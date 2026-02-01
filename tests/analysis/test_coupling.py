@@ -88,7 +88,9 @@ class TestSigmaThreshold:
     def test_check_detects_excess(self, sample_psd_inj, sample_psd_bkg):
         """Test check() with sigma threshold."""
         strategy = SigmaThreshold(sigma=2.0)
-        mask = strategy.check(sample_psd_inj, sample_psd_bkg)
+        # Catch warning about low n_avg
+        with pytest.warns(UserWarning, match="SigmaThreshold: n_avg"):
+            mask = strategy.check(sample_psd_inj, sample_psd_bkg)
 
         # With sigma=2, should detect the 10x excess
         assert np.sum(mask) > 0
@@ -144,7 +146,8 @@ class TestEdgeCases:
     def test_sigma_threshold_with_uniform_psd(self, sample_psd_bkg):
         """Test SigmaThreshold with uniform PSD."""
         strategy = SigmaThreshold(sigma=3.0)
-        mask = strategy.check(sample_psd_bkg, sample_psd_bkg)
+        with pytest.warns(UserWarning, match="SigmaThreshold: n_avg"):
+            mask = strategy.check(sample_psd_bkg, sample_psd_bkg)
 
         # No excess with identical PSDs
         assert np.sum(mask) == 0

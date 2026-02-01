@@ -16,7 +16,6 @@ from __future__ import annotations
 import logging
 import os
 import warnings
-from typing import Any
 
 import numpy as np
 from scipy.signal import get_window

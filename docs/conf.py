@@ -135,7 +135,7 @@ try:  # pragma: no cover
 except Exception:
     pass
 
-intersphinx_mapping = {}
+intersphinx_mapping: dict[str, tuple[str, str | None]] = {}
 
 nitpick_ignore = [
     ("py:class", "numpy.dtype"),

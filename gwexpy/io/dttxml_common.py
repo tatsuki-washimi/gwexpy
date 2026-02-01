@@ -4,9 +4,11 @@ Shared utilities for parsing dttxml (Diag GUI XML) files.
 
 from __future__ import annotations
 
+import base64
+import re
 import warnings
 import xml.etree.ElementTree as ET
-from typing import TypedDict
+from typing import Any, Literal, TypedDict, cast
 
 import numpy as np
 
@@ -141,6 +143,8 @@ def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.nd
 
     # Determine dtype
     dtype_lower = dtype_str.lower()
+    np_dtype: type[np.floating[Any] | np.complexfloating[Any, Any]]
+
     if dtype_lower == "float":
         np_dtype = np.float32
     elif dtype_lower == "double":
@@ -154,6 +158,7 @@ def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.nd
         np_dtype = np.float32
 
     # Handle byte order
+    byte_order: Literal["<", ">"]
     if is_little:
         byte_order = "<"
     else:
