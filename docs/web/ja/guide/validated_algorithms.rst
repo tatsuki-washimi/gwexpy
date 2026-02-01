@@ -98,6 +98,106 @@ GPS/TAI時刻系には該当しません。
 
 - GWpy TimeSeries.epoch ドキュメント
 - LIGO GPS時刻規約 (LIGO-T980044)
+- Box, G.E.P. & Jenkins, G.M., *Time Series Analysis* (1976), Ch. 4
+
+
+前提条件と規約
+==============
+
+以下のセクションでは、これらのアルゴリズムを使用する際に
+ユーザーが認識すべき重要な前提条件と規約を説明します。
+
+
+MCMC固定共分散前提
+------------------
+
+**関数**: :meth:`gwexpy.fitting.FitResult.run_mcmc`
+
+**前提**: 共分散行列 Σ は **パラメータ非依存（固定）** であること。
+
+この前提の下では、対数行列式項 ``log|Σ|`` は定数であり、
+対数尤度から正しく省略できます：
+
+.. math::
+
+    \log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r + \text{const}
+
+Σ がモデルパラメータ θ に依存する場合は、``log|Σ|`` を含む
+完全な対数尤度を使用する必要があり、実装の修正が必要です。
+
+**複素データ**: 複素数値データの場合、エルミート形式
+``r.conj() @ cov_inv @ r`` は **円形複素ガウス** 分布
+（実部と虚部が等分散で無相関）を仮定しています。
+
+**参考文献**:
+
+- Rasmussen & Williams, *Gaussian Processes for Machine Learning* (2006), Ch. 2.2
+- Gelman et al., *Bayesian Data Analysis* (3rd ed., 2013), §14.2
+
+
+角波数 vs サイクル波数
+----------------------
+
+**関数**: :meth:`gwexpy.fields.ScalarField.fft_space`
+
+**規約**: ``k`` 軸は **角波数** [rad/length] を返します。
+サイクル波数 [1/length] ではありません。
+
+- 角波数: :math:`k = 2\pi / \lambda`
+- サイクル波数: :math:`\nu = 1 / \lambda`
+- 変換: :math:`\nu = k / (2\pi)`
+
+
+降順軸の符号規約
+----------------
+
+**関数**: :meth:`gwexpy.fields.ScalarField.fft_space`
+
+**規約**: 空間軸が降順 (dx < 0) の場合、k軸は位相因子規約
+``e^{+ikx}`` との物理的整合性を保つために **符号反転** されます。
+
+これにより、データ格納順序に関係なく、正の ``k`` が
+正のx方向に伝播する波に対応することが保証されます。
+
+**参考文献**: Jackson, *Classical Electrodynamics* (3rd ed., 1998), §4.2
+
+
+ブートストラップにおけるVIF適用
+-------------------------------
+
+**関数**: :func:`gwexpy.spectral.estimation.bootstrap_spectrogram`
+
+**条件付き動作**:
+
+- **標準ブートストラップ** (``block_size=None``): Welchオーバーラップ相関を
+  補正するためにVIF補正が適用されます。
+- **ブロックブートストラップ** (``block_size`` 指定): 二重補正を防ぐため
+  VIF補正は **無効化** (factor=1.0) されます。
+
+これにより、ブロック構造と解析的VIFの両方が同時に適用された場合の
+分散推定の過大評価を防止します。
+
+
+ブートストラップの定常性前提
+----------------------------
+
+**関数**: :func:`gwexpy.spectral.estimation.bootstrap_spectrogram`
+
+**前提**: 入力データは **定常過程** であること。
+
+Moving Block Bootstrap は、データの統計的性質が時間とともに
+変化しないことを仮定しています。非定常データ（グリッチ、トランジェント、
+ドリフトするノイズフロア）では、信頼区間が偏る可能性があります。
+
+**推奨** ``block_size``: 時間相関のあるスペクトログラムでは、
+少なくともストライド長（セグメント間隔）以上を設定してください。
+
+**参考文献**:
+
+- Künsch, H.R., "The jackknife and the bootstrap for general stationary
+  observations", Ann. Statist. 17(3), 1989
+- Politis, D.N. & Romano, J.P., "The stationary bootstrap",
+  J. Amer. Statist. Assoc. 89(428), 1994
 
 
 検証について
@@ -117,3 +217,4 @@ GPS/TAI時刻系には該当しません。
 - Perplexity
 
 完全な検証レポートは開発者ドキュメントで参照できます。
+

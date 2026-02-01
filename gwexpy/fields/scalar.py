@@ -448,9 +448,26 @@ class ScalarField(FieldBase):
 
         Notes
         -----
+        **Angular Wavenumber Convention**
+
         The wavenumber axis is computed as ``k = 2π * fftfreq(n, d=dx)``,
-        satisfying ``k = 2π / λ``. This is the standard angular wavenumber
-        definition in physics.
+        satisfying ``k = 2π / λ``. This is the standard **angular wavenumber**
+        definition in physics, with units of [rad/length].
+
+        Note: This is NOT the cycle wavenumber (1/λ) commonly used in some
+        fields. To convert: ``k_cycle = k_angular / (2π)``.
+
+        **Sign Convention for Descending Axes (dx < 0)**
+
+        If the spatial axis is descending (dx < 0), the k-axis is sign-flipped
+        to preserve physical consistency with the phase factor convention
+        ``e^{+ikx}``. This ensures that positive k corresponds to waves
+        propagating in the positive x direction, regardless of the data
+        storage order.
+
+        This convention differs from the standard FFT behavior (which ignores
+        axis direction) but maintains physical consistency for interferometer
+        simulations and wave propagation analysis.
 
         This formula was validated by 10/12 AI models in cross-verification
         (2026-02-01). The ``2π`` factor is correctly applied, and units are
@@ -461,6 +478,8 @@ class ScalarField(FieldBase):
         .. [1] Press et al., Numerical Recipes (3rd ed., 2007), §12.3.2
         .. [2] NumPy fftfreq documentation
         .. [3] GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)
+        .. [4] Jackson, Classical Electrodynamics (3rd ed., 1998), §4.2:
+               Fourier transform sign conventions
         """
         # Default: all real-domain spatial axes
         if axes is None:

@@ -313,6 +313,46 @@ def bootstrap_spectrogram(
     Returns
     -------
     FrequencySeries or (FrequencySeries, BifrequencyMap)
+
+    Notes
+    -----
+    **VIF (Variance Inflation Factor) Application**
+
+    The VIF correction for overlapping Welch segments is applied **only**
+    when ``block_size`` is not specified (standard bootstrap). When
+    ``block_size`` is specified, the VIF correction is disabled (factor=1.0)
+    because the block bootstrap is designed to capture serial correlation
+    implicitly.
+
+    This behavior prevents "double correction" where both block structure
+    and analytical VIF would over-inflate variance estimates.
+
+    **Stationarity Assumption**
+
+    Moving Block Bootstrap assumes the input data is a **stationary process**.
+    For non-stationary data (e.g., glitches, transient events, or drifting
+    noise floors), the bootstrap confidence intervals may be biased.
+
+    Consider:
+    - Pre-processing to remove non-stationarities
+    - Using shorter analysis segments where stationarity holds
+    - Validating stationarity with statistical tests
+
+    **Block Size Selection**
+
+    If ``block_size=None``, standard (iid) bootstrap is performed, which
+    ignores serial correlation from Welch overlap. Recommended to set
+    ``block_size`` to at least the stride length (segment spacing) for
+    time-correlated spectrograms.
+
+    References
+    ----------
+    .. [1] Percival, D.B. & Walden, A.T., Spectral Analysis for Physical
+           Applications (1993), Ch. 7.3.2
+    .. [2] Künsch, H.R., "The jackknife and the bootstrap for general
+           stationary observations", Ann. Statist. 17(3), 1989
+    .. [3] Politis, D.N. & Romano, J.P., "The stationary bootstrap",
+           J. Amer. Statist. Assoc. 89(428), 1994
     """
     data = spectrogram.value
     frequencies = spectrogram.frequencies.value
