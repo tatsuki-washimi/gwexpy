@@ -112,27 +112,63 @@ class SigmaThreshold(ThresholdStrategy):
     """
     Checks if P_inj > P_bkg + sigma * std_error.
 
-    Statistical Assumptions:
-        - Background Power Spectral Density (PSD) at each bin follows a Gaussian distribution.
-        - The parameter `n_avg` represents the number of independent averages (e.g., in Welch's method).
-        - Assumes standard deviation of the noise reduces as `1 / sqrt(n_avg)`.
+    Statistical Assumptions
+    -----------------------
+    - Background Power Spectral Density (PSD) at each bin approximately follows
+      a Gaussian distribution (valid when n_avg is sufficiently large).
+    - The parameter `n_avg` represents the number of independent averages
+      (e.g., in Welch's method).
+    - Assumes standard deviation of the noise reduces as `1 / sqrt(n_avg)`.
 
-    Meaning of Threshold:
-        - `threshold = mean + sigma * (mean / sqrt(n_avg))`
-        - This is a **statistical significance判定** (significance test), NOT a physical upper limit.
-        - It identifies frequencies where the injection is statistically distinguishable from background variance.
+    Meaning of Threshold
+    --------------------
+    - ``threshold = mean + sigma * (mean / sqrt(n_avg))``
+    - This is a **statistical significance test**, NOT a physical upper limit.
+    - It identifies frequencies where the injection is statistically
+      distinguishable from background variance.
 
-    WARNING:
-        This method relies heavily on the Gaussian and stationary assumptions. It may be unreliable if:
-        - The background contains significant non-Gaussian features (glitches, transients).
-        - `n_avg` is small, where the central limit theorem has not yet converged.
-        - There are strong spectral lines (non-stationary or deterministic signals).
+    Gaussian Approximation Validity
+    -------------------------------
+    Welch PSD estimates follow a χ² distribution with 2K degrees of freedom
+    (K = n_avg). The Gaussian approximation is valid when K ≥ 10 (approximately).
 
-    In such cases, `PercentileThreshold` is recommended as it uses the empirical distribution.
+    For K < 10, consider:
+    - Using `PercentileThreshold` (empirical distribution, no Gaussian assumption)
+    - Increasing FFT averaging by using longer data or shorter fftlength
+
+    References
+    ----------
+    - Welch, P.D. (1967): PSD estimation via overlapped segment averaging
+    - Bendat & Piersol, Random Data (4th ed., 2010), Ch. 11
+
+    Warning
+    -------
+    This method relies heavily on the Gaussian and stationary assumptions.
+    It may be unreliable if:
+    - The background contains significant non-Gaussian features (glitches)
+    - `n_avg` is small (< ~10), where the central limit theorem has not converged
+    - There are strong spectral lines (non-stationary or deterministic signals)
+
+    In such cases, `PercentileThreshold` is recommended as it uses the
+    empirical distribution.
     """
+
+    # Minimum n_avg for reliable Gaussian approximation
+    _MIN_NAVG_GAUSSIAN = 10
 
     def __init__(self, sigma: float = 3.0) -> None:
         self.sigma = sigma
+
+    def _check_gaussian_validity(self, n_avg: float) -> None:
+        """Warn if Gaussian approximation may be unreliable."""
+        if n_avg < self._MIN_NAVG_GAUSSIAN:
+            warnings.warn(
+                f"SigmaThreshold: n_avg={n_avg:.1f} < {self._MIN_NAVG_GAUSSIAN}. "
+                f"Gaussian approximation may be inaccurate for χ²(2K) with K < 10. "
+                f"Consider using PercentileThreshold for more robust results.",
+                UserWarning,
+                stacklevel=3,
+            )
 
     def check(
         self,
@@ -147,6 +183,7 @@ class SigmaThreshold(ThresholdStrategy):
         if n_avg <= 0:
             return np.ones_like(psd_inj.value, dtype=bool)
 
+        self._check_gaussian_validity(n_avg)
         factor = 1.0 + (self.sigma / np.sqrt(n_avg))
         return psd_inj.value > (psd_bkg.value * factor)
 
@@ -784,6 +821,13 @@ class CouplingFunctionAnalysis:
         duration_inj = ts_wit_inj.span[1] - ts_wit_inj.span[0]
         duration_bkg = ts_wit_bkg.span[1] - ts_wit_bkg.span[0]
         eff_ovlp = overlap
+
+        # Guard against fftlength == overlap (would cause division by zero)
+        if fftlength <= eff_ovlp:
+            raise ValueError(
+                f"fftlength ({fftlength}) must be greater than overlap ({eff_ovlp}). "
+                f"Otherwise, n_avg cannot be computed (division by zero)."
+            )
 
         n_avg_inj = max(1, (duration_inj - eff_ovlp) / (fftlength - eff_ovlp))
         n_avg_bkg = max(1, (duration_bkg - eff_ovlp) / (fftlength - eff_ovlp))

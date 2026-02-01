@@ -620,10 +620,26 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         -----
         Requires the `pywt` (PyWavelets) package.
 
+        **Complex Coefficients**
+
+        For complex wavelets (e.g., 'cmor', 'morl'), the CWT coefficients are
+        **complex-valued**, containing both magnitude and phase information:
+
+        - ``np.abs(coefs)`` : Envelope/magnitude (instantaneous amplitude)
+        - ``np.angle(coefs)`` : Instantaneous phase (radians)
+        - ``np.real(coefs)`` : Real part (in-phase component)
+        - ``np.imag(coefs)`` : Imaginary part (quadrature component)
+
+        For time-frequency power analysis, use ``np.abs(coefs)**2``.
+
+        The returned Spectrogram object preserves complex dtype. To visualize,
+        apply ``np.abs()`` before plotting.
+
         Examples
         --------
         >>> ts = TimeSeries(data, sample_rate=1024)
         >>> spec = ts.cwt(frequencies=np.logspace(0, 2, 50))
+        >>> power = np.abs(spec.value)**2  # Time-frequency power
         """
         self._check_regular("cwt")
 
