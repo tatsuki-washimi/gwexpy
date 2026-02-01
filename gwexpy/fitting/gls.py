@@ -14,6 +14,7 @@ from typing import Any
 import numpy as np
 from iminuit import Minuit
 from iminuit.util import describe
+from scipy.linalg import solve_triangular
 
 __all__ = ["GeneralizedLeastSquares", "GLS"]
 
@@ -84,6 +85,9 @@ class GeneralizedLeastSquares:
     model : callable
         Model function with signature `model(x, *params) -> y`.
         The first argument must be `x`, followed by fit parameters.
+    cov : ndarray, optional
+        Original covariance matrix. If provided, Cholesky decomposition
+        is used for better numerical stability.
 
     Notes
     -----
@@ -106,10 +110,12 @@ class GeneralizedLeastSquares:
         y: np.ndarray,
         cov_inv: np.ndarray,
         model: Callable[..., Any],
+        cov: np.ndarray | None = None,
     ) -> None:
         self.x = np.asarray(x)
         self.y = np.asarray(y)
         self.cov_inv = np.asarray(cov_inv)
+        self.cov = np.asarray(cov) if cov is not None else None
         self.model = model
 
         # Validate dimensions
@@ -119,6 +125,15 @@ class GeneralizedLeastSquares:
                 f"cov_inv shape {self.cov_inv.shape} does not match "
                 f"data length {n}. Expected ({n}, {n})."
             )
+
+        # Precompute Cholesky factor if covariance is available for better stability
+        self.cov_cho = None
+        if self.cov is not None:
+            try:
+                self.cov_cho = np.linalg.cholesky(self.cov)
+            except np.linalg.LinAlgError:
+                # Fallback to cov_inv if not positive definite
+                self.cov_cho = None
 
         # Extract parameter names from model (skip first arg 'x')
         params = describe(model)[1:]
@@ -142,8 +157,19 @@ class GeneralizedLeastSquares:
         ym = self.model(self.x, *args)
         # Residual vector
         r = self.y - ym
-        # χ² = r.T @ cov_inv @ r
-        chi2 = float(r @ self.cov_inv @ r)
+
+        # Compute χ² based on available covariance information
+        if self.cov_cho is not None:
+            # Use Cholesky factor for better numerical stability
+            # r.T @ inv(cov) @ r == ||inv(L) @ r||^2
+
+            # solve L @ w = r
+            w = solve_triangular(self.cov_cho, r, lower=True)
+            chi2 = float(np.sum(np.abs(w) ** 2))
+        else:
+            # χ² = r.T @ cov_inv @ r
+            chi2 = float(r @ self.cov_inv @ r)
+
         return chi2
 
     @property

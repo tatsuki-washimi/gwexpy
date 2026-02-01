@@ -1223,6 +1223,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         fft_kwargs: Optional[dict[str, Any]] = None,
         downsample: Optional[NumberLike] = None,
         align: Literal["intersection", "none"] = "intersection",
+        epsilon: Optional[float] = None,
         **kwargs: Any,
     ) -> Any:
         """
@@ -1260,6 +1261,11 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             Whether to downsample if sample rates differ (mode="transient" only).
         align : `str`, optional
             Alignment method: "intersection" or "none" (mode="transient" only).
+        epsilon : `float`, optional
+            L2 regularization parameter to prevent division by zero or
+            numerical instability. If provided, the division is performed as:
+            - steady mode: H(f) = CSD(f) / (PSD(f) + epsilon)
+            - transient mode: H(f) = (FFT_B * conj(FFT_A)) / (|FFT_A|^2 + epsilon)
 
         Returns
         -------
@@ -1329,7 +1335,9 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         if mode not in ("steady", "transient"):
             raise ValueError(f"mode must be 'steady' or 'transient', got: {mode}")
 
-        def _divide_with_special_rules(num_series: Any, den_series: Any) -> Any:
+        def _divide_with_special_rules(
+            num_series: Any, den_series: Any, epsilon: float = 0.0
+        ) -> Any:
             size = min(num_series.size, den_series.size)
             num = num_series[:size]
             den = den_series[:size]
@@ -1337,33 +1345,44 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             num_vals = np.asarray(num.value)
             den_vals = np.asarray(den.value)
             out_dtype = np.result_type(num_vals, den_vals)
-            out_vals = np.empty_like(num_vals, dtype=out_dtype)
 
-            den_zero = den_vals == 0
-            np.divide(num_vals, den_vals, out=out_vals, where=~den_zero)
+            if epsilon > 0:
+                if mode == "steady":
+                    # den_vals is PSD (real, non-negative)
+                    out_vals = num_vals / (den_vals + epsilon)
+                else:
+                    # den_vals is FFT (complex)
+                    # H = (num * conj(den)) / (|den|^2 + epsilon)
+                    out_vals = (num_vals * np.conj(den_vals)) / (
+                        np.abs(den_vals) ** 2 + epsilon
+                    )
+            else:
+                out_vals = np.empty_like(num_vals, dtype=out_dtype)
+                den_zero = den_vals == 0
+                np.divide(num_vals, den_vals, out=out_vals, where=~den_zero)
 
-            if np.any(den_zero):
-                num_zero = num_vals == 0
-                zero_zero = den_zero & num_zero
-                if np.any(zero_zero):
-                    if np.iscomplexobj(out_vals):
-                        out_vals[zero_zero] = np.nan + 1j * np.nan
-                    else:
-                        out_vals[zero_zero] = np.nan
+                if np.any(den_zero):
+                    num_zero = num_vals == 0
+                    zero_zero = den_zero & num_zero
+                    if np.any(zero_zero):
+                        if np.iscomplexobj(out_vals):
+                            out_vals[zero_zero] = np.nan + 1j * np.nan
+                        else:
+                            out_vals[zero_zero] = np.nan
 
-                num_nonzero = den_zero & ~num_zero
-                if np.any(num_nonzero):
-                    num_real = np.isreal(num_vals)
-                    real_mask = num_nonzero & num_real
-                    if np.any(real_mask):
-                        signs = np.sign(np.real(num_vals[real_mask]))
-                        out_vals[real_mask] = signs * np.inf
+                    num_nonzero = den_zero & ~num_zero
+                    if np.any(num_nonzero):
+                        num_real = np.isreal(num_vals)
+                        real_mask = num_nonzero & num_real
+                        if np.any(real_mask):
+                            signs = np.sign(np.real(num_vals[real_mask]))
+                            out_vals[real_mask] = signs * np.inf
 
-                    complex_mask = num_nonzero & ~num_real
-                    if np.any(complex_mask):
-                        out_vals[complex_mask] = (np.inf + 0j) * np.exp(
-                            1j * np.angle(num_vals[complex_mask])
-                        )
+                        complex_mask = num_nonzero & ~num_real
+                        if np.any(complex_mask):
+                            out_vals[complex_mask] = (np.inf + 0j) * np.exp(
+                                1j * np.angle(num_vals[complex_mask])
+                            )
 
             unit = None
             num_unit = getattr(num, "unit", None)
@@ -1407,7 +1426,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
                 average=average,
                 **kwargs,
             )
-            tf = _divide_with_special_rules(csd, psd)
+            tf = _divide_with_special_rules(csd, psd, epsilon=epsilon or 0.0)
             if other.name and self.name:
                 tf.name = f"{other.name} / {self.name}"
             return tf
@@ -1464,7 +1483,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             fx = a.fft(**kw)
             fy = b.fft(**kw)
 
-            tf = _divide_with_special_rules(fy, fx)
+            tf = _divide_with_special_rules(fy, fx, epsilon=epsilon or 0.0)
 
             if b.name and a.name:
                 tf.name = f"{b.name} / {a.name}"

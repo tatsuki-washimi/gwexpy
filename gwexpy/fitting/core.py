@@ -9,6 +9,7 @@ import numpy as np
 from astropy import units as u
 from iminuit import Minuit
 from iminuit.util import describe
+from scipy.linalg import solve_triangular
 
 from .models import get_model
 
@@ -136,6 +137,7 @@ class FitResult:
         dy_data=None,
         x_fit_range=None,
         cov_inv=None,
+        cov=None,
         unit=None,
         x_unit=None,
     ):
@@ -155,6 +157,7 @@ class FitResult:
         self.dy_data = dy_data
         self.x_fit_range = x_fit_range
         self.cov_inv = cov_inv  # Inverse covariance matrix for GLS
+        self.cov = cov          # Original covariance matrix (for stability/logdet)
         self.sampler = None
         self.samples = None
         self.mcmc_labels = None
@@ -635,6 +638,7 @@ class FitResult:
         y = self.y
         model = self.model
         cov_inv = self.cov_inv
+        cov = self.cov
         dy = self.dy
         all_param_names = list(self.minuit.parameters)
         limits_dict = {
@@ -642,6 +646,24 @@ class FitResult:
             for p in self.minuit.parameters
             if self.minuit.limits[p] != (None, None)
         }
+
+        # Validate fixed covariance assumption
+        if cov_inv is not None and callable(cov_inv):
+            raise ValueError(
+                "Parameter-dependent covariance matrices are not yet supported in run_mcmc."
+            )
+
+        # Precompute Cholesky factor if covariance is available for better stability
+        cov_cho = None
+        if cov is not None:
+            try:
+                # Ensure it's a positive definite matrix
+                cov_cho = np.linalg.cholesky(cov)
+            except np.linalg.LinAlgError:
+                logger.warning(
+                    "Covariance matrix is not positive definite, falling back to pinv."
+                )
+                cov_cho = None
 
         # Log Probability Function
         def log_prob(theta):
@@ -667,8 +689,15 @@ class FitResult:
                 r = y - ym
 
                 # Compute log probability based on error structure
-                if cov_inv is not None:
-                    # GLS: use full covariance structure
+                if cov_cho is not None:
+                    # GLS: use Cholesky factor for better numerical stability
+                    # r.T @ inv(cov) @ r == ||inv(L) @ r||^2
+
+                    # solve L @ w = r
+                    w = solve_triangular(cov_cho, r, lower=True)
+                    chi2 = float(np.sum(np.abs(w) ** 2))
+                elif cov_inv is not None:
+                    # GLS fallback: use full inverse covariance structure
                     # Handle complex residuals by taking real part of Hermitian form
                     val = r.conj() @ cov_inv @ r
                     # Ensure we aren't discarding meaningful imaginary parts (should be ~0 for Hermitian form)
@@ -1054,6 +1083,7 @@ def fit_series(
     # 2. Cost Function
     # Priority: cost_function > cov > sigma > default
     cov_inv_for_result = None  # Will be set if GLS is used
+    cov_for_result = None
 
     if cost_function is not None:
         # User-provided cost function takes highest priority
@@ -1061,6 +1091,8 @@ def fit_series(
         # Try to extract cov_inv from cost function if it's a GLS
         if hasattr(cost_function, "cov_inv"):
             cov_inv_for_result = cost_function.cov_inv
+        if hasattr(cost_function, "cov"):
+            cov_for_result = cost_function.cov
     elif cov is not None:
         # GLS mode: use covariance matrix
         if is_complex:
@@ -1088,6 +1120,9 @@ def fit_series(
                 raise ValueError(f"cov must be a 2D array, got {cov_arr.ndim}D")
             cov_inv = np.linalg.pinv(cov_arr)
 
+        cov_for_result = cov_arr
+        cov_inv_for_result = cov_inv
+
         # Check dimension matches
         n = len(y)
         if cov_inv.shape != (n, n):
@@ -1103,7 +1138,7 @@ def fit_series(
         sigma_for_result = dy
         sigma_full_for_plot = None  # Full-range sigma not available for GLS yet
 
-        cost = GeneralizedLeastSquares(x, y, cov_inv, model)
+        cost = GeneralizedLeastSquares(x, y, cov_inv, model, cov=cov_arr)
         cov_inv_for_result = cov_inv  # Save for MCMC
     elif is_complex:
         cost = ComplexLeastSquares(x, y, dy, model)
@@ -1170,6 +1205,7 @@ def fit_series(
         dy_data=sigma_full_for_plot,
         x_fit_range=x_range,
         cov_inv=cov_inv_for_result,
+        cov=cov_for_result,
         unit=getattr(target, "unit", None),
         x_unit=getattr(target, "xunit", None),
     )
