@@ -195,10 +195,38 @@ def detect_step_segments(
     snr_threshold: float = 10.0,
     min_duration: float = 5.0,
     trim_edge: float = 1.0,
-    freq_tolerance: float = 1.0,
+    freq_tolerance: float = 2.0,
 ) -> list[tuple[float, float, float]]:
     """
     Automatically detect time segments where the injection frequency is constant.
+
+    Parameters
+    ----------
+    witness : TimeSeries
+        Time series data containing the injection signal.
+    fftlength : float, optional
+        FFT length for tracking spectrogram (default: 1.0s, giving Δf=1 Hz).
+    snr_threshold : float, optional
+        Minimum SNR for injection detection (default: 10.0).
+    min_duration : float, optional
+        Minimum duration for a valid step (default: 5.0s).
+    trim_edge : float, optional
+        Time to trim from step edges (default: 1.0s).
+    freq_tolerance : float, optional
+        Maximum frequency change within a step [Hz] (default: 2.0).
+
+        **Note**: For reliable detection, ``freq_tolerance`` should be at least
+        ``2 * Δf`` where ``Δf = 1/fftlength``. With the default fftlength=1.0s
+        (Δf=1 Hz), a strict tolerance of Δf risks false step boundaries due to
+        spectral bin fluctuations. The default 2.0 Hz provides adequate margin.
+
+        Reference: Harris, F.J. "On the use of windows for harmonic analysis
+        with the discrete Fourier transform", Proc. IEEE 66(1), 1978.
+
+    Returns
+    -------
+    list of tuple
+        List of (start_time, end_time, frequency) tuples for each detected step.
     """
     # High-res tracking spectrogram
     # Note: gwpy requires stride >= fftlength. We use stride=fftlength for tracking.

@@ -209,7 +209,11 @@ def pca_fit(
         sklearn_model=pca,
         channel_labels=getattr(matrix, "channel_names", []),
         preprocessing=preprocessing,
-        input_meta={"t0": matrix.t0, "dt": matrix.dt},
+        input_meta={
+            "t0": matrix.t0,
+            "dt": matrix.dt,
+            "original_shape": matrix.shape,
+        },
     )
 
 
@@ -299,18 +303,27 @@ def pca_inverse_transform(pca_res, scores_matrix):
     # X_rec_val is (samples, features) -> (features, samples)
     X_rec_val = X_rec_val.T
 
-    # Reshape back to original 3D structure?
-    # We don't know original structure explicitly unless we stored shape in preprocessing?
-    # But usually we return flattened channels if structure unknown, or try to infer.
-    # For now, return (features, 1, samples) as default flat structure.
-    # Or try to look at input_meta?
-    # preprocess 'standardize' maintained shape.
-    # 'whiten' maintained shape if same dim.
-    # 'pca' inverse: features count matches original.
-    # If we knew original shape, we could reshape.
-    # Let's assume (features, 1, samples) for now.
-
-    X_rec_3d = X_rec_val[:, None, :]
+    # Reshape back to original 3D structure using stored original_shape
+    original_shape = pca_res.input_meta.get("original_shape")
+    if original_shape is not None and len(original_shape) == 3:
+        n_channels, n_cols, _ = original_shape
+        n_features = X_rec_val.shape[0]
+        n_samples = X_rec_val.shape[1]
+        # Verify feature count matches
+        if n_features == n_channels * n_cols:
+            X_rec_3d = X_rec_val.reshape(n_channels, n_cols, n_samples)
+        else:
+            # Mismatch (e.g., n_components < n_features), fallback to flat
+            import warnings
+            warnings.warn(
+                f"Cannot reshape to original 3D structure: "
+                f"expected {n_channels * n_cols} features, got {n_features}. "
+                f"Returning (features, 1, time) structure."
+            )
+            X_rec_3d = X_rec_val[:, None, :]
+    else:
+        # No original shape stored, use flat structure
+        X_rec_3d = X_rec_val[:, None, :]
 
     # Undo scaler (scaler handles 3D if generic axis logic used in inverse)
     # _inverse_scaler simply mult/add.
@@ -424,7 +437,11 @@ def ica_fit(
         sklearn_model=ica,
         channel_labels=getattr(matrix, "channel_names", []),
         preprocessing=preprocessing,
-        input_meta={"t0": matrix.t0, "dt": matrix.dt},
+        input_meta={
+            "t0": matrix.t0,
+            "dt": matrix.dt,
+            "original_shape": matrix.shape,
+        },
     )
 
 
@@ -528,8 +545,27 @@ def ica_inverse_transform(ica_res, sources):
     # Undo scaler
     # _inverse_scaler expects (channels, ..., time) or generic broadcasting?
     # rec is (samples, channels).
-    # transpose back to (channels, 1, samples)
-    rec_3d = rec.T[:, None, :]
+    # Reshape back to original 3D structure using stored original_shape
+    original_shape = ica_res.input_meta.get("original_shape")
+    if original_shape is not None and len(original_shape) == 3:
+        n_channels, n_cols, _ = original_shape
+        n_features = rec.shape[1]
+        n_samples = rec.shape[0]
+        # Verify feature count matches
+        if n_features == n_channels * n_cols:
+            rec_3d = rec.T.reshape(n_channels, n_cols, n_samples)
+        else:
+            # Mismatch, fallback to flat
+            import warnings
+            warnings.warn(
+                f"Cannot reshape to original 3D structure: "
+                f"expected {n_channels * n_cols} features, got {n_features}. "
+                f"Returning (features, 1, time) structure."
+            )
+            rec_3d = rec.T[:, None, :]
+    else:
+        # No original shape stored, use flat structure
+        rec_3d = rec.T[:, None, :]
 
     rec_final = _inverse_scaler(rec_3d, ica_res.preprocessing)
 

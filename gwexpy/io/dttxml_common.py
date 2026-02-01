@@ -98,6 +98,72 @@ def extract_xml_channels(filename: str) -> list[ChannelInfo]:
     return channels
 
 
+def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.ndarray:
+    """
+    Decode a DTT XML <Stream> element directly.
+
+    This function provides a fallback for cases where dttxml package
+    may incorrectly parse complex data (e.g., subtype 6 issue where
+    .real is taken, discarding phase information).
+
+    Parameters
+    ----------
+    stream_text : str
+        Base64-encoded content of the <Stream> element.
+    encoding : str
+        Encoding specification (e.g., "LittleEndian,base64").
+    dtype_str : str
+        Array type (e.g., "float", "floatComplex", "double").
+
+    Returns
+    -------
+    np.ndarray
+        Decoded array with correct dtype (complex for floatComplex).
+
+    Notes
+    -----
+    DTT XML complex format:
+    - "floatComplex": interleaved float32 pairs (real, imag)
+    - "doubleComplex": interleaved float64 pairs (real, imag)
+    """
+    import base64
+
+    # Parse encoding
+    encoding_parts = [e.strip().lower() for e in encoding.split(",")]
+    is_base64 = "base64" in encoding_parts
+    is_little = "littleendian" in encoding_parts
+
+    if not is_base64:
+        raise ValueError(f"Unsupported encoding: {encoding}. Only base64 supported.")
+
+    # Decode base64
+    raw_bytes = base64.b64decode(stream_text.strip())
+
+    # Determine dtype
+    dtype_lower = dtype_str.lower()
+    if dtype_lower == "float":
+        np_dtype = np.float32
+    elif dtype_lower == "double":
+        np_dtype = np.float64
+    elif dtype_lower == "floatcomplex":
+        np_dtype = np.complex64
+    elif dtype_lower == "doublecomplex":
+        np_dtype = np.complex128
+    else:
+        # Fallback to float32
+        np_dtype = np.float32
+
+    # Handle byte order
+    if is_little:
+        byte_order = "<"
+    else:
+        byte_order = ">"
+
+    # For complex types, numpy interprets as interleaved real/imag automatically
+    dt = np.dtype(np_dtype).newbyteorder(byte_order)
+    return np.frombuffer(raw_bytes, dtype=dt)
+
+
 try:
     import dttxml
 
@@ -211,11 +277,31 @@ def load_dttxml_products(source):
         tf_source = results._mydict["TF"]
     if tf_source:
         tf_dict = {}
+        phase_loss_warned = False
         for chA, info in tf_source.items():
             for i, chB in enumerate(info.channelB):
                 key = (chB, chA)
+                xfer_data = info.xfer[i]
+
+                # Check for potential phase loss: if TF data is real but expected complex
+                # dttxml may strip imaginary part for subtype 6
+                if not np.iscomplexobj(xfer_data) and not phase_loss_warned:
+                    # Transfer functions should typically be complex
+                    # Real-only TF may indicate phase information was lost
+                    subtype = get_attr(info, "subtype", None)
+                    if subtype in (3, 4, 6) or subtype is None:
+                        warnings.warn(
+                            f"Transfer function data for {key} appears to be real-only. "
+                            f"Phase information may have been lost during parsing. "
+                            f"This is a known issue with dttxml subtype handling. "
+                            f"If phase information is critical, consider re-exporting from DTT "
+                            f"or using a different format.",
+                            UserWarning,
+                        )
+                        phase_loss_warned = True
+
                 tf_dict[key] = create_series(
-                    info.xfer[i],
+                    xfer_data,
                     x_axis=info.FHz,
                     t0=info.gps_second,
                     name=str(key),
