@@ -1918,7 +1918,7 @@ version</p></li>
 <li><p><strong>format</strong> (<cite>str</cite>, optional) – <p>the data format to download and parse, default: <code class="docutils literal notranslate"><span class="pre">'h5py'</span></code></p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">'hdf5'</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">'gwf'</span></code> - requires <a href="#id11"><span class="problematic" id="id12">|LDAStools.frameCPP|_</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'gwf'</span></code> - requires <a href="#id9"><span class="problematic" id="id10">|LDAStools.frameCPP|_</span></a></p></li>
 </ul>
 </p></li>
 <li><p><strong>host</strong> (<cite>str</cite>, optional) – HTTP host name of GWOSC server to access</p></li>
@@ -2601,7 +2601,7 @@ The default is ‘C’.</p>
 <dt class="sig sig-object py">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_nds2_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Construct a new series from an <cite>nds2.buffer</cite> object</p>
-<p><strong>Requires:</strong> <a href="#id13"><span class="problematic" id="id14">|nds2|_</span></a></p>
+<p><strong>Requires:</strong> <a href="#id11"><span class="problematic" id="id12">|nds2|_</span></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3798,10 +3798,10 @@ Must NOT be specified if <code class="docutils literal notranslate"><span class=
 Defines the analysis bandwidth (half-bandwidth) around DC.</p></li>
 <li><p><strong>singlesided</strong> (<em>bool</em><em>, </em><em>default: True</em>) – If True (default), multiply the output by 2. This is the convention
 for recovering the full amplitude of a real-valued input signal
-$A cos(omega t + phi)$.</p></li>
+$A \cos(\omega t + \phi)$.</p></li>
 <li><p><strong>output</strong> (<em>{'amp_phase'</em><em>, </em><em>'complex'</em><em>, </em><em>'iq'}</em><em>, </em><em>default: 'amp_phase'</em>) – Formatting of the returned data:
 - <code class="docutils literal notranslate"><span class="pre">'amp_phase'</span></code>: Returns a tuple of (amplitude, phase).
-- <code class="docutils literal notranslate"><span class="pre">'complex'</span></code>: Returns a complex TimeSeries ($mag cdot e^{iphi}$).
+- <code class="docutils literal notranslate"><span class="pre">'complex'</span></code>: Returns a complex TimeSeries ($mag \cdot e^{i\phi}$).
 - <code class="docutils literal notranslate"><span class="pre">'iq'</span></code>: Returns a tuple of (In-phase, Quadrature) TimeSeries.</p></li>
 <li><p><strong>deg</strong> (<em>bool</em><em>, </em><em>default: True</em>) – If True and <code class="docutils literal notranslate"><span class="pre">output='amp_phase'</span></code>, the phase is returned in
 degrees. Otherwise, radians.</p></li>
@@ -3822,11 +3822,12 @@ is the same as the input signal.</p>
 </dl>
 <div class="admonition-notes admonition">
 <p class="admonition-title">Notes</p>
-<p><strong>Phase Convention</strong>
-The mixing uses the negative exponential convention:
-$Z(t) = 2 cdot text{LPF}{ x(t) cdot e^{-iphi(t)} }$ (if singlesided=True).
-For a real input $x(t) = A cos(omega t + phi_0)$, this operation
-correctly recovers the complex amplitude $A e^{iphi_0}$.</p>
+<p><strong>Phase Convention</strong></p>
+<p>The mixing uses the negative exponential convention:</p>
+<div class="math notranslate nohighlight">
+\[Z(t) = 2 \cdot \text{LPF}\{ x(t) \cdot e^{-i\phi(t)} \} \quad (\text{if singlesided=True})\]</div>
+<p>For a real input <span class="math notranslate nohighlight">\(x(t) = A \cos(\omega t + \phi_0)\)</span>, this operation
+correctly recovers the complex amplitude <span class="math notranslate nohighlight">\(A e^{i\phi_0}\)</span>.</p>
 <p><strong>Edge Handling</strong>
 - <strong>Stride mode</strong>: Discards any remainder samples at the end that do</p>
 <blockquote>
@@ -6582,8 +6583,8 @@ For backward compatibility: “gwpy”/”csd_psd” -&gt; mode=”steady”,
 <li><p><strong>align</strong> (<cite>str</cite>, optional) – Alignment method: “intersection” or “none” (mode=”transient” only).</p></li>
 <li><p><strong>epsilon</strong> (<cite>float</cite>, optional) – L2 regularization parameter to prevent division by zero or
 numerical instability. If provided, the division is performed as:
-- steady mode: H(f) = CSD(f) / (PSD(f) + epsilon)
-- transient mode: H(f) = (FFT_B * conj(FFT_A)) / (<a href="#id3"><span class="problematic" id="id4">|</span></a>FFT_A|^2 + epsilon)</p></li>
+- steady mode: <span class="math notranslate nohighlight">\(H(f) = \text{CSD}(f) / (\text{PSD}(f) + \epsilon)\)</span>
+- transient mode: <span class="math notranslate nohighlight">\(H(f) = (FFT_B \cdot FFT_A^*) / (|FFT_A|^2 + \epsilon)\)</span></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -6598,14 +6599,14 @@ numerical instability. If provided, the division is performed as:
 <dl>
 <dt><strong>steady mode (GWpy-compatible)</strong>:</dt><dd><p>Uses cross-spectral density and power spectral density:</p>
 <div class="math notranslate nohighlight">
-\[H(f) = \frac{\mathrm{CSD}_{A,B}(f)}{\mathrm{PSD}_A(f)}\]</div>
+\[\begin{split}H(f) = \\frac{\\mathrm{CSD}_{A,B}(f)}{\\mathrm{PSD}_A(f)}\end{split}\]</div>
 <p>This is the standard estimator for steady-state system identification,
 providing noise averaging through overlapped segmented FFTs.
 Results are numerically identical to GWpy’s <cite>transfer_function</cite>.</p>
 </dd>
 <dt><strong>transient mode (gwexpy extension)</strong>:</dt><dd><p>Uses direct FFT ratio without averaging:</p>
 <div class="math notranslate nohighlight">
-\[H_{\mathrm{transient}}(f) = \frac{\mathrm{FFT}_B(f)}{\mathrm{FFT}_A(f)}\]</div>
+\[\begin{split}H_{\\mathrm{transient}}(f) = \\frac{\\mathrm{FFT}_B(f)}{\\mathrm{FFT}_A(f)}\end{split}\]</div>
 <p>Use this for single-shot transient response analysis where
 averaging would obscure the instantaneous transfer characteristics.
 Employs the corrected transient FFT with proper DC/Nyquist handling.</p>
@@ -7419,7 +7420,7 @@ progress meter.</p></li>
 <dt class="sig sig-object py">
 <em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_nds2_buffers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">metadata</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Construct a new dict from a list of <cite>nds2.buffer</cite> objects</p>
-<p><strong>Requires:</strong> <a href="#id15"><span class="problematic" id="id16">|nds2|_</span></a></p>
+<p><strong>Requires:</strong> <a href="#id13"><span class="problematic" id="id14">|nds2|_</span></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
