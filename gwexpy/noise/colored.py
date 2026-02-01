@@ -59,12 +59,14 @@ def power_law(
         ratio = f_vals / f_ref_val
         data = amp_val * (ratio ** (-exponent))
 
-    if f_vals[0] == 0:
+    # Handle f=0 singularities
+    zero_mask = f_vals == 0
+    if np.any(zero_mask):
         if exponent > 0:
-            data[0] = np.inf
+            data[zero_mask] = np.inf
         elif exponent < 0:
-            data[0] = 0.0
-        # exponent=0 -> const, data[0] is fine
+            data[zero_mask] = 0.0
+        # exponent=0 -> const, data is fine
 
     # Remove 'unit' from kwargs to avoid double passing
     kwargs.pop("unit", None)

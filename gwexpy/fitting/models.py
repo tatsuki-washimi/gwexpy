@@ -77,6 +77,10 @@ def landau(x, A, mu, sigma):
     """
     Landau distribution approximation (Moyal distribution).
     f(x) = A * exp(-0.5 * (lambda + exp(-lambda))), where lambda = (x - mu) / sigma
+
+    Note:
+        A is a scaling factor, not the peak amplitude.
+        The peak height occurs at lambda=0 and is equal to A * exp(-0.5) ≈ 0.607 * A.
     """
     lam = (x - mu) / sigma
     return A * np.exp(-0.5 * (lam + np.exp(-lam)))

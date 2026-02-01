@@ -182,6 +182,13 @@ def hurst(
         return H
 
 
+class _MockTS:
+    """Lightweight wrapper for TimeSeries value."""
+
+    def __init__(self, v):
+        self.value = v
+
+
 def local_hurst(
     timeseries,
     window,
@@ -301,6 +308,10 @@ def local_hurst(
     else:
         x_full = x
 
+    # Optimize: Resolve 'auto' method once if possible to avoid repeated checks
+    # However, _get_* functions perform imports.
+    # We rely on python's sys.modules caching for speed.
+
     for i, s in enumerate(starts):
         e = s + w_samples
         segment_val = x_full[s:e]
@@ -326,22 +337,9 @@ def local_hurst(
 
         # Compute H
         try:
-            # Make a temporary TimeSeries-like wrapper or just pass value to underlying helper?
-            # But our hurst() fn takes 'timeseries' object usually?
-            # Wait, hurst() definition takes `timeseries` and accesses .value.
-            # I should define `hurst_val` helper or wrap segment.
-
-            # Let's wrap segment in simple object with .value
-            class MockTS:
-                def __init__(self, v):
-                    self.value = v
-
-            # Recurse to one-shot hurst
-            # We rely on 'hurst' function below.
-            # We pass nan_policy='raise' because we handled 'impute' globally or 'drop' locally.
-            # Actually we dealt with impute globally.
+            # Use lightweight mock
             h = hurst(
-                MockTS(segment_val),
+                _MockTS(segment_val),
                 method=method,
                 return_details=False,
                 nan_policy="raise",
