@@ -135,8 +135,16 @@ class ArimaResult:
 
             forecast_t0 = self.t0 + n_obs * self.dt
 
-        This assumes equally-spaced data without gaps. GPS times follow the
-        LIGO/GWpy convention using TAI continuous seconds (no leap seconds).
+        **Assumptions**:
+
+        - **Equally-spaced data without gaps**: The formula assumes no missing
+          samples between ``t0`` and the forecast start.
+        - **GPS/TAI time convention**: Times follow the LIGO/GWpy convention
+          using TAI continuous seconds (no leap seconds).
+        - **Differencing (d parameter)**: When d > 0, the effective sample count
+          ``n_obs`` reflects the internally differenced series. The forecast
+          timestamps are correctly computed by statsmodels, but users should
+          be aware that d-th order differencing loses d initial samples.
 
         This formula was validated by 12-AI cross-verification (2026-02-01).
         The leap-second concern raised by some models does not apply to
@@ -146,6 +154,7 @@ class ArimaResult:
         ----------
         .. [1] GWpy TimeSeries.epoch documentation
         .. [2] LIGO GPS time convention (LIGO-T980044)
+        .. [3] Box, G.E.P. & Jenkins, G.M., Time Series Analysis (1976), Ch. 4
         """
         from .timeseries import TimeSeries
 
