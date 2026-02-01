@@ -157,7 +157,7 @@ class FitResult:
         self.dy_data = dy_data
         self.x_fit_range = x_fit_range
         self.cov_inv = cov_inv  # Inverse covariance matrix for GLS
-        self.cov = cov          # Original covariance matrix (for stability/logdet)
+        self.cov = cov  # Original covariance matrix (for stability/logdet)
         self.sampler = None
         self.samples = None
         self.mcmc_labels = None

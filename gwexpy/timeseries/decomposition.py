@@ -315,6 +315,7 @@ def pca_inverse_transform(pca_res, scores_matrix):
         else:
             # Mismatch (e.g., n_components < n_features), fallback to flat
             import warnings
+
             warnings.warn(
                 f"Cannot reshape to original 3D structure: "
                 f"expected {n_channels * n_cols} features, got {n_features}. "
@@ -557,6 +558,7 @@ def ica_inverse_transform(ica_res, sources):
         else:
             # Mismatch, fallback to flat
             import warnings
+
             warnings.warn(
                 f"Cannot reshape to original 3D structure: "
                 f"expected {n_channels * n_cols} features, got {n_features}. "

@@ -136,7 +136,6 @@ class TimeSeries(
             if key.startswith("_gwex_") and key not in self.__dict__:
                 self.__dict__[key] = val
 
-
     # ===============================
     # Override methods from _core.py
     # (These take precedence over _LegacyTimeSeries versions)

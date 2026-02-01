@@ -230,7 +230,11 @@ def load_dttxml_native(source: str) -> dict:
 
         # Extract time
         time_elem = result_elem.find("Time[@Name='t0']")
-        t0 = float(time_elem.text.strip()) if time_elem is not None and time_elem.text else 0.0
+        t0 = (
+            float(time_elem.text.strip())
+            if time_elem is not None and time_elem.text
+            else 0.0
+        )
 
         subtype = params.get("Subtype", 0)
         f0 = params.get("f0", 0.0)
