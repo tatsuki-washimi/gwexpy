@@ -992,7 +992,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         deg: bool = True,
         **kwargs: Any,
     ) -> Any:
-        """
+        r"""
         Perform lock-in amplification (demodulation + filtering/averaging).
 
         This method extracts the complex amplitude (or magnitude and phase) of
@@ -1065,10 +1065,15 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         Notes
         -----
         **Phase Convention**
+
         The mixing uses the negative exponential convention:
-        $Z(t) = 2 \\cdot \\text{LPF}\\{ x(t) \\cdot e^{-i\\phi(t)} \\}$ (if singlesided=True).
-        For a real input $x(t) = A \\cos(\\omega t + \\phi_0)$, this operation
-        correctly recovers the complex amplitude $A e^{i\\phi_0}$.
+
+        .. math::
+
+            Z(t) = 2 \cdot \text{LPF}\{ x(t) \cdot e^{-i\phi(t)} \} \quad (\text{if singlesided=True})
+
+        For a real input :math:`x(t) = A \cos(\omega t + \phi_0)`, this operation
+        correctly recovers the complex amplitude :math:`A e^{i\phi_0}`.
 
         **Edge Handling**
         - **Stride mode**: Discards any remainder samples at the end that do
@@ -1226,7 +1231,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         epsilon: Optional[float] = None,
         **kwargs: Any,
     ) -> Any:
-        """
+        r"""
         Compute the transfer function between this TimeSeries and another.
 
         This TimeSeries (`self`) is the 'A-channel' (reference, denominator),
@@ -1264,8 +1269,8 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         epsilon : `float`, optional
             L2 regularization parameter to prevent division by zero or
             numerical instability. If provided, the division is performed as:
-            - steady mode: H(f) = CSD(f) / (PSD(f) + epsilon)
-            - transient mode: H(f) = (FFT_B * conj(FFT_A)) / (|FFT_A|^2 + epsilon)
+            - steady mode: :math:`H(f) = \text{CSD}(f) / (\text{PSD}(f) + \epsilon)`
+            - transient mode: :math:`H(f) = (FFT_B \cdot FFT_A^*) / (|FFT_A|^2 + \epsilon)`
 
         Returns
         -------
