@@ -123,7 +123,9 @@ if available, significantly accelerating the resampling process.</p>
 <li><p><strong>window</strong> (<em>str</em><em> or </em><em>array</em><em>, </em><em>optional</em>)</p></li>
 <li><p><strong>nperseg</strong> (<em>int</em><em>, </em><em>optional</em>)</p></li>
 <li><p><strong>noverlap</strong> (<em>int</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>block_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Size of blocks for block bootstrap. If None, perform standard bootstrap.</p></li>
+<li><p><strong>block_size</strong> (<em>int</em><em> or </em><em>'auto'</em><em>, </em><em>optional</em>) – Size of blocks for block bootstrap.
+If ‘auto’, estimates size based on overlap ratio (ceil(duration/stride)).
+If None, perform standard bootstrap with analytical VIF correction.</p></li>
 <li><p><strong>rebin_width</strong> (<em>float</em><em>, </em><em>optional</em>) – Width to rebin frequencies (in Hz) before bootstrapping.</p></li>
 <li><p><strong>return_map</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, return a BifrequencyMap of the covariance.</p></li>
 <li><p><strong>ignore_nan</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, ignore NaNs during bootstrap averaging. Default is True.</p></li>

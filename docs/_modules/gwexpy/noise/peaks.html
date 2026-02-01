@@ -107,10 +107,16 @@
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate a Lorentzian peak (ASD).</span>
+<span class="sd">    Generate a Lorentzian peak (ASD form, Peak Normalization).</span>
+
 <span class="sd">    Formula: ASD(f) = A * gamma / sqrt( (f-f0)^2 + gamma^2 )</span>
 
-<span class="sd">    This profile peaks at &#39;amplitude&#39; when f = f0.</span>
+<span class="sd">    This implementation uses **Peak Normalization** where the profile peaks</span>
+<span class="sd">    exactly at `amplitude` when f = f0. This differs from the physics</span>
+<span class="sd">    convention of Area Normalization (where the integral is A).</span>
+
+<span class="sd">    This form is suitable for modeling spectral lines in ASD (Amplitude</span>
+<span class="sd">    Spectral Density) where the peak height is known.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

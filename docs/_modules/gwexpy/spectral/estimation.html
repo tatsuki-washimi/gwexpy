@@ -85,15 +85,18 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_window</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
-<span class="c1"># Optional Numba import</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">numba</span><span class="w"> </span><span class="kn">import</span> <span class="n">njit</span><span class="p">,</span> <span class="n">prange</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">numba.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">NumbaError</span>
@@ -381,8 +384,10 @@
 <span class="sd">    window : str or array, optional</span>
 <span class="sd">    nperseg : int, optional</span>
 <span class="sd">    noverlap : int, optional</span>
-<span class="sd">    block_size : int, optional</span>
-<span class="sd">        Size of blocks for block bootstrap. If None, perform standard bootstrap.</span>
+<span class="sd">    block_size : int or &#39;auto&#39;, optional</span>
+<span class="sd">        Size of blocks for block bootstrap.</span>
+<span class="sd">        If &#39;auto&#39;, estimates size based on overlap ratio (ceil(duration/stride)).</span>
+<span class="sd">        If None, perform standard bootstrap with analytical VIF correction.</span>
 <span class="sd">    rebin_width : float, optional</span>
 <span class="sd">        Width to rebin frequencies (in Hz) before bootstrapping.</span>
 <span class="sd">    return_map : bool, optional</span>
@@ -452,6 +457,19 @@
     <span class="k">if</span> <span class="n">avg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">}:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;method must be &#39;median&#39; or &#39;mean&#39;.&quot;</span><span class="p">)</span>
 
+    <span class="c1"># Check for non-stationarity (basic heuristic)</span>
+    <span class="c1"># Spectral data is typically non-negative (PSD/ASD)</span>
+    <span class="n">segment_avgs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_time</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="c1"># Check if segment averages vary significantly</span>
+        <span class="n">std_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanstd</span><span class="p">(</span><span class="n">segment_avgs</span><span class="p">)</span>
+        <span class="n">mean_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">segment_avgs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mean_avg</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">std_avg</span> <span class="o">/</span> <span class="n">mean_avg</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Significant variation in segment levels detected (std/mean &gt; 0.5). &quot;</span>
+                <span class="s2">&quot;Bootstrap results on non-stationary data may be biased.&quot;</span>
+            <span class="p">)</span>
+
     <span class="c1"># 1. Frequency Rebinning</span>
     <span class="k">if</span> <span class="n">rebin_width</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">rebin_width</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">df</span> <span class="o">=</span> <span class="p">(</span>
@@ -485,6 +503,16 @@
     <span class="n">use_median</span> <span class="o">=</span> <span class="n">avg</span> <span class="o">==</span> <span class="s2">&quot;median&quot;</span>
 
     <span class="c1"># 2. Block Bootstrap</span>
+    <span class="k">if</span> <span class="n">block_size</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">_infer_overlap_ratio</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ratio</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">block_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">ratio</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Auto-selected block_size=</span><span class="si">{</span><span class="n">block_size</span><span class="si">}</span><span class="s2"> based on overlap ratio </span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">block_size</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="k">if</span> <span class="n">block_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">block_size</span> <span class="o">&gt;=</span> <span class="n">n_time</span><span class="p">:</span>
             <span class="c1"># Just one block? or simple bootstrap of blocks?</span>
