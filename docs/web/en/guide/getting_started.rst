@@ -70,3 +70,4 @@ Next Steps
 
 - Complete tutorial list: :doc:`tutorials/index`
 - API Reference: :doc:`../reference/index`
+- :doc:`validated_algorithms` - Algorithm validation report
