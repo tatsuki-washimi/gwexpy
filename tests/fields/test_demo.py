@@ -64,8 +64,6 @@ def test_make_propagating_gaussian_nonnegative():
 
 
 def test_make_demo_scalar_field_invalid_pattern_raises():
-    bad_pattern = cast(
-        Literal["gaussian", "sine", "standing", "noise"], "unknown"
-    )
+    bad_pattern = cast(Literal["gaussian", "sine", "standing", "noise"], "unknown")
     with pytest.raises(ValueError):
         make_demo_scalar_field(bad_pattern, nt=2, nx=2, ny=2, nz=2)

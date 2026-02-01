@@ -6,7 +6,8 @@ import nbformat as nbf
 nb = nbf.v4.new_notebook()
 
 # Title and Introduction
-nb.cells.append(nbf.v4.new_markdown_cell("""# ScalarField クラス入門
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""# ScalarField クラス入門
 
 このノートブックでは、`gwexpy` の `ScalarField` クラスの基本的な使い方を学びます。
 
@@ -18,30 +19,38 @@ nb.cells.append(nbf.v4.new_markdown_cell("""# ScalarField クラス入門
 - **軸1-3（空間軸）**: 実空間 ↔ K空間（波数空間）の変換
 - **4D構造の保持**: スライシングしても常に4次元を維持
 - **バッチ操作**: `FieldList` と `FieldDict` による複数フィールドの一括処理
-"""))
+""")
+)
 
 # Setup
-nb.cells.append(nbf.v4.new_markdown_cell("""## セットアップ
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""## セットアップ
 
 必要なライブラリをインポートします。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""import numpy as np
+nb.cells.append(
+    nbf.v4.new_code_cell("""import numpy as np
 from astropy import units as u
 import matplotlib.pyplot as plt
 
 from gwexpy.fields import ScalarField, FieldList, FieldDict
 
 # 再現性のためのシード設定
-np.random.seed(42)"""))
+np.random.seed(42)""")
+)
 
 # Section 1: Initialization
-nb.cells.append(nbf.v4.new_markdown_cell("""## 1. ScalarField の初期化とメタデータ
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""## 1. ScalarField の初期化とメタデータ
 
 `ScalarField` オブジェクトを作成し、そのメタデータを確認します。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 4Dデータの作成（10時点 × 8×8×8 の空間グリッド）
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 4Dデータの作成（10時点 × 8×8×8 の空間グリッド）
 nt, nx, ny, nz = 10, 8, 8, 8
 data = np.random.randn(nt, nx, ny, nz)
 
@@ -68,49 +77,63 @@ print(f"Shape: {field.shape}")
 print(f"Unit: {field.unit}")
 print(f"Axis names: {field.axis_names}")
 print(f"Axis0 domain: {field.axis0_domain}")
-print(f"Space domains: {field.space_domains}")"""))
+print(f"Space domains: {field.space_domains}")""")
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""### メタデータの確認
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""### メタデータの確認
 
 - `axis0_domain`: 軸0のドメイン（"time" または "frequency"）
 - `space_domains`: 各空間軸のドメイン（"real" または "k"）
 - `axis_names`: 各軸の名前
 
 これらのメタデータは、FFT変換時に自動的に更新されます。
-"""))
+""")
+)
 
 # Section 2: Slicing
-nb.cells.append(nbf.v4.new_markdown_cell("""## 2. 4D構造を保持するスライシング
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""## 2. 4D構造を保持するスライシング
 
 `ScalarField` の重要な特徴は、**スライシングしても常に4次元を維持する**ことです。
 整数インデックスを使っても、自動的に長さ1のスライスに変換されます。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 整数インデックスでスライス（通常のndarrayなら3Dになる）
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 整数インデックスでスライス（通常のndarrayなら3Dになる）
 sliced = field[0, :, :, :]
 
 print(f"Original shape: {field.shape}")
 print(f"Sliced shape: {sliced.shape}")  # (1, 8, 8, 8) - 4Dを維持！
 print(f"Type: {type(sliced)}")  # ScalarField のまま
-print(f"Axis names preserved: {sliced.axis_names}")"""))
+print(f"Axis names preserved: {sliced.axis_names}")""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 複数の軸で整数インデックスを使用
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 複数の軸で整数インデックスを使用
 sliced_multi = field[0, 1, 2, 3]
 
 print(f"Multi-sliced shape: {sliced_multi.shape}")  # (1, 1, 1, 1) - やはり4D
-print(f"Value: {sliced_multi.value}")"""))
+print(f"Value: {sliced_multi.value}")""")
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""この挙動により、ScalarFieldオブジェクトの一貫性が保たれ、メタデータ（軸名やドメイン情報）が失われることがありません。
-"""))
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""この挙動により、ScalarFieldオブジェクトの一貫性が保たれ、メタデータ（軸名やドメイン情報）が失われることがありません。
+""")
+)
 
 # Section 3: Time-Frequency Transform
-nb.cells.append(nbf.v4.new_markdown_cell("""## 3. 時間-周波数変換（軸0のFFT）
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""## 3. 時間-周波数変換（軸0のFFT）
 
 `fft_time()` と `ifft_time()` メソッドを使って、時間軸を周波数軸に変換できます。
 GWpy の `TimeSeries.fft()` と同じ正規化を採用しています。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 時間ドメインのScalarFieldを作成（正弦波）
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 時間ドメインのScalarFieldを作成（正弦波）
 t_dense = np.arange(128) * 0.01 * u.s
 x_small = np.arange(4) * 1.0 * u.m
 signal_freq = 10.0  # Hz
@@ -136,9 +159,11 @@ field_freq = field_time.fft_time()
 
 print(f"Time domain shape: {field_time.shape}")
 print(f"Frequency domain shape: {field_freq.shape}")
-print(f"Axis0 domain changed: {field_time.axis0_domain} → {field_freq.axis0_domain}")"""))
+print(f"Axis0 domain changed: {field_time.axis0_domain} → {field_freq.axis0_domain}")""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 周波数スペクトルをプロット（1点のx,y,zを選択）
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 周波数スペクトルをプロット（1点のx,y,zを選択）
 spectrum = np.abs(field_freq[:, 0, 0, 0].value)
 freqs = field_freq._axis0_index.value
 
@@ -157,14 +182,18 @@ plt.show()
 # ピーク周波数を確認
 peak_idx = np.argmax(spectrum)
 peak_freq = freqs[peak_idx]
-print(f"Peak frequency: {peak_freq:.2f} Hz (expected: {signal_freq} Hz)")"""))
+print(f"Peak frequency: {peak_freq:.2f} Hz (expected: {signal_freq} Hz)")""")
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""### 逆FFT（周波数 → 時間）
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""### 逆FFT（周波数 → 時間）
 
 `ifft_time()` で元の時間ドメインに戻すことができます。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 逆FFT
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 逆FFT
 field_reconstructed = field_freq.ifft_time()
 
 # 元の信号と比較
@@ -184,16 +213,20 @@ plt.show()
 
 # 誤差を確認
 error = np.abs(original - reconstructed.real)
-print(f"Max reconstruction error: {np.max(error):.2e} V")"""))
+print(f"Max reconstruction error: {np.max(error):.2e} V")""")
+)
 
 # Section 4: Spatial FFT
-nb.cells.append(nbf.v4.new_markdown_cell("""## 4. 実空間-K空間変換（空間軸のFFT）
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""## 4. 実空間-K空間変換（空間軸のFFT）
 
 `fft_space()` と `ifft_space()` を使って、空間軸を波数空間（K空間）に変換できます。
 角波数 k = 2π / λ の符号付きFFTを使用します。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 空間的に周期構造を持つデータを作成
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 空間的に周期構造を持つデータを作成
 nx, ny, nz = 16, 16, 16
 x_grid = np.arange(nx) * 0.5 * u.m
 y_grid = np.arange(ny) * 0.5 * u.m
@@ -223,9 +256,11 @@ field_kx = field_real.fft_space(axes=["x"])
 
 print(f"Original space domains: {field_real.space_domains}")
 print(f"After fft_space: {field_kx.space_domains}")
-print(f"Axis names: {field_kx.axis_names}")"""))
+print(f"Axis names: {field_kx.axis_names}")""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# K空間スペクトルをプロット
+nb.cells.append(
+    nbf.v4.new_code_cell("""# K空間スペクトルをプロット
 kx_spectrum = np.abs(field_kx[0, :, 0, 0].value)
 kx_values = field_kx._axis1_index.value
 
@@ -244,25 +279,33 @@ plt.show()
 # ピーク波数を確認
 peak_idx = np.argmax(kx_spectrum)
 peak_k = kx_values[peak_idx]
-print(f"Peak wavenumber: {peak_k:.2f} rad/m (expected: ±{k_expected:.2f} rad/m)")"""))
+print(f"Peak wavenumber: {peak_k:.2f} rad/m (expected: ±{k_expected:.2f} rad/m)")""")
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""### 波長の計算
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""### 波長の計算
 
 K空間では、`wavelength()` メソッドで波長を計算できます。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 波長を計算
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 波長を計算
 wavelengths = field_kx.wavelength("kx")
 
 print(f"Wavelength at k={k_expected:.2f}: {2*np.pi/k_expected:.2f} m")
-print(f"Calculated wavelengths range: {wavelengths.value[wavelengths.value > 0].min():.2f} - {wavelengths.value[wavelengths.value < np.inf].max():.2f} m")"""))
+print(f"Calculated wavelengths range: {wavelengths.value[wavelengths.value > 0].min():.2f} - {wavelengths.value[wavelengths.value < np.inf].max():.2f} m")""")
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""### 全空間軸のFFT
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""### 全空間軸のFFT
 
 `axes` パラメータを省略すると、全空間軸をまとめてFFTできます。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 全空間軸をFFT
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 全空間軸をFFT
 field_k_all = field_real.fft_space()
 print(f"All spatial axes in K space: {field_k_all.space_domains}")
 
@@ -272,20 +315,26 @@ print(f"Back to real space: {field_real_back.space_domains}")
 
 # 再構成誤差
 reconstruction_error = np.max(np.abs(field_real.value - field_real_back.value))
-print(f"Max reconstruction error: {reconstruction_error:.2e}")"""))
+print(f"Max reconstruction error: {reconstruction_error:.2e}")""")
+)
 
 # Section 5: Collections
-nb.cells.append(nbf.v4.new_markdown_cell("""## 5. FieldList と FieldDict によるバッチ操作
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""## 5. FieldList と FieldDict によるバッチ操作
 
 複数の `ScalarField` オブジェクトをまとめて処理するには、`FieldList` または `FieldDict` を使用します。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""### FieldList
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""### FieldList
 
 リスト形式で複数のフィールドを管理し、一括でFFT操作を適用できます。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 3つの異なる振幅を持つScalarFieldを作成
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 3つの異なる振幅を持つScalarFieldを作成
 amplitudes = [1.0, 2.0, 3.0]
 fields = []
 
@@ -306,37 +355,47 @@ for amp in amplitudes:
 
 # FieldList を作成
 field_list = FieldList(fields, validate=True)
-print(f"Number of fields: {len(field_list)}")"""))
+print(f"Number of fields: {len(field_list)}")""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 一括で時間FFTを実行
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 一括で時間FFTを実行
 field_list_freq = field_list.fft_time_all()
 
 print(f"All fields transformed to frequency domain:")
 for i, field in enumerate(field_list_freq):
-    print(f"  Field {i}: axis0_domain = {field.axis0_domain}")"""))
+    print(f"  Field {i}: axis0_domain = {field.axis0_domain}")""")
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""### FieldDict
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""### FieldDict
 
 辞書形式で名前付きフィールドを管理します。
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 名前付きフィールドの辞書を作成
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 名前付きフィールドの辞書を作成
 field_dict = FieldDict({
     "channel_A": fields[0],
     "channel_B": fields[1],
     "channel_C": fields[2]
 }, validate=True)
 
-print(f"Field names: {list(field_dict.keys())}")"""))
+print(f"Field names: {list(field_dict.keys())}")""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# 一括で空間FFTを実行
+nb.cells.append(
+    nbf.v4.new_code_cell("""# 一括で空間FFTを実行
 field_dict_k = field_dict.fft_space_all(axes=["x", "y"])
 
 for name, field in field_dict_k.items():
-    print(f"{name}: {field.space_domains}")"""))
+    print(f"{name}: {field.space_domains}")""")
+)
 
 # Summary
-nb.cells.append(nbf.v4.new_markdown_cell("""## まとめ
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""## まとめ
 
 このノートブックでは、`ScalarField` の主要な機能を学びました：
 
@@ -353,10 +412,13 @@ nb.cells.append(nbf.v4.new_markdown_cell("""## まとめ
 - より複雑な物理シミュレーションへの応用
 - 実データとの組み合わせ
 - カスタム解析パイプラインの構築
-"""))
+""")
+)
 
 # Write notebook
-with open("/home/washimi/work/gwexpy/examples/tutorials/intro_ScalarField.ipynb", "w") as f:
+with open(
+    "/home/washimi/work/gwexpy/examples/tutorials/intro_ScalarField.ipynb", "w"
+) as f:
     nbf.write(nb, f)
 
 print("✓ Created: examples/tutorials/intro_ScalarField.ipynb")

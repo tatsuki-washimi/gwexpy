@@ -10,6 +10,7 @@ This script checks:
 
 import numpy as np
 from astropy import units as u
+
 from gwexpy.fields import ScalarField
 from gwexpy.types import XIndex
 
@@ -46,7 +47,7 @@ field_time = ScalarField(
     axis3=x_coord.copy(),
     axis_names=["t", "x", "y", "z"],
     axis0_domain="time",
-    space_domain="real"
+    space_domain="real",
 )
 
 # Compute FFT
@@ -141,7 +142,7 @@ field_real = ScalarField(
     axis3=np.arange(4) * 1.0 * u.m,
     axis_names=["t", "x", "y", "z"],
     axis0_domain="time",
-    space_domain="real"
+    space_domain="real",
 )
 
 # FFT in x direction
@@ -165,17 +166,19 @@ print(f"Difference: {np.abs(peak_k - k_expected):.4e} rad/m")
 if np.abs(peak_k - k_expected) < 0.01 * k_expected:
     print("✓ Wavenumber calculation: PASS")
 else:
-    print(f"✗ Wavenumber calculation: FAIL")
+    print("✗ Wavenumber calculation: FAIL")
 
 # Verify wavelength computation
 wavelength_computed = field_kx.wavelength("kx")
 wavelength_at_peak = wavelength_computed.value[peak_idx]
-print(f"\nWavelength at peak: {wavelength_at_peak:.4f} m (expected: {wavelength:.4f} m)")
+print(
+    f"\nWavelength at peak: {wavelength_at_peak:.4f} m (expected: {wavelength:.4f} m)"
+)
 
 if np.abs(wavelength_at_peak - wavelength) < 0.01 * wavelength:
     print("✓ Wavelength computation: PASS")
 else:
-    print(f"✗ Wavelength computation: FAIL")
+    print("✗ Wavelength computation: FAIL")
 
 # ============================================================================
 # Test 4: Spatial FFT Reversibility (Real ↔ K space)
@@ -207,7 +210,7 @@ print(f"After time FFT: {field_freq.unit}")
 print(f"After time IFFT: {field_reconstructed.unit}")
 print(f"After spatial FFT: {field_kx.unit}")
 
-if (field_time.unit == field_freq.unit == field_reconstructed.unit == field_kx.unit):
+if field_time.unit == field_freq.unit == field_reconstructed.unit == field_kx.unit:
     print("✓ Unit preservation: PASS")
 else:
     print("✗ Unit preservation: FAIL (units changed unexpectedly)")
@@ -241,7 +244,9 @@ if not isinstance(k_axis, XIndex):
 elif k_axis.unit == expected_k_unit:
     print("✓ Wavenumber axis unit: PASS")
 else:
-    print(f"✗ Wavenumber axis unit: FAIL (got {k_axis.unit}, expected {expected_k_unit})")
+    print(
+        f"✗ Wavenumber axis unit: FAIL (got {k_axis.unit}, expected {expected_k_unit})"
+    )
 
 # ============================================================================
 # Summary

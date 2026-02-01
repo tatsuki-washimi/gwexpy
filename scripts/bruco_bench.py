@@ -7,8 +7,8 @@ Example:
 """
 
 import argparse
-import time
 import resource
+import time
 
 import numpy as np
 
@@ -17,8 +17,12 @@ from gwexpy.analysis.bruco import BrucoResult
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="BrucoResult.update_batch benchmark")
-    parser.add_argument("--n-bins", type=int, default=20000, help="Number of frequency bins")
-    parser.add_argument("--n-channels", type=int, default=300, help="Number of channels in batch")
+    parser.add_argument(
+        "--n-bins", type=int, default=20000, help="Number of frequency bins"
+    )
+    parser.add_argument(
+        "--n-channels", type=int, default=300, help="Number of channels in batch"
+    )
     parser.add_argument("--top-n", type=int, default=5, help="Top-N to keep per bin")
     parser.add_argument(
         "--block-size",

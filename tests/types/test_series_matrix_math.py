@@ -10,6 +10,7 @@ Tests linear algebra operations:
 - inverse (inv)
 - eigenvalues (eigvals)
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -23,12 +24,18 @@ from gwexpy.types.seriesmatrix import SeriesMatrix
 @pytest.fixture
 def square_matrix_2x2():
     """Create a 2x2 SeriesMatrix with 10 samples."""
-    data = np.array([
-        [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],
-         [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]],
-        [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-         [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]]
-    ])
+    data = np.array(
+        [
+            [
+                [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0],
+                [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0],
+            ],
+            [
+                [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
+            ],
+        ]
+    )
     xindex = np.linspace(0, 9, 10)
     return SeriesMatrix(data, xindex=xindex)
 
@@ -127,9 +134,7 @@ class TestMatMul:
         eye = SeriesMatrix(eye_data, xindex=np.linspace(0, 9, 10))
 
         result = square_matrix_2x2 @ eye
-        np.testing.assert_array_almost_equal(
-            result._value, square_matrix_2x2._value
-        )
+        np.testing.assert_array_almost_equal(result._value, square_matrix_2x2._value)
 
     def test_matmul_dimension_mismatch_raises(self, square_matrix_2x2):
         """Test that mismatched dimensions raise ValueError."""
@@ -217,10 +222,12 @@ class TestUnitHandling:
         """Test trace preserves units."""
         data = np.ones((2, 2, 5))
         xindex = np.linspace(0, 4, 5)
-        meta_arr = np.array([
-            [MetaData(unit=u.m), MetaData(unit=u.m)],
-            [MetaData(unit=u.m), MetaData(unit=u.m)]
-        ])
+        meta_arr = np.array(
+            [
+                [MetaData(unit=u.m), MetaData(unit=u.m)],
+                [MetaData(unit=u.m), MetaData(unit=u.m)],
+            ]
+        )
         mat = SeriesMatrix(data, xindex=xindex, meta=MetaDataMatrix(meta_arr))
 
         tr = mat.trace()
@@ -232,10 +239,12 @@ class TestUnitHandling:
         data[0, 0, :] = 2.0
         data[1, 1, :] = 3.0
         xindex = np.linspace(0, 4, 5)
-        meta_arr = np.array([
-            [MetaData(unit=u.m), MetaData(unit=u.m)],
-            [MetaData(unit=u.m), MetaData(unit=u.m)]
-        ])
+        meta_arr = np.array(
+            [
+                [MetaData(unit=u.m), MetaData(unit=u.m)],
+                [MetaData(unit=u.m), MetaData(unit=u.m)],
+            ]
+        )
         mat = SeriesMatrix(data, xindex=xindex, meta=MetaDataMatrix(meta_arr))
 
         det = mat.det()
