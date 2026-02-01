@@ -4,11 +4,9 @@ Shared utilities for parsing dttxml (Diag GUI XML) files.
 
 from __future__ import annotations
 
-import base64
-import re
 import warnings
 import xml.etree.ElementTree as ET
-from typing import Any, Literal, TypedDict, cast
+from typing import Any, Literal, TypedDict
 
 import numpy as np
 
