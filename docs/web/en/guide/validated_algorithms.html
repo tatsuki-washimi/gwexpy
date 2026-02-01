@@ -142,6 +142,82 @@ GPS/TAI time systems used in gravitational wave data analysis.</p>
 <ul class="simple">
 <li><p>GWpy TimeSeries.epoch documentation</p></li>
 <li><p>LIGO GPS time convention (LIGO-T980044)</p></li>
+<li><p>Box, G.E.P. &amp; Jenkins, G.M., <em>Time Series Analysis</em> (1976), Ch. 4</p></li>
+</ul>
+</section>
+</section>
+<section id="assumptions-and-conventions">
+<h1>Assumptions and Conventions<a class="headerlink" href="#assumptions-and-conventions" title="Link to this heading"></a></h1>
+<p>The following sections document important assumptions and conventions
+that users should be aware of when using these algorithms.</p>
+<section id="mcmc-fixed-covariance-assumption">
+<h2>MCMC Fixed Covariance Assumption<a class="headerlink" href="#mcmc-fixed-covariance-assumption" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fitting.FitResult.run_mcmc()</span></code></p>
+<p><strong>Assumption</strong>: The covariance matrix Σ is <strong>parameter-independent (fixed)</strong>.</p>
+<p>Under this assumption, the log determinant term <code class="docutils literal notranslate"><span class="pre">log|Σ|</span></code> is constant
+and can be correctly omitted from the log likelihood:</p>
+<div class="math notranslate nohighlight">
+\[\log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r + \text{const}\]</div>
+<p>If Σ depends on model parameters θ, the full log likelihood including
+<code class="docutils literal notranslate"><span class="pre">log|Σ|</span></code> must be used, which requires modifying the implementation.</p>
+<p><strong>Complex Data</strong>: For complex-valued data, the Hermitian form
+<code class="docutils literal notranslate"><span class="pre">r.conj()</span> <span class="pre">&#64;</span> <span class="pre">cov_inv</span> <span class="pre">&#64;</span> <span class="pre">r</span></code> assumes <strong>circular complex Gaussian</strong>
+distribution (equal variance for real and imaginary parts).</p>
+<p><strong>References</strong>:</p>
+<ul class="simple">
+<li><p>Rasmussen &amp; Williams, <em>Gaussian Processes for Machine Learning</em> (2006), Ch. 2.2</p></li>
+<li><p>Gelman et al., <em>Bayesian Data Analysis</em> (3rd ed., 2013), §14.2</p></li>
+</ul>
+</section>
+<section id="angular-vs-cycle-wavenumber">
+<h2>Angular vs Cycle Wavenumber<a class="headerlink" href="#angular-vs-cycle-wavenumber" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <a class="reference internal" href="../reference/api/fields.html#gwexpy.fields.ScalarField.fft_space" title="gwexpy.fields.ScalarField.fft_space"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></a></p>
+<p><strong>Convention</strong>: The <code class="docutils literal notranslate"><span class="pre">k</span></code> axis returns <strong>angular wavenumber</strong> [rad/length],
+NOT cycle wavenumber [1/length].</p>
+<ul class="simple">
+<li><p>Angular wavenumber: <span class="math notranslate nohighlight">\(k = 2\pi / \lambda\)</span></p></li>
+<li><p>Cycle wavenumber: <span class="math notranslate nohighlight">\(\nu = 1 / \lambda\)</span></p></li>
+<li><p>Conversion: <span class="math notranslate nohighlight">\(\nu = k / (2\pi)\)</span></p></li>
+</ul>
+</section>
+<section id="sign-convention-for-descending-axes">
+<h2>Sign Convention for Descending Axes<a class="headerlink" href="#sign-convention-for-descending-axes" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <a class="reference internal" href="../reference/api/fields.html#gwexpy.fields.ScalarField.fft_space" title="gwexpy.fields.ScalarField.fft_space"><code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></a></p>
+<p><strong>Convention</strong>: If the spatial axis is descending (dx &lt; 0), the k-axis is
+<strong>sign-flipped</strong> to preserve physical consistency with the phase factor
+convention <code class="docutils literal notranslate"><span class="pre">e^{+ikx}</span></code>.</p>
+<p>This ensures that positive <code class="docutils literal notranslate"><span class="pre">k</span></code> corresponds to waves propagating in
+the positive x direction, regardless of the data storage order.</p>
+<p><strong>Reference</strong>: Jackson, <em>Classical Electrodynamics</em> (3rd ed., 1998), §4.2</p>
+</section>
+<section id="vif-application-in-bootstrap">
+<h2>VIF Application in Bootstrap<a class="headerlink" href="#vif-application-in-bootstrap" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.bootstrap_spectrogram()</span></code></p>
+<p><strong>Conditional Behavior</strong>:</p>
+<ul class="simple">
+<li><p><strong>Standard bootstrap</strong> (<code class="docutils literal notranslate"><span class="pre">block_size=None</span></code>): VIF correction is applied
+to account for Welch overlap correlation.</p></li>
+<li><p><strong>Block bootstrap</strong> (<code class="docutils literal notranslate"><span class="pre">block_size</span></code> specified): VIF correction is
+<strong>disabled</strong> (factor=1.0) to prevent double correction.</p></li>
+</ul>
+<p>This prevents over-inflation of variance estimates when both block
+structure and analytical VIF would be applied simultaneously.</p>
+</section>
+<section id="bootstrap-stationarity-assumption">
+<h2>Bootstrap Stationarity Assumption<a class="headerlink" href="#bootstrap-stationarity-assumption" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.bootstrap_spectrogram()</span></code></p>
+<p><strong>Assumption</strong>: The input data is a <strong>stationary process</strong>.</p>
+<p>Moving Block Bootstrap assumes the statistical properties of the data
+do not change over time. For non-stationary data (glitches, transients,
+drifting noise floors), the confidence intervals may be biased.</p>
+<p><strong>Recommended</strong> <code class="docutils literal notranslate"><span class="pre">block_size</span></code>: At least the stride length (segment spacing)
+for time-correlated spectrograms.</p>
+<p><strong>References</strong>:</p>
+<ul class="simple">
+<li><p>Künsch, H.R., “The jackknife and the bootstrap for general stationary
+observations”, Ann. Statist. 17(3), 1989</p></li>
+<li><p>Politis, D.N. &amp; Romano, J.P., “The stationary bootstrap”,
+J. Amer. Statist. Assoc. 89(428), 1994</p></li>
 </ul>
 </section>
 <section id="about-the-validation">

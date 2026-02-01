@@ -530,9 +530,26 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
+<span class="sd">        **Angular Wavenumber Convention**</span>
+
 <span class="sd">        The wavenumber axis is computed as ``k = 2π * fftfreq(n, d=dx)``,</span>
-<span class="sd">        satisfying ``k = 2π / λ``. This is the standard angular wavenumber</span>
-<span class="sd">        definition in physics.</span>
+<span class="sd">        satisfying ``k = 2π / λ``. This is the standard **angular wavenumber**</span>
+<span class="sd">        definition in physics, with units of [rad/length].</span>
+
+<span class="sd">        Note: This is NOT the cycle wavenumber (1/λ) commonly used in some</span>
+<span class="sd">        fields. To convert: ``k_cycle = k_angular / (2π)``.</span>
+
+<span class="sd">        **Sign Convention for Descending Axes (dx &lt; 0)**</span>
+
+<span class="sd">        If the spatial axis is descending (dx &lt; 0), the k-axis is sign-flipped</span>
+<span class="sd">        to preserve physical consistency with the phase factor convention</span>
+<span class="sd">        ``e^{+ikx}``. This ensures that positive k corresponds to waves</span>
+<span class="sd">        propagating in the positive x direction, regardless of the data</span>
+<span class="sd">        storage order.</span>
+
+<span class="sd">        This convention differs from the standard FFT behavior (which ignores</span>
+<span class="sd">        axis direction) but maintains physical consistency for interferometer</span>
+<span class="sd">        simulations and wave propagation analysis.</span>
 
 <span class="sd">        This formula was validated by 10/12 AI models in cross-verification</span>
 <span class="sd">        (2026-02-01). The ``2π`` factor is correctly applied, and units are</span>
@@ -543,6 +560,8 @@
 <span class="sd">        .. [1] Press et al., Numerical Recipes (3rd ed., 2007), §12.3.2</span>
 <span class="sd">        .. [2] NumPy fftfreq documentation</span>
 <span class="sd">        .. [3] GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)</span>
+<span class="sd">        .. [4] Jackson, Classical Electrodynamics (3rd ed., 1998), §4.2:</span>
+<span class="sd">               Fourier transform sign conventions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Default: all real-domain spatial axes</span>
         <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

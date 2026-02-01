@@ -1258,9 +1258,21 @@ to reduce peak memory usage. Default is False.</p></li>
 </dl>
 <div class="admonition-notes admonition">
 <p class="admonition-title">Notes</p>
+<p><strong>Angular Wavenumber Convention</strong></p>
 <p>The wavenumber axis is computed as <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">2π</span> <span class="pre">*</span> <span class="pre">fftfreq(n,</span> <span class="pre">d=dx)</span></code>,
-satisfying <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">2π</span> <span class="pre">/</span> <span class="pre">λ</span></code>. This is the standard angular wavenumber
-definition in physics.</p>
+satisfying <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">2π</span> <span class="pre">/</span> <span class="pre">λ</span></code>. This is the standard <strong>angular wavenumber</strong>
+definition in physics, with units of [rad/length].</p>
+<p>Note: This is NOT the cycle wavenumber (1/λ) commonly used in some
+fields. To convert: <code class="docutils literal notranslate"><span class="pre">k_cycle</span> <span class="pre">=</span> <span class="pre">k_angular</span> <span class="pre">/</span> <span class="pre">(2π)</span></code>.</p>
+<p><strong>Sign Convention for Descending Axes (dx &lt; 0)</strong></p>
+<p>If the spatial axis is descending (dx &lt; 0), the k-axis is sign-flipped
+to preserve physical consistency with the phase factor convention
+<code class="docutils literal notranslate"><span class="pre">e^{+ikx}</span></code>. This ensures that positive k corresponds to waves
+propagating in the positive x direction, regardless of the data
+storage order.</p>
+<p>This convention differs from the standard FFT behavior (which ignores
+axis direction) but maintains physical consistency for interferometer
+simulations and wave propagation analysis.</p>
 <p>This formula was validated by 10/12 AI models in cross-verification
 (2026-02-01). The <code class="docutils literal notranslate"><span class="pre">2π</span></code> factor is correctly applied, and units are
 properly set as <code class="docutils literal notranslate"><span class="pre">1/dx_unit</span></code>.</p>
@@ -1278,6 +1290,11 @@ properly set as <code class="docutils literal notranslate"><span class="pre">1/d
 <aside class="footnote brackets" id="id5" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
 <p>GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)</p>
+</aside>
+<aside class="footnote brackets" id="id6" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></span>
+<p>Jackson, Classical Electrodynamics (3rd ed., 1998), §4.2:
+Fourier transform sign conventions</p>
 </aside>
 </aside>
 </dd></dl>
@@ -2968,8 +2985,8 @@ structured array:</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="id6">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">space_domains</span></span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="id7">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">space_domains</span></span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
 <dd><p>Mapping of spatial axis names to domains.</p>
 </dd></dl>
 

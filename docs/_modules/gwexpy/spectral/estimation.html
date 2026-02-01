@@ -393,6 +393,46 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    FrequencySeries or (FrequencySeries, BifrequencyMap)</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **VIF (Variance Inflation Factor) Application**</span>
+
+<span class="sd">    The VIF correction for overlapping Welch segments is applied **only**</span>
+<span class="sd">    when ``block_size`` is not specified (standard bootstrap). When</span>
+<span class="sd">    ``block_size`` is specified, the VIF correction is disabled (factor=1.0)</span>
+<span class="sd">    because the block bootstrap is designed to capture serial correlation</span>
+<span class="sd">    implicitly.</span>
+
+<span class="sd">    This behavior prevents &quot;double correction&quot; where both block structure</span>
+<span class="sd">    and analytical VIF would over-inflate variance estimates.</span>
+
+<span class="sd">    **Stationarity Assumption**</span>
+
+<span class="sd">    Moving Block Bootstrap assumes the input data is a **stationary process**.</span>
+<span class="sd">    For non-stationary data (e.g., glitches, transient events, or drifting</span>
+<span class="sd">    noise floors), the bootstrap confidence intervals may be biased.</span>
+
+<span class="sd">    Consider:</span>
+<span class="sd">    - Pre-processing to remove non-stationarities</span>
+<span class="sd">    - Using shorter analysis segments where stationarity holds</span>
+<span class="sd">    - Validating stationarity with statistical tests</span>
+
+<span class="sd">    **Block Size Selection**</span>
+
+<span class="sd">    If ``block_size=None``, standard (iid) bootstrap is performed, which</span>
+<span class="sd">    ignores serial correlation from Welch overlap. Recommended to set</span>
+<span class="sd">    ``block_size`` to at least the stride length (segment spacing) for</span>
+<span class="sd">    time-correlated spectrograms.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Percival, D.B. &amp; Walden, A.T., Spectral Analysis for Physical</span>
+<span class="sd">           Applications (1993), Ch. 7.3.2</span>
+<span class="sd">    .. [2] Künsch, H.R., &quot;The jackknife and the bootstrap for general</span>
+<span class="sd">           stationary observations&quot;, Ann. Statist. 17(3), 1989</span>
+<span class="sd">    .. [3] Politis, D.N. &amp; Romano, J.P., &quot;The stationary bootstrap&quot;,</span>
+<span class="sd">           J. Amer. Statist. Assoc. 89(428), 1994</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">value</span>
     <span class="n">frequencies</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
