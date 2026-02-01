@@ -55,7 +55,7 @@ def test_plot_show_save_side_effect():
 
     # Mock plt.show to avoid actual display (must accept block parameter)
     original_show = plt.show
-    plt.show = lambda block=None: None
+    plt.show = lambda block=None: None  # type: ignore
 
     try:
         # gwexpy's show() now supports 'close' and 'block' arguments.

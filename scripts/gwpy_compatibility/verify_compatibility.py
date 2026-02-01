@@ -64,7 +64,7 @@ def test_plot_lifecycle():
     import matplotlib.pyplot as plt
     # Mock plt.show to avoid blocking
     original_show = plt.show
-    plt.show = lambda: None
+    plt.show = lambda: None  # type: ignore
     try:
         plot.show()
         # After show, figure should be closed
