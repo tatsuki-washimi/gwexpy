@@ -229,16 +229,14 @@ def _convert_seismic_quantity(
         with np.errstate(divide="ignore", invalid="ignore"):
             data = fs.value / omega
             # Set f=0 to NaN (not 0 or inf)
-            if len(f) > 0 and f[0] == 0:
-                data[0] = np.nan
+            data[f == 0] = np.nan
 
     elif quantity == "displacement":
         target_unit = u.Unit("m / Hz^(1/2)")
         with np.errstate(divide="ignore", invalid="ignore"):
             data = fs.value / (omega**2)
             # Set f=0 to NaN (not 0 or inf)
-            if len(f) > 0 and f[0] == 0:
-                data[0] = np.nan
+            data[f == 0] = np.nan
 
     else:
         # Should not reach here due to earlier validation
