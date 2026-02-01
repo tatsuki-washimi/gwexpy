@@ -182,28 +182,47 @@ to calculate the distribution of PSDs across segments.</p></li>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.analysis.coupling.</span></span><span class="sig-name descname"><span class="pre">SigmaThreshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#SigmaThreshold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.SigmaThreshold" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gwexpy.analysis.coupling.ThresholdStrategy" title="gwexpy.analysis.coupling.ThresholdStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdStrategy</span></code></a></p>
 <p>Checks if P_inj &gt; P_bkg + sigma * std_error.</p>
-<dl class="simple">
-<dt>Statistical Assumptions:</dt><dd><ul class="simple">
-<li><p>Background Power Spectral Density (PSD) at each bin follows a Gaussian distribution.</p></li>
-<li><p>The parameter <cite>n_avg</cite> represents the number of independent averages (e.g., in Welch’s method).</p></li>
+<section id="statistical-assumptions">
+<h2>Statistical Assumptions<a class="headerlink" href="#statistical-assumptions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Background Power Spectral Density (PSD) at each bin approximately follows
+a Gaussian distribution (valid when n_avg is sufficiently large).</p></li>
+<li><p>The parameter <cite>n_avg</cite> represents the number of independent averages
+(e.g., in Welch’s method).</p></li>
 <li><p>Assumes standard deviation of the noise reduces as <cite>1 / sqrt(n_avg)</cite>.</p></li>
 </ul>
-</dd>
-<dt>Meaning of Threshold:</dt><dd><ul class="simple">
-<li><p><cite>threshold = mean + sigma * (mean / sqrt(n_avg))</cite></p></li>
-<li><p>This is a <strong>statistical significance判定</strong> (significance test), NOT a physical upper limit.</p></li>
-<li><p>It identifies frequencies where the injection is statistically distinguishable from background variance.</p></li>
+</section>
+<section id="meaning-of-threshold">
+<h2>Meaning of Threshold<a class="headerlink" href="#meaning-of-threshold" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">threshold</span> <span class="pre">=</span> <span class="pre">mean</span> <span class="pre">+</span> <span class="pre">sigma</span> <span class="pre">*</span> <span class="pre">(mean</span> <span class="pre">/</span> <span class="pre">sqrt(n_avg))</span></code></p></li>
+<li><p>This is a <strong>statistical significance test</strong>, NOT a physical upper limit.</p></li>
+<li><p>It identifies frequencies where the injection is statistically
+distinguishable from background variance.</p></li>
 </ul>
-</dd>
-</dl>
+</section>
+<section id="gaussian-approximation-validity">
+<h2>Gaussian Approximation Validity<a class="headerlink" href="#gaussian-approximation-validity" title="Link to this heading"></a></h2>
+<p>Welch PSD estimates follow a χ² distribution with 2K degrees of freedom
+(K = n_avg). The Gaussian approximation is valid when K ≥ 10 (approximately).</p>
+<p>For K &lt; 10, consider:
+- Using <cite>PercentileThreshold</cite> (empirical distribution, no Gaussian assumption)
+- Increasing FFT averaging by using longer data or shorter fftlength</p>
+<p class="rubric">References</p>
+<ul class="simple">
+<li><p>Welch, P.D. (1967): PSD estimation via overlapped segment averaging</p></li>
+<li><p>Bendat &amp; Piersol, Random Data (4th ed., 2010), Ch. 11</p></li>
+</ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This method relies heavily on the Gaussian and stationary assumptions. It may be unreliable if:
-- The background contains significant non-Gaussian features (glitches, transients).
-- <cite>n_avg</cite> is small, where the central limit theorem has not yet converged.
-- There are strong spectral lines (non-stationary or deterministic signals).</p>
+<p>This method relies heavily on the Gaussian and stationary assumptions.
+It may be unreliable if:
+- The background contains significant non-Gaussian features (glitches)
+- <cite>n_avg</cite> is small (&lt; ~10), where the central limit theorem has not converged
+- There are strong spectral lines (non-stationary or deterministic signals)</p>
+<p>In such cases, <cite>PercentileThreshold</cite> is recommended as it uses the
+empirical distribution.</p>
 </div>
-<p>In such cases, <cite>PercentileThreshold</cite> is recommended as it uses the empirical distribution.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwexpy.analysis.coupling.SigmaThreshold.check">
 <span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd_inj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">psd_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries" title="gwexpy.frequencyseries.frequencyseries.FrequencySeries"><span class="pre">FrequencySeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_bkg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries" title="gwexpy.timeseries.timeseries.TimeSeries"><span class="pre">TimeSeries</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/analysis/coupling.html#SigmaThreshold.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwexpy.analysis.coupling.SigmaThreshold.check" title="Link to this definition"></a></dt>
@@ -226,6 +245,7 @@ to calculate the distribution of PSDs across segments.</p></li>
 <dd><p>Return the PSD threshold values used by this strategy.</p>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">

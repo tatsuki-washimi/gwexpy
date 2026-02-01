@@ -204,27 +204,63 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks if P_inj &gt; P_bkg + sigma * std_error.</span>
 
-<span class="sd">    Statistical Assumptions:</span>
-<span class="sd">        - Background Power Spectral Density (PSD) at each bin follows a Gaussian distribution.</span>
-<span class="sd">        - The parameter `n_avg` represents the number of independent averages (e.g., in Welch&#39;s method).</span>
-<span class="sd">        - Assumes standard deviation of the noise reduces as `1 / sqrt(n_avg)`.</span>
+<span class="sd">    Statistical Assumptions</span>
+<span class="sd">    -----------------------</span>
+<span class="sd">    - Background Power Spectral Density (PSD) at each bin approximately follows</span>
+<span class="sd">      a Gaussian distribution (valid when n_avg is sufficiently large).</span>
+<span class="sd">    - The parameter `n_avg` represents the number of independent averages</span>
+<span class="sd">      (e.g., in Welch&#39;s method).</span>
+<span class="sd">    - Assumes standard deviation of the noise reduces as `1 / sqrt(n_avg)`.</span>
 
-<span class="sd">    Meaning of Threshold:</span>
-<span class="sd">        - `threshold = mean + sigma * (mean / sqrt(n_avg))`</span>
-<span class="sd">        - This is a **statistical significance判定** (significance test), NOT a physical upper limit.</span>
-<span class="sd">        - It identifies frequencies where the injection is statistically distinguishable from background variance.</span>
+<span class="sd">    Meaning of Threshold</span>
+<span class="sd">    --------------------</span>
+<span class="sd">    - ``threshold = mean + sigma * (mean / sqrt(n_avg))``</span>
+<span class="sd">    - This is a **statistical significance test**, NOT a physical upper limit.</span>
+<span class="sd">    - It identifies frequencies where the injection is statistically</span>
+<span class="sd">      distinguishable from background variance.</span>
 
-<span class="sd">    WARNING:</span>
-<span class="sd">        This method relies heavily on the Gaussian and stationary assumptions. It may be unreliable if:</span>
-<span class="sd">        - The background contains significant non-Gaussian features (glitches, transients).</span>
-<span class="sd">        - `n_avg` is small, where the central limit theorem has not yet converged.</span>
-<span class="sd">        - There are strong spectral lines (non-stationary or deterministic signals).</span>
+<span class="sd">    Gaussian Approximation Validity</span>
+<span class="sd">    -------------------------------</span>
+<span class="sd">    Welch PSD estimates follow a χ² distribution with 2K degrees of freedom</span>
+<span class="sd">    (K = n_avg). The Gaussian approximation is valid when K ≥ 10 (approximately).</span>
 
-<span class="sd">    In such cases, `PercentileThreshold` is recommended as it uses the empirical distribution.</span>
+<span class="sd">    For K &lt; 10, consider:</span>
+<span class="sd">    - Using `PercentileThreshold` (empirical distribution, no Gaussian assumption)</span>
+<span class="sd">    - Increasing FFT averaging by using longer data or shorter fftlength</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    - Welch, P.D. (1967): PSD estimation via overlapped segment averaging</span>
+<span class="sd">    - Bendat &amp; Piersol, Random Data (4th ed., 2010), Ch. 11</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This method relies heavily on the Gaussian and stationary assumptions.</span>
+<span class="sd">    It may be unreliable if:</span>
+<span class="sd">    - The background contains significant non-Gaussian features (glitches)</span>
+<span class="sd">    - `n_avg` is small (&lt; ~10), where the central limit theorem has not converged</span>
+<span class="sd">    - There are strong spectral lines (non-stationary or deterministic signals)</span>
+
+<span class="sd">    In such cases, `PercentileThreshold` is recommended as it uses the</span>
+<span class="sd">    empirical distribution.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Minimum n_avg for reliable Gaussian approximation</span>
+    <span class="n">_MIN_NAVG_GAUSSIAN</span> <span class="o">=</span> <span class="mi">10</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_gaussian_validity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_avg</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Warn if Gaussian approximation may be unreliable.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n_avg</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MIN_NAVG_GAUSSIAN</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;SigmaThreshold: n_avg=</span><span class="si">{</span><span class="n">n_avg</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_MIN_NAVG_GAUSSIAN</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Gaussian approximation may be inaccurate for χ²(2K) with K &lt; 10. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Consider using PercentileThreshold for more robust results.&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="SigmaThreshold.check">
 <a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.SigmaThreshold.check">[docs]</a>
@@ -241,6 +277,7 @@
         <span class="k">if</span> <span class="n">n_avg</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">psd_inj</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_gaussian_validity</span><span class="p">(</span><span class="n">n_avg</span><span class="p">)</span>
         <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_avg</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">psd_inj</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">psd_bkg</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span></div>
 
@@ -905,6 +942,13 @@
         <span class="n">duration_inj</span> <span class="o">=</span> <span class="n">ts_wit_inj</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ts_wit_inj</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">duration_bkg</span> <span class="o">=</span> <span class="n">ts_wit_bkg</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ts_wit_bkg</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">eff_ovlp</span> <span class="o">=</span> <span class="n">overlap</span>
+
+        <span class="c1"># Guard against fftlength == overlap (would cause division by zero)</span>
+        <span class="k">if</span> <span class="n">fftlength</span> <span class="o">&lt;=</span> <span class="n">eff_ovlp</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;fftlength (</span><span class="si">{</span><span class="n">fftlength</span><span class="si">}</span><span class="s2">) must be greater than overlap (</span><span class="si">{</span><span class="n">eff_ovlp</span><span class="si">}</span><span class="s2">). &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Otherwise, n_avg cannot be computed (division by zero).&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">n_avg_inj</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">duration_inj</span> <span class="o">-</span> <span class="n">eff_ovlp</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">fftlength</span> <span class="o">-</span> <span class="n">eff_ovlp</span><span class="p">))</span>
         <span class="n">n_avg_bkg</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">duration_bkg</span> <span class="o">-</span> <span class="n">eff_ovlp</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">fftlength</span> <span class="o">-</span> <span class="n">eff_ovlp</span><span class="p">))</span>

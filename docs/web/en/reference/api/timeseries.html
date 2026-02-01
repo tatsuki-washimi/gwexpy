@@ -1574,10 +1574,23 @@ If output=’ndarray’: (coefficients, frequencies) tuple.</p>
 <div class="admonition-notes admonition">
 <p class="admonition-title">Notes</p>
 <p>Requires the <cite>pywt</cite> (PyWavelets) package.</p>
+<p><strong>Complex Coefficients</strong></p>
+<p>For complex wavelets (e.g., ‘cmor’, ‘morl’), the CWT coefficients are
+<strong>complex-valued</strong>, containing both magnitude and phase information:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">np.abs(coefs)</span></code> : Envelope/magnitude (instantaneous amplitude)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">np.angle(coefs)</span></code> : Instantaneous phase (radians)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">np.real(coefs)</span></code> : Real part (in-phase component)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">np.imag(coefs)</span></code> : Imaginary part (quadrature component)</p></li>
+</ul>
+<p>For time-frequency power analysis, use <code class="docutils literal notranslate"><span class="pre">np.abs(coefs)**2</span></code>.</p>
+<p>The returned Spectrogram object preserves complex dtype. To visualize,
+apply <code class="docutils literal notranslate"><span class="pre">np.abs()</span></code> before plotting.</p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">spec</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">cwt</span><span class="p">(</span><span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># Time-frequency power</span>
 </pre></div>
 </div>
 </dd></dl>
