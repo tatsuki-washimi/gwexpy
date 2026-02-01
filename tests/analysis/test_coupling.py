@@ -4,6 +4,7 @@ Unit tests for coupling function analysis module.
 
 Tests threshold strategies for coupling function estimation.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -128,7 +129,9 @@ class TestEdgeCases:
         """Test RatioThreshold handles zero values."""
         freqs = np.linspace(1, 10, 10) * u.Hz
         psd_inj = FrequencySeries(np.ones(10), frequencies=freqs)
-        psd_bkg = FrequencySeries(np.array([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]), frequencies=freqs)
+        psd_bkg = FrequencySeries(
+            np.array([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]), frequencies=freqs
+        )
 
         strategy = RatioThreshold(ratio=2.0)
         with np.errstate(divide="ignore", invalid="ignore"):

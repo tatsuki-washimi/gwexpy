@@ -30,11 +30,11 @@ autosummary_generate = True
 autosummary_imported_members = False
 
 autodoc_default_options = {
-    'members': True,
-    'undoc-members': True,
-    'inherited-members': True,
-    'show-inheritance': True,
-    'member-order': 'bysource',
+    "members": True,
+    "undoc-members": True,
+    "inherited-members": True,
+    "show-inheritance": True,
+    "member-order": "bysource",
 }
 
 # Napoleon settings for NumPy/Google docstrings
