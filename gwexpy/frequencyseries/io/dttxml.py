@@ -47,15 +47,25 @@ def read_frequencyseriesdict_dttxml(
     unit=None,
     epoch=None,
     timezone=None,
+    native: bool = False,
     **kwargs,
 ) -> FrequencySeriesDict:
+    """Read FrequencySeriesDict from DTT XML file.
+
+    Parameters
+    ----------
+    native : bool, optional
+        If True, use gwexpy's native XML parser instead of the dttxml package.
+        Use this to correctly handle complex TF data (subtype 6 phase loss fix).
+        Default is False.
+    """
     if products is None:
         raise ValueError("products must be specified for dttxml")
     prod = str(products).upper()
     if prod not in SUPPORTED_FREQ:
         raise ValueError(f"dttxml products '{prod}' is not a frequency-series product")
 
-    normalized = load_dttxml_products(source)
+    normalized = load_dttxml_products(source, native=native)
     payload = normalized.get(prod, {})
     fsd = FrequencySeriesDict()
     for ch, info in payload.items():
@@ -101,15 +111,25 @@ def read_frequencyseriesmatrix_dttxml(
     unit=None,
     epoch=None,
     timezone=None,
+    native: bool = False,
     **kwargs,
 ) -> FrequencySeriesMatrix:
+    """Read FrequencySeriesMatrix from DTT XML file.
+
+    Parameters
+    ----------
+    native : bool, optional
+        If True, use gwexpy's native XML parser instead of the dttxml package.
+        Use this to correctly handle complex TF data (subtype 6 phase loss fix).
+        Default is False.
+    """
     if products is None:
         raise ValueError("products must be specified for dttxml")
     prod = str(products).upper()
     if prod not in SUPPORTED_MATRIX:
         raise ValueError(f"dttxml products '{prod}' is not a matrix product")
 
-    normalized = load_dttxml_products(source)
+    normalized = load_dttxml_products(source, native=native)
     payload = normalized.get(prod, {})
     pairs_list = list(payload.keys())
     if pairs:
