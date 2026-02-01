@@ -160,7 +160,29 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         other_length: NumberLike | None = None,
         **kwargs: Any,
     ) -> FrequencySeries:
-        """Internal method for transient-restoration FFT."""
+        """Internal method for transient-restoration FFT.
+
+        Returns an **amplitude spectrum** (not a density spectrum [V/√Hz]).
+        The formula ``rfft(x) / N`` with one-sided values doubled allows
+        direct reading of sinusoidal amplitudes.
+
+        Notes
+        -----
+        This function returns an amplitude spectrum, not a power spectral
+        density. The normalization ``rfft(x) / N`` with factor-of-2
+        correction for one-sided spectrum (excluding DC and Nyquist)
+        yields the peak amplitude of sinusoidal components.
+
+        This convention was validated by 12-AI cross-verification (2026-02-01).
+        The suggestion to multiply by ``dt`` (Gemini Web) applies to density
+        spectra, not amplitude spectra used for transient analysis.
+
+        References
+        ----------
+        .. [1] Oppenheim & Schafer, Discrete-Time Signal Processing
+               (3rd ed., 2010), §8.6.2
+        .. [2] SciPy rfft documentation
+        """
         x = self.value
 
         if pad_left > 0 or pad_right > 0:

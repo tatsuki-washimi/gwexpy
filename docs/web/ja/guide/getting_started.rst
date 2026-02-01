@@ -70,3 +70,4 @@ GWexpyへようこそ！このガイドでは、GWexpyの学習パスを紹介�
 
 - 全チュートリアル一覧: :doc:`tutorials/index`
 - API リファレンス: :doc:`../reference/index`
+- :doc:`validated_algorithms` - アルゴリズム検証レポート

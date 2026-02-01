@@ -128,6 +128,24 @@ class ArimaResult:
             The mean forecast.
         intervals : dict
             Dict with 'lower' and 'upper' TimeSeries for confidence intervals.
+
+        Notes
+        -----
+        The forecast start time is computed as::
+
+            forecast_t0 = self.t0 + n_obs * self.dt
+
+        This assumes equally-spaced data without gaps. GPS times follow the
+        LIGO/GWpy convention using TAI continuous seconds (no leap seconds).
+
+        This formula was validated by 12-AI cross-verification (2026-02-01).
+        The leap-second concern raised by some models does not apply to
+        GPS/TAI time systems used in gravitational wave data analysis.
+
+        References
+        ----------
+        .. [1] GWpy TimeSeries.epoch documentation
+        .. [2] LIGO GPS time convention (LIGO-T980044)
         """
         from .timeseries import TimeSeries
 
