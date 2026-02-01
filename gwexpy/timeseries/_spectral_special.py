@@ -112,6 +112,18 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             sigma_val = float(sigma)
 
         tau = np.arange(n) * dt_val
+
+        # Overflow guardrail for sigma < 0
+        # exp(-sigma * tau) = exp(|sigma| * tau) for sigma < 0
+        # This can overflow float64 when -sigma * tau_max > ~709
+        max_exponent = -sigma_val * tau.max()
+        if max_exponent > 700:
+            raise ValueError(
+                f"Configuration leads to overflow: exp({max_exponent:.1f}) exceeds float64 range. "
+                f"sigma={sigma_val:.3g}/s, max_tau={tau.max():.3g}s. "
+                f"Consider using smaller |sigma| or shorter data duration."
+            )
+
         if dtype is None:
             out_dtype = np.result_type(data.dtype, np.complex128)
         else:
