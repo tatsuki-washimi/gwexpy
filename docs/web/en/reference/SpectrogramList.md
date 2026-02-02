@@ -215,3 +215,16 @@ write(self, target, *args, **kwargs)
 
 Write list to file.
 
+For HDF5 output you can choose a layout (default is GWpy-compatible dataset-per-entry).
+
+```python
+sgl.write("out.h5", format="hdf5")               # GWpy-compatible (default)
+sgl.write("out.h5", format="hdf5", layout="group")  # legacy group-per-entry
+```
+
+.. warning::
+   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+   arbitrary code on load.
+
+Pickle portability note: pickled gwexpy `SpectrogramList` unpickles as a built-in
+`list` of GWpy `Spectrogram` (gwexpy not required on the loading side).

@@ -1,11 +1,25 @@
 from __future__ import annotations
 
 from collections import UserDict, UserList
+from typing import SupportsIndex
 
+import h5py
 from astropy import units as u
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 
 from gwexpy.interop._optional import require_optional
+from gwexpy.io.hdf5_collection import (
+    LAYOUT_DATASET,
+    LAYOUT_GROUP,
+    detect_hdf5_layout,
+    ensure_hdf5_file,
+    normalize_layout,
+    read_hdf5_keymap,
+    read_hdf5_order,
+    safe_hdf5_key,
+    unique_hdf5_key,
+    write_hdf5_manifest,
+)
 from gwexpy.types.mixin import PhaseMethodsMixin
 
 from .spectrogram import Spectrogram
@@ -62,8 +76,35 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         format = kwargs.get("format", "hdf5")
         new_list = self.__class__()
         if format == "hdf5":
-            h5py = require_optional("h5py")
-            with h5py.File(source, "r") as f:
+            with h5py.File(source, "r") as h5f:
+                layout = detect_hdf5_layout(h5f)
+                order = read_hdf5_order(h5f) or list(h5f.keys())
+                if layout == LAYOUT_DATASET or layout is None:
+                    for ds_name in order:
+                        try:
+                            new_list.append(
+                                Spectrogram.read(h5f, format="hdf5", path=ds_name)
+                            )
+                        except Exception:
+                            pass
+                    self.extend(new_list)
+                    return self
+                if layout == LAYOUT_GROUP:
+                    for grp_name in order:
+                        try:
+                            grp = h5f[grp_name]
+                            new_list.append(
+                                Spectrogram.read(grp, format="hdf5", path="data")
+                            )
+                        except Exception:
+                            try:
+                                new_list.append(Spectrogram.read(grp, format="hdf5"))
+                            except Exception:
+                                pass
+                    self.extend(new_list)
+                    return self
+            _h5py = require_optional("h5py")
+            with _h5py.File(source, "r") as f:
                 keys = sorted(f.keys(), key=lambda x: int(x) if x.isdigit() else x)
                 for k in keys:
                     try:
@@ -75,6 +116,9 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         self.extend(new_list)
         return self
 
+    def __reduce_ex__(self, protocol: SupportsIndex):
+        return (list, (list(self),))
+
     def write(self, target, *args, **kwargs):
         """Write list to file."""
         format = kwargs.get("format", "hdf5")
@@ -84,12 +128,28 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
 
             return write_root_file(self, target, **kwargs)
         if format == "hdf5":
-            import h5py  # noqa: F401 - availability check
-
-            with h5py.File(target, mode) as f:
+            overwrite = bool(kwargs.pop("overwrite", False))
+            mode = kwargs.pop("mode", mode)
+            layout = normalize_layout(kwargs.pop("layout", "gwpy"))
+            used: set[str] = set()
+            order: list[str] = []
+            with ensure_hdf5_file(target, mode=mode, overwrite=overwrite) as h5f:
                 for i, s in enumerate(self):
-                    grp = f.create_group(str(i))
-                    s.write(grp, format="hdf5")
+                    key = safe_hdf5_key(str(i))
+                    name = unique_hdf5_key(key, used=used)
+                    if layout == LAYOUT_DATASET:
+                        s.write(h5f, format="hdf5", path=name)
+                    else:
+                        grp = h5f.create_group(name)
+                        s.write(grp, format="hdf5", path="data")
+                    order.append(name)
+                write_hdf5_manifest(
+                    h5f,
+                    kind="SpectrogramList",
+                    layout=layout,
+                    keymap={},
+                    order=order,
+                )
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
@@ -359,8 +419,34 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         """Read dictionary from HDF5 file keys -> dict keys."""
         format = kwargs.get("format", "hdf5")
         if format == "hdf5":
-            h5py = require_optional("h5py")
-            with h5py.File(source, "r") as f:
+            with h5py.File(source, "r") as h5f:
+                layout = detect_hdf5_layout(h5f)
+                keymap = read_hdf5_keymap(h5f)
+                order = read_hdf5_order(h5f) or list(h5f.keys())
+                if layout == LAYOUT_DATASET or layout is None:
+                    for ds_name in order:
+                        try:
+                            s = Spectrogram.read(h5f, format="hdf5", path=ds_name)
+                        except Exception:
+                            continue
+                        key = keymap.get(ds_name, ds_name)
+                        self[key] = s
+                    return self
+                if layout == LAYOUT_GROUP:
+                    for grp_name in order:
+                        try:
+                            grp = h5f[grp_name]
+                            s = Spectrogram.read(grp, format="hdf5", path="data")
+                        except Exception:
+                            try:
+                                s = Spectrogram.read(grp, format="hdf5")
+                            except Exception:
+                                continue
+                        key = keymap.get(grp_name, grp_name)
+                        self[key] = s
+                    return self
+            _h5py = require_optional("h5py")
+            with _h5py.File(source, "r") as f:
                 for k in f.keys():
                     try:
                         s = Spectrogram.read(f[k], format="hdf5")
@@ -371,6 +457,9 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
             raise NotImplementedError(f"Format {format} not supported")
         return self
 
+    def __reduce_ex__(self, protocol: SupportsIndex):
+        return (dict, (dict(self),))
+
     def write(self, target, *args, **kwargs):
         """Write dictionary to file."""
         format = kwargs.get("format", "hdf5")
@@ -380,11 +469,30 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
 
             return write_root_file(self, target, **kwargs)
         if format == "hdf5":
-            h5py = require_optional("h5py")
-            with h5py.File(target, mode) as f:
-                for k, s in self.items():
-                    grp = f.create_group(str(k))
-                    s.write(grp, format="hdf5")
+            overwrite = bool(kwargs.pop("overwrite", False))
+            mode = kwargs.pop("mode", mode)
+            layout = normalize_layout(kwargs.pop("layout", "gwpy"))
+            used: set[str] = set()
+            keymap: dict[str, str] = {}
+            order: list[str] = []
+            with ensure_hdf5_file(target, mode=mode, overwrite=overwrite) as h5f:
+                for key, s in self.items():
+                    safe = safe_hdf5_key(str(key))
+                    name = unique_hdf5_key(safe, used=used)
+                    if layout == LAYOUT_DATASET:
+                        s.write(h5f, format="hdf5", path=name)
+                    else:
+                        grp = h5f.create_group(name)
+                        s.write(grp, format="hdf5", path="data")
+                    keymap[name] = str(key)
+                    order.append(name)
+                write_hdf5_manifest(
+                    h5f,
+                    kind="SpectrogramDict",
+                    layout=layout,
+                    keymap=keymap,
+                    order=order,
+                )
         else:
             raise NotImplementedError(f"Format {format} not supported")
 

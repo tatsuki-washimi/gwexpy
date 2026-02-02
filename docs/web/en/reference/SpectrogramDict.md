@@ -266,3 +266,21 @@ write(self, target, *args, **kwargs)
 
 Write dictionary to file.
 
+For HDF5 output you can choose a layout (default is GWpy-compatible dataset-per-entry).
+
+```python
+sgd.write("out.h5", format="hdf5")               # GWpy-compatible (default)
+sgd.write("out.h5", format="hdf5", layout="group")  # legacy group-per-entry
+```
+
+HDF5 dataset names (for GWpy `path=`):
+- Keys are sanitized to be HDF5-friendly (e.g. `H1:SPEC` -> `H1_SPEC`).
+- If multiple keys sanitize to the same name, a suffix like `__1` is added.
+- The original keys are stored in file attributes, and `gwexpy` restores them on read.
+
+.. warning::
+   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+   arbitrary code on load.
+
+Pickle portability note: pickled gwexpy `SpectrogramDict` unpickles as a built-in
+`dict` of GWpy `Spectrogram` (gwexpy not required on the loading side).

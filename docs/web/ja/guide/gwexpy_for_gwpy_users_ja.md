@@ -186,6 +186,41 @@ GWpyが標準サポートする形式に加え、以下に対応（または拡�
 *   `WAV` (Audio, 拡張サポート)
 *   `ROOT` file (.root)
 
+## Pickle / shelve に関する注意
+
+> [!WARNING]
+> 信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+
+gwexpy の pickle は、可搬性を優先して **unpickle 時に GWpy 型を返す**設計になっています
+（つまり、読み込み側に gwexpy が無くても gwpy があれば復元できます）。
+
+```python
+import pickle
+import numpy as np
+from gwexpy.timeseries import TimeSeries
+
+ts = TimeSeries(np.arange(10.0), sample_rate=1.0, t0=0, unit="m")
+obj = pickle.loads(pickle.dumps(ts))
+# obj は gwpy.timeseries.TimeSeries
+```
+
+互換性メモ:
+
+- `TimeSeries` / `FrequencySeries` / `Spectrogram` -> unpickle 時に GWpy オブジェクト
+- `TimeSeriesDict` / `TimeSeriesList` -> unpickle 時に GWpy のコレクション
+- `FrequencySeriesDict/List` / `SpectrogramDict/List` -> unpickle 時に builtins の `dict` / `list`（中身はGWpyオブジェクト）
+- `Matrix` 系や `Field` 系など gwexpy 独自型は、この可搬性契約の対象外です
+
+保持されるもの（ベストエフォート）:
+
+- 数値データ（`.value`）
+- 軸情報（`times` / `frequencies`）
+- GWpy側で一般的に扱えるメタデータ（`unit`, `name`, `channel`, `epoch`）
+
+保持されないもの:
+
+- gwexpy独自の内部属性（例: `_gwex_*`）や、gwexpyで追加した振る舞い
+
 ## 6. GUI アプリケーション
 
 *   **pyaggui (`gwexpy.gui.pyaggui`)**:

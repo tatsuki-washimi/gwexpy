@@ -364,6 +364,25 @@ write(self, target: 'str', *args: 'Any', **kwargs: 'Any') -> 'Any'
 
 Write dict to file (HDF5, ROOT, etc.).
 
+For HDF5 output you can choose a layout (default is GWpy-compatible dataset-per-entry).
+
+```python
+fsd.write("out.h5", format="hdf5")               # GWpy-compatible (default)
+fsd.write("out.h5", format="hdf5", layout="group")  # legacy group-per-entry
+```
+
+HDF5 dataset names (for GWpy `path=`):
+- Keys are sanitized to be HDF5-friendly (e.g. `H1:ASD` -> `H1_ASD`).
+- If multiple keys sanitize to the same name, a suffix like `__1` is added.
+- The original keys are stored in file attributes, and `gwexpy` restores them on read.
+
+.. warning::
+   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+   arbitrary code on load.
+
+Pickle portability note: pickled gwexpy `FrequencySeriesDict` unpickles as a built-in
+`dict` of GWpy `FrequencySeries` (gwexpy not required on the loading side).
+
 ### `zpk`
 
 ```python
@@ -373,5 +392,3 @@ zpk(self, *args, **kwargs) -> "'FrequencySeriesDict'"
 
 Apply ZPK filter to each FrequencySeries.
 Returns a new FrequencySeriesDict.
-
-

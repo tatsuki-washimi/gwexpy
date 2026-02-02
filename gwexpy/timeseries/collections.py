@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
+from pathlib import Path
+from typing import Any, SupportsIndex
 
+import h5py
 from astropy import units as u
 
 try:
@@ -14,6 +16,19 @@ from gwpy.timeseries import TimeSeries as BaseTimeSeries
 from gwpy.timeseries import TimeSeriesDict as BaseTimeSeriesDict
 from gwpy.timeseries import TimeSeriesList as BaseTimeSeriesList
 
+from gwexpy.io.hdf5_collection import (
+    LAYOUT_DATASET,
+    LAYOUT_GROUP,
+    detect_hdf5_layout,
+    ensure_hdf5_file,
+    normalize_layout,
+    read_hdf5_keymap,
+    read_hdf5_order,
+    safe_hdf5_key,
+    unique_hdf5_key,
+    write_hdf5_manifest,
+)
+
 # --- Monkey Patch TimeSeriesDict ---
 from gwexpy.types.mixin import PhaseMethodsMixin
 
@@ -22,6 +37,68 @@ from .spectral import coherence_matrix_from_collection, csd_matrix_from_collecti
 
 class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     """Dictionary of TimeSeries objects."""
+
+    @classmethod
+    def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
+        fmt = kwargs.get("format")
+        try:
+            p = Path(source)
+        except TypeError:
+            p = None
+        if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
+            from gwexpy.io.collection_dir import read_collection_dir
+            from gwexpy.io.utils import apply_unit
+            from gwexpy.timeseries import TimeSeries
+
+            _, items = read_collection_dir(
+                p,
+                expected_kind="TimeSeriesDict",
+                entry_format=fmt,
+                reader=lambda path, f: TimeSeries.read(path, format=f),
+            )
+            out = cls()
+            for k, v, meta in items:
+                unit = meta.get("unit")
+                v = apply_unit(v, unit) if unit else v
+                out[k] = v
+            return out
+        if fmt in ("hdf5", "h5", "hdf"):
+            from gwexpy.timeseries import TimeSeries
+
+            with h5py.File(source, "r") as h5f:
+                layout = detect_hdf5_layout(h5f)
+                keymap = read_hdf5_keymap(h5f)
+                order = read_hdf5_order(h5f)
+                keys = order or list(h5f.keys())
+                out = cls()
+                if layout == LAYOUT_DATASET or layout is None:
+                    for ds_name in keys:
+                        try:
+                            ts = TimeSeries.read(h5f, format="hdf5", path=ds_name)
+                        except Exception:
+                            continue
+                        orig_key = keymap.get(ds_name, ds_name)
+                        out[orig_key] = ts
+                    return out
+                if layout == LAYOUT_GROUP:
+                    for grp_name in keys:
+                        try:
+                            grp = h5f[grp_name]
+                            ts = TimeSeries.read(grp, format="hdf5", path="data")
+                        except Exception:
+                            try:
+                                ts = TimeSeries.read(grp, format="hdf5")
+                            except Exception:
+                                continue
+                        orig_key = keymap.get(grp_name, grp_name)
+                        out[orig_key] = ts
+                    return out
+        return super().read(source, *args, **kwargs)
+
+    def __reduce_ex__(self, protocol: SupportsIndex):
+        from gwpy.timeseries import TimeSeriesDict as GwpyTimeSeriesDict
+
+        return (GwpyTimeSeriesDict, (dict(self),))
 
     def asfreq(self, rule, **kwargs):
         """
@@ -522,6 +599,46 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             from gwexpy.interop.root_ import write_root_file
 
             return write_root_file(self, target, **kwargs)
+        if fmt in ("csv", "txt"):
+            from gwexpy.io.collection_dir import write_collection_dir
+
+            overwrite = bool(kwargs.pop("overwrite", False))
+            # Each entry is written as a standalone GWpy-compatible CSV/TXT.
+            return write_collection_dir(
+                target,
+                kind="TimeSeriesDict",
+                entry_format=str(fmt),
+                entries=list(self.items()),
+                writer=lambda ts, path, f: ts.write(path, format=f),
+                meta_getter=lambda ts: {"unit": str(getattr(ts, "unit", "") or "")},
+                overwrite=overwrite,
+            )
+        if fmt in ("hdf5", "h5", "hdf"):
+            overwrite = bool(kwargs.pop("overwrite", False))
+            mode = kwargs.pop("mode", None)
+            layout = normalize_layout(kwargs.pop("layout", "gwpy"))
+            used: set[str] = set()
+            keymap: dict[str, str] = {}
+            order: list[str] = []
+            with ensure_hdf5_file(target, mode=mode, overwrite=overwrite) as h5f:
+                for key, ts in self.items():
+                    safe = safe_hdf5_key(str(key))
+                    name = unique_hdf5_key(safe, used=used)
+                    if layout == LAYOUT_DATASET:
+                        ts.write(h5f, format="hdf5", path=name)
+                    else:
+                        grp = h5f.create_group(name)
+                        ts.write(grp, format="hdf5", path="data")
+                    keymap[name] = str(key)
+                    order.append(name)
+                write_hdf5_manifest(
+                    h5f,
+                    kind=type(self).__name__,
+                    layout=layout,
+                    keymap=keymap,
+                    order=order,
+                )
+            return target
         return super().write(target, *args, **kwargs)
 
     def plot(self, **kwargs: Any):
@@ -1804,6 +1921,66 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
 
         return to_tmultigraph(self, name=name)
 
+    @classmethod
+    def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
+        fmt = kwargs.get("format")
+        try:
+            p = Path(source)
+        except TypeError:
+            p = None
+        if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
+            from gwexpy.io.collection_dir import read_collection_dir
+            from gwexpy.io.utils import apply_unit
+            from gwexpy.timeseries import TimeSeries
+
+            _, items = read_collection_dir(
+                p,
+                expected_kind="TimeSeriesList",
+                entry_format=fmt,
+                reader=lambda path, f: TimeSeries.read(path, format=f),
+            )
+            dir_items = []
+            for _, v, meta in items:
+                unit = meta.get("unit")
+                v = apply_unit(v, unit) if unit else v
+                dir_items.append(v)
+            return cls(*dir_items)
+        if fmt in ("hdf5", "h5", "hdf"):
+            from gwexpy.timeseries import TimeSeries
+
+            with h5py.File(source, "r") as h5f:
+                layout = detect_hdf5_layout(h5f)
+                order = read_hdf5_order(h5f) or list(h5f.keys())
+                out_items: list[TimeSeries] = []
+                if layout == LAYOUT_DATASET or layout is None:
+                    for ds_name in order:
+                        try:
+                            ts = TimeSeries.read(h5f, format="hdf5", path=ds_name)
+                        except Exception:
+                            continue
+                        out_items.append(ts)
+                    return cls(*out_items)
+                if layout == LAYOUT_GROUP:
+                    for grp_name in order:
+                        try:
+                            grp = h5f[grp_name]
+                            ts = TimeSeries.read(grp, format="hdf5", path="data")
+                        except Exception:
+                            try:
+                                ts = TimeSeries.read(grp, format="hdf5")
+                            except Exception:
+                                continue
+                        out_items.append(ts)
+                    return cls(*out_items)
+        raise TypeError(
+            "TimeSeriesList.read currently supports only directory sources for csv/txt"
+        )
+
+    def __reduce_ex__(self, protocol: SupportsIndex):
+        from gwpy.timeseries import TimeSeriesList as GwpyTimeSeriesList
+
+        return (GwpyTimeSeriesList, tuple(self))
+
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write TimeSeriesList to file (HDF5, ROOT, etc.)."""
         fmt = kwargs.get("format")
@@ -1811,6 +1988,47 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             from gwexpy.interop.root_ import write_root_file
 
             return write_root_file(self, target, **kwargs)
+        if fmt in ("csv", "txt"):
+            from gwexpy.io.collection_dir import write_collection_dir
+
+            overwrite = bool(kwargs.pop("overwrite", False))
+            pairs: list[tuple[str, Any]] = []
+            for i, ts in enumerate(self):
+                key = ts.name or f"series_{i}"
+                pairs.append((key, ts))
+            return write_collection_dir(
+                target,
+                kind="TimeSeriesList",
+                entry_format=str(fmt),
+                entries=pairs,
+                writer=lambda ts, path, f: ts.write(path, format=f),
+                meta_getter=lambda ts: {"unit": str(getattr(ts, "unit", "") or "")},
+                overwrite=overwrite,
+            )
+        if fmt in ("hdf5", "h5", "hdf"):
+            overwrite = bool(kwargs.pop("overwrite", False))
+            mode = kwargs.pop("mode", None)
+            layout = normalize_layout(kwargs.pop("layout", "gwpy"))
+            used: set[str] = set()
+            order: list[str] = []
+            with ensure_hdf5_file(target, mode=mode, overwrite=overwrite) as h5f:
+                for i, ts in enumerate(self):
+                    key = safe_hdf5_key(str(i))
+                    name = unique_hdf5_key(key, used=used)
+                    if layout == LAYOUT_DATASET:
+                        ts.write(h5f, format="hdf5", path=name)
+                    else:
+                        grp = h5f.create_group(name)
+                        ts.write(grp, format="hdf5", path="data")
+                    order.append(name)
+                write_hdf5_manifest(
+                    h5f,
+                    kind=type(self).__name__,
+                    layout=layout,
+                    keymap={},
+                    order=order,
+                )
+            return target
         from astropy.io import registry
 
         return registry.write(self, target, *args, **kwargs)

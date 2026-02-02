@@ -6,13 +6,13 @@ Based on binary header parsing logic provided by user (ats2gwf.py).
 from __future__ import annotations
 
 import datetime
+from typing import Any
 
 import numpy as np
 from gwpy.io import registry as io_registry
 from gwpy.time import to_gps
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
-
 
 _ATS_HEADER_MIN_SIZE = 1024
 
@@ -22,7 +22,7 @@ def _decode_fixed_ascii(raw: bytes) -> str:
     return raw.decode("utf-8", errors="ignore").strip().strip("\x00").strip()
 
 
-def _read_ats_header(fh) -> dict[str, object]:
+def _read_ats_header(fh) -> dict[str, Any]:
     """
     Read the ATS binary header.
 

@@ -138,3 +138,27 @@ write(self, target: str, *args: Any, **kwargs: Any) -> Any
 ```
 
 TimeSeriesDict をファイル（HDF5, ROOT など）に書き込みます。
+
+CSV/TXT 出力は多チャンネル用の「ディレクトリ出力」です（各要素を個別ファイルに保存）。
+
+```python
+tsd.write("out_dir", format="csv")  # out_dir/ に ch ごとの CSV を保存
+```
+
+HDF5 出力では `layout` を指定できます（デフォルトは GWpy 互換の dataset-per-entry）。
+
+```python
+tsd.write("out.h5", format="hdf5")               # GWpy互換（既定）
+tsd.write("out.h5", format="hdf5", layout="group")  # 旧形式（group-per-entry）
+```
+
+HDF5 のデータセット名（GWpy の `path=` 用）:
+- キーは HDF5 で安全な名前にサニタイズされます（例: `H1:TEST` -> `H1_TEST`）。
+- サニタイズ後の名前が衝突する場合、`__1` のようなサフィックスが付与されます。
+- 元のキーはファイル属性に保存され、gwexpy の `read()` は元キーを復元します。
+
+> [!WARNING]
+> 信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+
+pickle 可搬性メモ: gwexpy の `TimeSeriesDict` は unpickle 時に **GWpy の `TimeSeriesDict`** を返します
+（読み込み側に gwexpy は不要です）。

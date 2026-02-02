@@ -104,6 +104,8 @@ def apply_unit(series: Any, unit: Any | None) -> Any:
     """
     if unit is None:
         return series
+    if unit == "":
+        return series
     try:
         from gwexpy.types.seriesmatrix import SeriesMatrix  # lazy import
 
@@ -119,6 +121,12 @@ def apply_unit(series: Any, unit: Any | None) -> Any:
             return series_matrix
         except (KeyError, IndexError, AttributeError):
             pass
+    # GWpy series objects keep `.unit` immutable after construction, but
+    # provide `override_unit()` for metadata-only changes.
+    with contextlib.suppress(AttributeError, TypeError, ValueError):
+        if hasattr(series, "override_unit"):
+            series.override_unit(unit)
+            return series
     try:
         series.unit = u.Unit(unit)
         return series

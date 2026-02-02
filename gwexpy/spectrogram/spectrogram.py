@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, SupportsIndex
 
 import numpy as np
 from astropy import units as u
@@ -41,6 +41,11 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
             return Series.__getitem__(self, item)
         return super().__getitem__(item)
+
+    def __reduce_ex__(self, protocol: SupportsIndex):
+        from gwexpy.io.pickle_compat import spectrogram_reduce_args
+
+        return spectrogram_reduce_args(self)
 
     def bootstrap(
         self,
