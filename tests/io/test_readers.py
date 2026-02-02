@@ -1,11 +1,14 @@
 from datetime import datetime
 from datetime import timezone as dt_timezone
+from pathlib import Path
 
 import numpy as np
 import pytest
 from gwpy.time import to_gps
 
 from gwexpy.timeseries import TimeSeriesDict
+from gwexpy.timeseries.io.gbd import GBD_FULL_SCALE
+from astropy import units as u
 
 
 def _write_minimal_gbd(tmp_path, counts=4):
@@ -35,6 +38,42 @@ def _write_minimal_gbd(tmp_path, counts=4):
     return path, start_str, dt, channels, data.reshape(counts, len(channels))
 
 
+def _write_gbd_with_amp_ranges(tmp_path, counts=4):
+    channels = ["CH1", "CH2"]
+    dt = 0.5
+    start_str = "2024/01/01 00:00:00"
+    header_lines = [
+        "HeaderSiz=0",
+        f"$$Time Start={start_str}",
+        "$$Time Stop=2024/01/01 00:00:02",
+        f"$$Data Sample={dt}",
+        "$$Data Type=Little,Int16",
+        "$$Data Order=" + ",".join(channels),
+        f"$$Data Counts={counts}",
+        "$$Amp1",
+        "CH1 = 0, 0, 10 V",
+        "CH2 = 1, 0, -5 mV",
+        "$$AmpEnd",
+    ]
+    while True:
+        header = "\r\n".join(header_lines) + "\r\n"
+        size = len(header.encode("ascii"))
+        new_line = f"HeaderSiz={size}"
+        if header_lines[0] == new_line:
+            break
+        header_lines[0] = new_line
+    data = np.arange(counts * len(channels), dtype=np.int16)
+    body = data.tobytes()
+    path = tmp_path / "amp_sample.gbd"
+    path.write_bytes(header.encode("ascii") + body)
+    reshape_data = data.reshape(counts, len(channels))
+    scales = {
+        "CH1": 10.0 / GBD_FULL_SCALE,
+        "CH2": 0.005 / GBD_FULL_SCALE,
+    }
+    return path, reshape_data, channels, scales
+
+
 def test_gbd_reader_requires_timezone(tmp_path):
     path, _, _, _, _ = _write_minimal_gbd(tmp_path)
     with pytest.raises(ValueError):
@@ -58,6 +97,23 @@ def test_gbd_reader_parses_minimal_file(tmp_path):
     assert np.isclose(ts.t0.value, expected_t0)
     assert ts.unit.to_string() == "V"
     np.testing.assert_array_equal(tsd[channels[1]].value, data[:, 1])
+
+
+def test_gbd_reader_applies_amp_range_scaling(tmp_path):
+    path, data, channels, scales = _write_gbd_with_amp_ranges(tmp_path)
+    tsd = TimeSeriesDict.read(path, format="gbd", timezone="UTC")
+    for idx, channel in enumerate(channels):
+        expected = data[:, idx] * scales[channel]
+        np.testing.assert_allclose(tsd[channel].value, expected, rtol=0, atol=0)
+
+
+def test_gbd_alarm_channels_are_dimensionless():
+    path = Path("gwexpy/gui/test-data/graphtec.GBD")
+    tsd = TimeSeriesDict.read(path, format="gbd", timezone="UTC")
+    for channel in ("Alarm", "AlarmOut"):
+        ts = tsd[channel]
+        assert ts.unit.is_equivalent(u.dimensionless_unscaled)
+        assert np.all(np.isin(ts.value, [0.0, 1.0]))
 
 
 def test_dttxml_products_requires_argument(tmp_path):
