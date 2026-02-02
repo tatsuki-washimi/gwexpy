@@ -14,6 +14,82 @@ from gwpy.time import to_gps
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
+_ATS_HEADER_MIN_SIZE = 1024
+
+
+def _decode_fixed_ascii(raw: bytes) -> str:
+    # ATS fixed-size fields are not NUL-terminated (per Metronix programmer notes).
+    return raw.decode("utf-8", errors="ignore").strip().strip("\x00").strip()
+
+
+def _read_ats_header(fh) -> dict[str, object]:
+    """
+    Read the ATS binary header.
+
+    Notes
+    -----
+    Metronix "ATSHeader_80" (and related) fields are stored in Intel byte order
+    (little endian). LSB is stored in mV/count.
+    """
+    header_len_bytes = fh.read(2)
+    if len(header_len_bytes) != 2:
+        raise ValueError("ATS file too short (missing header length)")
+
+    header_length = int(np.frombuffer(header_len_bytes, dtype="<u2")[0])
+    if header_length < _ATS_HEADER_MIN_SIZE:
+        raise ValueError(f"ATS header length too small: {header_length}")
+
+    fh.seek(0)
+    header_bytes = fh.read(header_length)
+    if len(header_bytes) != header_length:
+        raise ValueError("ATS file too short (incomplete header)")
+
+    header_vers = int(np.frombuffer(header_bytes[0x02:0x04], dtype="<i2")[0])
+    if header_vers == 1080:
+        # CEA/sliced header: data start and per-slice packing are different (see Metronix docs).
+        raise NotImplementedError(
+            "ATS CEA/sliced header (version 1080) is not supported yet"
+        )
+    if header_vers not in (80, 81):
+        raise ValueError(f"Unsupported ATS header version: {header_vers}")
+
+    ui_samples = int(np.frombuffer(header_bytes[0x04:0x08], dtype="<u4")[0])
+    ui_samples64 = int(np.frombuffer(header_bytes[0xF0:0xF8], dtype="<u8")[0])
+    total_samples = ui_samples64 if ui_samples == 0xFFFFFFFF else ui_samples
+
+    sample_freq = float(np.frombuffer(header_bytes[0x08:0x0C], dtype="<f4")[0])
+    start_time_unix = int(np.frombuffer(header_bytes[0x0C:0x10], dtype="<u4")[0])
+    lsb_mV = float(np.frombuffer(header_bytes[0x10:0x18], dtype="<f8")[0])
+
+    adu_serial = int(np.frombuffer(header_bytes[0x20:0x22], dtype="<u2")[0])
+    # system / ADC board serial exists at 0x22..0x24 but currently unused
+    chan_type = _decode_fixed_ascii(header_bytes[0x26:0x28])
+    sensor_type = _decode_fixed_ascii(header_bytes[0x28:0x2E])
+    sensor_serial = int(np.frombuffer(header_bytes[0x2E:0x30], dtype="<i2")[0])
+    system_type = _decode_fixed_ascii(header_bytes[0x84:0x90])
+
+    bit_indicator = int(np.frombuffer(header_bytes[0xAA:0xAC], dtype="<i2")[0])
+    if bit_indicator not in (0, 1):
+        raise ValueError(f"Unsupported ATS bit_indicator: {bit_indicator}")
+
+    data_dtype = np.dtype("<i8" if bit_indicator == 1 else "<i4")
+
+    return {
+        "header_length": header_length,
+        "header_vers": header_vers,
+        "total_samples": total_samples,
+        "sample_freq": sample_freq,
+        "start_time_unix": start_time_unix,
+        "lsb_mV": lsb_mV,
+        "adu_serial": adu_serial,
+        "chan_type": chan_type,
+        "sensor_type": sensor_type,
+        "sensor_serial": sensor_serial,
+        "system_type": system_type,
+        "data_dtype": data_dtype,
+    }
+
+
 def read_timeseriesdict_ats(source, **kwargs):
     """
     Read a Metronix ATS file into a TimeSeriesDict.
@@ -28,76 +104,43 @@ def read_timeseries_ats(source, **kwargs):
     """
     filename = str(source)
     with open(filename, mode="rb") as f:
-        # Read entire file content buffer?
-        # For large files, memory mapping or chunk reading is better,
-        # but following original script's logic:
-        # f_data = f.read()
-        # Header is fixed size usually. Let's read header first.
+        hdr = _read_ats_header(f)
 
-        # Header length is at offset 0 (int16)
-        header_len_bytes = f.read(2)
-        header_length = np.frombuffer(header_len_bytes, dtype=np.int16)[0]
+        sample_freq = float(hdr["sample_freq"])
+        start_time_unix = int(hdr["start_time_unix"])
+        lsb_mV = float(hdr["lsb_mV"])
+        header_length = int(hdr["header_length"])
+        total_samples = int(hdr["total_samples"])
+        data_dtype = hdr["data_dtype"]
 
-        # Read the rest of the header (assuming 1024 bytes based on previous checks)
-        f.seek(0)
-        header_bytes = f.read(header_length)
+        system_type = str(hdr["system_type"])
+        adu_serial = int(hdr["adu_serial"])
+        channel_type = str(hdr["chan_type"])
+        sensor_type = str(hdr["sensor_type"])
+        sensor_serial = int(hdr["sensor_serial"])
 
-        # Parse Header
-        # Offsets based on ats2gwf.py
-        # SampleFreq: 8-12 (float32)
-        sample_freq = np.frombuffer(header_bytes[8:12], dtype=np.float32)[0]
-
-        # StartTime: 12-16 (int32 - Reference Unix Timestamp?)
-        start_time_int = np.frombuffer(header_bytes[12:16], dtype=np.int32)[0]
-
-        # LSB Value: 16-24 (float64)
-        lsb_val = np.frombuffer(header_bytes[16:24], dtype=np.float64)[0]
-
-        # System Number: 32-34 (int16)
-        system_number = np.frombuffer(header_bytes[32:34], dtype=np.int16)[0]
-
-        # Strings are fixed width, null padded?
-        # Channel Type: 38-40
-        channel_type = header_bytes[38:40].decode("utf-8", errors="ignore").strip()
-
-        # Sensor Type: 40-46
-        sensor_type = header_bytes[40:46].decode("utf-8", errors="ignore").strip()
-
-        # Serial Number: 46-48 (int16)
-        serial_number = np.frombuffer(header_bytes[46:48], dtype=np.int16)[0]
-
-        # System Type: 132-144
-        system_type = (
-            header_bytes[132:144]
-            .strip(b"\x00")
-            .decode("utf-8", errors="ignore")
-            .strip()
+        # Construct Channel Name (stable, filename-independent)
+        chname = (
+            f"Metronix_{system_type}_{adu_serial:03}_{channel_type}_{sensor_type}_{sensor_serial:04}"
         )
-
-        # Construct Channel Name
-        chname = f"Metronix_{system_type}_{system_number:03}_{channel_type}_{sensor_type}_{serial_number:04}"
 
         # Calculate t0
         # StartTime is Unix timestamp
-        dt_obj = datetime.datetime.fromtimestamp(
-            start_time_int, tz=datetime.timezone.utc
-        )
+        dt_obj = datetime.datetime.fromtimestamp(start_time_unix, tz=datetime.timezone.utc)
         t0 = to_gps(dt_obj)
 
         # Read Data
-        # Data starts after HeaderLength
-        # Using memmap for data to be efficient if needed, or fromfile
         f.seek(header_length)
-        data_raw = np.fromfile(f, dtype=np.int32)
+        data_raw = np.fromfile(f, dtype=data_dtype, count=total_samples)
+        if data_raw.size != total_samples:
+            raise ValueError(
+                f"ATS data block shorter than expected: got {data_raw.size}, expected {total_samples}"
+            )
 
         # Scale Data
-        # unit='Volt', value = raw * LSB / 1000 ? (LSB is likely nV or similar?)
-        # User script: * LSBval / 1000
-        # If LSBval is in uV/count?
-        # Assuming result unit is Volts? Or mV?
-        # ats2gwf says unit='Volt'.
-
-        data_scaled = data_raw * lsb_val / 1000.0
+        # Per Metronix programmer notes: dblLSBMV * counts -> mV (gains already included).
+        # Convert to V.
+        data_scaled = data_raw.astype(np.float64) * lsb_mV / 1000.0
 
         ts = TimeSeries(
             data_scaled,
