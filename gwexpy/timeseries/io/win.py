@@ -32,6 +32,26 @@ def s4(v):
     return v
 
 
+def _apply_4bit_deltas(output: list[int], sdata: bytes, n_deltas: int) -> None:
+    """
+    Apply n_deltas 4-bit signed deltas to the last value in ``output``.
+
+    WIN 0.5-byte compression stores two signed 4-bit deltas per byte: upper nibble
+    then lower nibble. When the number of deltas is odd (e.g. even sampling rate),
+    the last nibble is unused and must be skipped. We therefore decode exactly
+    ``n_deltas`` values rather than blindly consuming all nibbles.
+    """
+    remaining = int(n_deltas)
+    for val_byte in sdata:
+        # Upper nibble then lower nibble
+        for shift in (4, 0):
+            if remaining <= 0:
+                return
+            nib = (val_byte >> shift) & 0b1111
+            output.append(output[-1] + s4(nib))
+            remaining -= 1
+
+
 def _read_win_fixed(filename, century="20"):
     """
     Reads a WIN file and returns a Stream object.
@@ -108,21 +128,8 @@ def _read_win_fixed(filename, century="20"):
                     warnings.warn(msg)
 
                 if datawide == 0.5:
-                    for i in range(xlen):
-                        val_byte = sdata[i]  # int in Py3
-
-                        # Upper 4 bits
-                        v_upper = (val_byte & 0b11110000) >> 4
-                        idata2 = output[chanum][-1] + s4(v_upper)
-                        output[chanum].append(idata2)
-
-                        if i == (xlen - 1):
-                            break
-
-                        # Lower 4 bits
-                        v_lower = val_byte & 0b00001111
-                        idata2 = idata2 + s4(v_lower)
-                        output[chanum].append(idata2)
+                    # There are (srate - 1) deltas after the first absolute sample.
+                    _apply_4bit_deltas(output[chanum], sdata, srate - 1)
 
                 elif datawide == 1:
                     for i in range(int(xlen // datawide)):
