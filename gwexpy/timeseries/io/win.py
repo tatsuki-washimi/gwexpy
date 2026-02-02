@@ -136,20 +136,10 @@ def _read_win_fixed(filename, century="20"):
                         output[chanum].append(idata2)
                 elif datawide == 3:
                     for i in range(int(xlen // datawide)):
-                        # PATCH: Add parenthesis and sign extension for 3-byte int
-                        (
-                            sdata[3 * i : 3 * (i + 1)] + b"\x00"
-                        )  # Pad to 4 bytes? No, b' ' is 0x20.
-                        # Wait, original code uses b' '.
-                        # struct.unpack('>i', chunk + b' ') ? No chunk is 3 bytes.
-                        # Original: from_buffer(sdata[...] + b' ', '>i')[0] >> 8
-                        # Assuming Big Endian 3 bytes -> Pad at END with something, unpack as 4 byte int, shift right 8.
-                        # b' ' is 0x20. If we pad with 0x00 it changes nothing for >> 8 if positive?
-                        # The 'chunk' variable was unused, directly unpack.
-                        val_tmp = struct.unpack(
-                            ">i", sdata[3 * i : 3 * (i + 1)] + b" "
-                        )[0]
-                        val = val_tmp >> 8
+                        # 24-bit signed big-endian delta: pad to 32-bit and shift back.
+                        # Using signed unpack + arithmetic shift preserves sign.
+                        chunk = sdata[3 * i : 3 * (i + 1)]
+                        val = struct.unpack(">i", chunk + b"\x00")[0] >> 8
                         idata2 = output[chanum][-1] + val
                         output[chanum].append(idata2)
                 elif datawide == 4:
@@ -157,12 +147,12 @@ def _read_win_fixed(filename, century="20"):
                         val = struct.unpack(">i", sdata[4 * i : 4 * (i + 1)])[0]
                         idata2 = output[chanum][-1] + val
                         output[chanum].append(idata2)
-                    else:
-                        msg = (
-                            f"DATAWIDE is {datawide} but only values of 0.5, 1, 2, 3 or 4 "
-                            "are supported."
-                        )
-                        raise NotImplementedError(msg)
+                else:
+                    msg = (
+                        f"DATAWIDE is {datawide} but only values of 0.5, 1, 2, 3 or 4 "
+                        "are supported."
+                    )
+                    raise NotImplementedError(msg)
 
     traces = []
     for chan in output.keys():
