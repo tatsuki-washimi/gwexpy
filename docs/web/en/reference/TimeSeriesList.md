@@ -785,6 +785,26 @@ write(self, target: str, *args: Any, **kwargs: Any) -> Any
 
 Write TimeSeriesList to file (HDF5, ROOT, etc.).
 
+CSV/TXT output for multi-channel data uses a directory layout (one file per entry).
+
+```python
+tsl.write("out_dir", format="txt")  # writes per-series TXT under out_dir/
+```
+
+For HDF5 output you can choose a layout (default is GWpy-compatible dataset-per-entry).
+
+```python
+tsl.write("out.h5", format="hdf5")               # GWpy-compatible (default)
+tsl.write("out.h5", format="hdf5", layout="group")  # legacy group-per-entry
+```
+
+.. warning::
+   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+   arbitrary code on load.
+
+Pickle portability note: pickled gwexpy `TimeSeriesList` unpickles as a **GWpy**
+`TimeSeriesList` (gwexpy not required on the loading side).
+
 ### `zpk`
 
 ```python
@@ -794,5 +814,3 @@ zpk(self, *args, **kwargs) -> 'TimeSeriesList'
 
 ZPK filter each TimeSeries in the list.
 Returns a new TimeSeriesList.
-
-

@@ -60,3 +60,40 @@ deltas based on the discussion in:
   No. 26, pp. 31-36, 2020.
 
 See ``gwexpy/timeseries/io/win.py`` for implementation details.
+
+Pickle / shelve notes
+---------------------
+
+.. warning::
+   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+   arbitrary code during loading.
+
+For portability, gwexpy pickling is designed to return **GWpy types** on load
+(i.e. unpickling does not require gwexpy to be installed).
+
+.. code-block:: python
+
+   import pickle
+   import numpy as np
+   from gwexpy.timeseries import TimeSeries
+
+   ts = TimeSeries(np.arange(10.0), sample_rate=1.0, t0=0, unit="m")
+   obj = pickle.loads(pickle.dumps(ts))
+   # obj is a gwpy.timeseries.TimeSeries
+
+Compatibility notes:
+
+- `TimeSeries`, `FrequencySeries`, `Spectrogram` -> unpickle as GWpy objects.
+- `TimeSeriesDict`, `TimeSeriesList` -> unpickle as GWpy collections.
+- `FrequencySeriesDict/List`, `SpectrogramDict/List` -> unpickle as built-in `dict`/`list` containing GWpy objects.
+- gwexpy-only types (e.g. matrix/field classes) are not covered by this portability contract.
+
+What is preserved (best-effort):
+
+- numeric data (`.value`)
+- axis information (`times` / `frequencies`)
+- metadata commonly supported by GWpy (`unit`, `name`, `channel`, `epoch`)
+
+What is not preserved:
+
+- gwexpy-only internal attributes (e.g. `_gwex_*`) and any behavior added only by gwexpy

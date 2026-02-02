@@ -2,10 +2,25 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from collections.abc import Iterable
-from typing import Any, TypeVar
+from pathlib import Path
+from typing import Any, SupportsIndex, TypeVar
 
+import h5py
 import numpy as np
 from astropy import units as u
+
+from gwexpy.io.hdf5_collection import (
+    LAYOUT_DATASET,
+    LAYOUT_GROUP,
+    detect_hdf5_layout,
+    ensure_hdf5_file,
+    normalize_layout,
+    read_hdf5_keymap,
+    read_hdf5_order,
+    safe_hdf5_key,
+    unique_hdf5_key,
+    write_hdf5_manifest,
+)
 
 from .frequencyseries import FrequencySeries, as_series_dict_class
 
@@ -168,9 +183,62 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         FrequencySeriesDict
             A new dict containing the data read from the source.
         """
+        fmt = kwargs.get("format")
+        try:
+            p = Path(source)
+        except TypeError:
+            p = None
+        if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
+            from gwexpy.io.collection_dir import read_collection_dir
+            from gwexpy.io.utils import apply_unit
+
+            _, items = read_collection_dir(
+                p,
+                expected_kind=cls.__name__,
+                entry_format=fmt,
+                reader=lambda path, f: FrequencySeries.read(path, format=f),
+            )
+            out = cls()
+            for k, v, meta in items:
+                unit = meta.get("unit")
+                v = apply_unit(v, unit) if unit else v
+                out[k] = v
+            return out
+        if fmt in ("hdf5", "h5", "hdf"):
+            with h5py.File(source, "r") as h5f:
+                layout = detect_hdf5_layout(h5f)
+                keymap = read_hdf5_keymap(h5f)
+                order = read_hdf5_order(h5f)
+                keys = order or list(h5f.keys())
+                out = cls()
+                if layout == LAYOUT_DATASET or layout is None:
+                    for ds_name in keys:
+                        try:
+                            fs = FrequencySeries.read(h5f, format="hdf5", path=ds_name)
+                        except Exception:
+                            continue
+                        orig_key = keymap.get(ds_name, ds_name)
+                        out[orig_key] = fs
+                    return out
+                if layout == LAYOUT_GROUP:
+                    for grp_name in keys:
+                        try:
+                            grp = h5f[grp_name]
+                            fs = FrequencySeries.read(grp, format="hdf5", path="data")
+                        except Exception:
+                            try:
+                                fs = FrequencySeries.read(grp, format="hdf5")
+                            except Exception:
+                                continue
+                        orig_key = keymap.get(grp_name, grp_name)
+                        out[orig_key] = fs
+                    return out
         from astropy.io import registry
 
         return registry.read(cls, source, *args, **kwargs)
+
+    def __reduce_ex__(self, protocol: SupportsIndex):
+        return (dict, (dict(self),))
 
     def write(self, target, *args, **kwargs):
         from astropy.io import registry
@@ -501,6 +569,45 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
             from gwexpy.interop.root_ import write_root_file
 
             return write_root_file(self, target, **kwargs)
+        if fmt in ("csv", "txt"):
+            from gwexpy.io.collection_dir import write_collection_dir
+
+            overwrite = bool(kwargs.pop("overwrite", False))
+            return write_collection_dir(
+                target,
+                kind=type(self).__name__,
+                entry_format=str(fmt),
+                entries=list(self.items()),
+                writer=lambda fs, path, f: fs.write(path, format=f),
+                meta_getter=lambda fs: {"unit": str(getattr(fs, "unit", "") or "")},
+                overwrite=overwrite,
+            )
+        if fmt in ("hdf5", "h5", "hdf"):
+            overwrite = bool(kwargs.pop("overwrite", False))
+            mode = kwargs.pop("mode", None)
+            layout = normalize_layout(kwargs.pop("layout", "gwpy"))
+            used: set[str] = set()
+            keymap: dict[str, str] = {}
+            order: list[str] = []
+            with ensure_hdf5_file(target, mode=mode, overwrite=overwrite) as h5f:
+                for key, fs in self.items():
+                    safe = safe_hdf5_key(str(key))
+                    name = unique_hdf5_key(safe, used=used)
+                    if layout == LAYOUT_DATASET:
+                        fs.write(h5f, format="hdf5", path=name)
+                    else:
+                        grp = h5f.create_group(name)
+                        fs.write(grp, format="hdf5", path="data")
+                    keymap[name] = str(key)
+                    order.append(name)
+                write_hdf5_manifest(
+                    h5f,
+                    kind=type(self).__name__,
+                    layout=layout,
+                    keymap=keymap,
+                    order=order,
+                )
+            return target
         from astropy.io import registry
 
         return registry.write(self, target, *args, **kwargs)
@@ -591,9 +698,58 @@ class FrequencySeriesBaseList(list[_FS]):
         FrequencySeriesList
             A new list containing the data read from the source.
         """
+        fmt = kwargs.get("format")
+        try:
+            p = Path(source)
+        except TypeError:
+            p = None
+        if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
+            from gwexpy.io.collection_dir import read_collection_dir
+            from gwexpy.io.utils import apply_unit
+
+            _, items = read_collection_dir(
+                p,
+                expected_kind=cls.__name__,
+                entry_format=fmt,
+                reader=lambda path, f: FrequencySeries.read(path, format=f),
+            )
+            dir_items = []
+            for _, v, meta in items:
+                unit = meta.get("unit")
+                v = apply_unit(v, unit) if unit else v
+                dir_items.append(v)
+            return cls(dir_items)
+        if fmt in ("hdf5", "h5", "hdf"):
+            with h5py.File(source, "r") as h5f:
+                layout = detect_hdf5_layout(h5f)
+                order = read_hdf5_order(h5f) or list(h5f.keys())
+                out_items: list[FrequencySeries] = []
+                if layout == LAYOUT_DATASET or layout is None:
+                    for ds_name in order:
+                        try:
+                            fs = FrequencySeries.read(h5f, format="hdf5", path=ds_name)
+                        except Exception:
+                            continue
+                        out_items.append(fs)
+                    return cls(out_items)
+                if layout == LAYOUT_GROUP:
+                    for grp_name in order:
+                        try:
+                            grp = h5f[grp_name]
+                            fs = FrequencySeries.read(grp, format="hdf5", path="data")
+                        except Exception:
+                            try:
+                                fs = FrequencySeries.read(grp, format="hdf5")
+                            except Exception:
+                                continue
+                        out_items.append(fs)
+                    return cls(out_items)
         from astropy.io import registry
 
         return registry.read(cls, source, *args, **kwargs)
+
+    def __reduce_ex__(self, protocol: SupportsIndex):
+        return (list, (list(self),))
 
     def write(self, target, *args, **kwargs):
         from astropy.io import registry
@@ -876,6 +1032,47 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
             from gwexpy.interop.root_ import write_root_file
 
             return write_root_file(self, target, **kwargs)
+        if fmt in ("csv", "txt"):
+            from gwexpy.io.collection_dir import write_collection_dir
+
+            overwrite = bool(kwargs.pop("overwrite", False))
+            pairs: list[tuple[str, Any]] = []
+            for i, fs in enumerate(self):
+                key = fs.name or f"series_{i}"
+                pairs.append((key, fs))
+            return write_collection_dir(
+                target,
+                kind=type(self).__name__,
+                entry_format=str(fmt),
+                entries=pairs,
+                writer=lambda fs, path, f: fs.write(path, format=f),
+                meta_getter=lambda fs: {"unit": str(getattr(fs, "unit", "") or "")},
+                overwrite=overwrite,
+            )
+        if fmt in ("hdf5", "h5", "hdf"):
+            overwrite = bool(kwargs.pop("overwrite", False))
+            mode = kwargs.pop("mode", None)
+            layout = normalize_layout(kwargs.pop("layout", "gwpy"))
+            used: set[str] = set()
+            order: list[str] = []
+            with ensure_hdf5_file(target, mode=mode, overwrite=overwrite) as h5f:
+                for i, fs in enumerate(self):
+                    key = safe_hdf5_key(str(i))
+                    name = unique_hdf5_key(key, used=used)
+                    if layout == LAYOUT_DATASET:
+                        fs.write(h5f, format="hdf5", path=name)
+                    else:
+                        grp = h5f.create_group(name)
+                        fs.write(grp, format="hdf5", path="data")
+                    order.append(name)
+                write_hdf5_manifest(
+                    h5f,
+                    kind=type(self).__name__,
+                    layout=layout,
+                    keymap={},
+                    order=order,
+                )
+            return target
         from astropy.io import registry
 
         return registry.write(self, target, *args, **kwargs)

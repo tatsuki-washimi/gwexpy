@@ -4,6 +4,14 @@
 
 追加の相互運用メソッドを備えた gwpy.spectrogram.Spectrogram の拡張。
 
+## Pickle / shelve の可搬性
+
+> [!WARNING]
+> 信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+
+gwexpy の pickle は可搬性を優先しており、unpickle 時に **GWpy 型**を返す設計です
+（読み込み側に gwexpy が無くても、gwpy があれば復元できます）。
+
 ## 主要プロパティ
 
 | プロパティ | 説明 |

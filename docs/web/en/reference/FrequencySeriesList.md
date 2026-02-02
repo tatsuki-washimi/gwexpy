@@ -336,6 +336,20 @@ write(self, target: 'str', *args: 'Any', **kwargs: 'Any') -> 'Any'
 
 Write list to file (HDF5, ROOT, etc.).
 
+For HDF5 output you can choose a layout (default is GWpy-compatible dataset-per-entry).
+
+```python
+fsl.write("out.h5", format="hdf5")               # GWpy-compatible (default)
+fsl.write("out.h5", format="hdf5", layout="group")  # legacy group-per-entry
+```
+
+.. warning::
+   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+   arbitrary code on load.
+
+Pickle portability note: pickled gwexpy `FrequencySeriesList` unpickles as a built-in
+`list` of GWpy `FrequencySeries` (gwexpy not required on the loading side).
+
 ### `zpk`
 
 ```python
@@ -345,5 +359,3 @@ zpk(self, *args, **kwargs) -> "'FrequencySeriesList'"
 
 Apply ZPK filter to each FrequencySeries in the list.
 Returns a new FrequencySeriesList.
-
-

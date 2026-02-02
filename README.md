@@ -98,6 +98,28 @@ Beyond standard GWpy formats (`.gwf`, `.hdf5`), gwexpy natively supports:
 - **General**: ROOT (.root), WAV (extended), Parquet, Feather, Pickle
 - **Meteorology**: SDB (Davis weather station)
 
+> [!WARNING]
+> Never unpickle data from untrusted sources. `pickle`/`shelve` can execute arbitrary code on load.
+
+Pickle portability note: gwexpy objects are pickled so that unpickling returns **GWpy types**
+in a GWpy-only environment (gwexpy not required).
+
+Compatibility details:
+
+- `TimeSeries`, `FrequencySeries`, `Spectrogram` → unpickle as the corresponding GWpy objects.
+- `TimeSeriesDict`, `TimeSeriesList` → unpickle as the GWpy collection classes.
+- `FrequencySeriesDict/List`, `SpectrogramDict/List` → unpickle as built-in `dict`/`list` whose elements are GWpy objects.
+- gwexpy-only types such as the matrix/field classes are not covered by this portability contract.
+
+What is preserved (best effort):
+
+- Core numeric data (`.value` arrays) and axis coordinates (`times`, `frequencies`).
+- Common GWpy metadata (`unit`, `name`, `channel`, `epoch`).
+
+What is not preserved:
+
+- gwexpy-only attributes (`_gwex_*`) and behavior that only exists in gwexpy subclasses.
+
 ### 🔬 Physics Models & Simulation
 
 - **Detector Noise**: `gwinc` integration for gravitational wave detector sensitivity curves

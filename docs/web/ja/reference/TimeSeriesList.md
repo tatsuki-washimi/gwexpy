@@ -125,6 +125,33 @@ phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
 
 すべてのシリーズをプロットします。
 
+### `write`
+
+```python
+write(self, target: str, *args: Any, **kwargs: Any) -> Any
+```
+
+TimeSeriesList をファイルに書き込みます。
+
+CSV/TXT 出力は多チャンネル用の「ディレクトリ出力」です（各要素を個別ファイルに保存）。
+
+```python
+tsl.write("out_dir", format="txt")  # out_dir/ に series ごとの TXT を保存
+```
+
+HDF5 出力では `layout` を指定できます（デフォルトは GWpy 互換の dataset-per-entry）。
+
+```python
+tsl.write("out.h5", format="hdf5")               # GWpy互換（既定）
+tsl.write("out.h5", format="hdf5", layout="group")  # 旧形式（group-per-entry）
+```
+
+> [!WARNING]
+> 信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+
+pickle 可搬性メモ: gwexpy の `TimeSeriesList` は unpickle 時に **GWpy の `TimeSeriesList`** を返します
+（読み込み側に gwexpy は不要です）。
+
 ### `q_transform`
 
 各 TimeSeries の Q 変換を計算します。SpectrogramList を返します。

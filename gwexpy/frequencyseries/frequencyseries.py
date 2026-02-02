@@ -8,7 +8,7 @@ Extends gwpy.frequencyseries with matrix support and future extensibility.
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, SupportsIndex, TypeVar
 
 import numpy as np
 from astropy import units as u
@@ -99,6 +99,11 @@ class FrequencySeries(
         for attr in _gwex_attrs:
             if hasattr(obj, attr):
                 setattr(self, attr, getattr(obj, attr))
+
+    def __reduce_ex__(self, protocol: SupportsIndex):
+        from gwexpy.io.pickle_compat import frequencyseries_reduce_args
+
+        return frequencyseries_reduce_args(self)
 
     # --- Phase and Angle ---
 

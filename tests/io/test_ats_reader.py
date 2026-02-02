@@ -8,7 +8,6 @@ from gwpy.time import to_gps
 
 from gwexpy.timeseries import TimeSeries
 
-
 _SAMPLE_ATS = Path("gwexpy/gui/test-data/134_V01_C02_R000_THx_BL_128H.ats")
 
 

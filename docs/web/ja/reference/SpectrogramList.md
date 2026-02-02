@@ -105,6 +105,27 @@ plot_summary(self, **kwargs)
 
 リストをスペクトログラムとパーセンタイルサマリーを並べてプロットします。
 
+### `write`
+
+```python
+write(self, target, *args, **kwargs)
+```
+
+SpectrogramList をファイルに書き込みます。
+
+HDF5 出力では `layout` を指定できます（デフォルトは GWpy 互換の dataset-per-entry）。
+
+```python
+sgl.write("out.h5", format="hdf5")               # GWpy互換（既定）
+sgl.write("out.h5", format="hdf5", layout="group")  # 旧形式（group-per-entry）
+```
+
+> [!WARNING]
+> 信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+
+pickle 可搬性メモ: gwexpy の `SpectrogramList` は unpickle 時に builtins の `list` を返します
+（中身は GWpy の `Spectrogram`、読み込み側に gwexpy は不要です）。
+
 ### `radian`
 
 ```python

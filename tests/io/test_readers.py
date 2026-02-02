@@ -4,11 +4,11 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from astropy import units as u
 from gwpy.time import to_gps
 
 from gwexpy.timeseries import TimeSeriesDict
 from gwexpy.timeseries.io.gbd import GBD_FULL_SCALE
-from astropy import units as u
 
 
 def _write_minimal_gbd(tmp_path, counts=4):

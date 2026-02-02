@@ -1121,6 +1121,31 @@ Write this `TimeSeriesDict` to a file
 Arguments and keywords depend on the output format, see the
 online documentation for full details for each format.
 
+CSV/TXT output for multi-channel data uses a directory layout (one file per entry).
+
+```python
+tsd.write("out_dir", format="csv")  # writes per-channel CSVs under out_dir/
+```
+
+For HDF5 output you can choose a layout (default is GWpy-compatible dataset-per-entry).
+
+```python
+tsd.write("out.h5", format="hdf5")               # GWpy-compatible (default)
+tsd.write("out.h5", format="hdf5", layout="group")  # legacy group-per-entry
+```
+
+HDF5 dataset names (for GWpy `path=`):
+- Keys are sanitized to be HDF5-friendly (e.g. `H1:TEST` -> `H1_TEST`).
+- If multiple keys sanitize to the same name, a suffix like `__1` is added.
+- The original keys are stored in file attributes, and `gwexpy` restores them on read.
+
+.. warning::
+   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+   arbitrary code on load.
+
+Pickle portability note: pickled gwexpy `TimeSeriesDict` unpickles as a **GWpy**
+`TimeSeriesDict` (gwexpy not required on the loading side).
+
 Parameters
 ----------
 target : `str`
@@ -1156,5 +1181,3 @@ zpk(self, *args, **kwargs) -> 'TimeSeriesDict'
 
 Apply ZPK filter to each TimeSeries in the dict.
 Returns a new TimeSeriesDict.
-
-

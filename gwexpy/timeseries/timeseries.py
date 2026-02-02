@@ -14,7 +14,7 @@ This module integrates all Mixins into a single TimeSeries class.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, SupportsIndex, cast
 
 import numpy as np
 from astropy import units as u
@@ -135,6 +135,11 @@ class TimeSeries(
         for key, val in getattr(obj, "__dict__", {}).items():
             if key.startswith("_gwex_") and key not in self.__dict__:
                 self.__dict__[key] = val
+
+    def __reduce_ex__(self, protocol: SupportsIndex):
+        from gwexpy.io.pickle_compat import timeseries_reduce_args
+
+        return timeseries_reduce_args(self)
 
     # ===============================
     # Override methods from _core.py

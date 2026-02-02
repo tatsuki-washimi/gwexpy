@@ -55,6 +55,32 @@ inplace : bool, optional
 -------
 SpectrogramDict
 
+### `write`
+
+```python
+write(self, target, *args, **kwargs)
+```
+
+SpectrogramDict をファイルに書き込みます。
+
+HDF5 出力では `layout` を指定できます（デフォルトは GWpy 互換の dataset-per-entry）。
+
+```python
+sgd.write("out.h5", format="hdf5")               # GWpy互換（既定）
+sgd.write("out.h5", format="hdf5", layout="group")  # 旧形式（group-per-entry）
+```
+
+HDF5 のデータセット名（GWpy の `path=` 用）:
+- キーは HDF5 で安全な名前にサニタイズされます（例: `H1:SPEC` -> `H1_SPEC`）。
+- サニタイズ後の名前が衝突する場合、`__1` のようなサフィックスが付与されます。
+- 元のキーはファイル属性に保存され、gwexpy の `read()` は元キーを復元します。
+
+> [!WARNING]
+> 信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+
+pickle 可搬性メモ: gwexpy の `SpectrogramDict` は unpickle 時に builtins の `dict` を返します
+（中身は GWpy の `Spectrogram`、読み込み側に gwexpy は不要です）。
+
 ### `crop_frequencies`
 
 ```python
