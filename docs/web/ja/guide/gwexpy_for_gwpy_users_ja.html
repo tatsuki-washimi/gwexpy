@@ -384,7 +384,13 @@
 <p>GWpyが標準サポートする形式に加え、以下に対応（または拡張）しています。</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ATS</span></code> (Metronix MTデータ)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">GBD</span></code> (GRAPHTEC データロガー)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GBD</span></code> (GRAPHTEC データロガー)</p>
+<ul>
+<li><p>アナログCHはヘッダのアンプレンジ（例: <code class="docutils literal notranslate"><span class="pre">20mV</span></code> 等）を用いて <code class="docutils literal notranslate"><span class="pre">count</span> <span class="pre">-&gt;</span> <span class="pre">V</span></code> に換算します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Alarm</span></code> / <code class="docutils literal notranslate"><span class="pre">AlarmOut</span></code> / <code class="docutils literal notranslate"><span class="pre">Pulse*</span></code> / <code class="docutils literal notranslate"><span class="pre">Logic*</span></code> はデジタル/ステータスとして扱い、値を 0/1 に正規化し unit を dimensionless にします。</p></li>
+<li><p>必要に応じて <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;gbd&quot;,</span> <span class="pre">digital_channels=[...])</span></code> でデジタル扱いするチャンネル名を上書きできます。</p></li>
+</ul>
+</li>
 <li><p><code class="docutils literal notranslate"><span class="pre">TDMS</span></code> (LabVIEW / NI)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">MiniSEED</span></code>, <code class="docutils literal notranslate"><span class="pre">SAC</span></code>, <code class="docutils literal notranslate"><span class="pre">GSE2</span></code> (地震波データ, Obspy連携)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">WIN</span></code> (地震波データ)</p></li>
