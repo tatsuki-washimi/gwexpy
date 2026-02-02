@@ -6,6 +6,17 @@ References:
     - Shigeki NAKAGAWA and Aitaro KATO, "New Module for Reading WIN Format Data in ObsPy",
       Technical Research Report, Earthquake Research Institute, the University of Tokyo, No. 26, pp. 31-36, 2020.
       https://www.eri.u-tokyo.ac.jp/GIHOU/archive/26_031-036.pdf
+
+This module intentionally deviates from ObsPy's legacy WIN reader behavior for the
+edge-cases described in the paper above:
+
+- 0.5-byte (4-bit) delta decoding:
+  - Fix sign handling for the lower nibble.
+  - Skip the unused last nibble when the number of deltas is odd (e.g. even sampling rate).
+- 3-byte (24-bit) delta decoding:
+  - Apply correct operator precedence and sign-preserving unpack/shift.
+
+We also provide regression tests using a sample WIN file under ``gwexpy/gui/test-data/``.
 """
 
 from __future__ import annotations

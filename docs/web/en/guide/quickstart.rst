@@ -47,3 +47,16 @@ Time utilities and auto series
 
    ts_axis = as_series((1419724818 + np.arange(10)) * u.s, unit="h")
    fs_axis = as_series(np.arange(5) * u.Hz, unit="mHz")
+
+File I/O notes
+--------------
+
+gwexpy adds/extends several readers beyond GWpy's defaults. For WIN (NIED) files,
+gwexpy includes decoding fixes for 0.5-byte (4-bit) and 3-byte (24-bit) compressed
+deltas based on the discussion in:
+
+- Shigeki Nakagawa and Aitaro Kato, "New Module for Reading WIN Format Data in ObsPy",
+  Technical Research Report, Earthquake Research Institute, the University of Tokyo,
+  No. 26, pp. 31-36, 2020.
+
+See ``gwexpy/timeseries/io/win.py`` for implementation details.
