@@ -176,6 +176,9 @@ GWpyが標準サポートする形式に加え、以下に対応（または拡�
 *   `TDMS` (LabVIEW / NI)
 *   `MiniSEED`, `SAC`, `GSE2` (地震波データ, Obspy連携)
 *   `WIN` (地震波データ)
+    *   0.5バイト（4bit差分）/ 3バイト差分の復号について、ObsPyの既知の不具合・注意点を踏まえた実装になっています。
+    *   参考: 中川茂樹・加藤愛太郎「WINフォーマットデータをObsPyで読み込む新しいモジュール」(東京大学地震研究所技術研究報告 No.26, 2020)。
+    *   gwexpyの実装: `gwexpy/timeseries/io/win.py`（4bit差分の下位ニブル処理・奇数差分の末尾ニブルスキップ、24bit差分の符号付き復元など）。
 *   `DTTXML` (LIGO Diagnostic Test Tools)
 *   `SDB` (気象計 Davis データ)
 *   `Midas` (PSI/DAQフォーマット)
