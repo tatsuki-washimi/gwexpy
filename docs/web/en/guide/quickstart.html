@@ -48,10 +48,13 @@
 <li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Quickstart</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#time-utilities-and-auto-series">Time utilities and auto series</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#file-i-o-notes">File I/O notes</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/index.html">Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
@@ -129,6 +132,18 @@
 <span class="n">fs_axis</span> <span class="o">=</span> <span class="n">as_series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;mHz&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="file-i-o-notes">
+<h2>File I/O notes<a class="headerlink" href="#file-i-o-notes" title="Link to this heading"></a></h2>
+<p>gwexpy adds/extends several readers beyond GWpy’s defaults. For WIN (NIED) files,
+gwexpy includes decoding fixes for 0.5-byte (4-bit) and 3-byte (24-bit) compressed
+deltas based on the discussion in:</p>
+<ul class="simple">
+<li><p>Shigeki Nakagawa and Aitaro Kato, “New Module for Reading WIN Format Data in ObsPy”,
+Technical Research Report, Earthquake Research Institute, the University of Tokyo,
+No. 26, pp. 31-36, 2020.</p></li>
+</ul>
+<p>See <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/win.py</span></code> for implementation details.</p>
 </section>
 </section>
 

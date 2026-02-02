@@ -50,6 +50,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/getting_started.html">はじめに (Getting Started)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../guide/validated_algorithms.html#id2">前提条件と規約</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">リファレンス</a><ul class="current">
@@ -104,181 +106,17 @@
 <h1>API リファレンス<a class="headerlink" href="#api" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="timeseries.html">時系列 (Time Series)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">TimeSeries.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">TimeSeries.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.OWNDATA"><code class="docutils literal notranslate"><span class="pre">TimeSeries.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">TimeSeries.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.ALIGNED"><code class="docutils literal notranslate"><span class="pre">TimeSeries.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">TimeSeries.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.FNC"><code class="docutils literal notranslate"><span class="pre">TimeSeries.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.FORC"><code class="docutils literal notranslate"><span class="pre">TimeSeries.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.BEHAVED"><code class="docutils literal notranslate"><span class="pre">TimeSeries.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.CARRAY"><code class="docutils literal notranslate"><span class="pre">TimeSeries.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeries.FARRAY"><code class="docutils literal notranslate"><span class="pre">TimeSeries.FARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.OWNDATA"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.ALIGNED"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.FNC"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.FORC"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.BEHAVED"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.CARRAY"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="timeseries.html#gwexpy.timeseries.TimeSeriesMatrix.FARRAY"><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.FARRAY</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="frequencyseries.html">周波数系列 (Frequency Series)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.OWNDATA"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.ALIGNED"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.FNC"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.FORC"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.BEHAVED"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.CARRAY"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.FARRAY"><code class="docutils literal notranslate"><span class="pre">BifrequencyMap.FARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.OWNDATA"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.ALIGNED"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.FNC"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.FORC"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.BEHAVED"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.CARRAY"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.FARRAY"><code class="docutils literal notranslate"><span class="pre">FrequencySeries.FARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.OWNDATA"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.ALIGNED"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.FNC"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.FORC"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.BEHAVED"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.CARRAY"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesMatrix.FARRAY"><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix.FARRAY</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="spectrogram.html">スペクトログラム (Spectrogram)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Spectrogram.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Spectrogram.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.OWNDATA"><code class="docutils literal notranslate"><span class="pre">Spectrogram.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">Spectrogram.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.ALIGNED"><code class="docutils literal notranslate"><span class="pre">Spectrogram.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">Spectrogram.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.FNC"><code class="docutils literal notranslate"><span class="pre">Spectrogram.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.FORC"><code class="docutils literal notranslate"><span class="pre">Spectrogram.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.BEHAVED"><code class="docutils literal notranslate"><span class="pre">Spectrogram.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.CARRAY"><code class="docutils literal notranslate"><span class="pre">Spectrogram.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.Spectrogram.FARRAY"><code class="docutils literal notranslate"><span class="pre">Spectrogram.FARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.OWNDATA"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.ALIGNED"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.FNC"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.FORC"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.BEHAVED"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.CARRAY"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="spectrogram.html#gwexpy.spectrogram.SpectrogramMatrix.FARRAY"><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix.FARRAY</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="fields.html">フィールド (Fields)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">ScalarField.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">ScalarField.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.OWNDATA"><code class="docutils literal notranslate"><span class="pre">ScalarField.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">ScalarField.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.ALIGNED"><code class="docutils literal notranslate"><span class="pre">ScalarField.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">ScalarField.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.FNC"><code class="docutils literal notranslate"><span class="pre">ScalarField.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.FORC"><code class="docutils literal notranslate"><span class="pre">ScalarField.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.BEHAVED"><code class="docutils literal notranslate"><span class="pre">ScalarField.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.CARRAY"><code class="docutils literal notranslate"><span class="pre">ScalarField.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="fields.html#gwexpy.fields.ScalarField.FARRAY"><code class="docutils literal notranslate"><span class="pre">ScalarField.FARRAY</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="timeseries.html">時系列 (Time Series)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="frequencyseries.html">周波数系列 (Frequency Series)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spectrogram.html">スペクトログラム (Spectrogram)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fields.html">フィールド (Fields)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spectral.html">スペクトル解析 (Spectral)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">解析ユーティリティ (Analysis)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="noise.html">ノイズシミュレーション (Noise)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="noise.html#submodules">Submodules</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="types.html">基本型 (Types)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.OWNDATA"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.ALIGNED"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.FNC"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.FORC"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.BEHAVED"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.CARRAY"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.MetaDataMatrix.FARRAY"><code class="docutils literal notranslate"><span class="pre">MetaDataMatrix.FARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Array.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Array.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.OWNDATA"><code class="docutils literal notranslate"><span class="pre">Array.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">Array.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.ALIGNED"><code class="docutils literal notranslate"><span class="pre">Array.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">Array.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.FNC"><code class="docutils literal notranslate"><span class="pre">Array.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.FORC"><code class="docutils literal notranslate"><span class="pre">Array.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.BEHAVED"><code class="docutils literal notranslate"><span class="pre">Array.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.CARRAY"><code class="docutils literal notranslate"><span class="pre">Array.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array.FARRAY"><code class="docutils literal notranslate"><span class="pre">Array.FARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Array2D.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Array2D.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.OWNDATA"><code class="docutils literal notranslate"><span class="pre">Array2D.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">Array2D.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.ALIGNED"><code class="docutils literal notranslate"><span class="pre">Array2D.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">Array2D.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.FNC"><code class="docutils literal notranslate"><span class="pre">Array2D.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.FORC"><code class="docutils literal notranslate"><span class="pre">Array2D.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.BEHAVED"><code class="docutils literal notranslate"><span class="pre">Array2D.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.CARRAY"><code class="docutils literal notranslate"><span class="pre">Array2D.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array2D.FARRAY"><code class="docutils literal notranslate"><span class="pre">Array2D.FARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Plane2D.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Plane2D.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.OWNDATA"><code class="docutils literal notranslate"><span class="pre">Plane2D.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">Plane2D.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.ALIGNED"><code class="docutils literal notranslate"><span class="pre">Plane2D.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">Plane2D.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.FNC"><code class="docutils literal notranslate"><span class="pre">Plane2D.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.FORC"><code class="docutils literal notranslate"><span class="pre">Plane2D.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.BEHAVED"><code class="docutils literal notranslate"><span class="pre">Plane2D.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.CARRAY"><code class="docutils literal notranslate"><span class="pre">Plane2D.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Plane2D.FARRAY"><code class="docutils literal notranslate"><span class="pre">Plane2D.FARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Array3D.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Array3D.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.OWNDATA"><code class="docutils literal notranslate"><span class="pre">Array3D.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">Array3D.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.ALIGNED"><code class="docutils literal notranslate"><span class="pre">Array3D.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">Array3D.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.FNC"><code class="docutils literal notranslate"><span class="pre">Array3D.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.FORC"><code class="docutils literal notranslate"><span class="pre">Array3D.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.BEHAVED"><code class="docutils literal notranslate"><span class="pre">Array3D.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.CARRAY"><code class="docutils literal notranslate"><span class="pre">Array3D.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array3D.FARRAY"><code class="docutils literal notranslate"><span class="pre">Array3D.FARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.C_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Array4D.C_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.F_CONTIGUOUS"><code class="docutils literal notranslate"><span class="pre">Array4D.F_CONTIGUOUS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.OWNDATA"><code class="docutils literal notranslate"><span class="pre">Array4D.OWNDATA</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.WRITEABLE"><code class="docutils literal notranslate"><span class="pre">Array4D.WRITEABLE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.ALIGNED"><code class="docutils literal notranslate"><span class="pre">Array4D.ALIGNED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.WRITEBACKIFCOPY"><code class="docutils literal notranslate"><span class="pre">Array4D.WRITEBACKIFCOPY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.FNC"><code class="docutils literal notranslate"><span class="pre">Array4D.FNC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.FORC"><code class="docutils literal notranslate"><span class="pre">Array4D.FORC</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.BEHAVED"><code class="docutils literal notranslate"><span class="pre">Array4D.BEHAVED</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.CARRAY"><code class="docutils literal notranslate"><span class="pre">Array4D.CARRAY</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html#gwexpy.types.Array4D.FARRAY"><code class="docutils literal notranslate"><span class="pre">Array4D.FARRAY</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">基本型 (Types)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra.html">フィッティング (fitting)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="extra.html#interop">相互運用 (interop)</a></li>
 </ul>

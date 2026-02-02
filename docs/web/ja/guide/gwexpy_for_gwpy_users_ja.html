@@ -50,6 +50,8 @@
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
 <li class="toctree-l2"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html#id2">前提条件と規約</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">GWexpy 機能一覧 (GWpyユーザー向け)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#gwpy">1. GWpy既存クラスの機能拡張 (軽微なもの)</a><ul>
@@ -393,7 +395,13 @@
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">TDMS</span></code> (LabVIEW / NI)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">MiniSEED</span></code>, <code class="docutils literal notranslate"><span class="pre">SAC</span></code>, <code class="docutils literal notranslate"><span class="pre">GSE2</span></code> (地震波データ, Obspy連携)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">WIN</span></code> (地震波データ)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WIN</span></code> (地震波データ)</p>
+<ul>
+<li><p>0.5バイト（4bit差分）/ 3バイト差分の復号について、ObsPyの既知の不具合・注意点を踏まえた実装になっています。</p></li>
+<li><p>参考: 中川茂樹・加藤愛太郎「WINフォーマットデータをObsPyで読み込む新しいモジュール」(東京大学地震研究所技術研究報告 No.26, 2020)。</p></li>
+<li><p>gwexpyの実装: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/win.py</span></code>（4bit差分の下位ニブル処理・奇数差分の末尾ニブルスキップ、24bit差分の符号付き復元など）。</p></li>
+</ul>
+</li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DTTXML</span></code> (LIGO Diagnostic Test Tools)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SDB</span></code> (気象計 Davis データ)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Midas</span></code> (PSI/DAQフォーマット)</p></li>
