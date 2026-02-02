@@ -52,7 +52,7 @@
 | **MiniSEED / SAC** | `.mseed`, `.sac` | TS | 地震計等（ObsPy依存）で用いられる形式。 |
 | **WAV Audio** | `.wav` | TS | 音声データ。マイク録音等の解析に利用可能。 |
 | **NI TDMS** | `.tdms` | TS | **National Instruments** 製機器のデータ形式。 |
-| **Graphtec GBD** | `.gbd` | TS | **Graphtec** 製データロガーのバイナリ形式。 |
+| **Graphtec GBD** | `.gbd` | TS | **Graphtec** 製データロガーのバイナリ形式（アナログはレンジ換算、`Alarm/AlarmOut/Pulse*/Logic*` はステータス扱い）。 |
 | **Metronix ATS** | `.ats` | TS | **Metronix ADU** 製機器のデータ形式。 |
 | **Text / CSV** | `.txt`, `.csv`, `.dat` | TS | カンマまたはスペース区切りのテキストデータ。 |
 | **その他 / Others** | `.npy`, `.mat`, `.fits`, `.pkl`, `.ffl`, `.sdb` | TS | NumPy, MATLAB, FFL(Frame File List)等。 |

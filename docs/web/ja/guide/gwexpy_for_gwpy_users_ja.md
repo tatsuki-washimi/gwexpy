@@ -170,6 +170,9 @@ GWpyのスペクトログラムとQ変換に加えて、様々な時間周波数
 GWpyが標準サポートする形式に加え、以下に対応（または拡張）しています。
 *   `ATS` (Metronix MTデータ)
 *   `GBD` (GRAPHTEC データロガー)
+    *   アナログCHはヘッダのアンプレンジ（例: `20mV` 等）を用いて `count -> V` に換算します。
+    *   `Alarm` / `AlarmOut` / `Pulse*` / `Logic*` はデジタル/ステータスとして扱い、値を 0/1 に正規化し unit を dimensionless にします。
+    *   必要に応じて `TimeSeriesDict.read(..., format="gbd", digital_channels=[...])` でデジタル扱いするチャンネル名を上書きできます。
 *   `TDMS` (LabVIEW / NI)
 *   `MiniSEED`, `SAC`, `GSE2` (地震波データ, Obspy連携)
 *   `WIN` (地震波データ)

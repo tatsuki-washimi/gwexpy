@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
+from astropy import units as u
 from gwpy.io import registry as io_registry
 
 from gwexpy.io.utils import (
@@ -28,6 +29,7 @@ from gwexpy.io.utils import (
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 HEADER_SIZE_PATTERN = re.compile(r"HeaderSiz[e]?\s*[:=]\s*(\d+)", re.IGNORECASE)
+GBD_FULL_SCALE = 20000.0
 
 
 @dataclass
@@ -50,6 +52,7 @@ def read_timeseriesdict_gbd(
     *,
     timezone=None,
     channels: Iterable[str] | None = None,
+    digital_channels: Iterable[str] | None = None,
     unit=None,
     epoch=None,
     pad=np.nan,
@@ -93,15 +96,27 @@ def read_timeseriesdict_gbd(
     )
     if scale_arr.size != len(header.order):
         scale_arr = np.ones(len(header.order))
-    data = data * scale_arr
+
+    digital_set = (
+        {c.strip().upper() for c in digital_channels}
+        if digital_channels is not None
+        else _default_digital_channels(header.order)
+    )
 
     tsd = TimeSeriesDict()
     for idx, ch in enumerate(header.order):
+        raw_values = data[:, idx]
+        is_digital = ch.strip().upper() in digital_set
+        if is_digital:
+            channel_values = np.where(raw_values != 0, 1.0, 0.0)
+        else:
+            channel_values = raw_values * float(scale_arr[idx])
+        channel_unit = u.dimensionless_unscaled if is_digital else (unit or "V")
         ts = TimeSeries(
-            data[:, idx],
+            channel_values,
             t0=gps_start,
             dt=header.dt,
-            unit=unit or "V",
+            unit=channel_unit,
             channel=ch,
             name=ch,
         )
@@ -118,6 +133,8 @@ def read_timeseriesdict_gbd(
             "gap": "pad",
             "pad_value": pad,
             "channels": list(channels) if channels is not None else header.order,
+            "digital_channels": sorted(digital_set),
+            "digital_mode": "binarize" if digital_set else "none",
         },
     )
     return tsd
@@ -247,16 +264,108 @@ def _parse_dtype(raw: str) -> np.dtype:
 
 
 def _parse_scales(header_text: str, order: list[str]) -> list[float]:
+    amp_ranges = _extract_amp_ranges(header_text)
     scales = []
     for ch in order:
-        pattern = rf"{re.escape(ch)}.*?(?:Range|Scale)\s*[:=]\s*([0-9eE.+-]+)"
-        match = re.search(pattern, header_text, re.IGNORECASE | re.DOTALL)
-        if match:
-            with contextlib.suppress(Exception):
-                scales.append(float(match.group(1)))
-                continue
-        scales.append(1.0)
+        channel_key = ch.upper()
+        scale = _scale_from_amp_range(amp_ranges.get(channel_key))
+        if scale is None:
+            scale = _scale_from_header_field(header_text, ch)
+        scales.append(scale if scale is not None else 1.0)
     return scales
+
+
+def _extract_amp_ranges(header_text: str) -> dict[str, str]:
+    ranges: dict[str, str] = {}
+    in_amp_section = False
+    for raw_line in header_text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        if line.startswith("$"):
+            stripped = line.lstrip("$").strip()
+            in_amp_section = stripped.lower().startswith("amp")
+            continue
+        if not in_amp_section:
+            continue
+        match = re.match(r"^(CH\d+)\s*=\s*(.+)", line, re.IGNORECASE)
+        if not match:
+            continue
+        channel_name = match.group(1).upper()
+        fields = [field.strip() for field in match.group(2).split(",") if field.strip()]
+        if len(fields) >= 3:
+            ranges[channel_name] = fields[2]
+    return ranges
+
+
+def _scale_from_amp_range(range_str: str | None) -> float | None:
+    volts = _parse_range_volts(range_str)
+    if volts is None:
+        return None
+    return volts / GBD_FULL_SCALE
+
+
+def _parse_range_volts(range_str: str | None) -> float | None:
+    if not range_str:
+        return None
+    cleaned = range_str.strip().replace(" ", "").replace("±", "").replace("−", "-")
+    numbers = re.findall(r"[+-]?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?", cleaned)
+    if not numbers:
+        return None
+    try:
+        numeric = float(numbers[-1])
+    except ValueError:
+        return None
+    if numeric == 0:
+        return None
+    unit_match = re.search(r"[a-zA-Zμµ]+$", cleaned)
+    suffix = unit_match.group(0) if unit_match else ""
+    multiplier = _unit_multiplier(suffix)
+    if multiplier is None:
+        return None
+    return abs(numeric) * multiplier
+
+
+def _unit_multiplier(unit: str) -> float | None:
+    cleaned = (unit or "").replace("μ", "u").replace("µ", "u").lower()
+    if not cleaned:
+        return 1.0
+    if cleaned.endswith("v"):
+        prefix = cleaned[:-1]
+    else:
+        prefix = cleaned
+    if prefix in ("", "v"):
+        return 1.0
+    if prefix in ("m", "mv"):
+        return 1e-3
+    if prefix in ("u", "uv"):
+        return 1e-6
+    if prefix in ("k", "kv"):
+        return 1e3
+    return None
+
+
+def _scale_from_header_field(header_text: str, channel: str) -> float | None:
+    pattern = rf"{re.escape(channel)}.*?(?:Range|Scale)\s*[:=]\s*([0-9eE.+-]+)"
+    match = re.search(pattern, header_text, re.IGNORECASE)
+    if not match:
+        return None
+    with contextlib.suppress(Exception):
+        return float(match.group(1))
+    return None
+
+
+def _default_digital_channels(order: list[str]) -> set[str]:
+    digital: set[str] = set()
+    for ch in order:
+        key = ch.strip().upper()
+        if key in {"ALARM", "ALARMOUT"}:
+            digital.add(key)
+            continue
+        if key.startswith("PULSE") or key.startswith("LOGIC"):
+            digital.add(key)
+            continue
+    return digital
 
 
 def _read_data_block(fh, header: GBDHeader) -> np.ndarray:
