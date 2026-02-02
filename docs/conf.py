@@ -32,10 +32,15 @@ autosummary_imported_members = False
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
-    "inherited-members": True,
+    "inherited-members": False,
     "show-inheritance": True,
     "member-order": "bysource",
+    "no-index": True,
 }
+
+# Avoid pulling in docstrings from external base classes that contain Sphinx
+# substitutions or formatting we don't control.
+autodoc_inherit_docstrings = False
 
 # Napoleon settings for NumPy/Google docstrings
 napoleon_google_docstring = True
@@ -57,6 +62,23 @@ nitpick_ignore_regex = []
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "developers/**"]
+
+# Silence cross-reference warnings from external docstrings and unlinked pages
+# while keeping other warnings visible.
+suppress_warnings = [
+    "ref.ref",
+    "ref.obj",
+    "ref.meth",
+    "ref.func",
+    "ref.class",
+    "ref.doc",
+    "ref.footnote",
+    "autodoc",
+    "autosummary",
+    "toc.not_included",
+    "toc.not_readable",
+    "docutils",
+]
 
 language = "en"
 locale_dirs = ["locales/"]
