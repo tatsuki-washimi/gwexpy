@@ -187,11 +187,10 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
 
     References
     ----------
-    .. [1] Percival, D.B. & Walden, A.T., Spectral Analysis for Physical
-           Applications (1993), Ch. 7.3.2, Eq.(56)
-    .. [2] Bendat, J.S. & Piersol, A.G., Random Data (4th ed., 2010)
-    .. [3] Ingram, A. (2019), Error formulae for the energy-dependent
-           cross-spectrum
+    - Percival, D.B. & Walden, A.T., Spectral Analysis for Physical Applications
+      (1993), Ch. 7.3.2, Eq.(56)
+    - Bendat, J.S. & Piersol, A.G., Random Data (4th ed., 2010)
+    - Ingram, A. (2019), Error formulae for the energy-dependent cross-spectrum
 
     Parameters
     ----------

@@ -32,7 +32,6 @@ Spectrogram Class
       ~Spectrogram.percentile
       ~Spectrogram.ratio
       ~Spectrogram.filter
-      ~Spectrogram.resample
 
 Module Contents
 ---------------

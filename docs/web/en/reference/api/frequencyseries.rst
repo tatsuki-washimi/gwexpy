@@ -34,7 +34,6 @@ FrequencySeries Class
       ~FrequencySeries.angle
       ~FrequencySeries.phase
       ~FrequencySeries.filter
-      ~FrequencySeries.resample
 
 Module Contents
 ---------------
