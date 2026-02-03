@@ -13,6 +13,23 @@ from typing import TYPE_CHECKING, Any
 
 from astropy.utils.exceptions import AstropyWarning
 
+# -----------------------------------------------------------------------------
+# Compatibility: some minimal or newer gwpy builds used in docs/CI may lack
+# `gwpy.io.registry.register_reader`. Ensure the attribute exists so our IO
+# modules' registration calls don't explode during import.
+# -----------------------------------------------------------------------------
+try:  # pragma: no cover - defensive
+    import gwpy.io as _gwpy_io
+
+    _io_reg = getattr(_gwpy_io, "registry", None)
+    if _io_reg is not None and not hasattr(_io_reg, "register_reader"):
+        def _noop_register_reader(*_args, **_kwargs):
+            return None
+
+        _io_reg.register_reader = _noop_register_reader  # type: ignore[attr-defined]
+except Exception:
+    pass
+
 # Keep docs/tutorial output readable by suppressing known noisy warnings.
 warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
 warnings.filterwarnings("ignore", category=UserWarning, module="gwpy")
