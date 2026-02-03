@@ -15,19 +15,22 @@ from astropy.utils.exceptions import AstropyWarning
 
 # -----------------------------------------------------------------------------
 # Compatibility: some minimal or newer gwpy builds used in docs/CI may lack
-# `gwpy.io.registry.register_reader`. Ensure the attribute exists so our IO
-# modules' registration calls don't explode during import.
+# `gwpy.io.registry.register_reader` / `register_identifier`. Ensure the
+# attributes exist so our IO modules' registration calls don't explode during
+# import in stripped-down environments.
 # -----------------------------------------------------------------------------
 try:  # pragma: no cover - defensive
     import gwpy.io as _gwpy_io
 
     _io_reg = getattr(_gwpy_io, "registry", None)
-    if _io_reg is not None and not hasattr(_io_reg, "register_reader"):
+    if _io_reg is not None:
 
-        def _noop_register_reader(*_args, **_kwargs):
+        def _noop(*_args, **_kwargs):
             return None
 
-        _io_reg.register_reader = _noop_register_reader  # type: ignore[attr-defined]
+        for _name in ("register_reader", "register_identifier"):
+            if not hasattr(_io_reg, _name):
+                setattr(_io_reg, _name, _noop)  # type: ignore[attr-defined]
 except Exception:
     pass
 
