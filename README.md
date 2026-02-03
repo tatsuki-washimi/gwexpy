@@ -204,6 +204,16 @@ Note: GUI/IO sample fixtures are stored under `tests/sample-data/` and are not
 versioned in git. If you need to run the data-dependent tests locally, place the
 sample files under `tests/sample-data/gui/` (see the test paths for exact names).
 
+Optional stats dependencies note:
+- In CI we intentionally avoid optional packages that often require building from source.
+- If you want MIC-related functionality locally, conda/mamba is recommended:
+
+```bash
+mamba install -c conda-forge minepy mictools
+```
+
+(Package names can vary by platform/channel; adjust as needed.)
+
 ## Contributing
 
 Contributions are welcome! Please open issues or submit PRs on [GitHub](https://github.com/tatsuki-washimi/gwexpy).
