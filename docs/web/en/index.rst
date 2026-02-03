@@ -6,14 +6,20 @@ analysis utilities for time and frequency series.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Guide
+   :caption: User Guide
 
-   guide/installation
-   guide/quickstart
-   guide/getting_started
-   guide/scalarfield_slicing
-   guide/validated_algorithms
-   guide/tutorials/index
+   user_guide/installation
+   user_guide/quickstart
+   user_guide/getting_started
+   user_guide/scalarfield_slicing
+   user_guide/validated_algorithms
+   user_guide/tutorials/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Examples
+
+   examples/index
 
 .. toctree::
    :maxdepth: 2

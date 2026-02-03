@@ -1,0 +1,1575 @@
+Analysis of gravitational waves from binary neutron star merger by
+Hilbert-Huang transform
+Masato Kaneyama,1 Ken-ichi Oohara,2 Hirotaka Takahashi,3
+Yuichiro Sekiguchi,4 Hideyuki Tagoshi,1 and Masaru Shibata5
+1
+
+Department of Physics, Graduate School of Science,
+Osaka City University, Osaka 558-8585, Japan
+2
+Graduate School of Science and Technology, Niigata University, Niigata 950-2181, Japan
+3
+Department of Information and Management Systems Engineering,
+Nagaoka Uniersity of Technology, Nagaoka, Niigata 940-2188, Japan and
+Earthquake Research Institute, The University of Tokyo, Bunkyo-Ku, Tokyo 113-0032, Japan
+4
+Department of Physics, Toho University, Funabashi, Chiba 274-8510, Japan
+5
+Yukawa Institute for Theoretical Physics, Kyoto University, Kyoto 606-8502, Japan
+(Dated: January 15, 2016)
+Using the Hilbert-Huang transform (HHT), we analyze gravitational waves from late-inspiral,
+merger, and post-merger phases of binary neutron stars coalescence, computed by a general relativistic numerical simulation. The HHT analysis has been developed as a novel method for time
+series analysis of nonlinear and non-stationary data and it enables us to perform a high resolution
+time-frequency analysis of signals with strong frequency modulation, by evaluating the instantaneous variation of amplitude and frequency of data. It is found that temporal variation of frequency
+of post-merger waveforms can be evaluated within 5 % error if BNS coalescences occur within 10
+Mpc. This accuracy allows us to constrain the equation of state of neutron stars and to evaluate
+the radius of a fiducial neutron star of 1.8M⊙ with ∼ 1 km accuracy.
+PACS numbers: 95.55.Ym, 04.30.-w, 07.05.Kf
+
+I.
+
+INTRODUCTION
+
+The coalescence of binary neutron stars (BNSs) is
+one of the most promising sources for the groundbased gravitational wave detectors, such as Advanced LIGO [1], Advanced Virgo [2] and KAGRA [3]. The observation of gravitational waves
+(GWs) from the coalescence of BNSs will lead to
+constraining the equation of state (EOS) of the neutron stars (NSs) and examining the hypothesis of
+the central engine of short γ-ray bursts. The detection rate of such events for the ground-based gravitational wave detectors is estimated to be 4-400 yr−1
+by theoretical and statistical studies [4].
+The EOS of high-density nuclear matter for NSs
+is still poorly known. Under assumptions that a NS
+is in cold, spherically symmetric, general relativistic, hydrostatistic equilibrium, there is one-to-one
+correspondence between the EOS and mass-radius
+relation of NSs [5]. Therefore, the EOS will be constrained, if the mass and radius of NSs are evaluated
+through the observation of GWs from coalescences
+of BNS.
+Many hypothetical EOSs have been proposed from
+the theoretical study of nuclear physics. Each EOS
+is characterized by the maximum mass of neutron stars. Recently, NSs of high mass such as
+1.97 ± 0.04M⊙ [6] and 2.01 ± 0.04M⊙ [7] were discove through electromagnetic observations. These
+discoveries suggest that the EOS of NSs must predict the maximum mass greater than 2M⊙ .
+Recently, the gravitational waveforms from the
+coalescences of BNS and dynamics of post-merger
+phase have been explored in detail by general rela-
+
+tivistic numerical simulations (e.g., [8–13]). These
+gravitational waveforms reflects mass and the EOS
+of NSs as well as the dynamics of the BNS merger [8–
+13]. A black hole is promptly formed after the coalescences for soft EOSs or for high-mass BNS, while
+a massive neutron star (MNS) is formed after the
+coalescences for stiﬀ EOSs or for low-mass BNS. We
+note that the mass of MNS can be heavier than the
+maximum mass of spherical NSs, since MNSs formed
+after the coalescences are supported by thermal pressure and the centrifugal force resulting from rapid
+and diﬀerential rotation.
+Previous studies [10–12] have suggested the possible presence of a relation between the radius of a
+fiducial NS and the peak frequency in the Fourier
+spectrum of GWs from MNSs. Thus if we can determine the peak frequency of GWs, the radii of a
+fiducial NS will be constrained, leading to a strong
+constraint of the EOS of NSs. This information allow us to constrain the EOS of NSs.
+The Hilbert-Huang transform (HHT), which consists of an empirical mode decomposition followed by
+the Hilbert spectral analysis, have been developed
+recently by Huang et al. [14–16]. Compared with
+the Fourier decomposition and wavelet decomposition, the empirical mode decomposition approach
+has an advantage for analyzing the non-stationary
+and non-linear data since it decomposes the signal
+into intrinsic mode functions based on the time scale
+of the signal itself with adaptive nature. The HHT is
+not limited by time-frequency uncertainty and thus
+it provides a high resolution time-frequency analysis.
+The HHT is a promising powerful tool to extract
+the informations from the gravitational waveforms.
+
+2
+Applications of the HHT to the data analysis of
+GWs, mainly from burst sources including supernovae and coalescence of supermassive black holes,
+have already been proposed in Refs. [17–22]. It could
+also be a powerful tool for analyzing GWs from
+the BNS coalescences, in particular for the merger
+and post-merger phases. Thus, in this paper, we
+describe a method for analyzing GWs from lateinspiral, merger, and post-merger phases of BNSs
+using the HHT.
+The paper is organized as follows. In Sec. II, we
+briefly review the Hilbert-Huang transform. In Sec.
+III, we briefly describe the numerical waveforms that
+we employ in this paper. In Sec. IV, the results of
+the HHT analysis are shown and the implication of
+the results is discussed. In Sec. V, we discuss the
+accuracy of derived instantaneous frequency of GWs
+from MNS. Section VI is devoted to a summary.
+
+II.
+
+(B) At any data point, the mean values of the upper and the lower envelopes defined by using
+the local maxima and minima, respectively,
+have to be zero.
+These empirical conditions indicate that the data
+have a vertical symmetry around zero point. However, the observational data s(t) do not generally
+satisfy these conditions. Thus the observational data
+s(t) should be decomposed by using the EMD. When
+using the EMD, we implicitly assume that, at any
+given time, the data may have many coexisting oscillatory modes of significantly diﬀerent frequencies,
+one superimposed on the other. For each of these
+modes, we define an IMF that satisfies the IMF condition. With the definition of the IMF, we can thus
+decompose any data through the EMD, which, in a
+sense, is a sifting process using a series of high-pass
+filters. The outline of this algorithm is summarized
+as follows and Fig. 1 shows a schematic example of
+this procedure.
+
+THE HILBERT-HUANG TRANSFORM
+
+Algorithm Empirical Mode Decompotion (EMD)
+In this section, we briefly review the HHT. The
+HHT analysis consists of two parts. The first one
+is the Empirical Mode Decomposition (EMD), in
+which the time series data are decomposed into intrinsic mode functions (IMFs). This is just a preconditioning for the next step. In the second part of
+the HHT, the Hilbert transform is applied to each
+IMF, and we obtain an analytic complex representation of each IMF. From this, we derive the instantaneous frequency (IF) and the instantaneous amplitude (IA) of each IMF. This part is called the Hilbert
+spectrum analysis (HSA). The IF and IA provide a
+time-frequency representation of data that is wellsuited for resolving nonlinear and transient feature
+of the original data.
+We assume that the input s(t) is given by sampling
+a continuous signal at discrete time series, tj = j∆t
+for j = 0, 1, · · · , N − 1, where N is the number of
+data points and ∆t is the sampling interval.
+
+A. Empirical Mode Decomposition and
+Ensemble empirical mode decomposition
+1.
+
+Empirical Mode Decomposition
+
+For any time-series data, it is known that the
+Hilbert transform of the data does not always yield
+physically meaningful results. Huang et al. [15]
+showed that the IA and IF have physically meaningful results, if the time-series data satisfy the following conditions (hereinafter referred to as the IMF
+condition):
+(A) For all data sets, the number of extrema and
+the number of zero crossings have to either be
+identical or diﬀer at most by one.
+
+procedure EMD(s(t))
+s1 (t) ⇐ s(t)
+i⇐1
+while si (t) includes osillatory modes do
+▷ See Note1 below.
+g(t) ⇐ si (t)
+repeat
+gmax [j] ⇐ local maxima of g(t)
+(Fig. 1a)
+gmin [j] ⇐ local minima of g(t)
+U (t) ⇐ the upper envelope joining gmax [j]
+L(t) ⇐ the lower envelope joining gmin [j]
+using cubic splines, respectively
+m(t) ⇐ (U (t) + L(t))/2
+(Fig. 1b)
+g(t) ⇐ g(t) − m(t)
+(Fig. 1c)
+until StopCr(g(t), m(t))
+ci (t) ⇐ R(t)
+[the i-th IMF]
+(Fig. 1d)
+si+1 (t) ⇐ si (t) − ci (t)
+i⇐i+1
+end while
+r(t) ⇐ si (t)
+[the residual]
+end procedure
+function StopCr(g(t), m(t))
+if a stoppage criterion is satisfied then
+▷ See Note2 below.
+return true
+else
+return false
+end if
+end function
+Note1: The decomposition completes when si (t) becomes monotonic or has only one extremum.
+Note2: The sifting process stops if the IMF condition
+is satisfied. See also the text below.
+
+The above procedures are summarized as follows.
+In the beginning, we set g(t) = s1 (t) = s(t), using
+the original data. Then the EMD procedure is performed identifying all the local extrema (Fig. 1a).
+
+3
+
+a
+
+b
+
+Time
+
+Time
+
+c
+
+d
+
+Time
+
+Time
+
+FIG. 1. Outline of EMD sifting algorithm and schematic example. Note that the magnitude of the vertical axis
+gradually decreases in each step.
+
+The local maxima and minima are connected by cubic splines to form the upper envelope U (t) and the
+lower envelope L(t), respectively (Fig. 1b). All data
+are usually encompassed between them. Let their
+mean m(t) = (U (t) + L(t))/2 and update g(t) by
+subtracting it from g(t) to obtain the first protomode; g(t) = g(t) − m(t) (Fig. 1c). The mean m(t)
+contains the DC oﬀset and componets in a low frequency band of the signal, and therefore g(t) is expected to satisfy the IMF condition. However, that
+is usually not the case, but iteration of the above
+procedure is necessary if g(t) still contains two or
+more oscillatory componets. Finally, g(t) becomes
+the IMF1, c1 (t) = g(t), if the IMF condition is satisfied approximately after several iterations (Fig. 1d).
+In practice, these conditions are not satisfied precisely. Thus, we have to define an approximate criterion for stopping the interaction procedure. This
+is controlled by a stoppage criterion. Several diﬀerent types of stoppage criteria have been adopted. In
+this paper, we use a criterion determined by using
+the Cauchy type of convergence test, which was used
+in [15]:
+N∑
+−1
+
+|m(tj )|2
+
+j=0
+N∑
+−1
+
+< ϵ,
+
+(1)
+
+|g(tj )|2
+
+j=0
+
+with a predetermined value ϵ.
+The first IMF1 c1 (t) should contain the finest scale
+or the shortest-period oscillation in the signal. It
+will be subtracted from the original data to obtain
+the residual s2 (t) = s1 (t) − c1 (t), which contains
+the longer-period oscillations. It is then treated as a
+new data source and subject to the same process of
+
+EMD as described above to obtain the IMF of the
+next lowest frequency.
+The procedure is iteratively applied to all subsequent si (t). The decomposition process finally stops
+when the residual, sn+1 (t), becomes monotonic or
+has only one extremum, from which no more IMF
+can be extracted. Then the original data are decomposed into
+∑n n IMFs and a residue, r(t) = sn+1 (t);
+s(t) =
+i=1 ci (t) + r(t). The residue r(t) can be
+either the adaptive local median or trend. In practice, numerical errors occasionally prevent the residual sn+1 (t) from being monotonic and thus the decomposition process is ceased if the residual becomes
+much smaller than previous IMFs.
+
+2.
+
+Ensemble empirical mode decomposition
+
+In the original form of EMD, however, mode mixing often occurs when either a single IMF consists of
+signals of widely disparate scales, or when signals of
+a similar scale reside in diﬀerent IMF components.
+To mitigate this eﬀect, Wu and Huang [23] proposed
+ensemble EMD (EEMD), which defines the true IMF
+components as the mean of an ensemble of trials,
+each consisting of the signal plus a white (Gaussian)
+noise of finite standard deviation (finite amplitude).
+The EEMD algorithm is composed of the following
+steps:
+(i) Add a white (Gaussian) noise with the standard deviation σe to the orignal data s(t).
+(ii) Decompose the data with the white noise into
+IMFs.
+
+4
+(iii) Repeat steps (i) and (ii) for several times but
+with a diﬀerent white Gaussian noise series at
+each time.
+(iv) Obtain the ensemble means for the series of
+the obtained IMFs of the decompositions. The
+number of trials, Ne , has to be larger than 100.
+In the algorithm of EMD/EEMD, some predeterminant parameters such as ϵ, σe and Ne exist.
+The method of setting the parameters is discussed
+in [20]. The EMD/EEMD parameters are used in
+this paper will be shown in Table II.
+B.
+
+Hilbert Spectral Analysis
+
+The HHT can provide a time-frequency-energy
+paradigm of data. In this approach, the nonlinearity and nonstationarity can be extracted in a better
+manner than in the traditional paradigm of constant
+frequency and amplitude. For instance, the nonstationarity can be found directly from the IF and IA
+(see below). This is the reason that the Hilbert Spectral Analysis (HSA) was included as a part of the
+HHT.
+The Hilbert transform of a function u(t) is defined
+as
+( )
+∫ ∞
+1
+1
+u(τ )
+v(t) = P
+dτ = u(t) ∗
+,
+(2)
+π
+t
+−
+τ
+πt
+−∞
+where P and ∗ denote taking the Cauchy principal
+value of the singular integral and the convolution, respectively. If a function u(t) belongs to the Lebesgue
+space Lp for 1 < p < ∞, the Hilbert transform is
+well-defined and g(t) = u(t) + iv(t) is the boundary
+value of a holomorphic function g(z) = a(z)eiθ(z)
+in the upper half-plane [24, 25]. Then the instantaneous amplitude Ainst (t), and the instantaneous
+phase function θinst (t) are defined by
+√
+Ainst (t) = u(t)2 + v(t)2 ,
+(3)
+}
+{
+v(t)
+.
+θinst (t) = tan−1
+(4)
+u(t)
+The instantaneous frequency Finst (t), is defined as
+1 dθinst (t)
+2π
+dt
+(
+)
+1
+dv(t)
+du(t)
+=
+u(t)
+−
+v(t)
+.
+(5)
+2πAinst (t)2
+dt
+dt
+
+Finst (t) =
+
+We emphasize that the meaning of the IF, which is
+a function of time, is very diﬀerent from that of the
+Fourier frequency, which is constant by definition.
+Indeed, as the IF is a continuous function, it can
+reflect a modulation of a base frequency over a small
+fraction of the base wave cycle.
+Through EMD/EEMD, we obtain the IMFs ci (t)
+(real part). From Eq.(2), we can obtain the imaginary part, or the conjugate function, of each ci (t).
+
+TABLE I. Waveform models. Duration (the fifth column) denotes the time duration for the emission of quasiperiodic gravitational waves from the MNS.
+Model EOS Mmax [M⊙ ] MNS [M⊙ ] Duration[msec]
+H135 Hyperon
+1.8
+1.35
+11
+H15 Hyperon
+1.8
+1.5
+3
+S135 Shen
+2.2
+1.35
+> 25
+S15
+Shen
+2.2
+1.5
+> 25
+S16
+Shen
+2.2
+1.6
+9
+
+Therefore, the HSA derives Ainst,i (t) and Finst,i (t),
+of each IMF ci (t). Through this procedure, the HHT
+to allows extract instantaneous time-frequency and
+time-amplitude trajectories. This time-frequencyamplitude map (HHT map) allows for a high resolution time-frequency analysis of waveforms with
+strong frequency modulation.
+
+III.
+
+SETUP FOR SIMULATION
+
+In this section, we explain the setup for our data
+analysis simulation. We prepare the simulated timeseries data of Advanced LIGO by combining Gaussian noise with a gravitational waveform from lateinspiral, merger, and post-merger phases of BNS
+computed by numerical-relativity simulations.
+
+A.
+
+Gravitational waveform from late-inspiral,
+merger and post-merger phase of BNS
+
+We choose 5 gravitational waveforms computed
+by Sekiguchi et al. [9, 27]. These gravitational
+waveform were computed for NSs of two finitetemperature EOSs: EOS including contributions of
+Λ hyperons (Hyp-EOS) [26] and a purely nucleonic EOS (Shen-EOS). The maximum masses of
+zero-temperature spherical NSs for Hyp-EOS and
+Shen-EOS are Mmax,Hyp ≃ 1.8M⊙ and Mmax,Shen ≃
+2.2M⊙ , respectively. Gravitational waveforms were
+computed only for symmetric binaries with MNS ≡
+M1 = M2 = 1.35M⊙ and 1.5M⊙ for Hyp-EOS (refered to as H135 and H15) and Shen-EOS (S135 and
+S15), and MNS = 1.6M⊙ for Shen-EOS (S16). The
+parameters of the models used in this paper are
+shown in Table I.
+The waveforms consist of three parts: the late
+inspiral waveform, the merger waveform, and the
+post merger waveform. Gravitational waves from the
+late inspiral phase are essentially identical with each
+other for the models with Hyp-EOS and Shen-EOS
+for the same mass. The waveforms in the merger and
+post-merger phases depends strongly on the total
+mass of binaries and the EOS. For all models used in
+this paper, a MNS is formed and the quasi-periodic
+gravitational waves from the remnant MNS are emit-
+
+5
+ted. Since the MNSs collapse to a black hole before
+relaxing to a stationary spheroid, the amplitude of
+quasi-periodic gravitational waves damps steeply at
+the black hole formation for H135 and H15. The
+frequency of gravitational wave increases with time
+for H135 and H15 (Hyp-EOS models) [9], while it
+is approximately constant (around 2 kHz) for S135,
+S15 and S16 (Shen-EOS).
+Detailed description of general relativistic numerical simulations and gravitational waveforms used in
+this paper are found in [9, 27].
+
+TABLE II. EEMD parameters.
+Model
+H135
+H15
+S135
+S15
+S16
+
+IV.
+B.
+
+Simulation data
+
+We use the simulated time-series noise data of
+Advanced LIGO. With a sensitivity curve of Advanced LIGO (the zero-detuned, high-power sensitivity curve [28]), we produce the simulated Gaussian noise in frequency domain. The sampling frequency is set to fs = 1/∆t = 16384Hz and the
+frequency range of the detector noise is set to be
+from 20 Hz to 8182 Hz. Time-series noise data, n(t),
+is produced by the inverse Fourier transform of the
+simulated noise in frequency domain.
+The hypothetical observational data s(t) is produced by injecting the GW signal h(t) into the Gausian noise n(t); s(t) = h(t) + n(t), where h(t) can
+be expressed in terms of antenna pattern functions
+F+ (⃗es (t)) and F× (⃗es (t)), which depend on the direction of the source ⃗es (t) = (θs (t), ϕs (t)), as well
+as polarizations components h+ (t) and h× (t) of the
+GWs as
+h(t) = F+ (⃗es (t))h+ (t) + F× (⃗es (t))h× (t).
+
+(6)
+
+In this paper, we set F+ (⃗es ) = 1 and F× (⃗es ) = 0,
+for simplicity. Figure 2 shows an example of data
+s(t), where the H135 GW signal at a hypothetical
+distance of 5 Mpc is injected into the simulated timeseries noise data of Advanced LIGO.
+
+8
+
+Injected signal + Noise
+Injected signal
+
+6
+
+1021 h+
+
+4
+2
+0
+−2
+−4
+−6
+−8
+
+−10
+
+−5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+15
+
+FIG. 2. Example of data s(t). The black curve denotes
+signal h(t) plus noise n(t) and the green curve denotes
+the injected signal (H135) at 5 Mpc, where tmerge approximately denotes the time at which two stars come
+into contact.
+
+ϵ
+10−6
+10−4
+10−4
+10−6
+10−2
+
+σe
+0.5
+0.5
+0.5
+0.5
+1.0
+
+Ne
+200
+200
+200
+200
+200
+
+RESULTS OF HHT
+
+In this section, we present the results of HHT analysis of the simulation data described in Sec.III.
+
+A.
+
+IMF, IA and IF
+
+First, we apply the EEMD to each data set with
+the signal described in Sec.III B. For each of IMFs,
+we compute the IA and IF with HSA.
+The values of EEMD parameters, which were discussed in Sec.II A 2, are summarized in Table II.
+In Fig.3, we show the results of HHT for the H135
+GW signal at a hypothetical distance of 5 Mpc injected in Advanced LIGO noise. In this case, the
+data is decomposed into 8 IMFs, but those only
+from IMF1 to IMF6 are plotted, since it is clear that
+no GW signal is included in IMF7 and IMF8. The
+upper panel in each figure box shows ci (t) as the
+red curve and the injected signal as the dashed blue
+curve. The IA is plotted in the middle panel of each
+figure box, while the bottom panel shows the IF as
+the red curve, and the frequency of the injected signal as the dashed blue curve.
+From this figure it is recognized that the IFs of
+IMF4 and IMF5, Finst,4 and Finst,5 , clearly capture
+the frequency modulation in the late-inspiral phase
+from −8 ms to 0 ms, even though the signal is split
+into two IMFs and each IA, Ainst,4 and Ainst,5 , is
+therefore smaller than the amplitude of the injected
+signal. The signal during this phase will be reconstructed more closely by adding the IMF4 and IMF5
+together. Signals with frequency band of 500 Hz or
+below would appear in IMF6 and higher IMFs, if we
+used a longer-term waveform including earlier inspiral components. A significant decrease in Ainst,4 is
+observed at t = tmerge and thus we may determine
+the merger time with reasonable accuracy. In any
+case, however, the matched filter method should attain higher accuracy than HHT for analysis of chirp
+signals in the inspiral phase.
+IMF3 from 0 ms to 10 ms, on the other hand,
+captures the signal emitted from the MNS formed
+after the merger, while some portion of the signal
+is allotted to IMF2, especially in the later stage.
+The IF of IMF3, Finst,3 , agrees substantially with
+that of the injected signal. However, Finst,3 stays in
+the same frequency band even after the black hole
+
+4
+21
+
+10 c2
+
+4
+2
+0
+-2
+-4
+
+2
+0
+8
+6
+4
+2
+0
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+1
+0
+6
+4
+2
+-10
+4
+
+2
+
+2
+
+21
+
+0
+-2
+
+-5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+15
+
+0
+-2
+-4
+
+1021Ainst,4
+
+Injected signal
+IMF3
+
+3
+2
+1
+0
+4
+3
+2
+1
+0
+
+Finst,4 (kHz)
+
+1021Ainst,3
+Finst,3 (kHz)
+
+2
+
+4
+
+-10
+
+-5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+2
+1
+0
+4
+3
+2
+1
+0
+-10
+
+4
+
+4
+
+2
+
+2
+
+21
+
+0
+
+Injected signal
+IMF4
+
+3
+
+15
+
+10 c6
+
+1021c5
+
+Injected signal
+IMF2
+
+3
+
+15
+
+-4
+
+-2
+-4
+
+-5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+15
+
+0
+-2
+-4
+
+1021Ainst,6
+
+Injected signal
+IMF5
+
+3
+2
+1
+0
+4
+3
+2
+1
+0
+
+Finst,6 (kHz)
+
+1021Ainst,5
+
+0
+-2
+
+0
+-5
+
+10 c4
+
+1021c3
+
+1021Ainst,2
+
+4
+
+-10
+
+Finst,5 (kHz)
+
+2
+
+-4
+Injected signal
+IMF1
+
+6
+
+Finst,2 (kHz)
+
+Finst,1 (kHz)
+
+1021Ainst,1
+
+1021c1
+
+6
+
+-10
+
+-5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+15
+
+Injected signal
+IMF6
+
+3
+2
+1
+0
+4
+3
+2
+1
+0
+-10
+
+-5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+15
+
+FIG. 3. A result of HHT. GW signal H135 at a hypothetical distance of 5 Mpc injected in Advanced LIGO noise is
+used. The upper panel in each figure box shows the IMF ci (t) (red curve) as well as the injected H135 waveform
+(dashed blue curve). The middle panel shows the IA of corresponding IMF. The bottom panel shows the IF of the
+corresponding IMF (red curve) as well as the frequency of injected signal (dashed blue curve).
+
+formation. During this period, IMF3 captures the
+noise in that frequency band. As for the IA, Ainst,3
+is decreases gradually even before the black hole formation. Therefore it is diﬃcult for the HHT to determine when the black hole is formed.
+Based on the obtained IFs and IAs, we plot the
+time-frequency-amplitude map, which we call the
+HHT map, in the left of Fig. fig:tfmap. In this figure, we use the time resolution ∆t = 1/16384 s and
+frequency resolution ∆f = 20 Hz, respectively. The
+frequency evolution can be seen clearly and it agrees
+approximately with that of the injected signal.
+We show the HHT map and its enlargement for
+S15 in the right of Fig.4. We also plot the Finst,3 in
+
+the post-merger phase for H135 and S15 as functions
+of time in Fig.5.
+
+As already pointed out in [9] and discussed in
+Sec.III A, the frequency of GWs from MNS increases
+with time for Hyp-EOS, while the frequency is approximately constant (besides a periodic oscillation)
+for Shen-EOS. Fig.5 indeed shows that the IF of
+H135 increases overall until 10 ms, while the IFs of
+S15 is essentially constant until 12 ms, when a black
+hole is formed. We may therefore distinguish the difference of the frequency evolution between Hyp-EOS
+models and Shen-EOS models.
+
+7
+
+3.0 × 10−21
+4
+
+2.5 × 10−21
+
+3
+
+2.0 × 10−21
+
+2
+
+1.5 × 10−21
+1.0 × 10−21
+
+Finst (kHz)
+
+Finst (kHz)
+
+4
+
+3.0 × 10−21
+
+1
+
+2.5 × 10−21
+
+3
+
+2.0 × 10−21
+
+2
+
+1.5 × 10−21
+1.0 × 10−21
+
+1
+0.5 × 10−21
+
+0.5 × 10−21
+
+0
+
+0
+−5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+−10
+
+15
+
+−5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+15
+
+3
+
+3.0 × 10−21
+
+3
+
+3.0 × 10−21
+
+2.8
+
+2.5 × 10−21
+
+2.8
+
+2.5 × 10−21
+
+2.6
+
+2.0 × 10−21
+
+2.6
+
+2.0 × 10−21
+
+2.4
+
+1.5 × 10−21
+
+2.4
+
+1.5 × 10−21
+
+2.2
+
+1.0 × 10−21
+
+2
+
+Finst (kHz)
+
+Finst (kHz)
+
+−10
+
+2.2
+
+1.0 × 10−21
+
+2
+0.5 × 10−21
+
+1.8
+
+0.5 × 10−21
+1.8
+
+2
+
+4
+
+6
+
+8
+
+t − tmerge (ms)
+
+10
+
+12
+
+2
+
+4
+
+6
+
+8
+
+t − tmerge (ms)
+
+10
+
+12
+
+FIG. 4. Time-frequency-amplitude map (HHT map). The color bar denotes the value of the IA. The GW signal
+H135 (left top) and, S15 (right top) at a hypothetical distance of 5 Mpc are used. The left and right bottom figures
+are the enlargement of left and right top figures, respectively.
+
+2.7
+
+H135
+S15
+
+Finst, 3 (kHz)
+
+2.6
+2.5
+2.4
+2.3
+2.2
+2.1
+2.0
+2
+
+4
+
+6
+
+8
+
+t − tmerge (ms)
+
+10
+
+12
+
+FIG. 5. Finst,3 for H135 (solid red curve) and S15 (dashed
+blue curve), as functions of time in post-merger phase.
+
+B.
+
+Statistical error
+
+Since we generate the detector noise n(t) with a
+Gaussian random variate, the results of the analysis
+will be changed even for the same injected signal, if a
+diﬀerent seed of random numbers is used. Since the
+(E)EMD is a data-driven decomposition method, the
+results of the HHT may be aﬀected by the diﬀerent
+realization of noise. Therefore, we investigate the
+statistical property of the results of the HHT. We
+perform the HHT for 1000 samples, each of which
+is generated by adding a Gaussian random variate
+with a diﬀerent seed.
+
+The result for H135 signal at a hypothetical distance of 5 Mpc is shown in Fig.6. Each of top panels
+shows the mean value of the IA for corresponding
+IMF as the red curve and it’s standard deviation
+(±1σ) as the green shaded region. In each of bottom panels, we plot the mean value of the IF (red
+curve) for corresponding IMF, it’s standard deviation (±1σ) (green shaded region) as well as the frequency of the injected signal (dashed blue curve),
+which is computed from h+ (t) and h× (t) obtained
+by numerical-relativity simulations.
+We find that the standard deviation of the IF is
+smaller in the period when the IA of the corresponding IMF is larger. We also find that the Finst,3 from
+0 ms to 10 ms agrees with the frequency of FWs emitted after the merger very well. Similarly, the Finst,4
+from −10 ms to 0 ms agrees with the frequency of
+GWs emitted in the late inspiral and the IF of Finst,5
+from −10 ms to −5 ms agrees with the frequency of
+the first half of the late inspiral. On the other hand,
+the standard deviation of the IF of each IMF are
+large when there exists only noise.
+For other injected signals given in Table I, we generally obtained the similar results to those discussed
+in Sec. IV A and Sec.IV B.
+
+C.
+
+Characteristics of frequency evolution
+
+From the discussion in Sec. IV A, we may distinguish the diﬀerence of the frequency evolution be-
+
+8
+
+1σ
+Injected signal
+IMF2
+
+1021Ainst
+
+2
+1
+
+1
+0
+
+4
+
+4
+
+3
+2
+1
+
+3
+2
+1
+0
+
+-10
+
+-5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+15
+
+1σ
+Injected signal
+IMF4
+
+-10
+
+-5
+
+0
+
+2
+1
+
+4
+
+Finst (kHz)
+
+4
+
+1
+0
+
+15
+
+1σ
+Injected signal
+IMF5
+
+1
+0
+
+2
+
+10
+
+2
+
+0
+
+3
+
+5
+
+t − tmerge (ms)
+
+3
+
+1021Ainst
+
+3
+
+1021Ainst
+
+2
+
+0
+
+0
+
+Finst (kHz)
+
+1σ
+Injected signal
+IMF3
+
+3
+
+Finst (kHz)
+
+Finst (kHz)
+
+1021Ainst
+
+3
+
+3
+2
+1
+0
+
+-10
+
+-5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+15
+
+-10
+
+-5
+
+0
+
+5
+
+t − tmerge (ms)
+
+10
+
+15
+
+FIG. 6. Example of statistical property of the IA and IF. The GW signal H135 at a hypothetical distance of 5 Mpc is
+used. Each upper panel shows the mean of IA (red curve) of corresponding IMF and it’s i standard deviation (±1σ)
+(green shaded region). Each bottom panel shows the mean IF of the corresponding IMF (red curve) and it’s standard
+deviation (±1σ) (green shaded region) as well as the frequency of the injected signal (dashed blue curve).
+
+tween Hyp-EOS models and Shen-EOS models. In
+this subsection, we characterize the frequency evolution by using the linear regression.
+We make the linear regression for Finst,3 using the
+least squares method with weights :
+(7)
+
+with the fitting time range from 3 ms to 11 ms for
+H135 and from 3 ms to 12 ms for S15, respectively.
+The coeﬃcient of β1 and β2 are the intercept and
+gradient, respectively. The frequency evolution are
+characterized with the gradient β2 .
+Using the results in Sec. IV B, we perform the fitting to evaluate the coeﬃcient β2 from 1000 samples. Fig.7 shows the distribution of β2 for H135
+(purple region) and S15 (green region). The mean
+and the standard deviation of β2 become: (40.3 ±
+18.7) Hz/ms for H135 and (5.4 ± 12.2) Hz/ms for
+S15. From these results, we can confirm that Finst,3
+increases with time for H135, while Finst,3 is approximately constant for S15. This fact suggests the possibility that we can distinguish the EOS from the
+evolution of the IF of MNS by using the HHT analysis. Note, however, that since the distribution of β2
+
+����
+
+����
+���
+
+����
+����
+���������
+
+Finst,3 (t) = β1 + β2 t,
+
+for H135 and S15 overlap each other in Fig.7, there is
+possibility that we can not distinguish the frequency
+evolution clearly at this distance.
+
+����
+���
+���
+���
+���
+��
+
+���
+
+���
+
+��
+
+���
+���
+����������
+
+���
+
+���
+
+����
+
+FIG. 7. Distribution of β2 for H135 (purple region) and
+S15 (green region).
+
+9
+ACCURACY OF THE FREQUENCY
+EVOLUTION
+
+Now we focus on the GWs emitted in the merger
+and post-merger phases. A MNS is formed after the
+merger for the models considered in this paper. We
+now examine how accurately we can measure the
+GW frequency from MNS with the HHT.
+In order to evaluate the measurement accuracy of
+the IF of GWs from MNS, we define [20]
+[
+]
+WTSS Finst,i (t) − Fsignal (t)
+[
+]
+,
+(8)
+δ = 100 ×
+WTSS Fsignal (t)
+
+H135
+S135
+S15
+S16
+
+10
+7.5
+δ (%)
+
+V.
+
+5
+2.5
+0
+0
+
+5
+
+10
+
+15
+
+20
+
+Distance (Mpc)
+
+[
+] ∑
+2
+WTSS Finst (t) =
+A2inst (tj )Finst
+(tj ),
+
+(9)
+
+j
+
+where Fsignal (t) is the frequency of the injected signal.
+We evaluate δ by using the IF and IA of IMF c2 or
+c3 for each model listed in Table I. In Table III, we
+show the mean value of δ and the standard deviation
+for an event at a distance of 10 Mpc. The mean
+values and the standard deviation of δ are plotted
+as functions of the source distance in Fig.8.
+We find that if the time duration of quasi-periodic
+GWs emitted from the MNS is long enough, the frequency modulation can be evaluated with good accuracy for Hyp-EOS and Shen-EOS cases. For example, although for H15, δ is about 30% at 10 Mpc, δ
+is less than 5% for other models. This diﬀerence can
+be explained from the duration of the quasi-periodic
+GWs emitted from MNS in Table I.
+In the previous study [12], the relation between
+the peak frequency of the Fourier spectrum fpeak and
+the radius parameter R1.8 , which is the radius of a
+cold, spherical neutron star of mass 1.8M⊙ in general
+relativistic hydrostatic equilibrium, was discussed.
+It is given as
+(
+
+(R1.8 /km) − 2
+fpeak = (4.0±0.3) kHz
+8
+
+)−3/2
+. (10)
+
+TABLE III. The value of δ ± 1σ for an event at a hypothetical distance of 10 Mpc. Range (the third column)
+denotes the time duration of summation in Eq.(9).
+Model IMF Range [ms]
+
+δ ± 1σ [%]
+
+H135
+
+3
+
+[ 2, 11 ]
+
+2.4 ± 1.2
+
+H15
+
+3
+
+[ 2, 3 ]
+
+29.6 ± 8.5
+
+S135
+
+3
+
+[ 2, 12 ]
+
+3.0 ± 3.6
+
+S15
+
+3
+
+[ 2, 12 ]
+
+1.0 ± 0.6
+
+S16
+
+2
+
+[ 2, 9 ]
+
+2.0 ± 0.8
+
+FIG. 8. The value of δ as a functions of the source distance. The marks mean the value of δ for 1000 realizations and the error bars are its standard deviation.
+
+The peak frequency fpeak can be evaluated from
+the time integration of the IF. For models other than
+H15, since δ is the square-sum of diﬀerence between
+the IF of IMF and the injected signal, the measurement error of fpeak may be much smaller than
+the value of δ. By using fpeak − R1.8 relation given
+by Eq.(10), the measurement accuracy of the IF is
+transformed into the accuracy of R1.8 within a few
+hundred meters.
+
+VI.
+
+SUMMARY
+
+We performed the HHT analysis of GWs emitted from the late-inspiral, merger, and post-merger
+phases of coalescence of BNSs. We used the waveforms computed by general relativistic numerical
+simulations and the simulated time-series noise data
+of Advanced LIGO. From the results of the HHT
+analysis, we found that the frequency evolution can
+be seen clearly on the time-frequency map, and that
+the frequency evolution agrees with that of the injected signals. As pointed out in [9] and discussed in
+Sec.III A, the frequency of GWs from MNS increases
+with time for Hyp-EOS, while the frequency is overall unchanged for Shen-EOS. We confirmed that we
+can distinguish the diﬀerence of the frequency evolution between Hyp-EOS models and Shen-EOS models in Sec.IV A and Sec. IV C. This fact suggest a
+possibility that we may be able to distinguish the
+EOS from the evolution of the IF of MNS by using
+the HHT analysis.
+We also investigated the statistical property of the
+measurement accuracy of the IF for each of injected
+signals. We found that for models in which MNS
+signals last for 10 ms or more, the frequency modulation can be evaluated with error less than 5% for an
+event at a distance of 10 Mpc. These results suggest
+that we can evaluate the radius parameter R1.8 with
+accuracy within a few hundred meters if a nearby
+
+10
+(lucky) event is detected by Advanced LIGO.
+The peak frequency can also be evaluated by using
+usual Fourier spectrum of data. In that sense, the
+peak frequency derived from the HHT is just an additional evidence of the peak frequency. Note, however, that, as stated above, the information which
+can be obtained by the HHT analysis is not limited
+to the peak frequency. We can also clearly observe
+the frequency evolution of the signals. This is one of
+the most important advantage of the HHT analysis.
+In this paper, we assumed that the sources are located at the distance of 5 or 10 Mpc The expected
+detection rate at 10 Mpc is ∼ 10−4 - 0.1 events
+yr−1 [4]. Thus, Advanced LIGO, Advanced Virgo
+and KAGRA may not observe BNS coalescences at
+such distance. On the other hand, in the case of
+a planned future detector, such like Einstein Telescope [29], the detectable distance will be increased
+by factor of ∼ 10. In that case, the expected event
+rate becames ∼ 0.1 - 100 events yr−1 . Thus, we may
+have to wait until such future detectors are realized
+before the HHT analysis of MNS signals presented
+in this paper become useful.
+In this paper, we used simulated Gaussian noise
+of Advanced LIGO. However, the noise of real laser
+
+interferometer detectors show non-Gaussianity and
+non-stationarity. Therefore, we are planning to apply our method to real laser interferometer data in
+the near future.
+
+[1] J. Abadie et al., Classical Quantum Gravity 32,
+074001 (2015).
+[2] T. Acernese et al., Classical Quantum Gravity 32,
+024001 (2015).
+[3] K. Kuroda, Classical Quantum Gravity 27, 084004
+(2010).
+[4] J. Abadie et al., Classical Quantum Gravity 27,
+173001 (2010).
+[5] J. M. Lattimer, and M. Prakash, Phys. Rep. 442,
+109 (2007).
+[6] P. Demorest, T. Pennucci, S. Ransom, M. Roberts,
+and J. Hessels, Nature (London) 467, 1081 (2010).
+[7] J. Antoniadis et al., Science 340, 1233232 (2013).
+[8] K. Hotokezaka, K. Kyutoku, H. Okawa, M. Shibata,
+and K. Kiuchi, Phys. Rev. D 83, 124008 (2011).
+[9] Y. Sekiguchi, K. Kiuchi, K. Kyutoku, and M. Shibata, Phys. Rev. Lett. 107, 211101 (2011).
+[10] A. Bauswein, and H.-T. Janka, Phys. Rev. Lett.
+108, 011101 (2012).
+[11] A. Bauswein, H.-T. Janka, K. Hebeler, and A.
+Schwenk, Phys. Rev. D 86, 063001 (2012).
+[12] K. Hotokezaka, K. kiuchi, K. Kyutoku, T.
+Muranushi, Y. Sekiguchi, M. Shibata, and K.
+Taniguchi, Phys. Rev. D 88, 044026 (2013).
+[13] K. Takami, L. Rezzolla, and L. Baiotti, Phys. Rev.
+Lett. 113, 091104 (2014).
+[14] N. Huang, S. Long, and Z. Shen, Adv. App. Mech.
+32, 59 (1996).
+[15] N. Huang, Z. Shen, S. Long, M. Wu, H. Shih, Q.
+Zheng, N. Yen, C. Tung, and H. Liu, Proc. R. Soc.
+A 454, 903 (1998).
+[16] N. Huang, Z. Shen, and S. Long, Annu. Rev. Fluid
+
+Mech. 31, 417 (1999).
+[17] J. B. Camp, J. K. Cannizzo, and K. Numata, Phys.
+Rev. D 75, 061101 (2007).
+[18] A. Stroeer, J. K. Cannizzo, and J. B. Camp, Phys.
+Rev. D 79, 124022 (2009).
+[19] A. Stroeer, L. Blackburn, and J. B. Camp, Classical
+Quantum Gravity 28, 155001 (2011).
+[20] H. Takahashi, K. Oohara, M. Kaneyama, Y. Hiranuma, and J. B. Camp, Advances in Adaptive
+Data Analysis 5, 2 (2013).
+[21] M. Kaneyama, K. Oohara, H. Takahashi, Y. Hiranuma, T. Wakamatsu, and J. B. Camp, ICIC Express Letters, Part B: Applications 5, 285 (2014).
+[22] M. Kaneyama, K. Oohara, Y. Sasaki, H. Takahashi,
+and J. B. Camp, ICIC Express Letters, Part B: Applications 6, 343 (2015).
+[23] Z. Wu, and N. Huang, Advances in Adaptive Data
+Analysis 1, 1 (2009).
+[24] L. Cohen, Time Frequency Analysis: Theory and
+Applications, (Prentice Hall, New York, 1995).
+[25] B. V. Khvedelidze, Encyclopaedia of Mathematics
+(Springer, New York, 1989)
+[26] H. Shen, H. Toki, K. Oyamatsu, and K. Sumiyoshi,
+Astrophys. J. Suppl., 197, 2 (2011).
+[27] Y. Sekiguchi, K. Kiuchi, K. Kyutoku, and M. Shibata, Phys. Rev. Lett. 107, 051102 (2011).
+[28] https://dcc.ligo.org/cgi-bin/DocDB/
+ShowDocument?docid=2974.
+[29] S. Hild et al., Classical Quantum Gravity 28, 094013
+(2011).
+
+ACKNOWLEDGMENTS
+
+The authors would like to thank Jordan B. Camp
+for many discussions about topics related to the
+research presented here. This work was in part
+supported by MEXT Grant-in-Aid for Scientific
+Research on Innovative Areas “New Developments
+in Astrophysics Through Multi-Messenger Observations of Gravitational Wave Sources” (Grant Number 24103005). This work was also supported in part
+by MEXT Grant-in-Aid for Scientific Research (C)
+(Grant Number 15K05071; KO), by JSPS Grantin-Aid for Young Scientists (B) (Grant Number
+26800129; H.Takahashi), by Grant-in-Aid for Scientific Research (C) (Nos. 23540309 and 15K05081;
+H.Tagoshi), Grant-in-Aid for Scientific Research (A)
+(No. 24244028; MS).
+
+

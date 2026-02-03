@@ -1,0 +1,4763 @@
+Draft version July 15, 2022
+Typeset using LATEX twocolumn style in AASTeX631
+
+A Comprehensive Analysis of the Gravitational Wave Events with the Hilbert-Huang Transform:
+From Compact Binary Coalescence to Supernova
+Chin-Ping Hu
+
+,1 Lupin Chun-Che Lin ,2 Kuo-Chuan Pan ,3 Kwan-Lok Li
+Albert K. H. Kong ,3 and C. Y. Hui 6
+
+,4 Chien-Chang Yen
+
+,5
+
+arXiv:2207.06714v1 [astro-ph.HE] 14 Jul 2022
+
+1 Department of Physics, National Changhua University of Education, Changhua, 50007, Taiwan
+2 Department of Physics, National Cheng-Kung University, Taiwan
+3 Institute of Astronomy, National Tsing Hua University, Hsinchu 30013, Taiwan
+4 Department of Physics, National Cheng Kung University, 70101 Tainan, Taiwan
+5 Department of Mathematics, Fu Jen Catholic University, 24205 New Taipei City, Taiwan
+6 Department of Astronomy and Space Science, Chungnam National University, Daejeon, Korea (ROK)
+
+(Accepted Jul. 14, 2022)
+
+ABSTRACT
+We analyze the gravitational wave signals with a model-independent time-frequency analysis, which
+is improved from the Hilbert-Huang transform (HHT) and optimized for characterizing the frequency
+variability on the time-frequency map. Except for the regular HHT algorithm, i.e., obtaining intrinsic
+mode functions with ensemble empirical mode decomposition and yielding the instantaneous frequencies, we propose an alternative algorithm that operates the ensemble mean on the time-frequency
+map. We systematically analyze the known gravitational wave events of the compact binary coalescence observed in LIGO O1 and O2, and in the simulated gravitational wave signals from core-collapse
+supernovae (CCSNe) with our method. The time-frequency maps of the binary black hole coalescence
+cases show much better details compared to those wavelet spectra. Moreover, the oscillation in the
+instantaneous frequency caused by mode-mixing could be reduced with our algorithm. For the CCSNe
+data, the oscillation from the proto-neutron star and the radiation from the standing accretion shock
+instability can be precisely determined with the HHT in great detail. More importantly, the initial
+stage of different modes of oscillations can be clearly separated. These results provide new hints for
+further establishment of the detecting algorithm, and new probes to investigate the underlying physical
+mechanisms.
+
+Keywords: Gravitational wave astronomy (675); Core-collapse supernovae (304); Black holes (162);
+Neutron stars (1108)
+1. INTRODUCTION
+
+The successful detection of the gravitational wave signal from the Laser Interferometer Gravitational-Wave
+Observatory (LIGO) opens a new window in both astronomy and physics (Abbott et al. 2016a). The advanced Virgo (aVirgo) interferometer also joined the engineer run with two aLIGO detectors since May of 2017.
+At the end of 2018 for the first and second observation runs (O1 and O2), aLIGO and the aVirgo has conCorresponding author: C.-P. Hu
+cphu0821@gm.ncue.edu.tw
+
+firmed 11 gravitational wave (GW) transients, including
+10 merging events from two massive stellar-mass black
+holes (BHs) and one from the coalescence of two neutron
+stars (NSs) (Abbott et al. 2019). Until the end of 3rd observation run in March of 2020, the aVirgo and aLIGO
+network have confirmed 90 GW events (The LIGO Scientific Collaboration et al. 2021), and 50 of which have
+been reported during the first half of the third observing run (O3) (Abbott et al. 2021). These GW events
+can be detected by multi-resolution techniques including wavelet Q-transform (Chatterji et al. 2004).
+It has been suggested that the novel time-series analysis method, the Hilbert-Huang transform (HHT), could
+
+2
+
+Hu et al.
+
+precisely describe the time-frequency properties of the
+GW signal owing to the high resolution of the HHT
+(Camp et al. 2007). The GW signal can be extracted
+from the simulated data with a BH merging signal embedded in a noisy background (Stroeer et al. 2009).
+Similar work has been extended to investigate the simulated GW signal from the coalescence of binary NSs
+(Kaneyama et al. 2016).
+The first and strongest event GW 150914 has been
+analyzed with the HHT (Sakai et al. 2017). The signal
+is not able to be decomposed into a single component
+through empirical mode decomposition (EMD). The ensemble EMD (EEMD) has been proposed to overcome
+the so-called ‘mode-mixing” or “mode-splitting” problem (Wu & Huang 2004; Wu & Huang 2009) but it is
+only valid for a signal with moderate frequency variability because EEMD is equivalent to a dyadic filter. This
+prevents getting a precise instantaneous frequency although the signal from different components with highest Hilbert amplitude could marginally connected with
+each other. The entire time-frequency map could be
+consistent with the theoretical prediction although some
+frequency modulations can be clearly seen. A systematic investigation of known GW events using the HHT
+is carried out by Akhshi et al. (2021). A physical time
+delay could be derived from the reconstructed waveform.
+In this paper, we comprehensively apply the Morlet
+wavelet analysis and the HHT on the LIGO data of the
+known GW events to test if the HHT is eligible to detect
+the trigger. Moreover, we propose an alternative method
+to obtain the Hilbert spectrum by stacking the timefrequency map instead of taking the ensemble mean of
+components in the data sets with artificial noises. Besides the coalescence events in the LIGO data sets, we
+also tested the algorithm on the simulated GW signal
+from core-collapse supernovae (CCSNe). Section 2 describes the reduction and processing of the LIGO data,
+and the mathematical algorithm used in this research.
+We present the analysis result of two cases, GW 150914
+and GW170817, in Section 3. The time-frequency maps
+of other events are shown in Appendix A. We describe
+the models and parameters used in generating the CCSN
+signal, and show the corresponding analytical result of a
+typical CCSN case in Section 4. Cases with other rotational parameters and viewing geometries are presented
+in Appendix B.
+2. DATA REDUCTION AND TIME-FREQUENCY
+
+ANALYSIS ALGORITHM
+2.1. LIGO Data Reduction
+In order to examine the capability of our numerical
+method, we check the performance of our algorithm on
+
+the known GW events in GWTC-1 (A gravitationalwave transient catalog of compact binary mergers observed by LIGO and Virgo during the first and second observing runs) within 2015–2017. We use the 32 s
+data of 4KHz released from the LIGO Open Science
+Center1 (Vallisneri et al. 2015) obtained from Hanford
+and Livingston sites to perform our analysis. We notice that a strong glitch and a GW candidate event
+(i.e., GW 170817) occurred almost simultaneously at
+the Livingston site, and therefore we downloaded the
+‘clean’ data after the noise subtracting following the
+glitch model described in Abbott et al. (2017a).
+Table 1 lists data sets of known GW events considered in this article, and all the signal processing was
+proceeded with the python based GW analysis library
+named as GWPY v2.1.02 (Macleod et al. 2020). To deal
+with the GW data, we followed the standard whitening
+process to suppress the extra colored noise at low frequencies and spectral lines led by instrumental or background effects (see, e.g., Usman et al. 2016; Abbott et al.
+2019). This operation might affect the nonlinearily of
+the GW signal. We note that whitening process is parameter dependent and the method is not unique (see,
+e.g., Tsukada et al. 2018; Huang et al. 2021). Further
+developments of the de-noising techniques would be important though this is beyond the scope of this research.
+We therefore whitened the time series to enhance the
+higher-frequency content with a FFT integration length
+of 4 s and 2 s-overlap between FFTs for the given window of Hann smoothing. We also apply a bandpass filter
+to reserve the data within 30–450 Hz and then use notch
+filters to attenuate line noises because we want to suppress the effect from thermal noises of mirrors, quantum
+noise of laser or any line noise arisen from detector resonances to dominate the spectral behavior.
+To confirm the practicability of our methods, we also
+check the instantaneous frequency obtained from the
+simulated gravitational waveform. We generate the
+waveform using the effective-one-body (EOB; Taracchini
+et al. 2014; Pürrer 2016; Bohé et al. 2017) numericalrelativity (NR) model. The simulated GW time series
+can be obtained by employing apps (LAL 6.19.1; LIGO
+Scientific Collaboration 2018) provided by the LIGO
+Algorithm Library3 . The basic physical parameters of
+GW150914 applied in the simulated waveform refer to
+those determined in GWTC-1 (Abbott et al. 2019).
+1 https://www.gw-openscience.org/catalog/GWTC-1-confident/
+
+html/
+2 https://gwpy.github.io/docs/stable/
+3 https://lscsoft.docs.ligo.org/lalsuite/
+
+3
+Table 1. The data files of LIGO/Virgo events investigated in this article.
+GW150914
+GW151012
+GW151226
+GW170104
+GW170608
+GW170729
+GW170809
+GW170814
+GW170817
+GW170818
+GW170823
+
+Hanford
+Livingston
+Hanford
+Livingston
+Hanford
+Livingston
+Hanford
+Livingston
+Hanford
+Livingston
+Hanford
+Livingston
+Hanford
+Livingston
+Hanford
+Livingston
+Hanford
+Livingston
+Hanford
+Livingston
+Hanford
+Livingston
+
+H-H1 GWOSC 4KHZ R1-1126259447-32.hdf5
+L-L1 GWOSC 4KHZ R1-1126259447-32.hdf5
+H-H1 GWOSC 4KHZ R1-1128678885-32.hdf5
+L-L1 GWOSC 4KHZ R1-1128678885-32.hdf5
+H-H1 GWOSC 4KHZ R1-1135136335-32.hdf5
+L-L1 GWOSC 4KHZ R1-1135136335-32.hdf5
+H-H1 GWOSC 4KHZ R1-1167559921-32.hdf5
+L-L1 GWOSC 4KHZ R1-1167559921-32.hdf5
+H-H1 GWOSC 4KHZ R1-1180922479-32.hdf5
+L-L1 GWOSC 4KHZ R1-1180922479-32.hdf5
+H-H1 GWOSC 4KHZ R1-1185389792-32.hdf5
+L-L1 GWOSC 4KHZ R1-1185389792-32.hdf5
+H-H1 GWOSC 4KHZ R1-1186302504-32.hdf5
+L-L1 GWOSC 4KHZ R1-1186302504-32.hdf5
+H-H1 GWOSC 4KHZ R1-1186741846-32.hdf5
+L-L1 GWOSC 4KHZ R1-1186741846-32.hdf5
+H-H1 GWOSC 4KHZ R1-1187008867-32.hdf5
+L-L1 LOSC CLN 4 V1-1187007040-2048.hdf5
+H-H1 GWOSC 4KHZ R1-1187058312-32.hdf5
+L-L1 GWOSC 4KHZ R1-1187058312-32.hdf5
+H-H1 GWOSC 4KHZ R1-1187529241-32.hdf5
+L-L1 GWOSC 4KHZ R1-1187529241-32.hdf5
+
+2.2. Hilbert-Huang Transform
+The Hilbert-Huang transform (HHT) is a novel timefrequency analysis algorithm that can trace frequency
+variability in a great detail (Huang et al. 1998). This
+adaptive method needs no priori basis, and has been
+widely used in many fields of science and engineering
+(see, e.g., Huang et al. 1999; Huang & Attoh-Okine 2005;
+Huang & Shen 2014). The core idea of the HHT is the
+Hilbert transform of a time series x(t):
+Z ∞
+1
+x(t0 ) 0
+y(t) = P
+dt ,
+(1)
+0
+π
+−∞ t − t
+where P indicates the Cauchy principal value and y(t)
+is the Hilbert transform of x(t). With this definition, we
+can have an analytical signal
+z(t) = x(t) + iy(t) = a(t)eiθ(t)
+(2)
+p
+where a(t) = x2 (t) + y 2 (t) is the Hilbert amplitude
+and θ(t) = tan−1 [y(t)/x(t)] is the instantaneous phase
+function. The time derivative of θ(t)
+ω(t) =
+
+dθ(t)
+dt
+
+(3)
+
+can be defined as the instantaneous frequency. As the
+development of the HHT, a few more methods were
+also proposed to obtain the frequency, such as generalized zero-crossing, and direct quadrature (Huang et al.
+
+2009). In our study, we mainly utilize the normalized
+Hilbert transform, which applying the Hilbert transform
+after normalizing the intrinsic mode functions (IMFs)
+to the range between −1 and 1. This is designed to
+overcome the limitation imposed by the Bedrosian theorem (Bedrosian 1962; Xu & Yan 2006). In some cases
+the intra-wave modulation, i.e., frequency modulation
+within one cycle that caused by possible non-linear effect of an oscillation system, is not physically important,
+we use the generalized zero-crossing, which is a robust
+method to calculate the inter-wave modulation (i.e., the
+variation of a cycle length) frequency (Sekhar & Sreenivas 2004). Both methods yield a fully consistent result.
+However, the instantaneous frequency is meaningful
+only if the input time series is an IMF, which must be
+symmetry with respect to zero, and the number of extrema and zero-crossing must be the same or at least
+differs by one. This criterion is difficult to be achieved
+in real data. A pre-processing is needed. Therefore, the
+HHT consists of two steps: (1) decompose the time series data into finite IMFs and (2) obtain instantaneous
+frequencies for each IMFs (Wu & Huang 2009).
+The first method proposed for the decomposition is
+the empirical mode decomposition (EMD). EMD is an
+iterative process called “sifting” that extracts IMFs by
+removing the local mean values obtained from taking the
+average of the upper and lower envelope of a time series
+
+4
+
+Hu et al.
+𝑛
+
+(a) HHT with EEMD
+
+(1)
+
+(2) EMD
+
+(1)
+
+𝑐2
+
+…
+
+(1) add noise
+
+𝑐1
+
+(1)
+
+𝑥1 (𝑡)
+
+𝑐𝑚
+
+(2)
+
+𝑐1
+
+…
+
+(2)
+𝑐𝑚
+
+…
+
+…
+
+𝑥(𝑡)
+
+…
+
+𝑥𝑛 (𝑡)
+
+(𝑛)
+
+𝑟𝑒𝑠𝑖𝑑
+𝑐1 ′
+
+(𝑠)
+
+𝑐1
+
+𝑐𝑚
+
+(𝑛)
+
+𝑐𝑚
+
+𝑓𝑚 𝑡 , 𝑎𝑚 (𝑡)
+
+𝑐2
+
+…
+(3) Hilbert transform
+zero-crossing, etc
+
+(b) Stacked Hilbert Spectrum
+(2) EMD
+or EEMD
+
+𝑡 , 𝑎2 (𝑡)
+
+𝑓2
+
+(1)
+
+(2)
+
+𝑓𝑚
+
+(𝑛)
+
+𝑓1
+
+…
+(2)
+
+(2)
+
+(𝑛)
+
+(𝑛)
+𝑡 , 𝑎1 (𝑡)
+(𝑛)
+(𝑛)
+𝑓2 𝑡 , 𝑎2 (𝑡)
+
+…
+
+…
+(𝑛)
+
+𝑐𝑚
+
+(2)
+
+𝑡 , 𝑎𝑚 (𝑡)
+
+…
+
+…
+
+𝑐1
+
+Spectrum(1)
+
+Spectrum(2)
+
+…
+
+𝑐𝑚
+
+…
+
+𝑥2 (𝑡)
+
+(2)
+𝑐2
+
+(𝑛)
+𝑐2
+
+(1)
+
+(1)
+(1)
+𝑡 , 𝑎𝑚 (𝑡)
+(2)
+(2)
+𝑓1 𝑡 , 𝑎1 (𝑡)
+(2)
+(2)
+𝑓2 𝑡 , 𝑎2 (𝑡)
+
+…
+
+𝑐1
+
+𝑥𝑛 (𝑡)
+
+(1)
+
+𝑓𝑚
+
+𝑐𝑚
+𝑥(𝑡)
+
+𝑡 , 𝑎1 (𝑡)
+
+(1)
+
+𝑓1
+
+…
+
+𝑥1 (𝑡)
+
+(1)
+
+(1)
+
+(1)
+𝑐2
+
+𝑐1
+
+…
+
+(1) add noise
+
+(6) plot 2D map
+
+(4) apply postprocessing EMD
+
+(𝑛)
+𝑐𝑚
+
+Hilbert
+spectrum
+
+…
+
+(2)
+𝑐2
+
+…
+
+𝑥2 (𝑡)
+
+(3) take
+1
+(𝑠)
+(𝑖)
+ensemble mean 𝑐1 = 𝑛 ෍ 𝑐1
+(5) Hilbert transform
+𝑖=1
+zero-crossing, etc
+𝑐1 ′
+(𝑠)
+𝑓1 𝑡 , 𝑎1 (𝑡)
+𝑐
+𝑐1
+1
+𝑟𝑒𝑠𝑖𝑑
+𝑐1 ′
+(𝑠)
+𝑐2
+𝑓2 𝑡 , 𝑎2 (𝑡)
+𝑐2
+
+Hilbert
+spectrum
+
+Spectrum(n)
+
+(4) stack all spectra
+
+(𝑛)
+(𝑛)
+𝑓𝑚 𝑡 , 𝑎𝑚 (𝑡)
+
+Figure 1. (a) The procedure of EEMD in this paper. We applied the post-processing EMD from the first IMF. (b) Stacked
+Hilbert analysis algorithm that is optimized for visualization of the time-frequency map.
+
+(Huang et al. 1998). It can separate time series into
+IMFs of different time scales, and make IMFs symmetric
+with respect to zero.
+In principle, there are infinite way to decompose the
+signal. For example, different sifting parameters, e.g.,
+stoppage criteria, spline method, etc. A confidence limit
+for Hilbert spectrum can be obtained from an ensemble
+of valid IMFs resulting from different sifting parameters.
+The ideal case is that the raw time series x(t) can be
+decomposed as
+x(t) =
+
+n
+X
+j=1
+
+cj (t) + r(t) =
+
+n
+X
+
+aj (t)ei
+
+R
+
+ωj (t)dt
+
++ r(t) (4)
+
+j=1
+
+where cj (t) is the j-th IMF, and r(t) is the nonoscillating residual.
+A signal with a narrow modulation timescale is expected to be decomposed in a single IMF. However, it
+could be decomposed into different IMFs using EMD if
+there are noises or intermittent signals. This “modemixing” problem can be solved by introducing white
+noise with finite amplitude into the data and taking the
+ensemble mean of corresponding obtained from all the
+simulated sets. This is the Ensemble EMD (EEMD)
+(Wu & Huang 2009). Based on the study of white noise,
+the EEMD is a dyadic filter that collates signals of sim-
+
+ilar scales together. The remaining problem is that the
+summation of IMFs is no longer an IMF. Therefore, a
+post-processing EMD is needed (Wu & Huang 2009).
+One can apply the post-processing EMD from arbitrary
+components of interest. Here we use it since the first
+IMF, the highest frequency mode of the signal. The
+entire procedure is shown as Figure 1(a).
+When applying EEMD, two more parameters are
+needed to be considered: the amplitude of the input
+noise σn and the number of ensemble trials N . Unlike
+EMD, the completeness of the signal is not guaranteed
+in EEMD due to the input noise. Therefore, a large N
+is needed to minimize the incompleteness of the output
+signal, which costs high computing resources. To reduce
+the computing time, the EEMD has been improved by
+adding a pair of positive and negative noises. This operation is also named as complementary EEMD (CEEMD
+Yeh et al. 2010). With this operation, a good completeness can be achieved compared to the original version of
+EEMD (see, e.g., Figure 6 in Yeh et al. 2010). With our
+parameter setting, the deviation between the summation
+of IMFs and the original time series is ∼ 10−15 times of
+the deviation of the original time series. This algorithm
+has been included in the Matlab fast EEMD package
+as the default EEMD algorithm, which is developed by
+
+5
+
+The OI can be defined specifically for any IMF of interest or between all IMFs. Because the GW signal usually
+spread in a wide frequency range, we minimize the overall OI presented in equation 5.
+However, the GW signal of the coalescence of two compact objects usually spans a wide frequency range, which
+is difficult to be decomposed into a single IMF with
+EEMD. This makes it difficult to trace the evolution of
+the signal in detail, especially near the boundary when
+the signal migrates from one IMF to another. For visualization purpose, we establish a stacked Hilbert spectrum
+algorithm to trace the time-frequency property of GW
+signals.
+The idea of our algorithm is demonstrated in Figure
+1(b). Similar to EEMD, we first add finite noises into
+the signal and create N simulated time series. Then, we
+apply EMD or EEMD on the noise-inserted time series
+to obtain IMFs. After this, we did not take the ensemble
+mean of IMFs. Instead, we calculate the instantaneous
+frequency and amplitudes of individual IMFs in each
+simulated data set. Finally, we stack all the Hilbert
+spectra on the time-frequency map. The basic idea is
+that the variability of the instantaneous frequency introduced by the mode-splitting effect would be different
+in each set of added white noise. As a result, the true
+frequency evolution would be enhanced on the stacked
+map, and the spurious variability would be smeared out.
+The detailed mathematical proof and statistical study of
+this method will be presented in another paper (Yen et
+al. in prep).
+3. ANALYSIS OF THE LIGO O1/O2 DATA
+
+4 https://github.com/HHTpy/HHTpywrapper
+5 https://github.com/macolominas/CEEMDAN
+
+0.05
+0.045
+0.04
+
+Orthogonality Index
+
+the Research Center for Adaptive Data Analysis at National Central University (Wang et al. 2014). We have
+successfully explored the time-frequency properties of Xray binaries and active galactic nuclei using this package
+(see, e.g., Hu et al. 2014; Su et al. 2015; Hu et al. 2019).
+A pywrapper of this package4 is also available (Su 2017).
+We also tried to perform the following analysis using the
+complete ensemble empirical mode decomposition with
+adaptive noise5 and found that the result is fully consistent with that obtained from the fast EEMD algorithm
+(Torres et al. 2011).
+To decide the best value of σn , we tried different level
+of and choose the best σn to minimize the orthogonality
+index OI, which is defined as
+P P
+t
+i6=j ci (t)cj (t)
+P
+OI ≡
+(5)
+2
+t x (t)
+
+0.035
+0.03
+0.025
+0.02
+0.015
+0.01
+0.005
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+2.5
+
+3
+
+3.5
+
+4
+
+4.5
+
+5
+
+Noise Level (RMS)
+
+Figure 2. The orthogonality index versus EEMD’s noise
+level in the Hanford data of GW150914 data. Blue filled area
+denotes the 1-sigma interval obtained from the simulated
+data sets.
+
+3.1. GW150914
+We obtain the LIGO data and whiten them using the
+data reduction pipeline described in Section 2.1. We
+first input white noises with σ = 1.0 times the deviation
+of the data and perform 104 times of such simulations
+(step 1 in Figure 1). This is helpful to obtain confidence
+intervals because the whitened data can be treated as
+the Gaussian white noise except for a short time interval that contains GW signal. Then, we try both EMD
+and EEMD on the simulated time series (step 2 in Figure 1). Further input of noise in EEMD is needed, and
+we observe the variability of the OI with different noise
+levels between 0 and 5 times the deviation of the data
+(see Figure 2). We found that the OI could be minimized with σ ≈ 0.3, and therefore we use it for the
+following analysis. We then stack the Hilbert spectra
+on the 2-dimensional map to smear the boundary effect
+when the GW signal was split into two nearby IMFs.
+Figure 3 shows the decomposition result and the
+Hilbert spectra of GW 150914 observed with LIGO Hanford (left) and Livingstone (right). Panel (a) shows
+the whitened data and the summation of IMF3–5. Because the GW signal spans from ∼ 50 Hz to ∼ 300 Hz,
+it matches the characteristic time scales of IMFs 3
+(∼ 340 Hz)–IMF 5 (∼ 80 Hz) based on the fact that the
+EEMD is a dyadic filter and the sampling rate is 4096
+Hz. In this case, the summation of IMFs 3–5 can greatly
+reproduce the waveform. This operation is equivalent to
+applying EEMD band-pass filter to the data. We plotted
+the decomposed IMFs 3–5 in Figure 3 b–d, respectively.
+It clearly shows that the GW signal firstly appears in
+IMF5, then migrates toward the high-frequency components, IMF4 and IMF3.
+
+6
+
+Hu et al.
+2
+
+(a) Cleaned Data
+Power
+
+Power
+
+2
+0
+-2
+
+0
+
+-2
+
+(b) Mean IMF 3
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+Energy
+
+Energy
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+(g) WWZ
+
+256
+128
+64
+32
+
+128
+64
+32
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+128
+64
+32
+0
+
+128
+
+32
+
+128
+
+512
+
+(f) WWA
+
+256
+
+512
+
+(g) WWZ
+
+256
+
+512
+
+(e) Mean Hilbert Energy
+
+2
+
+0
+512
+
+(f) WWA
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+4
+
+(e) Mean Hilbert Energy
+
+2
+
+512
+
+0
+-1
+
+4
+
+0
+512
+
+(b) Mean IMF 3
+
+1
+
+Power
+
+Power
+
+1
+
+6
+
+(a) Cleaned Data
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+Time (s)
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Time (s)
+
+Figure 3. The analysis results of GW150914 observed with LIGO Hanford (left) and Livingstone (right). (a) The whitened
+strain data (blue) overlaied with the EEMD band-pass filtered signal (red). (b)–(d) The EEMD decomposed IMF3–IMF5 with
+different input noise levels. The green shaded area denotes the 1-σ interval among the 10000 simulations (e) The summation of
+the Hilbert amplitude of IMF3–IMF5. The vertical orange lines denote the time of significant change in the Hilbert amplitude
+(see main text). The horizontal dashed line denotes the zero level of the Hilbert amplitude. (f) WWA spectrum (g) WWZ
+spectrum (h) Stacked Hilbert spectrum with 104 EEMD decomposed IMFs with randomly distributed noise level (i) Stacked
+Hilbert spectrum with 104 EMD decomposed IMFs.
+
+We performed the normalized Hilbert transform to
+calculate the Hilbert energy, which is defined as the
+square of the amplitude, and instantaneous frequency of
+each IMFs, and stacked those obtained from IMFs 3–5 to
+minimize the contribution from other frequency ranges.
+This operation is done for all 104 simulated data sets (see
+Figure 1) and thus we obtained the mean value and deviation of the band-pass filtered Hilbert energy (Figure
+3e). This instantaneous Hilbert energy can be used to
+detect the GW signal. We use the Bayesian block technique to detect occurrence times of significant change in
+the Hilbert energy (Scargle et al. 2013). GW150914 is
+the strongest event in the LIGO O1/O2 catalog where
+
+the boundaries can be easily detected if we set the null
+hypothesis probability p0 to be 10−80 .
+The stacked Hilbert spectra with EEMD and EMD
+algorithms with 104 times of simulation are presented
+in Figure 3h and 3i, respectively. We also performed
+the weighted wavelet analysis of the amplitude spectrum (WWA, Figure 3f) and the Z-transform spectrum
+(WWZ, Figure 3g) for comparison. The Morlet wavelet,
+2
+
+2
+
+f (z) = e−cω (t−τ )
+
+h
+i
+−1/4c
+eiω(t−τ )−e
+
+(6)
+
+is used in this analysis, where ω is the scale factor and
+τ is the time shift. The parameter c determines how
+rapidly th wavelet decays, or the size of the Gaussian en-
+
+7
+(a)
+
+512
+
+(b)
+
+(c)
+
+Frequency (Hz)
+
+256
+
+128
+
+64
+
+32
+
+0.35
+
+0.4
+
+0.45
+
+0.5
+
+0.55
+
+Energy (Scaled)
+
+Time (s)
+0.8
+
+(a)
+
+(b)
+
+HHT
+WWZ
+Template
+
+0.6
+
+(c)
+4
+
+1
+
+0.4
+
+2
+0.2
+0
+
+32
+
+64
+
+128
+
+256
+
+0
+
+32
+
+64
+
+128
+
+256
+
+0
+
+32
+
+64
+
+128
+
+256
+
+Frequency (Hz)
+
+Figure 4. Comparison between the stacked HHT spectrum
+(color map), WWZ spectrum (contour) and the instantaneous frequency of the template (blue line) of GW 150914
+observed with LIGO Hanford detector. Three slices are labeled by the dashed line for low-frequency (a), intermediate
+frequency (b), and high-frequency (c) regimes. The amplitude versus frequency plot (or spectral density) are plotted
+in the lower panels. Density maps of the instantaneous amplitude and frequency of the specific time of all simulation
+are shown as black dots, where the red profile is the averaged profile for the instantaneous frequency. The green curve
+denotes the result from the WWZ, where the blue dashed
+line indicates the instantaneous frequency obtained from the
+template. The HHT and WWZ profiles in panels (a)–(c) are
+scaled for display purpose.
+
+velope. We set it as c = 0.0125 (Foster 1996). These four
+algorithms yielded consistent results in the frequency
+evolution. However, the wavelet analysis has a trade-off
+between the frequency and the temporal resolutions by
+setting the width of the Gaussian window. The timefrequency property would be smeared out. In comparison, the Hilbert spectrum shows a strikingly good resolution on the time-frequency map and indicates the precise time of the incoming GW signal. The mode-mixing
+may introduce a few nonphysical modulations when the
+signal crosses two IMFs. Except for this, HHT would be
+an ideal tool to study the detailed time-frequency structure of the GW signals induced by two BHs coalescence.
+To compare the analysis result between different algorithms and the model template, we simulated the
+GW waveform using the python-based open software
+
+to explore astrophysical sources of GWs, PyCBCv2.0.16
+(Usman et al. 2016), with the approximant given by
+the effective-one-body (EOB; Taracchini et al. 2014;
+Pürrer 2016; Bohé et al. 2017) NR model. The instantaneous frequency of the template can be directly
+calculated via Hilbert transform without decomposing
+it into IMFs because the template fits the IMF criterion during the merging phase. The resulting instantaneous frequency of the template, the WWZ spectrum,
+and the stacked Hilbert spectrum are plotted in Figure
+4. The time-frequency map of the HHT can clearly describe the instantaneous frequency in better detail compared to that of the wavelet spectrum. To demonstrate
+this, we choose three slices in (a) low-frequency, (b)
+intermediate-frequency, and (c) high-frequency regimes.
+The slices of the HHT and WWZ spectra, as well as the
+instantaneous frequency obtained from the template, are
+shown in panel (a)–(c) of Figure 4. The gray color map
+denotes the density of the Hilbert energy-frequency pairs
+of each trial. The HHT result at epoch (b) is most ambiguous because the GW signal switches from one IMF
+to another at this time. However, the performance of
+the HHT remains comparable to that of the WWZ.
+GW150914 is one of the strongest signals recorded
+in GWTC-1. We analyzed all the BH-BH coalescence
+events in GWTC-1 and present the results in the appendix (See Figure A1 – A9). These signals have been
+analyzed in a combination with the HHT and de-noise
+algorithm using a network array (Akhshi et al. 2021).
+The instantaneous frequency can be detected but large
+variability in the instantaneous frequency is occasionally
+seen (see, e.g., Figure 4 in Akhshi et al. 2021). These
+signals could be minimized by our stacking method.
+3.2. GW170817
+GW170817 is the first confirmed NS-NS coalescence
+event (Abbott et al. 2017a). A γ-ray burst and multiwavelength afterglows is a benchmark of the multimessenger astronomy era (Abbott et al. 2017b). Compared to other BH-BH coalescence obtained in GWTC1 (Abbott et al. 2019), the signal of GW170817 has a
+much longer coherence time but the amplitude is much
+weaker. We tested both the WWZ and the HHT algorithms on this event. The signal can be seen on the
+wavelet map with c = 0.00125, ten times smaller than
+the c value for BH-BH coalescence events. Compared to
+the signals of BH-BH events, the amplitude of the NSNS signal is much lower, and the signal keeps its coherence for a long while. The nearly coherent signal before
+6 https://github.com/gwastro/pycbc
+
+8
+
+Hu et al.
+2
+
+(a) Cleaned Data
+Power
+
+Power
+
+2
+
+0
+
+-2
+
+-2
+
+(b) Mean IMF 3
+
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+1
+1
+0.5
+
+0
+0
+512
+
+(f) WWA
+Freq (Hz)
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+(g) WWZ
+
+256
+128
+64
+32
+
+128
+64
+32
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+128
+64
+32
+0
+
+128
+
+32
+
+128
+
+512
+
+(f) WWA
+
+256
+
+512
+
+(g) WWZ
+
+256
+
+512
+
+(e) Mean Hilbert Energy
+
+Energy
+Energy
+
+Energy
+Freq (Hz)
+
+2
+
+(e) Mean Hilbert Energy
+
+256
+
+512
+
+0
+-1
+
+0.5
+
+0
+512
+
+(b) Mean IMF 3
+
+1
+
+Power
+
+Power
+
+1
+
+1
+
+(a) Cleaned Data
+
+0
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+Time (s)
+
+11
+
+0
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+8
+
+9
+
+10
+
+11
+
+Time (s)
+
+Figure 5. The analysis results of GW170817 observed with LIGO Hanford (left) and Livingstone (right). Panel definitions are
+the same as those in Figure 3.
+
+the merging makes it possible to be detected with this
+setting, but the time-frequency property near the merging phase is smeared in time due to the large Gaussian
+window. In contrast, the signal is difficult to be resolved in the HHT time-frequency map. Because the
+HHT is sensitive to both the instantaneous variability
+of the frequency and the noise, the signal-to-noise ratio
+of this event is insufficient for the HHT to identify its
+intrinsic time-frequency property. Therefore, the HHT
+could be powerful for future NS-NS coalescence events
+with improved GW observatories in the next generation
+that could have a high signal-to-noise ratio.
+4. CORE-COLLAPSE SUPERNOVAE
+
+Detection of GW signals from a nearby CCSN will
+be the next milestone of gravitational wave astrophysics
+(Abbott et al. 2016b, 2020). It would be crucial for
+multi-messenger astronomy because the possible co-
+
+detection of gravitational waves and neutrinos would allow astronomers to probe the activity of the center of a
+massive star during the final evolutionary stage. Thanks
+to the growth of computing power, our knowledge of the
+explosion engine of a CCSN improved dramatically. Owing to the asymmetric and complex fluid motion and the
+oscillation/evolution of the proto-neutron star (PNS),
+complex gravitational signals with multiple components
+are expected to be investigated from three-dimensional
+high-fidelity self-consistent CCSN simulations (Janka
+et al. 2016; Burrows & Vartanyan 2021). CCSN waveforms depend on several physical quantities, such as the
+core angular momentum and the composition of the collapsar, the nuclear equation of state, and the dynamics
+of fluid instabilities. The future multi-messenger observations will place meaningful constraints on the supernova engines and the microphysics.
+
+The gravitational waveforms of CCSNe simulations
+used in this project are adopted from the threedimensional self-consistent CCSN simulations with the
+Isotropic Diffusion Source Approximation (Liebendörfer
+et al. 2009) for the neutrino transport, using the FLASH
+code (Fryxell et al. 2000) and are presented in Pan et al.
+(2021). The data are derived from a 40M progenitor
+at zero-age main sequence with solar metallicity from
+Woosley & Heger (2007) with three different initial rotational speeds (Ω0 = 0, 0.5 and 1 rad s−1 ) at the onset
+of core-collapse. A post-Newtonian treatment with the
+effective general relativity potential (Marek et al. 2006)
+and the Lattimer−Swesty (LS220) equation of state are
+considered (Lattimer & Swesty 1991).
+The GW strains are evaluated by the first time derivative of the mass quadrupole moment with an assumption of a fixed distance d = 10 kpc to an observer. The
+second time derivative of the mass quadrupole moment
+is calculated by the finite difference in post-processing,
+using the formula described in Scheidegger et al. (2008)
+and Murphy et al. (2009). We simulated two viewing
+angles, where the observers are in the infinity in the direction of the equatorial plane or the rotational axis.
+4.2. Analysis of Simulated CCSNe Waveforms
+Here we take the gravitational waveform of the nonrotating model with an observer viewed from the equatorial direction as an example for our HHT analysis. The
+gravitational waveforms of other models with different
+parameters are shown in the appendix (Figure A10 –
+A20). Figure 6 (a) shows the simulated strains, which
+followed by the wavelet spectra (b) – (c) and the stacked
+HHT spectra (d) – (e). The waveform starts from the
+core collapse and reaches the core bounce at t = 0 s.
+Since this model is non-rotating and the proto-neutron
+star convection happens after the core bounce, the gravitational strain shows a loud bounce signal at time zero,
+and then it is followed by a low-frequency peak PNS
+oscillation, which could be caused by the g-mode oscillation although the nature remains controversial (Müller
+et al. 2013; Pan et al. 2021). Multiple low-frequency oscillation signals dominate the first ∼ 0.15 s and they
+
+Freq (Hz)
+Freq (Hz)
+Freq (Hz)
+
+4.1. Waveforms and Simulations
+
+Freq (Hz)
+
+Nevertheless, recent theoretical works have reached
+consensuses on a few main structures of the GW signal
+on the time-frequency domain. These provide a strong
+basis to improve searching algorithms. On the other
+hand, the HHT is likely the most precise tool to investigate the detailed time-frequency properties of the CCSNe. Here we adopted the gravitational waveforms from
+the self-consistent three-dimensional CCSN simulations
+with neutrino transport in Pan et al. (2021).
+
+Power (x1021 )
+
+9
+0.5
+
+(a) Strain Data
+
+0
+
+-0.5
+
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+
+(b) WWA
+
+(c) WWZ
+
+(d) Stacked HHT, EEMD
+
+Core bounce
+
+PNS
+
+lation
+
+oscil
+
+PNS oscillation
+
+SASI
+
+(e) Stacked HHT, EMD
+
+-0.4
+
+-0.2
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+Time (s)
+
+Figure 6. (a) The cross-component of the gravitational
+waveform of a CCSN seen from the equatorial plane with an
+initial stellar mass of 40 M and without rotation. (b)–(c)
+The WWA and WWZ map of the gravitational signal. (d)–
+(e) Stacked Hilbert spectra based on EEMD (d) and EMD
+(e).
+
+can be well resolved with the HHT. In comparison, the
+limitation of the wavelet spectrum prevents us to identify them. As the frequency of the oscillation increases
+with time, another high-frequency mode oscillation signal appears with similar strength as the peak PNS mode.
+The low-frequency PNS oscillation vanishes at t ∼ 0.5 s.
+Then, interestingly, it followed by the quadruple radiation of the standing accretion shock instability (SASI
+Blondin et al. 2003) signal, which was suggested to be
+seen in the GW data Kuroda et al. (2016); Pan et al.
+(2021). The detailed waveform of the SASI signal is
+model dependent, but its time-frequency property has
+been shown in a few analysis either with the spectrogram or the HHT (see, e.g., Andresen et al. 2017; Mezzacappa et al. 2020; Takeda et al. 2021). In our analysis,
+the SASI signal can be seen on both the wavelet and
+the HHT spectra. The wavelet and the HHT results for
+other simulated CCSN events are shown in the appendix
+B. The Hilbert spectra of all the data sets show much
+better resolution than the wavelet spectra.
+5. DISCUSSION
+
+A Morlet wavelet consists of a complex exponential
+carrier multiplied by a Gaussian window. It provides a
+window size for both the low- and high-frequency regime
+
+10
+
+Hu et al.
+
+that contains the same number of waves. The timefrequency map is distorted, and the signal is smeared
+if the frequency of a signal changes drastically within a
+few cycles (see. e.g., Figure 3 (f) – (g) and Figure 6 (b)
+– (c)). A narrower width of the Gaussian envelope can
+result in a better time resolution, although the frequency
+resolution would be sacrificed.
+On the other hand, the Hilbert analysis calculates the
+instantaneous frequency of a signal. This helps trace the
+signal’s detailed evolution of the time-frequency property. Moreover, the complex multi-component, lowfrequency signals of CCSNe can be well resolved with
+the HHT. For example, the SASI signal in Figure 6 and
+a few multiple low-frequency signals in Figures A12 –
+A20 can only be clearly resolved in the Hilbert spectra.
+Nevertheless, the HHT can decompose a fast-changing
+signal into different IMFs. Fake frequency modulation
+in the instantaneous frequency is seen when the signal crosses two components. This can be reduced with
+the stacking algorithm suggested in this study, although
+they cannot be entirely removed. Moreover, the signal
+cannot be seen for low signal-to-noise ratio events. For
+example, the NS-NS coalescence event GW 170817 can
+be clearly detected with the wavelet analysis with a large
+Gaussian width. This is because the signal keeps its coherence for a few more cycles compared to the BH-BH
+coalescence events, but the signal-to-noise ratio within
+a cycle is much lower.
+Before stacking the time-frequency map, the evolution of Hilbert energy has gave hints of the GW signal.
+A detailed time delay among instruments can be further characterized by cross-correlating the EMD filtered
+profiles (Akhshi et al. 2021). In addition, the special
+pattern of the GW signal across IMFs (see, e.g., Figure
+3b – d) would form a remarkable feature in the twodimensional series where one dimension is time and another is IMF index. This would be helpful for detecting
+the GW signal using convolution neural network.
+The GW signal from a CCSN is believed to contain
+multiple components, where they could across a large
+range in the both the frequency and the energy. The
+high resolutions of the HHT in both the time and frequency domains are helpful in distinguishing them from
+each other, especially the low-frequency transient signals
+within ∼ 0.4 s after the core bounce.
+
+frequency map instead of taking the ensemble mean of
+the IMFs. This helps visualize the evolution of the instantaneous frequency. We carried out an analysis for
+LIGO O1 and O2 events and found that most of their
+frequency evolution can be well tracked with our algorithm. Furthermore, the EEMD filtered data is used to
+determine the time delay between Livingstone and Hanford sites. Except for the known GW sources, we also
+tested our algorithm on the simulated CCSN events.
+We found that multiple GW components can be obtained with the HHT. Compared to the wavelet analysis,
+the unprecedented resolutions in both the time and frequency domains of the HHT are an ideal tool for further
+investigating the time-frequency properties of a signal.
+This provides evidence that the HHT can be a powerful tool in detecting CCSNe events for future multimessenger campaigns.
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+
+6. SUMMARY
+
+29
+
+The HHT is a novel technique for time-frequency analysis although the mode-splitting problem is severe when
+working with signals with huge frequency variability like
+GW signals. We propose a method that could minimize
+the unreal frequency modulation by stacking the time-
+
+30
+31
+32
+33
+
+We thank the anonymous reviewer for valuable comments that improved this paper. This research has made
+use of data, software and/or web tools obtained from the
+Gravitational Wave Open Science Center (https://www.
+gw-openscience.org), a service of LIGO Laboratory, the
+LIGO Scientific Collaboration and the Virgo Collaboration. LIGO is funded by the U.S. National Science Foundation. Virgo is funded by the French Centre National
+de Recherche Scientifique (CNRS), the Italian Istituto
+Nazionale della Fisica Nucleare (INFN) and the Dutch
+Nikhef, with contributions by Polish and Hungarian institutes. C.-P.H. acknowledges support from the Ministry of Science and Technology in Taiwan through grant
+MOST 109-2112-M-018-009-MY3. L.C.C.L. acknowledges support from the Ministry of Science and Technology in Taiwan through grant Nos. MOST 110-2811M-006-515, MOST 110-2811-M-006-012 and MOST 1102112-M-006-006-MY3. K.C.P. is supported by the Ministry of Science and Technology of Taiwan through grant
+MOST 110-2112-M-007-019. K.L.L. is supported by the
+Ministry of Science and Technology of the Republic of
+China (Taiwan) through grant 110-2636-M-006-013, and
+he is a Yushan Young Fellow of the Ministry of Education of the Republic of China (Taiwan). C.-C.Y. is
+supported by the Ministry of Science and Technology
+of Taiwan through grant MOST 109-2115-M-030 -004
+-MY2. A.K.H.K. is supported by the Ministry of Science and Technology of Taiwan under the grants 1092628-M-007-005-RSP and 110-2628-M-007-005, and the
+Inter-University Research Program of the Institute for
+Cosmic Ray Research (ICRR), the University of Tokyo.
+CYH is supported by the National Research Foundation
+of Korea through grants 2016R1A5A1013277.
+
+11
+
+Software:
+Matlab (MATLAB 2018), Python3
+(Van Rossum & Drake 2009), GWpy (Macleod et al.
+2020), PyCBC (Usman et al. 2016)
+REFERENCES
+Abbott, B. P., Abbott, R., Abbott, T. D., et al. 2016a,
+Physical Review Letters, 116, 061102,
+doi: 10.1103/PhysRevLett.116.061102
+—. 2016b, PhRvD, 94, 102001,
+doi: 10.1103/PhysRevD.94.102001
+—. 2017a, PhRvL, 119, 161101,
+doi: 10.1103/PhysRevLett.119.161101
+—. 2017b, ApJL, 848, L13, doi: 10.3847/2041-8213/aa920c
+—. 2019, Physical Review X, 9, 031040,
+doi: 10.1103/PhysRevX.9.031040
+—. 2020, PhRvD, 101, 084002,
+doi: 10.1103/PhysRevD.101.084002
+Abbott, R., Abbott, T. D., Abraham, S., et al. 2021,
+Physical Review X, 11, 021053,
+doi: 10.1103/PhysRevX.11.021053
+Akhshi, A., Alimohammadi, H., Baghram, S., et al. 2021,
+Scientific Reports, 11, 20507,
+doi: 10.1038/s41598-021-98821-z
+Andresen, H., Müller, B., Müller, E., & Janka, H. T. 2017,
+MNRAS, 468, 2032, doi: 10.1093/mnras/stx618
+Bedrosian, E. 1962, A Product Theorem for Hilbert
+Transforms (Santa Monica, CA: RAND Corporation)
+Blondin, J. M., Mezzacappa, A., & DeMarino, C. 2003,
+ApJ, 584, 971, doi: 10.1086/345812
+Bohé, A., Shao, L., Taracchini, A., et al. 2017, PhRvD, 95,
+044028, doi: 10.1103/PhysRevD.95.044028
+Burrows, A., & Vartanyan, D. 2021, Nature, 589, 29,
+doi: 10.1038/s41586-020-03059-w
+Camp, J. B., Cannizzo, J. K., & Numata, K. 2007, PhRvD,
+75, 061101, doi: 10.1103/PhysRevD.75.061101
+Chatterji, S., Blackburn, L., Martin, G., & Katsavounidis,
+E. 2004, Classical and Quantum Gravity, 21
+Foster, G. 1996, AJ, 112, 1709, doi: 10.1086/118137
+Fryxell, B., Olson, K., Ricker, P., et al. 2000, ApJS, 131,
+273, doi: 10.1086/317361
+Hu, C.-P., Chou, Y., Yang, T.-C., & Su, Y.-H. 2014, ApJ,
+788, 31, doi: 10.1088/0004-637X/788/1/31
+Hu, C.-P., Mihara, T., Sugizaki, M., Ueda, Y., & Enoto, T.
+2019, ApJ, 885, 123, doi: 10.3847/1538-4357/ab48e4
+Huang, L., Zhou, Y., Liu, L., Zhu, F., & Shao, L. 2021, in
+2021 IEEE/CVF Conference on Computer Vision and
+Pattern Recognition (CVPR), 9507–9516
+
+Huang, N., & Attoh-Okine, N. 2005, The Hilbert-Huang
+Transform in Engineering (CRC Press). https:
+//books.google.com.tw/books?id=bO KBQAAQBAJ
+Huang, N., & Shen, S. 2014, Hilbert-Huang Transform and
+Its Applications, EBSCO ebook academic collection
+(World Scientific).
+https://books.google.com.tw/books?id=aJ26CgAAQBAJ
+Huang, N. E., Shen, Z., & Long, S. R. 1999, Annual Review
+of Fluid Mechanics, 31, 417,
+doi: 10.1146/annurev.fluid.31.1.417
+Huang, N. E., Wu, Z., Long, S. R., et al. 2009, Adv. Data
+Sci. Adapt. Anal., 1, 177,
+doi: 10.1142/S1793536909000096
+Huang, N. E., Shen, Z., Long, S. R., et al. 1998, Royal
+Society of London Proceedings Series A, 454, 903,
+doi: 10.1098/rspa.1998.0193
+Janka, H.-T., Melson, T., & Summa, A. 2016, Annual
+Review of Nuclear and Particle Science, 66, 341,
+doi: 10.1146/annurev-nucl-102115-044747
+Kaneyama, M., Oohara, K.-i., Takahashi, H., et al. 2016,
+PhRvD, 93, 123010, doi: 10.1103/PhysRevD.93.123010
+Kuroda, T., Kotake, K., & Takiwaki, T. 2016, ApJL, 829,
+L14, doi: 10.3847/2041-8205/829/1/L14
+Lattimer, J. M., & Swesty, D. F. 1991, NuPhA, 535, 331,
+doi: 10.1016/0375-9474(91)90452-C
+Liebendörfer, M., Whitehouse, S. C., & Fischer, T. 2009,
+ApJ, 698, 1174, doi: 10.1088/0004-637X/698/2/1174
+LIGO Scientific Collaboration. 2018, LIGO Algorithm
+Library - LALSuite, free software (GPL),
+doi: 10.7935/GT1W-FZ16
+Macleod, D., Urban, A. L., Coughlin, S., et al. 2020,
+gwpy/gwpy: 1.0.1, v1.0.1, Zenodo,
+doi: 10.5281/zenodo.3598469
+Marek, A., Dimmelmeier, H., Janka, H. T., Müller, E., &
+Buras, R. 2006, A&A, 445, 273,
+doi: 10.1051/0004-6361:20052840
+MATLAB. 2018, 9.7.0 (R2018b) (Natick, Massachusetts:
+The MathWorks Inc.)
+Mezzacappa, A., Marronetti, P., Landfield, R. E., et al.
+2020, PhRvD, 102, 023027,
+doi: 10.1103/PhysRevD.102.023027
+Müller, B., Janka, H.-T., & Marek, A. 2013, ApJ, 766, 43,
+doi: 10.1088/0004-637X/766/1/43
+
+12
+
+Hu et al.
+
+Murphy, J. W., Ott, C. D., & Burrows, A. 2009, ApJ, 707,
+1173, doi: 10.1088/0004-637X/707/2/1173
+Pan, K.-C., Liebendörfer, M., Couch, S. M., & Thielemann,
+F.-K. 2021, ApJ, 914, 140,
+doi: 10.3847/1538-4357/abfb05
+Pürrer, M. 2016, PhRvD, 93, 064041,
+doi: 10.1103/PhysRevD.93.064041
+Sakai, K., Oohara, K.-i., Kaneyama, M., & Takahashi, H.
+2017, ICIC Express Letters, 11, 45,
+doi: 10.24507/icicel.11.01.45
+Scargle, J. D., Norris, J. P., Jackson, B., & Chiang, J. 2013,
+ApJ, 764, 167, doi: 10.1088/0004-637X/764/2/167
+Scheidegger, S., Fischer, T., Whitehouse, S. C., &
+Liebendörfer, M. 2008, A&A, 490, 231,
+doi: 10.1051/0004-6361:20078577
+Sekhar, S. C., & Sreenivas, T. 2004, EURASIP Journal on
+Applied Signal Processing, 2004, 249858,
+doi: 10.1155/S111086570440417X
+Stroeer, A., Cannizzo, J. K., Camp, J. B., & Gagarin, N.
+2009, PhRvD, 79, 124022,
+doi: 10.1103/PhysRevD.79.124022
+Su, Y.-H. 2017, HHTpywrapper v0.1.dev, v0.1.dev, Zenodo,
+doi: 10.5281/zenodo.584082.
+https://doi.org/10.5281/zenodo.584082
+Su, Y.-H., Chou, Y., Hu, C.-P., & Yang, T.-C. 2015, ApJ,
+815, 74, doi: 10.1088/0004-637X/815/1/74
+Takeda, M., Hiranuma, Y., Kanda, N., et al. 2021, PhRvD,
+104, 084063, doi: 10.1103/PhysRevD.104.084063
+Taracchini, A., Buonanno, A., Pan, Y., et al. 2014, PhRvD,
+89, 061502, doi: 10.1103/PhysRevD.89.061502
+
+The LIGO Scientific Collaboration, the Virgo
+Collaboration, the KAGRA Collaboration, et al. 2021,
+arXiv e-prints, arXiv:2111.03606.
+https://arxiv.org/abs/2111.03606
+Torres, M. E., Colominas, M. A., Schlotthauer, G., &
+Flandrin, P. 2011, in 2011 IEEE International Conference
+on Acoustics, Speech and Signal Processing (ICASSP),
+4144–4147
+Tsukada, L., Cannon, K., Hanna, C., et al. 2018, PhRvD,
+97, 103009, doi: 10.1103/PhysRevD.97.103009
+Usman, S. A., Nitz, A. H., Harry, I. W., et al. 2016,
+Classical and Quantum Gravity, 33, 215004,
+doi: 10.1088/0264-9381/33/21/215004
+Vallisneri, M., Kanner, J., Williams, R., Weinstein, A., &
+Stephens, B. 2015, in Journal of Physics Conference
+Series, Vol. 610, Journal of Physics Conference Series,
+012021
+Van Rossum, G., & Drake, F. L. 2009, Python 3 Reference
+Manual (Scotts Valley, CA: CreateSpace)
+Wang, Y.-H., Yeh, C.-H., Young, H.-W. V., Hu, K., & Lo,
+M.-T. 2014, Physica A Statistical Mechanics and its
+Applications, 400, 159, doi: 10.1016/j.physa.2014.01.020
+Woosley, S. E., & Heger, A. 2007, PhR, 442, 269,
+doi: 10.1016/j.physrep.2007.02.009
+Wu, Z., & Huang, N. E. 2004, Royal Society of London
+Proceedings Series A, 460, 1597,
+doi: 10.1098/rspa.2003.1221
+Wu, Z., & Huang, N. E. 2009, AADA, 1, 1,
+doi: 10.1142/S1793536909000047
+Xu, Y., & Yan, D. 2006, Proceedings of the American
+Mathematical Society, 134, 2719, doi: 10.2307/4098122
+Yeh, J.-R., Shieh, J.-S., & Huang, N. E. 2010, Advances in
+Adaptive Data Analysis, 02, 135,
+doi: 10.1142/S1793536910000422
+
+13
+2
+
+(a) Cleaned Data
+
+1
+
+Power
+
+Power
+
+2
+
+0
+-1
+
+-2
+
+(b) Mean IMF 3
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+128
+64
+32
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+128
+64
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+(g) WWZ
+
+256
+
+32
+
+128
+
+128
+64
+32
+0
+
+64
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+512
+
+128
+
+32
+
+256
+
+512
+
+(f) WWA
+
+256
+
+512
+
+(g) WWZ
+Freq (Hz)
+
+Freq (Hz)
+
+512
+
+(e) Mean Hilbert Energy
+
+0.5
+
+0
+512
+
+(f) WWA
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+1
+
+(e) Mean Hilbert Energy
+
+0.5
+
+0
+512
+
+0
+-1
+
+Energy
+
+Energy
+
+1
+
+(b) Mean IMF 3
+
+1
+
+Power
+
+Power
+
+1
+
+(a) Cleaned Data
+
+0
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+Time (s)
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Time (s)
+
+Figure A1. The analysis results of GW151012 observed with LIGO Hanford (left) and Livingstone (right). Panels (a) – (i)
+have the same definition as those in Figure 3.
+
+APPENDIX
+
+A. RESULTING SPECTRA OF LIGO EVENTS
+
+All the remaining LIGO O1/O2 events and corresponding time-frequency maps of BH-BH mergers are shown in this
+section.
+B. RESULTING SPECTRA OF CCSNE EVENTS
+
+All the remaining simulated CCSN GW data, corresponding wavelet and Hilbert spectra are shown in this section.
+
+14
+
+Hu et al.
+(a) Cleaned Data
+
+1
+
+Power
+
+Power
+
+1
+0
+
+-1
+
+-1
+
+(b) Mean IMF 3
+
+(b) Mean IMF 3
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0.5
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+(g) WWZ
+
+256
+128
+64
+32
+
+128
+64
+32
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+128
+64
+32
+0
+
+128
+
+32
+
+128
+
+512
+
+(f) WWA
+
+256
+
+512
+
+(g) WWZ
+
+256
+
+512
+
+(e) Mean Hilbert Energy
+
+0.5
+
+0
+512
+
+(f) WWA
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+1
+
+Energy
+
+Energy
+
+(e) Mean Hilbert Energy
+
+512
+
+0
+-1
+
+1
+
+0
+512
+
+(a) Cleaned Data
+
+0
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+Time (s)
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Time (s)
+
+Figure A2. The analysis results of GW151226 observed with LIGO Hanford (left) and Livingstone (right). Panels (a) – (i)
+have the same definition as those in Figure 3.
+
+15
+5
+
+(a) Cleaned Data
+Power
+
+Power
+
+2
+
+0
+
+-2
+
+-5
+
+(b) Mean IMF 3
+
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+Energy
+
+Energy
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+
+(g) WWZ
+
+256
+128
+64
+32
+
+128
+64
+32
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+128
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+128
+64
+32
+0
+
+(f) WWA
+
+256
+
+32
+
+128
+
+512
+
+2
+
+512
+
+(g) WWZ
+
+256
+
+512
+
+(e) Mean Hilbert Energy
+
+4
+
+0
+512
+
+(f) WWA
+Freq (Hz)
+
+Freq (Hz)
+
+6
+
+(e) Mean Hilbert Energy
+
+256
+
+512
+
+0
+-1
+
+1
+
+0
+512
+
+(b) Mean IMF 3
+
+1
+
+Power
+
+Power
+
+1
+
+2
+
+(a) Cleaned Data
+
+0
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+Time (s)
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Time (s)
+
+Figure A3. The analysis results of GW170104 observed with LIGO Hanford (left) and Livingstone (right). Panels (a) – (i)
+have the same definition as those in Figure 3.
+
+16
+
+Hu et al.
+2
+
+(a) Cleaned Data
+Power
+
+Power
+
+2
+
+0
+
+-2
+
+-2
+
+(b) Mean IMF 3
+
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+(e) Mean Hilbert Energy
+
+128
+64
+32
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+(g) WWZ
+
+256
+128
+64
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+
+32
+
+128
+
+128
+64
+32
+0
+
+128
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+512
+
+(f) WWA
+
+256
+
+32
+
+256
+
+512
+
+0.5
+
+512
+
+(g) WWZ
+Freq (Hz)
+
+Freq (Hz)
+
+512
+
+1
+
+0
+512
+
+(f) WWA
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+(e) Mean Hilbert Energy
+
+0.5
+
+0
+512
+
+0
+-1
+
+Energy
+
+Energy
+
+1
+
+(b) Mean IMF 3
+
+1
+
+Power
+
+Power
+
+1
+
+(a) Cleaned Data
+
+0
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+Time (s)
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Time (s)
+
+Figure A4. The analysis results of GW170608 observed with LIGO Hanford (left) and Livingstone (right). Panels (a) – (i)
+have the same definition as those in Figure 3.
+
+17
+(a) Cleaned Data
+
+1
+
+Power
+
+Power
+
+2
+
+0
+
+-2
+
+-1
+
+(b) Mean IMF 3
+
+(b) Mean IMF 3
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+1
+
+0.5
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+(g) WWZ
+
+256
+128
+64
+32
+
+128
+64
+32
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+128
+64
+32
+0
+
+128
+
+32
+
+128
+
+512
+
+(f) WWA
+
+256
+
+512
+
+(g) WWZ
+
+256
+
+512
+
+(e) Mean Hilbert Energy
+
+0.5
+
+0
+512
+
+(f) WWA
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+Energy
+
+Energy
+
+(e) Mean Hilbert Energy
+
+512
+
+0
+-1
+
+1
+
+0
+512
+
+(a) Cleaned Data
+
+0
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+Time (s)
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Time (s)
+
+Figure A5. The analysis results of GW170729 observed with LIGO Hanford (left) and Livingstone (right). Panels (a) – (i)
+have the same definition as those in Figure 3.
+
+18
+
+Hu et al.
+2
+
+(a) Cleaned Data
+Power
+
+Power
+
+2
+
+0
+
+-2
+
+-2
+
+(b) Mean IMF 3
+
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+2
+
+(e) Mean Hilbert Energy
+Energy
+
+Energy
+
+(b) Mean IMF 3
+
+1
+
+Power
+
+Power
+
+1
+
+1
+
+(a) Cleaned Data
+
+0
+
+0.5
+
+(e) Mean Hilbert Energy
+
+1
+
+0
+0
+512
+
+(f) WWA
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+512
+
+128
+64
+32
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+64
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+128
+
+32
+
+128
+
+128
+64
+32
+0
+
+(g) WWZ
+
+256
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+512
+
+64
+32
+
+256
+
+512
+
+128
+
+512
+
+(g) WWZ
+Freq (Hz)
+
+Freq (Hz)
+
+512
+
+(f) WWA
+
+256
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+Time (s)
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Time (s)
+
+Figure A6. The analysis results of GW170809 observed with LIGO Hanford (left) and Livingstone (right). Panels (a) – (i)
+have the same definition as those in Figure 3.
+
+19
+2
+
+(a) Cleaned Data
+Power
+
+Power
+
+2
+
+0
+
+-2
+
+-2
+
+(b) Mean IMF 3
+
+(b) Mean IMF 3
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+2
+
+128
+64
+32
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+128
+64
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+(g) WWZ
+
+256
+
+32
+
+128
+
+128
+64
+32
+0
+
+64
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+512
+
+128
+
+32
+
+256
+
+512
+
+(f) WWA
+
+256
+
+512
+
+(g) WWZ
+Freq (Hz)
+
+Freq (Hz)
+
+512
+
+(e) Mean Hilbert Energy
+
+1
+
+0
+512
+
+(f) WWA
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+(e) Mean Hilbert Energy
+
+1
+
+0
+512
+
+0
+-1
+
+Energy
+
+Energy
+
+2
+
+(a) Cleaned Data
+
+0
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+Time (s)
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Time (s)
+
+Figure A7. The analysis results of GW170814 observed with LIGO Hanford (left) and Livingstone (right). Panels (a) – (i)
+have the same definition as those in Figure 3.
+
+20
+
+Hu et al.
+2
+
+(a) Cleaned Data
+
+1
+
+Power
+
+Power
+
+2
+
+0
+-1
+
+-2
+
+(b) Mean IMF 3
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+Energy
+
+Energy
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+(g) WWZ
+
+256
+128
+64
+32
+
+128
+64
+32
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+128
+64
+32
+0
+
+128
+
+32
+
+128
+
+512
+
+(f) WWA
+
+256
+
+512
+
+(g) WWZ
+
+256
+
+512
+
+(e) Mean Hilbert Energy
+
+1
+
+0
+512
+
+(f) WWA
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+2
+
+(e) Mean Hilbert Energy
+
+0.5
+
+512
+
+0
+-1
+
+1
+
+0
+512
+
+(b) Mean IMF 3
+
+1
+
+Power
+
+Power
+
+1
+
+1.5
+
+(a) Cleaned Data
+
+0
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+Time (s)
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Time (s)
+
+Figure A8. The analysis results of GW170818 observed with LIGO Hanford (left) and Livingstone (right). Panels (a) – (i)
+have the same definition as those in Figure 3.
+
+21
+2
+
+(a) Cleaned Data
+Power
+
+Power
+
+2
+
+0
+
+-2
+
+-2
+
+(b) Mean IMF 3
+
+0
+-1
+
+0
+-1
+
+(c) Mean IMF 4
+
+(c) Mean IMF 4
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+0
+-1
+
+(d) Mean IMF 5
+
+(d) Mean IMF 5
+1
+
+Power
+
+Power
+
+1
+0
+-1
+
+128
+64
+32
+
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+32
+
+(g) WWZ
+
+256
+128
+64
+
+(h) Stacked HHT, EEMD
+
+256
+128
+64
+32
+512
+
+(i) Stacked HHT, EMD
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+64
+
+32
+
+128
+
+128
+64
+32
+0
+
+128
+
+512
+
+(h) Stacked HHT, EEMD
+
+256
+
+512
+
+(f) WWA
+
+256
+
+32
+
+256
+
+512
+
+0.5
+
+512
+
+(g) WWZ
+Freq (Hz)
+
+Freq (Hz)
+
+512
+
+(e) Mean Hilbert Energy
+
+1
+
+0
+512
+
+(f) WWA
+
+256
+
+Freq (Hz)
+
+Freq (Hz)
+
+1.5
+
+(e) Mean Hilbert Energy
+
+1
+
+0
+512
+
+0
+-1
+
+Energy
+
+Energy
+
+2
+
+(b) Mean IMF 3
+
+1
+
+Power
+
+Power
+
+1
+
+(a) Cleaned Data
+
+0
+
+(i) Stacked HHT, EMD
+
+256
+128
+64
+32
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+Time (s)
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0.5
+
+0.6
+
+0.7
+
+0.8
+
+0.9
+
+1
+
+Time (s)
+
+Figure A9. The analysis results of GW170823 observed with LIGO Hanford (left) and Livingstone (right). Panels (a) – (i)
+have the same definition as those in Figure 3.
+
+22
+
+0.5
+
+(a) Strain Data
+
+Power (x1021 )
+
+0.5
+
+0
+
+-0.5
+
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+
+Freq (Hz)
+
+(c) WWZ
+Freq (Hz)
+
+2048
+1024
+512
+256
+128
+64
+32
+
+(d) Stacked HHT, EEMD
+
+(e) Stacked HHT, EMD
+
+-0.4
+
+-0.2
+
+0
+
+0.2
+
+0.4
+
+(a) Strain Data
+
+0
+
+-0.5
+
+(b) WWA
+
+Freq (Hz)
+
+2048
+1024
+512
+256
+128
+64
+32
+
+Freq (Hz)
+
+Freq (Hz)
+
+Freq (Hz)
+
+Freq (Hz)
+
+Freq (Hz)
+
+Power (x1021 )
+
+Hu et al.
+
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+
+0.6
+
+(b) WWA
+
+(c) WWZ
+
+(d) Stacked HHT, EEMD
+
+(e) Stacked HHT, EMD
+
+-0.4
+
+-0.2
+
+0
+
+Time (s)
+
+Figure A10. (a) The cross mode of the Gravitational waveform of a CCSN with an initial stellar mass of 40 M and
+without rotation viewed from the polar direction. Panels (b)
+– (e) shows wavelet and Hilbert maps with the same definition
+as those in Figure 6.
+
+0.4
+
+0.6
+
+(a) Strain Data
+
+Figure A11. (a) The plus mode of the Gravitational waveform
+of a CCSN with an initial stellar mass of 40 M and without
+rotation viewed from the equatorial direction. Panels (b) – (e)
+shows wavelet and Hilbert maps with the same definition as
+those in Figure 6.
+
+Power (x1021 )
+
+Power (x1021 )
+
+0.5
+
+0.2
+
+Time (s)
+
+0
+
+1
+
+(a) Strain Data
+
+0
+-1
+
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+
+Freq (Hz)
+
+(c) WWZ
+Freq (Hz)
+
+2048
+1024
+512
+256
+128
+64
+32
+
+(d) Stacked HHT, EEMD
+Freq (Hz)
+
+2048
+1024
+512
+256
+128
+64
+32
+
+(b) WWA
+
+(e) Stacked HHT, EMD
+Freq (Hz)
+
+Freq (Hz)
+
+Freq (Hz)
+
+Freq (Hz)
+
+Freq (Hz)
+
+-0.5
+
+-0.4
+
+-0.2
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+Time (s)
+
+Figure A12. (a) The plus mode of the Gravitational waveform
+of a CCSN with an initial stellar mass of 40 M and without
+rotation viewed from the polar direction. Panels (b) – (e) shows
+wavelet and Hilbert maps with the same definition as those in
+Figure 6.
+
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+
+(b) WWA
+
+(c) WWZ
+
+(d) Stacked HHT, EEMD
+
+(e) Stacked HHT, EMD
+
+-0.4
+
+-0.2
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+Time (s)
+
+Figure A13. (a) The cross mode of the Gravitational waveform of a CCSN with an initial stellar mass of 40 M and
+slow rotation (0.5 rad s−1 ) viewed from the equatorial direction. Panels (b) – (e) shows wavelet and Hilbert maps with the
+same definition as those in Figure 6.
+
+23
+2
+
+(a) Strain Data
+
+Power (x1021 )
+
+Power (x1021 )
+
+2
+1
+0
+-1
+
+2048
+1024
+512
+256
+128
+64
+32
+
+Freq (Hz)
+Freq (Hz)
+
+(c) WWZ
+
+(d) Stacked HHT, EEMD
+Freq (Hz)
+
+2048
+1024
+512
+256
+128
+64
+32
+
+(b) WWA
+
+(e) Stacked HHT, EMD
+Freq (Hz)
+
+Freq (Hz)
+Freq (Hz)
+Freq (Hz)
+Freq (Hz)
+
+2048
+1024
+512
+256
+128
+64
+32
+
+0
+-1
+-2
+
+-2
+2048
+1024
+512
+256
+128
+64
+32
+
+(a) Strain Data
+
+1
+
+-0.4
+
+-0.2
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+
+0.8
+
+(b) WWA
+
+(c) WWZ
+
+(d) Stacked HHT, EEMD
+
+(e) Stacked HHT, EMD
+
+-0.4
+
+-0.2
+
+0
+
+0.2
+
+Time (s)
+
+Figure A14. (a) The cross mode of the Gravitational waveform of a CCSN with an initial stellar mass of 40 M and
+and slow rotation (0.5 rad s−1 ) viewed from the polar direction. Panels (b) – (e) shows wavelet and Hilbert maps with the
+same definition as those in Figure 6.
+
+(a) Strain Data
+
+1
+0
+-1
+
+2048
+1024
+512
+256
+128
+64
+32
+
+Freq (Hz)
+Freq (Hz)
+
+(c) WWZ
+
+(d) Stacked HHT, EEMD
+Freq (Hz)
+
+2048
+1024
+512
+256
+128
+64
+32
+
+(b) WWA
+
+(e) Stacked HHT, EMD
+Freq (Hz)
+
+Freq (Hz)
+Freq (Hz)
+Freq (Hz)
+Freq (Hz)
+
+2048
+1024
+512
+256
+128
+64
+32
+
+0.8
+
+2
+
+(a) Strain Data
+
+1
+0
+-1
+-2
+
+-2
+2048
+1024
+512
+256
+128
+64
+32
+
+0.6
+
+Figure A15. (a) The plus mode of the Gravitational waveform
+of a CCSN with an initial stellar mass of 40 M and slow
+rotation (0.5 rad s−1 ) viewed from the equatorial direction.
+Panels (b) – (e) shows wavelet and Hilbert maps with the same
+definition as those in Figure 6.
+
+Power (x1021 )
+
+Power (x1021 )
+
+2
+
+0.4
+
+Time (s)
+
+-0.4
+
+-0.2
+
+0
+
+0.2
+
+0.4
+
+0.6
+
+0.8
+
+Time (s)
+
+Figure A16. (a) The plus mode of the Gravitational waveform of a CCSN with an initial stellar mass of 40 M and
+and slow rotation (0.5 rad s−1 ) viewed from the polar direction. Panels (b) – (e) shows wavelet and Hilbert maps with the
+same definition as those in Figure 6.
+
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+
+(b) WWA
+
+(c) WWZ
+
+(d) Stacked HHT, EEMD
+
+(e) Stacked HHT, EMD
+
+-0.4
+
+-0.3
+
+-0.2
+
+-0.1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+Time (s)
+
+Figure A17. (a) The cross mode of the Gravitational waveform of a CCSN with an initial stellar mass of 40 M and
+fast rotation (1 rad s−1 ) viewed from the equatorial direction.
+Panels (b) – (e) shows wavelet and Hilbert maps with the same
+definition as those in Figure 6.
+
+24
+(a) Strain Data
+
+Power (x1021 )
+
+20
+0
+-20
+
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+
+Freq (Hz)
+
+(c) WWZ
+Freq (Hz)
+
+2048
+1024
+512
+256
+128
+64
+32
+
+(b) WWA
+
+(d) Stacked HHT, EEMD
+Freq (Hz)
+
+2048
+1024
+512
+256
+128
+64
+32
+
+(e) Stacked HHT, EMD
+Freq (Hz)
+
+Freq (Hz)
+
+Freq (Hz)
+
+Freq (Hz)
+
+Freq (Hz)
+
+Power (x1021 )
+
+Hu et al.
+
+-0.4
+
+-0.3
+
+-0.2
+
+-0.1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+Time (s)
+
+Power (x1021 )
+Freq (Hz)
+Freq (Hz)
+Freq (Hz)
+Freq (Hz)
+
+(a) Strain Data
+
+0
+-20
+
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+
+(b) WWA
+
+(c) WWZ
+
+(d) Stacked HHT, EEMD
+
+(e) Stacked HHT, EMD
+
+-0.4
+
+-0.3
+
+-0.2
+
+-0.1
+
+0
+
+(a) Strain Data
+
+0
+-10
+
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+2048
+1024
+512
+256
+128
+64
+32
+
+(b) WWA
+
+(c) WWZ
+
+(d) Stacked HHT, EEMD
+
+(e) Stacked HHT, EMD
+
+-0.4
+
+-0.3
+
+-0.2
+
+-0.1
+
+0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+Time (s)
+
+Figure A18. (a) The cross mode of the Gravitational waveform of a CCSN with an initial stellar mass of 40 M and and
+fast rotation (1 rad s−1 ) viewed from the polar direction. Panels (b) – (e) shows wavelet and Hilbert maps with the same
+definition as those in Figure 6.
+
+20
+
+10
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+Time (s)
+
+Figure A20. (a) The plus mode of the Gravitational waveform
+of a CCSN with an initial stellar mass of 40 M and and fast
+rotation (1 rad s−1 ) viewed from the polar direction. Panels (b)
+– (e) shows wavelet and Hilbert maps with the same definition
+as those in Figure 6.
+
+Figure A19. (a) The plus mode of the Gravitational waveform of a CCSN with an initial stellar mass of 40 M and
+fast rotation (1 rad s−1 ) viewed from the equatorial direction.
+Panels (b) – (e) shows wavelet and Hilbert maps with the same
+definition as those in Figure 6.
+
+

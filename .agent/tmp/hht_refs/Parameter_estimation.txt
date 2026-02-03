@@ -1,0 +1,1108 @@
+Parameter estimation of protoneutron stars from gravitational wave signals using the
+Hilbert-Huang transform
+Seiya Sasaoka,1 Yusuke Sakai,2 Diego Dominguez,1 Kentaro Somiya,1 Kazuki
+Sakai,3 Ken-ichi Oohara,4, 5 Marco Meyer-Conde,2, 6 and Hirotaka Takahashi2, 7, 8
+1
+
+Department of Physics, Tokyo Institute of Technology,
+2-12-1 Ookayama, Meguro-ku, Tokyo 152-8551, Japan
+2
+Department of Design and Data Science and Research Center for Space Science, Advanced Research Laboratories,
+Tokyo City University, 3-3-1 Ushikubo-Nishi, Tsuzuki-ku, Yokohama, Kanagawa 224-8551, Japan
+3
+Department of Electronic Control Engineering, National Institute of Technology,
+Nagaoka College, 888 Nishikatakai, Nagaoka, Niigata 940-8532, Japan
+4
+Graduate School of Science and Technology, Niigata University,
+8050 Ikarashi-2-no-cho, Nishi-ku, Niigata 950-2181, Japan
+5
+Niigata Study Center, The Open University of Japan,
+754 Ichibancho, Asahimachi-dori, Chuo-ku, Niigata 951-8122, Japan
+6
+University of Illinois at Urbana-Champaign, Department of Physics, Urbana, Illinois 61801-3080, USA
+7
+Institute for Cosmic Ray Research (ICRR), The University of Tokyo,
+5-1-5 Kashiwa-no-Ha, Kashiwa City, Chiba 277-8582, Japan
+8
+Earthquake Research Institute, The University of Tokyo,
+1-1-1 Yayoi, Bunkyo-ku, Tokyo 113-0032, Japan
+(Dated: August 1, 2024)
+Core-collapse supernovae (CCSNe) are potential multimessenger events detectable by current and
+future gravitational wave (GW) detectors. The GW signals emitted during these events are expected
+to provide insights into the explosion mechanism and the internal structures of neutron stars. In
+recent years, several studies have empirically derived the relationship between the frequencies of
+the GW signals originating from the oscillations of protoneutron stars (PNSs) and the physical
+parameters of these stars. This study applies the Hilbert-Huang transform (HHT) [1] to extract
+the frequencies of these modes to infer the physical properties of the PNSs. The results exhibit
+comparable accuracy to a short-time Fourier transform-based estimation, highlighting the potential
+of this approach as a complementary method for extracting physical information from GW signals
+of CCSNe.
+I.
+
+INTRODUCTION
+
+Advanced gravitational-wave (GW) detectors now regularly observe signals from compact binary coalescences,
+with over 90 detections recorded to date [2–5]. The anticipated next milestone for these detectors is the first
+observation of the GW signal from a core-collapse supernova (CCSN). A CCSN is an explosion of a massive
+star, which leads to the formation of either a neutron
+star or a stellar-mass black hole. This explosion usually
+emits electromagnetic waves, neutrinos, and GWs. Although the exact explosion mechanism remains unclear,
+it is widely believed that most stars undergo neutrinodriven explosions [6, 7]. Current GW detectors, like Advanced LIGO [8], Advanced Virgo [9], and KAGRA [10],
+are predicted to detect neutrino-driven CCSN explosions
+occurring within our Galaxy, reaching a distance of ∼ 10
+kpc [11]. Next-generation ground-based GW detectors,
+such as the Cosmic Explorer [12, 13] and the Einstein
+Telescope (ET) [14], are anticipated to enable the detection of these events from other galaxies, such as the Large
+Magellanic Cloud. The kHz-band detector NEMO [15]
+has also been proposed in Australia for studying nuclear
+physics by observing high-frequency GWs. The detection of GW signals and their neutrino counterparts from
+supernovae yields valuable insights into the inner core
+
+of stars, offering crucial information about the explosion
+mechanism.
+Modeling the collapse of the stellar core, the bounce,
+and the subsequent post-bounce evolution is extraordinarily complicated and computationally expensive. However, remarkable progress has been made in multidimensional numerical simulations of CCSN explosions over the
+last decade. The characteristics of the GW waveform depend on the properties of its progenitor, such as mass, angular velocity, and equation of state, as well as on how the
+simulations approximate general relativistic effects and
+treat neutrino transport. Recent developments in these
+computations have revealed common characteristics of
+the CCSN signals. While the current standard burst GW
+search pipeline, the coherent WaveBurst (cWB) [16–18],
+does not rely on specific waveform morphologies, studies
+have begun to utilize known features of GW waveforms
+in detection algorithms. In particular, the application
+of machine learning in detection algorithms [19–24] has
+been studied extensively. Machine learning has also been
+employed to classify equations of state or explosion mechanisms using simulated gravitational waveforms [25–28].
+The GW spectrogram of CCSN explosions highlights
+a noticeable time evolution of the frequency, increasing
+monotonically over time. This so-called gravity-mode,
+also known as g-mode, is believed to be associated with
+the oscillation of PNSs [29, 30]. Characterizing these
+
+2
+modes is essential to enable CCSN asteroseismology using GWs (e.g. [31]). In recent years, numerical simulations have investigated the relationship between the frequency of these modes and the mass and radius of PNSs.
+In their studies [32, 33], Torres-Forné et al., calculated
+the relations between each f /g/p-mode and the physical parameters of the PNS. These relations are considered universal, as they are independent of the equation
+of state or the progenitor mass. Sotani et al. [34] suggest that once we observe a GW signal from a CCSN
+explosion, we can infer the physical parameters of the
+PNS by extracting the frequencies of these modes and
+solving the universal relations. In pursuing this goal,
+Bizouard et al. [35] developed a method to track the gmode in a spectrogram to estimate the PNS properties
+with current or next-generation GW detectors. Powell
+and Müller [36] proposed a reconstruction approach in
+the spectrogram domain with Bayesian inference and an
+asymmetric chirplet model to extract the PNS properties. Bruel et al. [37] extended the study in Ref. [35]
+by combining the data of a multi-detector network and
+tracking the g-mode with a LASSO regression algorithm.
+Moreover, Casallas-Lagos et al. [38] used a neural network regression model to estimate the slope of the highfrequency mode in a CCSN.
+Accurate extraction of GW frequencies is essential
+for inferring the physical properties of GW sources.
+Unlike the short-time Fourier transform (STFT) and
+wavelet transforms, time-frequency maps produced by
+the Hilbert-Huang transform (HHT) [1] are not constrained by the tradeoff between temporal duration and
+bandwidth—this absence of limitation results in high resolutions along both the time and frequency axes.
+In this context, the HHT has been explored within the
+GW research domain, as documented by Camp et al. [39],
+who recorded the first application of the HHT in GW
+analysis. Numerous studies have highlighted the HHT’s
+efficacy in identifying the frequencies of GW signals in
+addition to its use in detection algorithms. This includes post-merger studies of binary neutron star coalescence [40, 41], binary black hole coalescence [42], and
+low-frequency modes induced by neutrino-driven convection and standing accretion shock instability (SASI) in a
+CCSN [43].
+In this study, we propose an HHT-based approach
+2
+for estimating MPNS /RPNS
+from the g-mode GW signal,
+where MPNS and RPNS denote the mass and radius of
+the PNS, respectively. Our method integrates the cWB
+technique [16–18] and the extraction of the g-mode frequencies using the HHT to solve the universal relations
+from Refs. [32, 33]. We first apply the method to the GW
+signal-only case, then test it on signals in the ET’s simulated detector noise, and perform a comparative evaluation of the estimation accuracy with an approach based
+on STFT.
+This paper is organized as follows. Section II outlines
+the data used to evaluate our methodology. Section III
+details our approach for parameter estimation of PNSs.
+
+The results are presented in Sec. IV. Finally, we conclude
+our study in Sec. V.
+
+II.
+
+SIMULATION DATA
+
+Our analysis uses two simulated GW signals generated
+from different models to validate our parameter estimation method under two distinct conditions. The following
+will describe the two GW signals, the ET detector, and
+the preprocessing method.
+
+A.
+
+Signal waveform
+
+This work uses the GW signals from the ‘he3.5’ [44]
+and ‘y20’ [45] models. Both waveforms derive from
+three-dimensional numerical simulations conducted with
+the general-relativistic neutrino hydrodynamics code
+CoCoNuT-FMT [46].
+• The ‘he3.5’ progenitor model is an ultra-stripped star
+evolved from a helium star with an initial mass of
+3.5 M⊙ . The simulation is stopped at 0.7 s after the
+supernova core bounce. The GW amplitude reaches its
+highest at a peak frequency of around 900 Hz.
+• The ‘y20’ progenitor model is a non-rotating, solar
+metallicity helium star with a mass of 20 M⊙ . It has a
+significantly higher mass than the first model, the simulation ends at 1.2 s after core bounce, and the GW
+amplitude is the strongest at ∼ 600 Hz.
+In this simulation, the GW signal comprises two polarization states: h+ (t) (plus) and h× (t) (cross) modes.
+These modes are shown for each model in Fig. 1, where
+the signals are observed from the equatorial plane at a
+source distance of 10 kpc. Each model exhibits specific
+features in their signal originating from PNS oscillations.
+The strain signal h(t) of a GW signal is given, taking
+into account the antenna pattern functions F+ and F× :
+h(t) = F+ (α, δ, ψ, t)h+ (t) + F× (α, δ, ψ, t)h× (t),
+
+(1)
+
+where α is the right ascension, δ is the declination, and
+ψ is the polarization angle.
+
+B.
+
+Einstein Telescope
+
+The Einstein Telescope (ET) [14] is a third-generation
+ground-based GW detector proposed to be constructed
+underground in Europe. Its optical layout has yet to be
+finalized, and various designs have been proposed [47].
+The reference configuration is based on an equilateral
+triangle of three detectors, each consisting of two interferometers with 10-km long arms. One of the two interferometers is specialized for low-frequency bands with
+low laser power and cryogenic mirrors, while the other
+
+3
+
+Strain
+
+2
+
+×10−22
+
+h+ mode
+
+×10−22
+
+h× mode
+
+C.
+he3.5
+y20
+
+0
+−2
+
+Strain
+
+2
+
+he3.5
+y20
+
+0
+
+Data Preprocessing
+
+For the remainder of this analysis, the observer direction will be fixed in the equatorial plane at all times, and
+the sky location will be at the ET detector’s optimal orientation. We sample GW signals and detector noises at a
+sampling rate of 4096 Hz and apply a 100-1200 Hz bandpass filter. Additionally, we apply a notch filter around
+420 Hz to eliminate noise, which appears as a sensitivity
+peak in Fig. 2. The time origin is set to the moment
+when the GW amplitude is maximum. Moreover, parts
+of these computations were carried out using the PyCBC
+software [51].
+
+−2
+0.0
+
+0.2
+0.4
+Time form core bounce [s]
+
+0.6
+
+FIG. 1. Plus-mode and cross-mode GW signals of ‘he3.5’ and
+‘y20’ models at a source distance of 10 kpc.
+
+III.
+
+PARAMETER ESTIMATION
+
+The parameter estimation aims to extract the g-mode
+frequencies and solve the universal relations. The following subsections provide detailed descriptions of this
+procedure.
+
+A.
+
+FIG. 2. Amplitude spectral density of ‘he3.5’ and ‘y20’ generated waveforms, along with the ‘ET-D’ sensitivity curve.
+
+Signal reconstruction
+
+Both experimental data and noise-added simulated
+data undergo the same reconstruction algorithm to extract GW transients. For this purpose, we employ the
+cWB algorithm [16–18], an excess-power algorithm designed to detect and reconstruct GWs with minimal assumptions on waveform morphologies. This reconstruction step is applied to the raw data, illustrated by the
+spectrogram Fig.3, to separate GW signal from detector
+noise. In this figure, ‘he3.5’ model waveform is generated from a source distance of 17 kpc. Following this,
+the HHT procedure to extract g-mode information from
+CCSNe data.
+We used PycWB [52], a modularized Python package
+for the cWB reconstruction. We adopted the internal parameters and thresholds from the LIGO-Virgo targeted
+
+is specialized for high-frequency bands with high laser
+power and mirrors at room temperature.
+Figure 2 shows the ‘ET-D’ sensitivity curve [48] along
+with the frequency spectrum of the characteristic strain
+of the ‘he3.5’ and ‘y20’ waveforms for an observer in the
+equatorial plane from a distance of 10 kpc.
+The characteristic strain hc (t), is a helpful metric for
+comparing detector sensitivities with GW signals’ detectability [11]. Therefore, we use the ‘ET-D’ sensitivity
+curve [49], current data analysis standard, to simulate the
+ET detector noise. Unlike the strain signal h(t) of a GW
+signal, the characteristic strain provides a way to visualize the potential signal strength relative to the detector’s
+sensitivity [50]. Since the original ‘ET-D’ sensitivity is
+computed for an L-shaped interferometer, we normalized
+by sin(60◦ ) to make it for a triangular interferometer.
+
+FIG. 3. Averaged spectrogram over the three ET configurations, each combining the same ‘he3.5’ waveform data with
+their respective detector noise.
+
+4
+injected waveform. In this context, the network match
+denoted N is defined by the following equation:
+K
+X
+k=1
+
+(wk |hk )
+
+v
+N =v
+,
+uK
+uK
+uX
+uX
+t (wk |wk )t (hk |hk )
+k=1
+
+FIG. 4. Pixel distribution of the ‘he3.5’ sample after cWB
+reconstruction.
+
+k=1
+
+where K is the number of detectors, i.e. K = 3 in this
+analysis, and (·|·) denotes a noise-weighted inner product
+defined using the one-sided power spectral density S(f )
+of the detector noise, which is defined as
+Z fmax
+(a|b) = 4Re
+
+2 ×10
+
+0
+−1
+−2
+−0.4
+
+−0.2
+
+0.0
+Time [s]
+
+0.2
+
+ã(f )b̃∗ (f )
+df.
+S(f )
+
+(3)
+
+Here, fmin and fmax represent the integration ranges of
+the Fourier transform, which are set to 100 Hz and 1200
+Hz, respectively. The network match takes a value between 0 and 1. If N = 1, the reconstructed waveforms
+perfectly match the injected waveforms, and N = 0 indicates no match. To evaluate how detectable the injected
+signal hk is under the detector sensitivity S(f ), we define
+the network signal-to-noise ratio (SNR) as
+
+Noise added signal at 17kpc
+Injected signal
+Reconstructed signal
+
+1
+Strain
+
+fmin
+
+E1
+
+−22
+
+(2)
+
+0.4
+
+ρnetwork
+
+k
+
+k
+
+(4)
+
+k=1
+
+FIG. 5. Reconstructed signal from cWB algorithm (orange)
+obtained after processing a combination of ‘he3.5‘ model and
+ET1 detector noise.
+B.
+
+search for CCSNe during the O1 and O2 runs [53]. The
+procedure for cWB reconstruction involves the multiple
+steps. First, time-series data is whitened and turned into
+a time-frequency domain using the Wilson-DaubechiesMeyer wavelet transform [54] for several different timefrequency resolutions. Pixel energy is maximized over all
+sky locations, and pixels exceeding a specified threshold
+are retained for each time-frequency map. Subsequently,
+neighboring pixels are clustered as coincident pixels in
+the multi-resolution time-frequency maps, and coherent
+clusters across multiple detectors serve as triggers. Each
+trigger undergoes evaluation using the constrained maximum likelihood method [16]. For accepted events, waveforms are reconstructed by applying the inverse wavelet
+transform to the selected pixels.
+Eventually, selected pixels by the cWB algorithm are
+shown in Fig. 4. From such likelihood distribution, we
+obtain the reconstructed signal from the ET1 detector as
+shown in Fig. 5. Same reconstruction procedure applies
+to the ‘y20’ model and shown similar results.
+For signals injected into detector noise, we can measure
+how well the reconstructed waveforms match the original
+waveform by making use of the network match [55]. Let
+wk represent the reconstructed waveform and hk be the
+
+v
+uK
+uX
+= t (h |h ).
+
+Hilbert-Huang transform
+
+The HHT [1] comprises two steps: empirical mode decomposition (EMD) and Hilbert spectral analysis. In
+the first step, EMD decomposes a time-series signal into
+a sum of intrinsic mode functions (IMFs) denoted ck (t),
+where k represents the k-th IMF, alongside a residual
+component r(t). Therefore, a given input signal s(t) can
+be decomposed as following
+s(t) = c1..N (t) + r(t),
+
+(5)
+
+where N is the order of empirical mode decomposition
+and the new notation ci..j (t) represents a simplified form
+of the expression:
+ci..j (t) =
+
+j
+X
+
+ck (t)
+
+(6)
+
+k=i
+
+Each IMF, ck (t), represents an oscillatory mode found
+in the original signal, while r(t) accounts for a residual
+trend not captured by the EMD. Following EMD, the
+subsequent step is Hilbert spectral analysis, which employs the Hilbert transform to compute each IMF’s, or
+any combination of IMF’s, instantaneous amplitude (IA)
+
+5
+and frequency (IF). This is usually achieved by computing the analytic signal c̃k (t) from the k-th IMF ck (t), as
+following
+c̃k (t) = ck (t) + iH[ck (t)],
+
+(7)
+
+TABLE II. g-mode coefficients of the universal relations with
+x = M/R2 [32, 33].
+mode
+
+a
+
+b/105
+
+c/106
+
+d/109
+
+2
+
+g1
+
+0
+
+8.67
+
+−51.9
+
+0
+
+2
+
+g2
+
+0
+
+5.88
+
+−86.2
+
+4.67
+
+where H[ck (t)] denotes the Hilbert transform of ck (t),
+defined by
+C.
+
+1
+H[ck (t)] = PV
+π
+
+Solving universal relation
+
+Z ∞
+
+ck (t′ ) ′
+dt .
+′
+−∞ t − t
+
+(8)
+
+Here, PV denotes the Cauchy principal value. The instantaneous amplitude IAk (t) and the instantaneous frequency IFk (t) derived from the analytic signal c̃i (t) are
+defined respectively, as
+IAk (t) = |c̃k (t)|,
+1 d
+IFk (t) =
+arg [c̃k (t)] ,
+2π dt
+
+(9)
+
+The initial HHT uses a basic EMD as a decomposition
+method but often encounters problems such as mode mixing and mode splitting [56]. These issues were addressed
+in a series of empirical updates over the years aiming to
+improve stability.
+• Wu and Huang [56] proposed an extension of EMD
+called Ensemble EMD (EEMD). EEMD works by
+adding white Gaussian noise to the original signal and
+performing EMD on multiple realizations of the noisy
+signal. By averaging the IMFs obtained from different realizations, EEMD improves the accuracy of the
+decomposition.
+• Another extension called Complementary EEMD
+(CEEMD) was proposed by Yeh et al. [57] to enhance
+the decomposition further. In this method, white
+Gaussian noise is added in pairs —both positive and
+negative— to the original signal, producing two sets
+of ensemble IMFs. The final IMFs are the ensemble
+of both the IMFs with positive and negative noises.
+The algorithmic steps of this technique are described
+in Appendix A.
+Extensive details on the computation of the HHT are
+provided in Refs. [40, 41, 43].
+Moreover, the detailed parametrization of the HHT
+used in this analysis is listed in Table I and applies to
+both the‘he3.5’ and ‘y20’ models.
+TABLE I. Parameters of CEEMD.
+Total number of IMFs
+4
+Number of ensemble for CEEMD
+1000
+Standard deviation of added Gaussian noise
+0.8
+Stoppage criterion
+7 × 10−4
+
+Inference of the physical properties of PNSs involves
+utilizing the g-mode universal relations [32, 33]:
+f (t) = a + bx(t) + cx(t)2 + dx(t)3 ,
+
+(10)
+
+where f (t) is the frequency of the g-mode, and x(t) represents the PNS mass MPNS in solar masses divided by the
+squared radius RPNS in kilometers. Using the computed
+IFs and the parameters in Table II, we solve the cubic
+equation Eq. (10) for each time to obtain the time evo2
+. Solutions to the cubic equations
+lution of MPNS /RPNS
+are computed via the eigenvalues of the companion matrix [58]. Finally, we average the estimated values from
+the three ET detectors.
+Eventually, to compare method outcomes in the discussion section, we utilize the root mean squared error
+(RMSE), defined by
+s
+1 X
+RMSE =
+(yi − ŷi )2 ,
+(11)
+N i
+where N is the total number of samples, yi represents the
+true values, and ŷi is the estimated one.
+IV.
+
+RESULTS AND DISCUSSION
+
+In this section, we first present our results for the pure
+GW signals. Next, we will discuss the results for GW
+signals injected into ET detector noise. For each detector and distance, we generated a hundred randomized
+sequences of colored Gaussian noise. The distances considered for the GW signals range from 1 kpc to 29 kpc.
+
+A.
+
+Simple case: pure gravitational wave signals
+
+In this first step, we apply our approach to the pure
+GW signals, which were discussed in Sec. II A. In this
+case, cWB reconstruction is not required.
+Figure 6 shows the extracted IMFs of the ‘he3.5’ signal
+using CEEMD with parameters listed in Table I. We then
+apply the Hilbert spectral analysis to estimate the IAs
+and IFs from the obtained IMFs. The resulting timefrequency map is shown in Fig. 7 (a). In this plot, the
+frequencies of four IMFs are shown, with IMF1, IMF2,
+IMF3, and IMF4 representing the highest to the lowest
+frequencies. Figure 7 (b) shows the time-frequency map
+
+6
+tained from the numerical simulations and are used to
+calculate the RMSEs. For the ‘he3.5’ model, although
+the estimates from the STFT map exhibit some irregularities, they closely approximate the true values across
+all time. In contrast, the estimates from the HHT are
+smoother and align more closely with the true values.
+The ratio of the RMSE for the HHT to that for STFT
+is 0.66, indicating that the HHT provides approximately
+33.9% lower error compared to STFT.
+For the ‘y20’ model, the RMSE of the HHT is approximately 4.1% lower than that of STFT. Both methods
+yield larger RMSE values compared to the ‘he3.5’ model,
+as the estimates progressively deviate from the 2 g2 mode
+after 0 s. Despite this, both methods provide similar estimates, indicating that both the HHT and STFT can
+extract the frequencies of the 2 g2 mode with comparable
+accuracy.
+
+B.
+FIG. 6. IMFs and residual of the HHT for the pure ‘he3.5’
+signal from 10 kpc, observed at ET1 detector. The gray waveform in each plot represents the original signal.
+
+generated using STFT for comparison. Purple line in the
+STFT time-frequency map corresponds to the frequency
+with the maximum amplitude for each time bin. We
+compare the IFs of the HHT map and the purple line of
+STFT map to estimate the frequency of the g-mode.
+Figure 8 shows the IFs and IAs of the HHT along with
+the 2 g1 and 2 g2 modes associated with the ‘he3.5’ model.
+The IF1 appears to estimate the intermediate frequency
+between the 2 g1 and 2 g2 modes from −0.2 s to −0.1 s. In
+general, the evolution of g-modes spans a wide frequency
+range, from a low frequency of ∼ 200 Hz to several thousand Hz. This wide frequency range makes it challenging
+to decompose the signal into a single IMF, potentially
+leading to the mode splitting issue [56]. Our result also
+indicates that this problem occurs, as the 2 g2 mode appears to be separated into several IFs, such as IF1 around
+0 s, IF2 around −0.2 s, and IF3 around −0.3 s. In this
+case, summing the IMFs before applying Hilbert spectral
+analysis is one empirical method to mitigate the effect of
+mode splitting. Figure 9 shows the sums of the three IFs
+and three IAs, labeled as IF1..3 and IA1..3 , respectively.
+Note that IMF4 is excluded from the summation due to
+its relatively small IA and the estimated IF being below
+200 Hz, which is outside the frequency range of the 2 g2
+mode.
+To estimate M/R2 , the extracted frequencies were averaged across the three ET detectors, and the universal
+relation for the 2 g2 mode, as given in Eq. (10), was solved
+at each time step. Figure 10 shows the calculated M/R2
+for both the ‘he3.5’ and ‘y20’ models, using the extracted
+frequencies from the STFT map (Fig. 7 (b)) and IF1..3 .
+The green lines in Fig. 10 represent the true values ob-
+
+Detector noise-added gravitational wave signal
+
+The GW waveforms were injected in simulated 100 different detector noises and the injected waveforms in each
+noise were reconstructed by cWB [16–18].
+Figure 11 shows the distributions of the network match
+defined in Eq. (2) as the function of each distance or network SNR in Eq. (4) for each signal model. The plot
+exhibits the expected behavior; when the source distance
+is small, the cWB can accurately reconstruct the waveform. As the distance increases, the network match decreases, and its variance increases. Similar results are observed for the ‘y20’ case, despite that the network match
+is larger than the ‘he3.5’ case.
+Estimation of M/R2 is conducted via three methods; (i) the method ‘STFT’ denotes the extraction
+of frequencies from the original STFT map using the
+frequencies with maximum amplitude for each time
+bin, (ii) ‘cWB+STFT’ refers to the application of the
+cWB waveform reconstruction and the extraction of frequencies from the reconstructed STFT map, and (iii)
+‘cWB+HHT’ denotes the use of the cWB waveform reconstruction and the HHT.
+The RMSE for each method is shown in Fig. 12 for
+each signal model. In the ‘he3.5’ case, for signals with
+distances less than 7 kpc, the three methods exhibit almost the same RMSE. However, as the source distance
+increases, the STFT-based method experiences significantly increased RMSEs, due to the influence of noise
+other than the 2 g2 mode signal. As the distance increases,
+the two methods employing the cWB waveform reconstruction reduce the effect of noise through the extraction
+of coherent 2 g2 mode signals across multiple detectors.
+Regarding the ‘y20’ case, the RMSE of the STFT-based
+method increases at the distances greater than 15 kpc,
+while for the ‘he3.5’ case, the RMSE starts to increase at
+9 kpc. As for the accuracy of signal reconstruction shown
+in Fig. 11, the network match of the ‘y20’ signal at 15
+kpc is equal to that of the ‘he3.5’ signal at 9 kpc. These
+
+7
+
+(a) HHT
+(b) STFT
+FIG. 7. Time-frequency maps of the pure ‘he3.5’ signal from 10 kpc, observed at ET1 detector.
+
+IF3
+IA3
+
+IF4
+IA4
+
+1000
+800
+
+g1 mode
+
+2
+
+g2 mode
+
+1200
+
+4
+
+1000
+
+3
+
+600
+2
+
+400
+
+1
+
+200
+0
+−0.3
+
+−0.2
+
+−0.1
+0.0
+Time [s]
+
+0.1
+
+0
+0.2
+
+FIG. 8. IFs and IAs of the HHT from pure signal for each
+model. The 2 g1 and 2 g2 modes from the simulations are also
+plotted as the reference.
+
+results imply that for signals with the same reconstruction accuracy, the estimation error of M/R2 is also similar. Furthermore, the two methods, ‘cWB+STFT’ and
+‘cWB+HHT’, have equivalent RMSE values and the estimation. Based on these results, we conclude that both
+the ‘cWB + STFT’ and ‘cWB + HHT’ methods provide
+estimations of M/R2 with comparable accuracy.
+In conclusion, our HHT approach showed similar results to the STFT-based one in terms of the RMSE, highlighting the potential of this approach as a complementary method to extract the physical properties of PNSs
+from GW signals of CCSNe.
+
+V.
+
+IF1...3
+IA1...3
+
+×10−23 5
+
+IA
+
+IF/Frequency [Hz]
+
+1200
+
+2
+
+CONCLUSIONS
+
+In this study, we demonstrated the use of the HHT for
+estimating M/R2 of PNSs from their g-mode GW signals,
+using both the ‘he3.5’ and ‘y20’ signals. We first applied
+it to the pure GW signal and confirmed the effectiveness
+
+2
+
+g2 mode
+
+×10−22
+
+1.25
+1.00
+
+800
+0.75
+
+600
+
+0.50
+
+400
+
+0.25
+
+200
+0
+−0.3
+
+IA
+
+IF2
+IA2
+
+IF/Frequency [Hz]
+
+IF1
+IA1
+
+−0.2
+
+−0.1
+0.0
+Time [s]
+
+0.1
+
+0.00
+0.2
+
+FIG. 9. IF1..3 and IA1..3 from the HHT. The 2 g2 mode from
+the simulations is plotted as the reference.
+
+of our method to extract the g-mode frequencies. We
+then tested our approach, the combination of the cWB
+reconstruction and the HHT, for the signal injected into
+the ET detector noise. Our new approach showed comparable results to the STFT-based one in terms of the
+RMSE.
+For the extraction of the 2 g2 mode using the HHT,
+the multiple g-modes appear in the IMFs. In this study,
+we utilize the combined IMFs to reduce the effect of
+mode splitting. Further improved techniques for addressing mode mixing and splitting will enhance the performance of extraction. Furthermore, such techniques can
+be applied not only to the extraction of multiple g-modes
+but also to the extraction of other features such as the
+SASI [59, 60]. Our new complementary approach shows
+comparable results, and having two independent methods
+that yield equivalent accuracy might be valuable in realworld applications where the actual value is unknown. To
+validate the efficacy of our method further, testing with
+additional simulation data is necessary. For waveform reconstruction, we utilized the cWB algorithm, which does
+
+8
+not assume a waveform model in advance. We will also
+use another reconstruction method, BayesWave [61, 62],
+and test the effectiveness of our method.
+
+ACKNOWLEDGMENTS
+
+The authors would like to thank Jade Powell and
+Bernhard Müller for providing their simulation data.
+This research was supported in part by the Japan Society for the Promotion of Science (JSPS) Grant-in-Aid
+for Scientific Research [Nos. 22H01228, 23K22499 (K.
+Somiya), 21K13926 (K. Sakai), 22K03614 (K. Oohara)
+and Nos. 19H01901, 23H01176, 23K25872 and 23H04520
+(H. Takahashi)] and Grant-in-Aid for JSPS Fellows [No.
+22KF0329 (M. Meyer-Conde)]. This research was supported by the Joint Research Program of the Institute
+for Cosmic Ray Research, University of Tokyo, and Tokyo
+City University Prioritised Studies.
+
+Appendix A: Complementary ensemble empirical
+mode decomposition
+
+We employ the complementary ensemble empirical
+mode decomposition [57] to decompose signals into intrinsic mode functions. The decomposition process of a
+signal s(t) is as follows:
+1. Generate N time-series sequences {nk (t)} (k =
+1, . . . , N ), where each sequence represents white
+Gaussian noise with mean zero and standard deviation σ.
+(+)
+
+2. Construct noise-added signal sk (t) and noise(−)
+subtracted signal sk (t) to the target signal s(t):
+(±)
+
+sk (t) = s(t) ± nk (t)
+
+(A1)
+
+for k = 1, . . . , N .
+(±)
+
+3. Employ EMD to each sk (t) with the stoppage
+criterion based on a Cauchy convergence test
+with a predetermined value ϵ [40] to obtain IMFs
+(±)
+(±)
+{ci,k (t)}, alongside the residuals rk (t):
+(±)
+
+sk (t) =
+
+X (±)
+(±)
+ci,k (t) + rk (t).
+
+(A2)
+
+i
+
+4. Calculate the final IMFs and residue by
+N
+
+1 X  (+)
+(−)
+ci (t) =
+ci,k (t) + ci,k (t) ,
+2N
+
+(A3)
+
+N
+
+1 X  (+)
+(−)
+rk (t) + rk (t) .
+2N
+
+(A4)
+
+k=1
+
+r(t) =
+
+k=1
+
+9
+
+FIG. 10. Estimates of M/R2 calculated using the pure GW signal from 10 kpc. True values are obtained from numerical
+simulation.
+
+FIG. 11. Distributions of the network match as the function of distance or network SNR. Each boxplot shows its an interquartile
+range for 100 different noise realizations.
+
+FIG. 12. Distributions of the RMSE of M/R2 as a function of source distance for the three methods. Each boxplot shows its
+an interquartile range for 100 different noise realizations.
+
+10
+
+[1] N. E. Huang, Z. Shen, S. R. Long, M. C. Wu, H. H. Shih,
+Q. Zheng, N. C. Yen, C. C. Tung, and H. H. Liu, The empirical mode decomposition and the Hilbert spectrum for
+nonlinear and non-stationary time series analysis, Proc.
+R. Soc. A 454, 903 (1998).
+[2] B. P. Abbott et al. (LIGO Scientific Collaboration and
+Virgo Collaboration), GWTC-1: A gravitational-wave
+transient catalog of compact binary mergers observed by
+LIGO and Virgo during the first and second observing
+runs, Phys. Rev. X 9, 031040 (2019).
+[3] R. Abbott et al. (LIGO Scientific Collaboration and
+Virgo Collaboration), GWTC-2: Compact binary coalescences observed by LIGO and Virgo during the first
+half of the third observing run, Phys. Rev. X 11, 021053
+(2021).
+[4] R. Abbott et al. (The LIGO Scientific Collaboration
+and the Virgo Collaboration), GWTC-2.1: Deep extended catalog of compact binary coalescences observed
+by LIGO and Virgo during the first half of the third observing run, Phys. Rev. D 109, 022001 (2024).
+[5] R. Abbott et al. (LIGO Scientific Collaboration, Virgo
+Collaboration, and KAGRA Collaboration), GWTC-3:
+Compact binary coalescences observed by LIGO and
+Virgo during the second part of the third observing run,
+Phys. Rev. X 13, 041039 (2023).
+[6] H.-T. Janka, Explosion mechanisms of core-collapse supernovae, Annu. Rev. Nucl. Part. Sci. 62, 407 (2012).
+[7] A. Mezzacappa and M. Zanolin, Gravitational waves
+from neutrino-driven core collapse supernovae: Predictions, detection, and parameter estimation (2024),
+arXiv:2401.11635.
+[8] J. Aasi et al. (LIGO Scientific Collaboration), Advanced
+LIGO, Classical Quantum Gravity 32, 074001 (2015).
+[9] F. Acernese et al., Advanced Virgo: A second-generation
+interferometric gravitational wave detector, Classical
+Quantum Gravity 32, 024001 (2014).
+[10] T. Akutsu et al., KAGRA: 2.5 generation interferometric
+gravitational wave detector, Nat. Astron. 3, 35 (2019).
+[11] M. J. Szczepańczyk, J. M. Antelis, M. Benjamin,
+M. Cavaglià, D. Gondek-Rosińska, T. Hansen, S. Klimenko, M. D. Morales, C. Moreno, S. Mukherjee,
+G. Nurbek, J. Powell, N. Singh, S. Sitmukhambetov,
+P. Szewczyk, O. Valdez, G. Vedovato, J. Westhouse,
+M. Zanolin, and Y. Zheng, Detecting and reconstructing
+gravitational waves from the next galactic core-collapse
+supernova in the advanced detector era, Phys. Rev. D
+104, 102002 (2021).
+[12] B. P. Abbott et al., Exploring the sensitivity of next generation gravitational wave detectors, Classical Quantum
+Gravity 34, 044001 (2017).
+[13] D. Reitze, R. X. Adhikari, S. Ballmer, B. Barish, L. Barsotti, G. Billingsley, D. A. Brown, Y. Chen, D. Coyne,
+R. Eisenstein, M. Evans, P. Fritschel, E. D. Hall, A. Lazzarini, G. Lovelace, J. Read, B. S. Sathyaprakash,
+D. Shoemaker, J. Smith, C. Torrie, S. Vitale, R. Weiss,
+C. Wipf, and M. Zucker, Cosmic Explorer: The U.S. contribution to gravitational-wave astronomy beyond LIGO
+(2019), arXiv:1907.04833.
+[14] M. Punturo et al., The Einstein Telescope: A thirdgeneration gravitational wave observatory, Classical
+Quantum Gravity 27, 194002 (2010).
+
+[15] K. Ackley et al., Neutron star extreme matter observatory: A kilohertz-band gravitational-wave detector in the
+global network, Pub. Astron. Soc. Aust. 37, e047 (2020).
+[16] S. Klimenko, I. Yakushin, A. Mercer, and G. Mitselmakher, A coherent method for detection of gravitational
+wave bursts, Classical Quantum Gravity 25, 114029
+(2008).
+[17] S. Klimenko, G. Vedovato, M. Drago, F. Salemi, V. Tiwari, G. A. Prodi, C. Lazzaro, K. Ackley, S. Tiwari, C. F.
+Da Silva, and G. Mitselmakher, Method for detection and
+reconstruction of gravitational wave transients with networks of advanced detectors, Phys. Rev. D 93, 042004
+(2016).
+[18] M. Drago et al., Coherent WaveBurst, A pipeline for unmodeled gravitational-wave data analysis, SoftwareX 14,
+100678 (2021).
+[19] P. Astone, P. Cerdá-Durán, I. Di Palma, M. Drago,
+F. Muciaccia, C. Palomba, and F. Ricci, New method
+to observe gravitational waves emitted by core collapse
+supernovae, Phys. Rev. D 98, 122002 (2018).
+[20] A. Iess, E. Cuoco, F. Morawski, and J. Powell, Corecollapse supernova gravitational-wave search and deep
+learning classification, Mach. Learn. 1, 025014 (2020).
+[21] M. L. Chan, I. S. Heng, and C. Messenger, Detection
+and classification of supernova gravitational wave signals:
+A deep learning approach, Phys. Rev. D 102, 043022
+(2020).
+[22] M. López, I. Di Palma, M. Drago, P. Cerdá-Durán, and
+F. Ricci, Deep learning for core-collapse supernova detection, Phys. Rev. D 103, 063011 (2021).
+[23] A. Iess, E. Cuoco, F. Morawski, C. Nicolaou, and O. Lahav, LSTM and CNN application for core-collapse supernova search in gravitational wave real data, Astron.
+Astrophys. 669, A42 (2023).
+[24] S. Sasaoka, N. Koyama, D. Dominguez, Y. Sakai,
+K. Somiya, Y. Omae, and H. Takahashi, Visualizing
+convolutional neural network for classifying gravitational
+waves from core-collapse supernovae, Phys. Rev. D 108,
+123033 (2023).
+[25] M. C. Edwards, Classifying the equation of state from rotating core collapse gravitational waves with deep learning, Phys. Rev. D 103, 024025 (2021).
+[26] A. Saiz-Pérez, A. Torres-Forné, and J. A. Font, Classification of core-collapse supernova explosions with learned
+dictionaries, Mon. Not. R. Astron. Soc. 512, 3815 (2022).
+[27] A. Mitra, D. Orel, Y. S. Abylkairov, B. Shukirgaliyev,
+and E. Abdikamalov, Probing nuclear physics with supernova gravitational waves and machine learning, Mon.
+Not. R. Astron. Soc. 529, 3582 (2024).
+[28] J. Powell, A. Iess, M. Llorens-Monteagudo, M. Obergaulinger, B. Müller, A. Torres-Forné, E. Cuoco, and
+J. A. Font, Determining the core-collapse supernova explosion mechanism with current and future gravitationalwave observatories, Phys. Rev. D 109, 063019 (2024).
+[29] N. Andersson and K. D. Kokkotas, Towards gravitational
+wave asteroseismology, Mon. Not. R. Astron. Soc. 299,
+1059 (1998).
+[30] H. Sotani and T. Takiwaki, Gravitational wave asteroseismology with protoneutron stars, Phys. Rev. D 94,
+044043 (2016).
+[31] H. Sotani, T. Kuroda, T. Takiwaki, and K. Kotake, De-
+
+11
+pendence of the outer boundary condition on protoneutron star asteroseismology with gravitational-wave signatures, Phys. Rev. D 99, 123024 (2019).
+[32] A. Torres-Forné, P. Cerdá-Durán, M. Obergaulinger,
+B. Müller, and J. A. Font, Universal relations for
+gravitational-wave asteroseismology of protoneutron
+stars, Phys. Rev. Lett. 123, 051102 (2019).
+[33] A. Torres-Forné, P. Cerdá-Durán, M. Obergaulinger,
+B. Müller, and J. A. Font, Erratum: Universal relations
+for gravitational-wave asteroseismology of protoneutron
+stars [Phys. Rev. Lett. 123, 051102 (2019)], Phys. Rev.
+Lett. 127, 239901 (2021).
+[34] H. Sotani, T. Takiwaki, and H. Togashi, Universal relation for supernova gravitational waves, Phys. Rev. D
+104, 123009 (2021).
+[35] M.-A. Bizouard, P. Maturana-Russel, A. Torres-Forné,
+M. Obergaulinger, P. Cerdá-Durán, N. Christensen, J. A.
+Font, and R. Meyer, Inference of protoneutron star properties from gravitational-wave data in core-collapse supernovae, Phys. Rev. D 103, 063006 (2021).
+[36] J. Powell and B. Müller, Inferring astrophysical parameters of core-collapse supernovae from their gravitationalwave emission, Phys. Rev. D 105, 063018 (2022).
+[37] T. Bruel, M.-A. Bizouard, M. Obergaulinger,
+P. Maturana-Russel, A. Torres-Forné, P. Cerdá-Durán,
+N. Christensen, J. A. Font, and R. Meyer, Inference of
+protoneutron star properties in core-collapse supernovae
+from a gravitational-wave detector network, Phys. Rev.
+D 107, 083029 (2023).
+[38] A. Casallas-Lagos, J. M. Antelis, C. Moreno, M. Zanolin, A. Mezzacappa, and M. J. Szczepańczyk, Characterizing the temporal evolution of the high-frequency gravitational wave emission for a core collapse supernova with
+laser interferometric data: A neural network approach,
+Phys. Rev. D 108, 084027 (2023).
+[39] J. B. Camp, J. K. Cannizzo, and K. Numata, Application
+of the Hilbert-Huang transform to the search for gravitational waves, Phys. Rev. D 75, 061101 (2007).
+[40] M. Kaneyama, K. Oohara, H. Takahashi, Y. Sekiguchi,
+H. Tagoshi, and M. Shibata, Analysis of gravitational
+waves from binary neutron star merger by Hilbert-Huang
+transform, Phys. Rev. D 93, 123010 (2016).
+[41] I. Yoda, K. Oohara, H. Takahashi, and K. Sakai, Precise analysis of gravitational waves from binary neutron
+star coalescence using Hilbert-Huang transform based
+on Akima spline interpolation, Prog. Theor. Exp. Phys.
+2023, 083E01 (2023).
+[42] K. Sakai, K. Oohara, H. Nakano, M. Kaneyama, and
+H. Takahashi, Estimation of starting times of quasinormal modes in ringdown gravitational waves with
+the Hilbert-Huang transform, Phys. Rev. D 96, 044047
+(2017).
+[43] M. Takeda, Y. Hiranuma, N. Kanda, K. Kotake,
+T. Kuroda, R. Negishi, K. Oohara, K. Sakai, Y. Sakai,
+T. Sawada, H. Takahashi, S. Tsuchida, Y. Watanabe, and
+T. Yokozawa, Application of the Hilbert-Huang transform for analyzing standing-accretion-shock-instability
+induced gravitational waves in a core-collapse supernova,
+Phys. Rev. D 104, 084063 (2021).
+[44] J. Powell and B. Müller, Gravitational wave emission
+from 3D explosion models of core-collapse supernovae
+with low and normal explosion energies, Mon. Not. R.
+Astron. Soc. 487, 1178 (2019).
+[45] J. Powell and B. Müller, Three-dimensional core-collapse
+
+supernova simulations of massive and rotating progenitors, Mon. Not. R. Astron. Soc. 494, 4665 (2020).
+[46] B. Müller, H.-T. Janka, and H. Dimmelmeier, A new
+multi-dimensional general relativistic neutrino hydrodynamic code for core-collapse supernovae. I. Method and
+code tests in spherical symmetry, Astrophys. J. Suppl.
+Ser. 189, 104 (2010).
+[47] M. Branchesi et al., Science with the Einstein Telescope:
+A comparison of different designs, J. Cosmol. Astropart.
+Phys. 2023 (07), 068.
+[48] M. Punturo, ET sensitivities page, https://www.etgw.eu/index.php/etsensitivities (2011).
+[49] S. Hild et al., Sensitivity studies for third-generation
+gravitational wave observatories, Classical Quantum
+Gravity 28, 094013 (2011).
+[50] C. J. Moore, R. H. Cole, and C. P. L. Berry,
+Gravitational-wave sensitivity curves, Classical and
+Quantum Gravity 32, 015014 (2014).
+[51] A. Nitz et al., gwastro/pycbc: v2.3.3 release of pycbc
+(2024).
+[52] Y. Xu, S. Tiwari, and M. Drago, PycWB: A user-friendly,
+modular, and python-based framework for gravitational
+wave unmodelled search, SoftwareX 26, 101639 (2024).
+[53] B. P. Abbott et al. (LIGO Scientific Collaboration and
+Virgo Collaboration and ASAS-SN Collaboration and
+DLT40 Collaboration), Optically targeted search for
+gravitational waves emitted by core-collapse supernovae
+during the first and second observing runs of Advanced
+LIGO and Advanced Virgo, Phys. Rev. D 101, 084002
+(2020).
+[54] V. Necula, S. Klimenko, and G. Mitselmakher, Transient analysis with fast wilson-daubechies time-frequency
+transform, J. Phys. Conf. Ser. 363, 012032 (2012).
+[55] B. P. Abbott et al. (LIGO Scientific Collaboration and
+Virgo Collaboration), Observing gravitational-wave transient GW150914 with minimal assumptions, Phys. Rev.
+D 93, 122004 (2016).
+[56] Z. Wu and N. E. Huang, Ensemble empirical mode
+decomposition: A noise-assisted data analysis method,
+Adv. Adapt. Data Anal. 01, 1 (2009).
+[57] J.-R. Yeh, J.-S. Shieh, and N. E. Huang, Complementary
+ensemble empirical mode decomposition: A novel noise
+enhanced data analysis method, Adv. Adapt. Data Anal.
+02, 135 (2010).
+[58] E. Anderson, Z. Bai, C. Bischof, L. S. Blackford, J. Demmel, J. J. Dongarra, J. Du Croz, S. Hammarling,
+A. Greenbaum, A. McKenney, and D. Sorensen, LAPACK Users’ guide (third ed.) (Society for Industrial and
+Applied Mathematics, USA, 1999).
+[59] L. F. Roberts, G. Shen, V. Cirigliano, J. A. Pons,
+S. Reddy, and S. E. Woosley, Protoneutron star cooling with convection: The effect of the symmetry energy,
+Phys. Rev. Lett. 108, 061103 (2012).
+[60] T. Kuroda, K. Kotake, and T. Takiwaki, A new
+gravitational-wave signature from standing accretion
+shock instability in supernovae, Astrophys. J. Lett. 829,
+L14 (2016).
+[61] N. J. Cornish and T. B. Littenberg, Bayeswave: Bayesian
+inference for gravitational wave bursts and instrument
+glitches, Classical Quantum Gravity 32, 135012 (2015).
+[62] N. J. Cornish, T. B. Littenberg, B. Bécsy, K. Chatziioannou, J. A. Clark, S. Ghonge, and M. Millhouse,
+Bayeswave analysis pipeline in the era of gravitational
+wave observations, Phys. Rev. D 103, 044006 (2021).
+
+
