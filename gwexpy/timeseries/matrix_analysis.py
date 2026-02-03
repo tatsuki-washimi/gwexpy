@@ -441,7 +441,7 @@ class TimeSeriesMatrixAnalysisMixin:
         self: Any,
         *,
         method: str = "pca",
-        eps: float = 1e-12,
+        eps: float | str | None = "auto",
         n_components: int | None = None,
         return_model: bool = True,
     ) -> Any:

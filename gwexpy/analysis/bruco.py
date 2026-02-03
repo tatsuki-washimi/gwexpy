@@ -655,9 +655,9 @@ class BrucoResult:
             color = self._coherence_color(coh)  # Color logic uses Squared [0-1]
             rows.append(
                 "<tr>"
-                f"<td>{freq:.3f}</td>"
+                f"<td>{freq:.3g}</td>"
                 f"<td>{html.escape(str(ch))}</td>"
-                f"<td style='background-color:{color}'>{display_coh:.3f}</td>"
+                f"<td style='background-color:{color}'>{display_coh:.3e}</td>"
                 f"<td>{proj:.3e}</td>"
                 "</tr>"
             )

@@ -27,6 +27,7 @@ class HHTSpectrogram(Spectrogram):
         import matplotlib.colors as mcolors
         import matplotlib.pyplot as plt
         import numpy as np
+        from gwexpy.numerics.constants import SAFE_FLOOR
         from gwpy.plot import Plot
 
         # Extract HHT-specific defaults or from user input
@@ -69,22 +70,19 @@ class HHTSpectrogram(Spectrogram):
         vmin = kwargs.pop("vmin", None)
         vmax = kwargs.pop("vmax", None)
 
-        if norm == "log" and vmin is None:
-            # Get positive minimum from data
-            data_array = np.asarray(self.value)
+        data_array = np.asarray(self.value)
+        if norm == "log":
             positive_data = data_array[data_array > 0]
-            if len(positive_data) > 0:
-                vmin = np.min(positive_data)
-            else:
-                vmin = 1e-10  # fallback
-
-        if norm == "log" and vmax is None:
-            data_array = np.asarray(self.value)
-            positive_data = data_array[data_array > 0]
-            if len(positive_data) > 0:
-                vmax = np.max(positive_data)
-            else:
-                vmax = 1.0  # fallback
+            if vmin is None:
+                if positive_data.size > 0:
+                    vmin = float(np.percentile(positive_data, 1))
+                else:
+                    vmin = SAFE_FLOOR
+            if vmax is None:
+                if positive_data.size > 0:
+                    vmax = float(np.percentile(positive_data, 99))
+                else:
+                    vmax = 1.0  # fallback
 
         # Build norm object if string
         if norm == "log":

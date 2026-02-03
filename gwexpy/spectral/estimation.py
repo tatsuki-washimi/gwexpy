@@ -426,7 +426,7 @@ def bootstrap_spectrogram(
         if ratio is not None and ratio > 1.0:
             block_size = int(np.ceil(ratio))
             logger.info(
-                f"Auto-selected block_size={block_size} based on overlap ratio {ratio:.2f}"
+                f"Auto-selected block_size={block_size} based on overlap ratio {ratio:.3g}"
             )
         else:
             block_size = None

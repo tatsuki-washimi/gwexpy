@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 from collections import UserDict, UserList
 from typing import SupportsIndex
 
 import h5py
+
+logger = logging.getLogger(__name__)
 from astropy import units as u
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 
@@ -85,8 +88,8 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                             new_list.append(
                                 Spectrogram.read(h5f, format="hdf5", path=ds_name)
                             )
-                        except Exception:
-                            pass
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            logger.debug("Skipping dataset %s: %s", ds_name, e)
                     self.extend(new_list)
                     return self
                 if layout == LAYOUT_GROUP:
@@ -96,11 +99,11 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                             new_list.append(
                                 Spectrogram.read(grp, format="hdf5", path="data")
                             )
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
                             try:
                                 new_list.append(Spectrogram.read(grp, format="hdf5"))
-                            except Exception:
-                                pass
+                            except (KeyError, ValueError, TypeError, OSError) as e2:
+                                logger.debug("Skipping group %s: %s", grp_name, e2)
                     self.extend(new_list)
                     return self
             _h5py = require_optional("h5py")
@@ -427,7 +430,8 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
                     for ds_name in order:
                         try:
                             s = Spectrogram.read(h5f, format="hdf5", path=ds_name)
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         key = keymap.get(ds_name, ds_name)
                         self[key] = s
@@ -437,10 +441,11 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
                         try:
                             grp = h5f[grp_name]
                             s = Spectrogram.read(grp, format="hdf5", path="data")
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
                             try:
                                 s = Spectrogram.read(grp, format="hdf5")
-                            except Exception:
+                            except (KeyError, ValueError, TypeError, OSError) as e2:
+                                logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         key = keymap.get(grp_name, grp_name)
                         self[key] = s

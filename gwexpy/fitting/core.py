@@ -15,6 +15,14 @@ from .models import get_model
 
 logger = logging.getLogger(__name__)
 
+try:
+    from gwexpy.numerics.constants import SAFE_FLOOR_STRAIN
+except ImportError:
+    SAFE_FLOOR_STRAIN = 1e-50  # floor below GW strain power scale (~1e-42)
+
+# Relative jitter for MCMC initialization around best-fit parameters.
+RELATIVE_JITTER = 1e-4
+
 
 class ParameterValue(float):
     """
@@ -724,7 +732,7 @@ class FitResult:
             [
                 self.minuit.errors[p]
                 if self.minuit.errors[p] > 0
-                else 1e-4 * abs(v) + 1e-8
+                else max(abs(v) * RELATIVE_JITTER, SAFE_FLOOR_STRAIN)
                 for p, v in zip(float_params, p0_float)
             ]
         )

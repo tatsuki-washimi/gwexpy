@@ -83,6 +83,27 @@ class SeriesMatrixMathMixin:
                     out[i, j] = u.Quantity(self._value[i, j], u_ij).to_value(ref_unit)
         return out
 
+    @staticmethod
+    def _invert_with_rescale(mat: np.ndarray) -> np.ndarray:
+        """Invert with preconditioning if the direct inverse is singular."""
+        try:
+            return np.linalg.inv(mat)
+        except np.linalg.LinAlgError:
+            sigma = np.nanmax(np.abs(mat))
+            if not np.isfinite(sigma) or sigma == 0:
+                raise
+            mat_scaled = mat / sigma
+            eye = np.eye(mat.shape[0], dtype=mat.dtype)
+            inv_scaled = np.linalg.solve(mat_scaled, eye)
+            return inv_scaled / sigma
+
+    @classmethod
+    def _invert_stack_with_rescale(cls, mats: np.ndarray) -> np.ndarray:
+        inv_stack = np.empty_like(mats)
+        for idx, mat in enumerate(mats):
+            inv_stack[idx] = cls._invert_with_rescale(mat)
+        return inv_stack
+
     def __matmul__(self, other):
         """
         Matrix multiplication (broadcasting over sample axis).
@@ -264,7 +285,8 @@ class SeriesMatrixMathMixin:
         assert ref_unit is not None
         common = self._to_common_unit_values(ref_unit)
         mats = np.moveaxis(common, 2, 0)
-        det_vals = np.linalg.det(mats)
+        sign, logdet = np.linalg.slogdet(mats)
+        det_vals = sign * np.exp(logdet)
         result_unit = ref_unit**nrow
 
         series_cls = getattr(self, "series_class", None)
@@ -293,7 +315,10 @@ class SeriesMatrixMathMixin:
         assert ref_unit is not None
         common = self._to_common_unit_values(ref_unit)
         mats = np.moveaxis(common, 2, 0)
-        inv_stack = np.linalg.inv(mats)
+        try:
+            inv_stack = np.linalg.inv(mats)
+        except np.linalg.LinAlgError:
+            inv_stack = self._invert_stack_with_rescale(mats)
         inv_vals = np.moveaxis(inv_stack, 0, 2)
 
         inv_unit = ref_unit**-1
@@ -395,7 +420,10 @@ class SeriesMatrixMathMixin:
                 np.take(stack, eliminate_rows_idx, axis=1), eliminate_cols_idx, axis=2
             )
 
-            D_inv = np.linalg.inv(D)
+            try:
+                D_inv = np.linalg.inv(D)
+            except np.linalg.LinAlgError:
+                D_inv = self._invert_stack_with_rescale(D)
             schur_block = A - np.matmul(np.matmul(B, D_inv), C)
             result_vals = np.moveaxis(schur_block, 0, 2)
 

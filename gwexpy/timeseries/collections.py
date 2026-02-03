@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any, SupportsIndex
 
 import h5py
+
+logger = logging.getLogger(__name__)
 from astropy import units as u
 
 try:
@@ -75,7 +78,8 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
                     for ds_name in keys:
                         try:
                             ts = TimeSeries.read(h5f, format="hdf5", path=ds_name)
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         orig_key = keymap.get(ds_name, ds_name)
                         out[orig_key] = ts
@@ -85,10 +89,11 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
                         try:
                             grp = h5f[grp_name]
                             ts = TimeSeries.read(grp, format="hdf5", path="data")
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
                             try:
                                 ts = TimeSeries.read(grp, format="hdf5")
-                            except Exception:
+                            except (KeyError, ValueError, TypeError, OSError) as e2:
+                                logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = ts
@@ -1956,7 +1961,8 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
                     for ds_name in order:
                         try:
                             ts = TimeSeries.read(h5f, format="hdf5", path=ds_name)
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         out_items.append(ts)
                     return cls(*out_items)
@@ -1965,10 +1971,11 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
                         try:
                             grp = h5f[grp_name]
                             ts = TimeSeries.read(grp, format="hdf5", path="data")
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
                             try:
                                 ts = TimeSeries.read(grp, format="hdf5")
-                            except Exception:
+                            except (KeyError, ValueError, TypeError, OSError) as e2:
+                                logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         out_items.append(ts)
                     return cls(*out_items)

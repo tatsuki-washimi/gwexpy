@@ -234,7 +234,8 @@ class TensorField(FieldDict):
             )
 
         arr = self.to_array(order="last")
-        det_val = np.linalg.det(arr)
+        sign, logdet = np.linalg.slogdet(arr)
+        det_val = sign * np.exp(logdet)
         dim = arr.shape[-1]
 
         first = next(iter(self.values()))

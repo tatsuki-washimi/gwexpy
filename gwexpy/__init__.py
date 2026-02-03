@@ -31,7 +31,7 @@ try:  # pragma: no cover - defensive
         for _name in ("register_reader", "register_identifier", "register_writer"):
             if not hasattr(_io_reg, _name):
                 setattr(_io_reg, _name, _noop)  # type: ignore[attr-defined]
-except Exception:
+except (ImportError, AttributeError):
     pass
 
 # Keep docs/tutorial output readable by suppressing known noisy warnings.
