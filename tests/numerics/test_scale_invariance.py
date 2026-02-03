@@ -7,10 +7,12 @@ gravitational-wave data (O(1e-21)).
 
 import numpy as np
 import pytest
-from gwexpy.signal.preprocessing import whiten
-from gwexpy.timeseries.decomposition import ica_fit, ica_transform
-from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
+
 from gwexpy.numerics import SAFE_FLOOR, safe_log_scale
+from gwexpy.signal.preprocessing import whiten
+from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
+from gwexpy.timeseries.decomposition import ica_fit, ica_transform
+
 
 @pytest.fixture
 def check_scale_invariance():
@@ -46,7 +48,7 @@ def check_scale_invariance():
             np.testing.assert_allclose(v2, v1, rtol=1e-5)
         else:
             raise ValueError(f"Unknown mode: {mode}")
-            
+
     return _check
 
 def test_whitening_invariant(check_scale_invariance):
@@ -60,9 +62,9 @@ def test_whitening_invariant(check_scale_invariance):
     # Generate multi-feature random data O(1)
     rng = np.random.default_rng(42)
     data = rng.standard_normal((100, 3))
-    
+
     # This is expected to FAIL if 'whiten' uses a fixed eps=1e-12.
-    # For 10^-20 data, variance is 10^-40. If eps=1e-12, the whitening 
+    # For 10^-20 data, variance is 10^-40. If eps=1e-12, the whitening
     # will be dominated by eps, resulting in data scaled to ~10^-14 instead of O(1).
     check_scale_invariance(get_whitened_data, data, scale_factor=1e-20, mode="invariant")
 
@@ -74,39 +76,39 @@ def test_ica_source_recovery():
     rng = np.random.default_rng(42)
     s2 = rng.standard_normal(1000) # Gaussian noise
     S = np.c_[s1, s2]
-    
+
     # Mix sources with a non-singular matrix
     A = np.array([[1, 0.5], [0.5, 1]])
     X = (S @ A.T) * 1e-21
-    
+
     # Convert to TimeSeriesMatrix (channels, 1, samples)
     tsm = TimeSeriesMatrix(X.T[:, None, :], t0=0, dt=t[1]-t[0])
-    
+
     # Fit ICA
     # If it fails due to numerical precision (e.g. tol=1e-4 on 10^-21 data),
     # or if pre-whitening destroys the signal, this will fail.
     res = ica_fit(tsm, n_components=2, random_state=42)
-    
+
     # Check if sources are recovered (correlation should be high)
     sources_mat = ica_transform(res, tsm)
     recovered = np.asarray(sources_mat.value)
-    
+
     # Standardize to (samples, components)
     if recovered.ndim == 3:
         recovered = np.transpose(np.squeeze(recovered, axis=1))
     elif recovered.ndim == 2 and recovered.shape[0] < recovered.shape[1]:
         recovered = recovered.T
-    
+
     # Ensure S and recovered have same number of samples
     if recovered.shape[0] != S.shape[0] and recovered.shape[1] == S.shape[0]:
         recovered = recovered.T
-            
+
     assert recovered.shape[0] == S.shape[0], f"Sample mismatch: {recovered.shape} vs {S.shape}"
-    
+
     corr = np.abs(np.corrcoef(S.T, recovered.T))[:2, 2:]
     # Match components to sources based on max correlation
     max_corr = np.max(corr, axis=0)
-    
+
     assert np.all(max_corr > 0.9), (
         f"ICA failed to recover sources at 1e-21 scale. "
         f"Max correlations: {max_corr}. This often indicates "
@@ -119,7 +121,7 @@ def test_hht_vmin():
     # Signal at 10^-21 amplitude
     data = 1e-21 * np.sin(2 * np.pi * 100 * t)
     ts = TimeSeries(data, t0=0, dt=t[1]-t[0])
-    
+
     # Test TimeSeries.hht method
     try:
         res = ts.hht(output="spectrogram")
@@ -134,10 +136,10 @@ def test_safe_log():
     """Verify safe_log_scale allows inputs down to 10^-50 without clipping to flat -200dB."""
     # Values covering a wide range below the common 1e-20 floor
     vals = np.array([1e-25, 1e-30, 1e-45])
-    
+
     # If safe_log_scale uses a 1e-20 floor, these will all be approximately the same.
     log_vals = safe_log_scale(vals)
-    
+
     # Check for distinct values (avoiding clipping)
     # With 1e-20 floor, 1e-25 and 1e-30 will be within ~1e-10 of each other.
     assert not np.allclose(log_vals[0], log_vals[1], atol=1e-5), (
@@ -155,14 +157,14 @@ def test_filter_stability():
     rng = np.random.default_rng(42)
     data = 1e-21 * rng.standard_normal(2048)
     ts = TimeSeries(data, t0=0, dt=t[1]-t[0])
-    
+
     # High-pass filter at 20Hz
     # Numerical instability in filters often shows as NaNs or extreme values
     try:
         filtered = ts.highpass(20)
         assert not np.any(np.isnan(filtered.value)), "Highpass filter produced NaNs for 10^-21 data"
         assert np.all(np.isfinite(filtered.value)), "Highpass filter produced non-finite values"
-        
+
         # Verify the signal scale is preserved (not zeroed or exploded)
         std_val = np.std(filtered.value)
         assert 1e-23 < std_val < 1e-20, (

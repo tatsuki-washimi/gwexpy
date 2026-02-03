@@ -46,6 +46,8 @@ tmp_test_zarr.zarr/
 # Coverage
 .coverage
 htmlcov/
+coverage.xml
+coverage_*.xml
 
 
 # Type checking
@@ -97,3 +99,9 @@ tests/unit/
 .conda-envs/
 .conda-pkgs/
 docs/developers/references/*
+
+# cover-agent artifacts
+cover_agent_unit_test_runs.db
+run.log
+test_results.html
+stored_responses/

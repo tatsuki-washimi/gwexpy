@@ -11,6 +11,39 @@ from gwexpy.timeseries import TimeSeriesDict
 from gwexpy.timeseries.io.gbd import GBD_FULL_SCALE
 
 
+def _skip_if_obspy_sqlalchemy_incompatible() -> None:
+    """Skip ObsPy interop tests when ObsPy's pinned deps conflict with the env.
+
+    ObsPy 1.4.x requires SQLAlchemy<2. If another tool upgrades SQLAlchemy to
+    >=2, ObsPy's entrypoint loading can raise pkg_resources.VersionConflict.
+    """
+    import importlib.metadata as im
+
+    try:
+        im.version("obspy")
+    except im.PackageNotFoundError:
+        return
+
+    reqs = im.requires("obspy") or []
+    needs_sqlalchemy_lt2 = any(
+        r.lower().startswith("sqlalchemy") and "<2" in r for r in reqs
+    )
+    if not needs_sqlalchemy_lt2:
+        return
+
+    try:
+        sqlalchemy_ver = im.version("SQLAlchemy")
+    except im.PackageNotFoundError:
+        return
+
+    major = int(sqlalchemy_ver.split(".", 1)[0])
+    if major >= 2:
+        pytest.skip(
+            "ObsPy requires SQLAlchemy<2 but SQLAlchemy>=2 is installed; skipping "
+            "ObsPy-dependent reader tests.",
+            allow_module_level=True,
+        )
+
 def _write_minimal_gbd(tmp_path, counts=4):
     channels = ["CH1", "CH2"]
     dt = 0.5
@@ -124,6 +157,7 @@ def test_dttxml_products_requires_argument(tmp_path):
 
 
 def test_miniseed_pad_behavior(tmp_path):
+    _skip_if_obspy_sqlalchemy_incompatible()
     obspy = pytest.importorskip("obspy")
 
     start = obspy.UTCDateTime(0)

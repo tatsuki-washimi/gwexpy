@@ -229,7 +229,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
                         try:
                             grp = h5f[grp_name]
                             fs = FrequencySeries.read(grp, format="hdf5", path="data")
-                        except (KeyError, ValueError, TypeError, OSError) as e:
+                        except (KeyError, ValueError, TypeError, OSError):
                             try:
                                 fs = FrequencySeries.read(grp, format="hdf5")
                             except (KeyError, ValueError, TypeError, OSError) as e2:
@@ -743,7 +743,7 @@ class FrequencySeriesBaseList(list[_FS]):
                         try:
                             grp = h5f[grp_name]
                             fs = FrequencySeries.read(grp, format="hdf5", path="data")
-                        except (KeyError, ValueError, TypeError, OSError) as e:
+                        except (KeyError, ValueError, TypeError, OSError):
                             try:
                                 fs = FrequencySeries.read(grp, format="hdf5")
                             except (KeyError, ValueError, TypeError, OSError) as e2:

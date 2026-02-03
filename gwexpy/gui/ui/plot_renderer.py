@@ -15,6 +15,7 @@ import logging
 
 import numpy as np
 from PyQt5 import QtCore
+
 from gwexpy.numerics.scaling import safe_log_scale
 
 logger = logging.getLogger(__name__)
