@@ -142,7 +142,14 @@ def test_gbd_reader_applies_amp_range_scaling(tmp_path):
 
 
 def test_gbd_alarm_channels_are_dimensionless():
-    path = Path("gwexpy/gui/test-data/graphtec.GBD")
+    path = (
+        Path(__file__).resolve().parents[1]
+        / "sample-data"
+        / "gui"
+        / "graphtec.GBD"
+    )
+    if not path.exists():
+        pytest.skip("Sample data not available: tests/sample-data/gui/graphtec.GBD")
     tsd = TimeSeriesDict.read(path, format="gbd", timezone="UTC")
     for channel in ("Alarm", "AlarmOut"):
         ts = tsd[channel]

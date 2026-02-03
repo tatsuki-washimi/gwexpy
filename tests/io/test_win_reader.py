@@ -6,7 +6,12 @@ import pytest
 from gwexpy.timeseries import TimeSeriesDict
 from gwexpy.timeseries.io.win import _apply_4bit_deltas
 
-_SAMPLE_WIN = Path("gwexpy/gui/test-data/pmon_win_03.110909.010535.win")
+_SAMPLE_WIN = (
+    Path(__file__).resolve().parents[1]
+    / "sample-data"
+    / "gui"
+    / "pmon_win_03.110909.010535.win"
+)
 
 
 def _skip_if_obspy_sqlalchemy_incompatible() -> None:

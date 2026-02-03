@@ -200,6 +200,10 @@ For more complex examples, browse our **[Tutorials](https://tatsuki-washimi.gith
 python -m pytest
 ```
 
+Note: GUI/IO sample fixtures are stored under `tests/sample-data/` and are not
+versioned in git. If you need to run the data-dependent tests locally, place the
+sample files under `tests/sample-data/gui/` (see the test paths for exact names).
+
 ## Contributing
 
 Contributions are welcome! Please open issues or submit PRs on [GitHub](https://github.com/tatsuki-washimi/gwexpy).
