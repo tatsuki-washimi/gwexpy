@@ -69,7 +69,7 @@ jobs:
           channel_priority: strict
         init-shell: bash
         generate-run-shell: false
-        post-cleanup: false
+        post-cleanup: none
         create-args: >-
           python=3.12
           pip
