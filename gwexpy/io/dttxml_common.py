@@ -270,7 +270,7 @@ def load_dttxml_native(source: str) -> dict:
         # Decode data
         try:
             data = _decode_dtt_stream(stream_text, encoding, array_type)
-        except Exception as e:
+        except (ValueError, TypeError) as e:
             warnings.warn(f"Failed to decode stream for {result_name}: {e}")
             continue
 
@@ -280,7 +280,11 @@ def load_dttxml_native(source: str) -> dict:
             try:
                 data = data.reshape(dims)
             except ValueError:
-                pass  # Keep flat if reshape fails
+                warnings.warn(
+                    f"Cannot reshape {result_name} data "
+                    f"(size={data.size}) to dims={dims}; keeping flat",
+                    stacklevel=2,
+                )
 
         # Build frequency axis
         frequencies = f0 + np.arange(n_points) * df

@@ -371,11 +371,11 @@ class BifrequencyMap(Array2D):
         if axis == "f1":
             # f1 is columns (dim 1). Fix column idx.
             data = self.value[:, idx]
-            name = f"{self.name} (at f1={actual_val:.2f} {target_unit})"
+            name = f"{self.name} (at f1={actual_val:.3g} {target_unit})"
         else:
             # f2 is rows (dim 0). Fix row idx.
             data = self.value[idx, :]
-            name = f"{self.name} (at f2={actual_val:.2f} {target_unit})"
+            name = f"{self.name} (at f2={actual_val:.3g} {target_unit})"
 
         return FrequencySeries(data, frequencies=result_axis, unit=self.unit, name=name)
 

@@ -15,8 +15,14 @@ import logging
 
 import numpy as np
 from PyQt5 import QtCore
+from gwexpy.numerics.scaling import safe_log_scale
 
 logger = logging.getLogger(__name__)
+
+
+def _log_db(data: np.ndarray, factor: float) -> np.ndarray:
+    """dB conversion with data-adaptive floor to avoid Death Floats."""
+    return safe_log_scale(data, factor=factor)
 
 
 class PlotRenderer:
@@ -147,13 +153,13 @@ class PlotRenderer:
         if display_unit == "dB":
             if is_spectrogram:
                 # Spectrogram always uses 10*log10 (power-like)
-                return 10 * np.log10(np.abs(data) + 1e-20)
+                return _log_db(data, factor=10)
             else:
                 # For amplitude (ASD), use 20*log10; for power, use 10*log10
                 factor = (
                     10 if ("Power" in graph_type or "Squared" in graph_type) else 20
                 )
-                return factor * np.log10(np.abs(data) + 1e-20)
+                return _log_db(data, factor=factor)
 
         elif display_unit == "Phase":
             if np.iscomplexobj(data):

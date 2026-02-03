@@ -11,6 +11,34 @@ import warnings
 
 import numpy as np
 
+try:
+    from gwexpy.numerics import SAFE_FLOOR_STRAIN, get_safe_epsilon
+except ImportError:
+    # Fallbacks matching the Phase 1 numerics design (variance-scaled epsilon).
+    SAFE_FLOOR_STRAIN = 1e-50  # floor below GW strain power scale (~1e-42)
+    REL_EPS = 1e-6  # relative variance tolerance for auto epsilon
+
+    def get_safe_epsilon(data, rel_tol=REL_EPS, abs_tol=SAFE_FLOOR_STRAIN):
+        """Return an epsilon relative to data variance (temporary local logic)."""
+        arr = np.asarray(data.value if hasattr(data, "value") else data)
+        if arr.size == 0:
+            return abs_tol
+        var = np.nanvar(arr)
+        if not np.isfinite(var) or var <= 0:
+            return abs_tol
+        return max(abs_tol, var * rel_tol)
+
+
+def _resolve_eps(eps, data):
+    if eps is None or (isinstance(eps, str) and eps == "auto"):
+        return get_safe_epsilon(data)
+    if isinstance(eps, (int, float, np.floating)):
+        eps_val = float(eps)
+        if not np.isfinite(eps_val) or eps_val < 0:
+            raise ValueError("eps must be a non-negative finite float")
+        return eps_val
+    raise TypeError("eps must be a float, None, or 'auto'")
+
 
 class WhiteningModel:
     """Model resulting from whitening transformation.
@@ -51,7 +79,7 @@ class WhiteningModel:
         return X_rec
 
 
-def whiten(X, *, method="pca", eps=1e-12, n_components=None, return_model=True):
+def whiten(X, *, method="pca", eps=None, n_components=None, return_model=True):
     """
     Whiten an array using PCA or ZCA whitening.
 
@@ -70,9 +98,9 @@ def whiten(X, *, method="pca", eps=1e-12, n_components=None, return_model=True):
           with the original data while achieving decorrelation. This preserves
           the original axes alignment better than PCA.
 
-    eps : float, optional
+    eps : float or str or None, optional
         Small constant added to eigenvalues to avoid division by zero.
-        Default is 1e-12.
+        If None or 'auto' (default), the value is determined from data variance.
     n_components : int, optional
         Number of components to keep. If None, keep all components.
         For PCA, reduces dimensionality. For ZCA, reduces dimensionality but
@@ -102,6 +130,17 @@ def whiten(X, *, method="pca", eps=1e-12, n_components=None, return_model=True):
     mean = np.mean(X, axis=0)
     X_centered = X - mean
 
+    # Resolve eps
+    if eps is None or (isinstance(eps, str) and eps == "auto"):
+        # For whitening, we want eps to be relative to the eigenvalues of the covariance matrix.
+        # Eigenvalues have units of variance. std(X)**2 is a good proxy for the scale of eigenvalues.
+        var = np.nanvar(X_centered)
+        eps_val = max(SAFE_FLOOR_STRAIN, var * 1e-6)
+    elif isinstance(eps, (int, float, np.floating)):
+        eps_val = float(eps)
+    else:
+        raise TypeError("eps must be a float, None, or 'auto'")
+
     cov = np.cov(X_centered, rowvar=False)
 
     # Handle 1D case
@@ -110,7 +149,7 @@ def whiten(X, *, method="pca", eps=1e-12, n_components=None, return_model=True):
 
     U, S, Vt = np.linalg.svd(cov)
 
-    S_inv_sqrt = np.diag(1.0 / np.sqrt(S + eps))
+    S_inv_sqrt = np.diag(1.0 / np.sqrt(S + eps_val))
 
     if method == "pca":
         W = S_inv_sqrt @ U.T

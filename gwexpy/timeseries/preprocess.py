@@ -1132,7 +1132,7 @@ def whiten_matrix(
     matrix: TimeSeriesMatrix,
     *,
     method: Literal["pca", "zca"] = "pca",
-    eps: float = 1e-12,
+    eps: float | str | None = "auto",
     n_components: int | None = None,
 ) -> tuple[TimeSeriesMatrix, WhiteningModel]:
     """
@@ -1160,9 +1160,10 @@ def whiten_matrix(
           ``n_components`` is specified, the output is flattened to
           ``(n_components, 1, n_time)``.
 
-    eps : float, optional
+    eps : float or str or None, optional
         Small constant added to eigenvalues for numerical stability
-        (prevents division by zero). Default is ``1e-12``.
+        (prevents division by zero). If ``'auto'`` or ``None`` (default),
+        it is determined from data variance using ``safe_epsilon``.
     n_components : int or None, optional
         Number of components to keep. If None (default), all components are
         retained.
@@ -1205,6 +1206,8 @@ def whiten_matrix(
     >>> # PCA output is flattened
     >>> print(mat_w.shape)  # (6, 1, 100)
     """
+    from gwexpy.numerics import SAFE_FLOOR, SAFE_FLOOR_STRAIN, safe_epsilon
+
     if method not in ("pca", "zca"):
         raise ValueError(f"method must be 'pca' or 'zca', got '{method}'")
 
@@ -1220,6 +1223,15 @@ def whiten_matrix(
     mean = np.mean(X_T, axis=0)
     X_centered = X_T - mean
 
+    # Resolve eps
+    if eps is None or (isinstance(eps, str) and eps == "auto"):
+        # For whitening, we want eps to be relative to the eigenvalues of the covariance matrix.
+        # Eigenvalues have units of variance. std(X)**2 is a good proxy for the scale of eigenvalues.
+        var = np.nanvar(X_centered)
+        eps_val = max(SAFE_FLOOR_STRAIN, var * 1e-6)
+    else:
+        eps_val = float(cast(float, eps))
+
     # Handle 1D case (single feature)
     if n_features == 1:
         cov = np.array([[np.var(X_centered)]])
@@ -1230,7 +1242,7 @@ def whiten_matrix(
 
     U, S, Vt = np.linalg.svd(cov)
 
-    S_inv_sqrt = np.diag(1.0 / np.sqrt(S + eps))
+    S_inv_sqrt = np.diag(1.0 / np.sqrt(S + eps_val))
 
     if method == "pca":
         W = S_inv_sqrt @ U.T

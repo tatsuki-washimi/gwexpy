@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import logging
 from collections import OrderedDict
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Any, SupportsIndex, TypeVar
 
 import h5py
+
+logger = logging.getLogger(__name__)
 import numpy as np
 from astropy import units as u
 
@@ -215,7 +218,8 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
                     for ds_name in keys:
                         try:
                             fs = FrequencySeries.read(h5f, format="hdf5", path=ds_name)
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         orig_key = keymap.get(ds_name, ds_name)
                         out[orig_key] = fs
@@ -225,10 +229,11 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
                         try:
                             grp = h5f[grp_name]
                             fs = FrequencySeries.read(grp, format="hdf5", path="data")
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
                             try:
                                 fs = FrequencySeries.read(grp, format="hdf5")
-                            except Exception:
+                            except (KeyError, ValueError, TypeError, OSError) as e2:
+                                logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         orig_key = keymap.get(grp_name, grp_name)
                         out[orig_key] = fs
@@ -728,7 +733,8 @@ class FrequencySeriesBaseList(list[_FS]):
                     for ds_name in order:
                         try:
                             fs = FrequencySeries.read(h5f, format="hdf5", path=ds_name)
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
+                            logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         out_items.append(fs)
                     return cls(out_items)
@@ -737,10 +743,11 @@ class FrequencySeriesBaseList(list[_FS]):
                         try:
                             grp = h5f[grp_name]
                             fs = FrequencySeries.read(grp, format="hdf5", path="data")
-                        except Exception:
+                        except (KeyError, ValueError, TypeError, OSError) as e:
                             try:
                                 fs = FrequencySeries.read(grp, format="hdf5")
-                            except Exception:
+                            except (KeyError, ValueError, TypeError, OSError) as e2:
+                                logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         out_items.append(fs)
                     return cls(out_items)

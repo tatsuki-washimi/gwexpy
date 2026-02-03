@@ -14,6 +14,77 @@ except ImportError:
 
 from .preprocess import whiten_matrix
 
+try:
+    from gwexpy.numerics.scaling import get_safe_epsilon
+except ImportError:
+    # Temporary local logic aligned with Phase 1 numerics design.
+    SAFE_FLOOR_STRAIN = 1e-50  # floor below GW strain power scale (~1e-42)
+    REL_EPS = 1e-6  # relative variance tolerance for auto epsilon
+
+    def get_safe_epsilon(data, rel_tol=REL_EPS, abs_tol=SAFE_FLOOR_STRAIN):
+        arr = np.asarray(data.value if hasattr(data, "value") else data)
+        if arr.size == 0:
+            return abs_tol
+        var = np.nanvar(arr)
+        if not np.isfinite(var) or var <= 0:
+            return abs_tol
+        return max(abs_tol, var * rel_tol)
+
+# ICA convergence tolerance relative to unit-variance standardized data.
+ICA_REL_TOL = 1e-6  # relative tolerance on unit-variance standardized data
+
+
+def _resolve_eps(eps, data):
+    if eps is None or (isinstance(eps, str) and eps == "auto"):
+        return get_safe_epsilon(data)
+    if isinstance(eps, (int, float, np.floating)):
+        eps_val = float(eps)
+        if not np.isfinite(eps_val) or eps_val < 0:
+            raise ValueError("eps must be a non-negative finite float")
+        return eps_val
+    raise TypeError("eps must be a float, None, or 'auto'")
+
+
+def _standardize_for_ica(X, *, center: bool):
+    X = np.asarray(X, dtype=float)
+    if X.ndim != 2:
+        raise ValueError("ICA input must be 2D (samples, features)")
+
+    mean = np.mean(X, axis=0) if center else np.zeros(X.shape[1], dtype=X.dtype)
+    centered = X - mean
+
+    var = np.nanvar(centered, axis=0)
+    scale = np.nanmax(np.abs(X), axis=0)
+    eps = np.finfo(X.dtype).eps
+
+    bad_scale = (~np.isfinite(scale)) | (scale <= 0)
+    bad_var = (~np.isfinite(var)) | (var <= eps * (scale**2))
+    bad = bad_scale | bad_var
+    if np.any(bad):
+        bad_idx = np.where(bad)[0].tolist()
+        raise ValueError(
+            "ICA input variance is near machine epsilon for features "
+            f"{bad_idx}; rescale or remove near-constant channels."
+        )
+
+    std = np.sqrt(var)
+    X_std = centered / std if center else X / std
+    return X_std, {"mean": mean, "scale": std, "center": center}
+
+
+def _apply_ica_standardization(X, stats):
+    mean = stats["mean"]
+    scale = stats["scale"]
+    center = stats.get("center", True)
+    return (X - mean) / scale if center else X / scale
+
+
+def _undo_ica_standardization(X, stats):
+    mean = stats["mean"]
+    scale = stats["scale"]
+    center = stats.get("center", True)
+    return X * scale + mean if center else X * scale
+
 
 @dataclass
 class PCAResult:
@@ -350,7 +421,7 @@ def ica_fit(
     fun="logcosh",
     whiten="unit-variance",
     max_iter=200,
-    tol=1e-4,
+    tol=None,
     random_state=None,
     center=True,
     scale=None,
@@ -375,8 +446,8 @@ def ica_fit(
         Whitening strategy.
     max_iter : int, default=200
         Maximum number of iterations.
-    tol : float, default=1e-4
-        Tolerance.
+    tol : float or None, default=None
+        Tolerance. If None or 'auto', a relative tolerance is used.
     random_state : int, optional
         Random seed.
     center : bool, default=True
@@ -412,12 +483,28 @@ def ica_fit(
     if prewhiten:
         # Use our whitening
         X_proc, white_model = whiten_matrix(
-            X_proc, method="pca", n_components=n_components
+            X_proc,
+            method="pca",
+            eps=_resolve_eps(None, X_proc.value),
+            n_components=n_components,
         )
         preprocessing["whitening_model"] = white_model
         whiten_arg = False  # sklearn should not whiten again usually, or we adjust
     else:
         whiten_arg = whiten
+
+    # Input to sklearn: (samples, features)
+    X_features = X_proc.value.reshape(-1, X_proc.shape[-1])
+    start_val = X_features.T
+
+    # Ensure unit-variance scaling before FastICA.
+    start_val, ica_std = _standardize_for_ica(start_val, center=center)
+    preprocessing["ica_standardization"] = ica_std
+
+    if tol is None or (isinstance(tol, str) and tol == "auto"):
+        tol = ICA_REL_TOL
+    elif not isinstance(tol, (int, float, np.floating)) or tol <= 0:
+        raise ValueError("tol must be a positive float, None, or 'auto'")
 
     ica = FastICA(
         n_components=n_components if whiten_arg else None,
@@ -429,9 +516,6 @@ def ica_fit(
         random_state=random_state,
     )
 
-    # Input to sklearn: (samples, features)
-    X_features = X_proc.value.reshape(-1, X_proc.shape[-1])
-    start_val = X_features.T
     ica.fit(start_val)
 
     return ICAResult(
@@ -481,6 +565,10 @@ def ica_transform(ica_res, matrix):
     else:
         X_input = X_proc.value.reshape(-1, X_proc.shape[-1]).T  # (samples, channels)
 
+    ica_std = ica_res.preprocessing.get("ica_standardization")
+    if ica_std:
+        X_input = _apply_ica_standardization(X_input, ica_std)
+
     sources = ica_res.sklearn_model.transform(X_input)
     # sources: (samples, components)
 
@@ -526,6 +614,10 @@ def ica_inverse_transform(ica_res, sources):
     ).T  # (components, time).T -> (time, components)
 
     rec = ica_res.sklearn_model.inverse_transform(val_flat)
+
+    ica_std = ica_res.preprocessing.get("ica_standardization")
+    if ica_std:
+        rec = _undo_ica_standardization(rec, ica_std)
 
     # rec is (samples, features) if not prewhitened, or (samples, whitened_components) if prewhitened?
     # inverse_transform returns to the input space of fit().

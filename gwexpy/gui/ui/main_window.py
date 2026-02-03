@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Optional
 import numpy as np
 from gwpy.timeseries import TimeSeries
 from PyQt5 import QtCore, QtWidgets
+from gwexpy.numerics.scaling import safe_log_scale
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,11 @@ from .tabs import (
 
 if TYPE_CHECKING:
     from ..nds.nds_thread import ChannelListWorker
+
+
+def _log_db(data: np.ndarray, factor: float) -> np.ndarray:
+    """dB conversion with data-adaptive floor to avoid Death Floats."""
+    return safe_log_scale(data, factor=factor)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -1127,7 +1133,7 @@ class MainWindow(QtWidgets.QMainWindow):
                             disp = info.get("units", {}).get("display_y").currentText()
 
                             if disp == "dB":
-                                data = 10 * np.log10(np.abs(data) + 1e-20)
+                                data = _log_db(data, factor=10)
                             elif disp == "Phase":
                                 data = (
                                     np.angle(data, deg=True)
@@ -1163,11 +1169,12 @@ class MainWindow(QtWidgets.QMainWindow):
                             x, d = res
                             disp = info.get("units", {}).get("display_y").currentText()
                             if disp == "dB":
-                                d = (
+                                factor = (
                                     10
                                     if "Power" in g_type or "Squared" in g_type
                                     else 20
-                                ) * np.log10(np.abs(d) + 1e-20)
+                                )
+                                d = _log_db(d, factor=factor)
                             elif disp == "Phase":
                                 d = (
                                     np.angle(d, deg=True)
