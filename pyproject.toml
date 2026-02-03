@@ -138,7 +138,10 @@ all = [
 ]
 
 [tool.setuptools.package-data]
-gwexpy = ["py.typed"]
+gwexpy = [
+  "py.typed",
+  "gui/test-data/*",
+]
 
 [tool.setuptools.packages.find]
 include = ["gwexpy*"]
