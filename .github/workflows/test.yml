@@ -62,8 +62,14 @@ jobs:
         environment-name: gwexpy-full
         cache-environment: true
         cache-downloads: true
-        channel-priority: strict
-        channels: conda-forge
+        # Use condarc (supported input) to enforce channel settings.
+        condarc: |
+          channels:
+            - conda-forge
+          channel_priority: strict
+        init-shell: bash
+        generate-run-shell: false
+        post-cleanup: false
         create-args: >-
           python=3.12
           pip
