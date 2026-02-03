@@ -101,6 +101,8 @@ html_context = {
 }
 
 autodoc_mock_imports = [
+    # Core external deps (CI/docs environment may lack them)
+    "pytest",
     "pycbc",
     "gwinc",
     "polars",
