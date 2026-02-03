@@ -16,7 +16,7 @@ edge-cases described in the paper above:
 - 3-byte (24-bit) delta decoding:
   - Apply correct operator precedence and sign-preserving unpack/shift.
 
-We also provide regression tests using a sample WIN file under ``gwexpy/gui/test-data/``.
+We also provide regression tests using a sample WIN file under ``tests/sample-data/gui/``.
 """
 
 from __future__ import annotations

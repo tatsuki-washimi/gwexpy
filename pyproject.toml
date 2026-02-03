@@ -140,7 +140,6 @@ all = [
 [tool.setuptools.package-data]
 gwexpy = [
   "py.typed",
-  "gui/test-data/*",
 ]
 
 [tool.setuptools.packages.find]
@@ -196,7 +195,7 @@ ignore = [
 [tool.mypy]
 ignore_missing_imports = true
 check_untyped_defs = true
-exclude = "gwexpy/gui/(ui|reference-dtt|reference_ndscope|test-data)/.*|tests/.*"
+exclude = "gwexpy/gui/(ui|reference-dtt|reference_ndscope)/.*|tests/.*"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
