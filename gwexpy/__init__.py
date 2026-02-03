@@ -23,6 +23,7 @@ try:  # pragma: no cover - defensive
 
     _io_reg = getattr(_gwpy_io, "registry", None)
     if _io_reg is not None and not hasattr(_io_reg, "register_reader"):
+
         def _noop_register_reader(*_args, **_kwargs):
             return None
 
