@@ -53,7 +53,7 @@ Learn the basics with [quickstart](quickstart.md).
 
 ### 5. Practical Examples
 
-Browse the [Examples Gallery](../examples/index.md) for real-world applications:
+Browse the [{doc}`Examples Gallery <../examples/index>`] for real-world applications:
 
 - [case_noise_budget](tutorials/case_noise_budget.ipynb) - Noise budget analysis
 - [case_transfer_function](tutorials/case_transfer_function.ipynb) - Transfer function calculation
@@ -61,7 +61,7 @@ Browse the [Examples Gallery](../examples/index.md) for real-world applications:
 
 ## Next Steps
 
-- [Examples Gallery](../examples/index.md) - Visual examples and case studies
-- Complete tutorial list: [tutorials/index](tutorials/index.md)
-- API Reference: [../reference/index](../reference/index.md)
+- [{doc}`Examples Gallery <../examples/index>`] - Visual examples and case studies
+- Complete tutorial list: [{doc}`tutorials/index <tutorials/index>`]
+- API Reference: [{doc}`Reference <../reference/index>`]
 - [validated_algorithms](validated_algorithms.md) - Algorithm validation report
