@@ -120,13 +120,13 @@ def read_timeseries_ats(source, **kwargs):
         sensor_serial = int(hdr["sensor_serial"])
 
         # Construct Channel Name (stable, filename-independent)
-        chname = (
-            f"Metronix_{system_type}_{adu_serial:03}_{channel_type}_{sensor_type}_{sensor_serial:04}"
-        )
+        chname = f"Metronix_{system_type}_{adu_serial:03}_{channel_type}_{sensor_type}_{sensor_serial:04}"
 
         # Calculate t0
         # StartTime is Unix timestamp
-        dt_obj = datetime.datetime.fromtimestamp(start_time_unix, tz=datetime.timezone.utc)
+        dt_obj = datetime.datetime.fromtimestamp(
+            start_time_unix, tz=datetime.timezone.utc
+        )
         t0 = to_gps(dt_obj)
 
         # Read Data
