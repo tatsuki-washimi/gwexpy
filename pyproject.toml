@@ -114,7 +114,9 @@ control = ["control"]
 gui = ["PyQt5", "pyqtgraph", "qtpy", "sounddevice", "nds2-client"]
 plot = ["pygmt"]
 analysis = [
-    "PyEMD",
+    # NOTE: The pip name "pyemd" is a different project (Earth Mover's Distance).
+    # EMD decomposition (module: PyEMD) is provided by the "EMD-signal" distribution.
+    "EMD-signal",
     "PyWavelets",
     "librosa",
     "obspy"
@@ -132,7 +134,7 @@ all = [
     "xarray", "quantities",
     "control", "PyQt5", "pyqtgraph", "qtpy", "sounddevice",
     "pygmt",
-    "PyEMD", "PyWavelets"
+    "EMD-signal", "PyWavelets"
 ]
 
 [tool.setuptools.package-data]
