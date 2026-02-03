@@ -73,11 +73,25 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserDict</span><span class="p">,</span> <span class="n">UserList</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">SupportsIndex</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span> <span class="k">as</span> <span class="n">BaseSpectrogram</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._optional</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.hdf5_collection</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LAYOUT_DATASET</span><span class="p">,</span>
+    <span class="n">LAYOUT_GROUP</span><span class="p">,</span>
+    <span class="n">detect_hdf5_layout</span><span class="p">,</span>
+    <span class="n">ensure_hdf5_file</span><span class="p">,</span>
+    <span class="n">normalize_layout</span><span class="p">,</span>
+    <span class="n">read_hdf5_keymap</span><span class="p">,</span>
+    <span class="n">read_hdf5_order</span><span class="p">,</span>
+    <span class="n">safe_hdf5_key</span><span class="p">,</span>
+    <span class="n">unique_hdf5_key</span><span class="p">,</span>
+    <span class="n">write_hdf5_manifest</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseMethodsMixin</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span>
@@ -144,8 +158,35 @@
         <span class="nb">format</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
         <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">:</span>
-            <span class="n">h5py</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;h5py&quot;</span><span class="p">)</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5f</span><span class="p">:</span>
+                <span class="n">layout</span> <span class="o">=</span> <span class="n">detect_hdf5_layout</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="n">read_hdf5_order</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">(</span><span class="n">h5f</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_DATASET</span> <span class="ow">or</span> <span class="n">layout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">ds_name</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">Spectrogram</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">h5f</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">ds_name</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_list</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">self</span>
+                <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_GROUP</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">grp_name</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">grp</span> <span class="o">=</span> <span class="n">h5f</span><span class="p">[</span><span class="n">grp_name</span><span class="p">]</span>
+                            <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">Spectrogram</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">new_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Spectrogram</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">))</span>
+                            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                                <span class="k">pass</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_list</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">self</span>
+            <span class="n">_h5py</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;h5py&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">_h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="n">x</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
@@ -158,6 +199,9 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce_ex__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="n">SupportsIndex</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="p">),))</span>
+
 <div class="viewcode-block" id="SpectrogramList.write">
 <a class="viewcode-back" href="../../../web/ja/reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramList.write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -169,12 +213,28 @@
 
             <span class="k">return</span> <span class="n">write_root_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">:</span>
-            <span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>  <span class="c1"># noqa: F401 - availability check</span>
-
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">overwrite</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;overwrite&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">normalize_layout</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;layout&quot;</span><span class="p">,</span> <span class="s2">&quot;gwpy&quot;</span><span class="p">))</span>
+            <span class="n">used</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">with</span> <span class="n">ensure_hdf5_file</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5f</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                    <span class="n">grp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-                    <span class="n">s</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">safe_hdf5_key</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">unique_hdf5_key</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">used</span><span class="o">=</span><span class="n">used</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_DATASET</span><span class="p">:</span>
+                        <span class="n">s</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">h5f</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">grp</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                        <span class="n">s</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+                    <span class="n">order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">write_hdf5_manifest</span><span class="p">(</span>
+                    <span class="n">h5f</span><span class="p">,</span>
+                    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;SpectrogramList&quot;</span><span class="p">,</span>
+                    <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">,</span>
+                    <span class="n">keymap</span><span class="o">=</span><span class="p">{},</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Format </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span></div>
 
@@ -498,8 +558,34 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read dictionary from HDF5 file keys -&gt; dict keys.&quot;&quot;&quot;</span>
         <span class="nb">format</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">:</span>
-            <span class="n">h5py</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;h5py&quot;</span><span class="p">)</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5f</span><span class="p">:</span>
+                <span class="n">layout</span> <span class="o">=</span> <span class="n">detect_hdf5_layout</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
+                <span class="n">keymap</span> <span class="o">=</span> <span class="n">read_hdf5_keymap</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="n">read_hdf5_order</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">(</span><span class="n">h5f</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_DATASET</span> <span class="ow">or</span> <span class="n">layout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">ds_name</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">s</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">h5f</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">ds_name</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="n">keymap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ds_name</span><span class="p">,</span> <span class="n">ds_name</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+                    <span class="k">return</span> <span class="bp">self</span>
+                <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_GROUP</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">grp_name</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">grp</span> <span class="o">=</span> <span class="n">h5f</span><span class="p">[</span><span class="n">grp_name</span><span class="p">]</span>
+                            <span class="n">s</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">s</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+                            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                                <span class="k">continue</span>
+                        <span class="n">key</span> <span class="o">=</span> <span class="n">keymap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">grp_name</span><span class="p">,</span> <span class="n">grp_name</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+                    <span class="k">return</span> <span class="bp">self</span>
+            <span class="n">_h5py</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;h5py&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">_h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">s</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
@@ -510,6 +596,9 @@
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Format </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce_ex__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="n">SupportsIndex</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">),))</span>
 
 <div class="viewcode-block" id="SpectrogramDict.write">
 <a class="viewcode-back" href="../../../web/ja/reference/api/spectrogram.html#gwexpy.spectrogram.SpectrogramDict.write">[docs]</a>
@@ -522,11 +611,30 @@
 
             <span class="k">return</span> <span class="n">write_root_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;hdf5&quot;</span><span class="p">:</span>
-            <span class="n">h5py</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;h5py&quot;</span><span class="p">)</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">grp</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
-                    <span class="n">s</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+            <span class="n">overwrite</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;overwrite&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">normalize_layout</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;layout&quot;</span><span class="p">,</span> <span class="s2">&quot;gwpy&quot;</span><span class="p">))</span>
+            <span class="n">used</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">keymap</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">with</span> <span class="n">ensure_hdf5_file</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">safe</span> <span class="o">=</span> <span class="n">safe_hdf5_key</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">unique_hdf5_key</span><span class="p">(</span><span class="n">safe</span><span class="p">,</span> <span class="n">used</span><span class="o">=</span><span class="n">used</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_DATASET</span><span class="p">:</span>
+                        <span class="n">s</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">h5f</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">grp</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                        <span class="n">s</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+                    <span class="n">keymap</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">write_hdf5_manifest</span><span class="p">(</span>
+                    <span class="n">h5f</span><span class="p">,</span>
+                    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;SpectrogramDict&quot;</span><span class="p">,</span>
+                    <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">,</span>
+                    <span class="n">keymap</span><span class="o">=</span><span class="n">keymap</span><span class="p">,</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Format </span><span class="si">{</span><span class="nb">format</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span></div>
 

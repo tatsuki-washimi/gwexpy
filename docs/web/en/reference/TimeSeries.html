@@ -45,13 +45,14 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../guide/installation.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/getting_started.html">Getting Started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="api/index.html">API Reference</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="classes.html">Class Index</a><ul class="current">
@@ -132,6 +133,14 @@
 <p><strong>Inherits from:</strong> <code class="docutils literal notranslate"><span class="pre">gwpy.timeseries.TimeSeries</span></code></p>
 <p>Extended TimeSeries with full gwexpy functionality.</p>
 <p>See <a class="reference internal" href="api/timeseries.html"><span class="doc">Time Series</span></a> for the API reference.</p>
+<section id="pickle-shelve-portability">
+<h2>Pickle / shelve portability<a class="headerlink" href="#pickle-shelve-portability" title="Link to this heading"></a></h2>
+<p>.. warning::
+Never unpickle data from untrusted sources. <code class="docutils literal notranslate"><span class="pre">pickle</span></code>/<code class="docutils literal notranslate"><span class="pre">shelve</span></code> can execute
+arbitrary code on load.</p>
+<p>gwexpy pickling prioritizes portability: unpickling returns <strong>GWpy types</strong>
+so that loading does not require gwexpy to be installed.</p>
+</section>
 </section>
 
 

@@ -7,15 +7,21 @@ GWexpy は GWpy を拡張し、時系列および周波数系列のための追�
 
 .. toctree::
    :maxdepth: 2
-   :caption: ガイド
+   :caption: ユーザーガイド
 
-   guide/installation
-   guide/quickstart
-   guide/getting_started
-   guide/scalarfield_slicing
-   guide/validated_algorithms
-   guide/tutorials/index
-   guide/gwexpy_for_gwpy_users_ja
+   user_guide/installation
+   user_guide/quickstart
+   user_guide/getting_started
+   user_guide/scalarfield_slicing
+   user_guide/validated_algorithms
+   user_guide/tutorials/index
+   user_guide/gwexpy_for_gwpy_users_ja
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 実例集 (Examples)
+
+   examples/index
 
 .. toctree::
    :maxdepth: 2

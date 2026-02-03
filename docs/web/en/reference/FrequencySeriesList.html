@@ -45,13 +45,14 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../guide/installation.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/quickstart.html">Quickstart</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/getting_started.html">Getting Started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">Examples</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="api/index.html">API Reference</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="classes.html">Class Index</a><ul class="current">
@@ -385,6 +386,16 @@ Concatenates along a new dimension ‘channel’.</p>
 </pre></div>
 </div>
 <p>Write list to file (HDF5, ROOT, etc.).</p>
+<p>For HDF5 output you can choose a layout (default is GWpy-compatible dataset-per-entry).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fsl</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;out.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>               <span class="c1"># GWpy-compatible (default)</span>
+<span class="n">fsl</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;out.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>  <span class="c1"># legacy group-per-entry</span>
+</pre></div>
+</div>
+<p>.. warning::
+Never unpickle data from untrusted sources. <code class="docutils literal notranslate"><span class="pre">pickle</span></code>/<code class="docutils literal notranslate"><span class="pre">shelve</span></code> can execute
+arbitrary code on load.</p>
+<p>Pickle portability note: pickled gwexpy <code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code> unpickles as a built-in
+<code class="docutils literal notranslate"><span class="pre">list</span></code> of GWpy <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> (gwexpy not required on the loading side).</p>
 </section>
 <section id="zpk">
 <h3><code class="docutils literal notranslate"><span class="pre">zpk</span></code><a class="headerlink" href="#zpk" title="Link to this heading"></a></h3>

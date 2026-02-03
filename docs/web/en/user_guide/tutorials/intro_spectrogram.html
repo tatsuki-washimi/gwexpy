@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpectrogramList and SpectrogramDict Tutorial &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="gwexpy Plotting Introduction" href="intro_plotting.html" />
+    <link rel="prev" title="Advanced Features and Operations of FrequencySeries" href="intro_frequencyseries.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="intro_timeseries.html">TimeSeries Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries Basics</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Spectrogram Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_plotting.html">Plotting Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_mapplotting.html">Map Plotting Basics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_interop.html">Interoperability Basics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#vi-case-studies">VI. Case Studies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">SpectrogramList and SpectrogramDict Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_spectrogram.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/intro_spectrogram.ipynb">Download the notebook (.ipynb)</a>.</p>
+</div>
+<section id="SpectrogramList-and-SpectrogramDict-Tutorial">
+<h1>SpectrogramList and SpectrogramDict Tutorial<a class="headerlink" href="#SpectrogramList-and-SpectrogramDict-Tutorial" title="Link to this heading"></a></h1>
+<p>This notebook introduces the newly added <code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> and <code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code> classes in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>.</p>
+<p>These classes are containers for managing multiple spectrogram data (<code class="docutils literal notranslate"><span class="pre">gwpy.spectrogram.Spectrogram</span></code>) collectively and performing batch operations (cropping, rebinning, plotting, etc.). They have a similar interface to <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> which handle time series data, but are specialized for 2D data (time × frequency).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">sine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramDict</span><span class="p">,</span> <span class="n">SpectrogramList</span>
+</pre></div>
+</div>
+</div>
+<section id="1.-Data-Preparation">
+<h2>1. Data Preparation<a class="headerlink" href="#1.-Data-Preparation" title="Link to this heading"></a></h2>
+<p>First, let’s create demo spectrogram data. Here, we generate time series data containing sine waves at different frequencies and convert them using the <code class="docutils literal notranslate"><span class="pre">spectrogram()</span></code> method.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create sample data</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># seconds</span>
+<span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">128</span>  <span class="c1"># Hz</span>
+
+<span class="c1"># Create sine waves at 10Hz, 30Hz, 50Hz (+noise)</span>
+<span class="n">noise_amp</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_signal</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="n">freq</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">noise_amp</span><span class="p">)</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">n</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ts</span>
+
+
+<span class="n">ts1</span> <span class="o">=</span> <span class="n">make_signal</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;Signal 10Hz&quot;</span><span class="p">)</span>
+<span class="n">ts2</span> <span class="o">=</span> <span class="n">make_signal</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;Signal 30Hz&quot;</span><span class="p">)</span>
+<span class="n">ts3</span> <span class="o">=</span> <span class="n">make_signal</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;Signal 50Hz&quot;</span><span class="p">)</span>
+
+<span class="c1"># Calculate spectrograms (stride=2s, fftlength=1s)</span>
+<span class="c1"># Specify nproc=1 for stability with serial execution</span>
+<span class="n">spec1</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">spec2</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">spec3</span> <span class="o">=</span> <span class="n">ts3</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Spectrogram shape:&quot;</span><span class="p">,</span> <span class="n">spec1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time range:&quot;</span><span class="p">,</span> <span class="n">spec1</span><span class="o">.</span><span class="n">xspan</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Freq range:&quot;</span><span class="p">,</span> <span class="n">spec1</span><span class="o">.</span><span class="n">yspan</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Basic-Operations-with-SpectrogramList">
+<h2>2. Basic Operations with SpectrogramList<a class="headerlink" href="#2.-Basic-Operations-with-SpectrogramList" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> behaves like a list, but can only store <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> objects. You can pass a list during initialization or add items using the <code class="docutils literal notranslate"><span class="pre">append()</span></code> method.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a list</span>
+<span class="n">spec_list</span> <span class="o">=</span> <span class="n">SpectrogramList</span><span class="p">([</span><span class="n">spec1</span><span class="p">,</span> <span class="n">spec2</span><span class="p">])</span>
+
+<span class="c1"># Append</span>
+<span class="n">spec_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spec3</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;List length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">spec_list</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Items: </span><span class="si">{</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">spec_list</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="Batch-Processing:-Cropping-Time-Axis-(crop)">
+<h3>Batch Processing: Cropping Time Axis (<code class="docutils literal notranslate"><span class="pre">crop</span></code>)<a class="headerlink" href="#Batch-Processing:-Cropping-Time-Axis-(crop)" title="Link to this heading"></a></h3>
+<p>Performs batch cropping of the time axis for all spectrograms in the list. <strong>Note:</strong> Since spectrograms have large data volumes, operations like cropping may return new objects (copies) without modifying the original data.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crop to 5-15 second range</span>
+<span class="n">cropped_list</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original range:&quot;</span><span class="p">,</span> <span class="n">spec_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xspan</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cropped range:&quot;</span><span class="p">,</span> <span class="n">cropped_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xspan</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Batch-Processing:-Cropping-Frequency-Axis-(crop_frequencies)">
+<h3>Batch Processing: Cropping Frequency Axis (<code class="docutils literal notranslate"><span class="pre">crop_frequencies</span></code>)<a class="headerlink" href="#Batch-Processing:-Cropping-Frequency-Axis-(crop_frequencies)" title="Link to this heading"></a></h3>
+<p>If there’s a compatible method in gwpy’s <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>, it will be used; otherwise, filtering is performed by specifying the frequency axis.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crop to 0Hz - 40Hz range</span>
+<span class="n">freq_cropped</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">crop_frequencies</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original yspan:&quot;</span><span class="p">,</span> <span class="n">spec_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">yspan</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cropped yspan:&quot;</span><span class="p">,</span> <span class="n">freq_cropped</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">yspan</span><span class="p">)</span>
+<span class="c1"># The third element containing the 50Hz signal will also have out-of-range portions cut</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="3.-Using-SpectrogramDict">
+<h2>3. Using SpectrogramDict<a class="headerlink" href="#3.-Using-SpectrogramDict" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code> is convenient when you want to manage spectrograms with names (keys).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spec_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">({</span><span class="s2">&quot;low_freq&quot;</span><span class="p">:</span> <span class="n">spec1</span><span class="p">,</span> <span class="s2">&quot;mid_freq&quot;</span><span class="p">:</span> <span class="n">spec2</span><span class="p">,</span> <span class="s2">&quot;high_freq&quot;</span><span class="p">:</span> <span class="n">spec3</span><span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Keys:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">spec_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="4.-Visualization-(plot)">
+<h2>4. Visualization (<code class="docutils literal notranslate"><span class="pre">plot</span></code>)<a class="headerlink" href="#4.-Visualization-(plot)" title="Link to this heading"></a></h2>
+<p>Calling the <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> method on a list or dictionary allows you to plot all contained spectrograms together. Internally, it uses <code class="docutils literal notranslate"><span class="pre">gwpy.plot.Plot</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Batch plotting</span>
+<span class="c1"># Setting sharex=True, sharey=True shares axes for easier comparison</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">spec_dict</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="5.-Conversion-to-Matrix-Format-and-Deep-Learning-Integration">
+<h2>5. Conversion to Matrix Format and Deep Learning Integration<a class="headerlink" href="#5.-Conversion-to-Matrix-Format-and-Deep-Learning-Integration" title="Link to this heading"></a></h2>
+<p>Using <code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code>, you can create a <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> object with a 3D array <code class="docutils literal notranslate"><span class="pre">(Channels,</span> <span class="pre">Time,</span> <span class="pre">Frequency)</span></code> that stacks each spectrogram.</p>
+<p>This is very convenient when creating inputs for machine learning models (PyTorch, TensorFlow, etc.).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">matrix</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matrix Type:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">matrix</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matrix Shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  (N_channels, N_time_steps, N_freq_bins)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Accessing attributes</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time axis shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Freq axis shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>If PyTorch or CuPy is installed, you can directly convert to Tensors, etc.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert to PyTorch Tensor</span>
+<span class="c1"># tensor = matrix.to_torch()</span>
+</pre></div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<p>This concludes the introduction to the basic usage of <code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> and <code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code>. Please make use of these classes when batch preprocessing large amounts of spectrogram data or creating comparison plots.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro_frequencyseries.html" class="btn btn-neutral float-left" title="Advanced Features and Operations of FrequencySeries" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intro_plotting.html" class="btn btn-neutral float-right" title="gwexpy Plotting Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

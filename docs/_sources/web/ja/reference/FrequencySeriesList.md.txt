@@ -108,6 +108,27 @@ plot(self, **kwargs: 'Any')
 
 すべてのシリーズをプロットします。gwexpy.plot.Plot に委譲します。
 
+### `write`
+
+```python
+write(self, target: str, *args: Any, **kwargs: Any) -> Any
+```
+
+FrequencySeriesList をファイルに書き込みます。
+
+HDF5 出力では `layout` を指定できます（デフォルトは GWpy 互換の dataset-per-entry）。
+
+```python
+fsl.write("out.h5", format="hdf5")               # GWpy互換（既定）
+fsl.write("out.h5", format="hdf5", layout="group")  # 旧形式（group-per-entry）
+```
+
+> [!WARNING]
+> 信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+
+pickle 可搬性メモ: gwexpy の `FrequencySeriesList` は unpickle 時に builtins の `list` を返します
+（中身は GWpy の `FrequencySeries`、読み込み側に gwexpy は不要です）。
+
 ### `smooth`
 
 ```python

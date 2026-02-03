@@ -46,14 +46,15 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../guide/installation.html">インストール</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/quickstart.html">クイックスタート</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">実例集 (Examples)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">リファレンス</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="api/index.html">API リファレンス</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="classes.html">クラス索引 (Class Index)</a><ul class="current">
@@ -248,6 +249,28 @@ gap : <code class="docutils literal notranslate"><span class="pre">str</span></c
 <h3><code class="docutils literal notranslate"><span class="pre">plot</span></code> / <code class="docutils literal notranslate"><span class="pre">plot_all</span></code><a class="headerlink" href="#plot-plot-all" title="Link to this heading"></a></h3>
 <p>すべてのシリーズをプロットします。</p>
 </section>
+<section id="write">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
+</pre></div>
+</div>
+<p>TimeSeriesList をファイルに書き込みます。</p>
+<p>CSV/TXT 出力は多チャンネル用の「ディレクトリ出力」です（各要素を個別ファイルに保存）。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tsl</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;out_dir&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;txt&quot;</span><span class="p">)</span>  <span class="c1"># out_dir/ に series ごとの TXT を保存</span>
+</pre></div>
+</div>
+<p>HDF5 出力では <code class="docutils literal notranslate"><span class="pre">layout</span></code> を指定できます（デフォルトは GWpy 互換の dataset-per-entry）。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tsl</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;out.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>               <span class="c1"># GWpy互換（既定）</span>
+<span class="n">tsl</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;out.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>  <span class="c1"># 旧形式（group-per-entry）</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>[!WARNING]
+信頼できないデータを <code class="docutils literal notranslate"><span class="pre">pickle</span></code> / <code class="docutils literal notranslate"><span class="pre">shelve</span></code> で読み込まないでください。ロード時に任意コード実行が起こり得ます。</p>
+</div></blockquote>
+<p>pickle 可搬性メモ: gwexpy の <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> は unpickle 時に <strong>GWpy の <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code></strong> を返します
+（読み込み側に gwexpy は不要です）。</p>
+</section>
 <section id="q-transform">
 <h3><code class="docutils literal notranslate"><span class="pre">q_transform</span></code><a class="headerlink" href="#q-transform" title="Link to this heading"></a></h3>
 <p>各 TimeSeries の Q 変換を計算します。SpectrogramList を返します。</p>
@@ -280,8 +303,8 @@ gap : <code class="docutils literal notranslate"><span class="pre">str</span></c
 <h3><code class="docutils literal notranslate"><span class="pre">to_pandas</span></code><a class="headerlink" href="#to-pandas" title="Link to this heading"></a></h3>
 <p>pandas DataFrame に変換します。各要素は列になります。共通の時間軸を前提とします。</p>
 </section>
-<section id="write">
-<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<section id="id4">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span>
 </pre></div>
 </div>

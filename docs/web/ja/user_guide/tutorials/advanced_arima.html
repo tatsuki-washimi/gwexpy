@@ -1,0 +1,628 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARIMAモデルによる時系列予測 &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="統計的相関機能" href="advanced_correlation.html" />
+    <link rel="prev" title="Hilbert-Huang Transform (HHT) 解析チュートリアル" href="advanced_hht.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="advanced_fitting.html">gwexpy.fitting: iminuit ベースのフィッティング機能</a></li>
+<li class="toctree-l4"><a class="reference internal" href="advanced_peak_detection.html">Peak Detection (ピーク検出)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="advanced_hht.html">Hilbert-Huang Transform (HHT) 解析チュートリアル</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ARIMAモデルによる時系列予測</a></li>
+<li class="toctree-l4"><a class="reference internal" href="advanced_correlation.html">統計的相関機能</a></li>
+<li class="toctree-l4"><a class="reference internal" href="advanced_correlation.html#高度な統計解析-(Advanced-Statistics)">高度な統計解析 (Advanced Statistics)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/index.html">実例集 (Examples)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
+      <li class="breadcrumb-item active">ARIMAモデルによる時系列予測</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/advanced_arima.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/advanced_arima.ipynb">Download the notebook (.ipynb)</a>.</p>
+</div>
+<section id="ARIMAモデルによる時系列予測">
+<h1>ARIMAモデルによる時系列予測<a class="headerlink" href="#ARIMAモデルによる時系列予測" title="Link to this heading"></a></h1>
+<p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスに追加された ARIMA 関連の機能（AR, MA, ARMA, ARIMA/SARIMAX）を使用して、時系列データのモデリングと未来予測を行う方法を解説します。</p>
+<section id="準備">
+<h2>準備<a class="headerlink" href="#準備" title="Link to this heading"></a></h2>
+<p>必要なライブラリをインポートします。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+    <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;.*force_all_finite.*&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span>
+<span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;sklearn\..*&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;pmdarima\..*&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="サンプルデータの作成">
+<h2>サンプルデータの作成<a class="headerlink" href="#サンプルデータの作成" title="Link to this heading"></a></h2>
+<p>ARIMAモデルの効果を確認するために、トレンド、季節性（周期性）、ノイズを含んだ模擬データを作成します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Trend + Seasonality + Noise</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># 1. Linear Trend</span>
+<span class="n">trend</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">t</span>
+
+<span class="c1"># 2. Periodic component (Sine)</span>
+<span class="n">seasonality</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># 3. Noise</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">trend</span> <span class="o">+</span> <span class="n">seasonality</span> <span class="o">+</span> <span class="n">noise</span>
+
+<span class="c1"># Create TimeSeries object</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Sample Data&quot;</span><span class="p">)</span>
+
+<span class="n">ts</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Original Data (Trend + Seasonality + Noise)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_3_0.png" />
+</div>
+</div>
+</section>
+<section id="1.-AR-(AutoRegressive)-モデル">
+<h2>1. AR (AutoRegressive) モデル<a class="headerlink" href="#1.-AR-(AutoRegressive)-モデル" title="Link to this heading"></a></h2>
+<p>ARモデルは、現在の値が過去の値に依存すると仮定するモデルです。 <code class="docutils literal notranslate"><span class="pre">ts.ar(p)</span></code> メソッドを使用します。<code class="docutils literal notranslate"><span class="pre">p</span></code> は次数です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit with order p=3</span>
+<span class="n">model_ar</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">ar</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># Display model summary</span>
+<span class="c1"># print(model_ar.summary())</span>
+
+<span class="c1"># Plot results</span>
+<span class="c1"># forecast_steps specifies how many steps to forecast into the future</span>
+<span class="n">model_ar</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">forecast_steps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;AR(3) Model Forecast&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_5_0.png" />
+</div>
+</div>
+</section>
+<section id="2.-MA-(Moving-Average)-モデル">
+<h2>2. MA (Moving Average) モデル<a class="headerlink" href="#2.-MA-(Moving-Average)-モデル" title="Link to this heading"></a></h2>
+<p>MAモデルは、現在の値が過去の予測誤差（ホワイトノイズ）に依存すると仮定するモデルです。 <code class="docutils literal notranslate"><span class="pre">ts.ma(q)</span></code> メソッドを使用します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit with order q=3</span>
+<span class="n">model_ma</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">ma</span><span class="p">(</span><span class="n">q</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># Plot results</span>
+<span class="n">model_ma</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">forecast_steps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;MA(3) Model Forecast&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_7_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_7_0.png" />
+</div>
+</div>
+</section>
+<section id="3.-ARMA-(AutoRegressive-Moving-Average)-モデル">
+<h2>3. ARMA (AutoRegressive Moving Average) モデル<a class="headerlink" href="#3.-ARMA-(AutoRegressive-Moving-Average)-モデル" title="Link to this heading"></a></h2>
+<p>ARとMAを組み合わせたモデルです。 <code class="docutils literal notranslate"><span class="pre">ts.arma(p,</span> <span class="pre">q)</span></code> メソッドを使用します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit with p=2, q=2</span>
+<span class="n">model_arma</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">arma</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">model_arma</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">forecast_steps</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;ARMA(2, 2) Model Forecast&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_9_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_9_0.png" />
+</div>
+</div>
+</section>
+<section id="4.-ARIMA-/-Auto-ARIMA">
+<h2>4. ARIMA / Auto-ARIMA<a class="headerlink" href="#4.-ARIMA-/-Auto-ARIMA" title="Link to this heading"></a></h2>
+<p>ARIMAモデルは、差分を取ることで非定常性（トレンドなど）を除去し、ARMAモデルを適用します。</p>
+<p><code class="docutils literal notranslate"><span class="pre">ts.arima()</span></code> メソッドを使用します。 <code class="docutils literal notranslate"><span class="pre">auto=True</span></code> オプションを指定すると、<code class="docutils literal notranslate"><span class="pre">pmdarima</span></code> ライブラリを使用して最適なパラメータ (p, d, q) を自動的に探索します。これが最も推奨される方法です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for optimal ARIMA parameters... (this may take a few seconds)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Seasonality can also be considered</span>
+<span class="c1"># m is the number of steps in a seasonal period</span>
+<span class="n">model_auto</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">arima</span><span class="p">(</span><span class="n">auto</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;seasonal&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">})</span>
+
+<span class="c1"># Show info of the optimal model found</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model_auto</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+
+<span class="c1"># Plot results (Forecasting for a longer period)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">model_auto</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">forecast_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Auto-ARIMA Model Forecast (Seasonal)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Searching for optimal ARIMA parameters... (this may take a few seconds)
+                                      SARIMAX Results
+===========================================================================================
+Dep. Variable:                                   y   No. Observations:                  300
+Model:             SARIMAX(1, 1, 2)x(1, 0, [], 50)   Log Likelihood                -404.141
+Date:                             Sun, 25 Jan 2026   AIC                            820.282
+Time:                                     20:52:05   BIC                            842.485
+Sample:                                          0   HQIC                           829.169
+                                             - 300
+Covariance Type:                               opg
+==============================================================================
+                 coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+intercept      0.0044      0.006      0.695      0.487      -0.008       0.017
+ar.L1          0.8693      0.053     16.310      0.000       0.765       0.974
+ma.L1         -1.6277      0.052    -31.464      0.000      -1.729      -1.526
+ma.L2          0.7409      0.043     17.235      0.000       0.657       0.825
+ar.S.L50       0.1604      0.071      2.263      0.024       0.021       0.299
+sigma2         0.8667      0.070     12.431      0.000       0.730       1.003
+===================================================================================
+Ljung-Box (L1) (Q):                   0.13   Jarque-Bera (JB):                 0.69
+Prob(Q):                              0.71   Prob(JB):                         0.71
+Heteroskedasticity (H):               1.37   Skew:                            -0.10
+Prob(H) (two-sided):                  0.12   Kurtosis:                         3.14
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_11_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_11_1.png" />
+</div>
+</div>
+</section>
+<section id="5.-予測データの取得">
+<h2>5. 予測データの取得<a class="headerlink" href="#5.-予測データの取得" title="Link to this heading"></a></h2>
+<p>プロットだけでなく、<code class="docutils literal notranslate"><span class="pre">.forecast()</span></code> メソッドを使用して予測値の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> オブジェクトを直接取得できます。 これには信頼区間（Confidence Interval）も含まれます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">steps</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="c1"># Get forecast values and confidence intervals</span>
+<span class="n">forecast_ts</span><span class="p">,</span> <span class="n">intervals</span> <span class="o">=</span> <span class="n">model_auto</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span>
+    <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="p">)</span>  <span class="c1"># 50% confidence interval</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Forecast Data:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">forecast_ts</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Confidence Interval (Upper):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">intervals</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">])</span>
+
+<span class="c1"># Forecasting data can be saved or used for other analysis</span>
+<span class="c1"># forecast_ts.write(&quot;forecast.h5&quot;)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Forecast Data:
+TimeSeries([ 9.02063128,  9.6094657 , 10.04247631, 10.15366767,
+            10.05259752, 10.38953478, 10.79815151, 10.7102782 ,
+            11.00660841, 11.18205246, 11.08230575, 11.29883086,
+            10.98339909, 11.34917016, 11.51885752, 11.45196135,
+            11.87327454, 11.52379202, 11.68683767, 11.78939489,
+            11.98098488, 11.63016415, 11.97773587, 11.84043006,
+            11.72116502, 11.91254974, 11.88390331, 11.78617651,
+            11.87744683, 11.82552359, 11.8978438 , 11.97900621,
+            12.11133271, 11.76628531, 12.22002418, 11.72134893,
+            11.98240157, 12.11216243, 12.11237931, 12.04095457,
+            12.14350252, 12.16098484, 12.20712226, 12.45443674,
+            12.45772244, 12.3928846 , 12.67001456, 12.66918777,
+            12.811045  , 12.86573742]
+           unit: V,
+           t0: 30.0 s,
+           dt: 0.1 s,
+           name: Sample Data_auto_forecast,
+           channel: None)
+
+Confidence Interval (Upper):
+TimeSeries([ 9.6485734 , 10.25546688, 10.71958794, 10.87456095,
+            10.82818668, 11.22844439, 11.70675184, 11.69299274,
+            12.06629509, 12.32036062, 12.29997447, 12.59592487,
+            12.35949021, 12.803475  , 13.05034122, 13.05941559,
+            13.55537603, 13.27914639, 13.51401227, 13.68694319,
+            13.94746457, 13.66415042, 14.07783095, 14.00527003,
+            13.94942439, 14.20294448, 14.23519256, 14.19716342,
+            14.34697864, 14.35249117, 14.48118085, 14.61768817,
+            14.80437543, 14.51274362, 15.01899042, 14.57195137,
+            14.88380284, 15.06355799, 15.11299592, 15.09004877,
+            15.24035926, 15.30491602, 15.39746543, 15.69055383,
+            15.73899855, 15.71872684, 16.03985096, 16.08246623,
+            16.26723232, 16.36431836]
+           unit: V,
+           t0: 30.0 s,
+           dt: 0.1 s,
+           name: upper_ci,
+           channel: None)
+</pre></div></div>
+</div>
+</section>
+<section id="6.-重力波データ解析における応用:-ARIMAによるノイズ除去-(Whitening)">
+<h2>6. 重力波データ解析における応用: ARIMAによるノイズ除去 (Whitening)<a class="headerlink" href="#6.-重力波データ解析における応用:-ARIMAによるノイズ除去-(Whitening)" title="Link to this heading"></a></h2>
+<p>重力波データ解析では、定常的な「有色ノイズ」の中から突発的なバースト信号やリングダウン波形を抽出するために、<strong>白色化 (Whitening)</strong> という処理が行われます。 ARIMAモデルを背景ノイズの予測モデルとして学習させ、実測値からその予測値を引く（残差をとる）ことで、ノイズを除去し信号を強調することが可能です。</p>
+<section id="Step-1:-有色ノイズの生成と信号の注入">
+<h3>Step 1: 有色ノイズの生成と信号の注入<a class="headerlink" href="#Step-1:-有色ノイズの生成と信号の注入" title="Link to this heading"></a></h3>
+<p>まず、低周波成分が強い有色ノイズ（AR(1)プロセス）を作成し、そこにそのままでは判別しにくい微弱な信号（サインガウシアン）を埋め込みます。 ※単位には Astropy で認識可能な “strain” を使用します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_mock_data</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">fs</span><span class="p">))</span>
+
+    <span class="c1"># 1. Background Noise (AR(1) process with strong autocorrelation)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">white_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">colored_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">white_noise</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)):</span>
+        <span class="n">colored_noise</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.95</span> <span class="o">*</span> <span class="n">colored_noise</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">white_noise</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="c1"># 2. Injected Signal (Sine-Gaussian)</span>
+    <span class="n">center_time</span> <span class="o">=</span> <span class="mf">5.0</span>
+    <span class="n">sig_freq</span> <span class="o">=</span> <span class="mf">50.0</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mf">2.0</span>
+        <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">t</span> <span class="o">-</span> <span class="n">center_time</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">width</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">sig_freq</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">colored_noise</span> <span class="o">+</span> <span class="n">signal</span>
+    <span class="c1"># Use a standard unit string that astropy/gwpy can recognize</span>
+    <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MockData&quot;</span><span class="p">)</span>
+
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">generate_mock_data</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Original Noisy Data (Signal is hidden here)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_16_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_16_0.png" />
+</div>
+</div>
+</section>
+<section id="Step-2:-ARIMAによるノイズモデリング">
+<h3>Step 2: ARIMAによるノイズモデリング<a class="headerlink" href="#Step-2:-ARIMAによるノイズモデリング" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">auto=True</span></code> を使って、背景ノイズの自己相関構造を表現する最適なモデルを探索します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for optimal noise model parameters...&quot;</span><span class="p">)</span>
+<span class="c1"># We prioritize AR model for whitening, so we set max_p=5 and max_q=0.</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">arima</span><span class="p">(</span><span class="n">auto</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_p</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_q</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best model order: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">res</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Searching for optimal noise model parameters...
+Best model order: (5, 1, 0)
+                               SARIMAX Results
+==============================================================================
+Dep. Variable:                      y   No. Observations:                10240
+Model:               SARIMAX(5, 1, 0)   Log Likelihood              -14694.968
+Date:                Sun, 25 Jan 2026   AIC                          29403.936
+Time:                        20:52:11   BIC                          29454.574
+Sample:                             0   HQIC                         29421.057
+                              - 10240
+Covariance Type:                  opg
+==============================================================================
+                 coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+intercept     -0.0003      0.010     -0.033      0.973      -0.020       0.019
+ar.L1         -0.0379      0.010     -3.794      0.000      -0.057      -0.018
+ar.L2         -0.0413      0.010     -4.150      0.000      -0.061      -0.022
+ar.L3         -0.0271      0.010     -2.692      0.007      -0.047      -0.007
+ar.L4         -0.0303      0.010     -3.078      0.002      -0.050      -0.011
+ar.L5         -0.0216      0.010     -2.195      0.028      -0.041      -0.002
+sigma2         1.0330      0.014     72.089      0.000       1.005       1.061
+===================================================================================
+Ljung-Box (L1) (Q):                   0.01   Jarque-Bera (JB):                 0.54
+Prob(Q):                              0.94   Prob(JB):                         0.76
+Heteroskedasticity (H):               1.03   Skew:                             0.01
+Prob(H) (two-sided):                  0.35   Kurtosis:                         3.03
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+</pre></div></div>
+</div>
+</section>
+<section id="Step-3:-残差（Residuals）の抽出と可視化">
+<h3>Step 3: 残差（Residuals）の抽出と可視化<a class="headerlink" href="#Step-3:-残差（Residuals）の抽出と可視化" title="Link to this heading"></a></h3>
+<p>モデルが予測した「定常ノイズ」を引くことで、残差 <span class="math notranslate nohighlight">\(x_r = x - \hat{x}\)</span> を求めます。これが白色化されたデータとなります。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_whitened</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">residuals</span><span class="p">()</span>
+<span class="n">ts_whitened</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Whitened Data&quot;</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Original Noisy Data&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_whitened</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Residuals (Whitened)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Whitened Data (Signal is now visible!)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="mf">4.8</span><span class="p">,</span> <span class="mf">5.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Injected Signal Position&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_20_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_20_0.png" />
+</div>
+</div>
+</section>
+<section id="Step-4:-周波数領域での評価">
+<h3>Step 4: 周波数領域での評価<a class="headerlink" href="#Step-4:-周波数領域での評価" title="Link to this heading"></a></h3>
+<p>パワースペクトル密度 (PSD) を計算して比較します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fft_original</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">psd</span><span class="p">()</span>
+<span class="n">fft_whitened</span> <span class="o">=</span> <span class="n">ts_whitened</span><span class="o">.</span><span class="n">psd</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span>
+    <span class="n">fft_original</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">fft_original</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original Noisy PSD&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span>
+    <span class="n">fft_whitened</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">fft_whitened</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Whitened PSD (Residuals)&quot;</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;PSD Comparison: Effect of ARIMA Whitening&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;PSD [1/Hz]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_22_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_22_0.png" />
+</div>
+</div>
+</section>
+<section id="まとめ">
+<h3>まとめ<a class="headerlink" href="#まとめ" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model.residuals()</span></code> を用いることで、複雑な数式を書かずに簡単に白色化処理が実行できます。</p></li>
+<li><p>この手法は、重力波解析におけるバースト信号の探索や、イベント直後のリングダウン波形（指数減衰する正弦波）の抽出に非常に強力です。</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="advanced_hht.html" class="btn btn-neutral float-left" title="Hilbert-Huang Transform (HHT) 解析チュートリアル" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_correlation.html" class="btn btn-neutral float-right" title="統計的相関機能" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

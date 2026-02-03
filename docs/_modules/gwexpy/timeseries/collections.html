@@ -72,8 +72,10 @@
   <h1>Source code for gwexpy.timeseries.collections</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">SupportsIndex</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -86,6 +88,19 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span> <span class="k">as</span> <span class="n">BaseTimeSeriesDict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesList</span> <span class="k">as</span> <span class="n">BaseTimeSeriesList</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.hdf5_collection</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">LAYOUT_DATASET</span><span class="p">,</span>
+    <span class="n">LAYOUT_GROUP</span><span class="p">,</span>
+    <span class="n">detect_hdf5_layout</span><span class="p">,</span>
+    <span class="n">ensure_hdf5_file</span><span class="p">,</span>
+    <span class="n">normalize_layout</span><span class="p">,</span>
+    <span class="n">read_hdf5_keymap</span><span class="p">,</span>
+    <span class="n">read_hdf5_order</span><span class="p">,</span>
+    <span class="n">safe_hdf5_key</span><span class="p">,</span>
+    <span class="n">unique_hdf5_key</span><span class="p">,</span>
+    <span class="n">write_hdf5_manifest</span><span class="p">,</span>
+<span class="p">)</span>
+
 <span class="c1"># --- Monkey Patch TimeSeriesDict ---</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhaseMethodsMixin</span>
 
@@ -96,6 +111,71 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesDict</span><span class="p">(</span><span class="n">PhaseMethodsMixin</span><span class="p">,</span> <span class="n">BaseTimeSeriesDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Dictionary of TimeSeries objects.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TimeSeriesDict.read">
+<a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.read">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>  <span class="c1"># type: ignore[override]</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">)):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.collection_dir</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_collection_dir</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_unit</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+            <span class="n">_</span><span class="p">,</span> <span class="n">items</span> <span class="o">=</span> <span class="n">read_collection_dir</span><span class="p">(</span>
+                <span class="n">p</span><span class="p">,</span>
+                <span class="n">expected_kind</span><span class="o">=</span><span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">,</span>
+                <span class="n">entry_format</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span>
+                <span class="n">reader</span><span class="o">=</span><span class="k">lambda</span> <span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">f</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">apply_unit</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span> <span class="k">if</span> <span class="n">unit</span> <span class="k">else</span> <span class="n">v</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">return</span> <span class="n">out</span>
+        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="s2">&quot;h5&quot;</span><span class="p">,</span> <span class="s2">&quot;hdf&quot;</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5f</span><span class="p">:</span>
+                <span class="n">layout</span> <span class="o">=</span> <span class="n">detect_hdf5_layout</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
+                <span class="n">keymap</span> <span class="o">=</span> <span class="n">read_hdf5_keymap</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="n">read_hdf5_order</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="n">order</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">(</span><span class="n">h5f</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_DATASET</span> <span class="ow">or</span> <span class="n">layout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">ds_name</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">h5f</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">ds_name</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">orig_key</span> <span class="o">=</span> <span class="n">keymap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ds_name</span><span class="p">,</span> <span class="n">ds_name</span><span class="p">)</span>
+                        <span class="n">out</span><span class="p">[</span><span class="n">orig_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span>
+                    <span class="k">return</span> <span class="n">out</span>
+                <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_GROUP</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">grp_name</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">grp</span> <span class="o">=</span> <span class="n">h5f</span><span class="p">[</span><span class="n">grp_name</span><span class="p">]</span>
+                            <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+                            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                                <span class="k">continue</span>
+                        <span class="n">orig_key</span> <span class="o">=</span> <span class="n">keymap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">grp_name</span><span class="p">,</span> <span class="n">grp_name</span><span class="p">)</span>
+                        <span class="n">out</span><span class="p">[</span><span class="n">orig_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span>
+                    <span class="k">return</span> <span class="n">out</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce_ex__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="n">SupportsIndex</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span> <span class="k">as</span> <span class="n">GwpyTimeSeriesDict</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">GwpyTimeSeriesDict</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">),))</span>
 
 <div class="viewcode-block" id="TimeSeriesDict.asfreq">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.asfreq">[docs]</a>
@@ -688,6 +768,46 @@
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.root_</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_root_file</span>
 
             <span class="k">return</span> <span class="n">write_root_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.collection_dir</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_collection_dir</span>
+
+            <span class="n">overwrite</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;overwrite&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+            <span class="c1"># Each entry is written as a standalone GWpy-compatible CSV/TXT.</span>
+            <span class="k">return</span> <span class="n">write_collection_dir</span><span class="p">(</span>
+                <span class="n">target</span><span class="p">,</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">,</span>
+                <span class="n">entry_format</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fmt</span><span class="p">),</span>
+                <span class="n">entries</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()),</span>
+                <span class="n">writer</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ts</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">ts</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">f</span><span class="p">),</span>
+                <span class="n">meta_getter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ts</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)},</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="s2">&quot;h5&quot;</span><span class="p">,</span> <span class="s2">&quot;hdf&quot;</span><span class="p">):</span>
+            <span class="n">overwrite</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;overwrite&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">normalize_layout</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;layout&quot;</span><span class="p">,</span> <span class="s2">&quot;gwpy&quot;</span><span class="p">))</span>
+            <span class="n">used</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">keymap</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">with</span> <span class="n">ensure_hdf5_file</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">safe</span> <span class="o">=</span> <span class="n">safe_hdf5_key</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">unique_hdf5_key</span><span class="p">(</span><span class="n">safe</span><span class="p">,</span> <span class="n">used</span><span class="o">=</span><span class="n">used</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_DATASET</span><span class="p">:</span>
+                        <span class="n">ts</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">h5f</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">grp</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                        <span class="n">ts</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+                    <span class="n">keymap</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">write_hdf5_manifest</span><span class="p">(</span>
+                    <span class="n">h5f</span><span class="p">,</span>
+                    <span class="n">kind</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">,</span>
+                    <span class="n">keymap</span><span class="o">=</span><span class="n">keymap</span><span class="p">,</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">target</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -2253,6 +2373,69 @@
         <span class="k">return</span> <span class="n">to_tmultigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="TimeSeriesList.read">
+<a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.read">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>  <span class="c1"># type: ignore[override]</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">)):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.collection_dir</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_collection_dir</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_unit</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+            <span class="n">_</span><span class="p">,</span> <span class="n">items</span> <span class="o">=</span> <span class="n">read_collection_dir</span><span class="p">(</span>
+                <span class="n">p</span><span class="p">,</span>
+                <span class="n">expected_kind</span><span class="o">=</span><span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">,</span>
+                <span class="n">entry_format</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span>
+                <span class="n">reader</span><span class="o">=</span><span class="k">lambda</span> <span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">f</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">dir_items</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">apply_unit</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span> <span class="k">if</span> <span class="n">unit</span> <span class="k">else</span> <span class="n">v</span>
+                <span class="n">dir_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">dir_items</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="s2">&quot;h5&quot;</span><span class="p">,</span> <span class="s2">&quot;hdf&quot;</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5f</span><span class="p">:</span>
+                <span class="n">layout</span> <span class="o">=</span> <span class="n">detect_hdf5_layout</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span>
+                <span class="n">order</span> <span class="o">=</span> <span class="n">read_hdf5_order</span><span class="p">(</span><span class="n">h5f</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">(</span><span class="n">h5f</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="n">out_items</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TimeSeries</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_DATASET</span> <span class="ow">or</span> <span class="n">layout</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">ds_name</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">h5f</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">ds_name</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">out_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">out_items</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_GROUP</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">grp_name</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">grp</span> <span class="o">=</span> <span class="n">h5f</span><span class="p">[</span><span class="n">grp_name</span><span class="p">]</span>
+                            <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+                            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                                <span class="k">continue</span>
+                        <span class="n">out_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">out_items</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;TimeSeriesList.read currently supports only directory sources for csv/txt&quot;</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce_ex__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="n">SupportsIndex</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesList</span> <span class="k">as</span> <span class="n">GwpyTimeSeriesList</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">GwpyTimeSeriesList</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
 <div class="viewcode-block" id="TimeSeriesList.write">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.write">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
@@ -2262,6 +2445,47 @@
             <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.root_</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_root_file</span>
 
             <span class="k">return</span> <span class="n">write_root_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;txt&quot;</span><span class="p">):</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.collection_dir</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_collection_dir</span>
+
+            <span class="n">overwrite</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;overwrite&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+            <span class="n">pairs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;series_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">pairs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">ts</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">write_collection_dir</span><span class="p">(</span>
+                <span class="n">target</span><span class="p">,</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">,</span>
+                <span class="n">entry_format</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fmt</span><span class="p">),</span>
+                <span class="n">entries</span><span class="o">=</span><span class="n">pairs</span><span class="p">,</span>
+                <span class="n">writer</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ts</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">ts</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="n">f</span><span class="p">),</span>
+                <span class="n">meta_getter</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ts</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)},</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="s2">&quot;h5&quot;</span><span class="p">,</span> <span class="s2">&quot;hdf&quot;</span><span class="p">):</span>
+            <span class="n">overwrite</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;overwrite&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">layout</span> <span class="o">=</span> <span class="n">normalize_layout</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;layout&quot;</span><span class="p">,</span> <span class="s2">&quot;gwpy&quot;</span><span class="p">))</span>
+            <span class="n">used</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">with</span> <span class="n">ensure_hdf5_file</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">safe_hdf5_key</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">unique_hdf5_key</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">used</span><span class="o">=</span><span class="n">used</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="n">LAYOUT_DATASET</span><span class="p">:</span>
+                        <span class="n">ts</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">h5f</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">grp</span> <span class="o">=</span> <span class="n">h5f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                        <span class="n">ts</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+                    <span class="n">order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">write_hdf5_manifest</span><span class="p">(</span>
+                    <span class="n">h5f</span><span class="p">,</span>
+                    <span class="n">kind</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">,</span>
+                    <span class="n">keymap</span><span class="o">=</span><span class="p">{},</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">target</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">registry</span>
 
         <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>

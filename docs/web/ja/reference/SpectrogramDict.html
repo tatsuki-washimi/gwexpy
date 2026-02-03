@@ -46,14 +46,15 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../guide/installation.html">インストール</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/quickstart.html">クイックスタート</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">実例集 (Examples)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">リファレンス</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="api/index.html">API リファレンス</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="classes.html">クラス索引 (Class Index)</a><ul class="current">
@@ -178,6 +179,30 @@ True の場合、その場で変更します。</p>
 <section id="id3">
 <h2>戻り値<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <p>SpectrogramDict</p>
+<section id="write">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>SpectrogramDict をファイルに書き込みます。</p>
+<p>HDF5 出力では <code class="docutils literal notranslate"><span class="pre">layout</span></code> を指定できます（デフォルトは GWpy 互換の dataset-per-entry）。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sgd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;out.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>               <span class="c1"># GWpy互換（既定）</span>
+<span class="n">sgd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;out.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">)</span>  <span class="c1"># 旧形式（group-per-entry）</span>
+</pre></div>
+</div>
+<p>HDF5 のデータセット名（GWpy の <code class="docutils literal notranslate"><span class="pre">path=</span></code> 用）:</p>
+<ul class="simple">
+<li><p>キーは HDF5 で安全な名前にサニタイズされます（例: <code class="docutils literal notranslate"><span class="pre">H1:SPEC</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">H1_SPEC</span></code>）。</p></li>
+<li><p>サニタイズ後の名前が衝突する場合、<code class="docutils literal notranslate"><span class="pre">__1</span></code> のようなサフィックスが付与されます。</p></li>
+<li><p>元のキーはファイル属性に保存され、gwexpy の <code class="docutils literal notranslate"><span class="pre">read()</span></code> は元キーを復元します。</p></li>
+</ul>
+<blockquote>
+<div><p>[!WARNING]
+信頼できないデータを <code class="docutils literal notranslate"><span class="pre">pickle</span></code> / <code class="docutils literal notranslate"><span class="pre">shelve</span></code> で読み込まないでください。ロード時に任意コード実行が起こり得ます。</p>
+</div></blockquote>
+<p>pickle 可搬性メモ: gwexpy の <code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code> は unpickle 時に builtins の <code class="docutils literal notranslate"><span class="pre">dict</span></code> を返します
+（中身は GWpy の <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>、読み込み側に gwexpy は不要です）。</p>
+</section>
 <section id="crop-frequencies">
 <h3><code class="docutils literal notranslate"><span class="pre">crop_frequencies</span></code><a class="headerlink" href="#crop-frequencies" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">crop_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -299,8 +324,8 @@ True の場合、その場で変更します。</p>
 <h3><code class="docutils literal notranslate"><span class="pre">to_cupy</span></code> / <code class="docutils literal notranslate"><span class="pre">to_dask</span></code> / <code class="docutils literal notranslate"><span class="pre">to_jax</span></code> / <code class="docutils literal notranslate"><span class="pre">to_tensorflow</span></code> / <code class="docutils literal notranslate"><span class="pre">to_torch</span></code><a class="headerlink" href="#to-cupy-to-dask-to-jax-to-tensorflow-to-torch" title="Link to this heading"></a></h3>
 <p>各アイテムを対応するフレームワークのテンソル/配列に変換します。辞書を返します。</p>
 </section>
-<section id="write">
-<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#write" title="Link to this heading"></a></h3>
+<section id="id13">
+<h3><code class="docutils literal notranslate"><span class="pre">write</span></code><a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>

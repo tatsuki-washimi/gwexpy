@@ -1,0 +1,514 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy Plotting Introduction &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="チュートリアル: 全天マップと地理マップのプロット" href="intro_mapplotting.html" />
+    <link rel="prev" title="SpectrogramList と SpectrogramDict のチュートリアル" href="intro_spectrogram.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html#i">I. 基本データ構造</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="intro_timeseries.html">gwexpy TimeSeries 新機能チュートリアル</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries の新機能と高度な操作</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_spectrogram.html">SpectrogramList と SpectrogramDict のチュートリアル</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">gwexpy Plotting Introduction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_mapplotting.html">チュートリアル: 全天マップと地理マップのプロット</a></li>
+<li class="toctree-l4"><a class="reference internal" href="intro_interop.html">GWExPy TimeSeries 相互運用性 (Interop) チュートリアル</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/index.html">実例集 (Examples)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
+      <li class="breadcrumb-item active">gwexpy Plotting Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/intro_plotting.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/intro_plotting.ipynb">Download the notebook (.ipynb)</a>.</p>
+</div>
+<section id="gwexpy-Plotting-Introduction">
+<h1>gwexpy Plotting Introduction<a class="headerlink" href="#gwexpy-Plotting-Introduction" title="Link to this heading"></a></h1>
+<p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の強化されたプロット機能を紹介します。 <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> や <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> などの行列データ構造、および <code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> などのコレクションに対する、「いい感じ」のデフォルト設定（figsize自動調整、対数軸、レイアウト、軸ラベル）についてデモを行います。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">FrequencySeriesList</span><span class="p">,</span>
+    <span class="n">FrequencySeriesMatrix</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span><span class="p">,</span> <span class="n">SpectrogramList</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
+
+<span class="c1"># ランダムシードの固定</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="1.-TimeSeriesMatrix-Plotting">
+<h2>1. TimeSeriesMatrix Plotting<a class="headerlink" href="#1.-TimeSeriesMatrix-Plotting" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> は (Row, Col, Time) の3次元構造を持つ時系列データを管理します。 <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> を呼び出すと、以下の最適化が行われます：</p>
+<ul class="simple">
+<li><p><strong>軸ラベル</strong>: <code class="docutils literal notranslate"><span class="pre">determine_xlabel</span></code> により “Time [s]” や “Time [s] from …” が自動設定されます。</p></li>
+<li><p><strong>Auto-GPS</strong>: 時間軸の場合、デフォルトで <code class="docutils literal notranslate"><span class="pre">auto-gps</span></code> スケールが適用され、GPS時刻（大きなオフセット）が適切に処理されます。</p></li>
+<li><p><strong>レイアウト</strong>: 行・列の構造に合わせて <code class="docutils literal notranslate"><span class="pre">figsize</span></code> が自動調整されます。</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 2x2 の TimeSeriesMatrix を作成</span>
+<span class="c1"># GPS時刻 (例: 1356998418 = 2023-01-01 00:00:00 UTC) からの10秒間</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mf">1356998418.0</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="c1"># 行: Sensor A, B / 列: Axis X, Y</span>
+<span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Velocity&quot;</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sensor A&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor B&quot;</span><span class="p">],</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;X-axis&quot;</span><span class="p">,</span> <span class="s2">&quot;Y-axis&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># プロット</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_3_0.png" />
+</div>
+</div>
+</section>
+<section id="2.-FrequencySeriesMatrix-Plotting">
+<h2>2. FrequencySeriesMatrix Plotting<a class="headerlink" href="#2.-FrequencySeriesMatrix-Plotting" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> は (Row, Col, Frequency) の3次元構造を持つ周波数データを管理します。 一般的なスペクトル解析の結果などを保持します。 <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> の特徴：</p>
+<ul class="simple">
+<li><p><strong>対数軸</strong>: データサイズ等の条件に応じて、X軸（周波数）やY軸（振幅）が自動的に対数スケールになります。</p></li>
+<li><p><strong>軸ラベル</strong>: “Frequency [Hz]” や “[unit]” が自動設定されます。</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FrequencySeriesMatrix の作成</span>
+<span class="c1"># 10Hz から 1kHz</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="c1"># 1/f ノイズのようなデータを生成</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">/</span> <span class="n">f</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">)</span>
+
+<span class="c1"># unit=&#39;m&#39; (Amplitude Spectral Density と仮定すると m/sqrt(Hz) ですが、ここでは単純化)</span>
+<span class="n">fsm</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Displacement&quot;</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sensor A&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor B&quot;</span><span class="p">],</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;X-axis&quot;</span><span class="p">,</span> <span class="s2">&quot;Y-axis&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># プロット</span>
+<span class="c1"># 自動的に log-log プロットになることを確認してください</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">fsm</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_5_0.png" />
+</div>
+</div>
+</section>
+<section id="3.-FrequencySeriesList-Plotting-(参考)">
+<h2>3. FrequencySeriesList Plotting (参考)<a class="headerlink" href="#3.-FrequencySeriesList-Plotting-(参考)" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code> (または Dict) は、グリッド構造を持たない単純なリストです。 これも同様にプロット可能です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FrequencySeriesList の作成</span>
+<span class="n">fs1</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">f</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Series 1&quot;</span><span class="p">)</span>
+<span class="n">fs2</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="n">f</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Series 2&quot;</span><span class="p">)</span>
+
+<span class="n">fs_list</span> <span class="o">=</span> <span class="n">FrequencySeriesList</span><span class="p">([</span><span class="n">fs1</span><span class="p">,</span> <span class="n">fs2</span><span class="p">])</span>
+
+<span class="n">fs_list</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_7_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_7_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <span class="n">times</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">tsm</span><span class="p">,</span> <span class="n">fsm</span><span class="p">,</span> <span class="n">fs1</span><span class="p">,</span> <span class="n">fs2</span><span class="p">,</span> <span class="n">fs_list</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
+
+<span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+16601
+</pre></div></div>
+</div>
+</section>
+<section id="4.-SpectrogramList-Plotting">
+<h2>4. SpectrogramList Plotting<a class="headerlink" href="#4.-SpectrogramList-Plotting" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> のプロットは、デフォルトで <code class="docutils literal notranslate"><span class="pre">geometry=(N,</span> <span class="pre">1)</span></code> の縦並びレイアウト、対数カラーバーなどが適用されます。 スペクトログラムも時間軸を持つため、GPS時刻を与えると <code class="docutils literal notranslate"><span class="pre">auto-gps</span></code> が機能します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Spectrogram の作成</span>
+<span class="c1"># TimeSeriesMatrix と同じ GPS 時刻を使用</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="c1"># 10Hz - 1000Hz</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+<span class="n">spec_list</span> <span class="o">=</span> <span class="n">SpectrogramList</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">Spectrogram</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">times</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Spec 1&quot;</span>
+        <span class="p">),</span>
+        <span class="n">Spectrogram</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">times</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Spec 2&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">spec_list</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_10_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_10_0.png" />
+</div>
+</div>
+</section>
+<section id="4.-Adaptive-Plotting-Optimization-(Decimation)">
+<h2>4. Adaptive Plotting Optimization (Decimation)<a class="headerlink" href="#4.-Adaptive-Plotting-Optimization-(Decimation)" title="Link to this heading"></a></h2>
+<p>大量のデータを持つ <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> をプロットする際、描画パフォーマンスを維持するために自動的に間引き（Min-Max Decimation）を適用します。</p>
+<ul class="simple">
+<li><p><strong>自動適用</strong>: デフォルトではサンプル数が 50,000 を超える場合に発動します。</p></li>
+<li><p><strong>ピーク維持</strong>: Min-Max アルゴリズムにより、波形のエンベロープ（最大・最小）を保持したままデータ点を削減（デフォルト 約10,000点）します。</p></li>
+<li><p><strong>カスタマイズ</strong>: <code class="docutils literal notranslate"><span class="pre">decimate_threshold</span></code> や <code class="docutils literal notranslate"><span class="pre">decimate_points</span></code> 引数で制御可能です。</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 100,000,000 サンプルのデータを生成</span>
+<span class="n">ts_large</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100000000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Large TS&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original samples: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_large</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># プロット実行 (自動的に間引きが行われる)</span>
+<span class="n">plot_opt</span> <span class="o">=</span> <span class="n">ts_large</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+<span class="c1"># 描画された点数を確認</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_opt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">line</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plotted points: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">get_xdata</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plot_opt</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original samples: 100000000
+Plotted points: 10000
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_12_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_12_1.png" />
+</div>
+</div>
+<section id="コレクション・行列への適用とパラメータ指定">
+<h3>コレクション・行列への適用とパラメータ指定<a class="headerlink" href="#コレクション・行列への適用とパラメータ指定" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> や <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> でも透過的に機能します。また、閾値を下げて強制的に適用させることも可能です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 閾値を 10,000 に下げて、プロット点数を 2,000 に指定する例</span>
+<span class="n">ts_med</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">16384</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Medium TS&quot;</span><span class="p">)</span>
+
+<span class="n">plot_custom</span> <span class="o">=</span> <span class="n">ts_med</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">decimate_threshold</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">decimate_points</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_custom</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_med</span><span class="p">)</span><span class="si">}</span><span class="s2">, Plotted: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_xdata</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plot_custom</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original: 20000, Plotted: 2000
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_14_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_14_1.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="5.-Spectrogram-Summary-Plotting">
+<h2>5. Spectrogram Summary Plotting<a class="headerlink" href="#5.-Spectrogram-Summary-Plotting" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">plot_summary</span></code> は、複数の <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> を垂直に並べ、それぞれの右側に <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> の統計量（10%, 50%, 90% パーセンタイル）をプロットする機能です。 スペクトログラムの時間変化と、その全体的な周波数特性を並べて確認する際に非常に便利です。</p>
+<ul class="simple">
+<li><p><strong>自動同期</strong>: スペクトログラムのカラー軸と FrequencySeries の縦軸が自動的に同期します。</p></li>
+<li><p><strong>MMMプロット</strong>: <code class="docutils literal notranslate"><span class="pre">plot_mmm</span></code> を用いて、Min/Median/Max（または任意のパーセンタイル）を塗りつぶし付きで表示します。</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+
+<span class="c1"># テストデータの生成</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_sg</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2048</span> <span class="o">*</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+
+<span class="n">sg_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">({</span><span class="s2">&quot;Channel A&quot;</span><span class="p">:</span> <span class="n">make_sg</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">),</span> <span class="s2">&quot;Channel B&quot;</span><span class="p">:</span> <span class="n">make_sg</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">)})</span>
+
+<span class="c1"># ASDgram プロットの実行</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">sg_dict</span><span class="o">.</span><span class="n">plot_summary</span><span class="p">(</span><span class="n">fmin</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;ASDgram Demonstration&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/gwexpy/plot/plot.py:843: UserWarning: This figure includes Axes that are not compatible with tight_layout, so results might be incorrect.
+  fig.tight_layout()
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_16_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_16_1.png" />
+</div>
+</div>
+</section>
+<section id="6.-PairPlot-Example">
+<h2>6. PairPlot Example<a class="headerlink" href="#6.-PairPlot-Example" title="Link to this heading"></a></h2>
+<p>以下は <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.PairPlot</span></code> の基本的な使用例です。</p>
+<ul class="simple">
+<li><p>2 つの <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を異なるサンプリングレートで作成</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PairPlot</span></code> が自動で最小サンプルレートにリサンプリングし、共通区間にトリミングします</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">corner=True</span></code>（デフォルト）により左下三角だけが描画されます</p></li>
+</ul>
+<p>実行すると、対角にヒストグラム、非対角に 2D ヒストグラムが表示されます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">PairPlot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="c1"># 2 つの異なるサンプリングレートの TimeSeries を作成</span>
+<span class="n">ts1</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TS1&quot;</span><span class="p">)</span>
+<span class="n">ts2</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TS2&quot;</span><span class="p">)</span>
+
+<span class="c1"># PairPlot を作成（corner=True がデフォルト）</span>
+<span class="n">pair</span> <span class="o">=</span> <span class="n">PairPlot</span><span class="p">([</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">],</span> <span class="n">corner</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># 描画</span>
+<span class="n">pair</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_18_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_18_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;gwexpy.plot.pairplot.PairPlot at 0x7f39d0284920&gt;
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro_spectrogram.html" class="btn btn-neutral float-left" title="SpectrogramList と SpectrogramDict のチュートリアル" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intro_mapplotting.html" class="btn btn-neutral float-right" title="チュートリアル: 全天マップと地理マップのプロット" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

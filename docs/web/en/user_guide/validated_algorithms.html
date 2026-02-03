@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validated Algorithms &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Tutorials" href="tutorials/index.html" />
+    <link rel="prev" title="ScalarField Slicing Guide" href="scalarfield_slicing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Validated Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#k-space-computation">k-space Computation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amplitude-spectrum-transient-fft">Amplitude Spectrum (Transient FFT)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vif-variance-inflation-factor">VIF (Variance Inflation Factor)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#forecast-timestamp-arima">Forecast Timestamp (ARIMA)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#assumptions-and-conventions">Assumptions and Conventions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mcmc-fixed-covariance-assumption">MCMC Fixed Covariance Assumption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#angular-vs-cycle-wavenumber">Angular vs Cycle Wavenumber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sign-convention-for-descending-axes">Sign Convention for Descending Axes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#vif-application-in-bootstrap">VIF Application in Bootstrap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bootstrap-stationarity-assumption">Bootstrap Stationarity Assumption</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#about-the-validation">About the Validation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
+      <li class="breadcrumb-item active">Validated Algorithms</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/validated_algorithms.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="validated-algorithms">
+<h1>Validated Algorithms<a class="headerlink" href="#validated-algorithms" title="Link to this heading"></a></h1>
+<p>The following algorithms have been validated through cross-verification
+by 12 different AI models (2026-02-01). This page documents the verified
+implementations with references.</p>
+<section id="k-space-computation">
+<h2>k-space Computation<a class="headerlink" href="#k-space-computation" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
+<p><strong>Consensus</strong>: 10/12 AI models confirmed correctness</p>
+<p>The angular wavenumber computation uses the standard physics definition:</p>
+<p>$$
+k = 2\pi \cdot \text{fftfreq}(n, d)
+$$</p>
+<p>This satisfies $k = 2\pi / \lambda$ and is consistent with:</p>
+<ul class="simple">
+<li><p>Press et al., <em>Numerical Recipes</em> (3rd ed., 2007), §12.3.2</p></li>
+<li><p>NumPy <code class="docutils literal notranslate"><span class="pre">fftfreq</span></code> documentation</p></li>
+<li><p>GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">2π</span></code> factor is correctly applied, and units are properly set as
+<code class="docutils literal notranslate"><span class="pre">1/dx_unit</span></code> (rad/length).</p>
+</section>
+<section id="amplitude-spectrum-transient-fft">
+<h2>Amplitude Spectrum (Transient FFT)<a class="headerlink" href="#amplitude-spectrum-transient-fft" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries._fft_transient</span></code></p>
+<p><strong>Consensus</strong>: Validated with clear rebuttal of incorrect critiques</p>
+<p>The transient FFT returns an <strong>amplitude spectrum</strong>, not a density spectrum:</p>
+<p>$$
+\text{amplitude} = \text{rfft}(x) / N
+$$</p>
+<p>with one-sided values (excluding DC and Nyquist) doubled.</p>
+<p>This convention allows direct reading of sinusoidal peak amplitudes.
+The suggestion to multiply by <code class="docutils literal notranslate"><span class="pre">dt</span></code> applies to density spectra
+(V/√Hz), which is a different use case.</p>
+<p><strong>References</strong>:</p>
+<ul class="simple">
+<li><p>Oppenheim &amp; Schafer, <em>Discrete-Time Signal Processing</em> (3rd ed., 2010), §8.6.2</p></li>
+<li><p>SciPy <code class="docutils literal notranslate"><span class="pre">rfft</span></code> documentation</p></li>
+</ul>
+</section>
+<section id="vif-variance-inflation-factor">
+<h2>VIF (Variance Inflation Factor)<a class="headerlink" href="#vif-variance-inflation-factor" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.calculate_correlation_factor()</span></code></p>
+<p><strong>Consensus</strong>: 8/12 AI models confirmed correctness</p>
+<p>The VIF formula follows Percival &amp; Walden (1993):</p>
+<p>$$
+\text{VIF} = \sqrt{1 + 2 \sum_{k=1}^{M-1} \left(1 - \frac{k}{M}\right) |\rho(kS)|^2}
+$$</p>
+<p><strong>Important</strong>: This is NOT the regression VIF (1/(1-R²)) used for
+multicollinearity diagnosis. The name collision caused confusion,
+but the implementation is correct for spectral analysis.</p>
+<p><strong>References</strong>:</p>
+<ul class="simple">
+<li><p>Percival, D.B. &amp; Walden, A.T., <em>Spectral Analysis for Physical Applications</em>
+(1993), Ch. 7.3.2, Eq.(56)</p></li>
+<li><p>Bendat, J.S. &amp; Piersol, A.G., <em>Random Data</em> (4th ed., 2010)</p></li>
+</ul>
+</section>
+<section id="forecast-timestamp-arima">
+<h2>Forecast Timestamp (ARIMA)<a class="headerlink" href="#forecast-timestamp-arima" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.timeseries.arima.ArimaResult.forecast()</span></code></p>
+<p><strong>Consensus</strong>: Validated with rebuttal of incorrect concerns</p>
+<p>The forecast start time is computed as:</p>
+<p>$$
+t_{\text{forecast}} = t_0 + n_{\text{obs}} \times \Delta t
+$$</p>
+<p>This assumes equally-spaced data without gaps. GPS times follow the
+LIGO/GWpy convention using TAI continuous seconds.</p>
+<p>The leap-second concern raised by some models does not apply to
+GPS/TAI time systems used in gravitational wave data analysis.</p>
+<p><strong>References</strong>:</p>
+<ul class="simple">
+<li><p>GWpy TimeSeries.epoch documentation</p></li>
+<li><p>LIGO GPS time convention (LIGO-T980044)</p></li>
+<li><p>Box, G.E.P. &amp; Jenkins, G.M., <em>Time Series Analysis</em> (1976), Ch. 4</p></li>
+</ul>
+</section>
+</section>
+<section id="assumptions-and-conventions">
+<h1>Assumptions and Conventions<a class="headerlink" href="#assumptions-and-conventions" title="Link to this heading"></a></h1>
+<p>The following sections document important assumptions and conventions
+that users should be aware of when using these algorithms.</p>
+<section id="mcmc-fixed-covariance-assumption">
+<h2>MCMC Fixed Covariance Assumption<a class="headerlink" href="#mcmc-fixed-covariance-assumption" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fitting.FitResult.run_mcmc()</span></code></p>
+<p><strong>Assumption</strong>: The covariance matrix Σ is <strong>parameter-independent (fixed)</strong>.</p>
+<p>Under this assumption, the log determinant term <code class="docutils literal notranslate"><span class="pre">log|Σ|</span></code> is constant
+and can be correctly omitted from the log likelihood:</p>
+<p>$$
+\log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r + \text{const}
+$$</p>
+<p>If Σ depends on model parameters θ, the full log likelihood including
+<code class="docutils literal notranslate"><span class="pre">log|Σ|</span></code> must be used, which requires modifying the implementation.</p>
+<p><strong>Complex Data</strong>: For complex-valued data, the Hermitian form
+<code class="docutils literal notranslate"><span class="pre">r.conj()</span> <span class="pre">&#64;</span> <span class="pre">cov_inv</span> <span class="pre">&#64;</span> <span class="pre">r</span></code> assumes <strong>circular complex Gaussian</strong>
+distribution (equal variance for real and imaginary parts).</p>
+<p><strong>References</strong>:</p>
+<ul class="simple">
+<li><p>Rasmussen &amp; Williams, <em>Gaussian Processes for Machine Learning</em> (2006), Ch. 2.2</p></li>
+<li><p>Gelman et al., <em>Bayesian Data Analysis</em> (3rd ed., 2013), §14.2</p></li>
+</ul>
+</section>
+<section id="angular-vs-cycle-wavenumber">
+<h2>Angular vs Cycle Wavenumber<a class="headerlink" href="#angular-vs-cycle-wavenumber" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
+<p><strong>Convention</strong>: The <code class="docutils literal notranslate"><span class="pre">k</span></code> axis returns <strong>angular wavenumber</strong> [rad/length],
+NOT cycle wavenumber [1/length].</p>
+<ul class="simple">
+<li><p>Angular wavenumber: $k = 2\pi / \lambda$</p></li>
+<li><p>Cycle wavenumber: $\nu = 1 / \lambda$</p></li>
+<li><p>Conversion: $\nu = k / (2\pi)$</p></li>
+</ul>
+</section>
+<section id="sign-convention-for-descending-axes">
+<h2>Sign Convention for Descending Axes<a class="headerlink" href="#sign-convention-for-descending-axes" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
+<p><strong>Convention</strong>: If the spatial axis is descending (dx &lt; 0), the k-axis is
+<strong>sign-flipped</strong> to preserve physical consistency with the phase factor
+convention $e^{+ikx}$.</p>
+<p>This ensures that positive <code class="docutils literal notranslate"><span class="pre">k</span></code> corresponds to waves propagating in
+the positive x direction, regardless of the data storage order.</p>
+<p><strong>Reference</strong>: Jackson, <em>Classical Electrodynamics</em> (3rd ed., 1998), §4.2</p>
+</section>
+<section id="vif-application-in-bootstrap">
+<h2>VIF Application in Bootstrap<a class="headerlink" href="#vif-application-in-bootstrap" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.bootstrap_spectrogram()</span></code></p>
+<p><strong>Conditional Behavior</strong>:</p>
+<ul class="simple">
+<li><p><strong>Standard bootstrap</strong> (<code class="docutils literal notranslate"><span class="pre">block_size=None</span></code>): VIF correction is applied
+to account for Welch overlap correlation.</p></li>
+<li><p><strong>Block bootstrap</strong> (<code class="docutils literal notranslate"><span class="pre">block_size</span></code> specified): VIF correction is
+<strong>disabled</strong> (factor=1.0) to prevent double correction.</p></li>
+</ul>
+<p>This prevents over-inflation of variance estimates when both block
+structure and analytical VIF would be applied simultaneously.</p>
+</section>
+<section id="bootstrap-stationarity-assumption">
+<h2>Bootstrap Stationarity Assumption<a class="headerlink" href="#bootstrap-stationarity-assumption" title="Link to this heading"></a></h2>
+<p><strong>Function</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.bootstrap_spectrogram()</span></code></p>
+<p><strong>Assumption</strong>: The input data is a <strong>stationary process</strong>.</p>
+<p>Moving Block Bootstrap assumes the statistical properties of the data
+do not change over time. For non-stationary data (glitches, transients,
+drifting noise floors), the confidence intervals may be biased.</p>
+<p><strong>Recommended</strong> <code class="docutils literal notranslate"><span class="pre">block_size</span></code>: At least the stride length (segment spacing)
+for time-correlated spectrograms.</p>
+<p><strong>References</strong>:</p>
+<ul class="simple">
+<li><p>Künsch, H.R., “The jackknife and the bootstrap for general stationary
+observations”, Ann. Statist. 17(3), 1989</p></li>
+<li><p>Politis, D.N. &amp; Romano, J.P., “The stationary bootstrap”,
+J. Amer. Statist. Assoc. 89(428), 1994</p></li>
+</ul>
+</section>
+<section id="about-the-validation">
+<h2>About the Validation<a class="headerlink" href="#about-the-validation" title="Link to this heading"></a></h2>
+<p>These validations were performed as part of a comprehensive algorithm
+audit using 12 different AI models:</p>
+<ul class="simple">
+<li><p>ChatGPT 5.2 Pro (Deep Research)</p></li>
+<li><p>Claude Opus 4.5 (Antigravity, IDE)</p></li>
+<li><p>Copilot (IDE)</p></li>
+<li><p>Cursor</p></li>
+<li><p>Felo</p></li>
+<li><p>Gemini 3 Pro (Antigravity, CLI, Web)</p></li>
+<li><p>Grok</p></li>
+<li><p>NotebookLM</p></li>
+<li><p>Perplexity</p></li>
+</ul>
+<p>The full validation report is available in the developer documentation.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="scalarfield_slicing.html" class="btn btn-neutral float-left" title="ScalarField Slicing Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorials/index.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

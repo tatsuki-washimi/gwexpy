@@ -46,14 +46,15 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../guide/installation.html">インストール</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../guide/quickstart.html">クイックスタート</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../guide/getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../guide/validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../guide/tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/index.html">実例集 (Examples)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">リファレンス</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">API リファレンス</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">時系列 (Time Series)</a></li>
@@ -642,6 +643,11 @@ Returns a SpectrogramDict.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/timeseries/collections.html#TimeSeriesDict.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/timeseries/collections.html#TimeSeriesDict.resample"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Resample items in the TimeSeriesDict.
 In-place operation (updates the dict contents).</p>
@@ -796,7 +802,7 @@ Returns a new TimeSeriesDict.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.timeseries.</span></span><span class="sig-name descname"><span class="pre">TimeSeriesList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/timeseries/collections.html#TimeSeriesList"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.timeseries.</span></span><span class="sig-name descname"><span class="pre">TimeSeriesList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_T</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/timeseries/collections.html#TimeSeriesList"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesList</span></code></p>
 <p>List of TimeSeries objects.</p>
 <dl class="py method">
@@ -1101,6 +1107,11 @@ Returns a SpectrogramList.</p>
 <span class="sig-name descname"><span class="pre">radian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TimeSeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/timeseries/collections.html#TimeSeriesList.radian"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Compute instantaneous phase (in radians) of each item.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/timeseries/collections.html#TimeSeriesList.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
