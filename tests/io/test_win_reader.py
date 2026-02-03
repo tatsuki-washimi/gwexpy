@@ -38,6 +38,7 @@ def _skip_if_obspy_sqlalchemy_incompatible() -> None:
             allow_module_level=True,
         )
 
+
 def test_win_reader_matches_obspy_for_sample():
     _skip_if_obspy_sqlalchemy_incompatible()
     obspy = pytest.importorskip("obspy")

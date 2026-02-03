@@ -19,6 +19,7 @@ def check_scale_invariance():
     """
     Fixture to verify that a function is either scale-invariant or linear.
     """
+
     def _check(func, data, scale_factor=1e-20, mode="linear"):
         """
         Logic:
@@ -33,7 +34,7 @@ def check_scale_invariance():
         def _get_val(obj):
             if hasattr(obj, "value"):
                 return obj.value
-            if hasattr(obj, "W"): # For WhiteningModel
+            if hasattr(obj, "W"):  # For WhiteningModel
                 return obj.W
             return obj
 
@@ -51,8 +52,10 @@ def check_scale_invariance():
 
     return _check
 
+
 def test_whitening_invariant(check_scale_invariance):
     """whiten(X) should return same whitened data for X and 10^-20 X."""
+
     # We test the whitened data itself, which should be normalized to unit variance
     # regardless of the input scale, provided the regularization epsilon adapts.
     def get_whitened_data(data):
@@ -66,7 +69,10 @@ def test_whitening_invariant(check_scale_invariance):
     # This is expected to FAIL if 'whiten' uses a fixed eps=1e-12.
     # For 10^-20 data, variance is 10^-40. If eps=1e-12, the whitening
     # will be dominated by eps, resulting in data scaled to ~10^-14 instead of O(1).
-    check_scale_invariance(get_whitened_data, data, scale_factor=1e-20, mode="invariant")
+    check_scale_invariance(
+        get_whitened_data, data, scale_factor=1e-20, mode="invariant"
+    )
+
 
 def test_ica_source_recovery():
     """ica_fit should recover sources mixed at 10^-21 amplitude."""
@@ -74,7 +80,7 @@ def test_ica_source_recovery():
     t = np.linspace(0, 1, 1000)
     s1 = np.sin(2 * np.pi * 7 * t)  # 7Hz sine
     rng = np.random.default_rng(42)
-    s2 = rng.standard_normal(1000) # Gaussian noise
+    s2 = rng.standard_normal(1000)  # Gaussian noise
     S = np.c_[s1, s2]
 
     # Mix sources with a non-singular matrix
@@ -82,7 +88,7 @@ def test_ica_source_recovery():
     X = (S @ A.T) * 1e-21
 
     # Convert to TimeSeriesMatrix (channels, 1, samples)
-    tsm = TimeSeriesMatrix(X.T[:, None, :], t0=0, dt=t[1]-t[0])
+    tsm = TimeSeriesMatrix(X.T[:, None, :], t0=0, dt=t[1] - t[0])
 
     # Fit ICA
     # If it fails due to numerical precision (e.g. tol=1e-4 on 10^-21 data),
@@ -103,7 +109,9 @@ def test_ica_source_recovery():
     if recovered.shape[0] != S.shape[0] and recovered.shape[1] == S.shape[0]:
         recovered = recovered.T
 
-    assert recovered.shape[0] == S.shape[0], f"Sample mismatch: {recovered.shape} vs {S.shape}"
+    assert recovered.shape[0] == S.shape[0], (
+        f"Sample mismatch: {recovered.shape} vs {S.shape}"
+    )
 
     corr = np.abs(np.corrcoef(S.T, recovered.T))[:2, 2:]
     # Match components to sources based on max correlation
@@ -115,22 +123,28 @@ def test_ica_source_recovery():
         "numerical swamping during pre-whitening or standardization."
     )
 
+
 def test_hht_vmin():
     """hht_spectrogram should not contain nan or empty plots for small data."""
     t = np.linspace(0, 0.1, 1000)
     # Signal at 10^-21 amplitude
     data = 1e-21 * np.sin(2 * np.pi * 100 * t)
-    ts = TimeSeries(data, t0=0, dt=t[1]-t[0])
+    ts = TimeSeries(data, t0=0, dt=t[1] - t[0])
 
     # Test TimeSeries.hht method
     try:
         res = ts.hht(output="spectrogram")
         # Ensure no NaNs were produced by internal divisions or logs
-        assert not np.any(np.isnan(res.value)), "HHT spectrogram contains NaNs for 10^-21 data"
+        assert not np.any(np.isnan(res.value)), (
+            "HHT spectrogram contains NaNs for 10^-21 data"
+        )
         # Ensure signal was not zeroed out by a floor that was too high
-        assert np.max(np.abs(res.value)) > 0, "HHT spectrogram is all zeros for 10^-21 data"
+        assert np.max(np.abs(res.value)) > 0, (
+            "HHT spectrogram is all zeros for 10^-21 data"
+        )
     except Exception as e:
         pytest.fail(f"HHT computation crashed for 10^-21 data: {e}")
+
 
 def test_safe_log():
     """Verify safe_log_scale allows inputs down to 10^-50 without clipping to flat -200dB."""
@@ -149,27 +163,33 @@ def test_safe_log():
         f"safe_log_scale clipped 1e-30 and 1e-45 to nearly same value: {log_vals[1]}"
     )
     # Should handle values down to SAFE_FLOOR (1e-50)
-    assert np.isfinite(log_vals[2]), "safe_log_scale produced non-finite value for 1e-45"
+    assert np.isfinite(log_vals[2]), (
+        "safe_log_scale produced non-finite value for 1e-45"
+    )
+
 
 def test_filter_stability():
     """Verify high-pass/band-pass filters don't explode on 10^-21 data."""
     t = np.linspace(0, 1, 2048)
     rng = np.random.default_rng(42)
     data = 1e-21 * rng.standard_normal(2048)
-    ts = TimeSeries(data, t0=0, dt=t[1]-t[0])
+    ts = TimeSeries(data, t0=0, dt=t[1] - t[0])
 
     # High-pass filter at 20Hz
     # Numerical instability in filters often shows as NaNs or extreme values
     try:
         filtered = ts.highpass(20)
-        assert not np.any(np.isnan(filtered.value)), "Highpass filter produced NaNs for 10^-21 data"
-        assert np.all(np.isfinite(filtered.value)), "Highpass filter produced non-finite values"
+        assert not np.any(np.isnan(filtered.value)), (
+            "Highpass filter produced NaNs for 10^-21 data"
+        )
+        assert np.all(np.isfinite(filtered.value)), (
+            "Highpass filter produced non-finite values"
+        )
 
         # Verify the signal scale is preserved (not zeroed or exploded)
         std_val = np.std(filtered.value)
         assert 1e-23 < std_val < 1e-20, (
-            f"Filter output scale is suspect: std={std_val:.2e}. "
-            "Expected O(1e-21)."
+            f"Filter output scale is suspect: std={std_val:.2e}. Expected O(1e-21)."
         )
     except Exception as e:
         pytest.fail(f"Filtering operation crashed for 10^-21 data: {e}")

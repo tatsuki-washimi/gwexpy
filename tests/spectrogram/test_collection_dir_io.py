@@ -21,9 +21,7 @@ def test_spectrogramdict_hdf5_file_roundtrip(tmp_path):
     for k in sgd:
         np.testing.assert_allclose(sgd2[k].value, sgd[k].value)
         np.testing.assert_allclose(sgd2[k].times.value, sgd[k].times.value)
-        np.testing.assert_allclose(
-            sgd2[k].frequencies.value, sgd[k].frequencies.value
-        )
+        np.testing.assert_allclose(sgd2[k].frequencies.value, sgd[k].frequencies.value)
         assert str(sgd2[k].unit) == str(sgd[k].unit)
 
 
@@ -43,7 +41,5 @@ def test_spectrogramlist_hdf5_file_roundtrip(tmp_path):
     for i in range(len(sgl)):
         np.testing.assert_allclose(sgl2[i].value, sgl[i].value)
         np.testing.assert_allclose(sgl2[i].times.value, sgl[i].times.value)
-        np.testing.assert_allclose(
-            sgl2[i].frequencies.value, sgl[i].frequencies.value
-        )
+        np.testing.assert_allclose(sgl2[i].frequencies.value, sgl[i].frequencies.value)
         assert str(sgl2[i].unit) == str(sgl[i].unit)

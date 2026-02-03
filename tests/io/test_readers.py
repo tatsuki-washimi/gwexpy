@@ -44,6 +44,7 @@ def _skip_if_obspy_sqlalchemy_incompatible() -> None:
             allow_module_level=True,
         )
 
+
 def _write_minimal_gbd(tmp_path, counts=4):
     channels = ["CH1", "CH2"]
     dt = 0.5

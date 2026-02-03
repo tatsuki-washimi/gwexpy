@@ -39,7 +39,5 @@ def test_frequencyserieslist_txt_directory_roundtrip(tmp_path):
     assert len(fsl2) == len(fsl)
     for i in range(len(fsl)):
         np.testing.assert_allclose(fsl2[i].value, fsl[i].value)
-        np.testing.assert_allclose(
-            fsl2[i].frequencies.value, fsl[i].frequencies.value
-        )
+        np.testing.assert_allclose(fsl2[i].frequencies.value, fsl[i].frequencies.value)
         assert str(fsl2[i].unit) == str(fsl[i].unit)

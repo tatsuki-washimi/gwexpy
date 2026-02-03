@@ -27,16 +27,30 @@ def _read_ats_header_fields(path: Path) -> tuple[int, int, int, float, int, floa
     start_unix = struct.unpack_from("<I", raw, 0x0C)[0]
     lsb_mV = struct.unpack_from("<d", raw, 0x10)[0]
     bit_indicator = struct.unpack_from("<h", raw, 0xAA)[0]
-    return header_length, header_vers, ui_samples, sample_freq, start_unix, lsb_mV, bit_indicator
+    return (
+        header_length,
+        header_vers,
+        ui_samples,
+        sample_freq,
+        start_unix,
+        lsb_mV,
+        bit_indicator,
+    )
 
 
 def test_ats_sample_metadata_and_scaling():
     if not _SAMPLE_ATS.exists():
         pytest.skip("sample ATS file is missing")
 
-    header_length, header_vers, ui_samples, sample_freq, start_unix, lsb_mV, bit_indicator = (
-        _read_ats_header_fields(_SAMPLE_ATS)
-    )
+    (
+        header_length,
+        header_vers,
+        ui_samples,
+        sample_freq,
+        start_unix,
+        lsb_mV,
+        bit_indicator,
+    ) = _read_ats_header_fields(_SAMPLE_ATS)
     assert header_vers == 80
     assert header_length == 1024
     assert sample_freq == pytest.approx(128.0)
@@ -91,4 +105,3 @@ def test_ats_reads_int64_when_bit_indicator_is_set(tmp_path):
     ts = TimeSeries.read(path, format="ats")
     # dblLSBMV=1000 mV/count => 1 count => 1 V after /1000
     np.testing.assert_allclose(ts.value[:2], np.array([1.0, -2.0], dtype=float))
-
