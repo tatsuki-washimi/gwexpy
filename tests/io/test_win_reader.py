@@ -9,7 +9,37 @@ from gwexpy.timeseries.io.win import _apply_4bit_deltas
 _SAMPLE_WIN = Path("gwexpy/gui/test-data/pmon_win_03.110909.010535.win")
 
 
+def _skip_if_obspy_sqlalchemy_incompatible() -> None:
+    """Skip ObsPy interop tests when ObsPy's pinned deps conflict with the env."""
+    import importlib.metadata as im
+
+    try:
+        im.version("obspy")
+    except im.PackageNotFoundError:
+        return
+
+    reqs = im.requires("obspy") or []
+    needs_sqlalchemy_lt2 = any(
+        r.lower().startswith("sqlalchemy") and "<2" in r for r in reqs
+    )
+    if not needs_sqlalchemy_lt2:
+        return
+
+    try:
+        sqlalchemy_ver = im.version("SQLAlchemy")
+    except im.PackageNotFoundError:
+        return
+
+    major = int(sqlalchemy_ver.split(".", 1)[0])
+    if major >= 2:
+        pytest.skip(
+            "ObsPy requires SQLAlchemy<2 but SQLAlchemy>=2 is installed; skipping "
+            "ObsPy-dependent WIN reader tests.",
+            allow_module_level=True,
+        )
+
 def test_win_reader_matches_obspy_for_sample():
+    _skip_if_obspy_sqlalchemy_incompatible()
     obspy = pytest.importorskip("obspy")
     if not _SAMPLE_WIN.exists():
         pytest.skip("sample WIN file is missing")

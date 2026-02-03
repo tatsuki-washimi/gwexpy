@@ -1206,7 +1206,7 @@ def whiten_matrix(
     >>> # PCA output is flattened
     >>> print(mat_w.shape)  # (6, 1, 100)
     """
-    from gwexpy.numerics import SAFE_FLOOR, SAFE_FLOOR_STRAIN, safe_epsilon
+    from gwexpy.numerics import SAFE_FLOOR_STRAIN
 
     if method not in ("pca", "zca"):
         raise ValueError(f"method must be 'pca' or 'zca', got '{method}'")

@@ -27,8 +27,9 @@ class HHTSpectrogram(Spectrogram):
         import matplotlib.colors as mcolors
         import matplotlib.pyplot as plt
         import numpy as np
-        from gwexpy.numerics.constants import SAFE_FLOOR
         from gwpy.plot import Plot
+
+        from gwexpy.numerics.constants import SAFE_FLOOR
 
         # Extract HHT-specific defaults or from user input
         yscale = kwargs.pop("yscale", "log")

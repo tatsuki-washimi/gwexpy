@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Optional
 import numpy as np
 from gwpy.timeseries import TimeSeries
 from PyQt5 import QtCore, QtWidgets
+
 from gwexpy.numerics.scaling import safe_log_scale
 
 logger = logging.getLogger(__name__)

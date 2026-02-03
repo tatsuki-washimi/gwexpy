@@ -2,6 +2,7 @@ import ast
 import os
 import sys
 
+
 def is_small_float(n):
     if isinstance(n, float):
         return 0.0 < abs(n) <= 1e-4
@@ -17,7 +18,7 @@ RISKY_FUNCS = {
     # Polynomials
     "polyfit", "roots",
     # GW specific types (if they appear as calls)
-    "TimeSeries", "FrequencySeries" 
+    "TimeSeries", "FrequencySeries"
 }
 
 DANGEROUS_CATCHES = {
@@ -28,7 +29,7 @@ class DeepRiskVisitor(ast.NodeVisitor):
     def __init__(self, filename):
         self.filename = filename
         self.risks = []
-    
+
     def _log(self, node, category, detail):
         self.risks.append({
             "file": self.filename,
@@ -43,12 +44,12 @@ class DeepRiskVisitor(ast.NodeVisitor):
             args_with_defaults = node.args.args[-len(node.args.defaults):]
             for arg, default in zip(args_with_defaults, node.args.defaults):
                 self._check_default(node, arg.arg, default)
-        
+
         if node.args.kw_defaults:
             for arg, default in zip(node.args.kwonlyargs, node.args.kw_defaults):
                 if default is not None:
                     self._check_default(node, arg.arg, default)
-        
+
         self.generic_visit(node)
 
     def _check_default(self, node, arg_name, value_node):
@@ -90,7 +91,7 @@ class DeepRiskVisitor(ast.NodeVisitor):
             val = self._extract_value(node.right)
             if val is not None and is_small_float(val):
                 self._log(node, "Risky Arithmetic", f"Op with {val}")
-        
+
         self.generic_visit(node)
 
     def visit_Compare(self, node):
@@ -140,14 +141,14 @@ class DeepRiskVisitor(ast.NodeVisitor):
             func_name = node.func.id
         elif isinstance(node.func, ast.Attribute):
             func_name = node.func.attr
-        
+
         if func_name in RISKY_FUNCS:
             self._log(node, "Risky Function Call", f"Calling {func_name}")
-        
+
         # Check for float32 casting
         if func_name in ("float32", "float16"):
              self._log(node, "Precision Risk", f"Cast to {func_name}")
-        
+
         # Check np.array(..., dtype='float32')
         if func_name == "array" or func_name == "zeros" or func_name == "ones" or func_name == "full":
              for kw in node.keywords:
@@ -184,7 +185,7 @@ class DeepRiskVisitor(ast.NodeVisitor):
              for v in format_spec.values:
                  if isinstance(v, ast.Constant):
                      spec_str += str(v.value)
-        
+
         # Look for .Nf where N is small (e.g. .2f, .4f)
         # Regex or simple parsing.
         # " .2f " -> risk if data is 1e-21
@@ -203,7 +204,7 @@ class DeepRiskVisitor(ast.NodeVisitor):
     def visit_While(self, node):
         self._check_boolean_condition(node, node.test)
         self.generic_visit(node)
-    
+
     def _check_boolean_condition(self, node, test_node):
         # Check if test_node is a Name that typically holds a float/array
         # This is heuristics based on names
@@ -211,7 +212,7 @@ class DeepRiskVisitor(ast.NodeVisitor):
             name = test_node.id
             if name in ('data', 'series', 'signal', 'psd', 'coherence', 'value', 'gain'):
                 self._log(node, "Implicit Boolean", f"Implicit check on '{name}'")
-        
+
     def visit_BinOp_Formatting(self, node):
         # Handle "%.2f" % val
         if isinstance(node.op, ast.Mod) and isinstance(node.left, ast.Constant) and isinstance(node.left.value, str):
@@ -226,24 +227,24 @@ class DeepRiskVisitor(ast.NodeVisitor):
 
 def scan_file(filepath):
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             source = f.read()
         tree = ast.parse(source)
         visitor = DeepRiskVisitor(filepath)
         visitor.visit(tree)
         return visitor.risks
-    except Exception as e:
+    except Exception:
         # print(f"Error parsing {filepath}: {e}", file=sys.stderr)
         return []
 
 def main():
     target_dir = sys.argv[1] if len(sys.argv) > 1 else "gwexpy"
     all_risks = []
-    
+
     for root, dirs, files in os.walk(target_dir):
         if "tests" in root.split(os.sep): continue
-        if "gui/test-data" in root: continue 
-        
+        if "gui/test-data" in root: continue
+
         for file in files:
             if file.endswith(".py"):
                 path = os.path.join(root, file)
@@ -251,9 +252,9 @@ def main():
                 all_risks.extend(risks)
 
     all_risks.sort(key=lambda x: (x['category'], x['file'], x['line']))
-    
+
     print(f"Scanned {target_dir}. Found {len(all_risks)} potential risks.\n")
-    
+
     current_cat = ""
     for r in all_risks:
         if r['category'] != current_cat:

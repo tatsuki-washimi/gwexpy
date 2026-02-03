@@ -99,7 +99,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                             new_list.append(
                                 Spectrogram.read(grp, format="hdf5", path="data")
                             )
-                        except (KeyError, ValueError, TypeError, OSError) as e:
+                        except (KeyError, ValueError, TypeError, OSError):
                             try:
                                 new_list.append(Spectrogram.read(grp, format="hdf5"))
                             except (KeyError, ValueError, TypeError, OSError) as e2:
@@ -441,7 +441,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
                         try:
                             grp = h5f[grp_name]
                             s = Spectrogram.read(grp, format="hdf5", path="data")
-                        except (KeyError, ValueError, TypeError, OSError) as e:
+                        except (KeyError, ValueError, TypeError, OSError):
                             try:
                                 s = Spectrogram.read(grp, format="hdf5")
                             except (KeyError, ValueError, TypeError, OSError) as e2:

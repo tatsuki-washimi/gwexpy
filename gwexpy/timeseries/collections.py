@@ -89,7 +89,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
                         try:
                             grp = h5f[grp_name]
                             ts = TimeSeries.read(grp, format="hdf5", path="data")
-                        except (KeyError, ValueError, TypeError, OSError) as e:
+                        except (KeyError, ValueError, TypeError, OSError):
                             try:
                                 ts = TimeSeries.read(grp, format="hdf5")
                             except (KeyError, ValueError, TypeError, OSError) as e2:
@@ -1971,7 +1971,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
                         try:
                             grp = h5f[grp_name]
                             ts = TimeSeries.read(grp, format="hdf5", path="data")
-                        except (KeyError, ValueError, TypeError, OSError) as e:
+                        except (KeyError, ValueError, TypeError, OSError):
                             try:
                                 ts = TimeSeries.read(grp, format="hdf5")
                             except (KeyError, ValueError, TypeError, OSError) as e2:

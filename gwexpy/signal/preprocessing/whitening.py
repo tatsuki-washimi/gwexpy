@@ -8,6 +8,7 @@ Whitening algorithms for signal processing.
 from __future__ import annotations
 
 import warnings
+from typing import Any
 
 import numpy as np
 
@@ -18,7 +19,9 @@ except ImportError:
     SAFE_FLOOR_STRAIN = 1e-50  # floor below GW strain power scale (~1e-42)
     REL_EPS = 1e-6  # relative variance tolerance for auto epsilon
 
-    def get_safe_epsilon(data, rel_tol=REL_EPS, abs_tol=SAFE_FLOOR_STRAIN):
+    def _fallback_get_safe_epsilon(
+        data: Any, *, rel_tol: float = REL_EPS, abs_tol: float = SAFE_FLOOR_STRAIN
+    ) -> float:
         """Return an epsilon relative to data variance (temporary local logic)."""
         arr = np.asarray(data.value if hasattr(data, "value") else data)
         if arr.size == 0:
@@ -27,6 +30,8 @@ except ImportError:
         if not np.isfinite(var) or var <= 0:
             return abs_tol
         return max(abs_tol, var * rel_tol)
+
+    get_safe_epsilon = _fallback_get_safe_epsilon
 
 
 def _resolve_eps(eps, data):
