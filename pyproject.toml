@@ -90,7 +90,7 @@ stats = [
   "statsmodels",
   "pmdarima",
   "mictools",
-  "minepy",
+  "minepy; python_version < '3.12'",
   "dcor",
   "hurst",
   "hurst-exponent",
@@ -124,7 +124,7 @@ analysis = [
 all = [
     "pycbc", "python-framel", "ldas-tools-framecpp", "gwinc", "dttxml", "nptdms",
     "nds2-client",
-    "polars", "scikit-learn", "statsmodels", "pmdarima", "mictools", "minepy", "dcor", "hurst", "hurst-exponent", "exp-hurst", "bottleneck",
+    "polars", "scikit-learn", "statsmodels", "pmdarima", "mictools", "minepy; python_version < '3.12'", "dcor", "hurst", "hurst-exponent", "exp-hurst", "bottleneck",
     "iminuit", "emcee", "corner",
     "specutils", "pyspeckit",
     "obspy", "mth5", "mtpy", "mt_metadata", "netCDF4",
