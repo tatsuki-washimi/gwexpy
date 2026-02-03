@@ -1,0 +1,190 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数値的安定性と精度 &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="チュートリアル" href="tutorials/index.html" />
+    <link rel="prev" title="検証済みアルゴリズム" href="validated_algorithms.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">数値的安定性と精度</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">主な機能</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adaptive-whitening">1. アダプティブ・ホワイトニング (Adaptive Whitening)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#robust-ica">2. 堅牢な独立成分分析 (Robust ICA)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#safe-logarithmic-scaling">3. 安全な対数スケーリング (Safe Logarithmic Scaling)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">4. 計算機イプシロンへの配慮</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">ユーザーへの推奨事項</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">実例集 (Examples)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
+      <li class="breadcrumb-item active">数値的安定性と精度</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/numerical_stability.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>数値的安定性と精度<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、重力波データ解析で頻繁に扱われる極めて広いダイナミックレンジを持つデータを処理できるように設計されています。
+重力波のひずみ信号（strain）は典型的には $10^{-21}$ のオーダーですが、中間処理では 1 に近い値を扱うこともあります。</p>
+<p>科学的な正確性を保証し、数値的なアーティファクト（”Death Floats” や信号消失など）を防ぐため、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は堅牢な数値安定化戦略を実装しています。</p>
+<section id="id2">
+<h2>主な機能<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="adaptive-whitening">
+<h3>1. アダプティブ・ホワイトニング (Adaptive Whitening)<a class="headerlink" href="#adaptive-whitening" title="Link to this heading"></a></h3>
+<p>標準的なホワイトニングアルゴリズムは、ゼロ除算を防ぐために固定の正規化パラメータ（<code class="docutils literal notranslate"><span class="pre">eps</span></code>）を使用することがよくあります。このパラメータが大きすぎる（例: <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>）と、物理的に意味のある微小な信号（$10^{-21}$ のひずみなど）が埋もれてしまう可能性があります。</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、データのスケールに合わせてこのパラメータを自動的に調整します：</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">eps</span></code> の自動スケーリング</strong>: 正規化フロアは入力データの分散に対して相対的に計算されます。</p></li>
+<li><p><strong>安全フロア</strong>: 極めて静かなデータやゼロ埋めされた領域でも特異点が発生しないよう、最小フロア（<code class="docutils literal notranslate"><span class="pre">SAFE_FLOOR</span> <span class="pre">=</span> <span class="pre">1e-50</span></code>）が設定されています。</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># 非常に小さな信号を作成 (O(1e-21))</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-21</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
+
+<span class="c1"># データをホワイトニング</span>
+<span class="c1"># eps=&quot;auto&quot; (デフォルト) により信号が破壊されるのを防ぎます</span>
+<span class="n">whitened</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">whiten</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="robust-ica">
+<h3>2. 堅牢な独立成分分析 (Robust ICA)<a class="headerlink" href="#robust-ica" title="Link to this heading"></a></h3>
+<p>ICA による分離は、数値的に安定した方法で実行されます：</p>
+<ul class="simple">
+<li><p><strong>内部標準化</strong>: データは FastICA アルゴリズムに渡される前に内部的に単位分散に標準化され、入力振幅に関わらず収束条件が満たされるようにします。</p></li>
+<li><p><strong>相対許容誤差</strong>: 収束判定の許容誤差（tolerance）は、データのスケールに対して相対的に定義されます。</p></li>
+</ul>
+</section>
+<section id="safe-logarithmic-scaling">
+<h3>3. 安全な対数スケーリング (Safe Logarithmic Scaling)<a class="headerlink" href="#safe-logarithmic-scaling" title="Link to this heading"></a></h3>
+<p>広いダイナミックレンジを持つデータ（スペクトログラムや PSD など）を可視化する際、データにゼロや極めて小さな値が含まれていると、デシベル（dB）への変換で問題が発生することがあります。</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は「Safe Log」アプローチを採用しています：</p>
+<ul class="simple">
+<li><p><strong>動的フロア</strong>: データの最大値と指定されたダイナミックレンジ（デフォルト 200 dB）に基づいて、フロア値が動的に計算されます。</p></li>
+<li><p><strong>アーティファクトの排除</strong>: これにより <code class="docutils literal notranslate"><span class="pre">-inf</span></code> 値の発生を防ぎ、「無音」部分が白い穴や数値エラーとしてではなく、カラースケールの最下部として正しく描画されます。</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>4. 計算機イプシロンへの配慮<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>パッケージ全体で使用される数値定数（分散フロア、コヒーレンスの分母など）は、使用されている浮動小数点型（float32 vs float64）の機械精度（イプシロン）に基づいて導出されており、不要なオーバーヘッドなしに最適な精度を保証します。</p>
+</section>
+</section>
+<section id="id4">
+<h2>ユーザーへの推奨事項<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>手動オフセットの回避</strong>: プロットや処理の前に、恣意的な小さな値（例: <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">+</span> <span class="pre">1e-20</span></code>）を手動で足す必要はありません。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の関数が内部で適切に処理します。</p></li>
+<li><p><strong>デフォルトを信頼する</strong>: <code class="docutils literal notranslate"><span class="pre">whiten()</span></code> や <code class="docutils literal notranslate"><span class="pre">ica_fit()</span></code> などの関数のデフォルトパラメータは、数値的な安全性を考慮して調整されています。可能な限り <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> や <code class="docutils literal notranslate"><span class="pre">tol=&quot;auto&quot;</span></code> を使用してください。</p></li>
+<li><p><strong>警告を確認する</strong>: 数値的に不安定な操作（例: 定数ゼロのチャンネルのホワイトニング）を行おうとした場合、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は解決策を示す有益な警告やエラーを出力します。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="validated_algorithms.html" class="btn btn-neutral float-left" title="検証済みアルゴリズム" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorials/index.html" class="btn btn-neutral float-right" title="チュートリアル" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

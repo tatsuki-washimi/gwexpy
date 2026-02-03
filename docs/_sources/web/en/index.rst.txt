@@ -13,6 +13,7 @@ analysis utilities for time and frequency series.
    user_guide/getting_started
    user_guide/scalarfield_slicing
    user_guide/validated_algorithms
+   user_guide/numerical_stability
    user_guide/tutorials/index
 
 .. toctree::
