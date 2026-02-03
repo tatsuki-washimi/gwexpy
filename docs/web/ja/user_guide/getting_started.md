@@ -53,7 +53,7 @@ GWexpyへようこそ！このガイドでは、GWexpyの学習パスを紹介�
 
 ### 5. 実践例
 
-[実例集ギャラリー](../examples/index.md)で実世界の応用例を参照できます：
+[{doc}`実例集ギャラリー <../examples/index>`]で実世界の応用例を参照できます：
 
 - [case_noise_budget](tutorials/case_noise_budget.ipynb) - ノイズバジェット解析
 - [case_transfer_function](tutorials/case_transfer_function.ipynb) - 伝達関数計算
@@ -61,7 +61,7 @@ GWexpyへようこそ！このガイドでは、GWexpyの学習パスを紹介�
 
 ## 次のステップ
 
-- [実例集ギャラリー](../examples/index.md) - 視覚的な使用例とケーススタディ
-- 全チュートリアル一覧: [tutorials/index](tutorials/index.md)
-- API リファレンス: [../reference/index](../reference/index.md)
+- [{doc}`実例集ギャラリー <../examples/index>`] - 視覚的な使用例とケーススタディ
+- 全チュートリアル一覧: [{doc}`tutorials/index <tutorials/index>`]
+- API リファレンス: [{doc}`リファレンス <../reference/index>`]
 - [validated_algorithms](validated_algorithms.md) - アルゴリズム検証レポート
