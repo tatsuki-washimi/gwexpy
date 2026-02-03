@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import sys
 
+
 def test_get_logger_defined():
     from gwexpy.utils import logger as logger_mod
 

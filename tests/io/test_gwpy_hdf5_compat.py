@@ -19,9 +19,7 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesList
 
 def test_gwpy_reads_timeseriesdict_hdf5(tmp_path):
     ts1 = TimeSeries(np.arange(4.0), sample_rate=2.0, t0=1.0, unit="m", name="A")
-    ts2 = TimeSeries(
-        np.arange(4.0) * 2, sample_rate=2.0, t0=1.0, unit="m", name="B"
-    )
+    ts2 = TimeSeries(np.arange(4.0) * 2, sample_rate=2.0, t0=1.0, unit="m", name="B")
     tsd = TimeSeriesDict({"H1:TEST": ts1, "L1:TEST": ts2})
 
     outfile = tmp_path / "tsd_gwpy.h5"

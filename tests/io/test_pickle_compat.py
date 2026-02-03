@@ -52,11 +52,7 @@ def test_pickle_collections_to_gwpy_or_builtin():
         }
     )
     fsl = FrequencySeriesList(
-        [
-            FrequencySeries(
-                np.arange(3.0), frequencies=np.arange(3.0), unit="1"
-            )
-        ]
+        [FrequencySeries(np.arange(3.0), frequencies=np.arange(3.0), unit="1")]
     )
     sgd = SpectrogramDict(
         {
@@ -121,11 +117,7 @@ def test_shelve_roundtrip_to_gwpy(tmp_path):
         }
     )
     fsl = FrequencySeriesList(
-        [
-            FrequencySeries(
-                np.arange(3.0), frequencies=np.arange(3.0), unit="1"
-            )
-        ]
+        [FrequencySeries(np.arange(3.0), frequencies=np.arange(3.0), unit="1")]
     )
     sgd = SpectrogramDict(
         {
