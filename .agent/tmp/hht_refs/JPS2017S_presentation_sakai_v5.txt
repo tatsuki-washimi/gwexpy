@@ -1,0 +1,411 @@
+1
+2017年3月18日 日本物理学会 第72回年次大会 ＠大阪大学
+
+Hilbert-Huang変換を用いた
+連星ブラックホール合体からの
+ringdown重力波の解析
+酒井一樹，大原謙一，中野寛之，
+金山雅人，高橋弘毅
+長岡技科大，新潟大自然，京大理，阪市大理
+
+k_sakai@stn.nagaokaut.ac.jp
+
+2
+
+Introduction
+2015年にLIGOグループによる
+重力波初検出
+Ø 2 events: どちらもBH連星
+(BBH) の合体
+BH連星合体からの重力波の Ringdown 重力波
+合体後のBHの準固有振動 (QNM)
+f = fR + i fI
+hQNM (t) = Re A0 ei{2 f (t t0 )+ 0 }
+= A0 e 2 fI (t t0 ) cos (2 fR (t
+
+QNM重力波の解析
+
+QNM周波数
+t0 ) +
+
+0)
+
+強くて動的な重力場における
+一般相対論 (GR) の検証
+
+3
+
+QNMの解析とGRの検証
+h
+(t) = Re A e
+QNM
+
+0
+
+i{2 f (t t0 )+
+
+0}
+
+t0(t) t0 )+ 0 }
+I (t f
+hQNM (t) = Re
+A0 e A20 efi{2
+cos (2 fR (t
+
+t0 ) +
+
+0)
+
+)
+= A0 e 2 fI (t ftI0/f
+cos
+(2 fR (t 0.236
+t0 ) + 0 )
+シュバルツシルトBHにおいて
+R の上限は
+• この上限を超えるかどうかでGRの検証に [Nakano, 2015]
+• SNRが大きければ 5σ での検証が可能なイベントも
+
+SNR=20
+
+SNR=50
+
+（小さいものから順に1σ, 2σ, ..., 5σ）
+
+SNR (QNM) の決定には ringdown の開始時刻の決定が重要
+しかし、その方法はまだ確立していない
+データから適合的に開始時刻を決める手法の構築を目指す
+
+4
+
+Hilbert-Huang変換とringdown解析
+Hilbert-Huang変換 (HHT)：
+
+data
+
+n 振幅と位相を時系列的に抽出
+
+Empirical Mode Decomposition (EMD)
+
+n 非定常な波形にも適応可能
+n 不確定性原理による大域的な
+
+解像度への制限が無い
+p パラメータの選び方に数学的
+
+基礎が少なく、人間が経験的
+に選んでいる
+
+IMF2
+
+IMF1
+
+IMFn
+
+Hilbert Spectral Analysis (HSA)
+
+IA1
+
+IP1
+
+IA2
+
+IP2
+
+IAn
+
+IPn
+
+IMF: 固有モード関数，IA: 瞬時振幅，IP: 瞬時位相
+NIMF
+
+s(t) =
+
+NIMF
+
+ci (t) =
+i=1
+
+IMF
+
+ai (t) cos
+i=1
+
+IA
+
+j 番目のIMFに ringdown 重力波が抽出できれば次が成り立つ
+aj (t) = A0 e 2 fI (t t0 ) ,
+t0 ) + 0
+j (t) = 2 fR (t
+観測データからこの式によく fit する区間を探すことで
+ringdown の開始時刻を決定できる
+
+i (t)
+
+IP
+
+5
+
+Our proposed strategy
+BBH重力波の観測データ
+＆ coalescence time tc
+
+フィルタとHHTをかけ、
+IMF1にringdownを抽出
+
+1. 全ての n0, N の組み合わせについて、
+IA をfittingし、RMSE(n0, N) を計算
+ˆ 0(N) を推定：
+2. 各 N について、n
+
+n̂0 (N ) = argmin RMSE(n0 , N )
+n0
+
+3.
+
+ringdown区間 (RDS) の決定
+(RDS: ringdown-dominant section)
+
+ˆ 0(N), N) のプロットに
+N – RMSE(n
+ˆ とする
+おいて傾きが変化する点を N
+0.2
+
+Hanford
+
+ˆ = 36
+N
+
+RDSにおいて a1(t), Á1(t) をfittingし、
+fR, fI を推定
+
+RMSE(N)
+
+0.15
+
+0.1
+
+0.05
+
+0
+
+10
+
+20
+
+30
+
+40
+N
+
+50
+
+60
+
+6
+
+Simulation Set-ups
+BBH重力波波形：
+• SXS (Simulating eXtreme Spacetimes) グループによる数値相対論
+
+シミュレーション波形[Chu, et al., 2015]
+• 26種類（全96種類中）
+• QNM modes: l = m = 2
+• total mass:
+Mtotal = 60 Msun
+• redshift:
+z = 0.09
+
+図：final BH のパラメータ分布
+青：全波形，赤：使用した波形
+
+検出器のノイズ：
+• aLIGO デザイン感度に基づいた Gaussian ノイズ
+• 各波形に対して 1000 通り
+
+7
+
+Analyzing pure waveforms
+ノイズを加えずにシミュレーション波形を解析
+SXS:BBH:0262 (q=3; χ1=-0.6; χ2=0)
+
+SXS:BBH:0230 (q=1; χ1=0.8; χ2=0.8)
+250
+
+400
+3x10-21
+
+0
+100
+-1x10-21
+
+waveform
+IA
+IF
+ﬁt
+frem
+
+-2x10-21
+-0.02
+
+-0.01
+
+0
+
+0.01
+
+0.02
+
+0.03
+
+50
+
+Amplitude
+
+Amplitude
+
+150
+
+350
+
+2x10-21
+
+Frequency [Hz]
+
+SXS:0262
+
+1x10-21
+
+200
+
+SXS:0230
+
+1x10-21
+0
+
+150
+waveform
+IA
+IF
+ﬁt
+frem
+
+-2x10-21
+
+Time [s]
+
+-0.02
+
+250
+200
+
+-1x10-21
+
+-3x10-21
+0
+0.04
+
+300
+
+-0.01
+
+0
+
+0.01
+
+0.02
+
+0.03
+
+Frequency [Hz]
+
+2x10-21
+
+100
+50
+0
+0.04
+
+Time [s]
+
+! = 2¼f の推定値とSXSのMetadataに記載されている値を比較
+
+平均相対誤差 (!R)：0.49 %
+
+平均相対誤差 (!I)：1.06 %
+
+8
+
+Results: simulated observed strains
+t0 (ringdownの開始時刻) の推定値のヒストグラム
+• シアン色の線：ノイズ無しでの解析により決定された値
+
+SXS:0262
+ρ = 83.07
+
+SXS:0230
+ρ = 159.6
+
+ノイズ無しでの結果と比べて小さめに推定する系統誤差が存在
+
+9
+
+Results: examples of decomposition
+ノイズありでのデータをHHT解析した結果の例 (SXS:0262)
+推定が上手くいったケース
+
+最も頻繁なケース
+
+頻繁なケースは上手くいったものに比べてIMF2の振幅が大きい
+ringdown重力波が複数のIMFに分散
+（EMDの未解決課題の１つ：mode-splitting問題）
+mode-splitting 問題が解決されれば実データへの適用が可能に
+
+10
+
+Results: GW150914 (Hanford)
+GW150914の実観測データに適用
+• バンドパスフィルタ：20 – 320 Hz
+• ノッチフィルタ：36, 40, 60, 331 Hz
+
+t0 [ms]
+
+Ârem
+
+5.223
+
+0.8151
+
+Mrem [M¯]
+71.72
+
+[LIGO collaboration, 2016]
+
+MCMCによる結果と無矛盾であり開始時刻の推定も行えた
+
+11
+
+Summary
+l
+
+l
+
+l
+
+BH連星合体からの重力波を解析し、ringdown phaseの開始時
+刻と周波数を推定する手法を構築した
+SXSグループの公開する数値相対論波形について解析したとこ
+ろ、周波数の推定値が公表値と非常に近い値を取ることができ
+た（平均相対誤差が 実部 0.49 %，虚部 1.06 %）
+GW150914の観測データを解析し、LIGOによる解析と無矛盾
+な結果を得ることができた
+
+今後の課題
+l ノイズが含まれる場合、ringdown重力波が正しく抽出するた
+めのモード分解手法の改良が必要
+Ø周波数空間でのスパース性などを考慮する予定
+This research has made use of data obtained from the LIGO Open Science Center
+(https://losc.ligo.org), a service of LIGO Laboratory and the LIGO Scientific Collaboration.
+
+

@@ -1,0 +1,2743 @@
+Effectiveness of Stacks in the Stacked Hilbert-Huang Transform
+Lupin Chun-Che Lin1 , Chin-Ping Hu2 ,∗ Chien-Chang Yen3 ,† Kuo-Chuan Pan4 , C. Y.
+Hui5 , Kwan-Lok Li1 , Yu-Chiung Lin4 , Yi-Sheng Huang1 , and Albert K. H. Kong4
+1
+Department of Physics, National Cheng Kung University, 70101 Tainan City, Taiwan
+Department of Physics, National Changhua University of Education, Changhua, 50007, Taiwan
+3
+Department of Mathematics, Fu Jen Catholic University, 24205 New Taipei City, Taiwan
+4
+Institute of Astronomy, National Tsing Hua University, Hsinchu 30013, Taiwan and
+5
+Department of Astronomy and Space Science, Chungnam National University, Daejeon, Korea (ROK)
+(Dated: May 30, 2025)
+2
+
+The Hilbert-Huang transform (HHT) consists of empirical mode decomposition (EMD), which
+is a template-free method that represents the combination of different intrinsic modes on a timefrequency map (i.e., the Hilbert spectrum). The application of HHT involves introducing trials by
+imposing white noise on the signal and then calculating the ensemble mean process of the corresponding EMD to demonstrate its significance on the Hilbert spectrum. In this study, we develop
+a stacked Hilbert-Huang Transform (sHHT) method that generates the Hilbert spectrum for each
+trial and compiles all results to enhance the strength of the real instantaneous frequency of the main
+signal on the time-frequency map. This new approach is more sensitive to detecting/tracing the
+nonlinear and transient features of a signal embedded in astronomical databases than the conventional HHT, particularly when the signal experiences dramatic frequency changes in a short time.
+We analytically investigate the consistency of HHT and sHHT and perform numerical simulations
+to examine the dispersion of the instantaneous frequency obtained through sHHT and compare
+its advantages and effectiveness with those of conventional HHT. To confirm the feasibility of the
+sHHT, we demonstrate its application in verifying the signal of superorbital modulation in X-ray
+and binary black hole mergers in gravitational waves.
+
+I.
+
+INTRODUCTION
+
+The development of multi-messenger astronomy in the
+recent decade amplifies the scope of the application in
+dynamical timing analysis; for example, the strain data
+related to the gravitational wave (GW) or the light curve
+of observation only contain information on time variation, and only the dynamical timing analysis is expected
+to discover intriguing events or the background signal [1–
+4]. Furthermore, in order to efficiently study the chirp
+pattern of a candidate GW event originated from the
+compact binary coalescence (CBC) on the time-frequency
+map, Q-transform [5] was treated as the most common
+algorithm applied for a fast scan to trace the behavior of
+the signal while the Omicron software [6] derived from
+the Omega scans pipeline [1] based on the Q-transform
+were then developed to perform such a multi-resolution
+time-frequency analysis of data obtained from the L-VK (i.e., aLIGO-aVirgo-KAGRA) observational network
+[7]. Compared with the aforementioned method, we also
+note that the Hilbert-Huang transform (HHT) is another
+novel dynamical analytical approach of time series widely
+applied to study the variation of a signal in many subjects, including medical applications [8, 9], finance [10],
+earthquakes [11, 12], ocean/water waves [13, 14], and astronomy [15, 16]. Although HHT computation is more
+time-consuming, investigation of GW via HHT still has
+many benefits, and it also has great potential to inves-
+
+∗ E-mail: cphu0821@gm.ncue.edu.tw
+† E-mail: yen@math.fju.edu.tw
+
+tigate the CBC events [17–20] or burst-type GW signal (e.g., core collapsed supernovae; [21, 22]). Based on
+HHT, Son et al. [23] also developed an event trigger generator (i.e., EtaGen) with a performance comparable to
+the Omicron claimed by the developer.
+Compared with the standard fast Fourier transform
+and the wavelet method, HHT is an adaptive algorithm
+that does not impose a prior basis set on the data. HHT
+decomposes an original time series data set into different intrinsic mode functions (IMFs) and then identifies
+the instantaneous frequency (IF) along with the associated instantaneous amplitude (IA) to further obtain the
+Hilbert spectrum [24]. The IF of HHT varies with time,
+distinguishing it from the constant value determined by
+frequency in the Fourier analysis. Therefore, HHT is suitable for analyzing non-linear and non-stationary signals.
+In addition, the IF of HHT can indicate a modulation
+of a base frequency over a small portion of the wave cycle, characterizing it as a differentiation algorithm for
+extracting a signal’s local waveform. Compared to the
+Fourier transform, HHT was claimed to provide a relatively high-resolution spectrogram on the time-frequency
+map to dynamically trace a signal behavior (i.e., Fig. 5
+in Camp et al. [17]). This viewpoint is firmly established
+by the findings from simulated CBC [17] and core collapsed supernova explosion [21] signals, and a thorough
+comparison of the resolution between HHT and wavelet
+for a CBC event clearly shows the superior advantages
+of using HHT (Fig. 4 of Hu et al. [22]). Through crosscorrelation of the high-resolution IF resolved from the
+data, HHT is also expected to check the physical time
+delays of events between the GW detectors [20] and the
+merger or post-merger phases of binary neutron star (NS)
+
+2
+coalescences [18]. Due to its unique characteristics, HHT
+is anticipated to be a powerful tool for studying nonlinear
+and transient GWs.
+The original decomposition method proposed for HHT
+is empirical mode decomposition (EMD; [25]), which extracts IMFs by removing the local mean values obtained
+from the average of the upper and lower envelopes of a
+time series. A signal with a large/broad modulation time
+scale can be decomposed into multiple IMFs by such an
+iterative process to lead to the “mode-mixing” or “modesplitting” problems. These problems can be alleviated
+by introducing white noise with finite amplitude into the
+data and then taking the ensemble mean of the corresponding IMFs from all simulated datasets, and this improved approach is known as the ensemble EMD (EEMD;
+[24]) method. Nevertheless, the merger phase of the GW
+signal, which occurs during the coalescence of two compact objects, spans a wide frequency range. This complicates the decomposition into a single IMF, even with
+EEMD, and spreads the information across multiple intrinsic modes. We have developed an algorithm to stack
+the time-frequency maps by employing the HHT multiple times to determine the final Hilbert spectrum [22].
+The pattern of the GW signal can be traced by inspecting the evolutionary track of the Hilbert energy, forming
+a remarkable feature in a two-dimensional series of time
+and IMF indices. In this paper, we aim to systematically
+prove the feasibility of this stacking algorithm and conduct more detailed tests using artificial and real signals.
+II.
+
+METHOD
+
+The HHT is an empirical tool for time-frequency analysis and employs a nonlinear approach. It is well known
+that HHT is more effective for non-stationary signals
+than the traditional method, which assumes constant frequency and amplitude.
+The Hilbert transform of a function x(t) is
+Z ∞
+1
+x(t)
+y(t) = p.v.
+dτ
+(1)
+π
+t
+−∞ − τ
+where p.v. is the Cauchy principal value of the singular
+integral. While y(t) is the transform from the function
+x(t), the analytic function can be defined
+z(t) = x(t) + i y(t) = a(t)eiθ(t)
+
+(2)
+
+y
+θ = arctan .
+x
+
+(3)
+
+is necessary for the IF calculation method to function
+appropriately.
+An arbitrary time series x(t) consists of internal noise
+and a few numbers of purely oscillatory functions. Therefore, a method of EMD is proposed by Huang et al. [25]
+to probe the IFs through the Hilbert transform. Each
+component defined as an IMF should satisfy the following conditions: (1) In the entire data set, the number of
+extrema and zero crossings must either be equal or differ
+by at most one. (2) At any given data point, the mean
+value of the envelopes created from only the local maxima and the local minima is zero. Moreover, an EMD
+decomposes a time series x(t) into a sum of IMFs (ck )
+and the residual rNm as
+x(t) =
+
+p
+x2 + y 2 ,
+
+Here, a(t) is the IA, and θ is the instantaneous phase. So
+the IF is
+f=
+
+ω
+1 dθ
+=
+2π
+2π dt
+
+(4)
+
+Huang et al. [25] noted that a purely oscillatory function (or a mono-component) with a zero reference level
+
+ck (t) + rNm (t),
+
+(5)
+
+k=1
+
+where Nm is a positive integer that represents the number of IMFs. The EMD can separate data into different
+components by their scales. Given that some data often contains noise of significant amplitude, a pertinent
+question arises: does a component (an IMF for EMD)
+reveal a true signal, or is it merely a result of noise?
+We notice that a single IMF can either consist of signals at different scales or contain signals of similar scales
+within various IMF components. It is so-called modemixing and is also one of the major drawbacks of EMD.
+To address the scale mixing problem, Huang and Wu [26]
+and Huang and Shen [27] proposed the EEMD algorithm,
+which defines the true IMF components as the average of
+an ensemble of trials, each consisting of the signal plus
+a finite amplitude white noise. EEMD contains the following steps: (1) add a white noise series to the targeted
+data; (2) decompose the data with the added white noise
+into IMFs; (3) repeat steps 1 and 2 again and again, but
+with different white noise levels each time; and (4) obtain the (ensemble) means of corresponding IMFs from
+the decomposition as the final result. In more detail, an
+arbitrary x(t) function under the jth “artificial” observation will be
+xj (t) = x(t) + nj (t),
+
+(6)
+
+where nj (t) is the jth realization of the white noise series
+[24]. Furthermore, the intrinsic mode ck (t) is defined by
+N
+
+t
+1 X
+ck,j (t)
+Nt →∞ Nt
+j=1
+
+ck (t) = lim
+
+and
+a(t) =
+
+Nm
+X
+
+(7)
+
+with
+ck,j (t) = ck (t) + rk,j (t).
+
+(8)
+
+Nt in eq. (7) refers to the total number of trials for adding
+the white noise series, and rk,j (t) in eq. (8) denotes the
+contribution to the kth IMF from the white noise added
+during the jth trial in the noise-added signal. To detect a signal that experiences an abrupt frequency change
+within a short time (e.g., CBCs), the IMFs ck (t) and the
+
+3
+effects of rk,j (t) must be revised. By applying the Hilbert
+transform to IMFs ck (t) along with the realization of frequency as described in equation (4), we can visualize a
+time-frequency plot, and this process is referred to as
+time-frequency realization. Meanwhile, the process defined in (7) is called the ensemble mean process.
+Here, we concentrate on modifying the conventional
+HHT with the application of only EMD. Let’s begin by
+introducing the stacked spectrum of the HHT for each
+trial xj (t). j = 1, 2, 3, . . . , Nt denotes the number of trials to stack the spectrum and Nt is the total number of
+trials. k = 1, 2, 3, . . . , Nm in sHHT corresponds to different IMFs, ck,j , and Nm is the total number of intrinsic
+modes for each xj . Compared with HHT, the proposed
+method directly calculates the Hilbert spectrum on these
+intrinsic modes without an ensemble process,
+I
+cR
+k,j + ick,j ,
+
+k = 1, 2, . . . , Nm ,
+
+Therefore, there are Nm time-frequency realization images for HHT and Nm × Nt time-frequency realization
+images for sHHT.
+To estimate the deviation of IF measured between the
+HHT without the ensemble process and the sHHT, we
+R
+I
+I
+assume that cR
+k,j = Gk + nk,j and ck,j = Gk + ñk,j , where
+R
+Gk is a real signal, nk,j is white noise, and ñk,j = g(nk,j ).
+The IF measured from HHT without an ensemble process
+has the coefficients,
+2
+I 2
+Ak = (GR
+k ) + (Gk ) ,
+d I
+d
+G − GIk GR
+Bk = GR
+k
+dt k
+dt k
+
+and the IF measured from sHHT has the coefficients,
+2
+I
+2
+Ak,j = (GR
+k + nk,j ) + (Gk + ñk,j ) ,
+
+(9)
+
+I
+where cR
+k,j and ck,j denote the real and imaginary parts
+of the IMF, respectively. Regarding random variables
+I
+for cR
+k,j and ck,j , the amplitude (ak,j (t)) and the phase
+(θk,j (t)) can be given by
+q
+I
+2
+2
+ak,j (t) = (cR
+(10)
+k,j ) + (ck,j )
+
+and
+d I
+(G + ñk,j )
+dt k
+d
+−(GIk + ñk,j ) (GR
++ nk,j )
+dt k
+
+Bk,j = (GR
+k + nk,j )
+
+)
+θk,j (t) = arctan( R
+ck,j (t)
+
+(12)
+
+d I
+d
+c − cIk,j cR
+dt k,j
+dt k,j
+Combining (10) and (13), we obtain the IF and IA to construct the time-frequency presentation/realization, and
+the Hilbert spectrum for the k-th intrinsic mode of the
+j-th trial (cR
+k,j ) can be represented as Ik,j . The sHHT is
+to ensemble all of the time-frequency realization Ik,j ,
+sHHT =
+
+Bk,j = cR
+k,j
+
+1
+Nt Nm
+
+Nm X
+Nt
+X
+k=1 j=1
+
+Ik,j
+
+2
+I
+2
+αk,j = 2GR
+k nk,j + nk,j + 2Gk ñk,j + ñk,j .
+
+and
+d
+d
+d
+(ñk,j ) + nk,j GIk + nk,j (ñk,j )
+dt
+dt
+dt
+d R
+d
+I d
+−Gk (nk,j ) − ñk,j Gk − ñk,j (nk,j ).(18)
+dt
+dt
+dt
+
+βk,j = GR
+k
+
+Let us denote E(X) as the expectation of a random
+variable X. The deviation ratio of IF measured from
+the sHHT compared with the HHT without the ensemble
+process is
+Dk = E[
+
+(13)
+
+where
+2
+I
+2
+Ak,j = (cR
+k,j ) + (ck,j ) ,
+
+(17)
+
+where
+
+Based on it, we are going to explain the detailed calculations used in sHHT. Compared with (4), it follows that
+ωk,j (t)
+1 d
+1 Bk,j
+fk,j (t) =
+=
+θk,j (t) =
+,
+2π
+2π dt
+2π Ak,j
+
+Bk,j
+Bk
+1 + βk,j /Bk
+=
+×
+Ak,j
+Ak
+1 + αk,j /Ak
+
+(11)
+
+I
+R
+where cR
+k,j and ck,j = g(ck,j ) are random variables for
+I
+some function g. In our simulations, both cR
+k,j and ck,j
+have the Gaussian distribution with zero mean and variI
+ance in 1 (i.e., N (0, 1)). Meanwhile, cR
+k,j and ck,j are orthogonal. The motivation for this derivation is to understand the distribution of the stacked Hilbert spectrum.
+The instantaneous angular frequency can be calculated
+by the derivative of the angle function for each intrinsic
+mode
+d I
+I d R
+cR
+d
+k,j dt ck,j − ck,j dt ck,j
+ωk.j = θk,j =
+I
+2
+2
+dt
+(cR
+k,j ) + (ck,j )
+
+(16)
+
+respectively. If Ak and Bk are not vanished, then
+
+and
+cIk,j (t)
+
+(15)
+
+(14)
+
+1 + βk,j /Bk
+]
+1 + αk,j /Ak
+
+(19)
+
+This computation is to understand the dispersion of IF
+(D) in (19) using sHHT. However, it is not linear, and
+there is no analytic solution. If
+E(nk,j ) = 0 = E(ñk,j ),
+
+(20)
+
+E(n2k,j ) = E(ñ2k,j ) = σk2 ,
+
+(21)
+
+and
+
+According to αk,j defined in eq. (18), then we have
+E[αk,j /Ak ] = 2
+
+σk2
+,
+Ak
+
+(22)
+
+4
+and
+d
+d
+1
+E[nk,j (ñk,j ) − ñk,j (nk,j )]
+Bk
+dt
+dt
+2σk2
+=µ
+,
+(23)
+Bk
+
+E[βk,j /Bk ] =
+
+and (21) can be verified by numerical approaches.
+From the eq. (23) for the discretization ∆t in the difference, it can be yield
+d
+d
+1
+E[nk,j (ñk,j ) − ñk,j (nk,j )]
+E[βk,j /Bk ] =
+Bk
+dt
+dt
+2σk2
+≈λ
+.
+(24)
+∆tBk
+Here, µ = λ/∆t, and λ is a factor to count for the amplification over the discretization. No analytical value can
+be provided to λ, and therefore, we further employ the
+numerical simulation to evaluate this value. We assume
+a Gaussian noise n with N (0, 1) and ∆t=1. Then we
+calculate the Hilbert transform of ñ for n to evaluate the
+values
+nk,j [ñk,j+1 − ñk,j ] − ñk,j [nk,j+1 − nk,j ]
+for each position. The expectations of the above formula
+are simulated based on the number of points N and the
+number of trials K. The expectation e and the standard
+deviation d are shown in the top sub-table and bottom
+sub-table in Table I. From the observation of Table I,
+the value λ is estimated to be ≈ 0.63 ± 0.03.
+N \K
+
+32
+
+64
+
+128
+
+256
+
+512
+
+1024
+
+32
+64
+128
+256
+512
+1024
+
+0.6662 0.6300 0.6410 0.6389 0.6319 0.6339
+0.6446 0.6482 0.6299 0.6342 0.6408 0.6362
+0.6568 0.6352 0.6365 0.6393 0.6402 0.6382
+0.6471 0.6423 0.6363 0.6379 0.6390 0.6369
+0.6410 0.6401 0.6381 0.6354 0.6365 0.6367
+0.6476 0.6415 0.6396 0.6385 0.6367 0.6364
+
+32
+64
+128
+256
+512
+1024
+
+0.148
+0.155
+0.148
+0.155
+0.147
+0.144
+
+0.117
+0.092
+0.096
+0.115
+0.108
+0.106
+
+0.071
+0.072
+0.077
+0.074
+0.079
+0.074
+
+0.045
+0.051
+0.054
+0.051
+0.048
+0.050
+
+0.032
+0.037
+0.040
+0.032
+0.035
+0.038
+
+0.028
+0.023
+0.029
+0.027
+0.026
+0.025
+
+TABLE I. e in the top sub-table and the standard deviation d
+in the bottom sub-table. These values obtained by simulation are
+used to evaluate the value λ ≈ e ± d.
+
+Now, we can derive the deviation ratio Dk for each
+mode from Equation (22), where
+Dk = E[1 + βk,j /Bk − αk,j βjk /Ak Bk + · · · ]
+≈ 1 + E[βk,j /Bk ] ≈ 1 + 1.26
+
+σk2
+Bk
+
+(25)
+
+Frequency (Hz)
+
+3.0
+2.5
+2.0
+1.5
+1.0
+0.5
+0
+
+2
+
+4
+
+0
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+6
+
+8
+
+3.5
+3.0
+
+Frequency (Hz)
+
+where µ is an amplification factor independent with σk2
+and Bk . We note that the conditions in equations (20)
+
+3.5
+
+2.5
+2.0
+1.5
+1.0
+0.5
+
+Time (sec)
+
+FIG. 1. A sinusoidal signal of the frequency change from 1 Hz
+to 2 Hz at 5 s with SN R = 5. The external input noise level of
+0.5 was added to perform EEMD in HHT and sHHT. The Hilbert
+spectrum obtained via EEMD is shown in the top panel, and the
+stacked Hilbert spectrum is demonstrated in the bottom panel.
+
+whenever αk,j and βk,j are small enough, and ∆t = 1.
+αk,j and βk,j in equation 18 correspond to the imposed
+noise to perform sHHT, while the entire process reverts to
+the conventional HHT if these two terms vanish. Moreover, Dk − 1 can be treated as the average of all the trials
+at the position (t, ωt ) along the frequency axis. Once
+we select a great Bk or omit σk2 – indicating that the
+additional input noise has a minimal impact – then Dk
+approaches unity. This signifies that formula (16) returns
+to formula (15), demonstrating the consistency between
+the conventional HHT and sHHT methods. The additional noise introduced by sHHT leads to a frequency
+dispersion compared to the exact signal in the measurement; nevertheless, the appropriate choice in variance σ 2
+and the strength of Bk can only limit deviations to a
+small range around the exact IF of the signal. The true
+behavior of the exact IF can be further clarified by accumulating a large number of trials, which enhances the
+results through a stacked effect. To numerically constrain
+the additional input noise level associated with data exhibiting various signal-to-noise ratios (SNRs) to track the
+exact signal, we also illustrate this correlation in different
+signal examples in § III.
+In the following section, we will outline the advantages
+of the stacked effect when utilizing sHHT. Additionally,
+we will highlight the limitations of the HHT in detecting abruptly changing waves within a short timeframe,
+specifically regarding the ensemble mean process prior to
+time-frequency realization. We have observed that the re-
+
+5
+verse process, employing time-frequency realization prior
+to the ensemble mean process, is more suitable than the
+original or conventional HHT. An example is provided
+below. This simulation features a signal that experiences a sudden frequency jump from f = 1 Hz to 2 Hz
+at t = 5 s. The signal is represented by the sinusoidal
+time series of sin(2πf t) with an SNR of 5, while the SNR
+was determined by the ratio of the signal’s amplitude
+to the average level of internal noise. Please note that
+the simulated signal is given in an arbitrary unit with
+amplitude in O(1). We added an external input noise
+level of 0.5 to perform sHHT to demonstrate the stacked
+effect compared to the EEMD applied in conventional
+HHT, and the noise level is universally used to describe
+the standard deviation ratio between the time series of
+the noise and signal throughout this manuscript. The
+results for HHT and sHHT are shown in the top and
+bottom panels of Figure 1, respectively. While we understand that the additional input noise influences the
+dispersion of the IF, it is evident that the 1 Hz signal,
+which appears between 0 and 5 seconds, and the 2 Hz
+signal, which appears after 5 seconds, exhibit a flatter
+profile when analyzed with the sHHT compared to the
+standard HHT. This flattening is attributed to the enhancement provided by the stack effect. Additionally,
+the relationship between 1 Hz and 2 Hz is more evident
+for sHHT compared to HHT near the point t = 5 s. Based
+on the observations above, we conclude that the visualization achieved through sHHT is clearer than that obtained through HHT. In the next section, we will numerically analyze the effectiveness of stacks in sHHT using a
+signal with a stationary frequency, as well as linear and
+exponential chirp signals.
+
+A.
+
+The time series of the signal is generated by sin(ωt),
+where ω = 2πf and f is the frequency of the signal fixed
+at 1 Hz. The evolving IF, derived from conventional HHT
+and sHHT, is illustrated in the left panel of Fig. 2. The IF
+determined by the sHHT method is closer to the actual
+frequency of our signal compared to the IF obtained from
+the conventional HHT. This comparison shows a clear deviation in the IFs between the traditional method and our
+new approach, thus verifying our derivation in the previous section. The right panel of Fig. 2 demonstrates the
+spectrum generated by sHHT, and the “stacked” method
+enhances the contour level to closely resemble the exact
+signal as depicted in the color map.
+The left panel of Fig. 3 shows the frequency dispersion
+ratio (i.e., the frequency dispersion divided by the actual
+frequency) yielded from sHHT for a stable signal that
+varied with different SNRs and the imposed noise level.
+If we increase the noise level imposed on the signal, we
+expect that the frequency dispersion may become larger
+as the simulated sample maintains the same SNR. Nevertheless, intriguing variations in dispersion can be observed as the SNR of the signal increases. For instance,
+in the left panel of Fig. 3, the dispersion increases when
+the SNR of the signal is between 2 and 8 with a low input noise level (i.e., . 0.3). We therefore simulate a time
+series with an SNR of 2 and an imposed external noise
+level of only 0.01 to be analyzed using sHHT as shown
+in the right panel of Fig. 3. Compared to Fig. 2, the
+mode mixing problem is more pronounced, even though
+the noise level is two orders of magnitude lower in this
+new example.
+
+B.
+
+III.
+
+ESTIMATION OF THE FREQUENCY
+DISPERSION
+
+We have analytically derived the frequency deviation measured by conventional HHT and our improved
+method in the previous section. The effects of this dispersion can be shown through various examples, emphasizing that sHHT is more effective than HHT for tracing
+signal evolution. Here we present three examples: stable signals, linear chirp signals, and exponential chirp
+signals, to demonstrate the effectiveness of the sHHT
+method. Additionally, we investigate how frequency dispersion changes with variations in the SNRs of a dataset
+and different levels of external input noise while applying our algorithm. The definition of the SNR and noise
+level for the mocked data set is the same as described
+in the previous section. The internal and input noise is
+assumed to be white Gaussian noise N (0, nσ), where n
+denotes the significance of the input noise level.
+
+Stable Sinusoidal Signal
+
+Linear Chirp Signal
+
+In the second example, we examine a signal where the
+frequency changes over time. In comparison to other timing methods, the HHT has an advantage in resolving signals of this type. This is because HHT utilizes an adaptive basis that adjusts to variations in the signal, enabling
+effective extraction of local information over time. Here
+we generate a variable sinusoidal signal sin(ωt), where
+ω = 2πf 0 and f 0 is defined as 0.1 · t + 10−3 , evolving
+with time (t). The exact frequency (f ) of this signal is
+given by the equation 0.2 · t + 10−3 , which is represented
+by the blue straight line in the left panel of Fig 4. The
+amplitude strength for both the signal and the internal
+noise was maintained at a consistent level to simulate
+mock data with an SNR of 1, and we arbitrarily introduced external white noise with an amplitude ratio of 0.6
+to perform the sHHT. According to the IFs determined
+by HHT and sHHT presented in the left panel of Fig. 4,
+it is evident that the sHHT performs better in resolving
+the signal pattern, even though the boundary problem
+remains a challenge. The IF obtained from HHT may
+display some spiky peaks in the plot due to the singular-
+
+6
+
+3.0
+
+3.0
+
+exact signal
+IF of HHT
+IF of sHHT
+
+2.0
+
+2.5
+
+Frequency (Hz)
+
+Frequency (Hz)
+
+2.5
+
+2.0
+
+1.5
+
+1.5
+
+1.0
+
+1.0
+
+0.5
+
+0.5
+
+0.00
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+00
+
+10
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+10
+
+FIG. 2. IFs of the stable sinusoidal signal obtained from the conventional HHT and sHHT. The stable signal was simulated with a
+frequency of 1 Hz and SNR = 2. The external noise level imposed on this signal is 0.3. The left panel presents the real signal frequency
+labeled by the blue color and the IFs obtained from the conventional HHT and sHHT labeled by the black and red colors, respectively.
+The right panel presents the IF obtained from the sHHT imposed on the Hilbert spectrum. The green contour shows the Hilbert energy
+levels displayed on the sHHT time-frequency map.
+
+0.72
+
+0.9
+
+0.64
+
+0.8
+
+0.56
+
+Input Noise Level
+
+0.7
+
+2.5
+2.0
+
+0.48
+
+0.6
+
+0.40
+
+0.5
+
+1.5
+
+0.32
+
+0.4
+
+1.0
+
+0.24
+
+0.3
+0.2
+
+0.16
+
+0.1
+
+0.08
+
+0.1
+
+3.0
+
+Frequency (Hz)
+
+1.0
+
+0.2
+
+0.5
+
+1.0
+
+SNR
+
+2.0
+
+5.0
+
+10.0
+
+0.5
+00
+
+0.00
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+10
+
+FIG. 3. Frequency dispersion of a stationary sinusoidal signal measured by the sHHT and the IF of a specific stationary signal. The
+left panel demonstrates the frequency deviation ratio of the IF for a stable signal, as determined by the sHHT, compared to the exact
+frequency (i.e., 1 Hz), under various SNRs and input noise levels. The right panel presents the IF obtained from sHHT imposed on the
+Hilbert spectrum. The signal was specifically simulated with the SNR = 2 and the imposed noise level of only 0.01. The green contour
+shows the Hilbert energy levels on the sHHT time-frequency map.
+
+Frequency (Hz)
+
+2.5
+2.0
+
+3.0
+
+exact signal
+IF of HHT
+IF of sHHT
+
+2.5
+
+Frequency (Hz)
+
+3.0
+
+2.0
+
+1.5
+
+1.5
+
+1.0
+
+1.0
+
+0.5
+0.00
+
+0.5
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+10
+
+00
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+10
+
+FIG. 4. IFs of the linear chirp signal resolved by the conventional HHT and sHHT. The chirp signal was simulated with the SNR = 1
+and the frequency of 0.2 · t + 10−3 , which evolves with time. The external noise level imposed on this signal is 0.6. The left panel shows
+evolving blue real signal frequency over time, along with IFs determined by the conventional HHT and sHHT, denoted by the black and
+red colors, respectively. The right panel presents the IF obtained from the sHHT imposed on the Hilbert spectrum. The green contour
+shows the Hilbert energy levels on the sHHT time-frequency map.
+
+7
+
+1.0
+
+0.90
+
+3.0
+
+0.75
+
+2.5
+
+0.8
+
+Input Noise Level
+
+0.7
+
+Frequency (Hz)
+
+0.9
+
+2.0
+
+0.60
+
+0.6
+
+1.5
+
+0.45
+
+0.5
+0.4
+
+1.0
+
+0.30
+
+0.3
+0.2
+
+0.15
+
+0.5
+
+0.00
+
+00
+
+0.1
+0.1
+
+0.2
+
+0.5
+
+1.0
+
+SNR
+
+2.0
+
+5.0
+
+10.0
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+10
+
+FIG. 5. Frequency dispersion ratio of the linear chirp signal estimated by the sHHT and the IF of a specific linear chirp signal. The
+left panel illustrates the variation in frequency dispersion ratio for a linear chirp signal analyzed by the sHHT under different SNRs and
+input noise levels. The right panel shows the IF resolved by the sHHT imposed on the Hilbert spectrum. The chirp signal was specifically
+simulated with the SNR = 1 and the imposed noise level of only 0.1. The green contour labels the Hilbert energy levels displayed on the
+sHHT time-frequency map.
+
+5
+
+5
+
+exact signal
+IF of HHT
+IF of sHHT
+
+4
+
+Frequency (Hz)
+
+Frequency (Hz)
+
+4
+3
+
+3
+
+2
+
+2
+
+1
+
+1
+
+00
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+10
+
+00
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+10
+
+FIG. 6. IFs of the exponential chirp signal resolved by the conventional HHT and sHHT. The chirp signal was generated with the SNR
+= 1 and the frequency of 20.1·t (1 + 0.1 · t · ln 2). The external noise level imposed on this signal is 0.9. The left panel displays the actual
+signal frequency in blue, along with the IFs derived from conventional HHT and sHHT, indicated by black and red colors, respectively.
+The right panel presents the same IF resolved by the sHHT imposed on the Hilbert spectrum. The green contour exhibits the Hilbert
+energy levels displayed on the sHHT time-frequency map.
+
+0.9
+
+0.9
+
+0.8
+
+0.8
+
+0.7
+
+Input Noise Level
+
+0.7
+
+0.6
+
+0.6
+
+0.5
+
+0.5
+
+0.4
+
+0.4
+
+0.3
+
+0.3
+0.2
+
+0.2
+
+0.1
+
+0.1
+
+0.1
+
+0.2
+
+0.5
+
+1.0
+
+SNR
+
+2.0
+
+5.0
+
+10.0
+
+0.0
+
+5
+4
+
+Frequency (Hz)
+
+1.0
+
+3
+2
+1
+00
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+10
+
+FIG. 7. Frequency dispersion ratio of the exponential chirp signal estimated by the sHHT and the IF of a specific exponential chirp
+signal. The left panel exhibits the variation of the frequency dispersion ratio for an exponential chirp signal, determined by the sHHT,
+with different SNRs and input noise levels. The right panel shows the IF resolved by the sHHT imposed on the Hilbert spectrum. This
+chirp signal was specifically simulated with the SNR = 1 and the imposed noise level of only 0.05. The green contour labels the Hilbert
+energy levels shown on the sHHT time-frequency map.
+
+8
+ity in the calculation; nevertheless, it can be smoothly
+moderated by our “stacked” algorithm. The right panel
+of Fig. 4 presents the color spectrum of sHHT, and we
+can see that the deep color to denote the higher Hilbert
+energy accurately corresponds to the actual frequency of
+the simulated signal.
+To examine the relationship between SNR and imposed
+noise level, which affects the frequency dispersion of the
+linear chirp signal, we analyze data sets with varying parameters. As shown in the left panel of Fig. 5, the frequency dispersion ratio generally increases when we raise
+the imposed noise level or reduce the SNR of our data
+sample; however, we also notice some intriguing features
+when we focus on cases where the imposed noise level
+is less than 1. If we fix the SNR of our dataset in 1,
+the ratio of frequency dispersion may decrease when we
+increase the imposed noise level. In the right panel of
+Fig. 5, the imposed noise level to perform sHHT is fixed
+at 0.1, allowing for a comparison with the plot in Fig. 4,
+where the noise level is set at 0.6. From this comparison,
+it is evident that a higher noise level results in increased
+frequency dispersion and more pronounced mode-mixing
+issues. We would like to emphasize that this phenomenon
+is likely to occur only when the imposed noise level is less
+than 1 and when the SNR of the data is between 0.2–1.6.
+Otherwise, the frequency dispersion ratio will continue
+to increase as the imposed noise level increases.
+
+curately approximates the actual frequency of the signal.
+Similar to the linear chirp signal, the frequency dispersion ratio of the exponential chirp signal increases as
+the noise level rises and the SNR decreases, particularly
+when the input noise level exceeds one. In the left panel
+of Fig. 7, we also find that the ratio of frequency dispersion within specific ranges of SNR decreases when we
+apply the sHHT while increasing the imposed noise level,
+as long as the noise level remains below one. We demonstrate the situation by performing the sHHT with an external noise level of only 0.05 to resolve an exponential
+chirp signal with an SNR of 1, as shown in the right panel
+of Fig. 7. In comparison to the data set displayed in the
+right panel of Fig. 6, the red IF in the right panel of Fig. 7
+exhibits a more significant deviation from the blue actual
+frequency, although it has an imposed noise level of one
+order of magnitude smaller. In our simulation to perform the sHHT, we found that the frequency dispersion
+derived from sHHT increases directly with a higher imposed noise level on a lower SNR dataset. However, this
+is only true when the external noise level is sufficiently
+large (i.e., & 1). Additionally, more severe mode-mixing
+issues can still arise in datasets with extremely low imposed noise levels, provided certain special conditions are
+met.
+
+D.
+C.
+
+Exponential Chirp Signal
+
+The signal pattern of a CBC GW event resembles an
+exponential chirp signal characterized by a rapid increase
+in frequency. For instance, during the coalescence of two
+black holes (BHs), the duration of the whitened waveform, when subjected to a bandpass filter, usually lasts
+less than one second. During the merging phase, the
+frequency shifts from a few tens of hertz to several thousand hertz in just 0.1 seconds [28]. Although the signal
+pattern of a GW event is more complex, we can use an
+exponential chirp signal to illustrate it and examine its
+characteristics as recognized by HHT and sHHT. Here we
+generate an exponential chirp signal using the sinusoidal
+function sin(ωt) with ω = 2πf 0 , while f 0 is a function of
+time to represent 20.1·t . The actual frequency of such a
+signal can be computed by 1/2π · d(ωt)/dt, equivalent to
+20.1·t (1 + 0.1 · t · ln 2), which can be illustrated by the blue
+curve in Fig. 6. In the generation of linear and exponential chirp signals, we multiply a small coefficient (i.e.,
+0.1) to retard the frequency increase, making it easier to
+compare with a stable sinusoidal signal; however, in order to match the GW signal, this coefficient can be much
+larger. We simulate a time series with SNR = 1 to test
+HHT and arbitrarily impose an external noise level = 0.9
+to identify the exponential chirp signal using sHHT. IFs
+determined by HHT and sHHT are represented by the
+black and red curves in the left panel of Fig. 6. As shown
+in the right panel, the IF obtained from sHHT more ac-
+
+Comparison with Q-transform
+
+Comparing the investigation of exponential chirp signals between sHHT and the Q-transform is interesting
+because such signals behave like GW signals, and the
+Q-transform is commonly used for fast scanning. The
+Q-transform effectively tracks signals with abrupt frequency changes by allowing the quality factor Q to be
+adjusted during computation, enabling the detection of
+instant changes in the frequency domain. In the previous section, we added a small exponential factor to
+reduce the rate of signal variation in the frequency domain. This modification allows us to compare the results
+obtained with the conventional HHT without significant
+mode splitting. For such a signal with a frequency change
+between 1 and 4 Hz during the first 10 s, the constant Qtransform [5], which closely resembles the Morlet (or Gabor) wavelet [29], can effectively transform our data into
+a train of sinusoid Gaussians. Please note that a small
+Q factor results in better time resolution but poorer frequency resolution, while a high Q value has the opposite
+effect. Therefore, it is important to choose an appropriate Q value when performing the transformation to
+balance the visual time and frequency resolutions on the
+power spectral map. Our investigation shows that the
+method with a fixed Q factor of 10 provides the best visual clarity on the power spectral density map (as shown
+by the green contour in the top panel of Fig. 8) compared to other Q factors in the constant Q-transform or
+the variable Q-transform.
+In contrast to investigating the best relationship be-
+
+9
+IV.
+
+APPLICATIONS
+
+HHT is widely applied in many academic and engineering fields, and here we would like to demonstrate its
+feasibility in studying the nonlinear signal embedded in
+astronomical observations. Because no priori basis is required for such an adaptive method to trace the signal
+pattern, HHT was confirmed as a practical algorithm to
+investigate the unstable astronomical event (e.g., QPO;
+[15], or superorbital modulation; [2, 16, 32]), especially
+for the specific GW signal, which can have an immediate change in the frequency domain with a short time
+scale (i.e., CBC; [20, 23]). We will present two examples
+to demonstrate the practicability of using the sHHT, including investigations into superorbital modulation and
+the GW signal. To trace the GW signal, we only include
+LIGO data in the following analysis. This is because the
+currently known GW events detected by LIGO possess
+relatively high SNRs, making them significant enough to
+
+4
+
+(a)
+
+(b)
+
+(c)
+
+3
+
+Frequency (Hz)
+
+tween the SNR of the data and the imposed noise level for
+performing sHHT, we stacked more spectra (i.e., 50000
+iterations) here to smooth the distribution of the derived IF for a further check of frequency and time resolutions. Based on our studies in the previous section,
+we set the imposed noise amplitude between 0.5 and 1
+to ensure a level comparable to the SNR of the data to
+minimize the derived frequency deviation, and we overlapped the results obtained from the Q-transform on the
+stacked Hilbert spectrum, as presented in Fig. 8. Both
+Q-transform generated with a Python-based parameter
+estimation toolkit for CBC signals (PyCBC v2.4.0[30];
+[31]) and sHHT provide the capability to track signal behavior. For further comparison, we selected six slices at
+different times (i.e., 2 s, 5 s, and 8 s) and frequencies (i.e.,
+1.5 Hz, 2 Hz, and 2.5 Hz), and this analysis focuses on the
+illustration of the related time and frequency resolutions
+as shown in the bottom panel of Fig. 8. The full widths
+at half maximum for the red and blue profiles to label the
+Q-transform and sHHT in the (a) to (c) panels of Fig. 8
+are similar, while it shows that the two approaches give a
+comparable frequency resolution. We can also find that
+the frequency corresponding to the signal resolved by the
+Q-transform in the earlier stage is slightly overestimated
+(i.e., panel (a)), although it remains within a tolerable
+range.
+
+2
+
+(f)
+(e)
+(d)
+
+0.4
+
+(a)
+
+4
+
+Time = 2.0 sec
+
+sHHT
+Q_transform
+
+Time (sec)
+
+6
+
+sHHT
+Q_transform
+
+1.2
+
+1.4
+
+1.6
+
+1.8
+
+Frequency (Hz)
+Frequency = 1.5 Hz
+
+2.0 0.0
+
+Frequency (Hz)
+Frequency = 2.0 Hz
+
+0.01.5
+
+Normalized Power
+
+Normalized Power
+
+Time (sec)
+
+sHHT
+Q_transform
+
+0.1
+
+1.50 1.75 2.00 2.25 2.50
+
+0.6
+sHHT
+sHHT
+(d)
+(e) 0.5
+0.8
+Q_transform
+Q_transform
+0.3
+0.6
+0.4
+0.2
+0.3
+0.4
+0.2
+0.1
+0.2
+0.1
+0.01.0 1.5 2.0 2.5 3.0 3.5 4.0 0.03.5 4.0 4.5 5.0 5.5 6.0 6.5 0.06.0
+
+Normalized Power
+
+0.4
+
+Time = 8.0 sec
+
+0.2
+
+0.1
+
+0.1
+
+0.4 (c)
+
+10
+
+0.3
+
+0.2
+
+0.2
+
+8
+
+Time = 5.0 sec
+
+0.3
+
+0.3
+
+0.01.0
+
+0.4 (b)
+
+Normalized Power
+
+Normalized Power
+
+0.5
+
+2
+
+Normalized Power
+
+10
+
+Panels (d) to (f) show that the time resolution of the
+sHHT is superior to that of the Q-transform. This is
+evident from the narrower full widths at half maximum,
+which better constrain the time intervals in the blue profile, even though multiple blue peaks may appear in the
+plot. Please note that the top panel of Fig. 8 showcases the optimal visual performance of the Q-transform.
+While opting for a smaller Q factor can improve time resolution, it sacrifices frequency resolution, making it more
+challenging to track the signal accurately. The multiple
+peaks observed in panels (d) to (f), which are also reflected as oscillations in all the resolved signals shown
+on the Hilbert spectra, result from intra- or inter-wave
+modulations. These modulations are caused by significant variations in the cycle lengths of the intrinsic noise
+compared to the exact signal. This effect is particularly
+pronounced when we impose a noise level comparable to
+the SNR of the datasets to perform sHHT, and it is expected to moderate this effect once we implement the
+zero-crossing algorithm in the sHHT method. We note
+that the frequency change in this simulation occurs at a
+much slower rate compared to a real CBC signal during
+the merging phase, suggesting that the Q-transform (or
+wavelet method) still has advantages in accurately tracking the evolution of such a signal, but these oscillations
+can be ignored once the ratio of their amplitude to the
+entire rapid frequency changes is small.
+
+Time (sec)
+
+2.0
+
+2.5
+
+3.0
+
+3.5
+
+Frequency (Hz)
+Frequency = 2.5 Hz
+sHHT
+Q_transform
+
+6.5
+
+7.0
+
+Time (sec)
+
+7.5
+
+4.0
+
+(f)
+
+8.0
+
+FIG. 8. Comparison between the stacked HHT spectrum
+(color map) and the spectrum of Q-transform (green contour).
+The red curve in the top panel denotes the IF derived from
+the sHHT, while the blue one presents the actual signal. Six
+slices are labeled by the black-dashed/purple-dotted lines for
+(a) time = 2.0 s, (b) time = 5.0 s, (c) time = 8.0 s, (d) frequency = 1.5 Hz, (e) frequency = 2.0 Hz, and (f) frequency
+= 2.5 Hz. The amplitude vs. frequency/time plot (i.e., the
+power spectral density) is presented in the lower panels. The
+blue curve is smoothed to demonstrate the averaged profile
+of the instantaneous frequency/time. The green curve denotes a similar result generated from the Q-transform, where
+the black dashed line in the bottom panel indicates the actual frequency/time of the simulated signal. The HHT and
+Q-transform profiles in panels (a)–(f) are scaled for display
+purposes.
+
+10
+be recognized in the dynamic power spectra.
+In general, we had no information on the SNR for one
+dataset, even though we quantitatively constrained the
+relationship between it and the required external noise
+level to perform sHHT, leading to the least dispersion in
+IF in § III. Please note that the conventional method to
+determine the network SNR of a GW event is through
+the matched filtering algorithm [33]. This approach differs from the simpler definition of SNR, which is based on
+the amplitude ratio between the signal and the noise, as
+universally applied throughout this manuscript. Without information about the strength of the internal noise
+embedded in a dataset, we can only blindly check the
+external noise level required to generate an acceptable
+stacked Hilbert spectrum. Typically, this external noise
+level is set between 0.01 and 10 to multiply the standard
+deviation of the time series. If the noise level incorporated is significantly smaller than the intrinsic noise of
+the data, the mode-mixing problem persists, resulting in
+several unphysical features on the stacked Hilbert spectrum. Conversely, the true signal in the Hilbert spectra can be obscured by the significant external noise involved in executing the sHHT. The best external noise
+level incorporated to perform sHHT can be determined
+after a series of investigations on the obtained stacked
+Hilbert spectrum, and this algorithm is definitely more
+time-consuming than other dynamical timing methods.
+Since the current known GW events with low SNRs (. 8,
+determined by matched filtering) cannot provide a clear
+image of the time-frequency representation and the signal is only sensitive to the correlation with a theoretical
+template, we therefore only demonstrate the GW signals
+recorded by two LIGO detectors in § IV.B.
+
+tinct time-frequency map of the superorbital modulation,
+minimizing the potential spurious frequency variability,
+as demonstrated in Fig. 9b and Hu et al. [4].
+
+B.
+
+Akhshi et al. [20] used the conventional HHT as the
+basis to develop a template-free approach to extract the
+GW signal, and they derive the physical time delays between the arrivals of GWs at different detector locations
+by analyzing the waveforms given by the HHT. However, the GW signal pattern obtained from the conventional HHT has a serious mode-mixing problem, especially when the EEMD was not employed in the related
+investigations. In addition to the conventional HHT,
+sHHT has demonstrated its feasibility to investigate the
+GW from the CBC and a burst-typed event with a better
+performance [22].
+We would like to provide additional examples to
+demonstrate the feasibility of sHHT in investigating confident GW events using the open data obtained from the
+O3 observing run of L-V-K-GEO [35], which were not
+included in Hu et al. [22]. We obtain the 32 s LIGO data
+of 4k Hz released from the GW Open Science Center[36].
+Both data sets recorded at the Hanford and Livingston
+sites are included in our analysis. The GW data are the
+time series to record a long-term strain variation with
+a peak intensity of ∼ 10−21 , and therefore, the serious
+contamination of the colored noise or line features from
+instruments and background can be seen from the sim-
+
+0.028
+
+A.
+
+Investigation of the Gravitational wave
+
+SMC X-1
+
+(a) HHT
+
+0.026
+
+0.022
+0.02
+0.018
+0.016
+0.014
+0.012
+0.01
+
+Time (MJD)
+0.028
+
+(b) sHHT
+
+0.026
+0.024
+
+Frequency (d -1 )
+
+The HHT has been successfully used to monitor the
+superorbital modulation of SMC X-1, as reported in Hu
+et al. [32]. The modulation period varies between approximately 35 to 70 days, which is just below a factor of
+2. The EEMD, which is a dyadic filter, can decompose
+the superorbital modulation signal into a single IMF that
+facilitates the calculation of the instantaneous frequency.
+However, the modulation period has evolved to a shorter
+regime, which challenges the tracking of the superorbital
+frequency during the latest “excursion” event, identified
+by a reduction in the superorbital modulation period to
+45 days or less (around MJD 54000, 57200, and 59200
+in Figure 9). The light curve data applied to generate
+the figure were obtained from the hard X-ray monitoring program using the Neil Gehrels Swift Observatory
+[34]. To maintain the modulation within a single IMF, it
+becomes necessary to incorporate a significant amount
+of noise when performing the EEMD. This results in
+further fluctuations in the instantaneous frequency, as
+shown in Fig. 9a, contrasting with Fig. 3 in Hu et al.
+[32]. On the other hand, the sHHT provides a more dis-
+
+Frequency (d -1 )
+
+0.024
+
+0.022
+0.02
+0.018
+0.016
+0.014
+0.012
+0.01
+54000
+
+55000
+
+56000
+
+57000
+
+58000
+
+59000
+
+Time (MJD)
+
+FIG. 9. Time-frequency maps of the superorbital modulation of
+SMC X-1 obtained using (a) the HHT and (b) the sHHT.
+
+11
+
+500
+
+(a)
+
+500
+
+0.035
+
+0.025
+
+300
+
+0.020
+0.015
+
+200
+
+400
+
+0.06
+
+(b)
+
+0.05
+
+Frequency (Hz)
+
+0.030
+
+Frequency (Hz)
+
+400
+
+0.040
+
+0.04
+
+300
+0.03
+
+200
+
+0.02
+
+0.005
+
+100
+
+0.01
+
+0.000
+
+6.3
+
+0.0200
+
+500
+
+0.010
+
+100
+6.325
+
+6.35
+
+6.375
+
+6.4
+
+6.425
+
+Time (+1264316110 sec)
+
+6.45
+
+6.475
+
+500
+
+(a)
+
+0.0175
+0.0150
+
+Frequency (Hz)
+
+400
+
+6.5
+
+0.0125
+
+300
+
+0.0100
+0.0075
+
+200
+
+400
+
+6.325
+
+6.35
+
+6.375
+
+6.4
+
+6.425
+
+Time (+1264316110 sec)
+
+6.45
+
+6.475
+
+(b)
+
+0.0025
+
+6.7
+
+6.8
+
+6.9
+
+7.0
+
+Time (+1249852250 sec)
+
+7.1
+
+0.0000
+
+0.00
+
+0.0175
+0.0150
+0.0125
+
+300
+
+0.0100
+0.0075
+
+200
+
+0.0050
+
+100
+
+6.5
+
+0.0200
+
+Frequency (Hz)
+
+6.3
+
+0.0050
+
+100
+
+0.0025
+
+6.7
+
+6.8
+
+6.9
+
+7.0
+
+Time (+1249852250 sec)
+
+7.1
+
+0.0000
+
+FIG. 10. Time-frequency representation of GW200129 065458 (upper panels) and GW190814 (bottom panels) obtained by sHHT. We
+present the stacked Hilbert spectra from LIGO Hanford (a) and Livingston (b) observations, generated from 10000 iterations to decompose
+the IMF affected by randomly distributed noise levels using EMD.
+
+ple Fourier transform. The effective frequency range of
+the current L-V-K-GEO data is restricted from 30 Hz to
+a few hundred Hz, depending on different interferometers [37, 38], and we can only search for GW signals
+of specific origins in this frequency band. To mitigate
+the effects of colored noise and spectral lines caused by
+instruments and background, we followed the standard
+procedure to whiten the data using a Python-based GW
+analysis library(GWPY v3.0.8[39]; [40]). This process is
+intended to normalize power across all frequencies and
+enhance higher-frequency content. The whitening process was performed using a fast Fourier transform integration lasting 4 s, with a 2 s window overlap for Hann
+smoothing. We concentrate on the frequency range of
+30–500 Hz in our analysis of LIGO data since the noise
+is high in the low- and high-frequency ends.
+To decide the optimal external noise level incorporated to perform the sHHT, we blindly consider different input noise levels within 0.01–10 as one example provided in Appendix A, and pick up the value to
+achieve the best visual performance. We finally impose the external noise levels of 0.6 and 0.8 to generate the Hilbert spectra of GW200129 065458 measured
+by Handford and Livingston detectors, respectively. For
+GW190814, we incorporate the external noise level of 0.9
+to perform the sHHT on the data obtained from both
+detectors. As shown in Fig. 10, we present the stacked
+
+Hilbert spectra of GW200129 065458 and GW190814
+[41]. GW200129 065458 is a significant event with a high
+network SNR (26.8 ± 0.2) inferred from the IMRPhenomXPHM model; [42]), and it was recorded in the GW
+Transient Catalog-3 (GWTC-3; [43]) with detection in all
+three detectors including Virgo. This event is supposed
+to be a binary BH merger with a mass of approximately
+∼ 35 M and ∼ 29 M , but the SEOBNRv4PHM template [44] indicates a preference for a merger with nearly
+equal masses, with a mass ratio of q ∼ 0.9. In addition, there is weak evidence of precession, characterized
+by χp ∼ 0.36. Due to the data quality issues identified
+in the Livingston dataset as mentioned in Abbott et al.
+[43], only the GstLAL pipeline [45] is considered for its
+trigger. This analysis yields a higher signal-to-noise ratio (SNR) for the Livingston data (i.e., 21.2) compared
+to the Hanford data (i.e., 14.6) and the Virgo data (i.e.,
+6.3). By the sHHT, we can clearly observe signal patterns for GW200129 065458 in the upper panel of Fig. 10
+while the power (i.e., Hilbert energy) accumulated in the
+Hilbert spectra for the Livingston data is also more substantial, aligning with the results provided by the GstLAL pipeline.
+Compared to generating a GW template for merging
+binary BHs, the amplitude of NS mergers is considerably
+lower, and the coherent signal can persist for a much
+longer duration during the inspiral phase. According to
+
+12
+Hu et al. [22], the time-frequency characteristics of a coalescing binary NSs event near the merging phase are
+smeared due to the wide Gaussian window, and the SNR
+is insufficient within this large window to accurately identify the intrinsic time-frequency properties of the signal.
+The wavelet method can present the signal more clearly
+because we can tune the Gaussian envelope’s parameter
+to one order smaller than the value used to examine the
+event of binary BH mergers. Except for the coalescence
+of two NSs, we notice that the GW template corresponding to the coalescence of a BH and an NS or a lower mass
+gap (i.e., 2.5 – 5 M ; [46, 47]) can also have a longer coherence time. We therefore select the GW190814, categorized as a BH-NS (with the secondary mass < 3 M ) in
+GWTC-2.1 [48], as our second example. This GW event
+is supposed to be caused by the merger of ∼ 23.3 M
+black hole and ∼ 2.6 M lower mass gap inferred from
+a set of posterior samples drawn with equal weight from
+the IMRPhenomXPHM [42] and SEOBNRv4PHM [44]
+analyses. We want to clarify that the Hanford interferometer was out of observation mode during the trigger
+time of GW190814. However, the strain dataset was still
+collected and carefully calibrated by the detector characterization team to identify useful time intervals for public
+release. In our analysis, we also examine the sHHT using
+the Hanford data as shown in the bottom panel of Fig. 10.
+The significance of the signal pattern is weaker than the
+performance shown for the Livingston data; however, its
+signal identification is still stronger than the GW170817
+(NS-NS event; [49]) presented in Hu et al. [22]. The interwave modulation can be seen in the inspiral phase in
+the low-frequency range on the time-frequency map, and
+it is expected to improve if we use the zero-crossing algorithm in sHHT, which is not supported in the current
+EMD package in Python (emd v0.6.2[50]; [51]).
+
+500
+
+0.0175
+0.0150
+
+Frequency (Hz)
+
+400
+
+0.0200
+
+[2,2]
+[3,3]
+
+0.0125
+
+300
+
+0.0100
+0.0075
+
+200
+
+0.0050
+
+100
+6.4
+
+We note that the waveform models including higherorder multipoles (HMs, e.g., IMRPhenomXPHM [42] and
+SEOBNRv4PHM [44]) were used to provide more precise measurements of the parameters for a CBC event,
+while the importance of a subdominant multipole moment increases with the mass ratio. GW190814 was detected with strong evidence of HMs [41] affecting the network SNR, and the coherent Wave-Burst pipeline, which
+was constructed based on minimally modeled burst algorithms [52, 53], can identify HMs through the timefrequency representation by detecting coherent excess
+power in the chirp-like regions that correspond to various
+HMs [54]. In Fig. 11, we use the SEOBNRv4PHM ROM
+template to approximate the waveform of GW190814
+with the dominant (l,|m|) = (2,2) quadrupole and the
+(l,|m|) = (3,3) subdomaint multipole and overlapped
+their IFs on the stacked Hilbert spectrum of the same
+event detected from the Livingston detector. Because the
+IF of the generic multipole (l,|m|) can be approximated
+to a scaled version of the dominant (2,2) quadrupole, we
+can examine the generic HM gravitational radiation with
+the following IF dependence [55, 56].
+fl,|m| (t) ≈
+
+|m|
+f22 (t) ≈ α0 f22 (t)
+2
+
+(26)
+
+α0 is a dimensionless parameter, which allows us to constrain a range on the time-frequency map to investigate
+the residual power/energy of a specific multipole’s IF
+along the time-frequency track. The green dashed curves
+in Fig. 11 label the time-frequency slice corresponding to
+[α0 − 0.1, α0 + 0.1]×f22 (t) with α0 = 1.5 of (3,3) multipole. We can find significant energy/power excesses close
+to 0.2 and 0.4 s before the merger time constrained in the
+above region shown in the stacked Hilbert spectrum, and
+it is consistent with the feature presented by the discrete
+Wilson–Daubechies–Meyer wavelet transform [57]. Similar features obtained from sHHT on the time-frequency
+representation are expected to further yield a similar result in the waveform-agnostic approach [54] to provide
+evidence for the presence of HM. Please note that the
+time resolution for generating the stacked Hilbert spectrum aligns with the sampling rate (4k) of the data, enabling the capability for more precise measurements between different phases. Further quantitative assessment
+to examine the HM GW radiation using sHHT could be
+an interesting work in future development.
+
+0.0025
+
+6.5
+
+6.6
+
+6.7
+
+6.8
+
+Time (+1249852250 sec)
+
+6.9
+
+7.0
+
+0.0000
+
+FIG. 11. stacked Hilbert spectrum of the GW190814 event obtained from LIGO Livingston detector. The dashed blue vertical
+line shows the merger time (GPS time: 1249852257.015 s) determined by Bayesian inference. The red and cyan curves correspond
+to the (l,|m|) = (2,2) and (3,3) multipoles of the waveform, respectively. Two green dashed curves label the time-frequency slice
+with α=1.5 (related to the (3,3) HM) used to evaluate the residual
+power in the map.)
+
+V.
+
+CONCLUSION
+
+In this study, we have introduced the analytical properties of the sHHT, a novel improvement over the traditional HHT for time-frequency analysis, and evaluated its applicability using simulated signals and real
+data. Through a series of numerical simulations, we have
+demonstrated that sHHT can effectively capture signals
+experiencing rapid frequency changes (the relevant codes
+can be referred to github[58]). This is commonly seen
+
+13
+in GW signals associated with CBCs and other bursttype events [22]. Our exploration has shown that the
+sHHT method greatly enhances the accuracy of tracing
+these signals compared to the conventional HHT, especially in instances of mode-mixing issues. We notice that
+the intra- or inter-wave modulations caused by the intrinsic noise within the data may produce the oscillation
+features on the time-frequency representation, and this
+can be confirmed by analyzing a pure signal using the
+sHHT method (details in Appendix B). While these oscillation features can become somewhat smeared when
+we consume more time to accumulate the Hilbert spectra, they cannot be completely eliminated. Nevertheless,
+the related effect is minor when we track a signal crossing
+over a wide frequency range within a short time interval.
+Similar to the HHT, the sHHT, a template-free
+method, does not require the imposition of a priori basis
+sets on the data. Therefore, the sHHT offers an adaptive approach to time-frequency analysis, making sHHT
+suitable for analyzing non-stationary signals. We have
+explored the frequency dispersion through examples of
+stationary sinusoidal, linear chirp, and exponential chirp
+signals. Our analysis reveals how the frequency dispersion evolves with changes in SNRs, highlighting the sensitivity of sHHT to these factors. By the investigation of
+simulations, we recommend incorporating an additional
+noise with a level between 0.5 and 1 times the standard
+deviation of the signal strength to perform this approach.
+Moreover, our application of sHHT to real astronomical
+data, including the superorbital modulation of SMC X-1
+and the signals from confirmed GW events, further highlights its capability to extract meaningful physical insights. The aforementioned external noise level between
+0.5 – 1 is also suitable to generate the stacked Hilbert
+spectrum of most known GW events. These results point
+out the potential of sHHT to serve as a powerful tool in
+the field of astrophysics and beyond, given the growing
+importance of the complexity of the signals observed in
+the multi-messenger era. For example, it will be remarkable to further quantitatively assess the GW events including HMs to compare with Wilson–Daubechies–Meyer
+wavelet transform [57] in the future.
+
+ACKNOWLEDGMENTS
+
+This research has used data or software obtained
+from the Gravitational Wave Open Science Center
+(gwosc.org), a service of the LIGO Scientific Collaboration, the Virgo Collaboration, and KAGRA. This material is based upon work supported by NSF’s LIGO
+Laboratory which is a major facility fully funded by
+the National Science Foundation, as well as the Science and Technology Facilities Council (STFC) of the
+United Kingdom, the Max-Planck-Society (MPS), and
+the State of Niedersachsen/Germany for support of the
+construction of Advanced LIGO and construction and
+operation of the GEO600 detector. Additional support
+
+for Advanced LIGO was provided by the Australian Research Council. Virgo is funded, through the European
+Gravitational Observatory (EGO), by the French Centre
+National de Recherche Scientifique (CNRS), the Italian
+Istituto Nazionale di Fisica Nucleare (INFN), and the
+Dutch Nikhef, with contributions by institutions from
+Belgium, Germany, Greece, Hungary, Ireland, Japan,
+Monaco, Poland, Portugal, and Spain. KAGRA is supported by the Ministry of Education, Culture, Sports,
+Science and Technology (MEXT), Japan Society for the
+Promotion of Science (JSPS) in Japan; National Research Foundation (NRF) and the Ministry of Science
+and ICT (MSIT) in Korea; Academia Sinica (AS) and
+National Science and Technology Council (NSTC) in
+Taiwan. C.-P.H. acknowledges support from the NSTC
+in Taiwan through grants 109-2112-M-018-009-MY3 and
+112-2112-M-018-004-MY3. K.C.P. is supported by the
+Ministry of Science and Technology of Taiwan through
+grant NSTC 113-2811-M-007-026. L.C.C.L., Y.S.H., and
+K.L.L. both acknowledge the support of the Yushan Fellow Program from the Ministry of Education (MOE)
+of Taiwan through grant MOE-109-YSFMS-0005-001-P1.
+L.C.C.L., and K.L.L. are also supported by the NSTC of
+Taiwan through grant NSTC 113-2636-M-006-003. C.C.Y. is supported by the NSTC under 112-2115-M-030002- and 113-2115-M-030-002-. A.K.H.K. and Y.C.L. are
+supported by the NSTC of Taiwan under grant 113-2112M-007-001. C.Y.H. is supported by the research fund of
+Chungnam National University and by the National Research Foundation of Korea grant 2022R1F1A1073952.
+Software: GWPY (Python-based GW analysis library,
+v3.0.82; [40]); PyCBC (A Python-based parameter estimation toolkit for CBC signals, v2.4.0; [31]); emd v0.6.23
+[51]
+
+Appendix A: Different input noise levels imposed on
+the real GW data
+
+Since we have no information about the SNR of one
+GW whitened data in the beginning, the optimal noise
+level incorporated to perform the sHHT can only be decided from a range (i.e., 0.01–10) with a repeated investigation on the visual performance of the results. We
+created a random time series by multiplying the external
+noise level and the dataset’s standard deviation (amplitude). This time series was then imposed on the original
+data to perform sHHT. Here we present all the stacked
+Hilbert spectra of the Livingston data generated with different external noise levels (Fig. 12) as references. Please
+note that the contour level of each plot in Fig. 12 is flexibly adjusted to highlight the real signal. Results indicate
+that the mode-mixing phenomenon remains significant,
+and the Hilbert spectrum is heavily influenced by intrinsic/internal noise when the incorporated noise level is
+too low. On the contrary, the real signal on the Hilbert
+spectra can be smeared by the strong external noise incorporated to perform the sHHT.
+
+14
+noise level = 0.03
+
+500
+
+300
+
+200
+
+200
+
+100
+6.7
+
+6.8
+
+6.9
+
+Time (+1249852250 sec)
+
+7.0
+
+7.1
+
+6.8
+
+6.9
+
+Time (+1249852250 sec)
+
+7.0
+
+7.1
+
+noise level = 0.3
+
+500
+
+6.8
+
+6.9
+
+Time (+1249852250 sec)
+
+7.0
+
+7.1
+
+6.8
+
+6.9
+
+Time (+1249852250 sec)
+
+7.0
+
+7.1
+
+noise level = 3
+
+500
+
+200
+100
+6.7
+
+6.8
+
+6.9
+
+Time (+1249852250 sec)
+
+7.0
+
+7.1
+
+6.8
+
+6.9
+
+Time (+1249852250 sec)
+
+7.0
+
+7.1
+
+7.0
+
+7.1
+
+7.0
+
+7.1
+
+noise level = 0.7
+
+100
+6.7
+
+6.8
+
+6.9
+
+Time (+1249852250 sec)
+
+7.0
+
+7.1
+
+6.7
+
+noise level = 5
+
+6.8
+
+6.9
+
+Time (+1249852250 sec)
+noise level = 7
+
+500
+400
+300
+200
+
+100
+6.7
+
+7.1
+
+200
+
+200
+
+100
+
+7.0
+
+300
+
+300
+
+200
+
+6.9
+
+Time (+1249852250 sec)
+
+400
+
+Frequency (Hz)
+
+300
+
+6.8
+
+500
+
+400
+
+Frequency (Hz)
+
+300
+
+6.7
+
+noise level = 0.5
+
+500
+
+400
+
+Frequency (Hz)
+
+400
+
+7.1
+
+100
+6.7
+
+noise level = 1
+
+500
+
+7.0
+
+200
+
+100
+6.7
+
+6.9
+
+Time (+1249852250 sec)
+
+300
+
+200
+
+100
+
+6.8
+
+Frequency (Hz)
+
+300
+
+200
+
+6.7
+
+400
+
+Frequency (Hz)
+
+300
+
+100
+
+500
+
+400
+
+Frequency (Hz)
+
+400
+
+200
+
+100
+6.7
+
+noise level = 0.1
+
+500
+
+300
+
+Frequency (Hz)
+
+100
+
+Frequency (Hz)
+
+300
+
+200
+
+400
+
+Frequency (Hz)
+
+300
+
+noise level = 0.07
+
+500
+
+400
+
+Frequency (Hz)
+
+400
+
+Frequency (Hz)
+
+400
+
+noise level = 0.05
+
+500
+
+Frequency (Hz)
+
+noise level = 0.01
+
+500
+
+100
+6.7
+
+6.8
+
+6.9
+
+Time (+1249852250 sec)
+
+7.0
+
+7.1
+
+6.7
+
+6.8
+
+6.9
+
+Time (+1249852250 sec)
+
+FIG. 12. Stacked Hilbert spectra of GW190814 obtained by sHHT with different external noise levels. Here we accumulated the spectra
+
+5
+
+5
+
+4
+
+4
+
+Frequency (Hz)
+
+Frequency (Hz)
+
+1000 times and showed the spectrograms generated by the Livingston data.
+
+1
+
+1
+
+3
+
+3
+
+2
+
+00
+
+2
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+10
+
+00
+
+2
+
+4
+
+Time (sec)
+
+6
+
+8
+
+10
+
+FIG. 13. Pure exponential chirp signal the same as Fig. 4 resolved by the sHHT method. The stacked Hilbert spectrum was obtained
+with the incorporation of the external noise of 0.5 in the left panel and of 0.05 in the right panel. The blue curve shows the actual signal
+frequency, and the red curves in both panels represent the IF determined by the sHHT, accumulated 10000 times. The green contour
+exhibits the different Hilbert energy levels on the stacked Hilbert spectra.
+
+Appendix B: Different input noise levels imposed on
+the pure signal
+
+In order to confirm whether the oscillation modulations
+shown on the stacked Hilbert spectra are caused by the
+
+internal noise of the data, we directly apply the sHHT to
+investigate the pure exponential chirp signal described in
+§ III.C. Fig. 13 presents the results yielded with different
+input noise levels to conduct the sHHT. Compared with
+
+15
+the stacked Hilbert spectra shown in Figs. 6 and 7, the
+contour to denote the signal behavior is almost uniformly
+distributed along the actual blue signals. For the IFs determined in two plots of Fig. 13, we can still see minor
+oscillations because we incorporate the external noise to
+perform the sHHT, and it also reflects on the wavy artifacts of the contours. We notice that the oscillation of
+IF in the left panel is visually more significant than that
+shown in the right panel of Fig 13 because the external
+
+noise level applied to perform the sHHT is one order of
+magnitude stronger. We therefore conclude that the oscillation features shown on the stacked Hilbert spectra
+are led by the intrinsic noises embedded inside the data,
+which cause significant intra- or inter-wave modulations
+to determine the IF. The external noise incorporated to
+perform the sHHT can also lead to a similar minor effect, and to pick up the proper noise level is important
+to investigate a stationary signal with sHHT.
+
+[1] S. Chatterji, L. Blackburn, G. Martin, and E. Katsavounidis, Multiresolution techniques for the detection
+of gravitational-wave bursts, Classical and Quantum
+Gravity 21, S1809 (2004).
+[2] L. C.-C. Lin, C.-P. Hu, A. K. H. Kong, D. C.-C. Yen,
+J. Takata, and Y. Chou, Long-term X-ray variability of
+ultraluminous X-ray sources, MNRAS 454, 1644 (2015),
+arXiv:1509.00547 [astro-ph.HE].
+[3] K. Yanagisawa, D. Jia, S. Hirobayashi, N. Uchikata,
+T. Narikawa, K. Ueno, H. Takahashi, and H. Tagoshi,
+A time-frequency analysis of gravitational wave signals
+with non-harmonic analysis, Progress of Theoretical and
+Experimental Physics 2019, 063F01 (2019).
+[4] C.-P. Hu, K. C. Dage, W. I. Clarkson, M. Brumback,
+P. A. Charles, D. Haggard, R. C. Hickox, T. Mihara,
+A. Bahramian, R. Karam, W. Athukoralalage, D. Altamirano, J. Neilsen, and J. Kennea, Monitoring observations of SMC X-1’s excursions (MOOSE) - II. A new excursion accompanies spin-up acceleration, MNRAS 520,
+3436 (2023), arXiv:2302.00260 [astro-ph.HE].
+[5] J. Brown, Calculation of a constant q spectral transform,
+Journal of the Acoustical Society of America 89, 425
+(1991).
+[6] F. Robinet, N. Arnaud, N. Leroy, A. Lundgren,
+D. Macleod, and J. McIver, Omicron: A tool to characterize transient noise in gravitational-wave detectors,
+SoftwareX 12, 100620 (2020).
+[7] P. Brady, G. Losurdo, and H. Shinkai, LIGO, VIRGO,
+and KAGRA as the International Gravitational Wave
+Network, in Handbook of Gravitational Wave Astronomy,
+edited by C. Bambi, S. Katsanevas, and K. D. Kokkotas
+(2022) p. 51.
+[8] D. J. Pines and L. W. Salvino, Health monitoring of onedimensional structures using empirical mode decomposition and the Hilbert-Huang transform, in Smart Structures and Materials 2002: Smart Structures and Integrated Systems, Society of Photo-Optical Instrumentation Engineers (SPIE) Conference Series, Vol. 4701,
+edited by L. P. Davis (2002) pp. 127–143.
+[9] J. Jan and R. B. Pachori, Discrimination between ictal
+and seizure-free eeg signals using empirical mode decomposition, Research Letters in Signal Processing 2008,
+293056 (2008).
+[10] N. E. Huang, M.-L. Wu, W. Qu, S. R. Long, and S. S. P.
+Shen, Applications of hilbert–huang transform to nonstationary financial time series analysis, Applied Stochastic Models in Business and Industry 19, 245 (2003),
+https://onlinelibrary.wiley.com/doi/pdf/10.1002/asmb.501.
+[11] R. R. Zhang, S. Ma, E. Safak, and S. Hartzell, Hilberthuang transform analysis of dynamic and earthquake mo-
+
+tion recordings, Journal of Engineering Mechanics 129,
+861 (2003).
+[12] X. Li, Z. Li, E. Wang, J. Feng, X. Kong, L. Chen, B. Li,
+and N. Li, Analysis of natural mineral earthquake and
+blast based on hilbert–huang transform (hht), Journal of
+Applied Geophysics 128, 79 (2016).
+[13] T. Schlurmann, Spectral Analysis of Nonlinear Water Waves Based on the Hilbert-Huang
+Transformation , Journal of Offshore Mechanics and Arctic Engineering 124, 22 (2001),
+https://asmedigitalcollection.asme.org/offshoremechanics/articlepdf/124/1/22/5719251/22 1.pdf.
+[14] A. D. Veltcheva, Wave and group transformation by a
+hilbert spectrum, Coastal Engineering Journal 44, 283
+(2002), https://doi.org/10.1142/S057856340200055X.
+[15] C.-P. Hu, Y. Chou, T.-C. Yang, and Y.-H. Su, Tracking the Evolution of Quasi-periodic Oscillation in RE
+J1034+396 Using the Hilbert-Huang Transform, Astrophys. J. 788, 31 (2014), arXiv:1404.5108 [astro-ph.HE].
+[16] L. C.-C. Lin, C.-P. Hu, K.-L. Li, J. Takata, D. C.-C. Yen,
+K. Kwak, Y.-M. Kim, and A. K. H. Kong, Investigation
+of X-ray timing and spectral properties of ESO 243-49
+HLX-1 with long-term Swift monitoring, MNRAS 491,
+5682 (2020), arXiv:1911.13107 [astro-ph.HE].
+[17] J. B. Camp, J. K. Cannizzo, and K. Numata, Application
+of the Hilbert-Huang transform to the search for gravitational waves, Phys. Rev. D 75, 061101 (2007), arXiv:grqc/0701148 [gr-qc].
+[18] M. Kaneyama, K.-i. Oohara, H. Takahashi, Y. Sekiguchi,
+H. Tagoshi, and M. Shibata, Analysis of gravitational
+waves from binary neutron star merger by Hilbert-Huang
+transform, Phys. Rev. D 93, 123010 (2016).
+[19] K. Sakai, K.-i. Oohara, H. Nakano, M. Kaneyama, and
+H. Takahashi, Estimation of starting times of quasinormal modes in ringdown gravitational waves with
+the hilbert-huang transform, Phys. Rev. D 96, 044047
+(2017).
+[20] A. Akhshi, H. Alimohammadi, S. Baghram, S. Rahvar,
+M. R. R. Tabar, and H. Arfaei, A template-free approach
+for waveform extraction of gravitational wave events,
+Scientific Reports 11, 20507 (2021), arXiv:2005.11352
+[astro-ph.IM].
+[21] M. Takeda, Y. Hiranuma, N. Kanda, K. Kotake,
+T. Kuroda, R. Negishi, K. Oohara, K. Sakai, Y. Sakai,
+T. Sawada, H. Takahashi, S. Tsuchida, Y. Watanabe, and
+T. Yokozawa, Application of the Hilbert-Huang transform for analyzing standing-accretion-shock-instability
+induced gravitational waves in a core-collapse supernova, Phys. Rev. D 104, 084063 (2021), arXiv:2107.05213
+[astro-ph.HE].
+
+16
+[22] C.-P. Hu, L. C.-C. Lin, K.-C. Pan, K.-L. Li, C.-C. Yen,
+A. K. H. Kong, and C. Y. Hui, A Comprehensive Analysis of the Gravitational Wave Events with the Stacked
+Hilbert-Huang Transform: From Compact Binary Coalescence to Supernova, Astrophys. J. 935, 127 (2022),
+arXiv:2207.06714 [astro-ph.HE].
+[23] E. J. Son, W. Kim, Y.-M. Kim, J. McIver, J. J. Oh, and
+S. H. Oh, Generating Event Triggers Based on HilbertHuang Transform and Its Application to GravitationalWave Data, arXiv e-prints , arXiv:1810.07555 (2018),
+arXiv:1810.07555 [astro-ph.IM].
+[24] Z. Wu and N. E. Huang, Ensemble empirical mode
+decomposition: A noise-assisted data analysis method,
+AADA 1, 1 (2009).
+[25] N. E. Huang, Z. Shen, S. R. Long, M. C. Wu, H. H. Shih,
+Q. Zheng, N.-C. Yen, C. C. Tung, and H. H. Liu, The empirical mode decomposition and the Hilbert spectrum for
+nonlinear and non-stationary time series analysis, Royal
+Society of London Proceedings Series A 454, 903 (1998).
+[26] N. E. Huang and Z. Wu, A review on Hilbert-Huang
+transform: Method and its applications to geophysical
+studies, Reviews of Geophysics 46, RG2006 (2008).
+[27] N. Huang and S. Shen, Hilbert-Huang Transform and Its
+Applications, EBSCO ebook academic collection (World
+Scientific, 2014).
+[28] S. Mohapatra, Z. Nemtzow, É. Chassande-Mottin, and
+L. Cadonati, Performance of a Chirplet-based analysis for gravitational-waves from binary black-hole mergers, in Journal of Physics Conference Series, Journal of
+Physics Conference Series, Vol. 363 (2012) p. 012031,
+arXiv:1111.3621 [gr-qc].
+[29] A. Bernardino and J. Santos-Victor, A real-time gabor
+primal sketch for visual attention, in Iberian Conference
+on Pattern Recognition and Image Analysis (Springer,
+2005) pp. 335–342.
+[30] Https://pycbc.org/.
+[31] C. M. Biwer, C. D. Capano, S. De, M. Cabero, D. A.
+Brown, A. H. Nitz, and V. Raymond, PyCBC Inference:
+A Python-based Parameter Estimation Toolkit for Compact Binary Coalescence Signal, 131, 024503 (2019),
+arXiv:1807.10312 [astro-ph.IM].
+[32] C.-P. Hu, Y. Chou, M.-C. Wu, T.-C. Yang, and Y.H. Su, Time-frequency Analysis of the Superorbital
+Modulation of the X-Ray Binary SMC X-1 Using the
+Hilbert-Huang Transform, Astrophys. J. 740, 67 (2011),
+arXiv:1107.5143 [astro-ph.HE].
+[33] K. Cannon, R. Cariou, A. Chapman, M. Crispin-Ortuzar,
+N. Fotopoulos, M. Frei, C. Hanna, E. Kara, D. Keppel,
+L. Liao, S. Privitera, A. Searle, L. Singer, and A. Weinstein, Toward early-warning detection of gravitational
+waves from compact binary coalescence, The Astrophysical Journal 748, 136 (2012).
+[34] H. A. Krimm, S. T. Holland, R. H. D. Corbet, A. B.
+Pearlman, P. Romano, J. A. Kennea, J. S. Bloom,
+S. D. Barthelmy, W. H. Baumgartner, J. R. Cummings,
+N. Gehrels, A. Y. Lien, C. B. Markwardt, D. M. Palmer,
+T. Sakamoto, M. Stamatikos, and T. N. Ukwatta, The
+Swift/BAT Hard X-Ray Transient Monitor, Astrophys.
+J. Suppl. 209, 14 (2013), arXiv:1309.0755 [astro-ph.HE].
+[35] R. Abbott, H. Abe, F. Acernese, et al., LIGO Scientific Collaboration, and Virgo Collaboration, Open Data
+from the Third Observing Run of LIGO, Virgo, KAGRA, and GEO, Astrophys. J. Suppl. 267, 29 (2023),
+
+arXiv:2302.03676 [gr-qc].
+[36] Https://gwosc.org/eventapi/html/.
+[37] B. P. Abbott, R. Abbott, T. D. Abbott, M. R. Abernathy, F. Acernese, et al., LIGO Scientific Collaboration, and Virgo Collaboration, Observation of Gravitational Waves from a Binary Black Hole Merger, Phys.
+Rev. Lett. 116, 061102 (2016), arXiv:1602.03837 [gr-qc].
+[38] B. P. Abbott, R. Abbott, T. D. Abbott, F. Acernese, K. Ackley, et al., LIGO Scientific Collaboration,
+and Virgo Collaboration, Phys. Rev. Lett. 119, 161101
+(2017), arXiv:1710.05832 [gr-qc].
+[39] Https://gwpy.github.io/docs/stable/.
+[40] D. M. Macleod, J. S. Areeda, S. B. Coughlin, T. J.
+Massinger, and A. L. Urban, GWpy: A Python package for gravitational-wave astrophysics, SoftwareX 13,
+100657 (2021).
+[41] R. Abbott, T. D. Abbott, S. Abraham, F. Acernese,
+K. Ackley, et al., LIGO Scientific Collaboration, and
+Virgo Collaboration, GW190814: Gravitational Waves
+from the Coalescence of a 23 Solar Mass Black Hole with
+a 2.6 Solar Mass Compact Object, Astrophys. J. Lett.
+896, L44 (2020), arXiv:2006.12611 [astro-ph.HE].
+[42] G. Pratten, C. Garcı́a-Quirós, M. Colleoni, A. RamosBuades, H. Estellés, M. Mateu-Lucena, R. Jaume,
+M. Haney, D. Keitel, J. E. Thompson, and S. Husa,
+Computationally efficient models for the dominant
+and subdominant harmonic modes of precessing binary black holes, Phys. Rev. D 103, 104056 (2021),
+arXiv:2004.06503 [gr-qc].
+[43] R. Abbott, T. D. Abbott, F. Acernese, K. Ackley,
+C. Adams, et al., V. C. Ligo Scientific Collaboration,
+and Kagra Collaboration, GWTC-3: Compact Binary
+Coalescences Observed by LIGO and Virgo during the
+Second Part of the Third Observing Run, Physical Review X 13, 041039 (2023), arXiv:2111.03606 [gr-qc].
+[44] S. Ossokine, A. Buonanno, S. Marsat, R. Cotesta,
+S. Babak, T. Dietrich, R. Haas, I. Hinder, H. P. Pfeiffer, M. Pürrer, C. J. Woodford, M. Boyle, L. E. Kidder, M. A. Scheel, and B. Szilágyi, Multipolar effectiveone-body waveforms for precessing binary black holes:
+Construction and validation, Phys. Rev. D 102, 044055
+(2020), arXiv:2004.09442 [gr-qc].
+[45] C. Messick, K. Blackburn, P. Brady, P. Brockill, K. Cannon, R. Cariou, S. Caudill, S. J. Chamberlin, J. D. E.
+Creighton, R. Everett, C. Hanna, D. Keppel, R. N.
+Lang, T. G. F. Li, D. Meacher, A. Nielsen, C. Pankow,
+S. Privitera, H. Qi, S. Sachdev, L. Sadeghian, L. Singer,
+E. G. Thomas, L. Wade, M. Wade, A. Weinstein, and
+K. Wiesner, Analysis framework for the prompt discovery
+of compact binary mergers in gravitational-wave data,
+Phys. Rev. D 95, 042001 (2017), arXiv:1604.04324 [astroph.IM].
+[46] C. D. Bailyn, R. K. Jain, P. Coppi, and J. A. Orosz, The
+Mass Distribution of Stellar Black Holes, Astrophys. J.
+499, 367 (1998), arXiv:astro-ph/9708032 [astro-ph].
+[47] F. Özel, D. Psaltis, R. Narayan, and A. Santos Villarreal, On the Mass Distribution and Birth Masses of Neutron Stars, Astrophys. J. 757, 55 (2012), arXiv:1201.1006
+[astro-ph.HE].
+[48] R. Abbott, T. D. Abbott, F. Acernese, K. Ackley,
+C. Adams, et al., LIGO Scientific Collaboration, and the
+Virgo Collaboration, GWTC-2.1: Deep extended catalog
+of compact binary coalescences observed by LIGO and
+
+17
+Virgo during the first half of the third observing run,
+Phys. Rev. D 109, 022001 (2024).
+[49] B. P. Abbott, R. Abbott, T. D. Abbott, F. Acernese,
+K. Ackley, et al., LIGO Scientific Collaboration, and
+Virgo Collaboration, GW170817: Observation of Gravitational Waves from a Binary Neutron Star Inspiral,
+Phys. Rev. Lett. 119, 161101 (2017), arXiv:1710.05832
+[gr-qc].
+[50] Https://emd.readthedocs.io/en/stable/index.html.
+[51] A. J. Quinn, V. Lopes-dos Santos, D. Dupret, A. C. Nobre, and M. W. Woolrich, Emd: Empirical mode decomposition and hilbert-huang spectral analyses in python,
+Journal of Open Source Software 6, 2977 (2021).
+[52] S. Klimenko, I. Yakushin, A. Mercer, and G. Mitselmakher, A coherent method for detection of gravitational
+wave bursts, Classical and Quantum Gravity 25, 114029
+(2008), arXiv:0802.3232 [gr-qc].
+[53] S. Klimenko, G. Vedovato, M. Drago, F. Salemi, V. Tiwari, G. A. Prodi, C. Lazzaro, K. Ackley, S. Tiwari, C. F.
+Da Silva, and G. Mitselmakher, Method for detection and
+reconstruction of gravitational wave transients with networks of advanced detectors, Phys. Rev. D 93, 042004
+(2016), arXiv:1511.05999 [gr-qc].
+
+[54] G. Vedovato, E. Milotti, G. A. Prodi, S. Bini, M. Drago,
+V. Gayathri, O. Halim, C. Lazzaro, D. Lopez, A. Miani, B. O’Brien, F. Salemi, M. Szczepanczyk, S. Tiwari,
+A. Virtuoso, and S. Klimenko, Minimally-modeled search
+of higher multipole gravitational-wave radiation in compact binary coalescences, Classical and Quantum Gravity
+39, 045001 (2022), arXiv:2108.13384 [gr-qc].
+[55] L. London, S. Khan, E. Fauchon-Jones, C. Garcı́a,
+M. Hannam, S. Husa, X. Jiménez-Forteza, C. Kalaghatgi,
+F. Ohme, and F. Pannarale, First Higher-Multipole
+Model of Gravitational Waves from Spinning and Coalescing Black-Hole Binaries, Phys. Rev. Lett. 120, 161102
+(2018), arXiv:1708.00404 [gr-qc].
+[56] S. Roy, A. S. Sengupta, and K. G. Arun, Unveiling the
+spectrum of inspiralling binary black holes, Phys. Rev. D
+103, 064012 (2021).
+[57] V. Necula, S. Klimenko, and G. Mitselmakher, Transient
+analysis with fast Wilson-Daubechies time-frequency
+transform, in Journal of Physics Conference Series, Journal of Physics Conference Series, Vol. 363 (IOP, 2012) p.
+012032.
+[58] Https://github.com/linlupin/sHHT.
+
+

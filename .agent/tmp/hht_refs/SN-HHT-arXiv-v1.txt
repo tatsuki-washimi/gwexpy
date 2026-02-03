@@ -1,0 +1,1612 @@
+Application of the Hilbert-Huang transform for analyzing SASI induced gravitational
+waves in a core-collapse supernova
+M. Takeda1 , Y. Hiranuma2 , N. Kanda1 , K. Kotake3,4 , T. Kuroda5 , R. Negishi2 , K. Oohara2,6 ,
+K. Sakai7 , Y. Sakai2 , T. Sawada1 , H. Takahashi6,8,9 , S. Tsuchida1 , Y. Watanabe2 , and T. Yokozawa10
+
+arXiv:submit/3776244 [astro-ph.HE] 12 Jul 2021
+
+1
+
+Graduate School of Science, Osaka City University,
+Sumiyoshi-ku, Osaka City, Osaka 558-8585, Japan
+2
+Graduate School of Science and Technology, Niigata University, Nishi-ku, Niigata City, Niigata 950-2181, Japan
+3
+Department of Applied Physics, Fukuoka University,
+Jonan-ku, Fukuoka City, Fukuoka 814-0180, Japan
+4
+Research Institute of Stellar Explosive Phenomena,
+Fukuoka University, Jonan-ku, Fukuoka City, Fukuoka 814-0180, Japan
+5
+Max-Planck-Institut für Gravitationsphysik, D-14476 Potsdam-Golm, Germany
+6
+Institute for Cosmic Ray Research, The University of Tokyo, Kashiwa City, Chiba 277-8582, Japan
+7
+Department of Electronic Control Engineering, National Institute of Technology,
+Nagaoka College, Nagaoka City, Niigata 940-8532, Japan
+8
+Research Center for Space Science, Advanced Research Laboratories
+and Graduate School of Integrative Science and Engineering,
+Tokyo City University, Setagaya-ku, Tokyo 158-0082, Japan
+9
+Earthquake Research Institute, The University of Tokyo, Bunkyo-ku, Tokyo 113-0032, Japan
+10
+Institute for Cosmic Ray Research, KAGRA Observatory,
+The University of Tokyo, Hida City, Gifu 506-1205, Japan
+Through numerical simulations, it is predicted that the gravitational waves (GWs) reflect the
+characteristics of the core-collapse supernova (CCSN) explosion mechanism. There are multiple
+GW excitation processes that occur inside a star before its explosion, and it is suggested that the
+GWs originating from the CCSN have a mode for each excitation process in terms of time-frequency
+representation. Therefore, we propose an application of the Hilbert-Huang Transform (HHT), which
+is a high-resolution time-frequency analysis method, to analyze these GW modes for theoretically
+probing and increasing our understanding of the explosion mechanism. The HHT defines frequency
+as a function of time, and is not bound by the trade-off between time and frequency resolutions.
+In this study, we analyze a gravitational waveform obtained from a three-dimensional generalrelativistic CCSN model that showed a vigorous activity of the standing-accretion-shock-instability
+(SASI). We succeed in extracting the SASI induced GWs with high resolution on a time-frequency
+representation using the HHT and we examine their instantaneous frequencies.
+
+I.
+
+INTRODUCTION
+
+Advanced LIGO [1] and Advanced Virgo [2] detected
+11 gravitational wave (GW) events during the first and
+the second observing run (O1 and O2) [3]. The third observing run (O3) started in April 2019 but was globally
+suspended in March 2020. It has been reported that 39
+candidate GW events were found in the data during the
+first half of O3 [4]. GEO600 [5] and KAGRA [6, 7] conducted a joint two-week observing run (O3GK) in April
+2020. The next fourth observing run (O4) will be a joint
+observation of LIGO, Virgo and KAGRA.
+The only type of event currently detected is a compact
+binary coalescence (CBC), and new sources, such as the
+core-collapse supernovae (CCSNe), are expected to be detected by using the third-generation GW detectors (e.g.
+Einstein Telescope [8], Cosmic Explorer [9] etc.) [10].
+The GWs from CBC are generally analyzed by employing a matched filter (MF) that uses model waveforms.
+However, a proper model waveform can hardly be created for the GWs from CCSNe (see [11, 12] for a review)
+and therefore, it is in general difficult to apply the MF in
+this case. These unmodeled GWs are usually analyzed
+by some types of time-frequency representation (TFR)
+
+techniques.
+Since the GWs from CCSNe have characteristic modes
+in TFR, spectrogram analysis has recently become the
+mainstream method for detecting them and classifying
+CCSNe models, rather than analyzing time-series waveforms [13–23]. In particular, the mainstream detection
+method is TFR analysis of coherent multi-detector networks in the wavelet domain [13–15]. Principal component analysis has also been shown to be useful for detection and classification, and software for supernova classification has been developed [16–20]. Furthermore, machine learning has been shown to be useful for detection and classification, and these methods are already
+capable of properly analyzing signals embedded in the
+non-Gaussian and non-stationary noise of the GW detectors [21–23]. This paper proposes a new application
+of TFR with the ultimate goal of analyzing the structure
+of detected and classified GWs from the CCSNe in more
+detail.
+The importance of GWs in the CCSNe research is
+demonstrated by the results of numerical simulations. It
+has been hypothesized that the GWs carry information
+about the star’s internal state before its explosion and
+consists of the GWs from several emission mechanisms
+
+2
+that occurred in the star’s core. Although there are several multidimensional general relativistic hydrodynamics simulations to obtain, at least, a theoretical explanation of the mechanism of CCSNe, it is not yet fully
+understood. The characteristics of the GW waveform
+depends on the emission mechanism, and GWs could be
+the “smoking gun” for the phenomena that take place inside the star. However, the theoretically predicted GW
+amplitudes from CCSNe are extremely small and are usually hidden by the background noise [15]. Therefore,
+together with the poorly understood CCSN explosion
+mechanisms, it makes difficult to even detect the GW
+signals in the expected real events, and even more to decipher their physical meanings to infer the phenomena
+occurring inside the stellar core.
+In the event of a gravitational collapse, the core temperature and density of the collapsed star increases
+rapidly, thereby trapping the neutrinos. Following this,
+when the density exceeds the nuclear saturation density,
+the core rapidly regains pressure, which competes with
+its self-gravity and causes core bounce. This leads to
+the formation of the shock wave in the vicinity of the
+inner core. At the core bounce, the unshocked core also
+gives rise to the formation of a proto-neutron star (PNS),
+the evolution of which depends on the explosion dynamics (e.g. mass accretion rate onto it) in the postbounce
+phase. The bounce shock does not immediately blow-off
+the outer layer of the collapsed core, but is temporarily
+stalled (e.g. [24] for a review). Before the possible onset of
+the neutrino-driven explosions, the stalled shock is known
+to be susceptible to multi-dimensional fluid instabilities
+(see [25–27] for recent reviews) including neutrino-driven
+convection and the standing accretion shock instability
+(SASI [28]), the latter of which globally deforms the
+shock surface. The briskness of the SASI depends on
+the nuclear equation of state (EoS) and initial conditions
+for the simulation, such as progenitor compactness and
+rotation. One of its remarkable features related to the
+GW emission mechanism is that, once it is fully grown,
+it produces a time modulated mass accretion onto the
+PNS core. The time modulated mass accretion penetrates deep into the PNS and trigger a surface distortion
+and motion of the central PNS core. From there and also
+from the globally deformed regions behind the shock [29],
+sizeable GWs could be emitted with their time frequency
+being characterized by the SASI frequency of the order
+of ∼ 100 Hz [29–36] (we call them as SASI mode here
+after).
+In this paper, we particularly focus on the GWs emitted from the SASI activities by discussing models developed by Kuroda et al. [30]. The models are based
+on numerical-relativity simulations taking into account a
+gray energy neutrino transport. In fact, the GW simulated by these previous studies has the SASI mode in
+the time-frequency representation and its frequency band
+(∼ 100 − 200 Hz) is significantly smaller than the PNS
+surface g-mode oscillation (∼ 700 Hz) induced by convection. The details of the behavior of the PNS in the
+
+simulation when the SASI occurs have been investigated
+by Kawahara et al. [37] using GW analysis.
+We further suggest that Hilbert-Huang Transform
+(HHT) [38–41] can be used to investigate whether we
+can actually capture the onset of the SASI, and if so, to
+what extent we can capture the nature of the SASI.
+HHT was first applied to the analysis of GWs in
+2007 [42]. Here, we highlight two advantages of using
+the HHT for analyzing the GWs. First, the HHT does
+not have the time and frequency resolution trade-off because it defines frequency as a function of time. This is
+called the instantaneous frequency (IF). Moreover, the
+amplitude, phase, and frequency acquired by the HHT
+have the same time resolution as the original time series
+signal. Second, the HHT decomposes the original time
+series signal into several time series signals that oscillate
+around the zero point. This process should be able to
+separate and obtain those modes from the GWs in which
+multiple radiation processes are mixed. Hence, it is fit for
+the analysis of GWs from the CCSNe. The effectiveness
+of the HHT in the GW analysis has been shown by studies assuming binary black hole (BBH), binary neutron
+star (BNS), and burst [43–47]. Furthermore, the HHT
+also worked well for the analysis of GW150914, which is
+the first GW detection event [48].
+This paper proposes a method with HHT of analyzing
+gravitational waves from a core collapse supernova. This
+is important to decipher what could be the driving mechanism of supernova explosion from observed GWs in the
+future. We have reanalyzed a GW analyzed by [30, 37]
+with the HHT. In particular, we focused on how clearly
+and accurately the SASI mode can be extracted and
+showed the HHT is a promising tool for it. Detailed
+analyses of results of various simulations will be given
+elsewhere.
+This paper is organized as follows: In section II, we
+introduce overview of the HHT. In section III, we describe the dynamics of a 3D CCSN model of our interest and its GW emission mechanisms. In section IV, we
+demonstrate the time-frequency representation using the
+HHT. In section V, we propose our method of analyzing
+the frequency and apply it to test signal and simulated
+GWs. Finally, we summarize and discuss our results in
+section VI.
+
+II.
+
+HILBERT-HUANG TRANSFORM
+
+The HHT consists of two steps. The first step is the
+empirical mode decomposition (EMD) that decomposes
+the original signal into intrinsic mode functions (IMFs).
+The second step is the Hilbert spectral analysis (HSA) of
+each IMF [39].
+The HSA is a type of TFRs using the Hilbert transform
+(HT),
+ 
+Z +∞
+1
+u(τ )
+1
+H[u(t)] = PV
+dτ = u(t) ∗
+, (II.1)
+π
+t
+−
+τ
+πt
+−∞
+
+3
+where u(t) is a real function of time, PV and ∗ denote
+the Cauchy principal value of the singular integral and
+convolution, respectively. Using the HT, the complex
+signal F (t) can be defined from a real signal u(t) [49] as
+
+
+F (t) = u(t) + iH[u(t)] = a(t) exp iφ(t) ,
+(II.2)
+in which
+p
+
+u(t)2 + H[u(t)]2 ,
+
+
+H[u(t)]
+φ(t) = arctan
+.
+u(t)
+a(t) =
+
+(II.3)
+(II.4)
+
+Note that if u(t) is the real part on the real axis of a complex function F (z) that is analytic in the upper half complex plane and goes to zero rapidly enough for |z| → ∞,
+the imaginary part of F (z) on the real axis is uniquely
+given by the HT of u(t), provided the HT in Eq.(II.1)
+exists. Here, a(t) and φ(t) can be considered as the instantaneous amplitude (IA) and the instantaneous phase
+of the signal, respectively, if the characteristic time scale
+of variation of a(t) is longer than that of φ(t). The instantaneous frequency (IF) is simply given by
+f (t) =
+
+1 dφ(t)
+.
+2π dt
+
+(II.5)
+
+The HSA gives IA and IF which have a clear physical
+picture with a signal of a single oscillation mode. However, it is not the case with a signal including multiple
+oscillation modes. Huang et al. [39] proposed that this
+fault can be overcome if an actual observed signal s(t)
+is decomposed into a finite number of IMFs cj (t) along
+with a residual r(t) as
+s(t) =
+
+N
+X
+
+cj (t) + r(t),
+
+(II.6)
+
+j=1
+
+by using the EMD. Here each IMF cj (t) oscillates around
+zero and r(t) is a non-oscillation mode. The EMD is
+a series of adaptive sifting processes that reveal highfrequency impacts without leaving the time domain. The
+first IMF (IMF1), c1 (t), has the shortest characteristic
+time scale, that is, it represents the highest frequency
+mode of the original signal.
+The HHT is very useful to analyze non-stationary
+and nonlinear signals, but the simple EMD encounters
+weighty problems in some cases. Wu and Huang [50] introduced the ensemble EMD (EEMD) to solve the modemixing problem.
+The EEMD consists of the following steps:
+1. Add a Gaussian white noise series to the original
+signal.
+2. Apply the EMD to the data with added white noise
+to obtain IMFs.
+3. Make ensembles of IMFs by repeating step 1 and
+step 2 many times with different white noise series
+added each time.
+
+4. Take the ensemble mean of each ensemble to obtain
+the final result of each IMF.
+In these steps, the mode mixing is effectively eliminated,
+while the added noise is averaged out through ensemble
+average. There are two significant parameters that need
+to be predetermined in these steps. The one is the amplitude of added noise. It depends on the characteristics of
+the original signal but it is usually suggested that the ratio of the standard deviation of the Gaussian white noise
+to that of the original signal, σeemd , is less than unity.
+However, Hiranuma et al. [51] found that the larger value
+is appropriate to effectively eliminate the mode mixing
+with the signal that will be analyzed in this paper. The
+other parameter is the number of ensemble trials Neemd ,
+which mainly depends on the value of σeemd . Although
+the value of Neemd is infinity to cancel out the effect of
+the added withe noise completely, too large value would
+increase computational cost. After some trials of these
+parameters with our signal, we found that the most appropriate value of σeemd is 10. For this amplitude, a very
+large value of Neemd is required. It was found that the
+final results does not change with the number of trial
+larger than 106 at most. Hence we set σeemd and Neemd
+on 10 and 106 , respectively, in this paper unless otherwise indicated. We used KAGRA Algorithmic Library
+(KAGALI) [52] for HHT calculation.
+
+III.
+
+3D CCSN MODEL
+
+In this section, we describe the dynamics of a 3D CCSN
+model of our interest and its GW emission mechanisms
+before going to explaining the applicability of HHT analysis for simulated gravitational waveform. The initial
+conditions are [30]: the progenitor mass is 15M , no
+rotation, and the EoS is “SFHx”. This simulation was
+calculated up to 0.35 s from the core bounce time, and its
+GW was derived using the standard quadrupole formula,
+assuming a distance of 10 kpc.
+Shortly after core bounce, the initial post bounce convection develops due to the negative entropy gradient. It
+emits GWs at a relatively low frequency range of ∼ 100
+Hz and lasts till ∼ 100 ms after bounce. Afterward the
+dominant hydrodynamic activity can be taken over by a
+non-linear SASI motion, while the PNS convection still
+coexists. Once the SASI phase initiates, the standing
+shock surface globally deforms its morphology depending on the dominant SASI mode, which varies from moment to moment. For instance in the current 3D CCSN
+model, the dominant mode is initially a sloshing mode,
+which gradually shifts to a rotating spiral mode around
+200 ms after bounce. In either mode, a typical frequency
+of SASI appears at ∼ 100 Hz, which can be derived from
+shock radii ∼ 100 km divided by the advection speed of
+fluid in the shocked region ∼ 108 cm s−1 . At ∼ 300 ms
+after bounce, the hydrodynamic activity is again dominated by the convective motion.
+
+4
+Based on the 3D CCSN model, [30] discussed a new
+gravitational wave emission mechanism in association
+with the vigorous SASI activities. They demonstrated
+that the low-frequency GW emissions can be triggered
+by a strong mass accretion having the same temporal dependence with the SASI frequency [see also 31, 32, 35].
+In the next section, we will discuss how such a characteristic frequency, which usually varies with time, can be
+extracted from the waveform using the HHT.
+Here we should comment on the neutrino treatment
+used in the current 3D CCSN model. It was calculated
+by a gray energy neutrino transport that is no longer
+state-of-the-art simulation compared to the recent spectral neutrino transport simulations. We, however, anticipate that the main focus of this study, i.e., extracting the
+characteristic GW frequencies associated with the SASI,
+would not be affected even if we use another model with
+more sophisticated neutrino transport. This is because
+that the development of SASI and its GW emission do
+not sensitively depend on the neutrino transport method.
+It can be justified from recent full-fledged 3D spectral
+neutrino transport simulations such as [18, 31, 35], in
+which they reported the SASI developments.
+
+IV.
+
+APPLICATION OF HHT FOR A
+SIMULATED GW
+
+We show the applicability of TFR using the HHT for
+a GW signal from the aforementioned three-dimensional
+general-relativistic (GR) core-collapsed supernova simulation [30]. Both upper panels in Fig. 1 show the same
+GW signal (h× ) [30] and the lower panels show the timefrequency map calculated using short time Fourier transform (STFT) (Fig. 1(a)) and the HHT (Fig. 1(b)). There
+are two strong signals in both the time-frequency domains: one is the PNS surface g-mode (gravity-mode),
+whose frequency increases rapidly with time at about
+0.05 − 0.35 s; the other has a lower frequency than the gmode and is suggested to be induced by the SASI mode.
+Using the STFT calculations, we can estimate that the
+SASI mode has a low frequency band and is approximately constant. We confirmed that there is no significant difference between results with h× and h+ , and
+therefore we show only the results with h× here and hereinafter.
+Hence, we compare our results with the previously reported outcomes [30, 37]. Apart from the two strong
+modes (g-mode, SASI mode), there are several other
+modes in TFR, also appear in the HHT. However, the
+IAs, which denote the weight of the wave with the frequency exist, are small. Thus, we do not focus on these
+modes and analyze only the SASI mode.
+We decomposed the GW signal into the IMFs and
+showed the IMF1-6 in Fig. 2(a). The g-mode and SASI
+mode components were extracted as the IMF3 and IMF5,
+respectively. Fig. 2(b) illustrates the IMF5, its IA and
+IF, and indicates that the SASI mode did not appear
+
+up to about ∼ 0.1 s from the core bounce time and it
+perhaps oscillates with about ∼ 150 Hz after that.
+Since the HHT has a higher time and frequency resolution than that of the STFT, the HHT is suitable for identifying the SASI dominant phase and investigating the
+time-dependency of its GW frequency. Extracting the instantaneous characteristic GW frequency from detected
+GWs particularly exerts its ability in multi-messenger astronomy. This is because the SASI activity may imprint
+its time modulated signal in both the gravitational waveform [30, 31, 35] and also in the neutrino signal [53, 54].
+We, therefore, need to determine more precisely the characteristic GW frequency to link the GW and neutrino
+signal and to identify that they are emitted from the
+same origin. For that purpose, we propose a method to
+investigate the characteristics of a GW frequency from
+the SASI based on the HHT.
+In section V, we discuss how to analyze the SASI mode
+properly and show our results.
+V.
+
+ANALYSIS OF THE INSTANTANEOUS
+FREQUENCY
+
+We show the method to analyze the IF of the IMF5,
+which includes the SASI mode. The activity of the GWs
+derived from SASI changes depending on the selection
+of the mass of progenitors and EoS, and the theory that
+describes their properties has not been confirmed [30, 54].
+We propose a method for investigating the characteristics
+of the GWs derived from SASI using the HHT. Here, we
+analyze the IF to estimate the time when the SASI mode
+occurred, and investigate the average and trend of the IF.
+Furthermore, the systematic error discovered by applying
+the same method to the test waveform imitating the GW
+is described.
+A.
+
+Method and demonstration
+
+We use a sine-Gaussian waveform with constant frequency as the test signal,
+" 
+2 #
+2π(t − tshift )
+htest,l (t) =A exp −
+sin(2πfconst t)
+twidth
++ gl ,
+
+(V.1)
+
+where gl is the white Gaussian noise, l is (l =
+1, · · · , Ntest ), Ntest is number of the white Gaussian noise
+signals generated from different seeds. In Eq. (V.1),
+the former simulates the SASI mode, and latter simulates the numerical error. We used the parameters
+tshift = 0.22, twidth = 0.4, fconst = 130 Hz and the corresponding signal is shown in Fig. 3(a). The reason for
+using a sine-Gaussian wave is that, as shown in Fig. 1,
+the SASI has a waveform in which the amplitude becomes
+stronger from a certain time, the frequency is almost constant, and then disappears after vibration. The SASI is
+
+5
+
+(a) STFT
+
+(b) HHT
+
+FIG. 1. Time-Frequency representation by STFT spectrograms and HHT map. The right and left top panels show the same
+GW signal wave (h× ) “SFHx” [30] and sampling frequency of the signal is 16 kHz. In bottom panels of (a) and (b), the
+x-axis and y-axis represent the post core bounce time and frequency in logarithmic scale, respectively. STFT’s color bar denote
+amplitude spectrum and HHT’s color bar denote instantaneous amplitude. In the STFT calculation, we used the Hanning
+window function and adopted ∼ 0.048 s window width and ∼ 0.042 s overlap.
+
+a phenomenon whose generation conditions and behavior are still under study, and there is no universal model
+with a theoretical support to investigate SASI. However,
+it is reasonable to assume that the frequency of SASI
+is almost constant in SFHx, as reported by Kuroda et
+al [30].
+
+Figure 3 shows the results of HHT of the test signal. In
+this analysis, a low trial number, namely, Neemd = 103 is
+applied since the results do not change even with higher
+values of Neemd for a simple signal like Eq.(V.1). Figure 3(b) shows that sine-Gaussian wave was compared to
+the IMF5, and the fact that the amplitude of the IMF5 is
+smaller than the sine-Gaussian wave in Fig. 3(c) indicates
+that mode splitting has occurred. Probably the IMF1-3,
+6 are mostly noise components. The components of the
+sine-Gaussian wave split in the IMF4. From Fig. 3(c),
+the IF does not have a physical meaning owing to the
+influence of noise and calculation error where the amplitude is small, and the frequency vibrates around 130 Hz
+owing to the influence of the white Gaussian noise, even
+where the amplitude is large. It is assumed that there
+are many cases where the mode splitting cannot be completely avoided in the actual analysis. In such cases, the
+analysis is advanced using these results.
+
+(A) Estimating the starting point of the target mode
+
+We estimated the appearance time tstart and disappearance time tend of the signal on the IMF. For this, we
+referred to [48], which used the root mean squared error
+(RMSE) and assumed a constant IF.
+The appearance and disappearance times were defined
+using discrete time series signals as:
+tstart (n0 ) = n0 ∆t,
+tend (n0 , NT ) = tstart + T
+= (n0 + NT )∆t,
+
+(V.2)
+(V.3)
+
+where, n0 is a segment of tstart , ∆t is the sampling
+time interval, that is, inverse of the sampling frequency
+(∆t = 1/fsampling ), T is time of appearance of the signal,
+and NT is the number of segments of T . The segment
+[n0 , n0 + NT ] is estimated using n0 and NT as variables.
+The first step is to estimate the optimal tstart for each
+NT . We calculate the IF variances σ̂(n0 , NT ) of the segment [n0 , n0 + NT ] in all possible n0 for a fixed NT .
+
+hf i(n0 , NT ) =
+
+n0 +N
+XT −1
+i=n0
+
+fi wi ,
+
+(V.4)
+
+6
+
+2
+IMF5/10-22
+
+IMF1/10-22 0
+-2
+2
+IMF2/10-22 0
+-2
+
+0
+-2
+
+2
+
+1.5
+
+-2
+
+1
+
+IA/10-22
+
+IMF3/10-22 0
+2
+
+IMF4/10-22 0
+-2
+
+original signal
+IMF5
+
+2
+
+IA of IMF5
+
+0.5
+0
+160
+
+IF (Hz)
+
+2
+IMF5/10-22 0
+-2
+2
+
+IMF6/10-22 0
+-2
+0
+
+0.05
+
+0.1
+
+0.15
+
+0.2
+
+0.25
+
+0.3
+
+0.35
+
+time (s)
+(a) IMFs of the GW using EEMD
+
+IF of IMF5
+
+130
+
+100
+
+0
+
+0.05
+
+0.1
+
+0.15
+0.2
+time (s)
+
+0.25
+
+0.3
+
+0.35
+
+(b) IMF5, IA and IF of IMF5
+
+FIG. 2. IMF1-6 by EEMD and the IA and IF of the IMF5 by HSA. The HHT map shown in Fig.1(b) was created by HSA all
+of the IMFs in (a).
+
+RMSE : σ̂(n0 , NT )
+v
+u
+XT −1 
+u 1 n0 +N
+2
+fi − hf i(n0 , NT ) , (V.5)
+=t
+NT i=n
+0
+
+where fi is IF, ai is IA, and wi is the weight function
+defined by
+a2
+wi = n +N i−1
+0 X
+T
+
+otherwise. Based on the above assumptions, we divide
+the NT − σ domain into two regions: above and below
+N. Each region is then calculated by linear regression to
+determine the optimal NTbest where the sum of both error
+terms is minimum.
+
+NTbest = argmin Er(NT,min , NT )
+NT
+
+.
+
+(V.6)
+
+
++ Er(NT + 1, NT,max ) ,
+
+The optimal n0 is represent by nbest
+, with the smallest σ̂
+0
+in the NT .
+
+Er(NT,1 , NT,2 )
+v
+u NT ,2
+u X h
+i2
+u
+σ(NT ) − (aNT + b)
+u
+u
+t NT =NT ,1
+,
+= min
+a,b
+NT,2 − NT,1
+
+(V.9)
+
+a2i
+
+i=n0
+
+nbest
+(NT ) = argmin σ̂(n0 , NT ),
+0
+
+(V.7)
+
+σ(NT ) = σ̂(nbest
+(NT ), NT ).
+0
+
+(V.8)
+
+n0
+
+The lower part of Fig. 4 shows the NT − σ map, which
+is obtained by performing the above calculations for all
+NT .
+The second step is to determine the optical NT . We
+assume the following,
+• IF of the SASI is almost constant with time.
+• The SASI mode appear in parts of the IMF.
+On the NT −σ map, σ gradually increases NT in the time
+segment where SASI dominates, but it increases rapidly
+
+(V.10)
+
+where NT,1 , NT,2 (NT,1 < NT,2 ) denote any NT on the
+NT − σ map and a, b denote the fitting coefficients, and
+NT,min and NT,max denote the minimum and maximum
+of x-axis on the NT − σ map, respectively. The black
+dashed line on the lower panel of Fig. 4 shows NTbest and
+the black dashed line on the top panel shows the time
+segment where SASI dominates. We succeeded in estimating the time segment where the amplitude is not
+zero, and this method is expected to function properly
+in the time segment where the SASI mode dominates as
+shown in Fig. 4.
+
+7
+
+6
+
+sine-gauss wave
+
+8
+4
+
+IA of the sine-gauss
+
+4
+
+0
+2
+
+-4
+-8
+
+0
+160
+
+sine-gauss + noise eq.(V.1)
+
+8
+
+IF (Hz) of the sine-gauss
+
+4
+0
+
+130
+
+-4
+-8
+0
+
+0.1
+
+0.2
+
+0.3
+
+100
+0.4
+0
+
+0.1
+
+time (s)
+
+0.2
+
+0.3
+
+0.4
+
+time (s)
+(a) Test signal shown in Eq. (V.1)
+
+(b) IMFs of test signal (V.1) using EEMD
+
+(c) IMF5, IA and IF of test signal (V.1) using HSA
+
+FIG. 3. Results of analysis of the test signal shown in Eq. (V.1) using HHT
+
+(B) Analysis of the frequency trend
+
+As we mentioned in Sec. 3, there is something unclear
+about the SASI. Therefore, it is necessary to obtain evidence from the observed data. Prior to that, we propose
+a method for analyzing the IF characteristics. Here, the
+
+IF within the time segment, obtained by method (A), is
+analyzed. We calculated the mean value of the IF in the
+trend using Eq. (V.4), and used weighted least squares re-
+
+8
+
+IMF5
+
+4
+
+sine-gauss
+IMF5
+
+0
+
+TABLE I. Fitting coefficients and errors of the IF of the test
+signal. The value in row of τ I (I = 0, 1, 2, 3) are coefficients
+fit
+of τ I and ferr
+is the error term of regression function. The
+numbers after ± in the table are the standard deviation of
+the coefficients, and χ2 is defined (V.14).
+
+IA
+
+-4
+4
+
+IF (Hz)
+
+0
+160
+130
+100
+
+0
+
+σ(NT)
+
+10
+
+0.2
+
+time (s)
+
+0.3
+
+0.4
+
+σ
+NTbest
+
+Linear
+130.0 ± 1.0
+-0.3 ± 3.3
+
+Quadratic
+130.0 ± 1.2
+-0.6 ± 3.5
+0.6 ± 8.0
+
+4.9
+1.6 × 10−4
+
+4.9
+4.4 × 10−4
+
+0
+
+1000
+
+2000
+
+3000
+
+4000
+
+NT
+
+ysis, we use the GNU Scientific Library [55] to calculate
+the best-fit coefficients and statistical errors.
+In addition, the following values are introduced to investigate the accuracy of the analysis results,
+
+FIG. 4. N − σ map of the test signal
+
+χ2d =
+4
+
+Cubic
+130.0 ± 1.3
+-0.4 ± 5.5
+0.7 ± 8.3
+0.8 ± 16.8
+6.5
+6.4 × 10−4
+
+linear regression
+
+5
+
+0
+
+0.1
+
+τ0
+τ1
+τ2
+τ3
+fit
+ferr
+χ2
+
+IA of IMF5
+
+fit
+− ftrue,i
+1 X fd,i
+NT i
+ftrue,i
+
+2
+,
+
+(V.14)
+
+IA
+
+d = {lin, quad, cubic},
+where, ftrue is the IF obtained by the HSA of the signal
+on which a white Gaussian noise is not superimposed and
+ftrue = 130 Hz.
+The fitting result is shown in Fig. 5 and the coefficients are listed in Table I. These results indicate that
+the test signal with a constant frequency at 130 Hz can
+be analyzed properly. Additionally, when the weighting
+function is not used (wi = 1), the average IF deviates
+from its original value; therefore, the weighting function
+is necessary to obtain an appropriate result.
+
+0
+
+IF (Hz)
+
+160
+
+130
+
+100
+0.1
+
+0.2
+IF of IMF5
+〈f〉
+〈f〉 err
+
+0.3
+time (s)
+cubic
+cubic err
+quad
+
+(C) Error estimation
+quad err
+linear
+linear err
+
+FIG. 5. Fitting lines for the IF of the test signal
+
+gression analysis for IF of the IMF to estimate the trend,
+fit
+fit
+flin
+(t) = a0 + a1 τ + flin,err
+,
+fit
+fit
+fquad
+(t) = b0 + b1 τ + b2 τ 2 + fquad,err
+,
+fit
+2
+3
+fit
+fcubic (t) = c0 + c1 τ + c2 τ + c3 τ + fcubic,err
+,
+
+(V.11)
+(V.12)
+(V.13)
+
+where fdfit , d = {lin, quad, cubic}, are dependent variables
+of the frequency trend, τ = (t − tc )/(tend − tstart ), tc =
+fit
+(tstart +tend )/2, fd,err
+, d = {lin, quad, cubic}, are the error
+P
+fit
+terms, and fd,err = wi (fi − fdfit )2 . For regression anal-
+
+To estimate the error caused by the above method,
+we prepared Ntest = 1000 test signals and generated a
+histogram of the estimated values.
+Figure 6 shows the histograms of the fitting coefficients, the average frequency, and the time interval. The
+top two histograms in the rightmost column are the results for the time interval. The top histogram in the the
+second column from the right is the result of the average
+frequency. The rest are histograms of the fitting coefficients. The widths of the histograms reflect variations in
+the results for Ntest = 1000 test signals. These are due
+to the fact that mode decomposition in EEMD could not
+be performed perfectly, and the noise behavior in which
+only the seed of Eq. (V.1) in the second term appears
+different. When applying this method to the GWs, the
+above should be considered a systematic error.
+
+9
+
+1500
+1500
+
+500
+〈f〉
+
+800
+
+a0
+
+a1
+
+t start
+
+1000
+
+1000
+
+250
+400
+
+500
+
+500
+0
+0
+
+0
+
+1500
+
+800
+
+0
+-5
+
+0
+
+5 500
+
+t end
+
+500
+
+b0
+
+b1
+
+b2
+
+1000
+
+250
+400
+
+250
+
+0
+
+0
+
+500
+0
+0
+1500
+
+800
+
+0
+
+500
+
+c0
+
+0.1
+
+0.2
+
+0.3
+
+0.4
+
+0
+
+5
+
+10
+
+300
+
+c1
+
+c2
+
+c3
+
+1000
+400
+
+250
+
+150
+
+500
+
+0
+
+0
+-5
+
+0
+
+5
+
+0
+-5
+
+0
+
+5
+
+0
+-10
+
+-5
+
+0
+
+5
+
+10
+
+-10
+
+-5
+
+2
+
+1.5
+
+0
+
+IA/10-22
+
+IA/10-22
+
+IMF5/10-22
+
+FIG. 6. Histograms of the parameters estimated for the IF of the test signal. Here is a list of histograms of the fitting coefficients
+(Tab.I), the average frequency, and the time interval.
+
+-2
+1.5
+1
+
+0.5
+0
+
+0.5
+
+160
+
+0
+160
+130
+100
+
+0
+
+σ(NT)
+
+10
+
+0.05
+
+0.1
+
+0.15
+
+0.2
+
+time (s)
+
+0.25
+
+0.3
+
+0.35
+
+IF (Hz)
+
+IF (Hz)
+
+IA of IMF5
+
+1
+
+130
+
+σ
+NTbest
+
+linear regression
+
+5
+
+100
+0
+
+0
+0
+
+1000
+
+2000
+
+3000
+
+NT
+
+FIG. 7. N − σ map of the GW
+
+0.1
+
+0.2
+
+IF of IMF5
+〈f 〉
+〈f〉 err
+
+time (s)
+cubic
+cubic err
+quad
+
+4000
+
+0.3
+quad err
+linear
+linear err
+
+FIG. 8. Fitting lines for the IF of the GW
+
+10
+
+1500
+1500
+
+500
+〈f〉
+
+800
+
+a1
+
+a0
+
+SFHx h×
+
+1000
+
+SFHx h×
+
+SFHx h×
+: a0 ⎯〈f〉
+
+1000
+
+t start
+
+250
+400
+
+500
+
+500
+0
+0
+
+0
+
+1500
+
+800
+
+0
+
+5 500
+
+t end
+
+500
+
+b1
+
+b0
+
+SFHx h×
+
+b2
+
+SFHx h×
+
+SFHx h×
+: b0 ⎯〈f〉
+
+1000
+
+0
+-5
+
+SFHx h×
+250
+
+400
+
+250
+
+0
+
+0
+
+500
+0
+0
+1500
+
+800
+
+500
+
+c2
+
+SFHx h×
+
+SFHx h×
+: c0 ⎯〈f〉
+
+0.1
+
+0.3
+
+0.4
+
+c3
+
+SFHx h×
+
+400
+
+0.2
+
+300
+
+c1
+
+c0
+1000
+
+0
+
+SFHx h×
+
+250
+
+150
+
+500
+
+0
+
+0
+-5
+
+0
+
+5
+
+0
+-5
+
+0
+
+5
+
+0
+-10
+
+-5
+
+0
+
+5
+
+10
+
+-10
+
+-5
+
+0
+
+5
+
+10
+
+FIG. 9. Estimated parameters of GW from the CCSN [30]. The histograms of the test signal (Fig. 6) and the parameters of
+the GW (Tab. II) are shown together. The average frequency of the GW is shown in the error range around the 0 axis and is
+not shown a red dashed line. The time interval of the GW is shown as a red dashed line and is not shown in the error range.
+
+B.
+
+Analysis of the simulated GW from CCSNe
+
+We apply the above method to a simulated GW from
+a CCSN model of [30] in Fig. 2(b). First, we estimated
+the time segment at which the SASI would appear. Next,
+we searched for the optimal segment [0.0 s, 0.35 s] to get
+NTbest . Using this, we further searched for [0.0 s, NTbest ]
+and [NTbest , 0.35 s] to obtain the second and third NTbest ,
+respectively. We selected an NTbest based on the smallest IF fitting error. The results are shown in Fig. 7.
+We estimated that the SASI mode was dominant at
+
+TABLE II. Same table to I excluding χ2 for the simulated
+GW from the CCSN [30].
+τ0
+τ1
+τ2
+τ3
+fit
+ferr
+
+Linear
+127.0 ± 1.1
+-0.4 ± 2.0
+
+Quadratic
+127.6 ± 1.4
+0.3 ± 2.2
+-1.9 ± 3.9
+
+12.2
+
+11.9
+
+Cubic
+127.6 ± 1.4
+0.3 ± 4.8
+-2.3 ± 4.3
+-0.1 ± 8.4
+11.9
+
+0.116 s . t . 0.347 s (t = time) and the internal environment that was needed to trigger SASI in the core
+was ready ∼ 0.1 s after the core bounce (t = 0 s). The
+end time (∼ 0.35 s) is close to the time when the simulation ceased calculating, and it is speculated that the
+SASI may have temporarily weakened. The fitting result is shown in Fig. 8 and the coefficients are listed in
+Table II. Fig. 9 shows the results of the GW analysis together with Fig. 6, where the fitting coefficients are the
+red dashed lines and the error of the coefficients is the
+white range. The average frequency of the GW is shown
+in the error range around the 0 axis and is not shown a
+red dashed line. The time interval of the GW is shown
+as a red dashed line and is not shown in the error range.
+The values of b2 and c2 suggest that the frequency of
+SASI may fluctuate. However, considering the error generated in the test signal, this analysis method uses the
+GW obtained from the SASI mode in the segment. No
+time change was obtained from the IF.
+
+11
+VI.
+
+SUMMARY AND DISCUSSION
+
+We analyzed a simulated GW signal from a corecollapse supernova (CCSN), which contained the strong
+SASI mode, using the HHT technique. The frequency of
+the SASI has information on the internal dynamics of the
+star before the explosion; therefore, we examined the behavior of the SASI frequency of the simulated signal. The
+HHT method could isolate the IF of each physical mode
+that was generated in the signal source. Consequently, we
+endeavored to evaluate the feasibility of employing HHT
+to analyze GWs generated by the SASI mode. Thus, we
+performed a statistical analysis because the IF was defined as a function of time, and found that the IF of the
+SASI mode extracted in the IMF5 was constant, namely
+hf i = 127.0 ± 3.7 Hz, with time within 1σ in the time
+segment 0.116 s . t . 0.347 s.
+
+vanced Virgo, and KAGRA) if the event is in the Galaxy.
+Therefore, there is a high possibility that SASI mode
+can be detected with Einstein Telescope [8], Cosmic Explorer [9], and thus, we plan to study the practical applications of HHT in the near future.
+
+ACKNOWLEDGMENTS
+
+Kuroda et al. [30] pointed out that the SASI mode can
+be captured by existing detectors (Advanced LIGO, Ad-
+
+We thank K. Hayama and T. Takiwaki for their contribution in early phase of this work and for enlightening discussions. We are also grateful to N. Uchikata,
+R. Nishi and K. Watanabe for enlightening discussions. This work was supported in part by Japan Society for the Promotion of Science (JSPS) Grants-in-Aid
+for Scientific Research on Innovative Areas Grant nos.
+24103005, JP17H01130, JP17H06364, JP17H06358, and
+JP17H06361, by JSPS Core-to-Core Program A, Advanced Research Networks, and by the joint research
+program of the Institute for Cosmic Ray Research,
+University of Tokyo. This work was also supported
+in part by a Grant-in-Aid for JSPS Research Fellows
+(No. 20J00978 S. Tsuchida), and by JSPS KAKENHI
+(Grant Nos. 17H06133; N. Kanda, 19K14717, 21K13926;
+K. Sakai, 19H0190; H. Takahashi). K. Kotake was supported by Research Institute of Stellar Explosive Phenomena at Fukuoka University and the associated project
+(No.207002).
+
+[1] J. Aasi, B. Abbott, R. Abbott, T. Abbott, M. Abernathy,
+K. Ackley, C. Adams, T. Adams, P. Addesso, R. Adhikari, et al., Class. Quant. Grav. 32, 074001 (2015).
+[2] F. Acernese, M. Agathos, K. Agatsuma, D. Aisa, N. Allemandou, A. Allocca, J. Amarni, P. Astone, G. Balestri,
+G. Ballardin, et al., Class. Quant. Grav. 32, 024001
+(2014).
+[3] B. P. Abbott et al. (LIGO Scientific and Virgo Collaboration), Phys. Rev. X 9, 031040 (2019).
+[4] R. Abbott et al. (LIGO Scientific and Virgo Collaboration), GWTC-2: Compact Binary Coalescences Observed
+by LIGO and Virgo During the First Half of the Third
+Observing Run (2020), arXiv:2010.14527 [gr-qc].
+[5] H. Grote, A. Freise, M. Malec, G. Heinzel, B. Willke,
+H. Lück, K. A. Strain, J. Hough, and K. Danzmann,
+Classical and Quantum Gravity 21, S473 (2004).
+[6] T. Akutsu et al. (KAGRA collaboration), Nature Astronomy 3, 35 (2018).
+[7] T. Akutsu et al. (KAGRA collaboration), arXiv preprint
+arXiv:2008.02921 (2020).
+[8] M. Punturo, M. Abernathy, F. Acernese, B. Allen, N. Andersson, K. Arun, F. Barone, B. Barr, M. Barsuglia,
+M. Beker, et al., Class. Quant. Grav. 27, 194002 (2010).
+[9] B. P. Abbott, R. Abbott, T. Abbott, M. Abernathy,
+K. Ackley, C. Adams, P. Addesso, R. Adhikari, V. Adya,
+C. Affeldt, et al., Class. Quant. Grav. 34, 044001 (2017).
+[10] V. Kalogera, M.-A. Bizouard, A. Burrows, T. Janka,
+K. Kotake, B. Messer, T. Mezzacappa, B. Mueller,
+E. Mueller, M. A. Papa, et al., arXiv preprint
+
+arXiv:1903.09224 (2019).
+[11] E. Abdikamalov, G. Pagliaroli, and D. Radice, arXiv
+e-prints , arXiv:2010.04356 (2020), arXiv:2010.04356
+[astro-ph.SR].
+[12] K. Kotake, Comptes Rendus Physique 14, 318 (2013),
+arXiv:1110.5107 [astro-ph.HE].
+[13] S. Klimenko, I. Yakushin, A. Mercer, and G. Mitselmakher, Classical and Quantum Gravity 25, 114029
+(2008).
+[14] S. Klimenko, G. Vedovato, M. Drago, F. Salemi, V. Tiwari, G. Prodi, C. Lazzaro, K. Ackley, S. Tiwari,
+C. Da Silva, et al., Physical Review D 93, 042004 (2016).
+[15] S. Gossan, P. Sutton, A. Stuver, M. Zanolin, K. Gill, and
+C. D. Ott, Physical Review D 93, 042002 (2016).
+[16] J. Logue, C. Ott, I. Heng, P. Kalmus, and J. Scargill,
+Physical Review D 86, 044023 (2012).
+[17] J. Powell, S. E. Gossan, J. Logue, and I. S. Heng, Physical
+Review D 94, 123012 (2016).
+[18] J. Powell, M. Szczepanczyk, and I. S. Heng, Physical Review D 96, 123013 (2017).
+[19] V. Roma, J. Powell, I. S. Heng, and R. Frey, Phys. Rev.
+D 99, 063018 (2019).
+[20] S. Suvorova, J. Powell, and A. Melatos, Physical Review
+D 99, 123012 (2019).
+[21] P. Astone, P. Cerdá-Durán, I. Di Palma, M. Drago,
+F. Muciaccia, C. Palomba, and F. Ricci, Physical Review
+D 98, 122002 (2018).
+[22] A. Iess, E. Cuoco, F. Morawski, and J. Powell, Machine
+Learning: Science and Technology 1, 025014 (2020).
+
+Our results were consistent with the previously reported research outcomes [30, 37] and established the effectiveness of the HHT technique. Hence, we can expect
+the HHT to work well for analyzing the SASI mode from
+the observation signals, and it will be important to search
+for the signal that is superimposed on the simulated GW
+signals and GW detector noises.
+
+12
+[23] M. L. Chan, I. S. Heng, and C. Messenger, Physical Review D 102, 043022 (2020).
+[24] K. Kotake, K. Sato, and K. Takahashi, Reports
+on Progress in Physics 69, 971 (2006), arXiv:astroph/0509456 [astro-ph].
+[25] H.-T. Janka, Neutrino-Driven Explosions, in Handbook
+of Supernovae, edited by A. W. Alsabti and P. Murdin
+(Springer International Publishing, 2017) p. 1095.
+[26] A. Burrows and D. Vartanyan, Nature (London) 589, 29
+(2021), arXiv:2009.14157 [astro-ph.SR].
+[27] T. Foglizzo, R. Kazeroni, J. Guilet, F. Masset,
+M. González, B. K. Krueger, J. Novak, M. Oertel, J. Margueron, J. Faure, N. Martin, P. Blottiau, B. Peres, and
+G. Durand, Publications of the Astronomical Society
+of Australia 32, e009 (2015), arXiv:1501.01334 [astroph.HE].
+[28] J. M. Blondin, A. Mezzacappa, and C. DeMarino, Astrophys. J. 584, 971 (2003), astro-ph/0210634.
+[29] A. Mezzacappa, P. Marronetti, R. E. Landfield, E. J.
+Lentz, K. N. Yakunin, S. W. Bruenn, W. R. Hix, O. E. B.
+Messer, E. Endeve, J. M. Blondin, and J. A. Harris, Phys.
+Rev. D 102, 023027 (2020), arXiv:2007.15099 [astroph.HE].
+[30] T. Kuroda, K. Kotake, and T. Takiwaki, Astrophys. J.
+829, L14 (2016).
+[31] H. Andresen, B. Muller, E. Muller, and H.-T. Janka,
+Monthly Notices of the Royal Astronomical Society 468,
+2032 (2017).
+[32] D. Radice, V. Morozova, A. Burrows, D. Vartanyan, and
+H. Nagakura, The Astrophysical Journal Letters 876, L9
+(2019), arXiv:1812.07703 [astro-ph.HE].
+[33] S. Shibagaki, T. Kuroda, K. Kotake, and T. Takiwaki,
+Monthly Notices of the Royal Astronomical Society 502,
+3066 (2021), arXiv:2010.03882 [astro-ph.HE].
+[34] J. Powell, B. Müller, and A. Heger, Monthly Notices of
+the Royal Astronomical Society 10.1093/mnras/stab614
+(2021), arXiv:2101.06889 [astro-ph.HE].
+[35] D. Vartanyan and A. Burrows, The Astrophysical Journal 901, 108 (2020).
+[36] D. Vartanyan, A. Burrows, and D. Radice, Monthly Notices of the Royal Astronomical Society 489, 2227 (2019).
+[37] H. Kawahara, T. Kuroda, T. Takiwaki, K. Hayama, and
+K. Kotake, Astrophys. J. 867, 126 (2018).
+[38] N. E. Huang, S. R. Long, and Z. Shen, Advances in ap-
+
+plied mechanics , 59 (1996).
+[39] N. E. Huang, Z. Shen, S. R. Long, M. C. Wu, H. H.
+Shih, Q. Zheng, N.-C. Yen, C. C. Tung, and H. H. Liu,
+Proceedings of the Royal Society of London. Series A:
+Mathematical, Physical and Engineering Sciences 454,
+903 (1998).
+[40] N. E. Huang, Z. Shen, and S. R. Long, Annual review of
+fluid mechanics 31, 417 (1999).
+[41] N. E. Huang, Hilbert-Huang transform and its applications, Vol. 16 (World Scientific, 2014).
+[42] J. B. Camp, J. K. Cannizzo, and K. Numata, Phys. Rev.
+D 75, 061101 (2007).
+[43] A. Stroeer, J. K. Cannizzo, J. B. Camp, and N. Gagarin,
+Phys. Rev. D 79, 124022 (2009).
+[44] H. Takahashi, K. Oohara, M. Kaneyama, Y. Hiranuma,
+and J. B. Camp, Advances in Adaptive Data Analysis 5,
+1350010 (2013).
+[45] H. Nakano, T. Narikawa, K. Oohara, K. Sakai,
+H. Shinkai, H. Takahashi, T. Tanaka, N. Uchikata, S. Yamamoto, and T. S. Yamamoto, Phys. Rev. D 99, 124032
+(2019).
+[46] M. Kaneyama, K. Oohara, H. Takahashi, Y. Sekiguchi,
+H. Tagoshi, and M. Shibata, Phys. Rev. D 93, 123010
+(2016).
+[47] M. Kaneyama, K. Oohara, T. Wakamatsu, H. Takahashi,
+and J. B. Camp, in The Fourteenth Marcel Grossmann
+Meeting (World Scientific, 2017) p. 3138.
+[48] K. Sakai, K. Oohara, H. Nakano, M. Kaneyama, and
+H. Takahashi, Phys. Rev. D 96, 044047 (2017).
+[49] L. Cohen, Time-frequency analysis (Prentice Hall PTR
+Englewood Cliffs, N.J, 1995).
+[50] Z. Wu and N. E. Huang, Advances in adaptive data analysis 1, 1 (2009).
+[51] Y. Hiranuma et al. (2021), in preparation.
+[52] K. Oohara et al., in The Fourteenth Marcel Grossmann
+Meeting (World Scientific, 2017) p. 3170.
+[53] I. Tamborra, F. Hanke, B. Müller, H.-T. Janka,
+and G. Raffelt, Phys. Rev. Lett. 111, 121104 (2013),
+arXiv:1307.7936 [astro-ph.SR].
+[54] T. Kuroda, K. Kotake, K. Hayama, and T. Takiwaki,
+Astrophys. J. 851, 62 (2017).
+[55] https://www.gnu.org/software/gsl/.
+
+

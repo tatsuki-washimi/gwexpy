@@ -1,0 +1,1168 @@
+Amplitude-based detection method for gravitational
+wave bursts with the Hilbert-Huang Transform
+Kazuki Sakai1 , Ken-ichi Oohara2 , Masato Kaneyama3 and
+Hirotaka Takahashi4
+1 Department of Information Science and Control Engineering,Nagaoka
+
+University of Technology, Nagaoka, Niigata 940-2188, Japan
+2 Graduate School of Science and Technology,Niigata University, Niigata
+950-2181, Japan
+3 Department of Physics, Graduate School of Science,Osaka City University,
+Osaka 558-8585, Japan
+4 Department of Information and Management Systems Engineering,Nagaoka
+University of Technology, Nagaoka, Niigata 940-2188, Japan and
+Earthquake Research Institute,The University of Tokyo, Bunkyo-Ku, Tokyo
+113-0032, Japan
+E-mail: k sakai@stn.nagaokaut.ac.jp
+Abstract. We propose a new detection method for gravitational wave bursts. It
+analyzes observed data with the Hilbert-Huang transform, which is an approach of
+time-frequency analysis constructed with the aim of manipulating non-linear and
+non-stationary data. Using the simulated time-series noise data and waveforms
+from rotating core-collapse supernovae at 30 kpc, we performed simulation to
+evaluate the performance of our method and it revealed the total detection
+probability to be 0.94 without false alerms, which corresponds to the false alarm
+rate < 10−3 Hz. The detection probability depends on the characteristics of
+the waveform, but it was found that the parameter determining the degree
+of diﬀerential rotation of the collapsing star is the most important for the
+performance of our method.
+
+PACS numbers: 04.80.Nn, 07.05.Kf
+
+Keywords: gravitational wave, detection method, Hilbert-Huang transform
+
+Submitted to: Class. Quantum Grav.
+
+1. Introduction
+The full operations of the advanced ground-based laser interferometer detectors for
+gravitational waves, such as Advanced LIGO [1] in the USA, Advanced Virgo [2] in
+Italy and KAGRA [3] in Japan, are about to be implemented. Their main targets
+are gravitational waves from compact binary coalescences, because waveforms of them
+are predictable with high accuracy in the post-Newtonian approximation of general
+relativity [4]. In other words, gravitational waves from compact binary coalescences
+can be detected by means of matched filtering analysis.
+
+Amplitude-based detection method for GW bursts with HHT
+
+2
+
+Gravitational wave bursts from various sources, such as gamma-ray bursts, corecollapse supernovae, soft-gamma repeaters, cosmic strings, late inspiral and mergers
+of compact binaries, ring-downs of perturbed neutron stars or black holes, are also
+thought as detectable by these detectors as well. However, it is not easy to predict
+waveforms from these sources with suﬃcient high accuracy for matched filtering,
+because their dynamics are complicated and the equation of state of neutron star
+matter is not known so well. Thus, a detection method that does not require exact
+information of waveforms is needed for the detection of gravitational wave bursts.
+Anderson et al. [5] have given a solution to it, namely, the Excess Power Method.
+It analyzes an observed data in time-frequency space by means of the short time
+Fourier transform. It requires only knowledge of the duration and frequency band
+of target signals. Thus, the Excess Power Method is well accepted in the field of
+gravitational wave data analysis. Recently, several new approaches for the detection
+of gravitational wave bursts with no or a little assumptions on the source models have
+been developed [6, 7, 8, 9, 10, 11].
+In fact, it is by burst search pipeline that the gravitational wave signal
+GW150914 was first identified [12, 13]. This event was announced by distinct search
+pipelines, coherent waveburst algorithm [6], omicron-LALInference-Bursts [9], and
+BayesWave [11]. As shown there, in order to enhance credibility of a detected event,
+it is important to set up multiple pipelines designed to detect gravitational wave
+bursts.
+In this paper, we propose a new approach for amplitude-based detection method
+of gravitational wave bursts by using Hilbert-Huang transform (HHT). In 1998, Huang
+et al.[14] proposed the HHT as a new approach of time-frequency analysis. Its
+characteristic feature is that it adaptively determines basis for decomposing according
+to the input data. The adaptiveness provides two specific merits. One is that it is
+capable of manipulating non-linear and non-stationary data, and the other is that
+it is not restricted by the uncertain principle. Since gravitational wave signals are
+mostly non-stationary and non-linear, the HHT is likely to be a powerful tool for
+analyzing gravitational wave signals. So far, it has been applied to some data analysis
+for gravitational waves [15, 16, 17, 18].
+The HHT consists of two steps. One is the empirical mode decomposition (EMD)
+and the other is Hilbert spectral analysis (HSA). The EMD decomposes time-series
+data into finite numbers of intrinsic mode functions (IMFs), each of which represents
+simple intrinsic oscillation contained in the original data. The Hilbert transform is then
+performed on each IMF to obtain instantaneous amplitude (IA) and instantaneous
+frequency (IF). Consequently, we can extract time-evolutionary information of the
+data with respect to the amplitude and frequency. The EMD works as waveletlike filter bank [19], and then noise will be dispersed into all IMFs with nearly
+equal amplitude. A burst signal of gravitational waves, on the other hand, will be
+decomposed into a single or a few set of IMFs, if it has a single oscillation mode. The
+IA of the burst signal is thus significantly large only at specific regions in some IMFs.
+Our method searches for the excess of the amplitude at these regions to know whether
+the data contains gravitational waves.
+To evaluate the performance of our method, we conduct a Monte Carlo simulation.
+An ensemble of input data is made by adding a colored Gaussian noise based on
+Advanced LIGO sensitivity curve [21] to a model signal of gravitational waves from a
+rotating core-collapse supernova as well as a sine-Gaussian signal.
+Throughout this paper, discrete sequences are represented with brackets, such as
+
+Amplitude-based detection method for GW bursts with HHT
+
+3
+
+10−22
+
+Strain [Hz−1/2 ]
+
+Simulated
+aLIGO Sensitivity
+
+10−23
+
+10−24
+
+10−25
+10
+
+100
+
+1000
+
+Frequency [Hz]
+
+Amplitude
+
+10−21
+0
+−10−21
+−0.2
+
+−0.1
+
+0
+
+0.1
+
+0.2
+
+Time [s]
+Figure 1. Sensitivity curve of Advanced LIGO (green) and an example of
+simulated noise strain (red) in the upper panel, and corresponding time-series
+n(t) in the lower panel.
+
+x[n], and continuous functions are represented with parentheses, such as s(t).
+This paper is organized as follows. In section 2, we briefly describe simulated
+time-series data of detector and the waveforms that we employ in this paper. In
+section 3, we explain the our proposed amplitude-based detection method with HHT.
+In section 4 and section 5, the results of the analysis with our proposed method
+are shown and the implication of the results is discussed. Section 6 is devoted to a
+summary.
+2. Data set
+We use a sensitivity curve of Advanced LIGO, namely, the zero-detuned, high-power
+sensitivity curve [21], and produce 1000 realizations of Gaussian noise in frequency
+domain. Each of time-series noise data, n(t), is produced by applying the inverse
+Fourier transform to the corresponding realization. The sampling frequency is 4096
+Hz and the duration of each segment of the time series is 0.5 s. We set cut-oﬀ frequency
+at 10 Hz. Figure 1 shows the sensitivity curve and an example of simulated noise strain
+in the upper panel, as well as the corresponding time-series n(t) in the lower panel.
+Concerning the injected signals, we first consider sine-Gaussian signals as
+simple models of short-duration gravitational-wave transients. As shown later, the
+gravitational wave signal from a core-collapse supernova is mostly characterized by
+a peak at the time of the core bounce and it can be emulated by a sine-Gaussian
+
+Amplitude-based detection method for GW bursts with HHT
+
+4
+
+signal. Since the sine-Gaussian signal is narrowband, we can test the performance of
+detection methods in those frequency bands. The sine-Gaussian signal that we used
+is expressed as
+)
+(
+2π 2 f 2 t2
+cos(2πf t),
+h(t) = α exp −
+(1)
+Q2
+where f , Q and α are constants. The amplitude α will be determined such that hrss
+of each signal was equivalent to the average of hrss of simulated burst signals, where
+hrss is defined by
+√∫
+∞
+hrss =
+(2)
+dt |h(t)|2 .
+−∞
+
+Next, as more realistic models, we use waveforms from rotating core-collapse
+supernovae given by Dimmelmeier et al. [20].
+In the simulation by Dimmelmeier et al., they used two nonzero-temperature
+equations of state (EoS), to simulate some thermofluid dynamic quantities. One is
+by Shen et al. [22] (Shen EoS), the other is by Lattimer and Swesty [23] (LS EoS).
+LS EoS is based on a compressible liquid-drop model, and Shen EoS is based on a
+relativistic mean field model. As presupernova stellar models, they employed various
+nonrotating models with zero-age main sequence mass Mprog = 11.2M⊙ , 15.0M⊙ ,
+20M⊙ and 40M⊙ (core-models s11, s15, s20 and s40, respectively), and some rotating
+models with Mprog = 15.0M⊙ (core-models e15a and e15b) and 20.0M⊙ (core-models
+e20a and e20b). They set those cores that are initially nonrotating (core-models s11,
+s15, s20, and s40) artificially into rotation, whose specific angular momentum j is
+given by
+j = A2 (Ωc,i − Ω ).
+
+(3)
+
+Here A is the length that parameterizes the degree of diﬀerential rotation, Ω is the
+angular velocity, and Ωc,i is the precollapse value of Ω at the center. The diﬀerentiality
+becomes stronger as A is decreasing. In the Newtonian limit, this reduces to
+A2
+,
+(4)
+A2 + r2 sin2 θ
+where r sin θ is the distance to the rotating axis. The precollapse rotation is
+parameterized by in terms of A and Ωc,i , where A = 50 000 km indicates an almost
+uniform rotation, A = 1000 km indicates a moderately diﬀerential rotation, and
+A = 500 km indicates a strongly diﬀerential rotation.
+In [20], the core collapse models are labeled according to Mprog , A and Ωc,i . We
+sort them alphabetically by the original labels and assign waveform numbers to them,
+that is, the waveforms in this paper are sorted by the values of Mprog , A, Ωc,i , and
+then the EoS. As examples, the waveforms of 55, 78 and 133 are plotted in figure 2
+and their parameters are listed in table 1.
+Ω = Ωc,i
+
+3. Detection Method
+Our proposed method consists of a preprocessing part and an event trigger part. In
+the preprocessing part, the HHT is performed to whitened observed data. In the
+event trigger part, an event is triggered if an index value defined with respect to the
+amplitude of the preprocessed data exceeds a predetermined threshold. We call this
+method the Excess Amplitude Method (henceforth EAM).
+
+Amplitude-based detection method for GW bursts with HHT
+
+5
+
+Amplitude (×1021 )
+
+2
+1
+0
+−1
+−2
+
+h55 (t)
+h78 (t)
+h133 (t)
+
+−3
+−20
+
+−10
+
+0
+
+10
+
+20
+
+Time [ms]
+Figure 2. Examples of the simulated waveforms. The waveforms are numbered
+in alphabetical order of their waveform names. The parameters of them are listed
+in table 1.
+
+Table 1. Parameters of the waveforms plotted in figure 2. The parameter in each
+column is the same as table 2 to be shown later.
+Waveform
+
+Core Model
+
+A [km]
+
+Ωc,i [rad/s]
+
+EoS
+
+55
+78
+133
+
+s15
+s20
+s40
+
+1000
+50 000
+500
+
+4.56
+1.43
+2.71
+
+LS
+Shen
+LS
+
+The whitening process of observed data is conducted by using a linear predictive
+error filter (LPEF). The LPEF is one of finite impulse response filters that flatten the
+spectrum of data [24]. Cuoco et al. [25] have examined the availability of the LPEF
+as a whitening method for signals from gravitational wave detectors, and it also has
+been incorporated in some gravitational wave search methods [26, 27]. Refer to the
+review by Chatterji et al. [27] for details.
+Figure 3 shows the result of the LPEF applying to the simulated noise data of
+Advanced LIGO (figure 1). We tuned the filter by using 1000 patterns of simulated
+noise data.
+The HHT is a method of time-frequency analysis for time-series data, developed
+by Huang et al. [14]. The HHT consists of two steps, the empirical mode decomposition
+(EMD) and the Hilbert spectral analysis (HSA). The HSA is based on the analytic
+representation of a signal s(t) [28] such as
+z(t) = s(t) + iH[s(t)]
+= a(t) exp (iθ(t)) ,
+where H[s(t)] is the Hilbert transform of s(t) defined by
+∫ ∞
+s(t′ )
+1
+dt′
+,
+H[s(t)] = PV
+π
+t − t′
+−∞
+
+(5)
+
+(6)
+
+where PV denotes the Cauchy principle value. Then, the instantaneous amplitude
+(IA) a(t) and the instantaneous phase θ(t) are given by
+)
+(
+√
+H[s(t)]
+,
+a(t) = s(t)2 + (H[s(t)])2 and θ(t) = arctan
+(7)
+s(t)
+
+Amplitude-based detection method for GW bursts with HHT
+
+6
+
+10−22
+
+Strain [Hz−1/2 ]
+
+Simulated
+aLIGO Sensitivity
+
+10−23
+
+10−24
+
+10−25
+10
+
+100
+
+1000
+
+Frequency [Hz]
+
+Amplitude
+
+10−21
+0
+−10−21
+−0.2
+
+−0.1
+
+0
+
+0.1
+
+0.2
+
+Time [s]
+Figure 3. The result of whitening of the simulated noise data shown in figure 1 by
+means of the LPEF. The spectrum of the whitened data as well as the sensitivity
+curve of Advanced LIGO is plotted in the upper panel and the time-series data,
+that is, the inverse Fourier transform is shown in the lower panel.
+
+respectively. The instantaneous frequency (IF) f (t) is defined as the derivative of θ(t);
+1 dθ(t)
+.
+(8)
+2π dt
+Unfortunately, however, the HSA will not lead physically meaningful results unless
+the signal s(t) is “monocomponent” and “narrowband” [14, 28]. The basic role of the
+EMD is to decompose time-series data into finite numbers of IMFs, each of which
+represents a simple intrinsic oscillation mode. The IMF has two specific properties,
+namely, the numbers of its extrema and zero-crossing are the same or diﬀer by one,
+and its local mean is zero at any point. Owing to these properties, the IMF admits
+a well-behaved Hilbert transform. The original signal s(t) is sum of IMFs ci (t) and
+residual r(t) of the EMD,
+f (t) =
+
+s(t) =
+
+N
+IMF
+∑
+
+ci (t) + r(t).
+
+(9)
+
+i=1
+
+where NIMF is the number of IMFs.
+Performing the Hilbert transform on the IMFs, the HHT tells multiple IAs and
+IFs if the signal s(t) contains multiple oscillations and/or a broadband noise.
+Because the HHT is not based on the assumption that the signal is stationary
+or linear, it has a potential to analyze non-stationary and non-linear data. Detailed
+descriptions of HHT algorithm used in this paper are found in [17, 18].
+
+Amplitude-based detection method for GW bursts with HHT
+
+7
+
+Since EMD works as wavelet-like filter bank [19], whitened noise whose spectrum
+distributes uniformly will be dispersed into almost all IMFs with nearly equal
+amplitude. A gravitational wave burst signal, on the other hand, will be mostly
+decomposed into a small number of IMFs, and hence the IAs of these IMFs become
+significantly large in some region. We can therefore expect that gravitational-wave
+bursts will be detected by finding the region where IA exceeds a certain threshold.
+As the first step of the event trigger part, we need to study the statistical
+characteristics of IA for the background, that is, the average µi and the standard
+deviation σi of IAi for IMFi (i = 1, 2, . . . , NIMF ). In the present simulation, µi and σi
+are estimated from over 1000 realizations of whitened noise-only data. We then define
+the conditional averaging function Ak (ai [n]|µi , σi ) and the maximum mean amplitude
+xk , respectively, by
+{
+⟨ai [n]⟩k
+(⟨ai [n]⟩k ≥ µi + 4σi ),
+Ak (ai [n]|µi , σi ) =
+(10)
+0
+otherwise,
+⟨ai [n]⟩k =
+
+n+k−1
+1 ∑
+ai [l],
+k
+
+(11)
+
+l=n
+
+where ai [n] is the value of IAi at t = tn and k is a predetermined window size, and
+(
+)
+xk = max
+max Ak (ai [n]|µi , σi ) ,
+(12)
+1≤i≤NIMF
+
+1≤n≤Ld −k
+
+where Ld is the data length. The definition (10) means that the input data is judged
+to contain no signal in the region if the IA is less than µ + 4σ of the noise level.
+The EAM will trigger an event of a gravitational wave, if the index value xk
+is greater than or equal to a predetermined threshold value xTH . We will discuss
+appropriate values of the window size k and the threshold xTH in the next section.
+4. Simulation
+To estimate the optimal window size k and the optimal threshold xTH , we have
+conducted simulations of applying the EAM to simulated data. The data were
+superpositions of simulated gravitational wave burst signals (sine-Gaussian and corecollapse supernova signal) and each of 1000 realizations of simulated Advanced LIGO
+noise data. In this paper, we assumed that gravitational wave bursts had entered with
+optimal orientation of the detector and the event of emitting gravitational wave had
+occurred in our galaxy (at most 30 kpc apart from the earth). In this case, average
+hrss of the simulated signals is 9.578 × 10−21 .
+To estimate false alerm rate (FAR), we also applied the EAM to each realization
+of simulated noise data without signal injection.
+First, we used the sine-Gaussian signals defined in (1). We considered the four
+cases: (f = 235 Hz, Q = 5), (f = 235 Hz, Q = 15), (f = 820 Hz, Q = 5) and
+(f = 820 Hz, Q = 15). We provisionally let the window size k be 41; this value means
+the duration of window is about 10 ms. Figure 4 shows the variations in detection
+probability of sine-Gaussian signals in accordance with threshold value xTH . It reveals
+that the EAM will detect almost all events, namely the detection probability being at
+least 0.999, without false alerms when the threshold value is between 2.8 × 10−22 to
+7.2 × 10−22 .
+
+Amplitude-based detection method for GW bursts with HHT
+
+8
+
+Detection Probability
+
+1
+f = 235, Q = 5
+f = 235, Q = 15
+f = 820, Q = 5
+f = 820, Q = 15
+
+0.75
+
+0.5
+
+0.25
+
+0
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+2.5
+
+3
+
+xTH (×1021 )
+Figure 4. Detection probability against threshold value xTH of the EAM to
+the sine-Gaussian signals defined by (1). The window size k is set at 41, which
+corresponds to the duration of about 10 ms. The solid black line shows the false
+alerm probability of the EAM.
+
+1
+
+Waveform No.
+
+0.8
+100
+0.6
+
+75
+
+0.4
+
+50
+
+0.2
+
+25
+
+Detection Probability
+
+125
+
+0
+0
+
+0.5
+
+1
+
+1.5
+
+xTH (×1021 )
+Figure 5. Detection probability against threshold value xTH of the EAM to the
+simulated waveforms of core-collapse supernovae [20]. The window size k is the
+same as Figure 4. The waveforms are numbered in alphabetical order.
+
+Second, we used the simulated waveforms of core-collapse supernovae. Figure 5
+shows the variations in detection probability of them with threshold value. Detection
+probabilities vary with waveform, which corresponds to the EoS and the parameters
+of initial configurations of core-collapse models. For more than half waveforms, some
+values of threshold will give the detection probability of 1.0 without false alerms,
+while the detection probability never reaches 1.0 with any threshold value for some
+waveforms.
+To evaluate the performance of the EAM more comprehensively, we plotted
+a receiver operating characteristic (ROC) curve, which is created by plotting the
+detection probability of a target signal against the FAR. Figure 6 shows the ROC
+
+Amplitude-based detection method for GW bursts with HHT
+
+9
+
+Detection Probability
+
+1
+0.8
+0.6
+0.4
+0.2
+EAM
+whiteningless EAM
+0
+0.001
+
+0.01
+
+0.1
+
+1
+
+False Alert Rate [Hz]
+Figure 6. ROC curves of the EAM for all waveforms of core-collapse. The red
+and green lines show the ROC curves of the EAM with and without whitening,
+respectively. The window size k is set at 41 for the red line, while it is at 10 for
+the green line, since these are respectively the optimal values.
+
+curve of the EAM for all waveforms of core-collapse we used. It reveals that the EAM
+has the detection probability of at least 0.85, with the false alarm rate < 10−3 Hz. It
+also indicates the whitening process plays an important role to improve the eﬃciency
+in the EAM.
+We plotted the ROC curves of the EAM for various values of k in figure 7. A
+small window size is expected to give a high detection probability, since it can detect
+even short-term excess of the amplitude. However it is likely to lead a high FAR at
+the same time. Therefore, we have to look for the optimal value of the window size
+to the maximum of the detection probability with the minimum of the FAR. The left
+panel of figure 7 shows a comparison of the window size k ranging from 20 to 60, and
+it indicates that the optimal value of k lies between 40 and 45. A minute comparison
+in this range is made in the right panel of figure 7 and it suggests that the optimal
+value of k is 41.
+We also checked the optimal window size for each waveform. If the detection
+probability of some waveforms becomes the highest value with two or more window
+sizes, the optimal window size of the waveform is chosen the one of them with which
+the total detection probability becomes highest. The optimal window size of each
+waveform is shown in figure 8. The optimal value is 15, 22, 41 or 64 for all the
+waveforms with few exceptions. The exceptions are k = 44 for five waveforms, k = 20
+for one waveform, and k = 50 for one waveform.
+Consequently, we will perform the EAM analysis with these four values of k
+simultaneously. Triggers are recorded if xk exceeds the threshold for at least one of k.
+The ROC curve of the EAM with some window size is shown in figure 9. It reveals that
+the detection eﬃciency is improved significantly. Eventually, the detection eﬃciency
+(the detection probability without false alerms in our realizations, which corresponds
+to the false alarm rate < 10−3 Hz in our simulation) of our proposed method reached
+0.940.
+As mentioned before with figure 5, the threshold value that leads high detection
+probability depends on waveforms of its target signal. The detection probability can
+
+1
+
+0.95
+
+0.95
+Detection Probability
+
+1
+
+0.9
+
+k = 20
+k = 25
+k = 30
+k = 35
+k = 40
+k = 45
+k = 50
+k = 55
+k = 60
+
+0.85
+
+0.8
+0.001
+
+0.01
+
+0.1
+
+10
+
+0.9
+
+0.85
+k = 40
+k = 41
+k = 42
+k = 43
+k = 44
+k = 45
+1
+
+0.8
+0.001
+
+False Alert Rate [Hz]
+
+0.01
+
+0.1
+
+1
+
+False Alert Rate [Hz]
+
+Figure 7. ROC curves of the EAM for all waveforms of core-collapse for various
+values of window size k. The left panel shows a comparison of the window size k
+ranging from 20 to 60. The right panel shows a minute comparison of k ranging
+from 40 to 45.
+
+Optimal window width
+
+Detection Probability
+
+Amplitude-based detection method for GW bursts with HHT
+
+60
+
+40
+
+20
+
+0
+25
+
+50
+
+75
+
+100
+
+Waveform No.
+Figure 8. Optimal window size of each waveform.
+
+125
+
+Amplitude-based detection method for GW bursts with HHT
+
+11
+
+Detection Probability
+
+1
+
+0.95
+
+0.9
+
+0.85
+k = 15, 22, 41, 64, in parallel
+k = 41, single
+0.8
+0.001
+
+0.01
+
+0.1
+
+1
+
+False Alert Rate [Hz]
+Figure 9. ROC curves of the EAM for all waveforms of core-collapse The red
+line is the result with window sizes k = 15, 22, 41, 64, while the green line is the
+result with window size k = 41, only.
+
+be 1.0 without false alerms for some waveforms (hereinafter referred to as class C1)
+if an appropriate threshold value xTH depending on the waveforms is adopted, while
+it cannot be realized with any threshold values for other waveforms (class C2). In
+figure 10, we plotted hrss for each waveform as well as the threshold values above
+which the detection probability becomes 1.0. It shows that there is a strong correlation
+between them, yielding the correlation coeﬃcient of 0.893. These waveforms of class
+C1 have hrss of 1.0 × 10−20 or above, while only 4 of 66 waveforms of class C2 have
+hrss of this value. The parameters of core-collapse simulations of class C1 are listed
+in table 2. It indicates that the parameter A of class C1 is 1000 km or below, while
+waveforms of A = 50 000km, which corresponds to almost uniform rotation, belong
+to class C2. As a result, the degree of diﬀerential rotation is more important for the
+EAM than the mass of the star.
+As examples, five waveforms for each of A = 50 000, 1000, and 500 km are
+plotted in figure 4. It indicates that the amplitude of the gravitational wave from
+the supernova is high if diﬀerential rotation of the initial configuration is strong, or A
+is small. It is one of reasons why the eﬃciency of the EAM largely depends on A.
+5. Discussion
+The optimal window size depends on the waveform as figure 8 shows and thus the
+eﬃciency of the EAM can be improved if the multi-window-size EAM is applied
+as figure 9 shows. In order to apply the EAM for detecting a specific target, it is
+important to investigate why the optimal window size depends on the waveform. In
+each panel of figure 12, we plotted four of waveforms that have the same value of the
+optimal window size, namely, k = 15 (type k15), k = 22 (k22), k = 41 (k41), and
+k = 64 (k64), and the ROC curves of these types are shown in figure 13. Table 3
+shows the breakdown by the value of A of each type.
+The waves of types k22 and k41 have similar shapes, that is, one sharp peak
+with little transient followed by a short ringdown. The optimal window size of k41
+
+Amplitude-based detection method for GW bursts with HHT
+
+12
+
+1
+
+24
+
+0.75
+
+18
+
+0.5
+
+12
+
+0.25
+
+6
+
+0
+
+hrss (×1021 )
+
+xTH (×1021 ) at DP = 1.0
+
+xTH
+hrss
+
+0
+25
+
+50
+
+75
+
+100
+
+125
+
+Waveform No.
+Figure 10. The threshold xTH that makes the detection probability 1.0 and
+the hrss against the waveform number. The correlation coeﬃcient is 0.893. The
+orange line represents xTH = 0.28 × 10−21 , with which the FAR becomes 0.
+
+Table 2. Properties of the core-collapse models for which gravitational waves
+can be detected without false alerms by means of the EAM. The name of the core
+model derives from the rotation and mass of the presupernova model (see text
+in section 2). The parameters A and Ωc,i denote, respectively, the diﬀerential
+rotation length scale and the precollapse angular velocity at the center of the
+star. As for the EoS, LS denotes the EoS of Lattimer and Swesty [23] and Shen
+denotes the EoS of Shen et al. [22]. No gravitational wave signal corresponding
+to A = 50 000 km can be detected without false alerms.
+Waveform
+
+core-model
+
+A [km]
+
+1–2
+7
+6, 8
+35–39
+59
+56, 58, 60
+63–72
+89–92
+95–104
+117–124
+125–136
+
+e15
+e20
+e20
+s11
+s15
+s15
+s15
+s20
+s20
+s40
+s40
+
+–
+–
+–
+500
+1000
+1000
+500
+1000
+500
+1000
+500
+
+min Ωc,i [rad/s]
+4.18
+11.01
+3.13
+10.65
+7.60
+4.56
+5.95
+6.45
+5.95
+3.40
+4.21
+
+EoS
+LS/Shen
+LS
+Shen†
+LS/Shen
+LS
+Shen†
+LS/Shen
+LS/Shen
+LS/Shen
+LS/Shen
+LS/Shen
+
+† The detection probability in LS EoS with the same parameters is 0.999.
+
+is, however, larger than that of k22, since the peak and the beginning part of the
+ringdown of k41 are decomposed into the single IMF by the EMD, while those of k22
+are decomposed into diﬀerent IMFs. The waves of k15 have a short peak but the
+amplitude is low, and hence the optimal window size will be small to compensate for
+the low amplitude with a contribution from the short peak maximally. Since the waves
+of k64 have no significant peak and the amplitude is low, the detection probability is
+much lower than other types as figure 13 shows. As shown in table 3, the parameter
+A of all the member of this type except few exceptions is 50 000 km, that is, they
+are almost uniformly rotating at the initial time. It means that uniform rotation
+
+Amplitude-based detection method for GW bursts with HHT
+
+Amplitude (×1022 )
+
+20
+10
+0
+−10
+−20
+20
+10
+0
+−10
+−20
+20
+10
+0
+−10
+−20
+
+13
+
+(a) A = 50 000 km
+
+(b) A = 1000 km
+
+(c) A = 500 km
+
+−50 −40 −30 −20 −10
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+Time [ms]
+Figure 11. Comparison of waveforms by the values of A, diﬀerentiality of rotation
+of the initial configuration. Five waveforms are chosen at random for each of
+A = 50 000 km (upper panel), 1000 km (middle panel) and 500 km (lower panel).
+
+Table 3. The number of waveforms that have the optimal window size k =
+15, 21, 41, and 64. The numbers are listed dividedly according to the value of A.
+optimal k
+
+A = 50 000 km
+
+A = 1000 km
+
+A = 500 km
+
+15
+22
+41
+64
+
+7
+4
+4
+20
+
+5
+11
+17
+1
+
+5
+4
+38
+1
+
+causes the low amplitude and thus leads to the diﬃculty in detecting waves. The
+large window size is required for averaging out the noise to reduce false alerms, rather
+than enhancing the eﬃciency.
+Since only amplitude variations of the IMFs are considered at present, it is diﬃcult
+to detect signals whose amplitude is low throughout even though the duration is long.
+6. Summary
+We validated a possibility of a new amplitude-based approach for the detection of
+gravitational wave bursts with the Hilbert-Huang transform. Our proposed method,
+called Excess Amplitude Method, will detect an event when the maximum value of all
+the maximum value in each intrinsic mode function of an observed data is greater
+than a predetermined threshold value. Using the simulated time-series noise data
+and waveforms from rotating core-collapse supernovae at 30 kpc, we performed the
+simulation to evaluate the performance of our proposed method and found that the
+detection probability reaches 0.94 without false alerms, which corresponds to the false
+
+20
+
+Amplitude (×1022 )
+
+Amplitude (×1022 )
+
+Amplitude-based detection method for GW bursts with HHT
+(a) k = 15
+10
+0
+−10
+−20
+−30
+−50
+
+−25
+
+0
+
+25
+
+50
+
+20
+(b) k = 22
+10
+0
+−10
+−20
+−30
+−50
+
+−25
+
+20
+(c) k = 41
+10
+0
+−10
+−20
+−25
+
+0
+
+0
+
+25
+
+50
+
+25
+
+50
+
+Time [ms]
+Amplitude (×1022 )
+
+Amplitude (×1022 )
+
+Time [ms]
+
+−30
+−50
+
+14
+
+25
+
+50
+
+20
+(d) k = 64
+10
+0
+−10
+−20
+−30
+−50
+
+Time [ms]
+
+−25
+
+0
+Time [ms]
+
+Figure 12. Comparison between waveforms of type k15, k22, k41 and k64. Four
+waveforms are chosen at random for each type.
+
+Detection Probability
+
+1
+
+0.95
+
+0.9
+
+0.85
+
+0.8
+0.001
+
+(a) k = 15
+(b) k = 22
+(c) k = 41
+(d) k = 64
+0.01
+
+0.1
+
+1
+
+False Alert Rate [Hz]
+Figure 13. ROC curves for type k15 (red), k22 (orange), k41 (green) and k64
+(blue).
+
+alarm rate < 10−3 Hz in our simulation.
+At the present, we do not take variations of the instantaneous frequency of the
+IMFs into account, but it must provide the useful information to distinguish signals
+from noise. We will include the information of the instantaneous frequency in the next
+version of our method.
+We used simulated Gaussian noise of Advanced LIGO in this paper, but the noise
+of real laser interferometer detectors show non-Gaussianity and non-stationarity. We
+will apply our method to real laser interferometer data and compare the results with
+
+Amplitude-based detection method for GW bursts with HHT
+
+15
+
+other detection methods such as the excess power method soon. In addition, we are
+planning to consider the coincidence analysis based on our method.
+Acknowledgments
+This work was in part supported by MEXT Grant-in-Aid for Scientific Research
+on Innovative Areas “New Developments in Astrophysics Through Multi-Messenger
+Observations of Gravitational Wave Sources” (Grant Number 24103005). This work
+was also supported in part by JSPS Grant-in-Aid for Scientific Research (C) (Grant
+Number 15K05071; K. Oohara), by JSPS Grant-in-Aid for Young Scientists (B) (Grant
+Number 26800129; H. Takahashi).
+References
+[1] Aasi J et al. (The LIGO Scientific Collaboration) 2015 Class. Quantum Grav. 32 074001
+[2] Acernese F et al. 2015 Class. Quantum Grav. 32 024001
+[3] Aso Y, Michimura Y, Somiya K, Ando M, Miyakawa O, Sekiguchi T, Tatsumi D and Yamamoto
+H (The KAGRA Collaboration) 2013 Phys. Rev. D 88 043007
+[4] Abadie J et al. 2010 Class. Quantum Grav. 27 173001
+[5] Anderson W G, Brady P R, Creighton J D E and Flanagan E E 2001 Phys. Rev. D 63 042003
+[6] Klimenko S, Yakushin I, Mercer A, Mitselmakher G 2008 Class. Quantum Grav. 25 114029
+[7] Sutton P J et al. 2010 New Journal of Physics 12 053034
+[8] Thrane E.et al. 2011 Phys. Rev. D 83 083004
+[9] Lynch R, Vitale S, Essick R, Katsavounidis E arXiv:1511.05955
+[10] Klimenko S et al. arXiv:1511.05999
+[11] Cornish N, Litternberg T, 2015 Class. Quantum Grav. 32 135012
+[12] Abbott B.et al. (LIGO Scientific Collaboration and Virgo Collaboration) 2016 Phys. Rev. Lett.
+116, 061102
+[13] Abbott B.et al. (LIGO Scientific Collabpration and Virgo Collaboration) 2016 LIGO P1500229,
+https://dcc.ligo.org/P1500229/public
+[14] Huang N E, Shen Z, Long S R, Wu M C, Shih H H, Zheng Q, Yen N C, Tung C C and Liu H H
+1998 Proc. R. Soc. A 454 903–995
+[15] Camp J B, Cannizzo J K and Numata K 2007 Phys. Rev. D 75 061101
+[16] Stroeer A, Cannizzo J K and Camp J B 2009 Phys. Rev. D 79 124022
+[17] Takahashi H, Oohara K, Kaneyama M, Hiranuma Y and Camp J B 2013 Advances in Adaptive
+Data Analysis 5 1350010
+[18] Kaneyama M, Oohara K, Takahashi H, Sekiguchi Y, Tagoshi H, Shibata M, submitted to Phys.
+Rev. D
+[19] Flandrin P, Rilling G and Gonçalvés P 2004 IEEE Signal Process. Lett. 11 112–114
+[20] Dimmelmeier H, Ott C D, Marek A and Janka H T 2008 Phys. Rev. D 78 064056
+[21] https://dcc.ligo.org/cgi-bin/DocDB/ShowDocument?docid=2974.
+[22] Shen H, Toki H, Oyamatsu K and Sumiyoshi K 1998 Progr. Theoret. Phys. 100 1013
+[23] Lattimer J M and Swesty F D 1991 Nucl. Phys. A 535 331–376
+[24] Vaidyanathan P P 2008 The Theory of Linear Prediction (Morgan & Claypool)
+[25] Cuoco E, Calamai G, Fabbroni L, Losurdo G, Mazzoni M, Stanga R and Vetrano F 2001 Class.
+Quantum Grav. 18 1727
+[26] McNabb J W C, Ashley M, Finn L S, Rotthoﬀ E, Stuver A, Summerscales T, Sutton P, Tibbits
+M, Thorne K and Zaleski K 2004 Class. Quantum Grav. 21 S1705–S1710
+[27] Chatterji S, Blackburn L, Martin G and Katsavounidis E 2004 Class. Quantum Grav. 21 S1809–
+S1818
+[28] Cohen L 1995 Time-Frequency Analysis (Prentice Hall)
+
+
