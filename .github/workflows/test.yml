@@ -71,31 +71,20 @@ jobs:
         generate-run-shell: false
         post-cleanup: none
         create-args: >-
-          python=3.12
+          python=3.10
           pip
           minepy
-          mictools
-          scikit-learn
-          statsmodels
-          polars
-          pmdarima
-          dcor
-          hurst
-          emd-signal
-          pywavelets
-          librosa
-          obspy
 
     - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y xvfb
 
-    - name: Install gwexpy (editable, pip)
+    - name: Install gwexpy (editable, pip) + optional mictools
       shell: bash -l {0}
       run: |
         micromamba run -n gwexpy-full python -m pip install --upgrade pip
-        micromamba run -n gwexpy-full pip install -e ".[dev,analysis]"
+        micromamba run -n gwexpy-full pip install -e ".[dev,analysis]" mictools
 
     - name: Run tests
       env:
