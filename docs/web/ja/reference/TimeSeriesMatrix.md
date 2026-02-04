@@ -45,6 +45,8 @@
 | `rolling_mean()` / `rolling_std()` / `rolling_max()` / `rolling_min()` | ローリング統計 |
 | `pca()` / `ica()` | PCA/ICA 分解 |
 | `impute()` | 欠損値の補完 |
+| `correlation_vector()` | ターゲット時系列と全チャンネルの相関（`method="pearson"` は高速なベクトル化パスあり） |
+| `partial_correlation_matrix()` | 全チャンネルの偏相関行列（precision から計算、shrinkage/eps 対応） |
 | `coherence()` / `csd()` | コヒーレンス/クロススペクトル計算 |
 
 ## 線形代数

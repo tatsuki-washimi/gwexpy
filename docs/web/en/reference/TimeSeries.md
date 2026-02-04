@@ -6,6 +6,13 @@ Extended TimeSeries with full gwexpy functionality.
 
 See {doc}`api/timeseries` for the API reference.
 
+## Statistics / association
+
+- `correlation(other, method="pearson"|"kendall"|"mic"|"distance")`
+- `partial_correlation(other, controls=..., method="residual"|"precision")`
+- `fastmi(other, grid_size=..., quantile=...)`
+- `granger_causality(other, maxlag=..., test=...)`
+
 ## Pickle / shelve portability
 
 .. warning::

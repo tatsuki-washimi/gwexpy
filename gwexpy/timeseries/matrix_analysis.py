@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 import numpy as np
 from astropy import units as u
+import warnings
 
 logger = logging.getLogger(__name__)
 
@@ -707,6 +708,54 @@ class TimeSeriesMatrixAnalysisMixin:
             nproc = os.cpu_count() or 1
 
         N, M, _ = self.shape
+        num_channels = N * M
+
+        if method == "pearson":
+            try:
+                target = target_timeseries
+                if hasattr(target, "sample_rate") and self.sample_rate != target.sample_rate:
+                    warnings.warn(
+                        "Sample rates do not match. Resampling 'target' to match matrix."
+                    )
+                    target = target.resample(self.sample_rate)
+
+                min_len = min(self.shape[-1], len(target))
+                data = self.value.reshape(-1, self.shape[-1])[:, :min_len]
+                target_vec = np.asarray(target.value[:min_len]).flatten()
+
+                target_centered = target_vec - np.mean(target_vec)
+                data_centered = data - np.mean(data, axis=1, keepdims=True)
+                numerator = data_centered @ target_centered
+                denom = np.linalg.norm(data_centered, axis=1) * np.linalg.norm(
+                    target_centered
+                )
+                with np.errstate(divide="ignore", invalid="ignore"):
+                    scores = numerator / denom
+
+                rows, cols = np.indices((N, M))
+                names = np.asarray(self.names).reshape(-1)
+                df = pd.DataFrame(
+                    {
+                        "row": rows.reshape(-1),
+                        "col": cols.reshape(-1),
+                        "channel": names,
+                        "score": scores,
+                    }
+                )
+                df = df.sort_values("score", ascending=False, key=abs).reset_index(
+                    drop=True
+                )
+                return df
+            except Exception:
+                logger.debug(
+                    "Vectorized Pearson correlation failed; falling back to loop.",
+                    exc_info=True,
+                )
+
+        if nproc > 1:
+            nproc = min(nproc, num_channels)
+            if num_channels < 32:
+                nproc = 1
         results = []
 
         def _run_serial():
@@ -752,3 +801,53 @@ class TimeSeriesMatrixAnalysisMixin:
         df = pd.DataFrame(results)
         df = df.sort_values("score", ascending=False, key=abs).reset_index(drop=True)
         return df
+
+    def partial_correlation_matrix(
+        self: Any,
+        *,
+        estimator: str = "empirical",
+        shrinkage: float | str | None = None,
+        eps: float = 1e-8,
+        return_precision: bool = False,
+    ) -> Any:
+        """
+        Compute partial correlation matrix across all channels.
+        """
+        data = self.value.reshape(-1, self.shape[-1])
+        n_channels, n_samples = data.shape
+        if n_samples < 2:
+            raise ValueError("Need at least 2 samples to compute covariance.")
+
+        if estimator != "empirical":
+            raise ValueError(f"Unknown estimator: {estimator}")
+
+        cov = np.cov(data, rowvar=True)
+
+        if shrinkage is not None:
+            if isinstance(shrinkage, str):
+                if shrinkage != "auto":
+                    raise ValueError(f"Unknown shrinkage: {shrinkage}")
+                shrinkage = min(1.0, n_channels / max(1, n_samples))
+            if not 0.0 <= float(shrinkage) <= 1.0:
+                raise ValueError("shrinkage must be within [0, 1].")
+            avg_var = np.trace(cov) / n_channels
+            cov = (1.0 - float(shrinkage)) * cov + float(shrinkage) * avg_var * np.eye(
+                n_channels
+            )
+
+        if eps is not None and eps > 0:
+            cov = cov + eps * np.eye(n_channels)
+
+        try:
+            precision = np.linalg.inv(cov)
+        except np.linalg.LinAlgError:
+            precision = np.linalg.pinv(cov)
+
+        denom = np.sqrt(np.outer(np.diag(precision), np.diag(precision)))
+        with np.errstate(divide="ignore", invalid="ignore"):
+            pcorr = -precision / denom
+        np.fill_diagonal(pcorr, 1.0)
+
+        if return_precision:
+            return pcorr, precision
+        return pcorr
