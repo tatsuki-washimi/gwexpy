@@ -82,22 +82,31 @@
 <section id="adaptive-whitening">
 <h3>1. アダプティブ・ホワイトニング (Adaptive Whitening)<a class="headerlink" href="#adaptive-whitening" title="Link to this heading"></a></h3>
 <p>標準的なホワイトニングアルゴリズムは、ゼロ除算を防ぐために固定の正規化パラメータ（<code class="docutils literal notranslate"><span class="pre">eps</span></code>）を使用することがよくあります。このパラメータが大きすぎる（例: <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>）と、物理的に意味のある微小な信号（$10^{-21}$ のひずみなど）が埋もれてしまう可能性があります。</p>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、データのスケールに合わせてこのパラメータを自動的に調整します：</p>
+<section id="id3">
+<h4>問題: 単純なホワイトニングは失敗する可能性がある<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># ❌ 悪い例: 適切な正規化なしの手動ホワイトニング</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-21</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">asd</span><span class="p">()</span>
+<span class="n">whitened</span> <span class="o">=</span> <span class="n">data</span> <span class="o">/</span> <span class="n">asd</span>  <span class="c1"># 危険: ゼロに近い値での除算が発生する可能性</span>
+</pre></div>
+</div>
+</section>
+<section id="gwexpy">
+<h4>解決策: GWexpyのアダプティブ・ホワイトニングを使用<a class="headerlink" href="#gwexpy" title="Link to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、データのスケールに合わせて正規化パラメータを自動的に調整します：</p>
 <ul class="simple">
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">eps</span></code> の自動スケーリング</strong>: 正規化フロアは入力データの分散に対して相対的に計算されます。</p></li>
 <li><p><strong>安全フロア</strong>: 極めて静かなデータやゼロ埋めされた領域でも特異点が発生しないよう、最小フロア（<code class="docutils literal notranslate"><span class="pre">SAFE_FLOOR</span> <span class="pre">=</span> <span class="pre">1e-50</span></code>）が設定されています。</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="c1"># 非常に小さな信号を作成 (O(1e-21))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ✅ 良い例: GWexpyの安全なホワイトニング</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-21</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
-
-<span class="c1"># データをホワイトニング</span>
-<span class="c1"># eps=&quot;auto&quot; (デフォルト) により信号が破壊されるのを防ぎます</span>
-<span class="n">whitened</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">whiten</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<span class="n">whitened</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">whiten</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>  <span class="c1"># 自動的に適切な正規化を処理</span>
 </pre></div>
 </div>
+</section>
 </section>
 <section id="robust-ica">
 <h3>2. 堅牢な独立成分分析 (Robust ICA)<a class="headerlink" href="#robust-ica" title="Link to this heading"></a></h3>
@@ -110,19 +119,36 @@
 <section id="safe-logarithmic-scaling">
 <h3>3. 安全な対数スケーリング (Safe Logarithmic Scaling)<a class="headerlink" href="#safe-logarithmic-scaling" title="Link to this heading"></a></h3>
 <p>広いダイナミックレンジを持つデータ（スペクトログラムや PSD など）を可視化する際、データにゼロや極めて小さな値が含まれていると、デシベル（dB）への変換で問題が発生することがあります。</p>
+<section id="id4">
+<h4>問題: アーティファクトが発生する対数スケールプロット<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ❌ 悪い例: 手動の対数変換は -inf 値を生成する可能性</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">asd</span><span class="p">()</span>
+<span class="n">asd_db</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">asd</span><span class="p">)</span>  <span class="c1"># 警告: ゼロに近い値で -inf が発生する可能性</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">asd_db</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h4>解決策: GWexpyの安全なプロット機能を使用<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は「Safe Log」アプローチを採用しています：</p>
 <ul class="simple">
 <li><p><strong>動的フロア</strong>: データの最大値と指定されたダイナミックレンジ（デフォルト 200 dB）に基づいて、フロア値が動的に計算されます。</p></li>
 <li><p><strong>アーティファクトの排除</strong>: これにより <code class="docutils literal notranslate"><span class="pre">-inf</span></code> 値の発生を防ぎ、「無音」部分が白い穴や数値エラーとしてではなく、カラースケールの最下部として正しく描画されます。</p></li>
 </ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ✅ 良い例: GWexpyは対数スケーリングを安全に処理</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">asd</span><span class="p">()</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># 可視化のために自動的に安全な対数スケーリングを適用</span>
+</pre></div>
+</div>
 </section>
-<section id="id3">
-<h3>4. 計算機イプシロンへの配慮<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+</section>
+<section id="id6">
+<h3>4. 計算機イプシロンへの配慮<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p>パッケージ全体で使用される数値定数（分散フロア、コヒーレンスの分母など）は、使用されている浮動小数点型（float32 vs float64）の機械精度（イプシロン）に基づいて導出されており、不要なオーバーヘッドなしに最適な精度を保証します。</p>
 </section>
 </section>
-<section id="id4">
-<h2>ユーザーへの推奨事項<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="id7">
+<h2>ユーザーへの推奨事項<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><strong>手動オフセットの回避</strong>: プロットや処理の前に、恣意的な小さな値（例: <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">+</span> <span class="pre">1e-20</span></code>）を手動で足す必要はありません。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の関数が内部で適切に処理します。</p></li>
 <li><p><strong>デフォルトを信頼する</strong>: <code class="docutils literal notranslate"><span class="pre">whiten()</span></code> や <code class="docutils literal notranslate"><span class="pre">ica_fit()</span></code> などの関数のデフォルトパラメータは、数値的な安全性を考慮して調整されています。可能な限り <code class="docutils literal notranslate"><span class="pre">eps=&quot;auto&quot;</span></code> や <code class="docutils literal notranslate"><span class="pre">tol=&quot;auto&quot;</span></code> を使用してください。</p></li>

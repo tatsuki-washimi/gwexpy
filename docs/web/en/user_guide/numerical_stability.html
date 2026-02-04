@@ -82,22 +82,31 @@ Gravitational-wave strain signals are typically on the order of $10^{-21}$, whil
 <section id="adaptive-whitening">
 <h3>1. Adaptive Whitening<a class="headerlink" href="#adaptive-whitening" title="Link to this heading"></a></h3>
 <p>Standard whitening algorithms often use a fixed regularization parameter (<code class="docutils literal notranslate"><span class="pre">eps</span></code>) to prevent division by zero. If this parameter is too large (e.g., <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>), it can swamp physically significant but numerically small signals (like $10^{-21}$ strain).</p>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> automatically adapts this parameter to the scale of your data:</p>
+<section id="problem-naive-whitening-can-fail">
+<h4>Problem: Naive whitening can fail<a class="headerlink" href="#problem-naive-whitening-can-fail" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># ❌ BAD: Manual whitening without proper regularization</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-21</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">asd</span><span class="p">()</span>
+<span class="n">whitened</span> <span class="o">=</span> <span class="n">data</span> <span class="o">/</span> <span class="n">asd</span>  <span class="c1"># Dangerous: can cause division by near-zero values</span>
+</pre></div>
+</div>
+</section>
+<section id="solution-use-gwexpy-s-adaptive-whitening">
+<h4>Solution: Use GWexpy’s adaptive whitening<a class="headerlink" href="#solution-use-gwexpy-s-adaptive-whitening" title="Link to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> automatically adapts the regularization parameter to the scale of your data:</p>
 <ul class="simple">
 <li><p><strong>Auto-scaling <code class="docutils literal notranslate"><span class="pre">eps</span></code></strong>: The regularization floor is calculated relative to the variance of the input data.</p></li>
 <li><p><strong>Safety Floor</strong>: A minimum floor (<code class="docutils literal notranslate"><span class="pre">SAFE_FLOOR</span> <span class="pre">=</span> <span class="pre">1e-50</span></code>) ensures that even extremely quiet data (or zero-padded regions) does not cause singularities.</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-
-<span class="c1"># Create a very small signal (O(1e-21))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ✅ GOOD: GWexpy&#39;s safe whitening</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-21</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
-
-<span class="c1"># Whiten the data</span>
-<span class="c1"># eps=&quot;auto&quot; (default) ensures the signal is not destroyed</span>
-<span class="n">whitened</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">whiten</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<span class="n">whitened</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">whiten</span><span class="p">(</span><span class="n">eps</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>  <span class="c1"># Automatically handles proper regularization</span>
 </pre></div>
 </div>
+</section>
 </section>
 <section id="robust-independent-component-analysis-ica">
 <h3>2. Robust Independent Component Analysis (ICA)<a class="headerlink" href="#robust-independent-component-analysis-ica" title="Link to this heading"></a></h3>
@@ -110,11 +119,28 @@ Gravitational-wave strain signals are typically on the order of $10^{-21}$, whil
 <section id="safe-logarithmic-scaling">
 <h3>3. Safe Logarithmic Scaling<a class="headerlink" href="#safe-logarithmic-scaling" title="Link to this heading"></a></h3>
 <p>When visualizing data with large dynamic ranges (e.g., spectrograms, PSDs), converting to decibels (dB) can be problematic if the data contains zeros or very small values.</p>
+<section id="problem-log-scale-plots-with-artifacts">
+<h4>Problem: Log-scale plots with artifacts<a class="headerlink" href="#problem-log-scale-plots-with-artifacts" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ❌ BAD: Manual log conversion can produce -inf values</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">asd</span><span class="p">()</span>
+<span class="n">asd_db</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">asd</span><span class="p">)</span>  <span class="c1"># Warning: can produce -inf for near-zero values</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">asd_db</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="solution-use-gwexpy-s-safe-plotting">
+<h4>Solution: Use GWexpy’s safe plotting<a class="headerlink" href="#solution-use-gwexpy-s-safe-plotting" title="Link to this heading"></a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> uses a “Safe Log” approach:</p>
 <ul class="simple">
 <li><p><strong>Dynamic Floor</strong>: A floor is dynamically calculated based on the maximum value in the data and a specified dynamic range (default 200 dB).</p></li>
 <li><p><strong>No Artifacts</strong>: This prevents <code class="docutils literal notranslate"><span class="pre">-inf</span></code> values and ensures that “silence” is rendered as the bottom of the color scale rather than as white holes or numerical errors.</p></li>
 </ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ✅ GOOD: GWexpy handles log scaling safely</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">asd</span><span class="p">()</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># Automatically applies safe log scaling for visualization</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="machine-precision-awareness">
 <h3>4. Machine Precision Awareness<a class="headerlink" href="#machine-precision-awareness" title="Link to this heading"></a></h3>
