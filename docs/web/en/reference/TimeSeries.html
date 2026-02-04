@@ -103,6 +103,15 @@
 <p><strong>Inherits from:</strong> <code class="docutils literal notranslate"><span class="pre">gwpy.timeseries.TimeSeries</span></code></p>
 <p>Extended TimeSeries with full gwexpy functionality.</p>
 <p>See <a class="reference internal" href="api/timeseries.html"><span class="doc">Time Series</span></a> for the API reference.</p>
+<section id="statistics-association">
+<h2>Statistics / association<a class="headerlink" href="#statistics-association" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">correlation(other,</span> <span class="pre">method=&quot;pearson&quot;|&quot;kendall&quot;|&quot;mic&quot;|&quot;distance&quot;)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">partial_correlation(other,</span> <span class="pre">controls=...,</span> <span class="pre">method=&quot;residual&quot;|&quot;precision&quot;)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fastmi(other,</span> <span class="pre">grid_size=...,</span> <span class="pre">quantile=...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">granger_causality(other,</span> <span class="pre">maxlag=...,</span> <span class="pre">test=...)</span></code></p></li>
+</ul>
+</section>
 <section id="pickle-shelve-portability">
 <h2>Pickle / shelve portability<a class="headerlink" href="#pickle-shelve-portability" title="Link to this heading"></a></h2>
 <p>.. warning::

@@ -137,8 +137,20 @@ Create a deep copy of this matrix.
 correlation_vector(self, target_timeseries, method='mic', nproc=None)
 ```
 
-
 Calculate correlation between a target TimeSeries and all channels in this Matrix.
+
+Notes
+-----
+- `method="pearson"` uses a vectorized path (fast for many channels).
+- For small matrices, `nproc` may be throttled to avoid process overhead.
+
+### `partial_correlation_matrix`
+
+```python
+partial_correlation_matrix(self, *, estimator: str = 'empirical', shrinkage: float | str | None = None, eps: float = 1e-08, return_precision: bool = False) -> Any
+```
+
+Compute the partial-correlation matrix across all channels (flattened).
 
 
 ### `crop`
@@ -1170,4 +1182,3 @@ Full extent of the sample axis as a tuple (start, end).
 ### `xunit`
 
 _No documentation available._
-
