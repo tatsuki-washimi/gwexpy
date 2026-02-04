@@ -8,6 +8,7 @@ from .coupling import (
     SigmaThreshold,
     estimate_coupling,
 )
+from .stat_info import association_edges, build_graph
 
 __all__ = [
     "Bruco",
@@ -17,4 +18,6 @@ __all__ = [
     "RatioThreshold",
     "SigmaThreshold",
     "PercentileThreshold",
+    "association_edges",
+    "build_graph",
 ]

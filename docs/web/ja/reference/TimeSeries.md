@@ -64,6 +64,7 @@ gwexpy の pickle は可搬性を優先しており、unpickle 時に **GWpy 型
 | メソッド | 説明 |
 |---------|------|
 | `mean()` / `std()` / `max()` / `min()` / `rms()` | 統計量 |
+| `correlation()` / `partial_correlation()` / `fastmi()` | 相関 / 偏相関 / 相互情報量（FastMI） |
 | `rolling_mean()` / `rolling_std()` 等 | ローリング統計 |
 | `find_peaks()` | ピーク検出 |
 | `instantaneous_phase()` / `instantaneous_frequency()` | 瞬時位相/周波数 |

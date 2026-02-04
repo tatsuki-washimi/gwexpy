@@ -1,23 +1,23 @@
-# Proposal: DeepClean Preprocessing Pipeline Integration
+# 提案: DeepClean 前処理パイプラインの統合
 
-**Date**: 2026-02-04
-**Status**: Proposed
+**日付**: 2026-02-04
+**ステータス**: 提案中
 
-## 1. Overview
+## 1. 概要
 
-This document proposes integrating the preprocessing logic from DeepClean v2 into `gwexpy` as a generalized, reusable module. Currently, DeepClean's preprocessing (splitting, filtering, channel-wise scaling) is tightly coupled with its PyTorch training loop (`LightningDataModule`). By extracting this logic into `gwexpy`, we enable:
+本ドキュメントは、DeepClean v2 の前処理ロジックを、汎用的かつ再利用可能なモジュールとして `gwexpy` に統合することを提案します。現在、DeepClean の前処理（データ分割、フィルタリング、チャンネルごとのスケーリング）は、PyTorch の学習ループ（`LightningDataModule`）と強く結合しています。このロジックを `gwexpy` に抽出することで、以下のメリットが得られます。
 
-1. **Model Agnosticism**: Use the same preprocessing for non-DL models (RandomForest, XGBoost, etc.).
-2. **Ease of Use**: Provide a "one-line" preparation step for noise subtraction tasks.
-3. **Standardization**: Ensure consistent data treatment across different analysis pipelines.
+1. **モデル非依存性**: 深層学習以外のモデル（ランダムフォレスト、XGBoostなど）でも同じ前処理を利用可能にする。
+2. **使いやすさ**: ノイズ除去タスクのための前処理を「1行」で準備できるようにする。
+3. **標準化**: 異なる解析パイプライン間でデータの取り扱いを一貫させる。
 
-## 2. Proposed Architecture
+## 2. 提案アーキテクチャ
 
-We propose adding a new module `gwexpy.signal.preprocessing.deepclean` containing the `DeepCleanPreprocessor` class.
+`gwexpy.signal.preprocessing.deepclean` モジュールを追加し、そこに `DeepCleanPreprocessor` クラスを実装することを提案します。
 
-### 2.1 `DeepCleanPreprocessor` Class
+### 2.1 `DeepCleanPreprocessor` クラス
 
-This class mimics the `scikit-learn` Transformer API (`fit`, `transform`) but is specialized for GW time series data.
+このクラスは `scikit-learn` の Transformer API (`fit`, `transform`) を模倣しますが、重力波時系列データ（GW TimeSeries）に特化しています。
 
 ```python
 class DeepCleanPreprocessor:
@@ -32,56 +32,56 @@ class DeepCleanPreprocessor:
         ...
 ```
 
-#### Key Methods
+#### 主要メソッド
 
 1. **`fit(X, y=None)`**:
-    * Computes statistics (mean, std/median, mad) for each channel in `X` (Witnesses) and `y` (Strain).
-    * Designs the bandpass filter coefficients if frequency bands are specified.
+    * `X` (参照チャンネル) および `y` (ターゲットチャンネル/Strain) の各チャンネルについて統計量（平均、標準偏差/中央値、MAD）を計算します。
+    * 周波数帯域が指定されている場合、バンドパスフィルタの係数を設計します。
 
 2. **`transform(X, y=None)`**:
-    * Applies bandpass filtering (zero-phase `filtfilt`).
-    * Applies standardization (Z-score or Robust).
-    * Returns processed `TimeSeriesMatrix` and `TimeSeries`.
+    * バンドパスフィルタを適用します（ゼロ位相 `filtfilt`）。
+    * 標準化（Z-score または Robust Scaling）を適用します。
+    * 処理済みの `TimeSeriesMatrix` および `TimeSeries` を返します。
 
 3. **`split(X, y)` -> `(X_train, y_train, X_valid, y_valid)`**:
-    * Splits data chronologically based on `valid_frac`.
-    * Ensures the split point respects integer sampling points.
-    * Returns the split datasets, ready for `transform`.
+    * `valid_frac` に基づいてデータを時系列順に分割します。
+    * 分割点が整数のサンプリングポイントになるように調整します。
+    * `transform` の入力としてそのまま使える分割データを返します。
 
-### 2.2 Integration with `TimeSeriesWindowDataset`
+### 2.2 `TimeSeriesWindowDataset` との連携
 
-The workflow for a user would be:
+ユーザーのワークフローは以下のようになります。
 
 ```python
-# 1. Load Data
+# 1. データ読み込み
 witnesses = TimeSeriesMatrix(...)
 strain = TimeSeries(...)
 
-# 2. Preprocess (Split -> Filter -> Scale)
+# 2. 前処理 (分割 -> フィルタ -> スケーリング)
 preprocessor = DeepCleanPreprocessor(sample_rate=4096, valid_frac=0.2)
 X_train, y_train, X_valid, y_valid = preprocessor.split(witnesses, strain)
 
-# Learn scaling/filtering from Train only
+# 学習用データ(Train)のみからスケーリング/フィルタ係数を学習
 preprocessor.fit(X_train, y_train)
 
-# Apply to both
+# 両方に適用
 X_train_proc, y_train_proc = preprocessor.transform(X_train, y_train)
 X_valid_proc, y_valid_proc = preprocessor.transform(X_valid, y_valid)
 
-# 3. Create Datasets (for PyTorch)
+# 3. データセット作成 (PyTorch用)
 train_ds = TimeSeriesWindowDataset(X_train_proc, labels=y_train_proc, ...)
 valid_ds = TimeSeriesWindowDataset(X_valid_proc, labels=y_valid_proc, ...)
 ```
 
-## 3. Implementation Details
+## 3. 実装詳細
 
-* **Filtering**: Leverage `gwpy.signal.filter_design` for filter construction (`butter`).
-* **Scaling**: Use existing `standardize_matrix` logic but wrap it to persist statistics (stateful).
-* **Interop**: Ensure output types are compatible with `gwexpy`'s existing `TimeSeries` ecosystem.
+* **フィルタリング**: `gwpy.signal.filter_design` (`butter`) を活用してフィルタを構築します。
+* **スケーリング**: 既存の `standardize_matrix` のロジックを利用しますが、統計量を保持（ステートフル化）するようにラップします。
+* **相互運用性**: 出力型が `gwexpy` の既存の `TimeSeries` エコシステムと互換性があることを保証します。
 
-## 4. Work Items
+## 4. 作業項目
 
-* [ ] Create `gwexpy/signal/preprocessing/deepclean.py`.
-* [ ] Implement `DeepCleanPreprocessor` class.
-* [ ] Add unit tests verifying numerical layout matches DeepClean original.
-* [ ] Create tutorial notebook `tutorial_DeepClean_Preprocessing.ipynb`.
+* [ ] `gwexpy/signal/preprocessing/deepclean.py` を作成する。
+* [ ] `DeepCleanPreprocessor` クラスを実装する。
+* [ ] DeepClean オリジナル実装と数値的に一致することを検証する単体テストを追加する。
+* [ ] チュートリアルノートブック `tutorial_DeepClean_Preprocessing.ipynb` を作成する。

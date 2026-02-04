@@ -107,3 +107,22 @@ def test_mic_if_available():
 
     assert mic > 0.4  # Sine wave MIC is typically good
     # assert mic > pcc # Usually True for non-linear
+
+
+def test_fastmi_basic():
+    rng = np.random.default_rng(0)
+    n = 512
+    x = rng.normal(size=n)
+    y = x + 0.1 * rng.normal(size=n)
+    z = rng.normal(size=n)
+
+    ts_x = TimeSeries(x, dt=1)
+    ts_y = TimeSeries(y, dt=1)
+    ts_z = TimeSeries(z, dt=1)
+
+    mi_xy = ts_x.fastmi(ts_y, grid_size=64)
+    mi_xz = ts_x.fastmi(ts_z, grid_size=64)
+
+    assert mi_xy >= 0.0
+    assert mi_xz >= 0.0
+    assert mi_xy > mi_xz
