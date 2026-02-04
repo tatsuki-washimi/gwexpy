@@ -65,6 +65,56 @@ GWexpy は GWpy を拡張し、時系列および周波数系列データ解析�
    GWexpyによる時系列データの可視化例
 
 
+実例ギャラリー
+--------------
+
+代表的なケーススタディ:
+
+.. grid:: 3
+
+    .. grid-item-card:: ノイズバジェット解析
+        :link: examples/index
+        :link-type: doc
+        :img-top: ../../_static/images/case_noise_budget_thumb.png
+
+        多チャンネル相関解析とノイズ源特定
+
+    .. grid-item-card:: 伝達関数の測定
+        :link: examples/index
+        :link-type: doc
+        :img-top: ../../_static/images/case_transfer_function_thumb.png
+
+        ボード線図とモデルフィッティング
+
+    .. grid-item-card:: アクティブダンピング
+        :link: examples/index
+        :link-type: doc
+        :img-top: ../../_static/images/case_active_damping_thumb.png
+
+        6自由度MIMO制御シミュレーション
+
+
+ユーザー別学習パス
+------------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 40 40
+
+   * - ユーザー層
+     - まず読む
+     - 次に進む
+   * - 初学者
+     - :doc:`インストール <user_guide/installation>`, :doc:`クイックスタート <user_guide/quickstart>`
+     - :doc:`はじめに <user_guide/getting_started>`, :doc:`チュートリアル <user_guide/tutorials/index>`
+   * - 実験系研究者
+     - :doc:`実例集 <examples/index>`
+     - :doc:`高度な信号処理 <user_guide/tutorials/index>`, :doc:`APIリファレンス <reference/index>`
+   * - GWpyユーザー
+     - :doc:`GWpy移行ガイド <user_guide/gwexpy_for_gwpy_users_ja>`
+     - :doc:`新機能チュートリアル <user_guide/tutorials/index>`
+
+
 主要ドキュメント
 ----------------
 
@@ -106,18 +156,6 @@ GWexpy は GWpy を拡張し、時系列および周波数系列データ解析�
 * :doc:`スカラーフィールドのスライス操作 <user_guide/scalarfield_slicing>` - 多次元データ操作
 * :doc:`数値的安定性と精度 <user_guide/numerical_stability>` - 計算の信頼性
 * :doc:`検証済みアルゴリズム <user_guide/validated_algorithms>` - アルゴリズム検証レポート
-
-
-.. admonition:: 学習フロー
-   :class: note
-
-   **推奨される学習の流れ:**
-
-   1. :doc:`インストール <user_guide/installation>` → 環境構築
-   2. :doc:`クイックスタート <user_guide/quickstart>` → 基本操作
-   3. :doc:`基本チュートリアル <user_guide/getting_started>` → データ構造理解
-   4. :doc:`実例集 <examples/index>` → 応用例を確認
-   5. :doc:`APIリファレンス <reference/index>` → 詳細仕様参照
 
 
 言語 (Language)

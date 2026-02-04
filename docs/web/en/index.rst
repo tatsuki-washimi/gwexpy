@@ -63,6 +63,56 @@ Visual Examples
    Time series visualization example with GWexpy
 
 
+Example Gallery
+---------------
+
+Representative case studies:
+
+.. grid:: 3
+
+    .. grid-item-card:: Noise Budget Analysis
+        :link: examples/index
+        :link-type: doc
+        :img-top: ../../_static/images/case_noise_budget_thumb.png
+
+        Multi-channel correlation and noise source identification
+
+    .. grid-item-card:: Transfer Function Measurement
+        :link: examples/index
+        :link-type: doc
+        :img-top: ../../_static/images/case_transfer_function_thumb.png
+
+        Bode plot and model fitting
+
+    .. grid-item-card:: Active Damping Control
+        :link: examples/index
+        :link-type: doc
+        :img-top: ../../_static/images/case_active_damping_thumb.png
+
+        6-DOF MIMO control simulation
+
+
+Learning Path by User Level
+---------------------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 40 40
+
+   * - User Level
+     - Start Here
+     - Next Steps
+   * - Beginners
+     - :doc:`Installation <user_guide/installation>`, :doc:`Quick Start <user_guide/quickstart>`
+     - :doc:`Getting Started <user_guide/getting_started>`, :doc:`Tutorials <user_guide/tutorials/index>`
+   * - Researchers
+     - :doc:`Examples <examples/index>`
+     - :doc:`Advanced Signal Processing <user_guide/tutorials/index>`, :doc:`API Reference <reference/index>`
+   * - GWpy Users
+     - :doc:`Migration Guide <user_guide/getting_started>`
+     - :doc:`New Feature Tutorials <user_guide/tutorials/index>`
+
+
 Main Documentation
 ------------------
 
@@ -103,18 +153,6 @@ To continue learning:
 * :doc:`ScalarField Slicing <user_guide/scalarfield_slicing>` - Multi-dimensional data manipulation
 * :doc:`Numerical Stability & Accuracy <user_guide/numerical_stability>` - Computational reliability
 * :doc:`Validated Algorithms <user_guide/validated_algorithms>` - Algorithm verification reports
-
-
-.. admonition:: Learning Flow
-   :class: note
-
-   **Recommended learning path:**
-
-   1. :doc:`Installation <user_guide/installation>` → Set up environment
-   2. :doc:`Quick Start <user_guide/quickstart>` → Learn basics
-   3. :doc:`Basic Tutorials <user_guide/getting_started>` → Understand data structures
-   4. :doc:`Examples <examples/index>` → See practical applications
-   5. :doc:`API Reference <reference/index>` → Detailed specifications
 
 
 Language
