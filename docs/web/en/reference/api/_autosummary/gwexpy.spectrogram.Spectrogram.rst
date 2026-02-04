@@ -61,10 +61,12 @@
       ~Spectrogram.is_compatible
       ~Spectrogram.is_contiguous
       ~Spectrogram.item
+      ~Spectrogram.itemset
       ~Spectrogram.max
       ~Spectrogram.mean
       ~Spectrogram.median
       ~Spectrogram.min
+      ~Spectrogram.newbyteorder
       ~Spectrogram.nonzero
       ~Spectrogram.override_unit
       ~Spectrogram.pad
@@ -75,6 +77,7 @@
       ~Spectrogram.plot
       ~Spectrogram.prepend
       ~Spectrogram.prod
+      ~Spectrogram.ptp
       ~Spectrogram.put
       ~Spectrogram.radian
       ~Spectrogram.ratio
@@ -99,7 +102,6 @@
       ~Spectrogram.to
       ~Spectrogram.to_cupy
       ~Spectrogram.to_dask
-      ~Spectrogram.to_device
       ~Spectrogram.to_frequencyseries_list
       ~Spectrogram.to_jax
       ~Spectrogram.to_mne
@@ -142,7 +144,6 @@
       ~Spectrogram.channel
       ~Spectrogram.ctypes
       ~Spectrogram.data
-      ~Spectrogram.device
       ~Spectrogram.df
       ~Spectrogram.dt
       ~Spectrogram.dtype
@@ -157,14 +158,10 @@
       ~Spectrogram.imag
       ~Spectrogram.info
       ~Spectrogram.isscalar
-      ~Spectrogram.itemset
       ~Spectrogram.itemsize
-      ~Spectrogram.mT
       ~Spectrogram.name
       ~Spectrogram.nbytes
       ~Spectrogram.ndim
-      ~Spectrogram.newbyteorder
-      ~Spectrogram.ptp
       ~Spectrogram.real
       ~Spectrogram.shape
       ~Spectrogram.si

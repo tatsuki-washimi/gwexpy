@@ -71,14 +71,6 @@ V. 特殊ツール
 
    advanced_bruco
 
-VI. ケーススタディ (具体例)
----------------------------
-重力波データ解析における実践的な応用例を紹介します。
-
-.. toctree::
-   :maxdepth: 1
-   :caption: ケーススタディ
-
-   case_noise_budget
-   case_transfer_function
-   case_active_damping
+.. note::
+   実践的なケーススタディと応用例は :doc:`../examples/index` に統合されています。
+   ノイズバジェット解析、伝達関数計算、アクティブダンピングなどの実例集を参照してください。
