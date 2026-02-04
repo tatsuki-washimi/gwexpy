@@ -87,6 +87,88 @@ def test_stlt_basic():
     # assert spec.shape == (6, 26) # Sliced
 
 
+def _manual_stlt_first_chunk(ts, window_dur_s, frequencies, sigma=0.0, time_ref="start"):
+    import scipy.signal
+
+    dt_s = ts.dt.to("s").value
+    nperseg = int(np.round(window_dur_s / dt_s))
+    window = scipy.signal.get_window("hann", nperseg)
+
+    if time_ref == "start":
+        t_rel = np.arange(nperseg) * dt_s
+    elif time_ref == "center":
+        t_rel = (np.arange(nperseg) - (nperseg - 1) / 2.0) * dt_s
+    else:
+        raise ValueError("unknown time_ref")
+
+    chunk = ts.value[:nperseg]
+    weighted = chunk * window * np.exp(-sigma * t_rel)
+
+    freqs_val = np.asarray(frequencies, dtype=float)
+    phase = np.exp((-2j * np.pi) * (freqs_val[:, None] * t_rel[None, :]))
+    spec = phase @ weighted
+    return spec * dt_s
+
+
+def test_stlt_frequencies_fft_subset():
+    dt = 0.01 * u.s
+    t = np.arange(100) * dt
+    data = np.sin(2 * np.pi * 10 * t.value)
+    ts = TimeSeries(data, dt=dt, t0=0 * u.s)
+
+    full = ts.stlt(stride="0.1s", window="0.5s")
+    freqs = np.array([0.0, 10.0, 20.0])
+    sub = ts.stlt(stride="0.1s", window="0.5s", frequencies=freqs)
+
+    full_freqs = full.axis2.index.to("Hz").value
+    idx = [int(np.where(np.isclose(full_freqs, f))[0][0]) for f in freqs]
+    assert np.allclose(sub.value, np.take(full.value, idx, axis=2))
+
+
+def test_stlt_frequencies_arbitrary():
+    dt = 0.01 * u.s
+    t = np.arange(100) * dt
+    data = np.sin(2 * np.pi * 10 * t.value)
+    ts = TimeSeries(data, dt=dt, t0=0 * u.s)
+
+    freqs = np.array([3.0, 7.5, 21.3])
+    stlt = ts.stlt(stride="0.1s", window="0.5s", frequencies=freqs)
+
+    expected = _manual_stlt_first_chunk(ts, 0.5, freqs, sigma=0.0, time_ref="start")
+    assert np.allclose(stlt.value[0, 0, :], expected, rtol=1e-7, atol=1e-9)
+
+
+def test_stlt_frequencies_uniform_grid_exact():
+    dt = 0.01 * u.s
+    t = np.arange(100) * dt
+    data = np.sin(2 * np.pi * 10 * t.value)
+    ts = TimeSeries(data, dt=dt, t0=0 * u.s)
+
+    freqs = np.linspace(0.0, 20.0, 201)
+    stlt = ts.stlt(stride="0.1s", window="0.5s", frequencies=freqs)
+
+    expected = _manual_stlt_first_chunk(ts, 0.5, freqs, sigma=0.0, time_ref="start")
+    assert np.allclose(stlt.value[0, 0, :], expected, rtol=1e-7, atol=1e-9)
+
+
+def test_stlt_frequencies_range_validation():
+    dt = 0.01 * u.s
+    data = np.zeros(100)
+    ts = TimeSeries(data, dt=dt, t0=0 * u.s)
+
+    with pytest.raises(ValueError, match="frequencies"):
+        ts.stlt(stride="0.1s", window="0.5s", frequencies=[-1.0], onesided=True)
+
+
+def test_stlt_invalid_scaling():
+    dt = 0.01 * u.s
+    data = np.zeros(100)
+    ts = TimeSeries(data, dt=dt, t0=0 * u.s)
+
+    with pytest.raises(ValueError, match="scaling"):
+        ts.stlt(stride="0.1s", window="0.5s", scaling="bad")
+
+
 def test_stlt_stability():
     dt = 0.01 * u.s
     data = np.zeros(100)

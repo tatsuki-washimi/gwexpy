@@ -211,7 +211,11 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         sigmas : float or array-like or Quantity, optional
             Real part of Laplace frequency s = sigma + j*omega. Default 0.
         frequencies : array-like, optional
-            Output frequencies. Currently ignored (always uses FFT grid).
+            Output frequencies in Hz. If provided, STLT is evaluated at these
+            frequencies (arbitrary points are supported). If None, uses the
+            FFT frequency grid. For performance, the implementation may choose
+            an optimized evaluation strategy (FFT + bin selection, zoom FFT for
+            large uniform grids, or direct DFT for arbitrary frequency lists).
         scaling : str, optional
             'dt' (multiply by dt, discrete integral), 'none' (raw FFT).
             Default 'dt'.
@@ -403,6 +407,66 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             )
 
         # Prepare outputs
+        fs_val = 1.0 / dt_s
+        nyquist = fs_val / 2.0
+        df = fs_val / nperseg
+        tol = df * 1e-9
+
+        def _coerce_frequencies(freqs):
+            if isinstance(freqs, u.Quantity):
+                freqs_val = np.asarray(freqs.to("Hz").value, dtype=float)
+                freqs_q = freqs.to("Hz")
+            else:
+                freqs_val = np.asarray(freqs, dtype=float)
+                freqs_q = u.Quantity(freqs_val, "Hz")
+            if freqs_val.ndim != 1:
+                raise ValueError("frequencies must be a 1D array.")
+            if freqs_val.size == 0:
+                raise ValueError("frequencies must be non-empty.")
+            return freqs_val, freqs_q
+
+        def _validate_frequencies(freqs_val):
+            if onesided:
+                if np.any(freqs_val < -tol) or np.any(freqs_val > nyquist + tol):
+                    raise ValueError(
+                        "frequencies must be within [0, Nyquist] for onesided STLT."
+                    )
+            else:
+                if np.any(freqs_val < -nyquist - tol) or np.any(
+                    freqs_val > nyquist + tol
+                ):
+                    raise ValueError(
+                        "frequencies must be within [-Nyquist, Nyquist] for two-sided STLT."
+                    )
+
+        def _fft_bin_indices(freqs_val):
+            if onesided:
+                k = np.rint(freqs_val / df).astype(int)
+                if np.any(k < 0) or np.any(k > nperseg // 2):
+                    return None
+                if np.max(np.abs(freqs_val - k * df)) > tol:
+                    return None
+                return k
+
+            k = np.rint(freqs_val / df).astype(int)
+            k_mod = k % nperseg
+            grid_freq = np.where(
+                k_mod <= nperseg // 2, k_mod * df, (k_mod - nperseg) * df
+            )
+            if np.max(np.abs(freqs_val - grid_freq)) > tol:
+                return None
+            return k_mod
+
+        freq_mode = "fft"
+        fft_indices = None
+        use_zoom = False
+        zoom_info = None
+        reverse_zoom = False
+        custom_method = None
+        cached_phase = None
+        ZOOM_MIN_M = 256
+        PHASE_CACHE_MAX_M = 256
+
         if frequencies is None:
             if onesided:
                 freqs_val = np.fft.rfftfreq(nperseg, d=dt_s)
@@ -410,20 +474,53 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
                 freqs_val = np.fft.fftfreq(nperseg, d=dt_s)
             freqs_q = u.Quantity(freqs_val, "Hz")
         else:
-            # Just matching axes, we still compute full FFT (optimization for later phase)
-            # If user supplied frequencies, we should warn if they don't match FFT grid?
-            import warnings
+            freqs_val, freqs_q = _coerce_frequencies(frequencies)
+            _validate_frequencies(freqs_val)
 
-            warnings.warn(
-                "Custom `frequencies` argument is currently ignored in `stlt`. "
-                "Output will always use the FFT frequency grid.",
-                UserWarning,
-            )
-            if onesided:
-                freqs_val = np.fft.rfftfreq(nperseg, d=dt_s)
-            else:
-                freqs_val = np.fft.fftfreq(nperseg, d=dt_s)
+            # Snap tiny values to 0 to reduce numeric drift
+            freqs_val = np.where(np.abs(freqs_val) < tol, 0.0, freqs_val)
             freqs_q = u.Quantity(freqs_val, "Hz")
+
+            fft_indices = _fft_bin_indices(freqs_val)
+            if fft_indices is not None:
+                freq_mode = "fft_subset"
+            else:
+                freq_mode = "custom"
+
+                # Check for uniform grid to enable zoom FFT
+                if freqs_val.size >= 2:
+                    diffs = np.diff(freqs_val)
+                    diffs_close = np.allclose(
+                        diffs, diffs[0], rtol=0.0, atol=tol * 10
+                    )
+                    if diffs_close and not np.isclose(diffs[0], 0.0, atol=tol):
+                        step = diffs[0]
+                        reverse_zoom = step < 0
+                        fmin = freqs_val[-1] if reverse_zoom else freqs_val[0]
+                        fmax = freqs_val[0] if reverse_zoom else freqs_val[-1]
+                        span = fmax - fmin
+                        m = freqs_val.size
+                        step_abs = abs(step)
+                        endpoint = abs(span - step_abs * (m - 1)) <= tol * 10
+                        if endpoint or abs(span - step_abs * m) <= tol * 10:
+                            if m > ZOOM_MIN_M:
+                                use_zoom = True
+                                zoom_info = (fmin, fmax, m, endpoint)
+                                custom_method = "zoom"
+                            else:
+                                custom_method = "dft"
+                        else:
+                            custom_method = "dft"
+                    else:
+                        custom_method = "dft"
+                else:
+                    custom_method = "dft"
+
+                # Precompute phase matrix for small frequency sets (DFT path)
+                if custom_method == "dft" and freqs_val.size <= PHASE_CACHE_MAX_M:
+                    cached_phase = np.exp(
+                        (-2j * np.pi) * (freqs_val[:, None] * t_rel[None, :])
+                    )
 
         n_freqs = len(freqs_val)
         n_sigmas = len(sigmas_vals)
@@ -445,8 +542,6 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         elements_per_chunk = nperseg * n_sigmas
         chunk_batch_size = max(1, BATCH_ELEMENTS // elements_per_chunk)
 
-        fft_func = np.fft.rfft if onesided else np.fft.fft
-
         # Precompute effective windows for all sigmas: (n_sigmas, nperseg)
         # decay = exp(-sigma * t)
         # shape: (S, N)
@@ -464,9 +559,51 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             # Broadcasting: (B, 1, N) * (1, S, N) -> (B, S, N)
             weighted_batch = batch_chunks[:, None, :] * effective_windows[None, :, :]
 
-            # FFT along the last axis (time/window axis)
-            # Result shape: (B, S, n_freqs)
-            spec = fft_func(weighted_batch, axis=-1)
+            if freq_mode == "fft":
+                fft_func = np.fft.rfft if onesided else np.fft.fft
+                # FFT along the last axis (time/window axis)
+                # Result shape: (B, S, n_freqs)
+                spec = fft_func(weighted_batch, axis=-1)
+            elif freq_mode == "fft_subset":
+                fft_func = np.fft.rfft if onesided else np.fft.fft
+                spec_full = fft_func(weighted_batch, axis=-1)
+                spec = spec_full[:, :, fft_indices]
+            elif use_zoom and zoom_info is not None:
+                fmin, fmax, m, endpoint = zoom_info
+                spec = scipy.signal.zoom_fft(
+                    weighted_batch,
+                    (fmin, fmax),
+                    m=m,
+                    fs=fs_val,
+                    endpoint=endpoint,
+                    axis=-1,
+                )
+                if reverse_zoom:
+                    spec = spec[:, :, ::-1]
+            else:
+                # Arbitrary frequency evaluation (direct DFT)
+                if cached_phase is not None:
+                    # (B, S, N) x (F, N) -> (B, S, F)
+                    spec = np.tensordot(weighted_batch, cached_phase, axes=([-1], [1]))
+                else:
+                    freq_chunk_size = max(
+                        16, min(256, int(2_000_000 // nperseg) or 16)
+                    )
+                    spec = np.zeros(
+                        (weighted_batch.shape[0], weighted_batch.shape[1], n_freqs),
+                        dtype=np.result_type(weighted_batch.dtype, np.complex64),
+                    )
+                    for i_freq in range(0, n_freqs, freq_chunk_size):
+                        f_end = min(i_freq + freq_chunk_size, n_freqs)
+                        f_chunk = freqs_val[i_freq:f_end]
+                        phase = np.exp(
+                            (-2j * np.pi)
+                            * (f_chunk[:, None] * t_rel[None, :])
+                        )
+                        # (B, S, N) x (F, N) -> (B, S, F)
+                        spec[:, :, i_freq:f_end] = np.tensordot(
+                            weighted_batch, phase, axes=([-1], [1])
+                        )
 
             # Store
             out_cube[i_chunk:end_chunk, :, :] = spec
@@ -477,7 +614,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         elif scaling == "none":
             pass
         else:
-            pass
+            raise ValueError(f"Unknown scaling: {scaling}")
 
         # --- 6. Container ---
         from gwexpy.types.array3d import Array3D
@@ -508,8 +645,8 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             kind="stlt",
             meta={
                 "window": win_dur,
-                "stride": str_dur if stride is not None else None,
-                "overlap": ov_dur if overlap is not None else None,
+                "stride": str_dur,
+                "overlap": ov_dur,
                 "source": self.name,
             },
         )
@@ -737,7 +874,9 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         sift_max_iter : int, default=1000
             Maximum iterations per sifting process.
         stopping_criterion : Any, default='default'
-            Stopping criterion for sifting.
+            If ``'default'`` or ``None``, keep PyEMD defaults. If a numeric
+            value, it is passed to PyEMD's ``std_thr`` stopping criterion.
+            Other types are not supported.
         eemd_noise_std : float, default=0.2
             Standard deviation of added noise for EEMD (ratio of signal std).
         eemd_trials : int, default=100
@@ -793,6 +932,37 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         """
         PyEMD = require_optional("PyEMD")
 
+        def _apply_emd_controls(emd_obj: Any) -> None:
+            if isinstance(sift_max_iter, bool) or not isinstance(
+                sift_max_iter, (int, np.integer)
+            ):
+                raise ValueError("sift_max_iter must be a positive integer.")
+            max_iter = int(sift_max_iter)
+            if max_iter < 1:
+                raise ValueError("sift_max_iter must be >= 1.")
+            if not hasattr(emd_obj, "MAX_ITERATION"):
+                raise AttributeError(
+                    "PyEMD EMD object does not expose MAX_ITERATION."
+                )
+            emd_obj.MAX_ITERATION = max_iter
+
+            if stopping_criterion is None or stopping_criterion == "default":
+                return
+            if isinstance(stopping_criterion, bool):
+                raise ValueError(
+                    "stopping_criterion must be 'default', None, or a numeric std_thr."
+                )
+            if isinstance(stopping_criterion, (int, float, np.number)):
+                if not hasattr(emd_obj, "std_thr"):
+                    raise AttributeError(
+                        "PyEMD EMD object does not expose std_thr."
+                    )
+                emd_obj.std_thr = float(stopping_criterion)
+                return
+            raise ValueError(
+                "stopping_criterion must be 'default', None, or a numeric std_thr."
+            )
+
         # Save and restore RNG state if needed
         saved_rng_state = None
         if random_state is not None:
@@ -804,6 +974,11 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         try:
             if method.lower() == "eemd":
                 decomposer = PyEMD.EEMD(trials=eemd_trials, noise_width=eemd_noise_std)
+                if not hasattr(decomposer, "EMD"):
+                    raise AttributeError(
+                        "PyEMD EEMD object does not expose underlying EMD instance."
+                    )
+                _apply_emd_controls(decomposer.EMD)
 
                 # Apply optional EEMD controls
                 if eemd_parallel is not None:
@@ -850,6 +1025,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
 
             elif method.lower() == "emd":
                 decomposer = PyEMD.EMD()
+                _apply_emd_controls(decomposer)
                 # EMD is deterministic; random_state is not applicable here
                 # (random_state only affects EEMD via noise_seed())
 

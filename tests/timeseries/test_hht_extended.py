@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import types
 from astropy import units as u
 from gwpy.spectrogram import Spectrogram
 
@@ -14,6 +15,51 @@ try:
     PYEMD_AVAILABLE = True
 except (ImportError, AttributeError):
     pass
+
+
+def _fake_pyemd(expected_max_iter, expected_std_thr, default_std_thr=0.2):
+    class SpyEMD:
+        def __init__(self):
+            self.MAX_ITERATION = 1000
+            self.std_thr = default_std_thr
+            self._imfs = None
+            self._residual = None
+
+        def emd(self, data, T=None, max_imf=-1):
+            assert self.MAX_ITERATION == expected_max_iter
+            assert self.std_thr == expected_std_thr
+            self._imfs = np.vstack([data])
+            self._residual = np.zeros_like(data)
+            return self._imfs
+
+        def get_imfs_and_residue(self):
+            return self._imfs, self._residual
+
+    class SpyEEMD:
+        def __init__(self, trials=100, noise_width=0.05, **kwargs):
+            self.trials = trials
+            self.noise_width = noise_width
+            self.parallel = True
+            self.processes = 1
+            self.noise_kind = "normal"
+            self.EMD = SpyEMD()
+            self._imfs = None
+            self._residual = None
+
+        def noise_seed(self, seed):
+            self._seed = seed
+
+        def eemd(self, data, T=None, max_imf=-1, progress=False):
+            assert self.EMD.MAX_ITERATION == expected_max_iter
+            assert self.EMD.std_thr == expected_std_thr
+            self._imfs = np.vstack([data])
+            self._residual = np.zeros_like(data)
+            return self._imfs
+
+        def get_imfs_and_residue(self):
+            return self._imfs, self._residual
+
+    return types.SimpleNamespace(EMD=SpyEMD, EEMD=SpyEEMD)
 
 
 class TestHHTExtended:
@@ -173,3 +219,60 @@ class TestHHTExtended:
         ts = TimeSeries(np.zeros(100), dt=0.01)
         with pytest.raises(ValueError, match="no IMFs"):
             ts.hht(output="spectrogram", emd_kwargs={"max_imf": 0})
+
+
+@pytest.mark.skipif(not PYEMD_AVAILABLE, reason="PyEMD not installed")
+def test_emd_applies_controls_emd(monkeypatch):
+    import gwexpy.timeseries._spectral_special as spectral_special
+
+    fake = _fake_pyemd(expected_max_iter=123, expected_std_thr=0.25)
+    monkeypatch.setattr(spectral_special, "require_optional", lambda name: fake)
+
+    ts = TimeSeries(np.ones(100), dt=0.01)
+    res = ts.emd(method="emd", sift_max_iter=123, stopping_criterion=0.25)
+    assert "IMF1" in res
+
+
+@pytest.mark.skipif(not PYEMD_AVAILABLE, reason="PyEMD not installed")
+def test_emd_applies_controls_eemd(monkeypatch):
+    import gwexpy.timeseries._spectral_special as spectral_special
+
+    fake = _fake_pyemd(expected_max_iter=321, expected_std_thr=0.33)
+    monkeypatch.setattr(spectral_special, "require_optional", lambda name: fake)
+
+    ts = TimeSeries(np.ones(100), dt=0.01)
+    res = ts.emd(
+        method="eemd",
+        sift_max_iter=321,
+        stopping_criterion=0.33,
+        eemd_trials=2,
+        random_state=0,
+    )
+    assert "IMF1" in res
+
+
+@pytest.mark.skipif(not PYEMD_AVAILABLE, reason="PyEMD not installed")
+def test_emd_default_stopping_criterion_no_override(monkeypatch):
+    import gwexpy.timeseries._spectral_special as spectral_special
+
+    sentinel = 0.123
+    fake = _fake_pyemd(
+        expected_max_iter=77, expected_std_thr=sentinel, default_std_thr=sentinel
+    )
+    monkeypatch.setattr(spectral_special, "require_optional", lambda name: fake)
+
+    ts = TimeSeries(np.ones(100), dt=0.01)
+    res = ts.emd(method="emd", sift_max_iter=77, stopping_criterion="default")
+    assert "IMF1" in res
+
+
+@pytest.mark.skipif(not PYEMD_AVAILABLE, reason="PyEMD not installed")
+def test_emd_invalid_sift_max_iter(monkeypatch):
+    import gwexpy.timeseries._spectral_special as spectral_special
+
+    fake = _fake_pyemd(expected_max_iter=1, expected_std_thr=0.2)
+    monkeypatch.setattr(spectral_special, "require_optional", lambda name: fake)
+
+    ts = TimeSeries(np.ones(10), dt=0.01)
+    with pytest.raises(ValueError, match="sift_max_iter"):
+        ts.emd(method="emd", sift_max_iter=0)
