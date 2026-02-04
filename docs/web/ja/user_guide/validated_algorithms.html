@@ -9,6 +9,7 @@
   <title>検証済みアルゴリズム &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
@@ -16,12 +17,11 @@
       <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="数値的安定性と精度" href="numerical_stability.html" />
-    <link rel="prev" title="スカラーフィールドのスライス操作ガイド" href="scalarfield_slicing.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,37 +43,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation.html">インストール</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">検証済みアルゴリズム</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#k-space">k-space計算</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fft">振幅スペクトル（トランジェントFFT）</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#vif">VIF（分散膨張率）</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#arima">予測タイムスタンプ（ARIMA）</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">前提条件と規約</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#mcmc">MCMC固定共分散前提</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#vs">角波数 vs サイクル波数</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">降順軸の符号規約</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">ブートストラップにおけるVIF適用</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">ブートストラップの定常性前提</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id6">検証について</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">実例集 (Examples)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a></li>
 </ul>
 
         </div>
@@ -90,7 +62,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
       <li class="breadcrumb-item active">検証済みアルゴリズム</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/validated_algorithms.md" class="fa fa-github"> Edit on GitHub</a>
@@ -273,10 +244,7 @@ J. Amer. Statist. Assoc. 89(428), 1994</p></li>
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="scalarfield_slicing.html" class="btn btn-neutral float-left" title="スカラーフィールドのスライス操作ガイド" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="numerical_stability.html" class="btn btn-neutral float-right" title="数値的安定性と精度" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

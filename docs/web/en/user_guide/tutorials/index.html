@@ -9,6 +9,7 @@
   <title>Tutorials &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
@@ -16,12 +17,13 @@
       <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="gwexpy TimeSeries New Features Tutorial" href="intro_timeseries.html" />
-    <link rel="prev" title="Numerical Stability and Precision" href="../numerical_stability.html" /> 
+    <link rel="prev" title="Getting Started" href="../getting_started.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,57 +47,27 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorials</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#i-core-data-structures">I. Core Data Structures</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="intro_timeseries.html">TimeSeries Basics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries Basics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_spectrogram.html">Spectrogram Basics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_plotting.html">Plotting Basics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_mapplotting.html">Map Plotting Basics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_interop.html">Interoperability Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#i-core-data-structures">I. Core Data Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#v-specialized-tools">V. Specialized Tools</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="matrix_timeseries.html">TimeSeriesMatrix</a></li>
-<li class="toctree-l4"><a class="reference internal" href="matrix_frequencyseries.html">FrequencySeriesMatrix</a></li>
-<li class="toctree-l4"><a class="reference internal" href="matrix_spectrogram.html">SpectrogramMatrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#iii-high-dimensional-fields">III. High-dimensional Fields</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="field_scalar_intro.html">Scalar Field Basics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="field_scalar_signal.html">Scalar Field Signals</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#iv-advanced-signal-processing">IV. Advanced Signal Processing</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="advanced_fitting.html">Advanced Fitting</a></li>
-<li class="toctree-l4"><a class="reference internal" href="advanced_peak_detection.html">Peak Detection</a></li>
-<li class="toctree-l4"><a class="reference internal" href="advanced_hht.html">HHT Analysis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="advanced_arima.html">ARIMA Forecasting</a></li>
-<li class="toctree-l4"><a class="reference internal" href="advanced_correlation.html">Statistical Correlation Features</a></li>
-<li class="toctree-l4"><a class="reference internal" href="advanced_correlation.html#Advanced-Statistics">Advanced Statistics</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#v-specialized-tools">V. Specialized Tools</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="advanced_bruco.html">Noise Hunting with Bruco</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#vi-case-studies">VI. Case Studies</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="case_noise_budget.html">Noise Budget</a></li>
-<li class="toctree-l4"><a class="reference internal" href="case_transfer_function.html">Transfer Functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="case_active_damping.html">Active Damping</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
 </ul>
 </li>
@@ -200,17 +172,11 @@
 <li class="toctree-l1"><a class="reference internal" href="advanced_bruco.html">Noise Hunting with Bruco</a></li>
 </ul>
 </div>
-</section>
-<section id="vi-case-studies">
-<h2>VI. Case Studies<a class="headerlink" href="#vi-case-studies" title="Link to this heading"></a></h2>
-<p>Practical examples from real-world gravitational wave data analysis.</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Case Studies</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="case_noise_budget.html">Noise Budget</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_transfer_function.html">Transfer Functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="case_active_damping.html">Active Damping</a></li>
-</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Practical case studies and applications are consolidated in <span class="xref std std-doc">../examples/index</span>.
+See the examples section for real-world applications like noise budget analysis,
+transfer function calculations, and active damping.</p>
 </div>
 </section>
 </section>
@@ -219,7 +185,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../numerical_stability.html" class="btn btn-neutral float-left" title="Numerical Stability and Precision" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="intro_timeseries.html" class="btn btn-neutral float-right" title="gwexpy TimeSeries New Features Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

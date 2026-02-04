@@ -9,6 +9,7 @@
   <title>クイックスタート &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
@@ -16,6 +17,7 @@
       <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -46,20 +48,26 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation.html">インストール</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">クイックスタート</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#series">時刻ユーティリティと自動Series生成</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">視覚的な例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">実例ギャラリー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">ユーザー別学習パス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">主要ドキュメント</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">インストール</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">クイックスタート</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwpy">GWpyからの移行</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">複数チャンネル時系列データの生成とプロット</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#timeseriesmatrix">TimeSeriesMatrixから周波数行列への一括変換</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l2"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">実例集 (Examples)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">実例集 (Examples)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id6">次のステップ</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>
@@ -96,49 +104,60 @@
 <p>:::{note}
 より詳しい学習パスは <a class="reference internal" href="getting_started.html"><span class="std std-doc">getting_started</span></a> を参照してください。
 :::</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<section id="gwpy">
+<h2>GWpyからの移行<a class="headerlink" href="#gwpy" title="Link to this heading"></a></h2>
+<p>GWpyコードをGWexpyで使用するには、importを置き換えるだけです：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># GWpy (従来)</span>
+<span class="c1"># from gwpy.timeseries import TimeSeries</span>
+<span class="c1"># from gwpy.frequencyseries import FrequencySeries</span>
 
-<span class="c1"># サンプルデータの生成 (1024 Hz, 4秒間)</span>
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4096</span><span class="p">),</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">1024</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">)</span>
-
-<span class="c1"># バンドパスフィルタの適用 (30 - 300 Hz)</span>
-<span class="n">bandpassed</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
-
-<span class="c1"># 周波数変換 (FFT)</span>
-<span class="n">spectrum</span> <span class="o">=</span> <span class="n">bandpassed</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="c1"># GWexpy（推奨）</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrix</span>
 </pre></div>
 </div>
-<p>コレクション（複数の時系列）の扱い:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+</section>
+<section id="id2">
+<h2>複数チャンネル時系列データの生成とプロット<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>実験的なノイズモデルから複数チャンネルの時系列データを生成します：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.signal.noise</span><span class="w"> </span><span class="kn">import</span> <span class="n">PowerLawNoise</span>
 
+<span class="c1"># ノイズモデルの設定 (1/f ノイズ: beta=1)</span>
+<span class="n">noise_model</span> <span class="o">=</span> <span class="n">PowerLawNoise</span><span class="p">(</span><span class="n">beta</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span>
+
+<span class="c1"># 複数チャンネル時系列データの生成</span>
 <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
-<span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;H1:TEST&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span>
-<span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;L1:TEST&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span> <span class="o">*</span> <span class="mf">0.5</span>
+<span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;H1:STRAIN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">noise_model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>  <span class="c1"># Hanford</span>
+<span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;L1:STRAIN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">noise_model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>  <span class="c1"># Livingston</span>
 
-<span class="c1"># TimeSeriesMatrix に変換</span>
-<span class="n">matrix</span> <span class="o">=</span> <span class="n">tsd</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="c1"># プロット</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">tsd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<section id="series">
-<h2>時刻ユーティリティと自動Series生成<a class="headerlink" href="#series" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_series</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span><span class="p">,</span> <span class="n">from_gps</span>
+</section>
+<section id="timeseriesmatrix">
+<h2>TimeSeriesMatrixから周波数行列への一括変換<a class="headerlink" href="#timeseriesmatrix" title="Link to this heading"></a></h2>
+<p>複数チャンネルの時系列データをFrequencySeriesMatrixに変換し、クロススペクトル密度(CSD)を計算します：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># TimeSeriesDictをmatrixに変換</span>
+<span class="n">ts_matrix</span> <span class="o">=</span> <span class="n">tsd</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
 
-<span class="c1"># GPS時刻への変換</span>
-<span class="n">times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">([</span><span class="s2">&quot;2025-01-01 00:00:00&quot;</span><span class="p">,</span> <span class="s2">&quot;2025-01-01 00:00:01&quot;</span><span class="p">])</span>
-<span class="n">gps</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
-<span class="n">iso</span> <span class="o">=</span> <span class="n">from_gps</span><span class="p">(</span><span class="n">gps</span><span class="p">)</span>
+<span class="c1"># CSD計算（Welch法、重なり50%）</span>
+<span class="n">csm</span> <span class="o">=</span> <span class="n">ts_matrix</span><span class="o">.</span><span class="n">csd</span><span class="p">(</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hann&#39;</span>
+<span class="p">)</span>
 
-<span class="c1"># 軸データから自動的に Series (TimeSeries / FrequencySeries) を作成</span>
-<span class="n">ts_axis</span> <span class="o">=</span> <span class="n">as_series</span><span class="p">((</span><span class="mi">1419724818</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">)</span>
-<span class="n">fs_axis</span> <span class="o">=</span> <span class="n">as_series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;mHz&quot;</span><span class="p">)</span>
+<span class="c1"># 周波数行列としてプロット</span>
+<span class="n">freq_plot</span> <span class="o">=</span> <span class="n">csm</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">freq_plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># 具体的な周波数領域の解析</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;周波数範囲: </span><span class="si">{</span><span class="n">csm</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">csm</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;H1-L1相互スペクトル (10 Hz): </span><span class="si">{</span><span class="n">csm</span><span class="p">[</span><span class="s1">&#39;H1:STRAIN&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;L1:STRAIN&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

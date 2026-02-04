@@ -9,6 +9,7 @@
   <title>実例集 (Examples) &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
@@ -16,11 +17,12 @@
       <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="リファレンス" href="../reference/index.html" />
+    <link rel="next" title="ノイズバジェッティングと多チャンネル相関解析" href="../user_guide/tutorials/case_noise_budget.html" />
     <link rel="prev" title="GWexpy 機能一覧 (GWpyユーザー向け)" href="../user_guide/gwexpy_for_gwpy_users_ja.html" /> 
 </head>
 
@@ -46,39 +48,26 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/installation.html">インストール</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/quickstart.html">クイックスタート</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">実例集 (Examples)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">基本的な使用例</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/intro_timeseries.html">gwexpy TimeSeries 新機能チュートリアル</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/intro_frequencyseries.html">FrequencySeries の新機能と高度な操作</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/intro_spectrogram.html">SpectrogramList と SpectrogramDict のチュートリアル</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/intro_plotting.html">gwexpy Plotting Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">視覚的な例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">実例ギャラリー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">ユーザー別学習パス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">主要ドキュメント</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/installation.html">インストール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/quickstart.html">クイックスタート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">実例集 (Examples)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">基本的な使用例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">高度な使用例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">ケーススタディ</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">高度な使用例</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/field_scalar_intro.html">ScalarField クラス入門</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/matrix_timeseries.html">TimeSeriesMatrix チュートリアル</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/advanced_peak_detection.html">Peak Detection (ピーク検出)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/advanced_arima.html">ARIMAモデルによる時系列予測</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">ケーススタディ</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_noise_budget.html">ノイズバジェッティングと多チャンネル相関解析</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_transfer_function.html">チュートリアル: 伝達関数の測定</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_active_damping.html">6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id6">次のステップ</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>
@@ -154,7 +143,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../user_guide/gwexpy_for_gwpy_users_ja.html" class="btn btn-neutral float-left" title="GWexpy 機能一覧 (GWpyユーザー向け)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../reference/index.html" class="btn btn-neutral float-right" title="リファレンス" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../user_guide/tutorials/case_noise_budget.html" class="btn btn-neutral float-right" title="ノイズバジェッティングと多チャンネル相関解析" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

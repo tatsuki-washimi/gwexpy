@@ -9,6 +9,7 @@
   <title>gwexpy Plotting Introduction &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
@@ -17,6 +18,7 @@
       <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -49,33 +51,28 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../installation.html">インストール</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="index.html#i">I. 基本データ構造</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="intro_timeseries.html">gwexpy TimeSeries 新機能チュートリアル</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_frequencyseries.html">FrequencySeries の新機能と高度な操作</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_spectrogram.html">SpectrogramList と SpectrogramDict のチュートリアル</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">gwexpy Plotting Introduction</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_mapplotting.html">チュートリアル: 全天マップと地理マップのプロット</a></li>
-<li class="toctree-l4"><a class="reference internal" href="intro_interop.html">GWExPy TimeSeries 相互運用性 (Interop) チュートリアル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">視覚的な例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id3">実例ギャラリー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id4">ユーザー別学習パス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id5">主要ドキュメント</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
-<li class="toctree-l3"><a class="reference internal" href="index.html#vi">VI. ケーススタディ (具体例)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">実例集 (Examples)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../examples/index.html">実例集 (Examples)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id6">次のステップ</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
 </ul>
 </li>

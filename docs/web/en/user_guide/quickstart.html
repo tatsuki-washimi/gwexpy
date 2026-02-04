@@ -9,6 +9,7 @@
   <title>Quickstart &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
@@ -16,6 +17,7 @@
       <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -45,21 +47,25 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Quickstart</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#time-utilities-and-auto-series">Time utilities and auto series</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#file-i-o-notes">File I/O notes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pickle-shelve-notes">Pickle / shelve notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#migration-from-gwpy">Migration from GWpy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#generate-and-plot-multi-channel-time-series">Generate and Plot Multi-channel Time Series</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#batch-csd-conversion-time-series-to-frequency-matrix">Batch CSD Conversion: Time Series to Frequency Matrix</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
-<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
 </ul>
 </li>
@@ -93,94 +99,66 @@
              
   <section id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading"></a></h1>
-<p>Create and analyze a simple time series.</p>
+<p>Create and analyze time series data from multiple channels.</p>
 <p>:::{note}
 For a more detailed learning path, see <a class="reference internal" href="getting_started.html"><span class="std std-doc">getting_started</span></a>.
 :::</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<section id="migration-from-gwpy">
+<h2>Migration from GWpy<a class="headerlink" href="#migration-from-gwpy" title="Link to this heading"></a></h2>
+<p>To use GWpy code with GWexpy, simply replace the imports:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># GWpy (legacy)</span>
+<span class="c1"># from gwpy.timeseries import TimeSeries</span>
+<span class="c1"># from gwpy.frequencyseries import FrequencySeries</span>
 
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4096</span><span class="p">),</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">1024</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">)</span>
-<span class="n">bandpassed</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
-<span class="n">spectrum</span> <span class="o">=</span> <span class="n">bandpassed</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+<span class="c1"># GWexpy (recommended)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrix</span>
 </pre></div>
 </div>
-<p>Working with collections:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+</section>
+<section id="generate-and-plot-multi-channel-time-series">
+<h2>Generate and Plot Multi-channel Time Series<a class="headerlink" href="#generate-and-plot-multi-channel-time-series" title="Link to this heading"></a></h2>
+<p>Generate multiple channels of time series data from an experimental noise model:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.signal.noise</span><span class="w"> </span><span class="kn">import</span> <span class="n">PowerLawNoise</span>
 
+<span class="c1"># Setup noise model (1/f noise: beta=1)</span>
+<span class="n">noise_model</span> <span class="o">=</span> <span class="n">PowerLawNoise</span><span class="p">(</span><span class="n">beta</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span>
+
+<span class="c1"># Generate multi-channel time series</span>
 <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
-<span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;H1:TEST&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span>
-<span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;L1:TEST&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span> <span class="o">*</span> <span class="mf">0.5</span>
+<span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;H1:STRAIN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">noise_model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>  <span class="c1"># Hanford</span>
+<span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;L1:STRAIN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">noise_model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>  <span class="c1"># Livingston</span>
 
-<span class="n">matrix</span> <span class="o">=</span> <span class="n">tsd</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-</pre></div>
-</div>
-<section id="time-utilities-and-auto-series">
-<h2>Time utilities and auto series<a class="headerlink" href="#time-utilities-and-auto-series" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_series</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span><span class="p">,</span> <span class="n">from_gps</span>
-
-<span class="n">times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">([</span><span class="s2">&quot;2025-01-01 00:00:00&quot;</span><span class="p">,</span> <span class="s2">&quot;2025-01-01 00:00:01&quot;</span><span class="p">])</span>
-<span class="n">gps</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
-<span class="n">iso</span> <span class="o">=</span> <span class="n">from_gps</span><span class="p">(</span><span class="n">gps</span><span class="p">)</span>
-
-<span class="n">ts_axis</span> <span class="o">=</span> <span class="n">as_series</span><span class="p">((</span><span class="mi">1419724818</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">)</span>
-<span class="n">fs_axis</span> <span class="o">=</span> <span class="n">as_series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;mHz&quot;</span><span class="p">)</span>
+<span class="c1"># Plot</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">tsd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </section>
-<section id="file-i-o-notes">
-<h2>File I/O notes<a class="headerlink" href="#file-i-o-notes" title="Link to this heading"></a></h2>
-<p>gwexpy adds/extends several readers beyond GWpy’s defaults. For WIN (NIED) files,
-gwexpy includes decoding fixes for 0.5-byte (4-bit) and 3-byte (24-bit) compressed
-deltas based on the discussion in:</p>
-<ul class="simple">
-<li><p>Shigeki Nakagawa and Aitaro Kato, “New Module for Reading WIN Format Data in ObsPy”,
-Technical Research Report, Earthquake Research Institute, the University of Tokyo,
-No. 26, pp. 31-36, 2020.</p></li>
-</ul>
-<p>See <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/win.py</span></code> for implementation details.</p>
-</section>
-<section id="pickle-shelve-notes">
-<h2>Pickle / shelve notes<a class="headerlink" href="#pickle-shelve-notes" title="Link to this heading"></a></h2>
-<p>:::{warning}
-Never unpickle data from untrusted sources. <code class="docutils literal notranslate"><span class="pre">pickle</span></code>/<code class="docutils literal notranslate"><span class="pre">shelve</span></code> can execute
-arbitrary code during loading.
-:::</p>
-<p>For portability, gwexpy pickling is designed to return <strong>GWpy types</strong> on load
-(i.e. unpickling does not require gwexpy to be installed).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<section id="batch-csd-conversion-time-series-to-frequency-matrix">
+<h2>Batch CSD Conversion: Time Series to Frequency Matrix<a class="headerlink" href="#batch-csd-conversion-time-series-to-frequency-matrix" title="Link to this heading"></a></h2>
+<p>Transform multiple channels from time domain to frequency domain, computing cross-spectral densities:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert TimeSeriesDict to matrix</span>
+<span class="n">ts_matrix</span> <span class="o">=</span> <span class="n">tsd</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
 
-<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
-<span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
-<span class="c1"># obj is a gwpy.timeseries.TimeSeries</span>
+<span class="c1"># Compute CSD (Welch&#39;s method, 50% overlap)</span>
+<span class="n">csm</span> <span class="o">=</span> <span class="n">ts_matrix</span><span class="o">.</span><span class="n">csd</span><span class="p">(</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hann&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Plot frequency matrix</span>
+<span class="n">freq_plot</span> <span class="o">=</span> <span class="n">csm</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">freq_plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Analyze specific frequency bins</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency range: </span><span class="si">{</span><span class="n">csm</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">csm</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;H1-L1 cross-spectrum (10 Hz): </span><span class="si">{</span><span class="n">csm</span><span class="p">[</span><span class="s1">&#39;H1:STRAIN&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;L1:STRAIN&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Compatibility notes:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>, <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> -&gt; unpickle as GWpy objects.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>, <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> -&gt; unpickle as GWpy collections.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict/List</span></code>, <code class="docutils literal notranslate"><span class="pre">SpectrogramDict/List</span></code> -&gt; unpickle as built-in <code class="docutils literal notranslate"><span class="pre">dict</span></code>/<code class="docutils literal notranslate"><span class="pre">list</span></code> containing GWpy objects.</p></li>
-<li><p>gwexpy-only types (e.g. matrix/field classes) are not covered by this portability contract.</p></li>
-</ul>
-<p>What is preserved (best-effort):</p>
-<ul class="simple">
-<li><p>numeric data (<code class="docutils literal notranslate"><span class="pre">.value</span></code>)</p></li>
-<li><p>axis information (<code class="docutils literal notranslate"><span class="pre">times</span></code> / <code class="docutils literal notranslate"><span class="pre">frequencies</span></code>)</p></li>
-<li><p>metadata commonly supported by GWpy (<code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">channel</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>)</p></li>
-</ul>
-<p>What is not preserved:</p>
-<ul class="simple">
-<li><p>gwexpy-only internal attributes (e.g. <code class="docutils literal notranslate"><span class="pre">_gwex_*</span></code>) and any behavior added only by gwexpy</p></li>
-</ul>
 </section>
 </section>
 

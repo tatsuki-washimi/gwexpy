@@ -9,6 +9,7 @@
   <title>ScalarField Slicing Guide &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
@@ -16,12 +17,11 @@
       <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Validated Algorithms" href="validated_algorithms.html" />
-    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,39 +43,8 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">ScalarField Slicing Guide</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#d-structure-preservation-in-scalarfield">4D Structure Preservation in ScalarField</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#d-structure-preservation">4D Structure Preservation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reducing-dimensions">Reducing Dimensions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#slicing-examples">Slicing Examples</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#frequently-asked-questions-faq">Frequently Asked Questions (FAQ)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#why-preserve-4d-structure">Why preserve 4D structure?</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#what-if-i-need-numpy-like-behavior">What if I need NumPy-like behavior?</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#broadcast-operations-not-working-as-expected">Broadcast operations not working as expected</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#related-links">Related Links</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../examples/index.html">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/index.html">Reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
-</ul>
-</li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GWexpy Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
 </ul>
 
@@ -93,7 +62,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
       <li class="breadcrumb-item active">ScalarField Slicing Guide</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/scalarfield_slicing.md" class="fa fa-github"> Edit on GitHub</a>
@@ -194,10 +162,7 @@
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="validated_algorithms.html" class="btn btn-neutral float-right" title="Validated Algorithms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 
