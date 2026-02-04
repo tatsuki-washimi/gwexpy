@@ -67,3 +67,10 @@ pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.gi
 :::{note}
 `[gw]` エクストラを使用する場合は、上記の「基本インストール」セクションの important を参照してください。
 :::
+
+## 次のステップ
+
+GWexpyのインストールが完了したら、基本的な使い方を学びましょう:
+
+- [クイックスタート](quickstart.md) - 時系列データの生成とプロット
+- [はじめに](getting_started.md) - 完全な学習パス
