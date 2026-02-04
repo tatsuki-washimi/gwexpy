@@ -19,6 +19,7 @@ extensions = [
     "myst_parser",
     "sphinx.ext.intersphinx",
     "nbsphinx",
+    "sphinx_design",
 ]
 
 # nbsphinx configuration
@@ -85,6 +86,7 @@ locale_dirs = ["locales/"]
 gettext_compact = False
 
 html_theme = "sphinx_rtd_theme"
+html_static_path = ['_static']
 
 # User-facing site title/branding (package name remains `gwexpy`).
 html_title = "GWexpy Documentation"

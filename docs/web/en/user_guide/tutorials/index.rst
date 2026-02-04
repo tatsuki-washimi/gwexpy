@@ -71,14 +71,7 @@ Tools for specific noise hunting and diagnostics tasks.
 
    Noise Hunting with Bruco <advanced_bruco>
 
-VI. Case Studies
-----------------
-Practical examples from real-world gravitational wave data analysis.
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Case Studies
-
-   Noise Budget <case_noise_budget>
-   Transfer Functions <case_transfer_function>
-   Active Damping <case_active_damping>
+.. note::
+   Practical case studies and applications are consolidated in :doc:`../examples/index`.
+   See the examples section for real-world applications like noise budget analysis,
+   transfer function calculations, and active damping.

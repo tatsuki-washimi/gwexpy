@@ -1,97 +1,67 @@
 # Quickstart
 
-Create and analyze a simple time series.
+Create and analyze time series data from multiple channels.
 
 :::{note}
 For a more detailed learning path, see [getting_started](getting_started.md).
 :::
 
+## Migration from GWpy
+
+To use GWpy code with GWexpy, simply replace the imports:
+
 ```python
-import numpy as np
-from gwexpy.timeseries import TimeSeries
+# GWpy (legacy)
+# from gwpy.timeseries import TimeSeries
+# from gwpy.frequencyseries import FrequencySeries
 
-ts = TimeSeries(np.random.randn(4096), t0=0, dt=1/1024, name="demo")
-bandpassed = ts.bandpass(30, 300)
-spectrum = bandpassed.fft()
-
-print(spectrum.frequencies[:5])
+# GWexpy (recommended)
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from gwexpy.frequencyseries import FrequencySeriesMatrix
 ```
 
-Working with collections:
+## Generate and Plot Multi-channel Time Series
+
+Generate multiple channels of time series data from an experimental noise model:
 
 ```python
+import numpy as np
 from gwexpy.timeseries import TimeSeriesDict
+from gwexpy.signal.noise import PowerLawNoise
 
+# Setup noise model (1/f noise: beta=1)
+noise_model = PowerLawNoise(beta=1, dt=1/1024)
+
+# Generate multi-channel time series
 tsd = TimeSeriesDict()
-tsd["H1:TEST"] = ts
-tsd["L1:TEST"] = ts * 0.5
+tsd["H1:STRAIN"] = noise_model.generate(duration=64)  # Hanford
+tsd["L1:STRAIN"] = noise_model.generate(duration=64)  # Livingston
 
-matrix = tsd.to_matrix()
-print(matrix.shape)
+# Plot
+plot = tsd.plot()
+plot.show()
 ```
 
-## Time utilities and auto series
+## Batch CSD Conversion: Time Series to Frequency Matrix
+
+Transform multiple channels from time domain to frequency domain, computing cross-spectral densities:
 
 ```python
-import numpy as np
-from astropy import units as u
-import pandas as pd
-from gwexpy import as_series
-from gwexpy.time import to_gps, from_gps
+# Convert TimeSeriesDict to matrix
+ts_matrix = tsd.to_matrix()
 
-times = pd.to_datetime(["2025-01-01 00:00:00", "2025-01-01 00:00:01"])
-gps = to_gps(times)
-iso = from_gps(gps)
+# Compute CSD (Welch's method, 50% overlap)
+csm = ts_matrix.csd(
+    fftlength=4,
+    overlap=0.5,
+    window='hann'
+)
 
-ts_axis = as_series((1419724818 + np.arange(10)) * u.s, unit="h")
-fs_axis = as_series(np.arange(5) * u.Hz, unit="mHz")
+# Plot frequency matrix
+freq_plot = csm.plot()
+freq_plot.show()
+
+# Analyze specific frequency bins
+print(f"Frequency range: {csm.frequencies[0]:.1f} - {csm.frequencies[-1]:.1f} Hz")
+print(f"H1-L1 cross-spectrum (10 Hz): {csm['H1:STRAIN', 'L1:STRAIN'].interpolate(10).value:.2e}")
 ```
-
-## File I/O notes
-
-gwexpy adds/extends several readers beyond GWpy's defaults. For WIN (NIED) files,
-gwexpy includes decoding fixes for 0.5-byte (4-bit) and 3-byte (24-bit) compressed
-deltas based on the discussion in:
-
-- Shigeki Nakagawa and Aitaro Kato, "New Module for Reading WIN Format Data in ObsPy",
-  Technical Research Report, Earthquake Research Institute, the University of Tokyo,
-  No. 26, pp. 31-36, 2020.
-
-See `gwexpy/timeseries/io/win.py` for implementation details.
-
-## Pickle / shelve notes
-
-:::{warning}
-Never unpickle data from untrusted sources. `pickle`/`shelve` can execute
-arbitrary code during loading.
-:::
-
-For portability, gwexpy pickling is designed to return **GWpy types** on load
-(i.e. unpickling does not require gwexpy to be installed).
-
-```python
-import pickle
-import numpy as np
-from gwexpy.timeseries import TimeSeries
-
-ts = TimeSeries(np.arange(10.0), sample_rate=1.0, t0=0, unit="m")
-obj = pickle.loads(pickle.dumps(ts))
-# obj is a gwpy.timeseries.TimeSeries
-```
-
-Compatibility notes:
-
-- `TimeSeries`, `FrequencySeries`, `Spectrogram` -> unpickle as GWpy objects.
-- `TimeSeriesDict`, `TimeSeriesList` -> unpickle as GWpy collections.
-- `FrequencySeriesDict/List`, `SpectrogramDict/List` -> unpickle as built-in `dict`/`list` containing GWpy objects.
-- gwexpy-only types (e.g. matrix/field classes) are not covered by this portability contract.
-
-What is preserved (best-effort):
-
-- numeric data (`.value`)
-- axis information (`times` / `frequencies`)
-- metadata commonly supported by GWpy (`unit`, `name`, `channel`, `epoch`)
-
-What is not preserved:
-
-- gwexpy-only internal attributes (e.g. `_gwex_*`) and any behavior added only by gwexpy

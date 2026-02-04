@@ -6,51 +6,63 @@
 より詳しい学習パスは [getting_started](getting_started.md) を参照してください。
 :::
 
+## GWpyからの移行
+
+GWpyコードをGWexpyで使用するには、importを置き換えるだけです：
+
 ```python
-import numpy as np
-from gwexpy.timeseries import TimeSeries
+# GWpy (従来)
+# from gwpy.timeseries import TimeSeries
+# from gwpy.frequencyseries import FrequencySeries
 
-# サンプルデータの生成 (1024 Hz, 4秒間)
-ts = TimeSeries(np.random.randn(4096), t0=0, dt=1/1024, name="demo")
-
-# バンドパスフィルタの適用 (30 - 300 Hz)
-bandpassed = ts.bandpass(30, 300)
-
-# 周波数変換 (FFT)
-spectrum = bandpassed.fft()
-
-print(spectrum.frequencies[:5])
+# GWexpy（推奨）
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from gwexpy.frequencyseries import FrequencySeriesMatrix
 ```
 
-コレクション（複数の時系列）の扱い:
+## 複数チャンネル時系列データの生成とプロット
+
+実験的なノイズモデルから複数チャンネルの時系列データを生成します：
 
 ```python
+import numpy as np
 from gwexpy.timeseries import TimeSeriesDict
+from gwexpy.signal.noise import PowerLawNoise
 
+# ノイズモデルの設定 (1/f ノイズ: beta=1)
+noise_model = PowerLawNoise(beta=1, dt=1/1024)
+
+# 複数チャンネル時系列データの生成
 tsd = TimeSeriesDict()
-tsd["H1:TEST"] = ts
-tsd["L1:TEST"] = ts * 0.5
+tsd["H1:STRAIN"] = noise_model.generate(duration=64)  # Hanford
+tsd["L1:STRAIN"] = noise_model.generate(duration=64)  # Livingston
 
-# TimeSeriesMatrix に変換
-matrix = tsd.to_matrix()
-print(matrix.shape)
+# プロット
+plot = tsd.plot()
+plot.show()
 ```
 
-## 時刻ユーティリティと自動Series生成
+## TimeSeriesMatrixから周波数行列への一括変換
+
+複数チャンネルの時系列データをFrequencySeriesMatrixに変換し、クロススペクトル密度(CSD)を計算します：
 
 ```python
-import numpy as np
-from astropy import units as u
-import pandas as pd
-from gwexpy import as_series
-from gwexpy.time import to_gps, from_gps
+# TimeSeriesDictをmatrixに変換
+ts_matrix = tsd.to_matrix()
 
-# GPS時刻への変換
-times = pd.to_datetime(["2025-01-01 00:00:00", "2025-01-01 00:00:01"])
-gps = to_gps(times)
-iso = from_gps(gps)
+# CSD計算（Welch法、重なり50%）
+csm = ts_matrix.csd(
+    fftlength=4,
+    overlap=0.5,
+    window='hann'
+)
 
-# 軸データから自動的に Series (TimeSeries / FrequencySeries) を作成
-ts_axis = as_series((1419724818 + np.arange(10)) * u.s, unit="h")
-fs_axis = as_series(np.arange(5) * u.Hz, unit="mHz")
+# 周波数行列としてプロット
+freq_plot = csm.plot()
+freq_plot.show()
+
+# 具体的な周波数領域の解析
+print(f"周波数範囲: {csm.frequencies[0]:.1f} - {csm.frequencies[-1]:.1f} Hz")
+print(f"H1-L1相互スペクトル (10 Hz): {csm['H1:STRAIN', 'L1:STRAIN'].interpolate(10).value:.2e}")
 ```
+

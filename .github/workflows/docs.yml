@@ -35,7 +35,7 @@ jobs:
         run: |
           conda install -y "scipy<1.14" pandas matplotlib h5py gwpy nds2-client lalsuite framel \
             sphinx sphinx_rtd_theme myst-parser nbsphinx pandoc
-          pip install sphinx-intl
+          pip install sphinx-intl sphinx-design
           pip install --no-deps .
 
       - name: Build documentation
