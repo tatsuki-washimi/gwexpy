@@ -73,3 +73,10 @@ conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecp
 pip install ".[gw]"
 ```
 :::
+
+## Next Steps
+
+Now that GWexpy is installed, learn the basics with:
+
+- [Quickstart](quickstart.md) - Generate and plot time series data
+- [Getting Started](getting_started.md) - Complete learning path
