@@ -708,6 +708,8 @@ TimeSeries.emd(
 |---|---|---|---|
 | `method` | str | "eemd" | 分解手法 ('emd' または 'eemd') |
 | `max_imf` | int, None | None | 抽出する最大 IMF 数 (None は全て) |
+| `sift_max_iter` | int | 1000 | 1回の sifting の最大反復回数 (PyEMD の `MAX_ITERATION`) |
+| `stopping_criterion` | Any | "default" | `"default"` または `None` なら PyEMD 既定値を使用。数値なら `std_thr` として使用 |
 | `eemd_noise_std` | float | 0.2 | EEMD の付加ノイズの標準偏差 (信号の std に対する比率) |
 | `eemd_trials` | int | 100 | EEMD の試行回数 |
 | `random_state` | int, None | None | 乱数シード。EEMD は確率的な手法であるため、再現性が必要な場合に指定します。EMD は確定的であるため無視されます |
@@ -723,6 +725,27 @@ TimeSeries.emd(
 
 - **再現性**: EEMD は確率的なプロセスです。再現性を確保するには `random_state` を指定するか、PyEMD の `noise_seed()` を使用してください。EMD メソッドは確定的です。
 - **残差**: PyEMD のバージョンによっては残差の抽出方法が異なる場合がありますが、本メソッドは適切にハンドリングして出力します。
+- **停止条件**: `stopping_criterion` に数値を渡すと、PyEMD の `std_thr` として扱われます。`"default"` または `None` の場合は既定値を使用します。
+
+### 例
+
+```python
+# 推奨: hht() で一括実行
+result = ts.hht(
+    emd_method="eemd",
+    emd_kwargs={
+        "eemd_trials": 20,
+        "random_state": 42,
+        "sift_max_iter": 200,
+        "stopping_criterion": 0.2,
+    },
+    hilbert_kwargs={"pad": 100, "if_smooth": 11},
+    output="dict",
+)
+
+# EMD だけを直接実行する場合
+imfs = ts.emd(method="emd", sift_max_iter=200, stopping_criterion=0.2)
+```
 
 ---
 

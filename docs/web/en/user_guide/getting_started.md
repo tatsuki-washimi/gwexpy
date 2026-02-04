@@ -1,6 +1,44 @@
 # Getting Started
 
-Welcome to GWexpy! This guide provides a learning path for getting started with GWexpy.
+This page provides a **structured learning path** for GWexpy users. Whether you're new to time series analysis or migrating from GWpy, you'll find tailored recommendations for your background.
+
+**What you'll learn:**
+
+- Installation and setup
+- Core data structures (TimeSeries, FrequencySeries, Spectrogram)
+- Multi-channel analysis and matrix containers
+- Advanced signal processing techniques
+- Real-world application examples
+
+**Time estimate:** 2-3 hours for beginners, 30-60 minutes for GWpy users
+
+:::{tip}
+If you're in a hurry, start with [Quickstart](quickstart.md) for a 5-minute overview.
+:::
+
+:::{admonition} About This Page
+:class: note
+
+This page provides a **detailed learning roadmap**. If you haven't visited the [documentation homepage](../index) yet, start there to understand GWexpy's overall capabilities.
+:::
+
+## Quick Example
+
+Here's the most basic GWexpy workflow:
+
+```python
+from gwexpy.timeseries import TimeSeries
+import numpy as np
+
+# Create a time series
+ts = TimeSeries(np.random.randn(1000), sample_rate=100, t0=0)
+
+# Plot it
+plot = ts.plot()
+plot.show()
+```
+
+For more examples, continue to [Quickstart](quickstart.md).
 
 ## Prerequisites
 

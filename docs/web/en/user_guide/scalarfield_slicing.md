@@ -1,5 +1,18 @@
 # ScalarField Slicing Guide
 
+**Overview:** This guide explains how `ScalarField` preserves 4D structure during indexing operations, which differs from NumPy and GWpy behavior. Understanding this behavior is essential for correct domain transformations (time/frequency, space/k-space) and FFT operations.
+
+**Target Audience:** Intermediate users working with multi-dimensional field data
+
+**Prerequisites:**
+
+- Basic familiarity with NumPy array indexing
+- Understanding of [ScalarField basics](tutorials/field_scalar_intro.ipynb)
+
+:::{tip}
+If you're encountering unexpected shapes after slicing operations, jump to the [FAQ section](#frequently-asked-questions-faq) for quick answers.
+:::
+
 ## 4D Structure Preservation in ScalarField
 
 `ScalarField` always maintains a 4D structure, even after indexing operations. This differs from the standard behavior of NumPy arrays and GWpy.

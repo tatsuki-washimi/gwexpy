@@ -168,6 +168,11 @@ pickle 可搬性メモ: gwexpy の `TimeSeriesList` は unpickle 時に **GWpy �
 
 各アイテムに STLT を適用します。TimePlaneTransform のリストを返します。
 
+補足
+-----
+引数はすべて `TimeSeries.stlt()` に転送されます。特に `frequencies`（Hz）を指定すると、
+FFT グリッドではなく任意周波数点で STLT を評価できます。
+
 ### `to_matrix`
 
 ```python

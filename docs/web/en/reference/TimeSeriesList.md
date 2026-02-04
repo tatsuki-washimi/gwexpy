@@ -698,6 +698,12 @@ stlt(self, *args, **kwargs)
 
 Apply stlt to each item. Returns a list of TimePlaneTransforms.
 
+Notes
+-----
+All arguments are forwarded to `TimeSeries.stlt()`. In particular, you can pass
+`frequencies` (Hz) to evaluate STLT at arbitrary frequency points instead of the
+FFT grid.
+
 ### `taper`
 
 ```python
