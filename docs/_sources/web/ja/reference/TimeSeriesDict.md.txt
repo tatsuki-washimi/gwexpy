@@ -123,6 +123,15 @@ phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any
 
 各 TimeSeries のスペクトログラムを計算します。
 
+### `stlt`
+
+各アイテムに STLT を適用します。TimePlaneTransform の辞書を返します。
+
+補足
+-----
+引数はすべて `TimeSeries.stlt()` に転送されます。特に `frequencies`（Hz）を指定すると、
+FFT グリッドではなく任意周波数点で STLT を評価できます。
+
 ### `to_matrix`
 
 TimeSeriesMatrix に変換します。

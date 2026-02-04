@@ -55,6 +55,7 @@
 <li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#quick-example">Quick Example</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#learning-path">Learning Path</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#next-steps">Next Steps</a></li>
@@ -99,7 +100,39 @@
              
   <section id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
-<p>Welcome to GWexpy! This guide provides a learning path for getting started with GWexpy.</p>
+<p>This page provides a <strong>structured learning path</strong> for GWexpy users. Whether you’re new to time series analysis or migrating from GWpy, you’ll find tailored recommendations for your background.</p>
+<p><strong>What you’ll learn:</strong></p>
+<ul class="simple">
+<li><p>Installation and setup</p></li>
+<li><p>Core data structures (TimeSeries, FrequencySeries, Spectrogram)</p></li>
+<li><p>Multi-channel analysis and matrix containers</p></li>
+<li><p>Advanced signal processing techniques</p></li>
+<li><p>Real-world application examples</p></li>
+</ul>
+<p><strong>Time estimate:</strong> 2-3 hours for beginners, 30-60 minutes for GWpy users</p>
+<p>:::{tip}
+If you’re in a hurry, start with <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a> for a 5-minute overview.
+:::</p>
+<p>:::{admonition} About This Page
+:class: note</p>
+<p>This page provides a <strong>detailed learning roadmap</strong>. If you haven’t visited the <a class="reference internal" href="../index.html"><span class="doc std std-doc">documentation homepage</span></a> yet, start there to understand GWexpy’s overall capabilities.
+:::</p>
+<section id="quick-example">
+<h2>Quick Example<a class="headerlink" href="#quick-example" title="Link to this heading"></a></h2>
+<p>Here’s the most basic GWexpy workflow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Create a time series</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Plot it</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>For more examples, continue to <a class="reference internal" href="quickstart.html"><span class="std std-doc">Quickstart</span></a>.</p>
+</section>
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
 <ul class="simple">

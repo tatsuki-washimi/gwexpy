@@ -56,9 +56,10 @@
 <li class="toctree-l3"><a class="reference internal" href="installation.html">インストール</a></li>
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">はじめに (Getting Started)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">前提知識</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">学習パス</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id8">次のステップ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1">クイック例</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">前提知識</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">学習パス</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">次のステップ</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
@@ -100,33 +101,59 @@
              
   <section id="getting-started">
 <h1>はじめに (Getting Started)<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
+<p>このページでは、GWexpyユーザー向けに<strong>体系的な学習パス</strong>を提供します。時系列解析の初心者でも、GWpyからの移行者でも、あなたのバックグラウンドに合わせた推奨事項が見つかります。</p>
+<p><strong>学べる内容:</strong></p>
+<ul class="simple">
+<li><p>インストールとセットアップ</p></li>
+<li><p>基本データ構造（TimeSeries, FrequencySeries, Spectrogram）</p></li>
+<li><p>多チャンネル解析と行列コンテナ</p></li>
+<li><p>高度な信号処理技術</p></li>
+<li><p>実世界での応用例</p></li>
+</ul>
+<p><strong>所要時間:</strong> 初心者は2-3時間、GWpyユーザーは30-60分</p>
+<p>:::{tip}
+お急ぎの場合は、<a class="reference internal" href="quickstart.html"><span class="std std-doc">クイックスタート</span></a>で5分間の概要をご覧ください。
+:::</p>
 <p>:::{admonition} このページについて
 :class: note</p>
-<p>このページでは、GWexpyの詳細な学習パスを提示します。
-まだ <a class="reference internal" href="../index.html"><span class="doc std std-doc">トップページ</span></a> をご覧になっていない場合は、
-まずそちらで全体像をご確認ください。
+<p>このページでは<strong>詳細な学習ロードマップ</strong>を提供します。まだ<a class="reference internal" href="../index.html"><span class="doc std std-doc">ドキュメントトップページ</span></a>をご覧になっていない場合は、まずそちらでGWexpyの全体像をご確認ください。
 :::</p>
-<p>GWexpyへようこそ！このガイドでは、GWexpyの学習パスを紹介します。</p>
 <section id="id1">
-<h2>前提知識<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2>クイック例<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>最も基本的なGWexpyワークフローを示します：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># 時系列データを作成</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># プロット</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>詳細は <a class="reference internal" href="quickstart.html"><span class="std std-doc">クイックスタート</span></a> を参照してください。</p>
+</section>
+<section id="id2">
+<h2>前提知識<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Python 3.9+ の基本的な知識</p></li>
 <li><p>NumPy の基本（配列操作）</p></li>
 <li><p>（オプション）GWpy の経験</p></li>
 </ul>
 </section>
-<section id="id2">
-<h2>学習パス<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <section id="id3">
-<h3>1. インストール<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<h2>学習パス<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>1. インストール<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <p>まず <a class="reference internal" href="installation.html"><span class="std std-doc">installation</span></a> でGWexpyをインストールしてください。</p>
 </section>
-<section id="id4">
-<h3>2. クイックスタート<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<section id="id5">
+<h3>2. クイックスタート<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <p><a class="reference internal" href="quickstart.html"><span class="std std-doc">quickstart</span></a> で基本的な使い方を学びましょう。</p>
 </section>
-<section id="id5">
-<h3>3. 基本データ構造（推奨順）<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<section id="id6">
+<h3>3. 基本データ構造（推奨順）<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p><strong>初心者向け</strong></p>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="tutorials/intro_timeseries.html"><span class="std std-doc">intro_timeseries</span></a> - 時系列データの基本</p></li>
@@ -139,8 +166,8 @@
 <li><p><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html"><span class="std std-doc">gwexpy_for_gwpy_users_ja</span></a> - GWpyからの移行ガイド</p></li>
 </ul>
 </section>
-<section id="id6">
-<h3>4. 高度なトピック<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<section id="id7">
+<h3>4. 高度なトピック<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <p><strong>多チャンネル &amp; 行列</strong></p>
 <ul class="simple">
 <li><p><a class="reference internal" href="tutorials/matrix_timeseries.html"><span class="std std-doc">matrix_timeseries</span></a> - 時系列行列</p></li>
@@ -160,8 +187,8 @@
 <li><p><a class="reference internal" href="tutorials/advanced_correlation.html"><span class="std std-doc">advanced_correlation</span></a> - 相関解析</p></li>
 </ul>
 </section>
-<section id="id7">
-<h3>5. 実践例<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id8">
+<h3>5. 実践例<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <p>[<a class="reference internal" href="../examples/index.html"><span class="doc">実例集ギャラリー</span></a>]で実世界の応用例を参照できます：</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="tutorials/case_noise_budget.html"><span class="std std-doc">case_noise_budget</span></a> - ノイズバジェット解析</p></li>
@@ -170,8 +197,8 @@
 </ul>
 </section>
 </section>
-<section id="id8">
-<h2>次のステップ<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<section id="id9">
+<h2>次のステップ<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>[<a class="reference internal" href="../examples/index.html"><span class="doc">実例集ギャラリー</span></a>] - 視覚的な使用例とケーススタディ</p></li>
 <li><p>全チュートリアル一覧: [<a class="reference internal" href="tutorials/index.html"><span class="doc">tutorials/index</span></a>]</p></li>

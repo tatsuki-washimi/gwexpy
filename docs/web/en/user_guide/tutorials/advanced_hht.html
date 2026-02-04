@@ -110,13 +110,13 @@
 </div>
 <section id="Hilbert-Huang-Transform-(HHT)-Analysis-Tutorial">
 <h1>Hilbert-Huang Transform (HHT) Analysis Tutorial<a class="headerlink" href="#Hilbert-Huang-Transform-(HHT)-Analysis-Tutorial" title="Link to this heading"></a></h1>
-<p>This tutorial explains the procedure for <strong>Hilbert-Huang Transform (HHT)</strong> analysis using <strong>gwexpy</strong>. HHT is well-suited for analyzing nonlinear and non-stationary signals, and is a powerful method for extracting local frequency variations (instantaneous frequency) that cannot be captured by conventional Fourier transform or wavelet transform.</p>
+<p>This tutorial demonstrates the <strong>recommended HHT workflow</strong> in <strong>gwexpy</strong> using <code class="docutils literal notranslate"><span class="pre">TimeSeries.hht()</span></code>. HHT is well-suited for nonlinear and non-stationary signals and provides instantaneous frequency information that is difficult to capture with STFT or wavelets.</p>
 <p>HHT consists of two main steps:</p>
 <ol class="arabic simple">
-<li><p><strong>Empirical Mode Decomposition (EMD)</strong>: Decomposes the signal into Intrinsic Mode Functions (IMFs).</p></li>
-<li><p><strong>Hilbert Spectral Analysis</strong>: Performs Hilbert transform on each IMF to calculate instantaneous amplitude and instantaneous frequency.</p></li>
+<li><p><strong>Empirical Mode Decomposition (EMD/EEMD)</strong>: Decomposes the signal into Intrinsic Mode Functions (IMFs) and a residual.</p></li>
+<li><p><strong>Hilbert Spectral Analysis</strong>: Computes instantaneous amplitude and frequency for each IMF.</p></li>
 </ol>
-<p><strong>Note</strong>: To use this feature, the <code class="docutils literal notranslate"><span class="pre">PyEMD</span></code> (EMD-signal) package must be installed.</p>
+<p><strong>Note</strong>: This tutorial requires the <code class="docutils literal notranslate"><span class="pre">PyEMD</span></code> (EMD-signal) package.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>EMD-signal
 </pre></div>
 </div>
@@ -138,17 +138,17 @@ except ImportError:
     raise ImportError(
         &quot;This tutorial requires &#39;PyEMD&#39; (EMD-signal). Please run: pip install EMD-signal&quot;
     )
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <section id="1.-Creating-Simulation-Data">
 <h2>1. Creating Simulation Data<a class="headerlink" href="#1.-Creating-Simulation-Data" title="Link to this heading"></a></h2>
-<p>To verify the effectiveness of EMD, we will create a non-stationary synthetic signal with the following characteristics:</p>
-<ol class="arabic simple">
-<li><p><strong>Low-frequency trend</strong>: 5 Hz sine wave</p></li>
-<li><p><strong>Chirp signal</strong>: Component with frequency increasing over time (~100 Hz)</p></li>
-<li><p><strong>Linear trend</strong>: Linear drift</p></li>
-</ol>
+<p>We create a synthetic, non-stationary signal:</p>
+<ul class="simple">
+<li><p>A low-frequency sine (5 Hz)</p></li>
+<li><p>A chirp (80 → 120 Hz)</p></li>
+<li><p>A linear trend</p></li>
+</ul>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -168,126 +168,106 @@ data = TimeSeries(s1 + s2 + trend, dt=dt, unit=&quot;V&quot;, name=&quot;Simulat
 # Plot
 plot = data.plot(title=&quot;Original Simulation Signal&quot;)
 plot.show()
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 </section>
-<section id="2.-Empirical-Mode-Decomposition-(EMD)">
-<h2>2. Empirical Mode Decomposition (EMD)<a class="headerlink" href="#2.-Empirical-Mode-Decomposition-(EMD)" title="Link to this heading"></a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> can perform decomposition directly through the <code class="docutils literal notranslate"><span class="pre">emd()</span></code> method. The <code class="docutils literal notranslate"><span class="pre">emd()</span></code> method functions as a <code class="docutils literal notranslate"><span class="pre">PyEMD</span></code> wrapper and returns the result as a <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>.</p>
-<p>Here we use basic <strong>EMD</strong>, but <strong>EEMD (Ensemble EMD)</strong> is also optionally available.</p>
+<section id="2.-Recommended-workflow:-TimeSeries.hht()">
+<h2>2. Recommended workflow: <code class="docutils literal notranslate"><span class="pre">TimeSeries.hht()</span></code><a class="headerlink" href="#2.-Recommended-workflow:-TimeSeries.hht()" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries.hht()</span></code> runs EMD/EEMD and Hilbert analysis in one step. We pass:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">emd_kwargs</span></code>: EEMD settings (fewer trials for speed in this tutorial)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hilbert_kwargs</span></code>: padding + smoothing for stable instantaneous frequency</p></li>
+</ul>
+<p><strong>Tip</strong>: EEMD is stochastic; set <code class="docutils literal notranslate"><span class="pre">random_state</span></code> for reproducibility.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span># Execute EMD
-# Setting method=&#39;eemd&#39; will run Ensemble EMD (takes longer computation time)
-imfs = data.emd(method=&quot;emd&quot;)
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>emd_kwargs = {
+    &quot;eemd_trials&quot;: 20,
+    &quot;random_state&quot;: 42,
+    &quot;sift_max_iter&quot;: 200,
+    &quot;stopping_criterion&quot;: 0.2,
+}
+hilbert_kwargs = {
+    &quot;pad&quot;: 100,
+    &quot;if_smooth&quot;: 11,
+}
 
-print(&quot;Extracted IMFs:&quot;, list(imfs.keys()))
+result = data.hht(
+    emd_method=&quot;eemd&quot;,
+    emd_kwargs=emd_kwargs,
+    hilbert_kwargs=hilbert_kwargs,
+    output=&quot;dict&quot;,
+)
 
-# Plot all IMFs
-plot = imfs.plot(figsize=(10, 12), sharex=True, title=&quot;Intrinsic Mode Functions (IMFs)&quot;)
+imfs = result[&quot;imfs&quot;]
+plot = imfs.plot(figsize=(10, 10), sharex=True, title=&quot;IMFs (EEMD)&quot;)
 plot.show()
-</pre></div>
-</div>
-</div>
-<p>Looking at the plot, you can see that the signal has been decomposed into modes (IMFs) for different frequency bands.</p>
-<ul class="simple">
-<li><p><strong>IMF 0</strong>: Highest frequency component (part of chirp signal or noise)</p></li>
-<li><p><strong>IMF 1, 2…</strong>: Lower frequency components</p></li>
-<li><p><strong>Residual</strong>: Residue (trend component)</p></li>
-</ul>
-<hr class="docutils" />
-</section>
-<section id="3.-Hilbert-Spectral-Analysis">
-<h2>3. Hilbert Spectral Analysis<a class="headerlink" href="#3.-Hilbert-Spectral-Analysis" title="Link to this heading"></a></h2>
-<p>Since each IMF has properties close to a “single component,” physically meaningful <strong>Instantaneous Frequency</strong> and <strong>Instantaneous Amplitude</strong> can be defined by applying the Hilbert transform.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides the following methods:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">.hilbert()</span></code>: Computes the analytic signal</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.instantaneous_frequency()</span></code>: Computes instantaneous frequency (derivative of phase)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.envelope()</span></code>: Computes envelope (instantaneous amplitude)</p></li>
-</ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span># Dictionary to store analysis results
-hht_results = {}
 
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(10, 4))
+for key in list(imfs.keys())[:3]:
+    if_ts = result[&quot;if&quot;][key]
+    plt.plot(if_ts.times.value, if_ts.value, label=key)
 
-# Analyze the first few IMFs
-for key in list(imfs.keys())[:3]:  # Loop over first 3 IMFs
-    imf = imfs[key]
-
-    # Calculate instantaneous frequency
-    # The smooth parameter can smooth out noise from differentiation
-    inst_freq = imf.instantaneous_frequency(smooth=10)
-
-    # Calculate instantaneous amplitude (envelope)
-    inst_amp = imf.envelope()
-
-    hht_results[key] = {&quot;freq&quot;: inst_freq, &quot;amp&quot;: inst_amp}
-
-    # Plot time variation of instantaneous frequency
-    plt.plot(inst_freq.times.value, inst_freq.value, label=f&quot;{key} Freq&quot;)
-
-plt.title(&quot;Instantaneous Frequency of IMFs&quot;)
 plt.xlabel(&quot;Time [s]&quot;)
-plt.ylabel(&quot;Frequency [Hz]&quot;)
-plt.ylim(0, 150)
+plt.ylabel(&quot;Instantaneous Frequency [Hz]&quot;)
+plt.title(&quot;Instantaneous Frequency (First 3 IMFs)&quot;)
 plt.legend()
-plt.grid(True, alpha=0.3)
 plt.show()
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
+<section id="Interpretation-(IMFs-+-IF)">
+<h3>Interpretation (IMFs + IF)<a class="headerlink" href="#Interpretation-(IMFs-+-IF)" title="Link to this heading"></a></h3>
+<p>The first IMF typically captures the high-frequency chirp, and its instantaneous frequency increases over time.</p>
 </section>
-<section id="4.-Hilbert-Spectrum">
-<h2>4. Hilbert Spectrum<a class="headerlink" href="#4.-Hilbert-Spectrum" title="Link to this heading"></a></h2>
-<p>Finally, we combine these instantaneous frequencies and amplitudes to draw the <strong>Hilbert Spectrum</strong>. This represents the energy distribution on the time-frequency plane and is equivalent to a Fourier transform-based spectrogram, but has the characteristic of being less subject to time-frequency resolution limitations (uncertainty principle).</p>
-<p>Here we use a scatter plot that plots each sample’s (time, frequency) as a point, with color representing amplitude.</p>
+</section>
+<section id="3.-Hilbert-Spectrum-(HHTSpectrogram)">
+<h2>3. Hilbert Spectrum (HHTSpectrogram)<a class="headerlink" href="#3.-Hilbert-Spectrum-(HHTSpectrogram)" title="Link to this heading"></a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">output='spectrogram'</span></code> to obtain a time–frequency map. <code class="docutils literal notranslate"><span class="pre">HHTSpectrogram.plot()</span></code> uses log scaling by default.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>plt.figure(figsize=(10, 6))
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>spec = data.hht(
+    output=&quot;spectrogram&quot;,
+    emd_method=&quot;eemd&quot;,
+    emd_kwargs=emd_kwargs,
+    hilbert_kwargs=hilbert_kwargs,
+    fmin=0,
+    fmax=200,
+    n_bins=120,
+    weight=&quot;ia2&quot;,
+)
 
-for key, res in hht_results.items():
-    t_vals = res[&quot;freq&quot;].times.value
-    f_vals = res[&quot;freq&quot;].value
-    a_vals = res[&quot;amp&quot;].value
-
-    # Filter because frequency can be negative or extremely large
-    mask = (f_vals &gt; 0) &amp; (f_vals &lt; 200)
-
-    plt.scatter(
-        t_vals[mask],
-        f_vals[mask],
-        c=a_vals[mask],
-        cmap=&quot;viridis&quot;,
-        s=5,
-        alpha=0.7,
-        vmin=0,
-        vmax=1.0,
-    )
-
-plt.colorbar(label=&quot;Amplitude [V]&quot;)
-plt.xlabel(&quot;Time [s]&quot;)
-plt.ylabel(&quot;Frequency [Hz]&quot;)
-plt.title(&quot;Hilbert Spectrum (Scatter Plot)&quot;)
-plt.ylim(0, 150)
-plt.grid(True, alpha=0.3, linestyle=&quot;--&quot;)
-plt.show()
-</pre></div>
+plot = spec.plot(figsize=(10, 5))
+plot.show()
+<br/></pre></div>
 </div>
 </div>
-<section id="Interpretation-of-Results">
-<h3>Interpretation of Results<a class="headerlink" href="#Interpretation-of-Results" title="Link to this heading"></a></h3>
-<p>In the Hilbert spectrum, you can very clearly see the chirp signal’s frequency increasing linearly over time (80Hz -&gt; 120Hz). The low-frequency IMF appears as a line at the bottom.</p>
-<p>Thus, HHT is effective for detailed analysis of the non-stationary behavior of signals.</p>
+</section>
+<section id="4.-Low-level-note-(optional)">
+<h2>4. Low-level note (optional)<a class="headerlink" href="#4.-Low-level-note-(optional)" title="Link to this heading"></a></h2>
+<p>For fine-grained control or research, you can call the lower-level methods directly:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">emd()</span></code> for decomposition</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hilbert_analysis()</span></code> for IA/IF</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">instantaneous_frequency()</span></code> / <code class="docutils literal notranslate"><span class="pre">envelope()</span></code> for individual IMFs</p></li>
+</ul>
+<p>For most analysis, <code class="docutils literal notranslate"><span class="pre">hht()</span></code> is the recommended entry point.</p>
+<section id="Tips">
+<h3>Tips<a class="headerlink" href="#Tips" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Edge effects are common; consider <code class="docutils literal notranslate"><span class="pre">hilbert_kwargs={'pad':</span> <span class="pre">N}</span></code> and ignore boundaries.</p></li>
+<li><p>Increase <code class="docutils literal notranslate"><span class="pre">eemd_trials</span></code> for cleaner IMFs at the cost of runtime.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">emd_method='emd'</span></code> for deterministic results.</p></li>
+</ul>
+</section>
+<section id="Summary">
+<h3>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries.hht()</span></code> provides a concise and reproducible workflow for HHT analysis, producing both IMF diagnostics and a Hilbert spectrum.</p>
 </section>
 </section>
 </section>

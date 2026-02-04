@@ -217,6 +217,15 @@
 <h3><code class="docutils literal notranslate"><span class="pre">spectrogram</span></code> / <code class="docutils literal notranslate"><span class="pre">spectrogram2</span></code><a class="headerlink" href="#spectrogram-spectrogram2" title="Link to this heading"></a></h3>
 <p>各 TimeSeries のスペクトログラムを計算します。</p>
 </section>
+<section id="stlt">
+<h3><code class="docutils literal notranslate"><span class="pre">stlt</span></code><a class="headerlink" href="#stlt" title="Link to this heading"></a></h3>
+<p>各アイテムに STLT を適用します。TimePlaneTransform の辞書を返します。</p>
+</section>
+</section>
+<section id="id2">
+<h2>補足<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>引数はすべて <code class="docutils literal notranslate"><span class="pre">TimeSeries.stlt()</span></code> に転送されます。特に <code class="docutils literal notranslate"><span class="pre">frequencies</span></code>（Hz）を指定すると、
+FFT グリッドではなく任意周波数点で STLT を評価できます。</p>
 <section id="to-matrix">
 <h3><code class="docutils literal notranslate"><span class="pre">to_matrix</span></code><a class="headerlink" href="#to-matrix" title="Link to this heading"></a></h3>
 <p>TimeSeriesMatrix に変換します。</p>

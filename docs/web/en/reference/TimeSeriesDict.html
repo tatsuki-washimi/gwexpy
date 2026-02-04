@@ -961,6 +961,12 @@ appropriate</p>
 </div>
 <p>Apply stlt to each item. Returns a dict of TimePlaneTransforms.</p>
 </section>
+</section>
+<section id="id18">
+<h2>Notes<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<p>All arguments are forwarded to <code class="docutils literal notranslate"><span class="pre">TimeSeries.stlt()</span></code>. In particular, you can pass
+<code class="docutils literal notranslate"><span class="pre">frequencies</span></code> (Hz) to evaluate STLT at arbitrary frequency points instead of the
+FFT grid.</p>
 <section id="taper">
 <h3><code class="docutils literal notranslate"><span class="pre">taper</span></code><a class="headerlink" href="#taper" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">taper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;TimeSeriesDict&#39;</span>
@@ -1056,8 +1062,8 @@ arbitrary code on load.</p>
 <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> (gwexpy not required on the loading side).</p>
 </section>
 </section>
-<section id="id18">
-<h2>Parameters<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<section id="id19">
+<h2>Parameters<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
 <p>target : <code class="docutils literal notranslate"><span class="pre">str</span></code>
 output filename</p>
 <p>format : <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional
@@ -1065,8 +1071,8 @@ output format identifier. If not given, the format will be
 detected if possible. See below for list of acceptable
 formats.</p>
 </section>
-<section id="id19">
-<h2>Notes<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<section id="id20">
+<h2>Notes<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
 <p>The available built-in formats are:</p>
 <p>============ ==== ===== =============
 Format    Read Write Auto-identify

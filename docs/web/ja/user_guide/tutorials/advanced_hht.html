@@ -111,228 +111,164 @@
 </div>
 <section id="Hilbert-Huang-Transform-(HHT)-解析チュートリアル">
 <h1>Hilbert-Huang Transform (HHT) 解析チュートリアル<a class="headerlink" href="#Hilbert-Huang-Transform-(HHT)-解析チュートリアル" title="Link to this heading"></a></h1>
-<p>このチュートリアルでは、<strong>gwexpy</strong> を使用した <strong>Hilbert-Huang Transform (HHT)</strong> 解析の手順を解説します。 HHT は、非線形・非定常な信号の解析に適しており、従来のフーリエ変換やウェーブレット変換では捉えきれない局所的な周波数変動（瞬時周波数）を抽出するのに強力な手法です。</p>
-<p>HHT は以下の2つの主要なステップから成ります：</p>
+<p>このチュートリアルでは <strong>gwexpy</strong> の <code class="docutils literal notranslate"><span class="pre">TimeSeries.hht()</span></code> を用いた <strong>推奨ワークフロー</strong> を紹介します。 HHT は非線形・非定常な信号に強く、STFT やウェーブレットでは捉えにくい瞬時周波数の変化を可視化できます。</p>
+<p>HHT は次の2ステップで構成されます:</p>
 <ol class="arabic simple">
-<li><p><strong>Empirical Mode Decomposition (EMD)</strong>: 信号を固有モード関数 (IMF: Intrinsic Mode Function) に分解します。</p></li>
-<li><p><strong>Hilbert Spectral Analysis</strong>: 各 IMF に対してヒルベルト変換を行い、瞬時振幅と瞬時周波数を計算します。</p></li>
+<li><p><strong>Empirical Mode Decomposition (EMD/EEMD)</strong>: 信号を IMF と残差に分解</p></li>
+<li><p><strong>Hilbert Spectral Analysis</strong>: 各 IMF の瞬時振幅・瞬時周波数を算出</p></li>
 </ol>
-<p><strong>注意</strong>: この機能を使用するには <code class="docutils literal notranslate"><span class="pre">PyEMD</span></code> (EMD-signal) パッケージがインストールされている必要があります。</p>
+<p><strong>注意</strong>: 本チュートリアルには <code class="docutils literal notranslate"><span class="pre">PyEMD</span></code> (EMD-signal) が必要です。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>EMD-signal
 </pre></div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+import numpy as np
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+from gwexpy.timeseries import TimeSeries
 
-<span class="c1"># PyEMDの確認</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">PyEMD</span>
+# Check PyEMD availability
+try:
+    import PyEMD
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">PyEMD</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is installed and ready.&quot;</span><span class="p">)</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-        <span class="s2">&quot;このチュートリアルには &#39;PyEMD&#39; (EMD-signal) が必要です。 pip install EMD-signal を実行してください。&quot;</span>
-    <span class="p">)</span>
-</pre></div>
+    print(f&quot;{PyEMD.__name__} is installed and ready.&quot;)
+except ImportError:
+    raise ImportError(
+        &quot;This tutorial requires &#39;PyEMD&#39; (EMD-signal). Please run: pip install EMD-signal&quot;
+    )
+<br/></pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-PyEMD is installed and ready.
-</pre></div></div>
 </div>
 <section id="1.-シミュレーションデータの作成">
 <h2>1. シミュレーションデータの作成<a class="headerlink" href="#1.-シミュレーションデータの作成" title="Link to this heading"></a></h2>
-<p>EMD の効果を確認するために、以下の特徴を持つ非定常な合成信号を作成します。</p>
-<ol class="arabic simple">
-<li><p><strong>低周波トレンド</strong>: 5 Hz の正弦波</p></li>
-<li><p><strong>チャープ信号</strong>: 時間とともに周波数が上昇する成分 (〜100 Hz)</p></li>
-<li><p><strong>線形トレンド</strong>: 直線的なドリフト</p></li>
-</ol>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 時間軸 (1秒間、1000サンプル)</span>
-<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
-<span class="n">dt</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-<span class="c1"># 信号成分</span>
-<span class="n">s1</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># 低周波</span>
-<span class="n">s2</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">80</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">t</span><span class="p">))</span>  <span class="c1"># チャープ (80Hz -&gt; 120Hz)</span>
-<span class="n">trend</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">t</span>  <span class="c1"># 線形トレンド</span>
-
-<span class="c1"># TimeSeriesオブジェクトの作成</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">s1</span> <span class="o">+</span> <span class="n">s2</span> <span class="o">+</span> <span class="n">trend</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Simulation Data&quot;</span><span class="p">)</span>
-
-<span class="c1"># プロット</span>
-<span class="n">plot</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Original Simulation Signal&quot;</span><span class="p">)</span>
-<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_3_0.png" />
-</div>
-</div>
-</section>
-<section id="2.-Empirical-Mode-Decomposition-(EMD)">
-<h2>2. Empirical Mode Decomposition (EMD)<a class="headerlink" href="#2.-Empirical-Mode-Decomposition-(EMD)" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> オブジェクトは、<code class="docutils literal notranslate"><span class="pre">emd()</span></code> メソッドを通じて直接分解を行うことができます。 <code class="docutils literal notranslate"><span class="pre">emd()</span></code> メソッドは <code class="docutils literal notranslate"><span class="pre">PyEMD</span></code> ラッパーとして機能し、結果を <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> として返します。</p>
-<p>ここでは基本的な <strong>EMD</strong> を使用しますが、オプションで <strong>EEMD (Ensemble EMD)</strong> も選択可能です。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># EMDの実行</span>
-<span class="c1"># method=&#39;eemd&#39; とすると Ensemble EMD が実行されます (計算時間がかかります)</span>
-<span class="n">imfs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">emd</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;emd&quot;</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;抽出されたIMF:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">imfs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
-
-<span class="c1"># 全IMFをプロット</span>
-<span class="n">plot</span> <span class="o">=</span> <span class="n">imfs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Intrinsic Mode Functions (IMFs)&quot;</span><span class="p">)</span>
-<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-抽出されたIMF: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#39;]
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_5_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_5_1.png" />
-</div>
-</div>
-<p>プロットを見ると、信号が異なる周波数帯域ごとのモード (IMF) に分解されていることがわかります。</p>
+<p>以下の非定常信号を合成します:</p>
 <ul class="simple">
-<li><p><strong>IMF 0</strong>: 最も高周波な成分（チャープ信号の一部やノイズ）</p></li>
-<li><p><strong>IMF 1, 2…</strong>: より低周波な成分</p></li>
-<li><p><strong>Residual</strong>: 残差（トレンド成分）</p></li>
+<li><p>低周波サイン (5 Hz)</p></li>
+<li><p>チャープ (80 → 120 Hz)</p></li>
+<li><p>線形トレンド</p></li>
 </ul>
-<hr class="docutils" />
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span># 時間軸 (1秒間、1000サンプル)
+t = np.linspace(0, 1, 1000)
+dt = t[1] - t[0]
+
+# 信号成分
+s1 = 0.5 * np.sin(2 * np.pi * 5 * t)  # 低周波
+s2 = 1.0 * np.sin(2 * np.pi * 80 * t * (1 + 0.5 * t))  # チャープ (80Hz -&gt; 120Hz)
+trend = 2.0 * t  # 線形トレンド
+
+# TimeSeries の作成
+data = TimeSeries(s1 + s2 + trend, dt=dt, unit=&quot;V&quot;, name=&quot;Simulation Data&quot;)
+
+# プロット
+plot = data.plot(title=&quot;Original Simulation Signal&quot;)
+plot.show()
+<br/></pre></div>
+</div>
+</div>
 </section>
-<section id="3.-ヒルベルトスペクトル解析">
-<h2>3. ヒルベルトスペクトル解析<a class="headerlink" href="#3.-ヒルベルトスペクトル解析" title="Link to this heading"></a></h2>
-<p>各 IMF は「単一成分」に近い性質を持つため、ヒルベルト変換を適用することで物理的に意味のある<strong>瞬時周波数 (Instantaneous Frequency)</strong> と <strong>瞬時振幅 (Instantaneous Amplitude)</strong> を定義できます。</p>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> は以下のメソッドを提供しています：</p>
+<section id="2.-推奨ワークフロー:-TimeSeries.hht()">
+<h2>2. 推奨ワークフロー: <code class="docutils literal notranslate"><span class="pre">TimeSeries.hht()</span></code><a class="headerlink" href="#2.-推奨ワークフロー:-TimeSeries.hht()" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries.hht()</span></code> は EMD/EEMD とヒルベルト解析を一括で実行します。 ここでは次を指定します:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">.hilbert()</span></code>: 解析信号 (Analytic Signal) を計算</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.instantaneous_frequency()</span></code>: 瞬時周波数を計算 (位相の微分)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.envelope()</span></code>: 包絡線（瞬時振幅）を計算</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">emd_kwargs</span></code>: EEMD 設定（チュートリアルでは試行回数を少なめに設定）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hilbert_kwargs</span></code>: パディングと平滑化で IF を安定化</p></li>
 </ul>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<p><strong>Tip</strong>: EEMD は確率的なので、再現性のため <code class="docutils literal notranslate"><span class="pre">random_state</span></code> を指定します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 解析結果を格納する辞書</span>
-<span class="n">hht_results</span> <span class="o">=</span> <span class="p">{}</span>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>emd_kwargs = {
+    &quot;eemd_trials&quot;: 20,
+    &quot;random_state&quot;: 42,
+    &quot;sift_max_iter&quot;: 200,
+    &quot;stopping_criterion&quot;: 0.2,
+}
+hilbert_kwargs = {
+    &quot;pad&quot;: 100,
+    &quot;if_smooth&quot;: 11,
+}
 
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+result = data.hht(
+    emd_method=&quot;eemd&quot;,
+    emd_kwargs=emd_kwargs,
+    hilbert_kwargs=hilbert_kwargs,
+    output=&quot;dict&quot;,
+)
 
-<span class="c1"># 最初の数個のIMFについて解析を行う</span>
-<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">imfs</span><span class="o">.</span><span class="n">keys</span><span class="p">())[:</span><span class="mi">3</span><span class="p">]:</span>  <span class="c1"># Loop over first 3 IMFs</span>
-    <span class="n">imf</span> <span class="o">=</span> <span class="n">imfs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+imfs = result[&quot;imfs&quot;]
+plot = imfs.plot(figsize=(10, 10), sharex=True, title=&quot;IMFs (EEMD)&quot;)
+plot.show()
 
-    <span class="c1"># 瞬時周波数の計算</span>
-    <span class="c1"># smoothパラメータで微分のノイズを平滑化できます</span>
-    <span class="n">inst_freq</span> <span class="o">=</span> <span class="n">imf</span><span class="o">.</span><span class="n">instantaneous_frequency</span><span class="p">(</span><span class="n">smooth</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+plt.figure(figsize=(10, 4))
+for key in list(imfs.keys())[:3]:
+    if_ts = result[&quot;if&quot;][key]
+    plt.plot(if_ts.times.value, if_ts.value, label=key)
 
-    <span class="c1"># 瞬時振幅 (包絡線) の計算</span>
-    <span class="n">inst_amp</span> <span class="o">=</span> <span class="n">imf</span><span class="o">.</span><span class="n">envelope</span><span class="p">()</span>
-
-    <span class="n">hht_results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;freq&quot;</span><span class="p">:</span> <span class="n">inst_freq</span><span class="p">,</span> <span class="s2">&quot;amp&quot;</span><span class="p">:</span> <span class="n">inst_amp</span><span class="p">}</span>
-
-    <span class="c1"># 瞬時周波数の時間変化をプロット</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">inst_freq</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">inst_freq</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> Freq&quot;</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Instantaneous Frequency of IMFs&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+plt.xlabel(&quot;Time [s]&quot;)
+plt.ylabel(&quot;Instantaneous Frequency [Hz]&quot;)
+plt.title(&quot;Instantaneous Frequency (First 3 IMFs)&quot;)
+plt.legend()
+plt.show()
+<br/></pre></div>
+</div>
+</div>
+<section id="解釈（IMFs-と-IF）">
+<h3>解釈（IMFs と IF）<a class="headerlink" href="#解釈（IMFs-と-IF）" title="Link to this heading"></a></h3>
+<p>第1 IMF が高周波チャープを主に表し、瞬時周波数が時間とともに増加します。</p>
+</section>
+</section>
+<section id="3.-ヒルベルトスペクトル-(HHTSpectrogram)">
+<h2>3. ヒルベルトスペクトル (HHTSpectrogram)<a class="headerlink" href="#3.-ヒルベルトスペクトル-(HHTSpectrogram)" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">output='spectrogram'</span></code> を指定すると時間-周波数マップを得られます。<code class="docutils literal notranslate"><span class="pre">HHTSpectrogram.plot()</span></code> は既定で対数スケールです。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_8_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_8_0.png" />
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>spec = data.hht(
+    output=&quot;spectrogram&quot;,
+    emd_method=&quot;eemd&quot;,
+    emd_kwargs=emd_kwargs,
+    hilbert_kwargs=hilbert_kwargs,
+    fmin=0,
+    fmax=200,
+    n_bins=120,
+    weight=&quot;ia2&quot;,
+)
+
+plot = spec.plot(figsize=(10, 5))
+plot.show()
+<br/></pre></div>
 </div>
 </div>
 </section>
-<section id="4.-Hilbert-Spectrum-(ヒルベルトスペクトル)">
-<h2>4. Hilbert Spectrum (ヒルベルトスペクトル)<a class="headerlink" href="#4.-Hilbert-Spectrum-(ヒルベルトスペクトル)" title="Link to this heading"></a></h2>
-<p>最後に、これらの瞬時周波数と振幅を組み合わせて <strong>ヒルベルトスペクトル</strong> を描画します。 これは時間-周波数平面上でのエネルギー分布を表し、フーリエ変換ベースのスペクトログラムに相当しますが、時間・周波数分解能の制限（不確定性原理）を受けにくいという特徴があります。</p>
-<p>ここでは、各サンプルの (時刻, 周波数) を点としてプロットし、色で振幅を表す散布図を使用します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-
-<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">hht_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="n">t_vals</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;freq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">f_vals</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;freq&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-    <span class="n">a_vals</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;amp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-
-    <span class="c1"># 周波数が負や極端に大きい値になることがあるためフィルタリング</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_vals</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f_vals</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">)</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
-        <span class="n">t_vals</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
-        <span class="n">f_vals</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
-        <span class="n">c</span><span class="o">=</span><span class="n">a_vals</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
-        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
-        <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
-        <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">vmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-    <span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Amplitude [V]&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Hilbert Spectrum (Scatter Plot)&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_10_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_10_0.png" />
-</div>
-</div>
-<section id="結果の解釈">
-<h3>結果の解釈<a class="headerlink" href="#結果の解釈" title="Link to this heading"></a></h3>
-<p>ヒルベルトスペクトルでは、チャープ信号の周波数が時間とともに直線的に上昇している様子 (80Hz -&gt; 120Hz) が非常に鮮明に確認できます。 低周波のIMFは下部に線として現れます。</p>
-<p>このように、HHTは信号の非定常な振る舞いを詳細に分析するのに有効です。</p>
+<section id="4.-低レベルAPIについて（任意）">
+<h2>4. 低レベルAPIについて（任意）<a class="headerlink" href="#4.-低レベルAPIについて（任意）" title="Link to this heading"></a></h2>
+<p>詳細制御が必要な場合は以下を直接使用できます:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">emd()</span></code>（分解）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hilbert_analysis()</span></code>（IA/IF）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">instantaneous_frequency()</span></code> / <code class="docutils literal notranslate"><span class="pre">envelope()</span></code>（個別 IMF）</p></li>
+</ul>
+<p>通常の解析では <code class="docutils literal notranslate"><span class="pre">hht()</span></code> が推奨です。</p>
+<section id="ヒント">
+<h3>ヒント<a class="headerlink" href="#ヒント" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>端点効果が出やすいので <code class="docutils literal notranslate"><span class="pre">hilbert_kwargs={'pad':</span> <span class="pre">N}</span></code> を検討し、端は無視してください。</p></li>
+<li><p>より滑らかな IMF が必要なら <code class="docutils literal notranslate"><span class="pre">eemd_trials</span></code> を増やします（計算時間増）。</p></li>
+<li><p>再現性重視なら <code class="docutils literal notranslate"><span class="pre">emd_method='emd'</span></code> を使います。</p></li>
+</ul>
+</section>
+<section id="まとめ">
+<h3>まとめ<a class="headerlink" href="#まとめ" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TimeSeries.hht()</span></code> を使うと IMF の診断とヒルベルトスペクトルの両方を簡潔に取得できます。</p>
 </section>
 </section>
 </section>

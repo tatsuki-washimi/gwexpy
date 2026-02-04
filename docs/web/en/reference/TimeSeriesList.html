@@ -691,6 +691,12 @@ Returns a SpectrogramList.</p>
 </div>
 <p>Apply stlt to each item. Returns a list of TimePlaneTransforms.</p>
 </section>
+</section>
+<section id="id10">
+<h2>Notes<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<p>All arguments are forwarded to <code class="docutils literal notranslate"><span class="pre">TimeSeries.stlt()</span></code>. In particular, you can pass
+<code class="docutils literal notranslate"><span class="pre">frequencies</span></code> (Hz) to evaluate STLT at arbitrary frequency points instead of the
+FFT grid.</p>
 <section id="taper">
 <h3><code class="docutils literal notranslate"><span class="pre">taper</span></code><a class="headerlink" href="#taper" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">taper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;TimeSeriesList&#39;</span>
@@ -707,15 +713,15 @@ Returns a new TimeSeriesList.</p>
 <p>Convert list to TimeSeriesMatrix with alignment.</p>
 </section>
 </section>
-<section id="id10">
-<h2>Parameters<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<section id="id11">
+<h2>Parameters<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
 <p>align : str, optional
 Alignment strategy (‘intersection’, ‘union’, etc.). Default ‘intersection’.
 **kwargs
 Additional arguments passed to alignment function.</p>
 </section>
-<section id="id11">
-<h2>Returns<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<section id="id12">
+<h2>Returns<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
 <p>TimeSeriesMatrix
 Matrix with all series aligned to common time axis.</p>
 <section id="to-pandas">

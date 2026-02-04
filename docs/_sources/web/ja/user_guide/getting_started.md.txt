@@ -1,14 +1,44 @@
 # はじめに (Getting Started)
 
+このページでは、GWexpyユーザー向けに**体系的な学習パス**を提供します。時系列解析の初心者でも、GWpyからの移行者でも、あなたのバックグラウンドに合わせた推奨事項が見つかります。
+
+**学べる内容:**
+
+- インストールとセットアップ
+- 基本データ構造（TimeSeries, FrequencySeries, Spectrogram）
+- 多チャンネル解析と行列コンテナ
+- 高度な信号処理技術
+- 実世界での応用例
+
+**所要時間:** 初心者は2-3時間、GWpyユーザーは30-60分
+
+:::{tip}
+お急ぎの場合は、[クイックスタート](quickstart.md)で5分間の概要をご覧ください。
+:::
+
 :::{admonition} このページについて
 :class: note
 
-このページでは、GWexpyの詳細な学習パスを提示します。
-まだ [トップページ](../index) をご覧になっていない場合は、
-まずそちらで全体像をご確認ください。
+このページでは**詳細な学習ロードマップ**を提供します。まだ[ドキュメントトップページ](../index)をご覧になっていない場合は、まずそちらでGWexpyの全体像をご確認ください。
 :::
 
-GWexpyへようこそ！このガイドでは、GWexpyの学習パスを紹介します。
+## クイック例
+
+最も基本的なGWexpyワークフローを示します：
+
+```python
+from gwexpy.timeseries import TimeSeries
+import numpy as np
+
+# 時系列データを作成
+ts = TimeSeries(np.random.randn(1000), sample_rate=100, t0=0)
+
+# プロット
+plot = ts.plot()
+plot.show()
+```
+
+詳細は [クイックスタート](quickstart.md) を参照してください。
 
 ## 前提知識
 
