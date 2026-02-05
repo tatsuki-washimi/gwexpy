@@ -1,17 +1,53 @@
 # TimeSeries
 
-**継承元:** TimeSeriesInteropMixin, TimeSeriesAnalysisMixin, TimeSeriesResamplingMixin, TimeSeriesSignalMixin, SignalAnalysisMixin, TimeSeriesSpectralMixin, StatisticsMixin, FittingMixin, PhaseMethodsMixin, RegularityMixin, _LegacyTimeSeries (gwpy.timeseries.TimeSeries)
+**継承元:** `gwpy.timeseries.TimeSeries`
 
 すべての gwexpy 機能を備えた拡張 TimeSeries。
 
-このクラスは複数のモジュールからの機能を統合します：
-- コア操作: is_regular, _check_regular, tail, crop, append, find_peaks
-- スペクトル変換: fft, psd, cwt, laplace など
-- 信号処理: hilbert, mix_down, xcorr など
-- 解析: impute, standardize, rolling_* など
-- 相互運用性: to_pandas, to_torch, to_xarray など
+## 主な拡張機能 (Key Extensions)
 
-gwpy.timeseries.TimeSeries から継承し、完全な互換性を持ちます。
+### 統計と相関
+
+- **`correlation(other, method="pearson", ...)`**
+  他の TimeSeries との相関を計算します。
+  手法: `"pearson"`, `"kendall"`, `"mic"`, `"distance"`.
+- **`partial_correlation(other, controls=None, ...)`**
+  第三変数の影響を除いた偏相関を計算します。
+- **`fastmi(other, grid_size=128)`**
+  FastMI (FFTベース) 推定器を用いて相互情報量を計算します。
+- **`granger_causality(other, maxlag=5)`**
+  時系列間の因果関係（Granger Causality）を検定します。
+
+### 信号処理
+
+- **`hilbert()` / `envelope()`**
+  解析信号とその振幅包絡線を計算します。
+- **`mix_down(f0)`**
+  特定の搬送周波数で信号を復調します。
+- **`fft(mode="steady"|"transient", ...)`**
+  ゼロパディングやウィンドウ管理のオプションを備えた拡張FFT。
+
+### モデリングと前処理
+
+- **`arima(order=(p,d,q))`**
+  ARIMA 時系列モデルを適合します。
+- **`impute(method="interpolate")`**
+  データ内の欠損値 (NaN) を処理します。
+- **`standardize(method="zscore")`**
+  平均 0、分散 1 になるようにデータを再スケーリングします。
+
+## 使用例
+
+```python
+from gwexpy.timeseries import TimeSeries
+ts = TimeSeries.fetch_open_data('H1', 1126259446, 1126259478)
+
+# 非線形相関を計算
+mic_score = ts.correlation(other_ts, method="mic")
+
+# 標準化して包絡線を計算
+env = ts.standardize().envelope()
+```
 
 ## Pickle / shelve の可搬性
 
@@ -21,80 +57,12 @@ gwpy.timeseries.TimeSeries から継承し、完全な互換性を持ちます�
 gwexpy の pickle は可搬性を優先しており、unpickle 時に **GWpy 型**を返す設計です
 （読み込み側に gwexpy が無くても、gwpy があれば復元できます）。
 
-## 主要プロパティ
+## 全メソッド一覧
 
-| プロパティ | 説明 |
-|-----------|------|
-| `dt` | サンプル間隔 |
-| `t0` | 開始時刻 (GPS エポック) |
-| `times` | 時間配列 |
-| `sample_rate` | サンプリングレート |
-| `duration` | 継続時間 |
-| `channel` | データチャンネル |
-| `name` | データセット名 |
-| `unit` | 物理単位 |
-
-## スペクトル変換
-
-| メソッド | 説明 |
-|---------|------|
-| `fft()` | 高速フーリエ変換 |
-| `psd()` / `asd()` | パワー/振幅スペクトル密度 |
-| `spectrogram()` / `spectrogram2()` | スペクトログラム |
-| `q_transform()` | Q 変換 |
-| `cwt()` | 連続ウェーブレット変換 |
-| `cepstrum()` | ケプストラム解析 |
-
-## 信号処理
-
-| メソッド | 説明 |
-|---------|------|
-| `filter()` / `bandpass()` / `highpass()` / `lowpass()` / `notch()` | フィルタリング |
-| `resample()` / `decimate()` | リサンプリング |
-| `detrend()` | トレンド除去 |
-| `whiten()` | ホワイトニング |
-| `taper()` | テーパー処理 |
-| `hilbert()` / `analytic_signal()` | 解析信号 |
-| `heterodyne()` / `baseband()` / `mix_down()` / `lock_in()` | ヘテロダイン処理 |
-| `xcorr()` | 相互相関 |
-| `transfer_function()` / `coherence()` / `csd()` | 伝達関数/コヒーレンス/CSD |
-
-## 解析
-
-| メソッド | 説明 |
-|---------|------|
-| `mean()` / `std()` / `max()` / `min()` / `rms()` | 統計量 |
-| `correlation()` / `partial_correlation()` / `fastmi()` | 相関 / 偏相関 / 相互情報量（FastMI） |
-| `rolling_mean()` / `rolling_std()` 等 | ローリング統計 |
-| `find_peaks()` | ピーク検出 |
-| `instantaneous_phase()` / `instantaneous_frequency()` | 瞬時位相/周波数 |
-| `envelope()` | 包絡線 |
-| `impute()` | 欠損値補完 |
-| `standardize()` | 標準化 |
-
-## 相互運用性
-
-| メソッド | 説明 |
-|---------|------|
-| `to_pandas()` / `from_pandas()` | pandas 変換 |
-| `to_torch()` / `to_tensorflow()` / `to_jax()` | ML フレームワーク変換 |
-| `to_xarray()` / `to_polars()` | xarray/polars 変換 |
-| `to_control()` / `from_control()` | python-control 変換 |
-| `to_pint()` | Pint 変換 |
-
-## データ操作
-
-| メソッド | 説明 |
-|---------|------|
-| `crop()` | 時間範囲でクロップ（あらゆる時刻形式対応） |
-| `append()` / `prepend()` | データ接続 |
-| `shift()` | 時間シフト |
-| `pad()` | パディング |
-| `gate()` / `mask()` | ゲート/マスク処理 |
-
-## 入出力
-
-| メソッド | 説明 |
-|---------|------|
-| `read()` / `write()` | ファイル入出力 |
-| `get()` / `fetch()` / `find()` | データ取得 (NDS, GWF) |
+| カテゴリ | メソッド |
+|---|---|
+| **スペクトル** | `fft`, `psd`, `asd`, `spectrogram`, `q_transform`, `cwt`, `cepstrum` |
+| **信号処理** | `filter`, `bandpass`, `highpass`, `lowpass`, `notch`, `resample`, `detrend`, `whiten`, `taper` |
+| **解析** | `find_peaks`, `instantaneous_phase`, `rolling_mean` |
+| **相互運用** | `to_pandas`, `to_torch`, `to_tensorflow`, `to_xarray` |
+| **入出力** | `read`, `write`, `get`, `fetch` |
