@@ -381,7 +381,7 @@ Pearsonベクトルを計算中 (Top 5)...
 <section id="偏相関（共通要因の除去）">
 <h2>偏相関（共通要因の除去）<a class="headerlink" href="#偏相関（共通要因の除去）" title="Link to this heading"></a></h2>
 <p>共通の要因を取り除いて、直接的な結びつきを評価します。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
@@ -403,20 +403,11 @@ Pearsonベクトルを計算中 (Top 5)...
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-corr(x,y): 0.9809075921667307
-partial corr(x,y|z): 0.004410452860247931
-</pre></div></div>
-</div>
 </section>
 <section id="Association-Edges-/-グラフ化">
 <h2>Association Edges / グラフ化<a class="headerlink" href="#Association-Edges-/-グラフ化" title="Link to this heading"></a></h2>
 <p>ターゲット時系列に対して行列の各チャンネルを評価し、エッジを作成します。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
@@ -430,79 +421,17 @@ partial corr(x,y|z): 0.004410452860247931
 <span class="p">)</span>
 
 <span class="n">edges</span> <span class="o">=</span> <span class="n">association_edges</span><span class="p">(</span><span class="n">ts_x</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="n">topk</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">edges</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;関連エッジ:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+
 <span class="n">pcorr</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">partial_correlation_matrix</span><span class="p">(</span><span class="n">shrinkage</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
-<span class="n">pcorr</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;偏相関行列:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pcorr</span><span class="p">)</span>
 
 
 <span class="c1"># networkx があればグラフ化できます:</span>
 <span class="n">graph</span> <span class="o">=</span> <span class="n">build_graph</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
-<span class="n">graph</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;グラフ構築完了&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
-</pre></div>
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>row</th>
-      <th>col</th>
-      <th>channel</th>
-      <th>score</th>
-      <th>source</th>
-      <th>target</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>0</td>
-      <td>x</td>
-      <td>1.000000</td>
-      <td>x</td>
-      <td>x</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>2</td>
-      <td>0</td>
-      <td>z</td>
-      <td>0.989968</td>
-      <td>x</td>
-      <td>z</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>1</td>
-      <td>0</td>
-      <td>y</td>
-      <td>0.980908</td>
-      <td>x</td>
-      <td>y</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
 </div>
 <section id="可視化:-エッジランキングと偏相関ヒートマップ">
 <h3>可視化: エッジランキングと偏相関ヒートマップ<a class="headerlink" href="#可視化:-エッジランキングと偏相関ヒートマップ" title="Link to this heading"></a></h3>
@@ -713,6 +642,22 @@ Pearson Correlation  (A vs C): -0.071
 Granger Causality X -&gt; Y (p-value): 0.0000 (Significant)
 Granger Causality Y -&gt; X (p-value): 0.0907
 </pre></div></div>
+</div>
+</section>
+<section id="高速相互情報量推定-(fastmi)">
+<h2>高速相互情報量推定 (fastmi)<a class="headerlink" href="#高速相互情報量推定-(fastmi)" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fastmi</span></code> は、コピュラ（Copula）定式化、プロビット（Probit）変換、およびFFTベースの密度推定に基づく高速な相互情報量（Mutual Information）推定器です。Pearson相関が見逃す可能性のある複雑な非線形依存関係を捉えることができます。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mi_xy</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">fastmi</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">grid_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+<span class="n">mi_xz</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">fastmi</span><span class="p">(</span><span class="n">ts_z</span><span class="p">,</span> <span class="n">grid_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;相互情報量 (x, y): </span><span class="si">{</span><span class="n">mi_xy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> nats&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;相互情報量 (x, z): </span><span class="si">{</span><span class="n">mi_xz</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> nats&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </section>
 </section>

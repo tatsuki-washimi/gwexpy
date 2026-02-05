@@ -1672,9 +1672,23 @@ ObsPy interop OK: .Sensor 1..
 .Sensor 1.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:04.990000Z | 100.0 Hz, 500 samples
 </pre></div></div>
 </div>
+</section>
 <section id="まとめ">
-<h3>まとめ<a class="headerlink" href="#まとめ" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスは、従来の GWpy の使い勝手はそのままに、より現代的で広範な分析ニーズに応える機能を備えています。 是非、皆さんのプロジェクトで活用してください！</p>
+<h2>まとめ<a class="headerlink" href="#まとめ" title="Link to this heading"></a></h2>
+<p>このチュートリアルでは、<code class="docutils literal notranslate"><span class="pre">gwexpy.TimeSeries</span></code> の主要な拡張機能について学びました：</p>
+<ul class="simple">
+<li><p><strong>信号処理</strong>: Hilbert変換、復調、拡張FFTモード。</p></li>
+<li><p><strong>統計</strong>: 高度な相関手法 (MIC, Distance Correlation) と ARIMA モデリング。</p></li>
+<li><p><strong>データクリーニング</strong>: 欠損値補完と標準化。</p></li>
+<li><p><strong>相互運用性</strong>: Pandas, Xarray, PyTorch, TensorFlow, ObsPy とのシームレスな変換。</p></li>
+</ul>
+<section id="次のステップ">
+<h3>次のステップ<a class="headerlink" href="#次のステップ" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>多チャンネルデータ</strong>: <a class="reference internal" href="matrix_timeseries.html"><span class="doc">TimeSeriesMatrix</span></a> で多数のチャンネルを一括処理する方法を学ぶ。</p></li>
+<li><p><strong>スペクトル解析</strong>: <a class="reference internal" href="intro_frequencyseries.html"><span class="doc">FrequencySeries</span></a> を詳しく見る。</p></li>
+<li><p><strong>4Dフィールド</strong>: <a class="reference internal" href="field_scalar_intro.html"><span class="doc">ScalarField</span></a> で時空間解析を行う。</p></li>
+</ul>
 </section>
 </section>
 </section>

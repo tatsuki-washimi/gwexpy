@@ -102,15 +102,57 @@
 <h1>TimeSeries<a class="headerlink" href="#timeseries" title="Link to this heading"></a></h1>
 <p><strong>Inherits from:</strong> <code class="docutils literal notranslate"><span class="pre">gwpy.timeseries.TimeSeries</span></code></p>
 <p>Extended TimeSeries with full gwexpy functionality.</p>
-<p>See <a class="reference internal" href="api/timeseries.html"><span class="doc">Time Series</span></a> for the API reference.</p>
-<section id="statistics-association">
-<h2>Statistics / association<a class="headerlink" href="#statistics-association" title="Link to this heading"></a></h2>
+<section id="key-extensions">
+<h2>Key Extensions<a class="headerlink" href="#key-extensions" title="Link to this heading"></a></h2>
+<section id="statistics-and-correlation">
+<h3>Statistics and Correlation<a class="headerlink" href="#statistics-and-correlation" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">correlation(other,</span> <span class="pre">method=&quot;pearson&quot;|&quot;kendall&quot;|&quot;mic&quot;|&quot;distance&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">partial_correlation(other,</span> <span class="pre">controls=...,</span> <span class="pre">method=&quot;residual&quot;|&quot;precision&quot;)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fastmi(other,</span> <span class="pre">grid_size=...,</span> <span class="pre">quantile=...)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">granger_causality(other,</span> <span class="pre">maxlag=...,</span> <span class="pre">test=...)</span></code></p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">correlation(other,</span> <span class="pre">method=&quot;pearson&quot;,</span> <span class="pre">...)</span></code></strong>
+Compute correlation with another TimeSeries.
+Methods: <code class="docutils literal notranslate"><span class="pre">&quot;pearson&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;kendall&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;mic&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;distance&quot;</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">partial_correlation(other,</span> <span class="pre">controls=None,</span> <span class="pre">...)</span></code></strong>
+Compute partial correlation controlling for third-party variables.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">fastmi(other,</span> <span class="pre">grid_size=128)</span></code></strong>
+Compute mutual information using the FastMI (FFT-based) estimator.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">granger_causality(other,</span> <span class="pre">maxlag=5)</span></code></strong>
+Test for Granger causality between series.</p></li>
 </ul>
+</section>
+<section id="signal-processing">
+<h3>Signal Processing<a class="headerlink" href="#signal-processing" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">hilbert()</span></code> / <code class="docutils literal notranslate"><span class="pre">envelope()</span></code></strong>
+Compute the analytic signal and its amplitude envelope.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">mix_down(f0)</span></code></strong>
+Demodulate the signal at a specific carrier frequency.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">fft(mode=&quot;steady&quot;|&quot;transient&quot;,</span> <span class="pre">...)</span></code></strong>
+Enhanced FFT with zero-padding and window management options.</p></li>
+</ul>
+</section>
+<section id="modeling-and-preprocessing">
+<h3>Modeling and Preprocessing<a class="headerlink" href="#modeling-and-preprocessing" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">arima(order=(p,d,q))</span></code></strong>
+Fit an ARIMA time-series model.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">impute(method=&quot;interpolate&quot;)</span></code></strong>
+Handle missing values (NaNs) in the data.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">standardize(method=&quot;zscore&quot;)</span></code></strong>
+Rescale data to zero mean and unit variance.</p></li>
+</ul>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch_open_data</span><span class="p">(</span><span class="s1">&#39;H1&#39;</span><span class="p">,</span> <span class="mi">1126259446</span><span class="p">,</span> <span class="mi">1126259478</span><span class="p">)</span>
+
+<span class="c1"># Compute nonlinear correlation</span>
+<span class="n">mic_score</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">correlation</span><span class="p">(</span><span class="n">other_ts</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mic&quot;</span><span class="p">)</span>
+
+<span class="c1"># Standardize and compute envelope</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span><span class="o">.</span><span class="n">envelope</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 <section id="pickle-shelve-portability">
 <h2>Pickle / shelve portability<a class="headerlink" href="#pickle-shelve-portability" title="Link to this heading"></a></h2>

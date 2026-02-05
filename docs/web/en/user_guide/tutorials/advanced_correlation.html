@@ -117,15 +117,17 @@
 <li><p><strong>Kendall (Ktau)</strong>: Rank correlation (robust to outliers, non-parametric).</p></li>
 <li><p><strong>MIC</strong>: Maximal Information Coefficient (robust to nonlinear relationships, requires <code class="docutils literal notranslate"><span class="pre">minepy</span></code>).</p></li>
 </ul>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
+<span class="c1"># Ensure the root directory is in sys.path</span>
 <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+<span class="k">while</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span> <span class="o">!=</span> <span class="n">root</span><span class="p">:</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;gwexpy&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
@@ -139,16 +141,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">RuntimeError</span>                              Traceback (most recent call last)
-<span class="ansi-red-fg">RuntimeError</span>: module was compiled against NumPy C-API version 0x12 (NumPy 2.0) but the running NumPy has C-API version 0x11. Check the section C-API incompatibility at the Troubleshooting ImportError section at https://numpy.org/devdocs/user/troubleshooting-importerror.html#c-api-incompatibility for indications on how to solve this problem.
-</pre></div></div>
 </div>
 <section id="Pairwise-Correlation">
 <h2>Pairwise Correlation<a class="headerlink" href="#Pairwise-Correlation" title="Link to this heading"></a></h2>
@@ -365,7 +357,7 @@ Computing Pearson vector (Top 5)...
 <section id="Partial-Correlation-(Confound-Control)">
 <h2>Partial Correlation (Confound Control)<a class="headerlink" href="#Partial-Correlation-(Confound-Control)" title="Link to this heading"></a></h2>
 <p>Partial correlation estimates direct coupling by removing shared confounds.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
@@ -387,38 +379,11 @@ Computing Pearson vector (Top 5)...
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-corr(x,y): 0.9809075921667307
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 15</span>
-<span class="ansi-green-fg">     12</span> ts_z = TimeSeries(z, dt=t[<span class="ansi-green-fg">1</span>] - t[<span class="ansi-green-fg">0</span>], name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">     14</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">corr(x,y):</span><span class="ansi-yellow-fg">&#34;</span>, ts_x.correlation(ts_y, method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">pearson</span><span class="ansi-yellow-fg">&#34;</span>))
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">15</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">partial corr(x,y|z):</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-bg">ts_x</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">partial_correlation</span>(ts_y, controls=ts_z, method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">residual</span><span class="ansi-yellow-fg">&#34;</span>))
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniforge3/envs/ws-base/lib/python3.12/site-packages/gwpy/types/array.py:207</span>, in <span class="ansi-cyan-fg">Array.__getattr__</span><span class="ansi-blue-fg">(self, attr)</span>
-<span class="ansi-green-fg">    206</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(<span style="color: rgb(0,135,0)">self</span>, attr):
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">207</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-blue-fg ansi-yellow-bg">__getattribute__</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">attr</span><span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-red-fg">AttributeError</span>: &#39;TimeSeries&#39; object has no attribute &#39;partial_correlation&#39;
-</pre></div></div>
-</div>
 </section>
 <section id="Association-Edges-and-Graphs">
 <h2>Association Edges and Graphs<a class="headerlink" href="#Association-Edges-and-Graphs" title="Link to this heading"></a></h2>
 <p>Use a target TimeSeries against a TimeSeriesMatrix to build edges.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
@@ -432,36 +397,16 @@ corr(x,y): 0.9809075921667307
 <span class="p">)</span>
 
 <span class="n">edges</span> <span class="o">=</span> <span class="n">association_edges</span><span class="p">(</span><span class="n">ts_x</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="n">topk</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">edges</span>
-<span class="n">pcorr</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">partial_correlation_matrix</span><span class="p">(</span><span class="n">shrinkage</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
-<span class="n">pcorr</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Association edges:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
 
+<span class="n">pcorr</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">partial_correlation_matrix</span><span class="p">(</span><span class="n">shrinkage</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Partial correlation matrix:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pcorr</span><span class="p">)</span>
 
 <span class="c1"># If networkx is available:</span>
 <span class="n">graph</span> <span class="o">=</span> <span class="n">build_graph</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
-<span class="n">graph</span>
-<br/></pre></div>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Graph built successfully.&quot;</span><span class="p">)</span>
+</pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ImportError</span>                               Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[11]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeriesMatrix
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">analysis</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> association_edges, build_graph
-<span class="ansi-green-fg">      4</span> matrix = TimeSeriesMatrix(
-<span class="ansi-green-fg">      5</span>     np.stack([x, y, z], axis=<span class="ansi-green-fg">0</span>)[:, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>, :],
-<span class="ansi-green-fg">      6</span>     dt=t[<span class="ansi-green-fg">1</span>] - t[<span class="ansi-green-fg">0</span>],
-<span class="ansi-green-fg">      7</span>     channel_names=[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>],
-<span class="ansi-green-fg">      8</span> )
-<span class="ansi-green-fg">     10</span> edges = association_edges(ts_x, matrix, method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">pearson</span><span class="ansi-yellow-fg">&#34;</span>, topk=<span class="ansi-green-fg">3</span>)
-
-<span class="ansi-red-fg">ImportError</span>: cannot import name &#39;association_edges&#39; from &#39;gwexpy.analysis&#39; (/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/gwexpy/analysis/__init__.py)
-</pre></div></div>
 </div>
 <section id="Visualization:-Edge-Ranking-and-Partial-Corr-Heatmap">
 <h3>Visualization: Edge Ranking and Partial-Corr Heatmap<a class="headerlink" href="#Visualization:-Edge-Ranking-and-Partial-Corr-Heatmap" title="Link to this heading"></a></h3>
@@ -680,27 +625,19 @@ Granger Causality Y -&gt; X (p-value): 0.0907
   warnings.warn(
 </pre></div></div>
 </div>
+</section>
+<section id="Fast-Mutual-Information-(fastmi)">
+<h2>Fast Mutual Information (fastmi)<a class="headerlink" href="#Fast-Mutual-Information-(fastmi)" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fastmi</span></code> is a fast mutual-information (MI) estimator based on a copula formulation, a probit transform, and an FFT-based density estimate. It captures complex nonlinear dependencies that Pearson correlation might miss.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mi_xy</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">fastmi</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">grid_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+<span class="n">mi_xz</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">fastmi</span><span class="p">(</span><span class="n">ts_z</span><span class="p">,</span> <span class="n">grid_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mutual Information (x, y): </span><span class="si">{</span><span class="n">mi_xy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> nats&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mutual Information (x, z): </span><span class="si">{</span><span class="n">mi_xz</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> nats&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
