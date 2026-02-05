@@ -355,12 +355,13 @@
     <span class="n">average</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">ci</span><span class="o">=</span><span class="mf">0.68</span><span class="p">,</span>
     <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
-    <span class="n">nperseg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">noverlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">block_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">rebin_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">return_map</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Estimate robust ASD from a spectrogram using bootstrap resampling.</span>
@@ -382,8 +383,13 @@
 <span class="sd">        Alias for method (&#39;median&#39; or &#39;mean&#39;) for compatibility.</span>
 <span class="sd">    ci : float</span>
 <span class="sd">    window : str or array, optional</span>
-<span class="sd">    nperseg : int, optional</span>
-<span class="sd">    noverlap : int, optional</span>
+<span class="sd">    fftlength : float or Quantity, optional</span>
+<span class="sd">        FFT segment length in seconds used to generate the spectrogram.</span>
+<span class="sd">        Used for VIF (overlap correlation) correction.</span>
+<span class="sd">    overlap : float or Quantity, optional</span>
+<span class="sd">        Overlap between FFT segments in seconds.</span>
+<span class="sd">        Used for VIF correction. If None and fftlength is given,</span>
+<span class="sd">        defaults to the recommended overlap for the window function.</span>
 <span class="sd">    block_size : int or &#39;auto&#39;, optional</span>
 <span class="sd">        Size of blocks for block bootstrap.</span>
 <span class="sd">        If &#39;auto&#39;, estimates size based on overlap ratio (ceil(duration/stride)).</span>
@@ -439,6 +445,9 @@
 <span class="sd">    .. [3] Politis, D.N. &amp; Romano, J.P., &quot;The stationary bootstrap&quot;,</span>
 <span class="sd">           J. Amer. Statist. Assoc. 89(428), 1994</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.fft_args</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_deprecated_kwargs</span><span class="p">,</span> <span class="n">get_default_overlap</span><span class="p">,</span> <span class="n">parse_fftlength_or_overlap</span>
+
+    <span class="n">check_deprecated_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">value</span>
     <span class="n">frequencies</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
     <span class="n">n_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -631,7 +640,30 @@
         <span class="n">overlap_ratio</span> <span class="o">=</span> <span class="n">_infer_overlap_ratio</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">)</span>
         <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.0</span>
 
-        <span class="k">if</span> <span class="n">nperseg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fftlength</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># User provided fftlength/overlap in seconds — compute VIF</span>
+            <span class="c1"># using a dummy nperseg with the correct overlap ratio.</span>
+            <span class="c1"># VIF depends on window shape and overlap ratio, not absolute sample count.</span>
+            <span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;fftlength&quot;</span><span class="p">)</span>
+            <span class="n">overlap_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">overlap</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;overlap&quot;</span><span class="p">)</span>
+
+            <span class="c1"># fftlength_sec must be provided for VIF calculation</span>
+            <span class="k">if</span> <span class="n">fftlength_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">overlap_sec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">overlap_sec</span> <span class="o">=</span> <span class="n">get_default_overlap</span><span class="p">(</span><span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">overlap_sec</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">overlap_sec</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+                <span class="n">stride_sec</span> <span class="o">=</span> <span class="n">fftlength_sec</span> <span class="o">-</span> <span class="n">overlap_sec</span>
+                <span class="k">if</span> <span class="n">stride_sec</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">fftlength_sec</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">dummy_nperseg</span> <span class="o">=</span> <span class="mi">1000</span>
+                    <span class="n">dummy_step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">stride_sec</span> <span class="o">/</span> <span class="n">fftlength_sec</span> <span class="o">*</span> <span class="n">dummy_nperseg</span><span class="p">)))</span>
+                    <span class="n">dummy_noverlap</span> <span class="o">=</span> <span class="n">dummy_nperseg</span> <span class="o">-</span> <span class="n">dummy_step</span>
+                    <span class="n">factor</span> <span class="o">=</span> <span class="n">calculate_correlation_factor</span><span class="p">(</span>
+                        <span class="n">window</span><span class="p">,</span> <span class="n">dummy_nperseg</span><span class="p">,</span> <span class="n">dummy_noverlap</span><span class="p">,</span> <span class="n">n_time</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Heuristic from spectrogram metadata</span>
             <span class="k">if</span> <span class="n">overlap_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">overlap_ratio</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">dummy_step</span> <span class="o">=</span> <span class="mi">100</span>
                 <span class="n">dummy_nperseg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">dummy_step</span> <span class="o">*</span> <span class="n">overlap_ratio</span><span class="p">))</span>
@@ -640,13 +672,6 @@
                     <span class="n">factor</span> <span class="o">=</span> <span class="n">calculate_correlation_factor</span><span class="p">(</span>
                         <span class="n">window</span><span class="p">,</span> <span class="n">dummy_nperseg</span><span class="p">,</span> <span class="n">dummy_noverlap</span><span class="p">,</span> <span class="n">n_time</span>
                     <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">noverlap</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">overlap_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">overlap_ratio</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">inferred_noverlap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">nperseg</span> <span class="o">-</span> <span class="p">(</span><span class="n">nperseg</span> <span class="o">/</span> <span class="n">overlap_ratio</span><span class="p">)))</span>
-                <span class="n">noverlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inferred_noverlap</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">noverlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">noverlap</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">factor</span> <span class="o">=</span> <span class="n">calculate_correlation_factor</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">nperseg</span><span class="p">,</span> <span class="n">noverlap</span><span class="p">,</span> <span class="n">n_time</span><span class="p">)</span>
 
     <span class="n">err_low</span> <span class="o">*=</span> <span class="n">factor</span>
     <span class="n">err_high</span> <span class="o">*=</span> <span class="n">factor</span>

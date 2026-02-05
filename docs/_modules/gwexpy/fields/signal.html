@@ -236,12 +236,13 @@
     <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;welch&quot;</span><span class="p">,</span> <span class="s2">&quot;fft&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;welch&quot;</span><span class="p">,</span>
-    <span class="n">nperseg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">noverlap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
     <span class="n">detrend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
     <span class="n">scaling</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;density&quot;</span><span class="p">,</span> <span class="s2">&quot;spectrum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;density&quot;</span><span class="p">,</span>
     <span class="n">average</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute spectral density along any axis.</span>
 
@@ -263,10 +264,11 @@
 <span class="sd">    method : {&#39;welch&#39;, &#39;fft&#39;}</span>
 <span class="sd">        Estimation method. &#39;welch&#39; for averaged periodogram,</span>
 <span class="sd">        &#39;fft&#39; for direct FFT magnitude squared. Default &#39;welch&#39;.</span>
-<span class="sd">    nperseg : int, optional</span>
-<span class="sd">        Segment length for Welch method. Default min(256, axis_length).</span>
-<span class="sd">    noverlap : int, optional</span>
-<span class="sd">        Overlap for Welch. Default nperseg // 2.</span>
+<span class="sd">    fftlength : float, optional</span>
+<span class="sd">        Segment length in axis units (seconds for time axis, spatial</span>
+<span class="sd">        units for space axes). Default min(256, axis_length) samples.</span>
+<span class="sd">    overlap : float, optional</span>
+<span class="sd">        Overlap in axis units. Default fftlength / 2.</span>
 <span class="sd">    window : str</span>
 <span class="sd">        Window function. Default &#39;hann&#39;.</span>
 <span class="sd">    detrend : str or bool</span>
@@ -276,6 +278,9 @@
 <span class="sd">        &#39;spectrum&#39; gives total power in each bin. Default &#39;density&#39;.</span>
 <span class="sd">    average : {&#39;mean&#39;, &#39;median&#39;}</span>
 <span class="sd">        Averaging for Welch. Default &#39;mean&#39;.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments. Passing the removed ``nperseg``</span>
+<span class="sd">        or ``noverlap`` parameters will raise :class:`TypeError`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -315,15 +320,30 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">welch</span>
 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.fft_args</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_deprecated_kwargs</span><span class="p">,</span> <span class="n">get_default_overlap</span><span class="p">,</span> <span class="n">parse_fftlength_or_overlap</span>
+
+    <span class="n">check_deprecated_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="n">axis_int</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">delta_unit</span><span class="p">,</span> <span class="n">domain</span> <span class="o">=</span> <span class="n">_validate_axis_for_spectral</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
 
     <span class="n">n_axis</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis_int</span><span class="p">]</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">delta</span>  <span class="c1"># Sampling frequency (temporal or spatial)</span>
+
+    <span class="c1"># Convert fftlength/overlap to samples</span>
+    <span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">nperseg</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;fftlength&quot;</span><span class="p">)</span>
+    <span class="n">overlap_sec</span><span class="p">,</span> <span class="n">noverlap</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">overlap</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;overlap&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">nperseg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">nperseg</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">n_axis</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">noverlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">noverlap</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">//</span> <span class="mi">2</span>
-
-    <span class="n">fs</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">delta</span>  <span class="c1"># Sampling frequency (temporal or spatial)</span>
+        <span class="k">if</span> <span class="n">fftlength_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">overlap_sec_default</span> <span class="o">=</span> <span class="n">get_default_overlap</span><span class="p">(</span><span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">overlap_sec_default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">noverlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">overlap_sec_default</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">noverlap</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">noverlap</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">//</span> <span class="mi">2</span>
 
     <span class="c1"># Apply Welch along specified axis</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;welch&quot;</span><span class="p">:</span>
@@ -453,13 +473,14 @@
         <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
     <span class="p">),</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">nperseg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">noverlap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
     <span class="n">detrend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
     <span class="n">scaling</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;density&quot;</span><span class="p">,</span> <span class="s2">&quot;spectrum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;density&quot;</span><span class="p">,</span>
     <span class="n">average</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
     <span class="n">return_onesided</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span> <span class="o">|</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute power spectral density using Welch&#39;s method.</span>
 
@@ -478,10 +499,10 @@
 <span class="sd">        - Region dict: ``{&#39;x&#39;: slice or value, &#39;y&#39;: ..., &#39;z&#39;: ...}``</span>
 <span class="sd">          If region, averages over all points in the region.</span>
 
-<span class="sd">    nperseg : int, optional</span>
-<span class="sd">        Length of each segment. Default is min(256, len(time_axis)).</span>
-<span class="sd">    noverlap : int, optional</span>
-<span class="sd">        Number of overlapping points. Default is nperseg // 2.</span>
+<span class="sd">    fftlength : float, optional</span>
+<span class="sd">        Segment length in seconds. Default is min(256, len(time_axis)) samples.</span>
+<span class="sd">    overlap : float, optional</span>
+<span class="sd">        Overlap in seconds. Default is fftlength / 2.</span>
 <span class="sd">    window : str</span>
 <span class="sd">        Window function name. Default is &#39;hann&#39;.</span>
 <span class="sd">    detrend : str or bool</span>
@@ -493,6 +514,9 @@
 <span class="sd">        Averaging method for segments. Default is &#39;mean&#39;.</span>
 <span class="sd">    return_onesided : bool</span>
 <span class="sd">        If True, return one-sided spectrum for real data. Default True.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments. Passing the removed ``nperseg``</span>
+<span class="sd">        or ``noverlap`` parameters will raise :class:`TypeError`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -519,14 +543,30 @@
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">FrequencySeriesList</span>
 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.fft_args</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_deprecated_kwargs</span><span class="p">,</span> <span class="n">get_default_overlap</span><span class="p">,</span> <span class="n">parse_fftlength_or_overlap</span>
+
+    <span class="n">check_deprecated_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="n">dt_value</span><span class="p">,</span> <span class="n">dt_unit</span> <span class="o">=</span> <span class="n">_validate_regular_time_axis</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
     <span class="n">fs</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt_value</span>
 
     <span class="n">nt</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Convert fftlength/overlap to samples</span>
+    <span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">nperseg</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;fftlength&quot;</span><span class="p">)</span>
+    <span class="n">overlap_sec</span><span class="p">,</span> <span class="n">noverlap</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">overlap</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;overlap&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">nperseg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">nperseg</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">nt</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">noverlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">noverlap</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">fftlength_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">overlap_sec_default</span> <span class="o">=</span> <span class="n">get_default_overlap</span><span class="p">(</span><span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">overlap_sec_default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">noverlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">overlap_sec_default</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">noverlap</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">noverlap</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">//</span> <span class="mi">2</span>
 
     <span class="c1"># Determine extraction mode</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point_or_region</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -636,11 +676,12 @@
     <span class="n">at</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;welch&quot;</span><span class="p">,</span> <span class="s2">&quot;fft&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;welch&quot;</span><span class="p">,</span>
-    <span class="n">nperseg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">noverlap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
     <span class="n">detrend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
     <span class="n">scaling</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;density&quot;</span><span class="p">,</span> <span class="s2">&quot;spectrum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;density&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute frequency-space map along a spatial axis.</span>
 
@@ -659,16 +700,19 @@
 <span class="sd">        Example: ``{&#39;y&#39;: 0*u.m, &#39;z&#39;: 0*u.m}`` when axis=&#39;x&#39;.</span>
 <span class="sd">    method : {&#39;welch&#39;, &#39;fft&#39;}</span>
 <span class="sd">        PSD estimation method. Default is &#39;welch&#39;.</span>
-<span class="sd">    nperseg : int, optional</span>
-<span class="sd">        Segment length for Welch method. Default is min(256, nt).</span>
-<span class="sd">    noverlap : int, optional</span>
-<span class="sd">        Overlap for Welch method. Default is nperseg // 2.</span>
+<span class="sd">    fftlength : float, optional</span>
+<span class="sd">        Segment length in seconds. Default is min(256, nt) samples.</span>
+<span class="sd">    overlap : float, optional</span>
+<span class="sd">        Overlap in seconds. Default is fftlength / 2.</span>
 <span class="sd">    window : str</span>
 <span class="sd">        Window function. Default is &#39;hann&#39;.</span>
 <span class="sd">    detrend : str or bool</span>
 <span class="sd">        Detrending method. Default is &#39;constant&#39;.</span>
 <span class="sd">    scaling : {&#39;density&#39;, &#39;spectrum&#39;}</span>
 <span class="sd">        PSD scaling. Default is &#39;density&#39;.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments. Passing the removed ``nperseg``</span>
+<span class="sd">        or ``noverlap`` parameters will raise :class:`TypeError`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -693,14 +737,30 @@
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot._coord</span><span class="w"> </span><span class="kn">import</span> <span class="n">nearest_index</span><span class="p">,</span> <span class="n">slice_from_index</span>
 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.fft_args</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_deprecated_kwargs</span><span class="p">,</span> <span class="n">get_default_overlap</span><span class="p">,</span> <span class="n">parse_fftlength_or_overlap</span>
+
+    <span class="n">check_deprecated_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="n">dt_value</span><span class="p">,</span> <span class="n">dt_unit</span> <span class="o">=</span> <span class="n">_validate_regular_time_axis</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
     <span class="n">fs</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt_value</span>
 
     <span class="n">nt</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Convert fftlength/overlap to samples</span>
+    <span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">nperseg</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;fftlength&quot;</span><span class="p">)</span>
+    <span class="n">overlap_sec</span><span class="p">,</span> <span class="n">noverlap</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">overlap</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;overlap&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">nperseg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">nperseg</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">nt</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">noverlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">noverlap</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">fftlength_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">overlap_sec_default</span> <span class="o">=</span> <span class="n">get_default_overlap</span><span class="p">(</span><span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">overlap_sec_default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">noverlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">overlap_sec_default</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">noverlap</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">noverlap</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">//</span> <span class="mi">2</span>
 
     <span class="c1"># Map axis name to index</span>
     <span class="n">axis_int</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">_get_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
@@ -1154,10 +1214,11 @@
     <span class="n">plane</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;xy&quot;</span><span class="p">,</span>
     <span class="n">at</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">band</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">nperseg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">noverlap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
     <span class="n">stride</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span> <span class="o">|</span> <span class="n">FieldDict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute magnitude-squared coherence map from a reference point.</span>
 
@@ -1177,14 +1238,17 @@
 <span class="sd">    band : tuple of Quantity, optional</span>
 <span class="sd">        Frequency band ``(fmin, fmax)`` to average coherence over.</span>
 <span class="sd">        If None, returns coherence at all frequencies.</span>
-<span class="sd">    nperseg : int, optional</span>
-<span class="sd">        Segment length for coherence estimation. Default min(256, nt).</span>
-<span class="sd">    noverlap : int, optional</span>
-<span class="sd">        Overlap for segments. Default nperseg // 2.</span>
+<span class="sd">    fftlength : float, optional</span>
+<span class="sd">        Segment length in seconds. Default min(256, nt) samples.</span>
+<span class="sd">    overlap : float, optional</span>
+<span class="sd">        Overlap in seconds. Default fftlength / 2.</span>
 <span class="sd">    window : str</span>
 <span class="sd">        Window function. Default &#39;hann&#39;.</span>
 <span class="sd">    stride : int</span>
 <span class="sd">        Subsample stride. Default 1.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments. Passing the removed ``nperseg``</span>
+<span class="sd">        or ``noverlap`` parameters will raise :class:`TypeError`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1209,14 +1273,30 @@
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot._coord</span><span class="w"> </span><span class="kn">import</span> <span class="n">nearest_index</span>
 
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.fft_args</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_deprecated_kwargs</span><span class="p">,</span> <span class="n">get_default_overlap</span><span class="p">,</span> <span class="n">parse_fftlength_or_overlap</span>
+
+    <span class="n">check_deprecated_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="n">dt_value</span><span class="p">,</span> <span class="n">dt_unit</span> <span class="o">=</span> <span class="n">_validate_regular_time_axis</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
     <span class="n">fs</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt_value</span>
 
     <span class="n">nt</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Convert fftlength/overlap to samples</span>
+    <span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">nperseg</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;fftlength&quot;</span><span class="p">)</span>
+    <span class="n">overlap_sec</span><span class="p">,</span> <span class="n">noverlap</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">overlap</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;overlap&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">nperseg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">nperseg</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">nt</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">noverlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">noverlap</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">fftlength_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">overlap_sec_default</span> <span class="o">=</span> <span class="n">get_default_overlap</span><span class="p">(</span><span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">overlap_sec_default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">noverlap</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">overlap_sec_default</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">noverlap</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">noverlap</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">//</span> <span class="mi">2</span>
 
     <span class="c1"># Extract reference time series</span>
     <span class="n">ref_data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_extract_timeseries_1d</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">ref_point</span><span class="p">)</span>

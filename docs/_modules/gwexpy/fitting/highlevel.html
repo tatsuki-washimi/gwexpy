@@ -83,7 +83,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -109,8 +109,8 @@
     <span class="n">block_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">ci</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.68</span><span class="p">,</span>
     <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
-    <span class="n">nperseg</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
-    <span class="n">noverlap</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">n_boot</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
     <span class="n">initial_params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">bounds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -121,6 +121,7 @@
     <span class="n">mcmc_burn_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
     <span class="n">plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FitResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Integrated spectral analysis pipeline with bootstrap, GLS fitting, and MCMC.</span>
@@ -153,10 +154,14 @@
 <span class="sd">    window : str, optional</span>
 <span class="sd">        Window function for spectrogram and correlation correction.</span>
 <span class="sd">        Default is &#39;hann&#39;.</span>
-<span class="sd">    nperseg : int, optional</span>
-<span class="sd">        Segment length for spectrogram generation. Default is 16.</span>
-<span class="sd">    noverlap : int, optional</span>
-<span class="sd">        Overlap for spectrogram. If None, uses nperseg // 2.</span>
+<span class="sd">    fftlength : float or Quantity, optional</span>
+<span class="sd">        FFT segment length in seconds (e.g. ``1.0`` or ``1.0 * u.s``).</span>
+<span class="sd">        Used to generate the spectrogram from a TimeSeries and for</span>
+<span class="sd">        VIF overlap-correlation correction. If None and a TimeSeries</span>
+<span class="sd">        is given, GWpy chooses a default covering the full duration.</span>
+<span class="sd">    overlap : float or Quantity, optional</span>
+<span class="sd">        Overlap between FFT segments in seconds. If None, defaults to</span>
+<span class="sd">        the recommended overlap for *window* (50 % for Hann).</span>
 <span class="sd">    n_boot : int, optional</span>
 <span class="sd">        Number of bootstrap resamples. Default is 1000.</span>
 <span class="sd">    initial_params : dict, optional</span>
@@ -201,6 +206,8 @@
 <span class="sd">    ...     data,</span>
 <span class="sd">    ...     model_fn=power_law,</span>
 <span class="sd">    ...     freq_range=(5, 50),</span>
+<span class="sd">    ...     fftlength=1.0,</span>
+<span class="sd">    ...     overlap=0.5,</span>
 <span class="sd">    ...     rebin_width=0.25,</span>
 <span class="sd">    ...     block_size=4,</span>
 <span class="sd">    ...     initial_params={&quot;A&quot;: 10, &quot;alpha&quot;: -1.5},</span>
@@ -224,20 +231,40 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_series</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">bootstrap_spectrogram</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.utils.fft_args</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">check_deprecated_kwargs</span><span class="p">,</span>
+        <span class="n">get_default_overlap</span><span class="p">,</span>
+        <span class="n">parse_fftlength_or_overlap</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">check_deprecated_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="c1"># 1. Input check and Spectrogram generation</span>
     <span class="c1"># Check if input is a TimeSeries (has sample_rate attribute)</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data_or_spectrogram</span><span class="p">,</span> <span class="s2">&quot;sample_rate&quot;</span><span class="p">):</span>
         <span class="c1"># TimeSeries -&gt; Spectrogram</span>
-        <span class="k">if</span> <span class="n">noverlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">noverlap</span> <span class="o">=</span> <span class="n">nperseg</span> <span class="o">//</span> <span class="mi">2</span>
-
-        <span class="n">spectrogram</span> <span class="o">=</span> <span class="n">data_or_spectrogram</span><span class="o">.</span><span class="n">spectrogram2</span><span class="p">(</span>
-            <span class="n">stride</span><span class="o">=</span><span class="n">nperseg</span> <span class="o">-</span> <span class="n">noverlap</span><span class="p">,</span>
-            <span class="n">fftlength</span><span class="o">=</span><span class="n">nperseg</span><span class="p">,</span>
-            <span class="n">overlap</span><span class="o">=</span><span class="n">noverlap</span><span class="p">,</span>
-            <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+        <span class="c1"># Parse fftlength / overlap (seconds); GWpy expects seconds.</span>
+        <span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span>
+            <span class="n">fftlength</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;fftlength&quot;</span>
         <span class="p">)</span>
+        <span class="n">overlap_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span>
+            <span class="n">overlap</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;overlap&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Apply GWpy-compatible defaults</span>
+        <span class="k">if</span> <span class="n">overlap_sec</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fftlength_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">overlap_sec</span> <span class="o">=</span> <span class="n">get_default_overlap</span><span class="p">(</span><span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+
+        <span class="c1"># Build spectrogram keyword arguments</span>
+        <span class="n">spec_kw</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fftlength_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spec_kw</span><span class="p">[</span><span class="s2">&quot;fftlength&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fftlength_sec</span>
+            <span class="n">stride_sec</span> <span class="o">=</span> <span class="n">fftlength_sec</span> <span class="o">-</span> <span class="p">(</span><span class="n">overlap_sec</span> <span class="ow">or</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="n">spec_kw</span><span class="p">[</span><span class="s2">&quot;stride&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stride_sec</span>
+        <span class="k">if</span> <span class="n">overlap_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spec_kw</span><span class="p">[</span><span class="s2">&quot;overlap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">overlap_sec</span>
+
+        <span class="n">spectrogram</span> <span class="o">=</span> <span class="n">data_or_spectrogram</span><span class="o">.</span><span class="n">spectrogram2</span><span class="p">(</span><span class="o">**</span><span class="n">spec_kw</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Assume it&#39;s already a Spectrogram</span>
         <span class="n">spectrogram</span> <span class="o">=</span> <span class="n">data_or_spectrogram</span>
@@ -249,8 +276,8 @@
         <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
         <span class="n">ci</span><span class="o">=</span><span class="n">ci</span><span class="p">,</span>
         <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
-        <span class="n">nperseg</span><span class="o">=</span><span class="n">nperseg</span><span class="p">,</span>
-        <span class="n">noverlap</span><span class="o">=</span><span class="n">noverlap</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
         <span class="n">block_size</span><span class="o">=</span><span class="n">block_size</span><span class="p">,</span>
         <span class="n">rebin_width</span><span class="o">=</span><span class="n">rebin_width</span><span class="p">,</span>
         <span class="n">return_map</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Always get covariance map for GLS</span>
