@@ -8,7 +8,7 @@ combining bootstrap estimation, GLS fitting, and MCMC in a single API.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 import numpy as np
 
@@ -32,8 +32,8 @@ def fit_bootstrap_spectrum(
     block_size: Optional[int] = None,
     ci: float = 0.68,
     window: str = "hann",
-    nperseg: int = 16,
-    noverlap: Optional[int] = None,
+    fftlength=None,
+    overlap=None,
     n_boot: int = 1000,
     initial_params: Optional[dict[str, float]] = None,
     bounds: Optional[dict[str, tuple[float, float]]] = None,
@@ -44,6 +44,7 @@ def fit_bootstrap_spectrum(
     mcmc_burn_in: int = 500,
     plot: bool = True,
     progress: bool = True,
+    **kwargs,
 ) -> FitResult:
     """
     Integrated spectral analysis pipeline with bootstrap, GLS fitting, and MCMC.
@@ -76,10 +77,14 @@ def fit_bootstrap_spectrum(
     window : str, optional
         Window function for spectrogram and correlation correction.
         Default is 'hann'.
-    nperseg : int, optional
-        Segment length for spectrogram generation. Default is 16.
-    noverlap : int, optional
-        Overlap for spectrogram. If None, uses nperseg // 2.
+    fftlength : float or Quantity, optional
+        FFT segment length in seconds (e.g. ``1.0`` or ``1.0 * u.s``).
+        Used to generate the spectrogram from a TimeSeries and for
+        VIF overlap-correlation correction. If None and a TimeSeries
+        is given, GWpy chooses a default covering the full duration.
+    overlap : float or Quantity, optional
+        Overlap between FFT segments in seconds. If None, defaults to
+        the recommended overlap for *window* (50 % for Hann).
     n_boot : int, optional
         Number of bootstrap resamples. Default is 1000.
     initial_params : dict, optional
@@ -124,6 +129,8 @@ def fit_bootstrap_spectrum(
     ...     data,
     ...     model_fn=power_law,
     ...     freq_range=(5, 50),
+    ...     fftlength=1.0,
+    ...     overlap=0.5,
     ...     rebin_width=0.25,
     ...     block_size=4,
     ...     initial_params={"A": 10, "alpha": -1.5},
@@ -147,20 +154,40 @@ def fit_bootstrap_spectrum(
     """
     from gwexpy.fitting import fit_series
     from gwexpy.spectral import bootstrap_spectrogram
+    from gwexpy.utils.fft_args import (
+        check_deprecated_kwargs,
+        get_default_overlap,
+        parse_fftlength_or_overlap,
+    )
+
+    check_deprecated_kwargs(**kwargs)
 
     # 1. Input check and Spectrogram generation
     # Check if input is a TimeSeries (has sample_rate attribute)
     if hasattr(data_or_spectrogram, "sample_rate"):
         # TimeSeries -> Spectrogram
-        if noverlap is None:
-            noverlap = nperseg // 2
-
-        spectrogram = data_or_spectrogram.spectrogram2(
-            stride=nperseg - noverlap,
-            fftlength=nperseg,
-            overlap=noverlap,
-            window=window,
+        # Parse fftlength / overlap (seconds); GWpy expects seconds.
+        fftlength_sec, _ = parse_fftlength_or_overlap(
+            fftlength, arg_name="fftlength"
         )
+        overlap_sec, _ = parse_fftlength_or_overlap(
+            overlap, arg_name="overlap"
+        )
+
+        # Apply GWpy-compatible defaults
+        if overlap_sec is None and fftlength_sec is not None:
+            overlap_sec = get_default_overlap(fftlength_sec, window=window)
+
+        # Build spectrogram keyword arguments
+        spec_kw: dict[str, Any] = dict(window=window)
+        if fftlength_sec is not None:
+            spec_kw["fftlength"] = fftlength_sec
+            stride_sec = fftlength_sec - (overlap_sec or 0.0)
+            spec_kw["stride"] = stride_sec
+        if overlap_sec is not None:
+            spec_kw["overlap"] = overlap_sec
+
+        spectrogram = data_or_spectrogram.spectrogram2(**spec_kw)
     else:
         # Assume it's already a Spectrogram
         spectrogram = data_or_spectrogram
@@ -172,8 +199,8 @@ def fit_bootstrap_spectrum(
         method=method,
         ci=ci,
         window=window,
-        nperseg=nperseg,
-        noverlap=noverlap,
+        fftlength=fftlength,
+        overlap=overlap,
         block_size=block_size,
         rebin_width=rebin_width,
         return_map=True,  # Always get covariance map for GLS

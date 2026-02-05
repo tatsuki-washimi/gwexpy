@@ -162,12 +162,13 @@ def spectral_density(
     axis: int | str = 0,
     *,
     method: Literal["welch", "fft"] = "welch",
-    nperseg: int | None = None,
-    noverlap: int | None = None,
+    fftlength: float | None = None,
+    overlap: float | None = None,
     window: str = "hann",
     detrend: str | bool = "constant",
     scaling: Literal["density", "spectrum"] = "density",
     average: Literal["mean", "median"] = "mean",
+    **kwargs,
 ) -> ScalarField:
     """Compute spectral density along any axis.
 
@@ -189,10 +190,11 @@ def spectral_density(
     method : {'welch', 'fft'}
         Estimation method. 'welch' for averaged periodogram,
         'fft' for direct FFT magnitude squared. Default 'welch'.
-    nperseg : int, optional
-        Segment length for Welch method. Default min(256, axis_length).
-    noverlap : int, optional
-        Overlap for Welch. Default nperseg // 2.
+    fftlength : float, optional
+        Segment length in axis units (seconds for time axis, spatial
+        units for space axes). Default min(256, axis_length) samples.
+    overlap : float, optional
+        Overlap in axis units. Default fftlength / 2.
     window : str
         Window function. Default 'hann'.
     detrend : str or bool
@@ -202,6 +204,9 @@ def spectral_density(
         'spectrum' gives total power in each bin. Default 'density'.
     average : {'mean', 'median'}
         Averaging for Welch. Default 'mean'.
+    **kwargs
+        Additional keyword arguments. Passing the removed ``nperseg``
+        or ``noverlap`` parameters will raise :class:`TypeError`.
 
     Returns
     -------
@@ -241,15 +246,30 @@ def spectral_density(
     """
     from scipy.signal import welch
 
+    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+
+    check_deprecated_kwargs(**kwargs)
+
     axis_int, delta, delta_unit, domain = _validate_axis_for_spectral(field, axis)
 
     n_axis = field.shape[axis_int]
+    fs = 1.0 / delta  # Sampling frequency (temporal or spatial)
+
+    # Convert fftlength/overlap to samples
+    fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
+    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+
     if nperseg is None:
         nperseg = min(256, n_axis)
     if noverlap is None:
-        noverlap = nperseg // 2
-
-    fs = 1.0 / delta  # Sampling frequency (temporal or spatial)
+        if fftlength_sec is not None:
+            overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
+            if overlap_sec_default is not None:
+                noverlap = max(1, int(round(overlap_sec_default * fs)))
+            else:
+                noverlap = 0
+        else:
+            noverlap = nperseg // 2
 
     # Apply Welch along specified axis
     if method == "welch":
@@ -377,13 +397,14 @@ def compute_psd(
         | dict[str, Any]
     ),
     *,
-    nperseg: int | None = None,
-    noverlap: int | None = None,
+    fftlength: float | None = None,
+    overlap: float | None = None,
     window: str = "hann",
     detrend: str | bool = "constant",
     scaling: Literal["density", "spectrum"] = "density",
     average: Literal["mean", "median"] = "mean",
     return_onesided: bool = True,
+    **kwargs,
 ) -> FrequencySeries | FrequencySeriesList:
     """Compute power spectral density using Welch's method.
 
@@ -402,10 +423,10 @@ def compute_psd(
         - Region dict: ``{'x': slice or value, 'y': ..., 'z': ...}``
           If region, averages over all points in the region.
 
-    nperseg : int, optional
-        Length of each segment. Default is min(256, len(time_axis)).
-    noverlap : int, optional
-        Number of overlapping points. Default is nperseg // 2.
+    fftlength : float, optional
+        Segment length in seconds. Default is min(256, len(time_axis)) samples.
+    overlap : float, optional
+        Overlap in seconds. Default is fftlength / 2.
     window : str
         Window function name. Default is 'hann'.
     detrend : str or bool
@@ -417,6 +438,9 @@ def compute_psd(
         Averaging method for segments. Default is 'mean'.
     return_onesided : bool
         If True, return one-sided spectrum for real data. Default True.
+    **kwargs
+        Additional keyword arguments. Passing the removed ``nperseg``
+        or ``noverlap`` parameters will raise :class:`TypeError`.
 
     Returns
     -------
@@ -443,14 +467,30 @@ def compute_psd(
 
     from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
 
+    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+
+    check_deprecated_kwargs(**kwargs)
+
     dt_value, dt_unit = _validate_regular_time_axis(field)
     fs = 1.0 / dt_value
 
     nt = field.shape[0]
+
+    # Convert fftlength/overlap to samples
+    fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
+    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+
     if nperseg is None:
         nperseg = min(256, nt)
     if noverlap is None:
-        noverlap = nperseg // 2
+        if fftlength_sec is not None:
+            overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
+            if overlap_sec_default is not None:
+                noverlap = max(1, int(round(overlap_sec_default * fs)))
+            else:
+                noverlap = 0
+        else:
+            noverlap = nperseg // 2
 
     # Determine extraction mode
     if isinstance(point_or_region, dict):
@@ -557,11 +597,12 @@ def freq_space_map(
     at: dict[str, Quantity] | None = None,
     *,
     method: Literal["welch", "fft"] = "welch",
-    nperseg: int | None = None,
-    noverlap: int | None = None,
+    fftlength: float | None = None,
+    overlap: float | None = None,
     window: str = "hann",
     detrend: str | bool = "constant",
     scaling: Literal["density", "spectrum"] = "density",
+    **kwargs,
 ) -> ScalarField:
     """Compute frequency-space map along a spatial axis.
 
@@ -580,16 +621,19 @@ def freq_space_map(
         Example: ``{'y': 0*u.m, 'z': 0*u.m}`` when axis='x'.
     method : {'welch', 'fft'}
         PSD estimation method. Default is 'welch'.
-    nperseg : int, optional
-        Segment length for Welch method. Default is min(256, nt).
-    noverlap : int, optional
-        Overlap for Welch method. Default is nperseg // 2.
+    fftlength : float, optional
+        Segment length in seconds. Default is min(256, nt) samples.
+    overlap : float, optional
+        Overlap in seconds. Default is fftlength / 2.
     window : str
         Window function. Default is 'hann'.
     detrend : str or bool
         Detrending method. Default is 'constant'.
     scaling : {'density', 'spectrum'}
         PSD scaling. Default is 'density'.
+    **kwargs
+        Additional keyword arguments. Passing the removed ``nperseg``
+        or ``noverlap`` parameters will raise :class:`TypeError`.
 
     Returns
     -------
@@ -614,14 +658,30 @@ def freq_space_map(
 
     from gwexpy.plot._coord import nearest_index, slice_from_index
 
+    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+
+    check_deprecated_kwargs(**kwargs)
+
     dt_value, dt_unit = _validate_regular_time_axis(field)
     fs = 1.0 / dt_value
 
     nt = field.shape[0]
+
+    # Convert fftlength/overlap to samples
+    fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
+    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+
     if nperseg is None:
         nperseg = min(256, nt)
     if noverlap is None:
-        noverlap = nperseg // 2
+        if fftlength_sec is not None:
+            overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
+            if overlap_sec_default is not None:
+                noverlap = max(1, int(round(overlap_sec_default * fs)))
+            else:
+                noverlap = 0
+        else:
+            noverlap = nperseg // 2
 
     # Map axis name to index
     axis_int = field._get_axis_index(axis)
@@ -1066,10 +1126,11 @@ def coherence_map(
     plane: str = "xy",
     at: dict[str, Quantity] | None = None,
     band: tuple[Quantity, Quantity] | None = None,
-    nperseg: int | None = None,
-    noverlap: int | None = None,
+    fftlength: float | None = None,
+    overlap: float | None = None,
     window: str = "hann",
     stride: int = 1,
+    **kwargs,
 ) -> ScalarField | FieldDict:
     """Compute magnitude-squared coherence map from a reference point.
 
@@ -1089,14 +1150,17 @@ def coherence_map(
     band : tuple of Quantity, optional
         Frequency band ``(fmin, fmax)`` to average coherence over.
         If None, returns coherence at all frequencies.
-    nperseg : int, optional
-        Segment length for coherence estimation. Default min(256, nt).
-    noverlap : int, optional
-        Overlap for segments. Default nperseg // 2.
+    fftlength : float, optional
+        Segment length in seconds. Default min(256, nt) samples.
+    overlap : float, optional
+        Overlap in seconds. Default fftlength / 2.
     window : str
         Window function. Default 'hann'.
     stride : int
         Subsample stride. Default 1.
+    **kwargs
+        Additional keyword arguments. Passing the removed ``nperseg``
+        or ``noverlap`` parameters will raise :class:`TypeError`.
 
     Returns
     -------
@@ -1121,14 +1185,30 @@ def coherence_map(
 
     from gwexpy.plot._coord import nearest_index
 
+    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+
+    check_deprecated_kwargs(**kwargs)
+
     dt_value, dt_unit = _validate_regular_time_axis(field)
     fs = 1.0 / dt_value
 
     nt = field.shape[0]
+
+    # Convert fftlength/overlap to samples
+    fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
+    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+
     if nperseg is None:
         nperseg = min(256, nt)
     if noverlap is None:
-        noverlap = nperseg // 2
+        if fftlength_sec is not None:
+            overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
+            if overlap_sec_default is not None:
+                noverlap = max(1, int(round(overlap_sec_default * fs)))
+            else:
+                noverlap = 0
+        else:
+            noverlap = nperseg // 2
 
     # Extract reference time series
     ref_data, _, _ = _extract_timeseries_1d(field, ref_point)

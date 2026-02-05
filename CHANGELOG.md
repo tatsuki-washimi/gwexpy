@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **API Unification**: Standardized all spectral analysis function signatures to use time-based parameters (`fftlength`/`overlap` in seconds) instead of sample-count-based parameters (`nperseg`/`noverlap`). This aligns gwexpy with GWpy conventions and improves user experience.
+  - **Affected Functions**:
+    - `gwexpy.spectral.bootstrap_spectrogram()` - now accepts `fftlength` and `overlap` (seconds)
+    - `gwexpy.fitting.fit_bootstrap_spectrum()` - now accepts `fftlength` and `overlap` (seconds)
+    - `gwexpy.spectrogram.Spectrogram.bootstrap()` and `.bootstrap_asd()` - now accept `fftlength` and `overlap` (seconds)
+    - `gwexpy.fields.signal.*` spectral functions (spectral_density, compute_psd, freq_space_map, coherence_map) - now accept `fftlength` and `overlap` (seconds)
+    - `gwexpy.timeseries.TimeSeriesMatrix` spectral methods (_vectorized_psd, _vectorized_csd, _vectorized_coherence) - now accept `fftlength` and `overlap` (seconds)
+  - **Migration Note**: Using deprecated `nperseg` or `noverlap` parameters will raise `TypeError` with guidance to use `fftlength` and `overlap` instead. No deprecation period - breaking change applies immediately.
+  - **New Module**: `gwexpy.utils.fft_args` provides helper functions for parameter validation and conversion:
+    - `parse_fftlength_or_overlap()` - converts time values (float, int, Quantity) to seconds and samples
+    - `check_deprecated_kwargs()` - detects and rejects deprecated parameters
+    - `get_default_overlap()` - returns window-appropriate default overlap values (GWpy-compatible)
+  - **GWpy Compatibility**: All functions now follow GWpy conventions for time-based FFT parameters, improving interoperability and reducing API confusion.
+
 ### Improved
 
 - **Numerical Stability**: Implemented a comprehensive numerical hardening strategy for low-amplitude gravitational-wave data (O(1e-21)).
