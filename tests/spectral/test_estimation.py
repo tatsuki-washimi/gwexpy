@@ -61,8 +61,8 @@ def test_bootstrap_spectrogram_overlap_scales_errors():
         average="mean",
         ci=0.68,
         window="hann",
-        nperseg=256,
-        noverlap=0,
+        fftlength=256.0,
+        overlap=0.0,
     )
 
     np.random.seed(0)
@@ -72,10 +72,11 @@ def test_bootstrap_spectrogram_overlap_scales_errors():
         average="mean",
         ci=0.68,
         window="hann",
-        nperseg=256,
-        noverlap=128,
+        fftlength=256.0,
+        overlap=128.0,
     )
 
+    # calculate_correlation_factor is internal, still uses nperseg/noverlap
     factor = calculate_correlation_factor(
         "hann", nperseg=256, noverlap=128, n_blocks=n_time
     )

@@ -24,8 +24,8 @@ def test_spectrogram_bootstrap_asd_wrapper():
         average="mean",
         ci=0.68,
         window="hann",
-        nperseg=256,
-        noverlap=0,
+        fftlength=256.0,
+        overlap=0.0,
     )
 
     assert isinstance(fs, FrequencySeries)

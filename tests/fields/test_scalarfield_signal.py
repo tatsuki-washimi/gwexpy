@@ -42,7 +42,8 @@ def sine_field():
 
 class TestComputePsd:
     def test_single_point_detects_peak_frequency(self, sine_field):
-        psd = sine_field.compute_psd((0 * u.m, 0 * u.m, 0 * u.m), nperseg=64)
+        # dt=0.01s → fs=100Hz, nperseg=64 → fftlength=0.64s
+        psd = sine_field.compute_psd((0 * u.m, 0 * u.m, 0 * u.m), fftlength=0.64)
 
         assert isinstance(psd, FrequencySeries)
         peak_freq = psd.frequencies.value[np.argmax(psd.value)]
@@ -54,7 +55,7 @@ class TestComputePsd:
     def test_multiple_points_returns_list(self, sine_field):
         psd = sine_field.compute_psd(
             [(0 * u.m, 0 * u.m, 0 * u.m), (1 * u.m, 0 * u.m, 0 * u.m)],
-            nperseg=64,
+            fftlength=0.64,
         )
 
         assert isinstance(psd, FrequencySeriesList)
@@ -62,7 +63,7 @@ class TestComputePsd:
         assert [p.name for p in psd] == ["point_0", "point_1"]
 
     def test_region_average_matches_manual_welch(self, sine_field):
-        psd_region = sine_field.compute_psd({"x": slice(None)}, nperseg=64)
+        psd_region = sine_field.compute_psd({"x": slice(None)}, fftlength=0.64)
 
         averaged = np.mean(sine_field.value, axis=(1, 2, 3))
         freqs, expected = welch(averaged, fs=1.0 / 0.01, nperseg=64)
@@ -107,7 +108,7 @@ class TestComputePsd:
 
 class TestFreqSpaceMap:
     def test_shape_and_units(self, sine_field):
-        fs_map = sine_field.freq_space_map("x", nperseg=64)
+        fs_map = sine_field.freq_space_map("x", fftlength=0.64)
 
         assert fs_map.axis0_domain == "frequency"
         assert fs_map.axis_names == ("f", "x", "y", "z")
@@ -201,7 +202,7 @@ class TestCoherenceMap:
             (0 * u.m, 0 * u.m, 0 * u.m),
             plane="xy",
             band=(1.0 * u.Hz, 20.0 * u.Hz),
-            nperseg=64,
+            fftlength=0.64,
         )
 
         assert coh_map.axis0_domain == "time"
@@ -216,7 +217,7 @@ class TestCoherenceMap:
             (0 * u.m, 0 * u.m, 0 * u.m),
             plane="xy",
             band=None,
-            nperseg=64,
+            fftlength=0.64,
         )
 
         assert coh_map.axis0_domain == "frequency"

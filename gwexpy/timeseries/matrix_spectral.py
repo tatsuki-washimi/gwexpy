@@ -61,15 +61,27 @@ class TimeSeriesMatrixSpectralMixin:
         from scipy.signal import welch
 
         from gwexpy.frequencyseries import FrequencySeriesMatrix
+        from gwexpy.utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+
+        check_deprecated_kwargs(**kwargs)
 
         cast("TimeSeriesMatrix", self)._check_regular("Vectorized PSD")
 
         data = np.asarray(cast("TimeSeriesMatrix", self).value)
         fs = 1.0 / cast("TimeSeriesMatrix", self).dt.value
 
-        # Adjust kwargs to match scipy.signal.welch
-        nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
-        noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
+        # Convert fftlength/overlap to samples
+        fftlength_val = kwargs.pop("fftlength", None)
+        overlap_val = kwargs.pop("overlap", None)
+        window = kwargs.get("window", "hann")
+
+        fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength_val, fs, "fftlength")
+        overlap_sec, noverlap = parse_fftlength_or_overlap(overlap_val, fs, "overlap")
+
+        if noverlap is None and fftlength_sec is not None:
+            overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
+            if overlap_sec_default is not None:
+                noverlap = max(1, int(round(overlap_sec_default * fs)))
 
         freqs, psd_data = welch(
             data, fs=fs, nperseg=nperseg, noverlap=noverlap, axis=-1, **kwargs
@@ -105,6 +117,9 @@ class TimeSeriesMatrixSpectralMixin:
         from scipy.signal import csd
 
         from gwexpy.frequencyseries import FrequencySeriesMatrix
+        from gwexpy.utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+
+        check_deprecated_kwargs(**kwargs)
 
         cast("TimeSeriesMatrix", self)._check_regular("Vectorized CSD")
 
@@ -112,8 +127,18 @@ class TimeSeriesMatrixSpectralMixin:
         other_data = np.asarray(other.value)
         fs = 1.0 / cast("TimeSeriesMatrix", self).dt.value
 
-        nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
-        noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
+        # Convert fftlength/overlap to samples
+        fftlength_val = kwargs.pop("fftlength", None)
+        overlap_val = kwargs.pop("overlap", None)
+        window = kwargs.get("window", "hann")
+
+        fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength_val, fs, "fftlength")
+        overlap_sec, noverlap = parse_fftlength_or_overlap(overlap_val, fs, "overlap")
+
+        if noverlap is None and fftlength_sec is not None:
+            overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
+            if overlap_sec_default is not None:
+                noverlap = max(1, int(round(overlap_sec_default * fs)))
 
         freqs, csd_data = csd(
             data,
@@ -142,6 +167,9 @@ class TimeSeriesMatrixSpectralMixin:
         from scipy.signal import coherence
 
         from gwexpy.frequencyseries import FrequencySeriesMatrix
+        from gwexpy.utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+
+        check_deprecated_kwargs(**kwargs)
 
         cast("TimeSeriesMatrix", self)._check_regular("Vectorized Coherence")
 
@@ -149,8 +177,18 @@ class TimeSeriesMatrixSpectralMixin:
         other_data = np.asarray(other.value)
         fs = 1.0 / cast("TimeSeriesMatrix", self).dt.value
 
-        nperseg = kwargs.pop("fftlength", kwargs.pop("nperseg", None))
-        noverlap = kwargs.pop("overlap", kwargs.pop("noverlap", None))
+        # Convert fftlength/overlap to samples
+        fftlength_val = kwargs.pop("fftlength", None)
+        overlap_val = kwargs.pop("overlap", None)
+        window = kwargs.get("window", "hann")
+
+        fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength_val, fs, "fftlength")
+        overlap_sec, noverlap = parse_fftlength_or_overlap(overlap_val, fs, "overlap")
+
+        if noverlap is None and fftlength_sec is not None:
+            overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
+            if overlap_sec_default is not None:
+                noverlap = max(1, int(round(overlap_sec_default * fs)))
 
         freqs, coh_data = coherence(
             data,

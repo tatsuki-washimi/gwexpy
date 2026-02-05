@@ -273,12 +273,13 @@ def bootstrap_spectrogram(
     average=None,
     ci=0.68,
     window="hann",
-    nperseg=None,
-    noverlap=None,
+    fftlength=None,
+    overlap=None,
     block_size=None,
     rebin_width=None,
     return_map=False,
     ignore_nan=True,
+    **kwargs,
 ):
     """
     Estimate robust ASD from a spectrogram using bootstrap resampling.
@@ -300,8 +301,13 @@ def bootstrap_spectrogram(
         Alias for method ('median' or 'mean') for compatibility.
     ci : float
     window : str or array, optional
-    nperseg : int, optional
-    noverlap : int, optional
+    fftlength : float or Quantity, optional
+        FFT segment length in seconds used to generate the spectrogram.
+        Used for VIF (overlap correlation) correction.
+    overlap : float or Quantity, optional
+        Overlap between FFT segments in seconds.
+        Used for VIF correction. If None and fftlength is given,
+        defaults to the recommended overlap for the window function.
     block_size : int or 'auto', optional
         Size of blocks for block bootstrap.
         If 'auto', estimates size based on overlap ratio (ceil(duration/stride)).
@@ -357,6 +363,9 @@ def bootstrap_spectrogram(
     .. [3] Politis, D.N. & Romano, J.P., "The stationary bootstrap",
            J. Amer. Statist. Assoc. 89(428), 1994
     """
+    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+
+    check_deprecated_kwargs(**kwargs)
     data = spectrogram.value
     frequencies = spectrogram.frequencies.value
     n_time = data.shape[0]
@@ -549,7 +558,30 @@ def bootstrap_spectrogram(
         overlap_ratio = _infer_overlap_ratio(spectrogram)
         factor = 1.0
 
-        if nperseg is None:
+        if fftlength is not None:
+            # User provided fftlength/overlap in seconds — compute VIF
+            # using a dummy nperseg with the correct overlap ratio.
+            # VIF depends on window shape and overlap ratio, not absolute sample count.
+            fftlength_sec, _ = parse_fftlength_or_overlap(fftlength, arg_name="fftlength")
+            overlap_sec, _ = parse_fftlength_or_overlap(overlap, arg_name="overlap")
+
+            # fftlength_sec must be provided for VIF calculation
+            if fftlength_sec is not None:
+                if overlap_sec is None:
+                    overlap_sec = get_default_overlap(fftlength_sec, window=window)
+                if overlap_sec is None:
+                    overlap_sec = 0.0
+
+                stride_sec = fftlength_sec - overlap_sec
+                if stride_sec > 0 and fftlength_sec > 0:
+                    dummy_nperseg = 1000
+                    dummy_step = max(1, int(round(stride_sec / fftlength_sec * dummy_nperseg)))
+                    dummy_noverlap = dummy_nperseg - dummy_step
+                    factor = calculate_correlation_factor(
+                        window, dummy_nperseg, dummy_noverlap, n_time
+                    )
+        else:
+            # Heuristic from spectrogram metadata
             if overlap_ratio is not None and overlap_ratio > 1:
                 dummy_step = 100
                 dummy_nperseg = int(round(dummy_step * overlap_ratio))
@@ -558,13 +590,6 @@ def bootstrap_spectrogram(
                     factor = calculate_correlation_factor(
                         window, dummy_nperseg, dummy_noverlap, n_time
                     )
-        else:
-            if noverlap is None and overlap_ratio is not None and overlap_ratio > 1:
-                inferred_noverlap = int(round(nperseg - (nperseg / overlap_ratio)))
-                noverlap = max(0, inferred_noverlap)
-            if noverlap is None:
-                noverlap = 0
-            factor = calculate_correlation_factor(window, nperseg, noverlap, n_time)
 
     err_low *= factor
     err_high *= factor

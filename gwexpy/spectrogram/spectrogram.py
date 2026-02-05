@@ -54,19 +54,36 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         average=None,
         ci=0.68,
         window="hann",
-        nperseg=None,
-        noverlap=None,
+        fftlength=None,
+        overlap=None,
         block_size=None,
         rebin_width=None,
         return_map=False,
         ignore_nan=True,
+        **kwargs,
     ):
         """
         Estimate robust ASD from this spectrogram using bootstrap resampling.
 
         This is a convenience wrapper around `gwexpy.spectral.bootstrap_spectrogram`.
+
+        Parameters
+        ----------
+        fftlength : float or Quantity, optional
+            FFT segment length in seconds (e.g. ``1.0`` or ``1.0 * u.s``).
+            Used for VIF overlap-correlation correction. If None, the
+            correction is estimated from spectrogram metadata.
+        overlap : float or Quantity, optional
+            Overlap between FFT segments in seconds. If None, defaults to
+            the recommended overlap for *window* (50 % for Hann).
+        **kwargs
+            Additional keyword arguments. Passing the removed ``nperseg``
+            or ``noverlap`` parameters will raise :class:`TypeError`.
         """
         from gwexpy.spectral import bootstrap_spectrogram
+        from gwexpy.utils.fft_args import check_deprecated_kwargs
+
+        check_deprecated_kwargs(**kwargs)
 
         if average is not None:
             method = average
@@ -78,8 +95,8 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             average=None,
             ci=ci,
             window=window,
-            nperseg=nperseg,
-            noverlap=noverlap,
+            fftlength=fftlength,
+            overlap=overlap,
             block_size=block_size,
             rebin_width=rebin_width,
             return_map=return_map,
@@ -92,27 +109,40 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         average="median",
         ci=0.68,
         window="hann",
-        nperseg=None,
-        noverlap=None,
+        fftlength=None,
+        overlap=None,
         block_size=None,
         rebin_width=None,
         return_map=False,
         ignore_nan=True,
+        **kwargs,
     ):
         """
         Convenience wrapper for bootstrap ASD estimation.
+
+        Parameters
+        ----------
+        fftlength : float or Quantity, optional
+            FFT segment length in seconds (e.g. ``1.0`` or ``1.0 * u.s``).
+            Used for VIF overlap-correlation correction.
+        overlap : float or Quantity, optional
+            Overlap between FFT segments in seconds.
+        **kwargs
+            Additional keyword arguments. Passing the removed ``nperseg``
+            or ``noverlap`` parameters will raise :class:`TypeError`.
         """
         return self.bootstrap(
             n_boot=n_boot,
             method=average,
             ci=ci,
             window=window,
-            nperseg=nperseg,
-            noverlap=noverlap,
+            fftlength=fftlength,
+            overlap=overlap,
             block_size=block_size,
             rebin_width=rebin_width,
             return_map=return_map,
             ignore_nan=ignore_nan,
+            **kwargs,
         )
 
     def to_th2d(self, error=None):
