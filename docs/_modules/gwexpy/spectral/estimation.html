@@ -436,6 +436,32 @@
 <span class="sd">    ``block_size`` to at least the stride length (segment spacing) for</span>
 <span class="sd">    time-correlated spectrograms.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.spectrogram import Spectrogram</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.spectral import bootstrap_spectrogram</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from astropy import units as u</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; # Create synthetic spectrogram</span>
+<span class="sd">    &gt;&gt;&gt; np.random.seed(42)</span>
+<span class="sd">    &gt;&gt;&gt; spec_data = np.random.random((100, 50))</span>
+<span class="sd">    &gt;&gt;&gt; spec = Spectrogram(spec_data, dt=1.0*u.s, f0=10*u.Hz, df=1*u.Hz)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; # Bootstrap with time-based parameters</span>
+<span class="sd">    &gt;&gt;&gt; result = bootstrap_spectrogram(</span>
+<span class="sd">    ...     spec,</span>
+<span class="sd">    ...     n_boot=100,</span>
+<span class="sd">    ...     fftlength=4.0,    # 4 seconds</span>
+<span class="sd">    ...     overlap=2.0,      # 2 seconds</span>
+<span class="sd">    ...     window=&#39;hann&#39;,</span>
+<span class="sd">    ...     method=&#39;median&#39;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; print(result.value.shape)</span>
+<span class="sd">    (50,)</span>
+<span class="sd">    &gt;&gt;&gt; print(result.unit)</span>
+<span class="sd">    Unit(dimensionless)</span>
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Percival, D.B. &amp; Walden, A.T., Spectral Analysis for Physical</span>

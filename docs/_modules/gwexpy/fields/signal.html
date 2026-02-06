@@ -1260,12 +1260,16 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from astropy import units as u</span>
+<span class="sd">    &gt;&gt;&gt; # Compute coherence map with time-based FFT parameters</span>
 <span class="sd">    &gt;&gt;&gt; coh_map = coherence_map(</span>
 <span class="sd">    ...     field,</span>
 <span class="sd">    ...     ref_point=(0*u.m, 0*u.m, 0*u.m),</span>
 <span class="sd">    ...     plane=&#39;xy&#39;,</span>
 <span class="sd">    ...     at={&#39;z&#39;: 0*u.m},</span>
-<span class="sd">    ...     band=(10*u.Hz, 100*u.Hz)</span>
+<span class="sd">    ...     band=(10*u.Hz, 100*u.Hz),</span>
+<span class="sd">    ...     fftlength=1.0,    # 1.0 seconds</span>
+<span class="sd">    ...     overlap=0.5,      # 0.5 seconds</span>
+<span class="sd">    ...     window=&#39;hann&#39;</span>
 <span class="sd">    ... )</span>
 <span class="sd">    &gt;&gt;&gt; coh_map.plot_map2d(&#39;xy&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>

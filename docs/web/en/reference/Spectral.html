@@ -101,6 +101,16 @@
   <section id="spectral-estimation">
 <h1>Spectral Estimation<a class="headerlink" href="#spectral-estimation" title="Link to this heading"></a></h1>
 <p>gwexpy enforces strict unit conventions for spectral density and power spectrum estimation.</p>
+<section id="api-change-notice-v0-1-0b2">
+<h2>API Change Notice (v0.1.0b2)<a class="headerlink" href="#api-change-notice-v0-1-0b2" title="Link to this heading"></a></h2>
+<p>⚠️ <strong>Breaking Change</strong>: Spectral analysis functions now use <strong>time-based parameters</strong>.</p>
+<ul class="simple">
+<li><p><strong>Old API</strong>: <code class="docutils literal notranslate"><span class="pre">nperseg=256,</span> <span class="pre">noverlap=128</span></code> (sample counts)</p></li>
+<li><p><strong>New API</strong>: <code class="docutils literal notranslate"><span class="pre">fftlength=1.0,</span> <span class="pre">overlap=0.5</span></code> (seconds)</p></li>
+</ul>
+<p>Using deprecated <code class="docutils literal notranslate"><span class="pre">nperseg</span></code>/<code class="docutils literal notranslate"><span class="pre">noverlap</span></code> will raise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> with migration guidance.</p>
+<p>See <a class="reference internal" href="../user_guide/migration_fftlength.html"><span class="std std-doc">Migration Guide</span></a> for details.</p>
+</section>
 <section id="unit-semantics">
 <h2>Unit Semantics<a class="headerlink" href="#unit-semantics" title="Link to this heading"></a></h2>
 <ul class="simple">

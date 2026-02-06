@@ -1,0 +1,403 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Migration Guide: nperseg/noverlap → fftlength/overlap &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Migration Guide: nperseg/noverlap → fftlength/overlap</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/migration_fftlength.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="migration-guide-nperseg-noverlap-fftlength-overlap">
+<h1>Migration Guide: nperseg/noverlap → fftlength/overlap<a class="headerlink" href="#migration-guide-nperseg-noverlap-fftlength-overlap" title="Link to this heading"></a></h1>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>gwexpy v0.1.0b2 unified all spectral analysis APIs to use <strong>time-based parameters</strong>:</p>
+<ul class="simple">
+<li><p><strong>Old API</strong>: <code class="docutils literal notranslate"><span class="pre">nperseg</span></code>, <code class="docutils literal notranslate"><span class="pre">noverlap</span></code> (sample counts)</p></li>
+<li><p><strong>New API</strong>: <code class="docutils literal notranslate"><span class="pre">fftlength</span></code>, <code class="docutils literal notranslate"><span class="pre">overlap</span></code> (seconds)</p></li>
+</ul>
+<p>This change aligns gwexpy with GWpy conventions and improves API consistency across the library.</p>
+</section>
+<hr class="docutils" />
+<section id="why-this-change">
+<h2>Why This Change?<a class="headerlink" href="#why-this-change" title="Link to this heading"></a></h2>
+<section id="problems-with-sample-count-parameters">
+<h3>Problems with Sample-Count Parameters<a class="headerlink" href="#problems-with-sample-count-parameters" title="Link to this heading"></a></h3>
+<p>The old <code class="docutils literal notranslate"><span class="pre">nperseg</span></code>/<code class="docutils literal notranslate"><span class="pre">noverlap</span></code> parameters had several issues:</p>
+<ol class="arabic simple">
+<li><p><strong>Sample Rate Dependency</strong>: The same parameter values meant different time windows at different sample rates</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nperseg=256</span></code> at 256 Hz → 1.0 second</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nperseg=256</span></code> at 4096 Hz → 0.0625 seconds (62.5 ms)</p></li>
+</ul>
+</li>
+<li><p><strong>Inconsistency with GWpy</strong>: GWpy uses time-based parameters throughout its API</p>
+<ul class="simple">
+<li><p>Mixing gwexpy and GWpy code required constant conversions</p></li>
+</ul>
+</li>
+<li><p><strong>User Confusion</strong>: Users had to manually calculate sample counts from desired time windows</p></li>
+</ol>
+</section>
+<section id="benefits-of-time-based-parameters">
+<h3>Benefits of Time-Based Parameters<a class="headerlink" href="#benefits-of-time-based-parameters" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Intuitive</strong>: Specify FFT length directly in seconds (e.g., <code class="docutils literal notranslate"><span class="pre">fftlength=1.0</span></code>)</p></li>
+<li><p><strong>Sample Rate Independent</strong>: Same parameter values work across different sample rates</p></li>
+<li><p><strong>GWpy Compatible</strong>: Seamless integration with GWpy workflows</p></li>
+<li><p><strong>Unit Support</strong>: Accepts <code class="docutils literal notranslate"><span class="pre">astropy.units.Quantity</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">fftlength=1.0*u.s</span></code>)</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="affected-functions">
+<h2>Affected Functions<a class="headerlink" href="#affected-functions" title="Link to this heading"></a></h2>
+<p>The following functions now use <code class="docutils literal notranslate"><span class="pre">fftlength</span></code> and <code class="docutils literal notranslate"><span class="pre">overlap</span></code> instead of <code class="docutils literal notranslate"><span class="pre">nperseg</span></code> and <code class="docutils literal notranslate"><span class="pre">noverlap</span></code>:</p>
+<section id="high-level-analysis">
+<h3>High-Level Analysis<a class="headerlink" href="#high-level-analysis" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.spectral.bootstrap_spectrogram()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.fitting.fit_bootstrap_spectrum()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.spectrogram.Spectrogram.bootstrap()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.spectrogram.Spectrogram.bootstrap_asd()</span></code></p></li>
+</ul>
+</section>
+<section id="field-analysis">
+<h3>Field Analysis<a class="headerlink" href="#field-analysis" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.fields.signal.spectral_density()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.fields.signal.compute_psd()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.fields.signal.freq_space_map()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.fields.signal.coherence_map()</span></code></p></li>
+</ul>
+</section>
+<section id="matrix-methods-internal">
+<h3>Matrix Methods (Internal)<a class="headerlink" href="#matrix-methods-internal" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.TimeSeriesMatrix._vectorized_psd()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.TimeSeriesMatrix._vectorized_csd()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.TimeSeriesMatrix._vectorized_coherence()</span></code></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="migration-examples">
+<h2>Migration Examples<a class="headerlink" href="#migration-examples" title="Link to this heading"></a></h2>
+<section id="example-1-fit-bootstrap-spectrum">
+<h3>Example 1: fit_bootstrap_spectrum<a class="headerlink" href="#example-1-fit-bootstrap-spectrum" title="Link to this heading"></a></h3>
+<p><strong>Before (v0.1.0b1)</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_bootstrap_spectrum</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">power_law</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">*</span> <span class="n">f</span><span class="o">**</span><span class="n">alpha</span>
+
+<span class="c1"># Old API: sample counts</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span>
+    <span class="n">timeseries</span><span class="p">,</span>
+    <span class="n">model_fn</span><span class="o">=</span><span class="n">power_law</span><span class="p">,</span>
+    <span class="n">nperseg</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>      <span class="c1"># 256 samples</span>
+    <span class="n">noverlap</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>     <span class="c1"># 128 samples</span>
+    <span class="n">n_boot</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>After (v0.1.0b2+)</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_bootstrap_spectrum</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">power_law</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">A</span> <span class="o">*</span> <span class="n">f</span><span class="o">**</span><span class="n">alpha</span>
+
+<span class="c1"># New API: time-based (seconds)</span>
+<span class="c1"># Assuming sample_rate = 256 Hz:</span>
+<span class="c1"># nperseg=256 → fftlength = 256/256 = 1.0 seconds</span>
+<span class="c1"># noverlap=128 → overlap = 128/256 = 0.5 seconds</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span>
+    <span class="n">timeseries</span><span class="p">,</span>
+    <span class="n">model_fn</span><span class="o">=</span><span class="n">power_law</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>    <span class="c1"># 1.0 seconds</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>      <span class="c1"># 0.5 seconds</span>
+    <span class="n">n_boot</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-2-spectrogram-bootstrap-asd">
+<h3>Example 2: Spectrogram.bootstrap_asd<a class="headerlink" href="#example-2-spectrogram-bootstrap-asd" title="Link to this heading"></a></h3>
+<p><strong>Before</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assuming sample_rate = 64 Hz</span>
+<span class="n">psd</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">bootstrap_asd</span><span class="p">(</span>
+    <span class="n">n_boot</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">nperseg</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>      <span class="c1"># 256 samples = 4.0 seconds</span>
+    <span class="n">noverlap</span><span class="o">=</span><span class="mi">192</span><span class="p">,</span>     <span class="c1"># 192 samples = 3.0 seconds</span>
+    <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hann&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>After</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">psd</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">bootstrap_asd</span><span class="p">(</span>
+    <span class="n">n_boot</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>    <span class="c1"># 4.0 seconds (directly)</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>      <span class="c1"># 3.0 seconds (directly)</span>
+    <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hann&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-3-using-astropy-units">
+<h3>Example 3: Using astropy.units<a class="headerlink" href="#example-3-using-astropy-units" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
+<span class="c1"># You can now use Quantity objects</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span>
+    <span class="n">timeseries</span><span class="p">,</span>
+    <span class="n">model_fn</span><span class="o">=</span><span class="n">power_law</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>    <span class="c1"># Explicit unit</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="mi">500</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">ms</span><span class="p">,</span>     <span class="c1"># 500 milliseconds</span>
+    <span class="n">n_boot</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="converting-old-code">
+<h2>Converting Old Code<a class="headerlink" href="#converting-old-code" title="Link to this heading"></a></h2>
+<section id="conversion-formula">
+<h3>Conversion Formula<a class="headerlink" href="#conversion-formula" title="Link to this heading"></a></h3>
+<p>If you have old code with <code class="docutils literal notranslate"><span class="pre">nperseg</span></code> and <code class="docutils literal notranslate"><span class="pre">noverlap</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Given old parameters and sample rate</span>
+<span class="n">nperseg_old</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">noverlap_old</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">256</span>  <span class="c1"># Hz</span>
+
+<span class="c1"># Convert to new parameters</span>
+<span class="n">fftlength_new</span> <span class="o">=</span> <span class="n">nperseg_old</span> <span class="o">/</span> <span class="n">sample_rate</span>      <span class="c1"># 1.0 seconds</span>
+<span class="n">overlap_new</span> <span class="o">=</span> <span class="n">noverlap_old</span> <span class="o">/</span> <span class="n">sample_rate</span>        <span class="c1"># 0.5 seconds</span>
+</pre></div>
+</div>
+</section>
+<section id="automated-conversion-script">
+<h3>Automated Conversion Script<a class="headerlink" href="#automated-conversion-script" title="Link to this heading"></a></h3>
+<p>For large codebases, you can use this script to identify old API usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find all occurrences of nperseg/noverlap in Python files</span>
+grep<span class="w"> </span>-rn<span class="w"> </span><span class="s2">&quot;nperseg\|noverlap&quot;</span><span class="w"> </span>--include<span class="o">=</span><span class="s2">&quot;*.py&quot;</span><span class="w"> </span>your_project/
+
+<span class="c1"># Find in Jupyter notebooks</span>
+grep<span class="w"> </span>-rn<span class="w"> </span><span class="s2">&quot;nperseg\|noverlap&quot;</span><span class="w"> </span>--include<span class="o">=</span><span class="s2">&quot;*.ipynb&quot;</span><span class="w"> </span>your_project/
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
+<section id="typeerror-with-deprecated-parameters">
+<h3>TypeError with Deprecated Parameters<a class="headerlink" href="#typeerror-with-deprecated-parameters" title="Link to this heading"></a></h3>
+<p>Using deprecated <code class="docutils literal notranslate"><span class="pre">nperseg</span></code> or <code class="docutils literal notranslate"><span class="pre">noverlap</span></code> parameters will raise <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">model_fn</span><span class="p">,</span> <span class="n">nperseg</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+<span class="go">TypeError: nperseg is removed from the public API.</span>
+<span class="go">Specify fftlength in seconds instead.</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">model_fn</span><span class="p">,</span> <span class="n">noverlap</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+<span class="go">TypeError: noverlap is removed from the public API.</span>
+<span class="go">Specify overlap in seconds instead.</span>
+</pre></div>
+</div>
+<p><strong>No deprecation period</strong>: The old parameters are immediately rejected. This ensures clean migration and prevents silent bugs.</p>
+</section>
+<section id="common-migration-errors">
+<h3>Common Migration Errors<a class="headerlink" href="#common-migration-errors" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Forgetting to convert sample counts</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ❌ Wrong: using sample counts with new API</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">model_fn</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>  <span class="c1"># Treats as 256 seconds!</span>
+
+<span class="c1"># ✓ Correct: convert to seconds</span>
+<span class="n">fftlength</span> <span class="o">=</span> <span class="mi">256</span> <span class="o">/</span> <span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># Convert to seconds</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">model_fn</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Unit mismatch</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ❌ Wrong: frequency unit instead of time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">model_fn</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
+<span class="c1"># ValueError: fftlength: expected a time-like Quantity; got unit &#39;Hz&#39;.</span>
+
+<span class="c1"># ✓ Correct: time unit</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">model_fn</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<hr class="docutils" />
+<section id="default-values">
+<h2>Default Values<a class="headerlink" href="#default-values" title="Link to this heading"></a></h2>
+<section id="old-api-defaults-v0-1-0b1">
+<h3>Old API Defaults (v0.1.0b1)<a class="headerlink" href="#old-api-defaults-v0-1-0b1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nperseg=16</span></code> (samples)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">noverlap=None</span></code> (auto-calculated based on window)</p></li>
+</ul>
+</section>
+<section id="new-api-defaults-v0-1-0b2">
+<h3>New API Defaults (v0.1.0b2+)<a class="headerlink" href="#new-api-defaults-v0-1-0b2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fftlength=None</span></code> (auto-calculated based on data length and desired resolution)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overlap=None</span></code> (window-dependent, typically 50% for Hann window)</p></li>
+</ul>
+<p><strong>Note</strong>: Default behavior is now fully aligned with GWpy conventions.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="compatibility-notes">
+<h2>Compatibility Notes<a class="headerlink" href="#compatibility-notes" title="Link to this heading"></a></h2>
+<section id="scipy-signal-functions">
+<h3>scipy.signal Functions<a class="headerlink" href="#scipy-signal-functions" title="Link to this heading"></a></h3>
+<p>If you need to use scipy directly, you must still use sample counts:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">scipy.signal</span>
+
+<span class="c1"># scipy.signal.stft still requires sample counts</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+<span class="n">nperseg_scipy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fftlength</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">noverlap_scipy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">overlap</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+
+<span class="n">f</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">Zxx</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">stft</span><span class="p">(</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span>
+    <span class="n">nperseg</span><span class="o">=</span><span class="n">nperseg_scipy</span><span class="p">,</span>
+    <span class="n">noverlap</span><span class="o">=</span><span class="n">noverlap_scipy</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>However, we recommend using gwexpy wrappers instead of calling scipy directly.</p>
+</section>
+<section id="backward-compatibility">
+<h3>Backward Compatibility<a class="headerlink" href="#backward-compatibility" title="Link to this heading"></a></h3>
+<p><strong>There is no backward compatibility</strong>. Old code using <code class="docutils literal notranslate"><span class="pre">nperseg</span></code>/<code class="docutils literal notranslate"><span class="pre">noverlap</span></code> will fail immediately with clear error messages.</p>
+<p>This design choice prevents silent bugs and encourages complete migration.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="additional-resources">
+<h2>Additional Resources<a class="headerlink" href="#additional-resources" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="#../../CHANGELOG.md"><span class="xref myst">CHANGELOG</span></a> - Full API change details</p></li>
+<li><p><a class="reference internal" href="#../developers/reports/api_unification_spectral_params_20260206.md"><span class="xref myst">Technical Report</span></a> - Implementation details</p></li>
+<li><p><a class="reference internal" href="../reference/fitting.html"><span class="std std-doc">gwexpy.fitting API Reference</span></a></p></li>
+<li><p><a class="reference internal" href="../reference/Spectral.html"><span class="std std-doc">gwexpy.spectral API Reference</span></a></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>
+<p>If you encounter issues during migration:</p>
+<ol class="arabic simple">
+<li><p>Check error messages - they provide clear guidance</p></li>
+<li><p>Review the examples above</p></li>
+<li><p>Report issues at: https://github.com/gwexpy/gwexpy/issues</p></li>
+<li><p>Contact developers via Slack/Discord (if available)</p></li>
+</ol>
+<hr class="docutils" />
+<p><strong>Last Updated</strong>: 2026-02-06
+<strong>Applies to</strong>: gwexpy v0.1.0b2 and later</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

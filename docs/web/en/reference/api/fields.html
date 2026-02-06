@@ -1396,12 +1396,16 @@ or a single ScalarField with frequency as axis0.</p></li>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compute coherence map with time-based FFT parameters</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">coh_map</span> <span class="o">=</span> <span class="n">coherence_map</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">field</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">ref_point</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">),</span>
 <span class="gp">... </span>    <span class="n">plane</span><span class="o">=</span><span class="s1">&#39;xy&#39;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">at</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">},</span>
-<span class="gp">... </span>    <span class="n">band</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">band</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>    <span class="c1"># 1.0 seconds</span>
+<span class="gp">... </span>    <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>      <span class="c1"># 0.5 seconds</span>
+<span class="gp">... </span>    <span class="n">window</span><span class="o">=</span><span class="s1">&#39;hann&#39;</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">coh_map</span><span class="o">.</span><span class="n">plot_map2d</span><span class="p">(</span><span class="s1">&#39;xy&#39;</span><span class="p">)</span>
 </pre></div>

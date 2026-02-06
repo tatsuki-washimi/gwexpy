@@ -160,6 +160,28 @@
 <span class="sd">        **kwargs</span>
 <span class="sd">            Additional keyword arguments. Passing the removed ``nperseg``</span>
 <span class="sd">            or ``noverlap`` parameters will raise :class:`TypeError`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.spectrogram import Spectrogram</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from astropy import units as u</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; # Create synthetic spectrogram</span>
+<span class="sd">        &gt;&gt;&gt; np.random.seed(42)</span>
+<span class="sd">        &gt;&gt;&gt; spec_data = np.random.random((100, 50))</span>
+<span class="sd">        &gt;&gt;&gt; spec = Spectrogram(spec_data, dt=1.0*u.s, f0=10*u.Hz, df=1*u.Hz)</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; # Bootstrap estimation with time-based parameters</span>
+<span class="sd">        &gt;&gt;&gt; result = spec.bootstrap(</span>
+<span class="sd">        ...     n_boot=100,</span>
+<span class="sd">        ...     fftlength=4.0,    # 4 seconds</span>
+<span class="sd">        ...     overlap=2.0,      # 2 seconds</span>
+<span class="sd">        ...     window=&#39;hann&#39;,</span>
+<span class="sd">        ...     method=&#39;median&#39;</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; print(result.value.shape)</span>
+<span class="sd">        (50,)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">bootstrap_spectrogram</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.utils.fft_args</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_deprecated_kwargs</span>
@@ -214,6 +236,28 @@
 <span class="sd">        **kwargs</span>
 <span class="sd">            Additional keyword arguments. Passing the removed ``nperseg``</span>
 <span class="sd">            or ``noverlap`` parameters will raise :class:`TypeError`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from gwexpy.spectrogram import Spectrogram</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from astropy import units as u</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; # Create synthetic spectrogram</span>
+<span class="sd">        &gt;&gt;&gt; np.random.seed(42)</span>
+<span class="sd">        &gt;&gt;&gt; spec_data = np.random.random((100, 50))</span>
+<span class="sd">        &gt;&gt;&gt; spec = Spectrogram(spec_data, dt=1.0*u.s, f0=10*u.Hz, df=1*u.Hz)</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; # Bootstrap ASD estimation</span>
+<span class="sd">        &gt;&gt;&gt; result = spec.bootstrap_asd(</span>
+<span class="sd">        ...     n_boot=100,</span>
+<span class="sd">        ...     fftlength=4.0,    # 4 seconds</span>
+<span class="sd">        ...     overlap=2.0,      # 2 seconds</span>
+<span class="sd">        ...     window=&#39;hann&#39;,</span>
+<span class="sd">        ...     average=&#39;median&#39;</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; print(result.value.shape)</span>
+<span class="sd">        (50,)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap</span><span class="p">(</span>
             <span class="n">n_boot</span><span class="o">=</span><span class="n">n_boot</span><span class="p">,</span>
