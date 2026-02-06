@@ -354,6 +354,32 @@ def bootstrap_spectrogram(
     ``block_size`` to at least the stride length (segment spacing) for
     time-correlated spectrograms.
 
+    Examples
+    --------
+    >>> from gwexpy.spectrogram import Spectrogram
+    >>> from gwexpy.spectral import bootstrap_spectrogram
+    >>> import numpy as np
+    >>> from astropy import units as u
+    >>>
+    >>> # Create synthetic spectrogram
+    >>> np.random.seed(42)
+    >>> spec_data = np.random.random((100, 50))
+    >>> spec = Spectrogram(spec_data, dt=1.0*u.s, f0=10*u.Hz, df=1*u.Hz)
+    >>>
+    >>> # Bootstrap with time-based parameters
+    >>> result = bootstrap_spectrogram(
+    ...     spec,
+    ...     n_boot=100,
+    ...     fftlength=4.0,    # 4 seconds
+    ...     overlap=2.0,      # 2 seconds
+    ...     window='hann',
+    ...     method='median'
+    ... )
+    >>> print(result.value.shape)
+    (50,)
+    >>> print(result.unit)
+    Unit(dimensionless)
+
     References
     ----------
     .. [1] Percival, D.B. & Walden, A.T., Spectral Analysis for Physical
