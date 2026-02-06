@@ -16,6 +16,7 @@ TimeSeries Class
 ----------------
 
 .. autoclass:: TimeSeries
+   :no-index:
    :members:
    :undoc-members:
    :inherited-members:
@@ -48,6 +49,7 @@ Module Contents
 ---------------
 
 .. automodule:: gwexpy.timeseries
+   :no-index:
    :members:
    :undoc-members:
    :show-inheritance:

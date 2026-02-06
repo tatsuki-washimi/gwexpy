@@ -21,7 +21,9 @@
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" /> 
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Numerical Stability and Precision" href="numerical_stability.html" />
+    <link rel="prev" title="Bruco (Brute force coherence) Python Tutorial" href="tutorials/advanced_bruco.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,8 +45,43 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">GWexpy Documentation</a></li>
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Migration Guide: nperseg/noverlap → fftlength/overlap</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#summary">Summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#why-this-change">Why This Change?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#affected-functions">Affected Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#migration-examples">Migration Examples</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#converting-old-code">Converting Old Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#error-handling">Error Handling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#default-values">Default Values</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#compatibility-notes">Compatibility Notes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#additional-resources">Additional Resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getting-help">Getting Help</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/case_ml_preprocessing.html">Machine Learning Preprocessing Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
 </ul>
 
@@ -62,6 +99,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
       <li class="breadcrumb-item active">Migration Guide: nperseg/noverlap → fftlength/overlap</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/migration_fftlength.md" class="fa fa-github"> Edit on GitHub</a>
@@ -350,8 +388,8 @@ grep<span class="w"> </span>-rn<span class="w"> </span><span class="s2">&quot;np
 <section id="additional-resources">
 <h2>Additional Resources<a class="headerlink" href="#additional-resources" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="#../../CHANGELOG.md"><span class="xref myst">CHANGELOG</span></a> - Full API change details</p></li>
-<li><p><a class="reference internal" href="#../developers/reports/api_unification_spectral_params_20260206.md"><span class="xref myst">Technical Report</span></a> - Implementation details</p></li>
+<li><p>CHANGELOG.md (repository root) - Full API change details</p></li>
+<li><p><a class="reference external" href="https://github.com/gwexpy/gwexpy/blob/main/docs/developers/reports/api_unification_spectral_params_20260206.md">Technical Report</a> - Implementation details</p></li>
 <li><p><a class="reference internal" href="../reference/fitting.html"><span class="std std-doc">gwexpy.fitting API Reference</span></a></p></li>
 <li><p><a class="reference internal" href="../reference/Spectral.html"><span class="std std-doc">gwexpy.spectral API Reference</span></a></p></li>
 </ul>
@@ -375,7 +413,10 @@ grep<span class="w"> </span>-rn<span class="w"> </span><span class="s2">&quot;np
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorials/advanced_bruco.html" class="btn btn-neutral float-left" title="Bruco (Brute force coherence) Python Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="numerical_stability.html" class="btn btn-neutral float-right" title="Numerical Stability and Precision" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

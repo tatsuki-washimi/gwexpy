@@ -126,6 +126,15 @@ Main Documentation
    user_guide/tutorials/index
 
 .. toctree::
+   :hidden:
+
+   user_guide/migration_fftlength
+   user_guide/numerical_stability
+   user_guide/scalarfield_slicing
+   user_guide/validated_algorithms
+   user_guide/tutorials/case_ml_preprocessing
+
+.. toctree::
    :maxdepth: 2
    :caption: Examples
 
