@@ -1172,12 +1172,16 @@ def coherence_map(
     Examples
     --------
     >>> from astropy import units as u
+    >>> # Compute coherence map with time-based FFT parameters
     >>> coh_map = coherence_map(
     ...     field,
     ...     ref_point=(0*u.m, 0*u.m, 0*u.m),
     ...     plane='xy',
     ...     at={'z': 0*u.m},
-    ...     band=(10*u.Hz, 100*u.Hz)
+    ...     band=(10*u.Hz, 100*u.Hz),
+    ...     fftlength=1.0,    # 1.0 seconds
+    ...     overlap=0.5,      # 0.5 seconds
+    ...     window='hann'
     ... )
     >>> coh_map.plot_map2d('xy')
     """

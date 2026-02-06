@@ -2,6 +2,17 @@
 
 gwexpy enforces strict unit conventions for spectral density and power spectrum estimation.
 
+## API Change Notice (v0.1.0b2)
+
+⚠️ **Breaking Change**: Spectral analysis functions now use **time-based parameters**.
+
+- **Old API**: `nperseg=256, noverlap=128` (sample counts)
+- **New API**: `fftlength=1.0, overlap=0.5` (seconds)
+
+Using deprecated `nperseg`/`noverlap` will raise `TypeError` with migration guidance.
+
+See [Migration Guide](../user_guide/migration_fftlength.md) for details.
+
 ## Unit Semantics
 
 * **PSD / ASD (Density)**:
