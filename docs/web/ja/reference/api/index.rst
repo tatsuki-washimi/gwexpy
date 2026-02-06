@@ -11,5 +11,6 @@ API リファレンス
    spectral
    analysis
    noise
+   preprocessing
    types
    extra

@@ -261,8 +261,8 @@ This design choice prevents silent bugs and encourages complete migration.
 
 ## Additional Resources
 
-- [CHANGELOG](../../CHANGELOG.md) - Full API change details
-- [Technical Report](../developers/reports/api_unification_spectral_params_20260206.md) - Implementation details
+- CHANGELOG.md (repository root) - Full API change details
+- [Technical Report](https://github.com/gwexpy/gwexpy/blob/main/docs/developers/reports/api_unification_spectral_params_20260206.md) - Implementation details
 - [gwexpy.fitting API Reference](../reference/fitting.md)
 - [gwexpy.spectral API Reference](../reference/Spectral.md)
 
