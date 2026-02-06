@@ -16,6 +16,7 @@ FrequencySeries Class
 ---------------------
 
 .. autoclass:: FrequencySeries
+   :no-index:
    :members:
    :undoc-members:
    :inherited-members:
@@ -39,6 +40,7 @@ Module Contents
 ---------------
 
 .. automodule:: gwexpy.frequencyseries
+   :no-index:
    :members:
    :undoc-members:
    :show-inheritance:

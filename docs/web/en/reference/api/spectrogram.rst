@@ -16,6 +16,7 @@ Spectrogram Class
 -----------------
 
 .. autoclass:: Spectrogram
+   :no-index:
    :members:
    :undoc-members:
    :inherited-members:
@@ -37,6 +38,7 @@ Module Contents
 ---------------
 
 .. automodule:: gwexpy.spectrogram
+   :no-index:
    :members:
    :undoc-members:
    :show-inheritance:

@@ -34,7 +34,7 @@ These notebooks demonstrate how to combine multiple `gwexpy` features to solve p
 ## 3. Specialized Analysis & Tutorials (`advanced-methods/tutorial_*.ipynb`)
 These notebooks provide in-depth tutorials on specific advanced analysis techniques.
 
-- **[tutorial_HHT_Analysis.ipynb](advanced-methods/tutorial_HHT_Analysis.ipynb)**: Hilbert-Huang Transform (EMD + Hilbert Spectral Analysis) for non-stationary signals.
+- **[advanced_hht.ipynb](../docs/web/en/user_guide/tutorials/advanced_hht.ipynb)**: Hilbert-Huang Transform (EMD + Hilbert Spectral Analysis) for non-stationary signals (published in User Guide).
 - **[tutorial_ARIMA_Forecast.ipynb](advanced-methods/tutorial_ARIMA_Forecast.ipynb)**: Time-series forecasting and whitening using ARIMA models.
 - **[tutorial_Correlation.ipynb](advanced-methods/tutorial_Correlation.ipynb)**: Advanced statistical features including Granger Causality and Distance Correlation.
 - **[tutorial_ShortTimeLaplaceTransformation.ipynb](advanced-methods/tutorial_ShortTimeLaplaceTransformation.ipynb)**: Time-frequency analysis using the Short-Time Laplace Transform (STLT).
