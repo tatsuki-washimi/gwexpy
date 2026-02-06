@@ -101,8 +101,8 @@ fit_bootstrap_spectrum(
     block_size=None,
     ci=0.68,
     window="hann",
-    nperseg=16,
-    noverlap=None,
+    fftlength=None,
+    overlap=None,
     n_boot=1000,
     initial_params=None,
     bounds=None,
@@ -126,6 +126,10 @@ fit_bootstrap_spectrum(
 | `method` | str | ブートストラップ平均化方法 ("median" / "mean") |
 | `rebin_width` | float | 周波数リビン幅 (Hz) |
 | `block_size` | int | ブロックブートストラップのブロックサイズ |
+| `ci` | float | 信頼区間 (デフォルト: 0.68) |
+| `window` | str | FFT ウィンドウ関数 (デフォルト: "hann") |
+| `fftlength` | float or Quantity | FFT セグメント長（秒） (デフォルト: None、自動計算) |
+| `overlap` | float or Quantity | オーバーラップ長（秒） (デフォルト: None、ウィンドウ依存) |
 | `n_boot` | int | ブートストラップ回数 |
 | `initial_params` | dict | 初期パラメータ |
 | `bounds` | dict | パラメータ制限 |

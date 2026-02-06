@@ -101,8 +101,8 @@ fit_bootstrap_spectrum(
     block_size=None,
     ci=0.68,
     window="hann",
-    nperseg=16,
-    noverlap=None,
+    fftlength=None,
+    overlap=None,
     n_boot=1000,
     initial_params=None,
     bounds=None,
@@ -126,6 +126,10 @@ fit_bootstrap_spectrum(
 | `method` | str | Bootstrap averaging method ("median" / "mean") |
 | `rebin_width` | float | Frequency rebinning width (Hz) |
 | `block_size` | int | Block size for block bootstrap |
+| `ci` | float | Confidence interval (default: 0.68) |
+| `window` | str | Window function for FFT (default: "hann") |
+| `fftlength` | float or Quantity | FFT segment length in seconds (default: None, auto-calculated) |
+| `overlap` | float or Quantity | Overlap length in seconds (default: None, window-dependent) |
 | `n_boot` | int | Number of bootstrap iterations |
 | `initial_params` | dict | Initial parameters |
 | `bounds` | dict | Parameter limits |
