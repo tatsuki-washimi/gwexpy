@@ -56,6 +56,7 @@ Statistical analysis and advanced transforms.
    :caption: Advanced Analysis
 
    Advanced Fitting <advanced_fitting>
+   Bootstrap PSD & GLS Fitting <case_bootstrap_gls_fitting>
    Peak Detection <advanced_peak_detection>
    HHT Analysis <advanced_hht>
    ARIMA Forecasting <advanced_arima>
