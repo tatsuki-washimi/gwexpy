@@ -2216,3 +2216,230 @@ class ScalarField(FieldBase):
 
         psd_result = self.psd(axis=axis, **kwargs)
         return np.sqrt(psd_result)
+
+    # FFT methods with axis support
+    def fft(self, axis=0, **kwargs):
+        """Compute FFT along any axis.
+
+        Unified FFT interface that dispatches to fft_time() or fft_space()
+        based on the axis parameter.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute FFT. Default is 0 (time axis).
+            - 0 or 'time': Time axis (uses fft_time)
+            - 1, 2, 3 or 'x', 'y', 'z': Spatial axes (uses fft_space)
+        **kwargs
+            Additional arguments passed to fft_time() or fft_space().
+
+        Returns
+        -------
+        ScalarField
+            FFT-transformed field with appropriate domain.
+
+        Examples
+        --------
+        >>> # Time-axis FFT
+        >>> fft_result = field.fft(axis=0)
+        >>> # Spatial FFT along x
+        >>> fft_x = field.fft(axis='x')
+
+        See Also
+        --------
+        fft_time : FFT along time axis
+        fft_space : FFT along spatial axes
+        ifft : Inverse FFT
+        """
+        # Resolve axis
+        if axis == 0 or axis == 'time':
+            return self.fft_time(**kwargs)
+        else:
+            # For spatial axes, determine which axes
+            if isinstance(axis, str):
+                axis_map = {'x': 1, 'y': 2, 'z': 3}
+                if axis in axis_map:
+                    axis_int = axis_map[axis]
+                else:
+                    raise ValueError(f"Invalid axis name: {axis}")
+            else:
+                axis_int = axis
+
+            if axis_int not in [1, 2, 3]:
+                raise ValueError(f"Spatial axis must be 1, 2, or 3 (or 'x', 'y', 'z'), got {axis}")
+
+            return self.fft_space(axes=(axis_int,), **kwargs)
+
+    def ifft(self, axis=0, **kwargs):
+        """Compute inverse FFT along any axis.
+
+        Unified inverse FFT interface that dispatches to ifft_time() or ifft_space()
+        based on the axis parameter.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute IFFT. Default is 0 (time axis).
+            - 0 or 'time': Time axis (uses ifft_time)
+            - 1, 2, 3 or 'x', 'y', 'z': Spatial axes (uses ifft_space)
+        **kwargs
+            Additional arguments passed to ifft_time() or ifft_space().
+
+        Returns
+        -------
+        ScalarField
+            Inverse FFT-transformed field with appropriate domain.
+
+        Examples
+        --------
+        >>> # Inverse time-axis FFT
+        >>> ifft_result = freq_field.ifft(axis=0)
+        >>> # Inverse spatial FFT along x
+        >>> ifft_x = kx_field.ifft(axis='x')
+
+        See Also
+        --------
+        ifft_time : IFFT along time axis
+        ifft_space : IFFT along spatial axes
+        fft : Forward FFT
+        """
+        # Resolve axis
+        if axis == 0 or axis == 'time':
+            return self.ifft_time(**kwargs)
+        else:
+            # For spatial axes
+            if isinstance(axis, str):
+                axis_map = {'x': 1, 'y': 2, 'z': 3}
+                if axis in axis_map:
+                    axis_int = axis_map[axis]
+                else:
+                    raise ValueError(f"Invalid axis name: {axis}")
+            else:
+                axis_int = axis
+
+            if axis_int not in [1, 2, 3]:
+                raise ValueError(f"Spatial axis must be 1, 2, or 3 (or 'x', 'y', 'z'), got {axis}")
+
+            return self.ifft_space(axes=(axis_int,), **kwargs)
+
+    # Filter convenience methods
+    def highpass(self, frequency, **kwargs):
+        """Apply highpass filter to time axis.
+
+        Parameters
+        ----------
+        frequency : float
+            Cutoff frequency in Hz.
+        **kwargs
+            Additional arguments passed to filter().
+            Common options: filtfilt (default True), order (default 4).
+
+        Returns
+        -------
+        ScalarField
+            Highpass-filtered field.
+
+        Examples
+        --------
+        >>> # Highpass filter at 10 Hz
+        >>> filtered = field.highpass(10)
+        >>> # With custom order
+        >>> filtered = field.highpass(10, order=8)
+
+        See Also
+        --------
+        lowpass : Lowpass filter
+        bandpass : Bandpass filter
+        filter : General filter method
+        """
+        return self.filter(frequency, type='highpass', **kwargs)
+
+    def lowpass(self, frequency, **kwargs):
+        """Apply lowpass filter to time axis.
+
+        Parameters
+        ----------
+        frequency : float
+            Cutoff frequency in Hz.
+        **kwargs
+            Additional arguments passed to filter().
+            Common options: filtfilt (default True), order (default 4).
+
+        Returns
+        -------
+        ScalarField
+            Lowpass-filtered field.
+
+        Examples
+        --------
+        >>> # Lowpass filter at 100 Hz
+        >>> filtered = field.lowpass(100)
+
+        See Also
+        --------
+        highpass : Highpass filter
+        bandpass : Bandpass filter
+        filter : General filter method
+        """
+        return self.filter(frequency, type='lowpass', **kwargs)
+
+    def bandpass(self, flow, fhigh, **kwargs):
+        """Apply bandpass filter to time axis.
+
+        Parameters
+        ----------
+        flow : float
+            Low frequency cutoff in Hz.
+        fhigh : float
+            High frequency cutoff in Hz.
+        **kwargs
+            Additional arguments passed to filter().
+            Common options: filtfilt (default True), order (default 4).
+
+        Returns
+        -------
+        ScalarField
+            Bandpass-filtered field.
+
+        Examples
+        --------
+        >>> # Bandpass filter between 10-100 Hz
+        >>> filtered = field.bandpass(10, 100)
+
+        See Also
+        --------
+        highpass : Highpass filter
+        lowpass : Lowpass filter
+        filter : General filter method
+        """
+        return self.filter(flow, fhigh, type='bandpass', **kwargs)
+
+    def notch(self, frequency, **kwargs):
+        """Apply notch filter to time axis.
+
+        Parameters
+        ----------
+        frequency : float or list of float
+            Frequency(ies) to notch in Hz.
+        **kwargs
+            Additional arguments passed to filter().
+            Common options: filtfilt (default True), quality (default 10).
+
+        Returns
+        -------
+        ScalarField
+            Notch-filtered field.
+
+        Examples
+        --------
+        >>> # Notch filter at 60 Hz (power line)
+        >>> filtered = field.notch(60)
+        >>> # Multiple notches
+        >>> filtered = field.notch([60, 120, 180])
+
+        See Also
+        --------
+        bandpass : Bandpass filter
+        filter : General filter method
+        """
+        return self.filter(frequency, type='notch', **kwargs)

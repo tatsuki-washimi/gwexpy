@@ -149,6 +149,45 @@ class TestComputePsd:
         # ASD should be sqrt(PSD)
         assert_allclose(asd_time.value, np.sqrt(psd_time.value))
 
+    def test_fft_with_axis_parameter(self, sine_field):
+        """Test fft() with axis parameter dispatches correctly."""
+        # Time axis FFT
+        fft_time = sine_field.fft(axis=0)
+        assert fft_time.axis0_domain == "frequency"
+
+        # Should be same as fft_time()
+        fft_time2 = sine_field.fft_time()
+        assert_allclose(fft_time.value, fft_time2.value)
+
+    def test_ifft_with_axis_parameter(self, sine_field):
+        """Test ifft() roundtrip."""
+        # FFT then IFFT should recover original (approximately)
+        fft_result = sine_field.fft(axis=0)
+        recovered = fft_result.ifft(axis=0)
+
+        # Check shape matches
+        assert recovered.shape == sine_field.shape
+        assert recovered.axis0_domain == "time"
+
+    def test_filter_convenience_methods(self, sine_field):
+        """Test highpass, lowpass, bandpass, notch methods."""
+        # Highpass
+        hp = sine_field.highpass(1.0)
+        assert hp.shape == sine_field.shape
+        assert hp.axis0_domain == "time"
+
+        # Lowpass
+        lp = sine_field.lowpass(50.0)
+        assert lp.shape == sine_field.shape
+
+        # Bandpass
+        bp = sine_field.bandpass(1.0, 50.0)
+        assert bp.shape == sine_field.shape
+
+        # Notch
+        notch = sine_field.notch(10.0)
+        assert notch.shape == sine_field.shape
+
 
 class TestFreqSpaceMap:
     def test_shape_and_units(self, sine_field):
