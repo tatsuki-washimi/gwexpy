@@ -182,7 +182,7 @@ do not change over time. For non-stationary data (glitches, transients,
 drifting noise floors), the confidence intervals may be biased.
 
 **Recommended** `block_size`: At least the stride length (segment spacing)
-for time-correlated spectrograms.
+for time-correlated spectrograms. Specified in seconds as a float or Quantity.
 
 **References**:
 

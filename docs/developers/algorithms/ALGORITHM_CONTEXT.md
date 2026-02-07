@@ -198,9 +198,11 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
     # ... (Implementation details using window autocorrelation)
 
 def bootstrap_spectrogram(spectrogram, n_boot=1000, block_size=None, ...):
+    # Note: block_size is now specified in seconds (float/Quantity/'auto')
+    # and converted to samples internally using spectrogram.dt
     # ...
     if block_size is not None and block_size > 1:
-        # Moving block bootstrap logic
+        # Moving block bootstrap logic (block_size here is in samples after conversion)
         num_possible_blocks = n_time - block_size + 1
         # ...
     else:
