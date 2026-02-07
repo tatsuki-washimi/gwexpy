@@ -308,8 +308,9 @@ def bootstrap_spectrogram(
         Overlap between FFT segments in seconds.
         Used for VIF correction. If None and fftlength is given,
         defaults to the recommended overlap for the window function.
-    block_size : int or 'auto', optional
-        Size of blocks for block bootstrap.
+    block_size : float, Quantity, or 'auto', optional
+        Duration of blocks for block bootstrap in seconds.
+        Can be specified as float (seconds), Quantity with time units, or 'auto'.
         If 'auto', estimates size based on overlap ratio (ceil(duration/stride)).
         If None, perform standard bootstrap with analytical VIF correction.
     rebin_width : float, optional
@@ -372,6 +373,7 @@ def bootstrap_spectrogram(
     ...     n_boot=100,
     ...     fftlength=4.0,    # 4 seconds
     ...     overlap=2.0,      # 2 seconds
+    ...     block_size=2.0,   # 2 seconds block
     ...     window='hann',
     ...     method='median'
     ... )
@@ -465,6 +467,17 @@ def bootstrap_spectrogram(
             )
         else:
             block_size = None
+    elif block_size is not None:
+        # Convert block_size from seconds to samples
+        # Calculate sample_rate from spectrogram dt (1/dt)
+        dt = spectrogram.dt.value if hasattr(spectrogram.dt, 'value') else spectrogram.dt
+        sample_rate = 1.0 / dt
+
+        _, block_size_samples = parse_fftlength_or_overlap(
+            block_size, sample_rate=sample_rate, arg_name="block_size"
+        )
+        block_size = block_size_samples
+        logger.debug(f"Converted block_size to {block_size} samples (dt={dt:.3g}s)")
 
     if block_size is not None and block_size > 1:
         if block_size >= n_time:
