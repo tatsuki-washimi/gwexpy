@@ -311,8 +311,8 @@
 <td><p>周波数リビン幅 (Hz)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">block_size</span></code></p></td>
-<td><p>int</p></td>
-<td><p>ブロックブートストラップのブロックサイズ</p></td>
+<td><p>float / Quantity / ‘auto’</p></td>
+<td><p>ブロックブートストラップのブロック時間長（秒）</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ci</span></code></p></td>
 <td><p>float</p></td>
@@ -329,6 +329,14 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">overlap</span></code></p></td>
 <td><p>float or Quantity</p></td>
 <td><p>オーバーラップ長（秒） (デフォルト: None、ウィンドウ依存)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nfft</span></code></p></td>
+<td><p>int</p></td>
+<td><p>FFT セグメント長（サンプル数）（<code class="docutils literal notranslate"><span class="pre">fftlength</span></code>の代替）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">noverlap</span></code></p></td>
+<td><p>int</p></td>
+<td><p>オーバーラップ長（サンプル数）（<code class="docutils literal notranslate"><span class="pre">nfft</span></code>と併用）</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">n_boot</span></code></p></td>
 <td><p>int</p></td>
@@ -378,7 +386,7 @@
     <span class="n">model_fn</span><span class="o">=</span><span class="n">power_law</span><span class="p">,</span>
     <span class="n">freq_range</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
     <span class="n">rebin_width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-    <span class="n">block_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">block_size</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>  <span class="c1"># 2秒</span>
     <span class="n">initial_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">},</span>
     <span class="n">run_mcmc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">mcmc_steps</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>

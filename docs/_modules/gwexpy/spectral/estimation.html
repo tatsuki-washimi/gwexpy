@@ -357,6 +357,8 @@
     <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
     <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">nfft</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">noverlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">block_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">rebin_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">return_map</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -386,12 +388,21 @@
 <span class="sd">    fftlength : float or Quantity, optional</span>
 <span class="sd">        FFT segment length in seconds used to generate the spectrogram.</span>
 <span class="sd">        Used for VIF (overlap correlation) correction.</span>
+<span class="sd">        Cannot be used with `nfft`.</span>
 <span class="sd">    overlap : float or Quantity, optional</span>
 <span class="sd">        Overlap between FFT segments in seconds.</span>
 <span class="sd">        Used for VIF correction. If None and fftlength is given,</span>
 <span class="sd">        defaults to the recommended overlap for the window function.</span>
-<span class="sd">    block_size : int or &#39;auto&#39;, optional</span>
-<span class="sd">        Size of blocks for block bootstrap.</span>
+<span class="sd">        Cannot be used with `noverlap`.</span>
+<span class="sd">    nfft : int, optional</span>
+<span class="sd">        FFT segment length in samples. Alternative to `fftlength` for</span>
+<span class="sd">        precise sample-based specification. Cannot be used with `fftlength`.</span>
+<span class="sd">    noverlap : int, optional</span>
+<span class="sd">        Overlap length in samples. Must be used with `nfft`.</span>
+<span class="sd">        Cannot be used with `overlap`.</span>
+<span class="sd">    block_size : float, Quantity, or &#39;auto&#39;, optional</span>
+<span class="sd">        Duration of blocks for block bootstrap in seconds.</span>
+<span class="sd">        Can be specified as float (seconds), Quantity with time units, or &#39;auto&#39;.</span>
 <span class="sd">        If &#39;auto&#39;, estimates size based on overlap ratio (ceil(duration/stride)).</span>
 <span class="sd">        If None, perform standard bootstrap with analytical VIF correction.</span>
 <span class="sd">    rebin_width : float, optional</span>
@@ -448,19 +459,30 @@
 <span class="sd">    &gt;&gt;&gt; spec_data = np.random.random((100, 50))</span>
 <span class="sd">    &gt;&gt;&gt; spec = Spectrogram(spec_data, dt=1.0*u.s, f0=10*u.Hz, df=1*u.Hz)</span>
 <span class="sd">    &gt;&gt;&gt;</span>
-<span class="sd">    &gt;&gt;&gt; # Bootstrap with time-based parameters</span>
+<span class="sd">    &gt;&gt;&gt; # Bootstrap with time-based parameters (high-level API)</span>
 <span class="sd">    &gt;&gt;&gt; result = bootstrap_spectrogram(</span>
 <span class="sd">    ...     spec,</span>
 <span class="sd">    ...     n_boot=100,</span>
 <span class="sd">    ...     fftlength=4.0,    # 4 seconds</span>
 <span class="sd">    ...     overlap=2.0,      # 2 seconds</span>
+<span class="sd">    ...     block_size=2.0,   # 2 seconds block</span>
 <span class="sd">    ...     window=&#39;hann&#39;,</span>
 <span class="sd">    ...     method=&#39;median&#39;</span>
 <span class="sd">    ... )</span>
 <span class="sd">    &gt;&gt;&gt; print(result.value.shape)</span>
 <span class="sd">    (50,)</span>
-<span class="sd">    &gt;&gt;&gt; print(result.unit)</span>
-<span class="sd">    Unit(dimensionless)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; # Alternatively, use sample-based parameters (low-level API)</span>
+<span class="sd">    &gt;&gt;&gt; result2 = bootstrap_spectrogram(</span>
+<span class="sd">    ...     spec,</span>
+<span class="sd">    ...     n_boot=100,</span>
+<span class="sd">    ...     nfft=4,        # 4 samples (dt=1s, so 4 seconds)</span>
+<span class="sd">    ...     noverlap=2,    # 2 samples overlap</span>
+<span class="sd">    ...     window=&#39;hann&#39;,</span>
+<span class="sd">    ...     method=&#39;median&#39;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; print(result2.value.shape)</span>
+<span class="sd">    (50,)</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -471,9 +493,30 @@
 <span class="sd">    .. [3] Politis, D.N. &amp; Romano, J.P., &quot;The stationary bootstrap&quot;,</span>
 <span class="sd">           J. Amer. Statist. Assoc. 89(428), 1994</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.fft_args</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_deprecated_kwargs</span><span class="p">,</span> <span class="n">get_default_overlap</span><span class="p">,</span> <span class="n">parse_fftlength_or_overlap</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.fft_args</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">check_deprecated_kwargs</span><span class="p">,</span>
+        <span class="n">get_default_overlap</span><span class="p">,</span>
+        <span class="n">parse_fftlength_or_overlap</span><span class="p">,</span>
+        <span class="n">validate_and_convert_fft_params</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">check_deprecated_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Validate and convert nfft/noverlap to fftlength/overlap if needed</span>
+    <span class="c1"># Get sample_rate from spectrogram for conversion</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">):</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">sample_rate_for_conversion</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sample_rate_for_conversion</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">validate_and_convert_fft_params</span><span class="p">(</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+        <span class="n">nfft</span><span class="o">=</span><span class="n">nfft</span><span class="p">,</span>
+        <span class="n">noverlap</span><span class="o">=</span><span class="n">noverlap</span><span class="p">,</span>
+        <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate_for_conversion</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">value</span>
     <span class="n">frequencies</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
     <span class="n">n_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -547,6 +590,17 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">block_size</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="n">block_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Convert block_size from seconds to samples</span>
+        <span class="c1"># Calculate sample_rate from spectrogram dt (1/dt)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">sample_rate</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">block_size_samples</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span>
+            <span class="n">block_size</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;block_size&quot;</span>
+        <span class="p">)</span>
+        <span class="n">block_size</span> <span class="o">=</span> <span class="n">block_size_samples</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converted block_size to </span><span class="si">{</span><span class="n">block_size</span><span class="si">}</span><span class="s2"> samples (dt=</span><span class="si">{</span><span class="n">dt</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">block_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">block_size</span> <span class="o">&gt;=</span> <span class="n">n_time</span><span class="p">:</span>

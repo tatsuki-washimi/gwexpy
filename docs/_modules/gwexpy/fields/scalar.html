@@ -2282,7 +2282,14 @@
 <span class="sd">                If provided, computes PSD at specific spatial point(s) or region</span>
 <span class="sd">                average instead of full field. Returns FrequencySeries(List).</span>
 <span class="sd">            - method : {&#39;welch&#39;, &#39;fft&#39;}, default &#39;welch&#39;</span>
-<span class="sd">            - nperseg : int, segment length</span>
+<span class="sd">            - fftlength : float, optional</span>
+<span class="sd">                Segment length in seconds (time-based specification)</span>
+<span class="sd">            - nfft : int, optional</span>
+<span class="sd">                Number of samples per segment (sample-based specification)</span>
+<span class="sd">            - overlap : float, optional</span>
+<span class="sd">                Overlap in seconds</span>
+<span class="sd">            - noverlap : int, optional</span>
+<span class="sd">                Number of overlapping samples</span>
 <span class="sd">            - window : str, window function</span>
 <span class="sd">            - scaling : {&#39;density&#39;, &#39;spectrum&#39;}</span>
 
@@ -2294,7 +2301,10 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; from astropy import units as u</span>
-<span class="sd">        &gt;&gt;&gt; psd_field = field.psd(nperseg=512)</span>
+<span class="sd">        &gt;&gt;&gt; # Time-based specification</span>
+<span class="sd">        &gt;&gt;&gt; psd_field = field.psd(fftlength=1.0, overlap=0.5)</span>
+<span class="sd">        &gt;&gt;&gt; # Or sample-based specification</span>
+<span class="sd">        &gt;&gt;&gt; psd_field = field.psd(nfft=512, noverlap=256)</span>
 <span class="sd">        &gt;&gt;&gt; psd_field.shape  # (n_freq, nx, ny, nz)</span>
 
 <span class="sd">        See Also</span>
