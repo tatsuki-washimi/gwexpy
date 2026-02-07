@@ -105,6 +105,31 @@ class TestComputePsd:
         with pytest.raises(ValueError, match="at least 2 points"):
             field.compute_psd((0 * u.m, 0 * u.m, 0 * u.m))
 
+    def test_asd_method(self, sine_field):
+        """Test that asd() returns sqrt of psd()."""
+        # Compute PSD and ASD
+        psd = sine_field.psd(fftlength=0.64)
+        asd = sine_field.asd(fftlength=0.64)
+
+        # Check that asd = sqrt(psd)
+        assert_allclose(asd.value, np.sqrt(psd.value))
+
+        # Check metadata
+        assert asd.axis0_domain == "frequency"
+        assert asd.shape == psd.shape
+
+        # Check units (ASD units should be sqrt of PSD units)
+        # PSD: V^2/Hz -> ASD: V/sqrt(Hz)
+        assert asd.unit == np.sqrt(psd.unit)
+
+    def test_asd_with_nfft_noverlap(self, sine_field):
+        """Test asd() with sample-based parameters."""
+        asd = sine_field.asd(nfft=64, noverlap=32)
+
+        assert asd.axis0_domain == "frequency"
+        assert asd.shape[0] > 0  # Has frequency points
+        assert asd.unit == u.V / u.Hz**0.5
+
 
 class TestFreqSpaceMap:
     def test_shape_and_units(self, sine_field):

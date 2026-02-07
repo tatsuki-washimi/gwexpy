@@ -2165,3 +2165,40 @@ class ScalarField(FieldBase):
             return compute_psd(self, point_or_region, **kwargs)
 
         return self.spectral_density(axis=0, **kwargs)
+
+    def asd(self, **kwargs):
+        """Compute amplitude spectral density along time axis.
+
+        Convenience method equivalent to ``sqrt(psd())``.
+        Returns the square root of the power spectral density.
+
+        Parameters
+        ----------
+        **kwargs
+            Keyword arguments passed to :meth:`psd`.
+            See :meth:`psd` for available options.
+
+        Returns
+        -------
+        ScalarField
+            ASD field with axis0_domain='frequency'.
+            Units are the square root of PSD units (e.g., V/√Hz).
+
+        Examples
+        --------
+        >>> from astropy import units as u
+        >>> # Time-based specification
+        >>> asd_field = field.asd(fftlength=1.0, overlap=0.5)
+        >>> # Or sample-based specification
+        >>> asd_field = field.asd(nfft=512, noverlap=256)
+        >>> asd_field.shape  # (n_freq, nx, ny, nz)
+
+        See Also
+        --------
+        psd : Power spectral density
+        spectral_density : Generalized spectral density for any axis.
+        """
+        import numpy as np
+
+        psd_result = self.psd(**kwargs)
+        return np.sqrt(psd_result)
