@@ -125,11 +125,13 @@ fit_bootstrap_spectrum(
 | `freq_range` | tuple | Frequency range for fitting |
 | `method` | str | Bootstrap averaging method ("median" / "mean") |
 | `rebin_width` | float | Frequency rebinning width (Hz) |
-| `block_size` | int | Block size for block bootstrap |
+| `block_size` | float / Quantity / 'auto' | Block duration in seconds for block bootstrap |
 | `ci` | float | Confidence interval (default: 0.68) |
 | `window` | str | Window function for FFT (default: "hann") |
 | `fftlength` | float or Quantity | FFT segment length in seconds (default: None, auto-calculated) |
 | `overlap` | float or Quantity | Overlap length in seconds (default: None, window-dependent) |
+| `nfft` | int | FFT segment length in samples (alternative to `fftlength`) |
+| `noverlap` | int | Overlap length in samples (must be used with `nfft`) |
 | `n_boot` | int | Number of bootstrap iterations |
 | `initial_params` | dict | Initial parameters |
 | `bounds` | dict | Parameter limits |
@@ -158,7 +160,7 @@ result = fit_bootstrap_spectrum(
     model_fn=power_law,
     freq_range=(5, 50),
     rebin_width=0.5,
-    block_size=4,
+    block_size=2.0,  # 2 seconds
     initial_params={"A": 10, "alpha": -1.5},
     run_mcmc=True,
     mcmc_steps=3000,
@@ -168,6 +170,16 @@ result = fit_bootstrap_spectrum(
 print(result.params)
 print(result.parameter_intervals)  # MCMC confidence intervals
 result.plot_corner()
+
+# Alternative: Use sample-based specification for precise FFT control
+result2 = fit_bootstrap_spectrum(
+    spectrogram,
+    model_fn=power_law,
+    freq_range=(5, 50),
+    nfft=1024,      # Exact FFT length (samples)
+    noverlap=512,   # Exact overlap (samples)
+    initial_params={"A": 10, "alpha": -1.5},
+)
 ```
 
 ---

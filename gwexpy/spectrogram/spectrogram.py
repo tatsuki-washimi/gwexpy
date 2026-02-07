@@ -56,6 +56,8 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         window="hann",
         fftlength=None,
         overlap=None,
+        nfft=None,
+        noverlap=None,
         block_size=None,
         rebin_width=None,
         return_map=False,
@@ -73,9 +75,24 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             FFT segment length in seconds (e.g. ``1.0`` or ``1.0 * u.s``).
             Used for VIF overlap-correlation correction. If None, the
             correction is estimated from spectrogram metadata.
+            Cannot be used with `nfft`.
         overlap : float or Quantity, optional
             Overlap between FFT segments in seconds. If None, defaults to
             the recommended overlap for *window* (50 % for Hann).
+            Cannot be used with `noverlap`.
+        nfft : int, optional
+            FFT segment length in samples. Alternative to `fftlength`.
+            Cannot be used with `fftlength`.
+        noverlap : int, optional
+            Overlap length in samples. Must be used with `nfft`.
+            Cannot be used with `overlap`.
+        block_size : float, Quantity, or 'auto', optional
+            Duration of blocks for block bootstrap in seconds. Can be
+            specified as float (seconds), Quantity with time units, or 'auto'.
+            If 'auto', estimates size based on overlap ratio. If None,
+            perform standard bootstrap with analytical VIF correction.
+        rebin_width : float, optional
+            Frequency rebinning width in Hz before bootstrapping.
         **kwargs
             Additional keyword arguments. Passing the removed ``nperseg``
             or ``noverlap`` parameters will raise :class:`TypeError`.
@@ -96,6 +113,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         ...     n_boot=100,
         ...     fftlength=4.0,    # 4 seconds
         ...     overlap=2.0,      # 2 seconds
+        ...     block_size=2.0,   # 2 seconds block
         ...     window='hann',
         ...     method='median'
         ... )
@@ -119,6 +137,8 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             window=window,
             fftlength=fftlength,
             overlap=overlap,
+            nfft=nfft,
+            noverlap=noverlap,
             block_size=block_size,
             rebin_width=rebin_width,
             return_map=return_map,
@@ -133,6 +153,8 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         window="hann",
         fftlength=None,
         overlap=None,
+        nfft=None,
+        noverlap=None,
         block_size=None,
         rebin_width=None,
         return_map=False,
@@ -146,9 +168,18 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         ----------
         fftlength : float or Quantity, optional
             FFT segment length in seconds (e.g. ``1.0`` or ``1.0 * u.s``).
-            Used for VIF overlap-correlation correction.
+            Used for VIF overlap-correlation correction. Cannot be used with `nfft`.
         overlap : float or Quantity, optional
-            Overlap between FFT segments in seconds.
+            Overlap between FFT segments in seconds. Cannot be used with `noverlap`.
+        nfft : int, optional
+            FFT segment length in samples. Alternative to `fftlength`.
+        noverlap : int, optional
+            Overlap length in samples. Must be used with `nfft`.
+        block_size : float, Quantity, or 'auto', optional
+            Duration of blocks for block bootstrap in seconds. Can be
+            specified as float (seconds), Quantity with time units, or 'auto'.
+        rebin_width : float, optional
+            Frequency rebinning width in Hz before bootstrapping.
         **kwargs
             Additional keyword arguments. Passing the removed ``nperseg``
             or ``noverlap`` parameters will raise :class:`TypeError`.
@@ -169,6 +200,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         ...     n_boot=100,
         ...     fftlength=4.0,    # 4 seconds
         ...     overlap=2.0,      # 2 seconds
+        ...     block_size=2.0,   # 2 seconds block
         ...     window='hann',
         ...     average='median'
         ... )
@@ -182,6 +214,8 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             window=window,
             fftlength=fftlength,
             overlap=overlap,
+            nfft=nfft,
+            noverlap=noverlap,
             block_size=block_size,
             rebin_width=rebin_width,
             return_map=return_map,
