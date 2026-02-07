@@ -125,7 +125,7 @@ fit_bootstrap_spectrum(
 | `freq_range` | tuple | フィット周波数範囲 |
 | `method` | str | ブートストラップ平均化方法 ("median" / "mean") |
 | `rebin_width` | float | 周波数リビン幅 (Hz) |
-| `block_size` | int | ブロックブートストラップのブロックサイズ |
+| `block_size` | float / Quantity / 'auto' | ブロックブートストラップのブロック時間長（秒） |
 | `ci` | float | 信頼区間 (デフォルト: 0.68) |
 | `window` | str | FFT ウィンドウ関数 (デフォルト: "hann") |
 | `fftlength` | float or Quantity | FFT セグメント長（秒） (デフォルト: None、自動計算) |
@@ -158,7 +158,7 @@ result = fit_bootstrap_spectrum(
     model_fn=power_law,
     freq_range=(5, 50),
     rebin_width=0.5,
-    block_size=4,
+    block_size=2.0,  # 2秒
     initial_params={"A": 10, "alpha": -1.5},
     run_mcmc=True,
     mcmc_steps=3000,

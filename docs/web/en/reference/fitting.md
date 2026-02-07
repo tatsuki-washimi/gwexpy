@@ -125,7 +125,7 @@ fit_bootstrap_spectrum(
 | `freq_range` | tuple | Frequency range for fitting |
 | `method` | str | Bootstrap averaging method ("median" / "mean") |
 | `rebin_width` | float | Frequency rebinning width (Hz) |
-| `block_size` | int | Block size for block bootstrap |
+| `block_size` | float / Quantity / 'auto' | Block duration in seconds for block bootstrap |
 | `ci` | float | Confidence interval (default: 0.68) |
 | `window` | str | Window function for FFT (default: "hann") |
 | `fftlength` | float or Quantity | FFT segment length in seconds (default: None, auto-calculated) |
@@ -158,7 +158,7 @@ result = fit_bootstrap_spectrum(
     model_fn=power_law,
     freq_range=(5, 50),
     rebin_width=0.5,
-    block_size=4,
+    block_size=2.0,  # 2 seconds
     initial_params={"A": 10, "alpha": -1.5},
     run_mcmc=True,
     mcmc_steps=3000,
