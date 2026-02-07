@@ -645,6 +645,8 @@ def freq_space_map(
     method: Literal["welch", "fft"] = "welch",
     fftlength: float | None = None,
     overlap: float | None = None,
+    nfft: int | None = None,
+    noverlap: int | None = None,
     window: str = "hann",
     detrend: str | bool = "constant",
     scaling: Literal["density", "spectrum"] = "density",
@@ -704,7 +706,12 @@ def freq_space_map(
 
     from gwexpy.plot._coord import nearest_index, slice_from_index
 
-    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+    from ..utils.fft_args import (
+        check_deprecated_kwargs,
+        get_default_overlap,
+        parse_fftlength_or_overlap,
+        validate_and_convert_fft_params,
+    )
 
     check_deprecated_kwargs(**kwargs)
 
@@ -713,21 +720,30 @@ def freq_space_map(
 
     nt = field.shape[0]
 
+    # Validate and convert nfft/noverlap to fftlength/overlap if needed
+    fftlength, overlap = validate_and_convert_fft_params(
+        fftlength=fftlength,
+        overlap=overlap,
+        nfft=nfft,
+        noverlap=noverlap,
+        sample_rate=fs,
+    )
+
     # Convert fftlength/overlap to samples
     fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
-    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+    overlap_sec, noverlap_calc = parse_fftlength_or_overlap(overlap, fs, "overlap")
 
     if nperseg is None:
         nperseg = min(256, nt)
-    if noverlap is None:
+    if noverlap_calc is None:
         if fftlength_sec is not None:
             overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
             if overlap_sec_default is not None:
-                noverlap = max(1, int(round(overlap_sec_default * fs)))
+                noverlap_calc = max(1, int(round(overlap_sec_default * fs)))
             else:
-                noverlap = 0
+                noverlap_calc = 0
         else:
-            noverlap = nperseg // 2
+            noverlap_calc = nperseg // 2
 
     # Map axis name to index
     axis_int = field._get_axis_index(axis)
@@ -777,7 +793,7 @@ def freq_space_map(
                 fs=fs,
                 window=window,
                 nperseg=nperseg,
-                noverlap=noverlap,
+                noverlap=noverlap_calc,
                 detrend=detrend,
                 scaling=scaling,
                 return_onesided=True,
