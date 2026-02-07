@@ -1920,6 +1920,94 @@ class ScalarField(FieldBase):
             space_domain=self._space_domains,
         )
 
+    def interpolate(self, sample_rate, kind='cubic'):
+        """Resample using interpolation (preserves bandlimited signals).
+
+        Uses scipy.interpolate for high-quality resampling, preferred for
+        calibrated data where preserving frequency content is critical.
+
+        Parameters
+        ----------
+        sample_rate : float or Quantity
+            New sample rate (e.g., in Hz).
+        kind : str, optional
+            Interpolation method: 'linear', 'cubic', 'quadratic', etc.
+            Default is 'cubic'. See scipy.interpolate.interp1d for options.
+
+        Returns
+        -------
+        ScalarField
+            Interpolated field at new sample rate.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Examples
+        --------
+        >>> # High-quality resampling with cubic interpolation
+        >>> resampled = field.interpolate(4096, kind='cubic')
+
+        See Also
+        --------
+        resample : FFT-based resampling
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("interpolate requires axis0_domain='time'")
+
+        from scipy import interpolate
+
+        # Get current sample rate and compute new parameters
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        if hasattr(sample_rate, "to"):
+            new_fs = sample_rate.to("Hz").value
+            new_dt = (1.0 / new_fs) * u.s
+        else:
+            new_fs = float(sample_rate)
+            new_dt = (1.0 / new_fs) * dt.unit
+
+        # Original time axis
+        t_old = self._axis0_index.value
+        t0 = self._axis0_index[0]
+
+        # New time axis
+        duration = (self.shape[0] * dt).to(new_dt.unit).value
+        new_nt = int(round(duration * new_fs))
+        t_new = np.arange(new_nt) * (1.0 / new_fs) * new_dt.to(dt.unit).value
+
+        # Reshape for efficient computation
+        orig_shape = self.shape
+        data_2d = self.value.reshape(orig_shape[0], -1)
+
+        # Interpolate each spatial point
+        interpolated_list = []
+        for i in range(data_2d.shape[1]):
+            f = interpolate.interp1d(
+                t_old, data_2d[:, i], kind=kind, bounds_error=False, fill_value='extrapolate'
+            )
+            interpolated_list.append(f(t_new))
+
+        # Stack results
+        new_data_2d = np.array(interpolated_list).T
+
+        # Create new time axis
+        new_times = t_new * dt.unit + t0
+
+        # Reshape back
+        new_shape = [new_nt] + list(orig_shape[1:])
+        return ScalarField(
+            new_data_2d.reshape(new_shape),
+            unit=self.unit,
+            axis0=new_times,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
     def filter(self, *args, **kwargs) -> ScalarField:
         """Apply a filter along the time axis (axis 0).
 
@@ -3651,6 +3739,463 @@ class ScalarField(FieldBase):
         result._spectrogram_orig_axis1 = self._axis1_index
 
         return result
+
+    def rayleigh_spectrum(self, fftlength=None, overlap=0, window="hann", **kwargs):
+        """Compute Rayleigh statistic as a function of frequency.
+
+        The Rayleigh statistic is the ratio of the maximum to mean bin power,
+        more sensitive than standard PSD to narrow-band disturbances and
+        non-Gaussian features.
+
+        Parameters
+        ----------
+        fftlength : float, optional
+            Length of FFT segments in seconds. If None, uses entire length.
+        overlap : float, optional
+            Overlap between segments in seconds. Default is 0.
+        window : str or tuple, optional
+            Window function name. Default is 'hann'.
+        **kwargs
+            Additional arguments (nperseg, noverlap can override time-based params).
+
+        Returns
+        -------
+        ScalarField
+            Rayleigh statistic as a function of frequency.
+            Higher values indicate non-Gaussian spectral features.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Notes
+        -----
+        The Rayleigh statistic R is computed as:
+        R(f) = max(|FFT_i(f)|^2) / mean(|FFT_i(f)|^2)
+
+        where i indexes the FFT segments. R ≈ 2 for Gaussian noise,
+        significantly higher for spectral lines or non-Gaussian features.
+
+        Examples
+        --------
+        >>> # Detect spectral lines
+        >>> ray_spec = field.rayleigh_spectrum(fftlength=2.0, overlap=1.0)
+        >>> # Values >> 2 indicate non-Gaussian features
+
+        See Also
+        --------
+        rayleigh_spectrogram : Time-frequency Rayleigh statistic
+        psd : Power spectral density
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("rayleigh_spectrum requires axis0_domain='time'")
+
+        from scipy import signal as scipy_signal
+
+        # Get sample rate
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        fs = (1.0 / dt).to("Hz").value
+
+        # Convert time-based to sample-based parameters
+        if "nperseg" not in kwargs and fftlength is not None:
+            kwargs["nperseg"] = int(round(fftlength * fs))
+        if "noverlap" not in kwargs and overlap > 0:
+            kwargs["noverlap"] = int(round(overlap * fs))
+
+        # Set defaults
+        kwargs.setdefault("nperseg", min(256, self.shape[0]))
+        kwargs.setdefault("scaling", "spectrum")  # Use spectrum not density
+
+        # Reshape for efficient computation
+        orig_shape = self.shape
+        data_2d = self.value.reshape(orig_shape[0], -1)
+
+        # Compute spectrogram for each spatial point
+        rayleigh_list = []
+        for i in range(data_2d.shape[1]):
+            freqs, times, spec = scipy_signal.spectrogram(
+                data_2d[:, i],
+                fs=fs,
+                window=window,
+                axis=0,
+                **kwargs,
+            )
+
+            # Compute Rayleigh statistic: max / mean across time
+            with np.errstate(divide='ignore', invalid='ignore'):
+                rayleigh = np.max(spec, axis=1) / np.mean(spec, axis=1)
+                rayleigh = np.nan_to_num(rayleigh, nan=1.0, posinf=1.0, neginf=1.0)
+
+            rayleigh_list.append(rayleigh)
+
+        # Stack results
+        rayleigh_2d = np.array(rayleigh_list).T
+
+        # Reshape back
+        new_shape = [len(freqs)] + list(orig_shape[1:])
+        rayleigh_data = rayleigh_2d.reshape(new_shape)
+
+        return ScalarField(
+            rayleigh_data,
+            unit=u.dimensionless_unscaled,
+            axis0=freqs * u.Hz,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=[
+                self._FREQ_AXIS_NAME,
+                self._axis1_name,
+                self._axis2_name,
+                self._axis3_name,
+            ],
+            axis0_domain="frequency",
+            space_domain=self._space_domains,
+        )
+
+    def rayleigh_spectrogram(self, stride, fftlength=None, overlap=0, window="hann", **kwargs):
+        """Compute time-frequency Rayleigh statistic.
+
+        Identifies when and where non-Gaussian features appear in the data.
+        Useful for glitch classification and data quality monitoring.
+
+        Parameters
+        ----------
+        stride : float
+            Time step between consecutive Rayleigh spectra in seconds.
+        fftlength : float, optional
+            Length of FFT segments for each Rayleigh spectrum in seconds.
+            If None, uses stride.
+        overlap : float, optional
+            Overlap between FFT segments in seconds. Default is 0.
+        window : str or tuple, optional
+            Window function name. Default is 'hann'.
+        **kwargs
+            Additional arguments.
+
+        Returns
+        -------
+        ScalarField
+            Time-frequency Rayleigh spectrogram.
+            Shape: (n_time_segments, n_freqs, nx, ny, nz).
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Examples
+        --------
+        >>> # Time-frequency Rayleigh analysis
+        >>> ray_spec = field.rayleigh_spectrogram(
+        ...     stride=1.0, fftlength=2.0, overlap=1.0
+        ... )
+
+        See Also
+        --------
+        rayleigh_spectrum : Frequency-only Rayleigh statistic
+        spectrogram : Standard PSD spectrogram
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("rayleigh_spectrogram requires axis0_domain='time'")
+
+        from scipy import signal as scipy_signal
+
+        # Get sample rate
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        fs = (1.0 / dt).to("Hz").value
+
+        if fftlength is None:
+            fftlength = stride
+
+        # Convert to samples
+        stride_samples = int(round(stride * fs))
+        nperseg = int(round(fftlength * fs))
+        noverlap = int(round(overlap * fs))
+
+        # Number of segments for Rayleigh calculation
+        # Use a sliding window approach
+        n_times = self.shape[0]
+        segment_starts = np.arange(0, n_times - nperseg, stride_samples)
+
+        # Reshape for efficient computation
+        orig_shape = self.shape
+        data_2d = self.value.reshape(orig_shape[0], -1)
+
+        # Compute Rayleigh spectrogram for each spatial point
+        rayleigh_spec_list = []
+        for i in range(data_2d.shape[1]):
+            ray_time_freq = []
+
+            for start in segment_starts:
+                # Extract segment
+                segment = data_2d[start : start + stride_samples, i]
+
+                # Compute spectrum of this segment using multiple FFT windows
+                if len(segment) < nperseg:
+                    continue
+
+                freqs, times_seg, spec = scipy_signal.spectrogram(
+                    segment,
+                    fs=fs,
+                    window=window,
+                    nperseg=min(nperseg, len(segment)),
+                    noverlap=noverlap,
+                )
+
+                # Compute Rayleigh statistic for this time segment
+                with np.errstate(divide='ignore', invalid='ignore'):
+                    rayleigh = np.max(spec, axis=1) / np.mean(spec, axis=1)
+                    rayleigh = np.nan_to_num(rayleigh, nan=1.0, posinf=1.0, neginf=1.0)
+
+                ray_time_freq.append(rayleigh)
+
+            rayleigh_spec_list.append(np.array(ray_time_freq))
+
+        # Stack results: shape (n_spatial, n_times, n_freqs)
+        rayleigh_3d = np.array(rayleigh_spec_list)
+
+        # Transpose to (n_times, n_freqs, n_spatial)
+        rayleigh_3d = rayleigh_3d.transpose(1, 2, 0)
+
+        # Reshape to (n_times, n_freqs, nx, ny, nz)
+        n_time_segs = rayleigh_3d.shape[0]
+        n_freqs = rayleigh_3d.shape[1]
+        new_shape = [n_time_segs, n_freqs] + list(orig_shape[1:])
+        rayleigh_data = rayleigh_3d.reshape(new_shape)
+
+        # Flatten to 4D: (n_times, n_freqs*nx, ny, nz)
+        rayleigh_4d = rayleigh_data.reshape(
+            n_time_segs, n_freqs * orig_shape[1], orig_shape[2], orig_shape[3]
+        )
+
+        # Time axis for segments
+        t0 = self._axis0_index[0]
+        seg_times = segment_starts[:len(rayleigh_4d)] * dt + t0
+
+        result = ScalarField(
+            rayleigh_4d,
+            unit=u.dimensionless_unscaled,
+            axis0=seg_times,
+            axis1=np.arange(n_freqs * orig_shape[1]) * u.dimensionless_unscaled,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=[
+                "t_seg",
+                "freq_space",
+                self._axis2_name,
+                self._axis3_name,
+            ],
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
+        # Store frequency and original spatial axis info
+        result._spectrogram_freqs = freqs * u.Hz
+        result._spectrogram_orig_axis1 = self._axis1_index
+
+        return result
+
+    # =========================================================================
+    # Correlation Analysis
+    # =========================================================================
+
+    def autocorrelation(self, maxlag=None, **kwargs):
+        """Compute autocorrelation function.
+
+        Shows how the signal correlates with time-shifted copies of itself,
+        revealing periodic structures and characteristic timescales.
+
+        Parameters
+        ----------
+        maxlag : int, optional
+            Maximum lag in samples. If None, uses half the data length.
+        **kwargs
+            Additional arguments (currently unused, for future compatibility).
+
+        Returns
+        -------
+        ScalarField
+            Autocorrelation function with lag as time axis.
+            Shape is (2*maxlag+1, nx, ny, nz).
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Examples
+        --------
+        >>> # Compute autocorrelation
+        >>> acf = field.autocorrelation(maxlag=100)
+        >>> # Peak at non-zero lag indicates periodicity
+
+        See Also
+        --------
+        correlate : Cross-correlation between two fields
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("autocorrelation requires axis0_domain='time'")
+
+        from scipy import signal as scipy_signal
+
+        if maxlag is None:
+            maxlag = self.shape[0] // 2
+
+        # Clip maxlag to valid range
+        maxlag = min(maxlag, self.shape[0] - 1)
+
+        # Reshape for efficient computation
+        orig_shape = self.shape
+        data_2d = self.value.reshape(orig_shape[0], -1)
+
+        # Compute autocorrelation for each spatial point
+        # Using 'same' mode and then extracting the center portion
+        acf_list = []
+        for i in range(data_2d.shape[1]):
+            # Normalize by removing mean
+            x = data_2d[:, i]
+            x_demean = x - np.mean(x)
+
+            # Compute autocorrelation using convolution
+            acf_full = scipy_signal.correlate(x_demean, x_demean, mode='same')
+
+            # Normalize by variance and length
+            acf_full = acf_full / (np.var(x) * len(x))
+
+            # Extract center portion (lag from -maxlag to +maxlag)
+            center = len(acf_full) // 2
+            acf = acf_full[center - maxlag : center + maxlag + 1]
+            acf_list.append(acf)
+
+        # Stack results
+        acf_2d = np.array(acf_list).T
+
+        # Reshape back
+        new_shape = [2 * maxlag + 1] + list(orig_shape[1:])
+        acf_data = acf_2d.reshape(new_shape)
+
+        # Create lag axis
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        lags = np.arange(-maxlag, maxlag + 1) * dt
+
+        return ScalarField(
+            acf_data,
+            unit=u.dimensionless_unscaled,
+            axis0=lags,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=['lag', self._axis1_name, self._axis2_name, self._axis3_name],
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
+    def correlate(self, other, maxlag=None, mode='same'):
+        """Cross-correlate with another field in time domain.
+
+        Computes correlation as a function of time lag, complementary to
+        csd() in the frequency domain. Used for time-delay estimation.
+
+        Parameters
+        ----------
+        other : ScalarField
+            Second field for cross-correlation. Must have same shape.
+        maxlag : int, optional
+            Maximum lag in samples. If None, uses half the data length.
+        mode : str, optional
+            Correlation mode: 'same', 'full', or 'valid'. Default is 'same'.
+
+        Returns
+        -------
+        ScalarField
+            Cross-correlation function with lag as time axis.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time' or shapes don't match.
+
+        Examples
+        --------
+        >>> # Cross-correlation between two fields
+        >>> xcf = field1.correlate(field2, maxlag=100)
+        >>> # Peak location indicates time delay
+
+        See Also
+        --------
+        autocorrelation : Autocorrelation function
+        csd : Cross-spectral density (frequency domain)
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("correlate requires axis0_domain='time'")
+        if other._axis0_domain != "time":
+            raise ValueError("other must have axis0_domain='time'")
+        if self.shape != other.shape:
+            raise ValueError(f"Shape mismatch: {self.shape} vs {other.shape}")
+
+        from scipy import signal as scipy_signal
+
+        if maxlag is None:
+            maxlag = min(self.shape[0], other.shape[0]) // 2
+
+        # Reshape for efficient computation
+        orig_shape = self.shape
+        data1_2d = self.value.reshape(orig_shape[0], -1)
+        data2_2d = other.value.reshape(orig_shape[0], -1)
+
+        # Compute cross-correlation for each spatial point
+        xcf_list = []
+        for i in range(data1_2d.shape[1]):
+            # Normalize by removing mean
+            x = data1_2d[:, i]
+            y = data2_2d[:, i]
+            x_demean = x - np.mean(x)
+            y_demean = y - np.mean(y)
+
+            # Compute cross-correlation
+            xcf_full = scipy_signal.correlate(x_demean, y_demean, mode='same')
+
+            # Normalize
+            xcf_full = xcf_full / (np.std(x) * np.std(y) * len(x))
+
+            # Extract center portion if maxlag is specified
+            if mode == 'same':
+                center = len(xcf_full) // 2
+                xcf = xcf_full[center - maxlag : center + maxlag + 1]
+            else:
+                xcf = xcf_full
+
+            xcf_list.append(xcf)
+
+        # Stack results
+        xcf_2d = np.array(xcf_list).T
+
+        # Reshape back
+        if mode == 'same':
+            new_shape = [2 * maxlag + 1] + list(orig_shape[1:])
+            lags = np.arange(-maxlag, maxlag + 1)
+        else:
+            new_shape = [xcf_2d.shape[0]] + list(orig_shape[1:])
+            lags = np.arange(xcf_2d.shape[0]) - xcf_2d.shape[0] // 2
+
+        xcf_data = xcf_2d.reshape(new_shape)
+
+        # Create lag axis
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        lag_times = lags * dt
+
+        return ScalarField(
+            xcf_data,
+            unit=u.dimensionless_unscaled,
+            axis0=lag_times,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=['lag', self._axis1_name, self._axis2_name, self._axis3_name],
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
 
     # =========================================================================
     # Time Series Utilities

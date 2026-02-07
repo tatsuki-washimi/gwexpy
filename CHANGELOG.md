@@ -25,9 +25,15 @@
     - `is_contiguous(other, tol=None)` - Test segment adjacency
     - `append(other, gap='raise', **kwargs)` - Concatenate fields in time
     - `prepend(other, **kwargs)` - Prepend another field
+  - **Medium Priority Methods (5)**: Advanced analysis methods with straightforward implementation:
+    - `autocorrelation(maxlag=None, **kwargs)` - Compute autocorrelation function to reveal periodic structures
+    - `correlate(other, maxlag=None, **kwargs)` - Time-domain cross-correlation for time-delay estimation
+    - `interpolate(sample_rate, kind='cubic')` - High-quality interpolation resampling (better than FFT for calibrated data)
+    - `rayleigh_spectrum(fftlength=None, **kwargs)` - Rayleigh statistic vs frequency to detect non-Gaussian features
+    - `rayleigh_spectrogram(stride, fftlength=None, **kwargs)` - Time-frequency Rayleigh statistic for transient feature detection
   - **FieldDict Support**: All methods are also available on `FieldDict`, applying operations to all components
-  - **Documentation**: Added comprehensive user guide in English and Japanese (`docs/web/{en,ja}/user_guide/fields_new_methods.rst`) with examples and complete workflow demonstrations
-  - **Note**: Medium-priority advanced analysis methods (q_transform, heterodyne, gate, etc.) are deferred for future implementation due to design complexity
+  - **Documentation**: Added comprehensive user guide in English and Japanese (`docs/web/{en,ja}/user_guide/fields_new_methods.rst`) with examples and complete workflow demonstrations, including new medium-priority methods
+  - **Note**: Remaining medium-priority advanced analysis methods (q_transform, heterodyne, gate, transfer_function) are deferred for future implementation due to design complexity
 
 ### Changed
 

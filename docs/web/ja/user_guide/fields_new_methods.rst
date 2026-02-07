@@ -235,6 +235,78 @@ FieldDict 操作
     rms_dict = vector_field.rms(axis=0)
     mean_dict = vector_field.mean(axis=0)
 
+中優先度メソッド
+----------------
+
+以下の高度な解析メソッドも実装されました：
+
+相関解析
+~~~~~~~~
+
+自己相関関数
+^^^^^^^^^^^^
+
+周期構造と特性時間スケールを明らかにします::
+
+    # 自己相関を計算
+    acf = field.autocorrelation(maxlag=100)
+
+    # ゼロでないラグでのピークは周期性を示す
+    # acf.value[maxlag] は常に 1.0 （ゼロラグ相関）
+
+相互相関
+^^^^^^^^
+
+時間遅延推定のための時間領域相関::
+
+    # 2つのフィールド間の相互相関
+    xcf = field1.correlate(field2, maxlag=100)
+
+    # 時間遅延を見つける
+    lag_idx = np.argmax(xcf.value[:, 0, 0, 0])
+    time_delay = xcf._axis0_index[lag_idx]
+
+補間リサンプリング
+~~~~~~~~~~~~~~~~~~
+
+補間を使用した高品質リサンプリング（較正データに対してFFTより優れています）::
+
+    # 3次補間リサンプリング
+    resampled = field.interpolate(4096, kind='cubic')
+
+    # その他の補間方法
+    resampled = field.interpolate(4096, kind='linear')  # より高速
+    resampled = field.interpolate(4096, kind='quintic')  # より高次
+
+Rayleigh統計
+~~~~~~~~~~~~
+
+非ガウススペクトル特徴とスペクトルラインを検出します。
+
+Rayleighスペクトル
+^^^^^^^^^^^^^^^^^^
+
+周波数の関数としての最大値と平均値の比::
+
+    # Rayleighスペクトルを計算
+    ray_spec = field.rayleigh_spectrum(fftlength=2.0, overlap=1.0)
+
+    # 値 >> 2 は非ガウス特徴を示す
+    # R ≈ 2 はガウスノイズ
+    non_gaussian_freqs = ray_spec.value > 4.0
+
+Rayleighスペクトログラム
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+過渡的特徴検出のための時間-周波数Rayleigh統計::
+
+    # 時間-周波数Rayleigh解析
+    ray_spec = field.rayleigh_spectrogram(
+        stride=1.0, fftlength=2.0, overlap=1.0
+    )
+
+    # グリッチ分類とデータ品質に有用
+
 使用例
 ------
 

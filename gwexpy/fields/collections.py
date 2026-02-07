@@ -817,3 +817,89 @@ class FieldDict(dict):
         if not isinstance(other, FieldDict):
             raise TypeError("other must be a FieldDict")
         return self.__class__({k: v.prepend(other[k], **kwargs) for k, v in self.items() if k in other})
+
+    # Correlation analysis
+    def autocorrelation(self, **kwargs):
+        """Compute autocorrelation of each component.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to ScalarField.autocorrelation().
+
+        Returns
+        -------
+        FieldDict
+            Autocorrelation for each component.
+        """
+        return self.__class__({k: v.autocorrelation(**kwargs) for k, v in self.items()})
+
+    def correlate(self, other, **kwargs):
+        """Cross-correlate with another FieldDict.
+
+        Parameters
+        ----------
+        other : FieldDict
+            Other FieldDict with matching keys.
+        **kwargs
+            Arguments passed to ScalarField.correlate().
+
+        Returns
+        -------
+        FieldDict
+            Cross-correlation for each component pair.
+        """
+        if not isinstance(other, FieldDict):
+            raise TypeError("other must be a FieldDict")
+        return self.__class__({k: v.correlate(other[k], **kwargs) for k, v in self.items() if k in other})
+
+    # Resampling
+    def interpolate(self, sample_rate, **kwargs):
+        """Interpolate each component to new sample rate.
+
+        Parameters
+        ----------
+        sample_rate : float or Quantity
+            New sample rate.
+        **kwargs
+            Arguments passed to ScalarField.interpolate().
+
+        Returns
+        -------
+        FieldDict
+            Interpolated FieldDict.
+        """
+        return self.__class__({k: v.interpolate(sample_rate, **kwargs) for k, v in self.items()})
+
+    # Rayleigh statistics
+    def rayleigh_spectrum(self, **kwargs):
+        """Compute Rayleigh spectrum of each component.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to ScalarField.rayleigh_spectrum().
+
+        Returns
+        -------
+        FieldDict
+            Rayleigh spectrum for each component.
+        """
+        return self.__class__({k: v.rayleigh_spectrum(**kwargs) for k, v in self.items()})
+
+    def rayleigh_spectrogram(self, stride, **kwargs):
+        """Compute Rayleigh spectrogram of each component.
+
+        Parameters
+        ----------
+        stride : float
+            Time step between consecutive spectrograms.
+        **kwargs
+            Arguments passed to ScalarField.rayleigh_spectrogram().
+
+        Returns
+        -------
+        FieldDict
+            Rayleigh spectrogram for each component.
+        """
+        return self.__class__({k: v.rayleigh_spectrogram(stride, **kwargs) for k, v in self.items()})

@@ -235,6 +235,78 @@ All methods work on :class:`FieldDict` by applying operations to each component:
     rms_dict = vector_field.rms(axis=0)
     mean_dict = vector_field.mean(axis=0)
 
+Medium Priority Methods
+------------------------
+
+The following advanced analysis methods have also been implemented:
+
+Correlation Analysis
+~~~~~~~~~~~~~~~~~~~~
+
+Autocorrelation Function
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Reveals periodic structures and characteristic timescales::
+
+    # Compute autocorrelation
+    acf = field.autocorrelation(maxlag=100)
+
+    # Peak at non-zero lag indicates periodicity
+    # acf.value[maxlag] is always 1.0 (zero-lag correlation)
+
+Cross-Correlation
+^^^^^^^^^^^^^^^^^
+
+Time-domain correlation for time-delay estimation::
+
+    # Cross-correlation between two fields
+    xcf = field1.correlate(field2, maxlag=100)
+
+    # Find time delay
+    lag_idx = np.argmax(xcf.value[:, 0, 0, 0])
+    time_delay = xcf._axis0_index[lag_idx]
+
+Interpolation Resampling
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+High-quality resampling using interpolation (better than FFT for calibrated data)::
+
+    # Cubic interpolation resampling
+    resampled = field.interpolate(4096, kind='cubic')
+
+    # Other interpolation methods
+    resampled = field.interpolate(4096, kind='linear')  # Faster
+    resampled = field.interpolate(4096, kind='quintic')  # Higher order
+
+Rayleigh Statistics
+~~~~~~~~~~~~~~~~~~~~
+
+Detect non-Gaussian spectral features and spectral lines.
+
+Rayleigh Spectrum
+^^^^^^^^^^^^^^^^^
+
+Ratio of maximum to mean bin power as a function of frequency::
+
+    # Compute Rayleigh spectrum
+    ray_spec = field.rayleigh_spectrum(fftlength=2.0, overlap=1.0)
+
+    # Values >> 2 indicate non-Gaussian features
+    # R ≈ 2 for Gaussian noise
+    non_gaussian_freqs = ray_spec.value > 4.0
+
+Rayleigh Spectrogram
+^^^^^^^^^^^^^^^^^^^^
+
+Time-frequency Rayleigh statistic for transient feature detection::
+
+    # Time-frequency Rayleigh analysis
+    ray_spec = field.rayleigh_spectrogram(
+        stride=1.0, fftlength=2.0, overlap=1.0
+    )
+
+    # Useful for glitch classification and data quality
+
 Examples
 --------
 
