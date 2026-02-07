@@ -31,8 +31,8 @@ def test_bootstrap_advanced_features():
     assert bs_rebin.df.value == 2.0
 
     # 2. Test Block Bootstrap
-    # Block size 10. Should run without error.
-    bs_block = spec.bootstrap(block_size=10, n_boot=20)
+    # Block size 10 seconds (dt=1s, so 10 samples). Should run without error.
+    bs_block = spec.bootstrap(block_size=10.0, n_boot=20)
     assert bs_block.size == 10
 
     # 3. Test Covariance Map

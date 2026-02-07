@@ -29,7 +29,7 @@ def fit_bootstrap_spectrum(
     freq_range: Optional[tuple[float, float]] = None,
     method: str = "median",
     rebin_width: Optional[float] = None,
-    block_size: Optional[int] = None,
+    block_size: Union[float, str, None] = None,
     ci: float = 0.68,
     window: str = "hann",
     fftlength=None,
@@ -70,8 +70,10 @@ def fit_bootstrap_spectrum(
         Bootstrap averaging method: 'median' (default) or 'mean'.
     rebin_width : float, optional
         Frequency rebinning width in Hz. If None, no rebinning.
-    block_size : int, optional
-        Block size for block bootstrap. If None, standard bootstrap.
+    block_size : float, Quantity, or 'auto', optional
+        Duration of blocks for block bootstrap in seconds. Can be
+        specified as float (seconds), Quantity with time units, or 'auto'.
+        If None, standard bootstrap.
     ci : float, optional
         Confidence interval for bootstrap errors. Default is 0.68 (1-sigma).
     window : str, optional
@@ -132,7 +134,7 @@ def fit_bootstrap_spectrum(
     ...     fftlength=1.0,
     ...     overlap=0.5,
     ...     rebin_width=0.25,
-    ...     block_size=4,
+    ...     block_size=2.0,  # 2 seconds
     ...     initial_params={"A": 10, "alpha": -1.5},
     ...     run_mcmc=True,
     ... )

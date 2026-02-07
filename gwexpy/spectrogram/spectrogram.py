@@ -76,6 +76,13 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         overlap : float or Quantity, optional
             Overlap between FFT segments in seconds. If None, defaults to
             the recommended overlap for *window* (50 % for Hann).
+        block_size : float, Quantity, or 'auto', optional
+            Duration of blocks for block bootstrap in seconds. Can be
+            specified as float (seconds), Quantity with time units, or 'auto'.
+            If 'auto', estimates size based on overlap ratio. If None,
+            perform standard bootstrap with analytical VIF correction.
+        rebin_width : float, optional
+            Frequency rebinning width in Hz before bootstrapping.
         **kwargs
             Additional keyword arguments. Passing the removed ``nperseg``
             or ``noverlap`` parameters will raise :class:`TypeError`.
@@ -96,6 +103,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         ...     n_boot=100,
         ...     fftlength=4.0,    # 4 seconds
         ...     overlap=2.0,      # 2 seconds
+        ...     block_size=2.0,   # 2 seconds block
         ...     window='hann',
         ...     method='median'
         ... )
@@ -149,6 +157,11 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             Used for VIF overlap-correlation correction.
         overlap : float or Quantity, optional
             Overlap between FFT segments in seconds.
+        block_size : float, Quantity, or 'auto', optional
+            Duration of blocks for block bootstrap in seconds. Can be
+            specified as float (seconds), Quantity with time units, or 'auto'.
+        rebin_width : float, optional
+            Frequency rebinning width in Hz before bootstrapping.
         **kwargs
             Additional keyword arguments. Passing the removed ``nperseg``
             or ``noverlap`` parameters will raise :class:`TypeError`.
@@ -169,6 +182,7 @@ class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         ...     n_boot=100,
         ...     fftlength=4.0,    # 4 seconds
         ...     overlap=2.0,      # 2 seconds
+        ...     block_size=2.0,   # 2 seconds block
         ...     window='hann',
         ...     average='median'
         ... )
