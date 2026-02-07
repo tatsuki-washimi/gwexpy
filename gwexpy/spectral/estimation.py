@@ -275,6 +275,8 @@ def bootstrap_spectrogram(
     window="hann",
     fftlength=None,
     overlap=None,
+    nfft=None,
+    noverlap=None,
     block_size=None,
     rebin_width=None,
     return_map=False,
@@ -304,10 +306,18 @@ def bootstrap_spectrogram(
     fftlength : float or Quantity, optional
         FFT segment length in seconds used to generate the spectrogram.
         Used for VIF (overlap correlation) correction.
+        Cannot be used with `nfft`.
     overlap : float or Quantity, optional
         Overlap between FFT segments in seconds.
         Used for VIF correction. If None and fftlength is given,
         defaults to the recommended overlap for the window function.
+        Cannot be used with `noverlap`.
+    nfft : int, optional
+        FFT segment length in samples. Alternative to `fftlength` for
+        precise sample-based specification. Cannot be used with `fftlength`.
+    noverlap : int, optional
+        Overlap length in samples. Must be used with `nfft`.
+        Cannot be used with `overlap`.
     block_size : float, Quantity, or 'auto', optional
         Duration of blocks for block bootstrap in seconds.
         Can be specified as float (seconds), Quantity with time units, or 'auto'.
@@ -367,7 +377,7 @@ def bootstrap_spectrogram(
     >>> spec_data = np.random.random((100, 50))
     >>> spec = Spectrogram(spec_data, dt=1.0*u.s, f0=10*u.Hz, df=1*u.Hz)
     >>>
-    >>> # Bootstrap with time-based parameters
+    >>> # Bootstrap with time-based parameters (high-level API)
     >>> result = bootstrap_spectrogram(
     ...     spec,
     ...     n_boot=100,
@@ -379,8 +389,18 @@ def bootstrap_spectrogram(
     ... )
     >>> print(result.value.shape)
     (50,)
-    >>> print(result.unit)
-    Unit(dimensionless)
+    >>>
+    >>> # Alternatively, use sample-based parameters (low-level API)
+    >>> result2 = bootstrap_spectrogram(
+    ...     spec,
+    ...     n_boot=100,
+    ...     nfft=4,        # 4 samples (dt=1s, so 4 seconds)
+    ...     noverlap=2,    # 2 samples overlap
+    ...     window='hann',
+    ...     method='median'
+    ... )
+    >>> print(result2.value.shape)
+    (50,)
 
     References
     ----------
@@ -391,9 +411,30 @@ def bootstrap_spectrogram(
     .. [3] Politis, D.N. & Romano, J.P., "The stationary bootstrap",
            J. Amer. Statist. Assoc. 89(428), 1994
     """
-    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+    from ..utils.fft_args import (
+        check_deprecated_kwargs,
+        get_default_overlap,
+        parse_fftlength_or_overlap,
+        validate_and_convert_fft_params,
+    )
 
     check_deprecated_kwargs(**kwargs)
+
+    # Validate and convert nfft/noverlap to fftlength/overlap if needed
+    # Get sample_rate from spectrogram for conversion
+    if hasattr(spectrogram, 'dt'):
+        dt = spectrogram.dt.value if hasattr(spectrogram.dt, 'value') else spectrogram.dt
+        sample_rate_for_conversion = 1.0 / dt
+    else:
+        sample_rate_for_conversion = None
+
+    fftlength, overlap = validate_and_convert_fft_params(
+        fftlength=fftlength,
+        overlap=overlap,
+        nfft=nfft,
+        noverlap=noverlap,
+        sample_rate=sample_rate_for_conversion,
+    )
     data = spectrogram.value
     frequencies = spectrogram.frequencies.value
     n_time = data.shape[0]
