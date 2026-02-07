@@ -164,6 +164,8 @@ def spectral_density(
     method: Literal["welch", "fft"] = "welch",
     fftlength: float | None = None,
     overlap: float | None = None,
+    nfft: int | None = None,
+    noverlap: int | None = None,
     window: str = "hann",
     detrend: str | bool = "constant",
     scaling: Literal["density", "spectrum"] = "density",
@@ -193,8 +195,16 @@ def spectral_density(
     fftlength : float, optional
         Segment length in axis units (seconds for time axis, spatial
         units for space axes). Default min(256, axis_length) samples.
+        Cannot be used with `nfft`.
     overlap : float, optional
         Overlap in axis units. Default fftlength / 2.
+        Cannot be used with `noverlap`.
+    nfft : int, optional
+        FFT segment length in samples. Alternative to `fftlength`.
+        Cannot be used with `fftlength`.
+    noverlap : int, optional
+        Overlap length in samples. Must be used with `nfft`.
+        Cannot be used with `overlap`.
     window : str
         Window function. Default 'hann'.
     detrend : str or bool
@@ -246,9 +256,27 @@ def spectral_density(
     """
     from scipy.signal import welch
 
-    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+    from ..utils.fft_args import (
+        check_deprecated_kwargs,
+        get_default_overlap,
+        parse_fftlength_or_overlap,
+        validate_and_convert_fft_params,
+    )
 
     check_deprecated_kwargs(**kwargs)
+
+    # Validate and convert nfft/noverlap to fftlength/overlap if needed
+    # Get sample_rate from field axis for conversion
+    axis_int, delta_value, delta_unit, domain = _validate_axis_for_spectral(field, axis)
+    sample_rate_for_conversion = 1.0 / delta_value if delta_value else None
+
+    fftlength, overlap = validate_and_convert_fft_params(
+        fftlength=fftlength,
+        overlap=overlap,
+        nfft=nfft,
+        noverlap=noverlap,
+        sample_rate=sample_rate_for_conversion,
+    )
 
     axis_int, delta, delta_unit, domain = _validate_axis_for_spectral(field, axis)
 
@@ -257,19 +285,19 @@ def spectral_density(
 
     # Convert fftlength/overlap to samples
     fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
-    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+    overlap_sec, noverlap_calc = parse_fftlength_or_overlap(overlap, fs, "overlap")
 
     if nperseg is None:
         nperseg = min(256, n_axis)
-    if noverlap is None:
+    if noverlap_calc is None:
         if fftlength_sec is not None:
             overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
             if overlap_sec_default is not None:
-                noverlap = max(1, int(round(overlap_sec_default * fs)))
+                noverlap_calc = max(1, int(round(overlap_sec_default * fs)))
             else:
-                noverlap = 0
+                noverlap_calc = 0
         else:
-            noverlap = nperseg // 2
+            noverlap_calc = nperseg // 2
 
     # Apply Welch along specified axis
     if method == "welch":
@@ -279,7 +307,7 @@ def spectral_density(
             axis=axis_int,
             window=window,
             nperseg=nperseg,
-            noverlap=noverlap,
+            noverlap=noverlap_calc,
             detrend=detrend,
             scaling=scaling,
             average=average,
@@ -399,6 +427,8 @@ def compute_psd(
     *,
     fftlength: float | None = None,
     overlap: float | None = None,
+    nfft: int | None = None,
+    noverlap: int | None = None,
     window: str = "hann",
     detrend: str | bool = "constant",
     scaling: Literal["density", "spectrum"] = "density",
@@ -467,7 +497,12 @@ def compute_psd(
 
     from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
 
-    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+    from ..utils.fft_args import (
+        check_deprecated_kwargs,
+        get_default_overlap,
+        parse_fftlength_or_overlap,
+        validate_and_convert_fft_params,
+    )
 
     check_deprecated_kwargs(**kwargs)
 
@@ -476,21 +511,32 @@ def compute_psd(
 
     nt = field.shape[0]
 
+    # Validate and convert nfft/noverlap to fftlength/overlap if needed
+    fftlength, overlap = validate_and_convert_fft_params(
+        fftlength=fftlength,
+        overlap=overlap,
+        nfft=nfft,
+        noverlap=noverlap,
+        sample_rate=fs,
+    )
+
     # Convert fftlength/overlap to samples
     fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
-    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+    overlap_sec, noverlap_samples = parse_fftlength_or_overlap(overlap, fs, "overlap")
 
     if nperseg is None:
         nperseg = min(256, nt)
-    if noverlap is None:
+    if noverlap_samples is None:
         if fftlength_sec is not None:
             overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
             if overlap_sec_default is not None:
-                noverlap = max(1, int(round(overlap_sec_default * fs)))
+                noverlap_calc = max(1, int(round(overlap_sec_default * fs)))
             else:
-                noverlap = 0
+                noverlap_calc = 0
         else:
-            noverlap = nperseg // 2
+            noverlap_calc = nperseg // 2
+    else:
+        noverlap_calc = noverlap_samples
 
     # Determine extraction mode
     if isinstance(point_or_region, dict):
@@ -519,7 +565,7 @@ def compute_psd(
             fs=fs,
             window=window,
             nperseg=nperseg,
-            noverlap=noverlap,
+            noverlap=noverlap_calc,
             detrend=detrend,
             scaling=scaling,
             average=average,
