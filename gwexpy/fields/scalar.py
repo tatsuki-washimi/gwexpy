@@ -2129,7 +2129,14 @@ class ScalarField(FieldBase):
                 If provided, computes PSD at specific spatial point(s) or region
                 average instead of full field. Returns FrequencySeries(List).
             - method : {'welch', 'fft'}, default 'welch'
-            - nperseg : int, segment length
+            - fftlength : float, optional
+                Segment length in seconds (time-based specification)
+            - nfft : int, optional
+                Number of samples per segment (sample-based specification)
+            - overlap : float, optional
+                Overlap in seconds
+            - noverlap : int, optional
+                Number of overlapping samples
             - window : str, window function
             - scaling : {'density', 'spectrum'}
 
@@ -2141,7 +2148,10 @@ class ScalarField(FieldBase):
         Examples
         --------
         >>> from astropy import units as u
-        >>> psd_field = field.psd(nperseg=512)
+        >>> # Time-based specification
+        >>> psd_field = field.psd(fftlength=1.0, overlap=0.5)
+        >>> # Or sample-based specification
+        >>> psd_field = field.psd(nfft=512, noverlap=256)
         >>> psd_field.shape  # (n_freq, nx, ny, nz)
 
         See Also

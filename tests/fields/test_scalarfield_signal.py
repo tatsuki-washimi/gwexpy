@@ -195,6 +195,26 @@ class TestTimeDelayMap:
 
         assert_allclose(delay_map.value[0, 1, 0, 0], expected_lag)
 
+    def test_stride_physical_quantity(self, sine_field):
+        """Test stride specified as physical distance."""
+        # sine_field has x spacing of 1.0 m
+        # stride=1 grid point should be equivalent to stride=1.0*u.m
+        delay_map_int = sine_field.time_delay_map(
+            (0 * u.m, 0 * u.m, 0 * u.m),
+            plane="xy",
+            stride=1,
+        )
+
+        delay_map_quantity = sine_field.time_delay_map(
+            (0 * u.m, 0 * u.m, 0 * u.m),
+            plane="xy",
+            stride=1.0 * u.m,
+        )
+
+        # Results should be identical
+        assert delay_map_int.shape == delay_map_quantity.shape
+        assert_allclose(delay_map_int.value, delay_map_quantity.value, rtol=1e-10)
+
 
 class TestCoherenceMap:
     def test_band_averaged_map_shape_and_range(self, sine_field):
@@ -226,3 +246,59 @@ class TestCoherenceMap:
         assert coh_map.unit == u.dimensionless_unscaled
         assert np.all(coh_map.value >= -1e-9)
         assert np.all(coh_map.value <= 1.0 + 1e-6)
+
+    def test_nfft_noverlap_parameters(self, sine_field):
+        """Test sample-based FFT parameters (nfft/noverlap)."""
+        # Test with sample-based parameters
+        coh_map_samples = sine_field.coherence_map(
+            (0 * u.m, 0 * u.m, 0 * u.m),
+            plane="xy",
+            band=(1.0 * u.Hz, 20.0 * u.Hz),
+            nfft=64,
+            noverlap=32,
+        )
+
+        # Test with equivalent time-based parameters
+        # dt=0.01s, so nfft=64 → fftlength=0.64s, noverlap=32 → overlap=0.32s
+        coh_map_time = sine_field.coherence_map(
+            (0 * u.m, 0 * u.m, 0 * u.m),
+            plane="xy",
+            band=(1.0 * u.Hz, 20.0 * u.Hz),
+            fftlength=0.64,
+            overlap=0.32,
+        )
+
+        # Results should be very similar
+        assert coh_map_samples.shape == coh_map_time.shape
+        assert_allclose(coh_map_samples.value, coh_map_time.value, rtol=1e-10)
+
+    def test_stride_physical_quantity(self, sine_field):
+        """Test stride specified as physical distance."""
+        # sine_field has x spacing of 1.0 m
+        # stride=2 grid points should be equivalent to stride=2.0*u.m
+        coh_map_int = sine_field.coherence_map(
+            (0 * u.m, 0 * u.m, 0 * u.m),
+            plane="xy",
+            fftlength=0.64,
+            stride=2,
+        )
+
+        coh_map_quantity = sine_field.coherence_map(
+            (0 * u.m, 0 * u.m, 0 * u.m),
+            plane="xy",
+            fftlength=0.64,
+            stride=2.0 * u.m,
+        )
+
+        # Results should be identical
+        assert coh_map_int.shape == coh_map_quantity.shape
+        assert_allclose(coh_map_int.value, coh_map_quantity.value, rtol=1e-10)
+
+    def test_mutual_exclusivity_fftlength_nfft(self, sine_field):
+        """Test that fftlength and nfft are mutually exclusive."""
+        with pytest.raises(ValueError, match="mutually exclusive"):
+            sine_field.coherence_map(
+                (0 * u.m, 0 * u.m, 0 * u.m),
+                fftlength=0.64,
+                nfft=64,
+            )
