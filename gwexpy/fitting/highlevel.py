@@ -29,11 +29,13 @@ def fit_bootstrap_spectrum(
     freq_range: Optional[tuple[float, float]] = None,
     method: str = "median",
     rebin_width: Optional[float] = None,
-    block_size: Optional[int] = None,
+    block_size: Union[float, str, None] = None,
     ci: float = 0.68,
     window: str = "hann",
     fftlength=None,
     overlap=None,
+    nfft: Optional[int] = None,
+    noverlap: Optional[int] = None,
     n_boot: int = 1000,
     initial_params: Optional[dict[str, float]] = None,
     bounds: Optional[dict[str, tuple[float, float]]] = None,
@@ -70,8 +72,10 @@ def fit_bootstrap_spectrum(
         Bootstrap averaging method: 'median' (default) or 'mean'.
     rebin_width : float, optional
         Frequency rebinning width in Hz. If None, no rebinning.
-    block_size : int, optional
-        Block size for block bootstrap. If None, standard bootstrap.
+    block_size : float, Quantity, or 'auto', optional
+        Duration of blocks for block bootstrap in seconds. Can be
+        specified as float (seconds), Quantity with time units, or 'auto'.
+        If None, standard bootstrap.
     ci : float, optional
         Confidence interval for bootstrap errors. Default is 0.68 (1-sigma).
     window : str, optional
@@ -85,6 +89,13 @@ def fit_bootstrap_spectrum(
     overlap : float or Quantity, optional
         Overlap between FFT segments in seconds. If None, defaults to
         the recommended overlap for *window* (50 % for Hann).
+        Cannot be used with `noverlap`.
+    nfft : int, optional
+        FFT segment length in samples. Alternative to `fftlength`.
+        Cannot be used with `fftlength`.
+    noverlap : int, optional
+        Overlap length in samples. Must be used with `nfft`.
+        Cannot be used with `overlap`.
     n_boot : int, optional
         Number of bootstrap resamples. Default is 1000.
     initial_params : dict, optional
@@ -132,7 +143,7 @@ def fit_bootstrap_spectrum(
     ...     fftlength=1.0,
     ...     overlap=0.5,
     ...     rebin_width=0.25,
-    ...     block_size=4,
+    ...     block_size=2.0,  # 2 seconds
     ...     initial_params={"A": 10, "alpha": -1.5},
     ...     run_mcmc=True,
     ... )
@@ -201,6 +212,8 @@ def fit_bootstrap_spectrum(
         window=window,
         fftlength=fftlength,
         overlap=overlap,
+        nfft=nfft,
+        noverlap=noverlap,
         block_size=block_size,
         rebin_width=rebin_width,
         return_map=True,  # Always get covariance map for GLS

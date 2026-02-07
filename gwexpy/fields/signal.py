@@ -164,6 +164,8 @@ def spectral_density(
     method: Literal["welch", "fft"] = "welch",
     fftlength: float | None = None,
     overlap: float | None = None,
+    nfft: int | None = None,
+    noverlap: int | None = None,
     window: str = "hann",
     detrend: str | bool = "constant",
     scaling: Literal["density", "spectrum"] = "density",
@@ -193,8 +195,16 @@ def spectral_density(
     fftlength : float, optional
         Segment length in axis units (seconds for time axis, spatial
         units for space axes). Default min(256, axis_length) samples.
+        Cannot be used with `nfft`.
     overlap : float, optional
         Overlap in axis units. Default fftlength / 2.
+        Cannot be used with `noverlap`.
+    nfft : int, optional
+        FFT segment length in samples. Alternative to `fftlength`.
+        Cannot be used with `fftlength`.
+    noverlap : int, optional
+        Overlap length in samples. Must be used with `nfft`.
+        Cannot be used with `overlap`.
     window : str
         Window function. Default 'hann'.
     detrend : str or bool
@@ -246,9 +256,27 @@ def spectral_density(
     """
     from scipy.signal import welch
 
-    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+    from ..utils.fft_args import (
+        check_deprecated_kwargs,
+        get_default_overlap,
+        parse_fftlength_or_overlap,
+        validate_and_convert_fft_params,
+    )
 
     check_deprecated_kwargs(**kwargs)
+
+    # Validate and convert nfft/noverlap to fftlength/overlap if needed
+    # Get sample_rate from field axis for conversion
+    axis_int, delta_value, delta_unit, domain = _validate_axis_for_spectral(field, axis)
+    sample_rate_for_conversion = 1.0 / delta_value if delta_value else None
+
+    fftlength, overlap = validate_and_convert_fft_params(
+        fftlength=fftlength,
+        overlap=overlap,
+        nfft=nfft,
+        noverlap=noverlap,
+        sample_rate=sample_rate_for_conversion,
+    )
 
     axis_int, delta, delta_unit, domain = _validate_axis_for_spectral(field, axis)
 
@@ -257,19 +285,19 @@ def spectral_density(
 
     # Convert fftlength/overlap to samples
     fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
-    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+    overlap_sec, noverlap_calc = parse_fftlength_or_overlap(overlap, fs, "overlap")
 
     if nperseg is None:
         nperseg = min(256, n_axis)
-    if noverlap is None:
+    if noverlap_calc is None:
         if fftlength_sec is not None:
             overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
             if overlap_sec_default is not None:
-                noverlap = max(1, int(round(overlap_sec_default * fs)))
+                noverlap_calc = max(1, int(round(overlap_sec_default * fs)))
             else:
-                noverlap = 0
+                noverlap_calc = 0
         else:
-            noverlap = nperseg // 2
+            noverlap_calc = nperseg // 2
 
     # Apply Welch along specified axis
     if method == "welch":
@@ -279,7 +307,7 @@ def spectral_density(
             axis=axis_int,
             window=window,
             nperseg=nperseg,
-            noverlap=noverlap,
+            noverlap=noverlap_calc,
             detrend=detrend,
             scaling=scaling,
             average=average,
@@ -399,6 +427,8 @@ def compute_psd(
     *,
     fftlength: float | None = None,
     overlap: float | None = None,
+    nfft: int | None = None,
+    noverlap: int | None = None,
     window: str = "hann",
     detrend: str | bool = "constant",
     scaling: Literal["density", "spectrum"] = "density",
@@ -467,7 +497,12 @@ def compute_psd(
 
     from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
 
-    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+    from ..utils.fft_args import (
+        check_deprecated_kwargs,
+        get_default_overlap,
+        parse_fftlength_or_overlap,
+        validate_and_convert_fft_params,
+    )
 
     check_deprecated_kwargs(**kwargs)
 
@@ -476,21 +511,32 @@ def compute_psd(
 
     nt = field.shape[0]
 
+    # Validate and convert nfft/noverlap to fftlength/overlap if needed
+    fftlength, overlap = validate_and_convert_fft_params(
+        fftlength=fftlength,
+        overlap=overlap,
+        nfft=nfft,
+        noverlap=noverlap,
+        sample_rate=fs,
+    )
+
     # Convert fftlength/overlap to samples
     fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
-    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+    overlap_sec, noverlap_samples = parse_fftlength_or_overlap(overlap, fs, "overlap")
 
     if nperseg is None:
         nperseg = min(256, nt)
-    if noverlap is None:
+    if noverlap_samples is None:
         if fftlength_sec is not None:
             overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
             if overlap_sec_default is not None:
-                noverlap = max(1, int(round(overlap_sec_default * fs)))
+                noverlap_calc = max(1, int(round(overlap_sec_default * fs)))
             else:
-                noverlap = 0
+                noverlap_calc = 0
         else:
-            noverlap = nperseg // 2
+            noverlap_calc = nperseg // 2
+    else:
+        noverlap_calc = noverlap_samples
 
     # Determine extraction mode
     if isinstance(point_or_region, dict):
@@ -519,7 +565,7 @@ def compute_psd(
             fs=fs,
             window=window,
             nperseg=nperseg,
-            noverlap=noverlap,
+            noverlap=noverlap_calc,
             detrend=detrend,
             scaling=scaling,
             average=average,
@@ -599,6 +645,8 @@ def freq_space_map(
     method: Literal["welch", "fft"] = "welch",
     fftlength: float | None = None,
     overlap: float | None = None,
+    nfft: int | None = None,
+    noverlap: int | None = None,
     window: str = "hann",
     detrend: str | bool = "constant",
     scaling: Literal["density", "spectrum"] = "density",
@@ -658,7 +706,12 @@ def freq_space_map(
 
     from gwexpy.plot._coord import nearest_index, slice_from_index
 
-    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+    from ..utils.fft_args import (
+        check_deprecated_kwargs,
+        get_default_overlap,
+        parse_fftlength_or_overlap,
+        validate_and_convert_fft_params,
+    )
 
     check_deprecated_kwargs(**kwargs)
 
@@ -667,21 +720,30 @@ def freq_space_map(
 
     nt = field.shape[0]
 
+    # Validate and convert nfft/noverlap to fftlength/overlap if needed
+    fftlength, overlap = validate_and_convert_fft_params(
+        fftlength=fftlength,
+        overlap=overlap,
+        nfft=nfft,
+        noverlap=noverlap,
+        sample_rate=fs,
+    )
+
     # Convert fftlength/overlap to samples
     fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
-    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+    overlap_sec, noverlap_calc = parse_fftlength_or_overlap(overlap, fs, "overlap")
 
     if nperseg is None:
         nperseg = min(256, nt)
-    if noverlap is None:
+    if noverlap_calc is None:
         if fftlength_sec is not None:
             overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
             if overlap_sec_default is not None:
-                noverlap = max(1, int(round(overlap_sec_default * fs)))
+                noverlap_calc = max(1, int(round(overlap_sec_default * fs)))
             else:
-                noverlap = 0
+                noverlap_calc = 0
         else:
-            noverlap = nperseg // 2
+            noverlap_calc = nperseg // 2
 
     # Map axis name to index
     axis_int = field._get_axis_index(axis)
@@ -731,7 +793,7 @@ def freq_space_map(
                 fs=fs,
                 window=window,
                 nperseg=nperseg,
-                noverlap=noverlap,
+                noverlap=noverlap_calc,
                 detrend=detrend,
                 scaling=scaling,
                 return_onesided=True,
@@ -920,7 +982,7 @@ def time_delay_map(
     at: dict[str, Quantity] | None = None,
     *,
     max_lag: int | Quantity | None = None,
-    stride: int = 1,
+    stride: int | Quantity = 1,
     roi: dict[str, slice] | None = None,
     normalize: bool = True,
     detrend: bool = True,
@@ -943,8 +1005,10 @@ def time_delay_map(
         Example: ``{'z': 0*u.m}`` when plane='xy'.
     max_lag : int or Quantity, optional
         Maximum lag to search for peak. Default uses all lags.
-    stride : int
-        Subsample stride to reduce computation. Default 1 (no subsampling).
+    stride : int or Quantity, optional
+        Spatial subsample stride. If int, treated as grid point stride.
+        If Quantity, treated as physical distance stride and converted
+        to grid points based on spatial resolution. Default 1.
     roi : dict, optional
         Region of interest as dict of slices. Example:
         ``{'x': slice(10, 50), 'y': slice(20, 80)}``
@@ -966,9 +1030,9 @@ def time_delay_map(
     ...     field,
     ...     ref_point=(0*u.m, 0*u.m, 0*u.m),
     ...     plane='xy',
-    ...     at={'z': 0*u.m}
+    ...     at={'z': 0*u.m},
+    ...     stride=0.05*u.m  # spatial stride in meters
     ... )
-    >>> delay_map.plot_map2d('xy')
 
     Notes
     -----
@@ -1020,6 +1084,20 @@ def time_delay_map(
             f"Specify its value in 'at'."
         )
 
+    # Convert stride to grid points if it's a physical quantity
+    if isinstance(stride, Quantity):
+        # Determine spatial resolution for the plane axes
+        # Use the first axis's resolution as representative
+        if len(ax1_index) > 1:
+            dx = abs(ax1_index[1] - ax1_index[0])
+            stride_gridpoints = int(round(stride.to(dx.unit).value / dx.value))
+        else:
+            stride_gridpoints = 1
+        if stride_gridpoints <= 0:
+            stride_gridpoints = 1
+    else:
+        stride_gridpoints = int(stride)
+
     # Apply ROI and stride
     if roi is None:
         roi = {}
@@ -1027,8 +1105,8 @@ def time_delay_map(
     ax1_slice = roi.get(ax1_name, slice(None))
     ax2_slice = roi.get(ax2_name, slice(None))
 
-    ax1_indices = range(*ax1_slice.indices(len(ax1_index)))[::stride]
-    ax2_indices = range(*ax2_slice.indices(len(ax2_index)))[::stride]
+    ax1_indices = range(*ax1_slice.indices(len(ax1_index)))[::stride_gridpoints]
+    ax2_indices = range(*ax2_slice.indices(len(ax2_index)))[::stride_gridpoints]
 
     n1 = len(ax1_indices)
     n2 = len(ax2_indices)
@@ -1128,8 +1206,10 @@ def coherence_map(
     band: tuple[Quantity, Quantity] | None = None,
     fftlength: float | None = None,
     overlap: float | None = None,
+    nfft: int | None = None,
+    noverlap: int | None = None,
     window: str = "hann",
-    stride: int = 1,
+    stride: int | Quantity = 1,
     **kwargs,
 ) -> ScalarField | FieldDict:
     """Compute magnitude-squared coherence map from a reference point.
@@ -1152,15 +1232,24 @@ def coherence_map(
         If None, returns coherence at all frequencies.
     fftlength : float, optional
         Segment length in seconds. Default min(256, nt) samples.
+        Cannot be used with `nfft`.
     overlap : float, optional
         Overlap in seconds. Default fftlength / 2.
+        Cannot be used with `noverlap`.
+    nfft : int, optional
+        Number of samples per segment (alternative to fftlength).
+        Cannot be used with `fftlength`.
+    noverlap : int, optional
+        Number of overlapping samples (alternative to overlap).
+        Cannot be used with `overlap`.
     window : str
         Window function. Default 'hann'.
-    stride : int
-        Subsample stride. Default 1.
+    stride : int or Quantity, optional
+        Spatial subsample stride. If int, treated as grid point stride.
+        If Quantity, treated as physical distance stride and converted
+        to grid points based on spatial resolution. Default 1.
     **kwargs
-        Additional keyword arguments. Passing the removed ``nperseg``
-        or ``noverlap`` parameters will raise :class:`TypeError`.
+        Additional keyword arguments.
 
     Returns
     -------
@@ -1183,13 +1272,26 @@ def coherence_map(
     ...     overlap=0.5,      # 0.5 seconds
     ...     window='hann'
     ... )
-    >>> coh_map.plot_map2d('xy')
+
+    >>> # Or with sample-based FFT parameters
+    >>> coh_map = coherence_map(
+    ...     field,
+    ...     ref_point=(0*u.m, 0*u.m, 0*u.m),
+    ...     nfft=1024,        # samples
+    ...     noverlap=512,     # samples
+    ...     stride=0.1*u.m    # spatial stride in meters
+    ... )
     """
     from scipy.signal import coherence
 
     from gwexpy.plot._coord import nearest_index
 
-    from ..utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+    from ..utils.fft_args import (
+        check_deprecated_kwargs,
+        get_default_overlap,
+        parse_fftlength_or_overlap,
+        validate_and_convert_fft_params,
+    )
 
     check_deprecated_kwargs(**kwargs)
 
@@ -1198,21 +1300,30 @@ def coherence_map(
 
     nt = field.shape[0]
 
-    # Convert fftlength/overlap to samples
+    # Validate and convert FFT parameters (time-based or sample-based)
+    fftlength, overlap = validate_and_convert_fft_params(
+        fftlength=fftlength,
+        overlap=overlap,
+        nfft=nfft,
+        noverlap=noverlap,
+        sample_rate=fs,
+    )
+
+    # Convert to samples
     fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength, fs, "fftlength")
-    overlap_sec, noverlap = parse_fftlength_or_overlap(overlap, fs, "overlap")
+    overlap_sec, noverlap_calc = parse_fftlength_or_overlap(overlap, fs, "overlap")
 
     if nperseg is None:
         nperseg = min(256, nt)
-    if noverlap is None:
+    if noverlap_calc is None:
         if fftlength_sec is not None:
             overlap_sec_default = get_default_overlap(fftlength_sec, window=window)
             if overlap_sec_default is not None:
-                noverlap = max(1, int(round(overlap_sec_default * fs)))
+                noverlap_calc = max(1, int(round(overlap_sec_default * fs)))
             else:
-                noverlap = 0
+                noverlap_calc = 0
         else:
-            noverlap = nperseg // 2
+            noverlap_calc = nperseg // 2
 
     # Extract reference time series
     ref_data, _, _ = _extract_timeseries_1d(field, ref_point)
@@ -1251,9 +1362,23 @@ def coherence_map(
             f"Specify its value in 'at'."
         )
 
+    # Convert stride to grid points if it's a physical quantity
+    if isinstance(stride, Quantity):
+        # Determine spatial resolution for the plane axes
+        # Use the first axis's resolution as representative
+        if len(ax1_index) > 1:
+            dx = abs(ax1_index[1] - ax1_index[0])
+            stride_gridpoints = int(round(stride.to(dx.unit).value / dx.value))
+        else:
+            stride_gridpoints = 1
+        if stride_gridpoints <= 0:
+            stride_gridpoints = 1
+    else:
+        stride_gridpoints = int(stride)
+
     # Apply stride
-    ax1_indices = range(len(ax1_index))[::stride]
-    ax2_indices = range(len(ax2_index))[::stride]
+    ax1_indices = range(len(ax1_index))[::stride_gridpoints]
+    ax2_indices = range(len(ax2_index))[::stride_gridpoints]
     n1 = len(ax1_indices)
     n2 = len(ax2_indices)
 
@@ -1265,7 +1390,7 @@ def coherence_map(
     )
     test_data = field.value[tuple(test_slices)]
     freqs, _ = coherence(
-        ref_data, test_data, fs=fs, window=window, nperseg=nperseg, noverlap=noverlap
+        ref_data, test_data, fs=fs, window=window, nperseg=nperseg, noverlap=noverlap_calc
     )
 
     n_freq = len(freqs)
@@ -1279,7 +1404,7 @@ def coherence_map(
             data = field.value[tuple(slices)]
 
             _, cxy = coherence(
-                ref_data, data, fs=fs, window=window, nperseg=nperseg, noverlap=noverlap
+                ref_data, data, fs=fs, window=window, nperseg=nperseg, noverlap=noverlap_calc
             )
             coh_3d[:, i1, i2] = cxy
 
