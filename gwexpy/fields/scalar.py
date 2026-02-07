@@ -2112,14 +2112,17 @@ class ScalarField(FieldBase):
 
         return spectral_density(self, axis=axis, **kwargs)
 
-    def psd(self, **kwargs):
-        """Compute power spectral density along time axis.
+    def psd(self, axis=0, **kwargs):
+        """Compute power spectral density along any axis.
 
-        Convenience method equivalent to ``spectral_density(axis=0)``.
-        Uses Welch's method by default for robust PSD estimation.
+        Computes power spectral density using Welch's method by default.
+        Can compute along time axis (axis=0) or spatial axes (axis=1,2,3 or 'x','y','z').
 
         Parameters
         ----------
+        axis : int or str, optional
+            Axis along which to compute PSD. Default is 0 (time axis).
+            Can specify as integer (0, 1, 2, 3) or string ('x', 'y', 'z').
         **kwargs
             Keyword arguments passed to :func:`~gwexpy.fields.signal.spectral_density`
             or :func:`~gwexpy.fields.signal.compute_psd` (if point_or_region is used).
@@ -2128,6 +2131,7 @@ class ScalarField(FieldBase):
             - point_or_region : tuple or list, optional
                 If provided, computes PSD at specific spatial point(s) or region
                 average instead of full field. Returns FrequencySeries(List).
+                Only valid for axis=0 (time).
             - method : {'welch', 'fft'}, default 'welch'
             - fftlength : float, optional
                 Segment length in seconds (time-based specification)
@@ -2143,37 +2147,46 @@ class ScalarField(FieldBase):
         Returns
         -------
         ScalarField
-            PSD field with axis0_domain='frequency'.
+            PSD field with transformed axis in spectral domain.
+            For axis=0, axis0_domain='frequency'.
+            For spatial axes, the axis becomes wavenumber.
 
         Examples
         --------
         >>> from astropy import units as u
-        >>> # Time-based specification
-        >>> psd_field = field.psd(fftlength=1.0, overlap=0.5)
+        >>> # Time-axis PSD
+        >>> psd_time = field.psd(axis=0, fftlength=1.0, overlap=0.5)
         >>> # Or sample-based specification
-        >>> psd_field = field.psd(nfft=512, noverlap=256)
-        >>> psd_field.shape  # (n_freq, nx, ny, nz)
+        >>> psd_time = field.psd(axis=0, nfft=512, noverlap=256)
+        >>> # Spatial power spectrum along x-axis
+        >>> psd_x = field.psd(axis='x')
 
         See Also
         --------
-        spectral_density : Generalized spectral density for any axis.
+        asd : Amplitude spectral density
+        spectral_density : Underlying implementation
         """
         if "point_or_region" in kwargs:
+            if axis != 0:
+                raise ValueError("point_or_region is only valid for axis=0 (time axis)")
             from .signal import compute_psd
 
             point_or_region = kwargs.pop("point_or_region")
             return compute_psd(self, point_or_region, **kwargs)
 
-        return self.spectral_density(axis=0, **kwargs)
+        return self.spectral_density(axis=axis, **kwargs)
 
-    def asd(self, **kwargs):
-        """Compute amplitude spectral density along time axis.
+    def asd(self, axis=0, **kwargs):
+        """Compute amplitude spectral density along any axis.
 
-        Convenience method equivalent to ``sqrt(psd())``.
+        Convenience method equivalent to ``sqrt(psd(axis=axis))``.
         Returns the square root of the power spectral density.
 
         Parameters
         ----------
+        axis : int or str, optional
+            Axis along which to compute ASD. Default is 0 (time axis).
+            Can specify as integer (0, 1, 2, 3) or string ('x', 'y', 'z').
         **kwargs
             Keyword arguments passed to :meth:`psd`.
             See :meth:`psd` for available options.
@@ -2181,24 +2194,25 @@ class ScalarField(FieldBase):
         Returns
         -------
         ScalarField
-            ASD field with axis0_domain='frequency'.
+            ASD field with transformed axis in spectral domain.
             Units are the square root of PSD units (e.g., V/√Hz).
 
         Examples
         --------
         >>> from astropy import units as u
-        >>> # Time-based specification
-        >>> asd_field = field.asd(fftlength=1.0, overlap=0.5)
+        >>> # Time-axis ASD
+        >>> asd_time = field.asd(axis=0, fftlength=1.0, overlap=0.5)
         >>> # Or sample-based specification
-        >>> asd_field = field.asd(nfft=512, noverlap=256)
-        >>> asd_field.shape  # (n_freq, nx, ny, nz)
+        >>> asd_time = field.asd(axis=0, nfft=512, noverlap=256)
+        >>> # Spatial amplitude spectrum along x-axis
+        >>> asd_x = field.asd(axis='x')
 
         See Also
         --------
         psd : Power spectral density
-        spectral_density : Generalized spectral density for any axis.
+        spectral_density : Underlying implementation
         """
         import numpy as np
 
-        psd_result = self.psd(**kwargs)
+        psd_result = self.psd(axis=axis, **kwargs)
         return np.sqrt(psd_result)

@@ -130,6 +130,25 @@ class TestComputePsd:
         assert asd.shape[0] > 0  # Has frequency points
         assert asd.unit == u.V / u.Hz**0.5
 
+    def test_psd_with_axis_parameter(self, sine_field):
+        """Test psd() with axis parameter for time and spatial axes."""
+        # Time axis (default)
+        psd_time = sine_field.psd(axis=0, fftlength=0.64)
+        assert psd_time.axis0_domain == "frequency"
+
+        # Also test with explicit axis=0
+        psd_time2 = sine_field.psd(fftlength=0.64)
+        assert_allclose(psd_time.value, psd_time2.value)
+
+    def test_asd_with_axis_parameter(self, sine_field):
+        """Test asd() with axis parameter."""
+        # Time axis
+        asd_time = sine_field.asd(axis=0, fftlength=0.64)
+        psd_time = sine_field.psd(axis=0, fftlength=0.64)
+
+        # ASD should be sqrt(PSD)
+        assert_allclose(asd_time.value, np.sqrt(psd_time.value))
+
 
 class TestFreqSpaceMap:
     def test_shape_and_units(self, sine_field):

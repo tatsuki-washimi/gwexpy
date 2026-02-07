@@ -292,3 +292,224 @@ class FieldDict(dict):
     def isel_all(self, **kwargs):
         """Apply isel to all fields, returning FieldDict."""
         return self.__class__({k: v.isel(**kwargs) for k, v in self.items()})
+
+    # Spectral analysis methods - apply to each component
+    def psd(self, axis=0, **kwargs):
+        """Compute power spectral density for each component.
+
+        Applies psd() to each ScalarField component and returns a new FieldDict.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute PSD. Default is 0 (time axis).
+        **kwargs
+            Additional arguments passed to ScalarField.psd().
+
+        Returns
+        -------
+        FieldDict
+            New FieldDict with PSD of each component.
+
+        Examples
+        --------
+        >>> vfield_psd = vector_field.psd(axis=0, fftlength=1.0)
+        >>> # Each component's PSD: {'x': Ex_psd, 'y': Ey_psd, 'z': Ez_psd}
+        """
+        return self.__class__({k: v.psd(axis=axis, **kwargs) for k, v in self.items()})
+
+    def asd(self, axis=0, **kwargs):
+        """Compute amplitude spectral density for each component.
+
+        Applies asd() to each ScalarField component and returns a new FieldDict.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute ASD. Default is 0 (time axis).
+        **kwargs
+            Additional arguments passed to ScalarField.asd().
+
+        Returns
+        -------
+        FieldDict
+            New FieldDict with ASD of each component.
+        """
+        return self.__class__({k: v.asd(axis=axis, **kwargs) for k, v in self.items()})
+
+    # Signal processing methods
+    def filter(self, *args, **kwargs):
+        """Apply filter to each component.
+
+        Parameters
+        ----------
+        *args, **kwargs
+            Arguments passed to ScalarField.filter().
+
+        Returns
+        -------
+        FieldDict
+            Filtered FieldDict.
+        """
+        return self.__class__({k: v.filter(*args, **kwargs) for k, v in self.items()})
+
+    def resample(self, rate, **kwargs):
+        """Resample each component.
+
+        Parameters
+        ----------
+        rate : float or Quantity
+            New sample rate.
+        **kwargs
+            Additional arguments passed to ScalarField.resample().
+
+        Returns
+        -------
+        FieldDict
+            Resampled FieldDict.
+        """
+        return self.__class__({k: v.resample(rate, **kwargs) for k, v in self.items()})
+
+    def astype(self, dtype, **kwargs):
+        """Convert each component to specified data type.
+
+        Parameters
+        ----------
+        dtype : dtype
+            Target data type.
+        **kwargs
+            Additional arguments.
+
+        Returns
+        -------
+        FieldDict
+            FieldDict with converted types.
+        """
+        return self.__class__({k: v.astype(dtype, **kwargs) for k, v in self.items()})
+
+    # Filtering methods
+    def highpass(self, frequency, **kwargs):
+        """Apply highpass filter to each component.
+
+        Parameters
+        ----------
+        frequency : float
+            Cutoff frequency.
+        **kwargs
+            Additional arguments passed to filter method.
+
+        Returns
+        -------
+        FieldDict
+            Highpass-filtered FieldDict.
+        """
+        return self.__class__({k: v.highpass(frequency, **kwargs) for k, v in self.items()})
+
+    def lowpass(self, frequency, **kwargs):
+        """Apply lowpass filter to each component.
+
+        Parameters
+        ----------
+        frequency : float
+            Cutoff frequency.
+        **kwargs
+            Additional arguments passed to filter method.
+
+        Returns
+        -------
+        FieldDict
+            Lowpass-filtered FieldDict.
+        """
+        return self.__class__({k: v.lowpass(frequency, **kwargs) for k, v in self.items()})
+
+    def bandpass(self, flow, fhigh, **kwargs):
+        """Apply bandpass filter to each component.
+
+        Parameters
+        ----------
+        flow : float
+            Low frequency cutoff.
+        fhigh : float
+            High frequency cutoff.
+        **kwargs
+            Additional arguments passed to filter method.
+
+        Returns
+        -------
+        FieldDict
+            Bandpass-filtered FieldDict.
+        """
+        return self.__class__({k: v.bandpass(flow, fhigh, **kwargs) for k, v in self.items()})
+
+    def notch(self, frequency, **kwargs):
+        """Apply notch filter to each component.
+
+        Parameters
+        ----------
+        frequency : float or list of float
+            Frequency(ies) to notch.
+        **kwargs
+            Additional arguments passed to filter method.
+
+        Returns
+        -------
+        FieldDict
+            Notch-filtered FieldDict.
+        """
+        return self.__class__({k: v.notch(frequency, **kwargs) for k, v in self.items()})
+
+    def zpk(self, zeros, poles, gain, **kwargs):
+        """Apply zero-pole-gain filter to each component.
+
+        Parameters
+        ----------
+        zeros : array_like
+            Filter zeros.
+        poles : array_like
+            Filter poles.
+        gain : float
+            Filter gain.
+        **kwargs
+            Additional arguments.
+
+        Returns
+        -------
+        FieldDict
+            Filtered FieldDict.
+        """
+        return self.__class__({k: v.zpk(zeros, poles, gain, **kwargs) for k, v in self.items()})
+
+    # FFT methods
+    def fft(self, axis=0, **kwargs):
+        """Apply FFT to each component.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute FFT. Default is 0.
+        **kwargs
+            Additional arguments.
+
+        Returns
+        -------
+        FieldDict
+            FFT of each component.
+        """
+        return self.__class__({k: v.fft(axis=axis, **kwargs) for k, v in self.items()})
+
+    def ifft(self, axis=0, **kwargs):
+        """Apply inverse FFT to each component.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute IFFT. Default is 0.
+        **kwargs
+            Additional arguments.
+
+        Returns
+        -------
+        FieldDict
+            IFFT of each component.
+        """
+        return self.__class__({k: v.ifft(axis=axis, **kwargs) for k, v in self.items()})

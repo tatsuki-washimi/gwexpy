@@ -230,3 +230,59 @@ def test_vectorfield_axis_mismatch_raises():
 
     with pytest.raises(ValueError, match="Axis 0 shape mismatch"):
         VectorField({"x": f_long, "y": f_short})
+
+
+def test_vectorfield_psd():
+    """Test VectorField.psd() applies to each component."""
+    dt = 0.01 * u.s
+    nt = 128
+    times = np.arange(nt) * dt
+
+    # Create vector field with different frequencies in each component
+    fx = ScalarField(
+        np.sin(2 * np.pi * 5.0 * times.to_value(u.s))[:, None, None, None],
+        axis0=times,
+        unit=u.V,
+    )
+    fy = ScalarField(
+        np.sin(2 * np.pi * 10.0 * times.to_value(u.s))[:, None, None, None],
+        axis0=times,
+        unit=u.V,
+    )
+    vf = VectorField({"x": fx, "y": fy})
+
+    # Compute PSD
+    vf_psd = vf.psd(fftlength=0.64)
+
+    assert isinstance(vf_psd, VectorField)
+    assert set(vf_psd.keys()) == {"x", "y"}
+    assert vf_psd["x"].axis0_domain == "frequency"
+    assert vf_psd["y"].axis0_domain == "frequency"
+    assert vf_psd["x"].unit == u.V**2 / u.Hz
+    assert vf_psd["y"].unit == u.V**2 / u.Hz
+
+
+def test_vectorfield_asd():
+    """Test VectorField.asd() applies to each component."""
+    dt = 0.01 * u.s
+    nt = 128
+    times = np.arange(nt) * dt
+
+    fx = ScalarField(
+        np.sin(2 * np.pi * 5.0 * times.to_value(u.s))[:, None, None, None],
+        axis0=times,
+        unit=u.V,
+    )
+    fy = ScalarField(
+        np.sin(2 * np.pi * 10.0 * times.to_value(u.s))[:, None, None, None],
+        axis0=times,
+        unit=u.V,
+    )
+    vf = VectorField({"x": fx, "y": fy})
+
+    # Compute ASD
+    vf_asd = vf.asd(fftlength=0.64)
+
+    assert isinstance(vf_asd, VectorField)
+    assert vf_asd["x"].axis0_domain == "frequency"
+    assert vf_asd["x"].unit == u.V / u.Hz**0.5
