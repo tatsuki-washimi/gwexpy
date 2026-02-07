@@ -130,6 +130,8 @@ fit_bootstrap_spectrum(
 | `window` | str | FFT ウィンドウ関数 (デフォルト: "hann") |
 | `fftlength` | float or Quantity | FFT セグメント長（秒） (デフォルト: None、自動計算) |
 | `overlap` | float or Quantity | オーバーラップ長（秒） (デフォルト: None、ウィンドウ依存) |
+| `nfft` | int | FFT セグメント長（サンプル数）（`fftlength`の代替） |
+| `noverlap` | int | オーバーラップ長（サンプル数）（`nfft`と併用） |
 | `n_boot` | int | ブートストラップ回数 |
 | `initial_params` | dict | 初期パラメータ |
 | `bounds` | dict | パラメータ制限 |
