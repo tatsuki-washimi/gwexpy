@@ -2,6 +2,33 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Field Signal Processing Methods**: Implemented 23 new methods for `ScalarField` and `FieldDict` based on GWpy's `TimeSeries` and `FrequencySeries` APIs to achieve feature parity with standard gravitational wave data analysis workflows.
+  - **High Priority Methods (10)**: Core signal processing essential for GW data analysis:
+    - `detrend(type='linear')` - Remove polynomial trends (linear/constant)
+    - `taper(side='leftright', duration=1.0)` - Apply Tukey window to endpoints
+    - `crop(start, end, copy=True)` - Extract time segments
+    - `pad(pad_width, **kwargs)` - Extend data with padding
+    - `zpk(zeros, poles, gain, **kwargs)` - Zero-Pole-Gain filter
+    - `whiten(fftlength=None, **kwargs)` - Normalize ASD for matched filtering
+    - `convolve(fir, **kwargs)` - Time-domain FIR convolution
+    - `inject(other, alpha=1.0)` - Add simulated signals
+    - `csd(other, **kwargs)` - Cross-spectral density analysis
+    - `coherence(other, **kwargs)` - Frequency-coherence analysis
+    - `spectrogram(stride, fftlength=None, **kwargs)` - Time-frequency representation
+  - **Low Priority Methods (12)**: Utility and mathematical operations:
+    - `value_at(t)` - Extract values at specific times
+    - `abs()`, `sqrt()` - Element-wise operations
+    - `mean()`, `median()`, `std()`, `rms()` - Statistical operations with axis support
+    - `is_compatible(other)` - Validate field compatibility
+    - `is_contiguous(other, tol=None)` - Test segment adjacency
+    - `append(other, gap='raise', **kwargs)` - Concatenate fields in time
+    - `prepend(other, **kwargs)` - Prepend another field
+  - **FieldDict Support**: All methods are also available on `FieldDict`, applying operations to all components
+  - **Documentation**: Added comprehensive user guide in English and Japanese (`docs/web/{en,ja}/user_guide/fields_new_methods.rst`) with examples and complete workflow demonstrations
+  - **Note**: Medium-priority advanced analysis methods (q_transform, heterodyne, gate, etc.) are deferred for future implementation due to design complexity
+
 ### Changed
 
 - **API Unification**: Standardized all spectral analysis function signatures to use time-based parameters (`fftlength`/`overlap` in seconds) instead of sample-count-based parameters (`nperseg`/`noverlap`). This aligns gwexpy with GWpy conventions and improves user experience.

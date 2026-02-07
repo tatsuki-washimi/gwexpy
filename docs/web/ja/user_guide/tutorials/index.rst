@@ -46,6 +46,7 @@ III. 高次元フィールド (Field API)
 
    field_scalar_intro
    field_scalar_signal
+   新しい信号処理メソッド <../fields_new_methods>
 
 IV. 高度な信号処理
 ------------------
