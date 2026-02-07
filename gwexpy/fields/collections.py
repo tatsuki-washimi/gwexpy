@@ -513,3 +513,307 @@ class FieldDict(dict):
             IFFT of each component.
         """
         return self.__class__({k: v.ifft(axis=axis, **kwargs) for k, v in self.items()})
+
+    # Preprocessing methods
+    def detrend(self, type="linear"):
+        """Apply detrend to each component.
+
+        Parameters
+        ----------
+        type : str, optional
+            Type of detrending ('linear' or 'constant'). Default is 'linear'.
+
+        Returns
+        -------
+        FieldDict
+            Detrended FieldDict.
+        """
+        return self.__class__({k: v.detrend(type=type) for k, v in self.items()})
+
+    def taper(self, **kwargs):
+        """Apply taper to each component.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to ScalarField.taper().
+
+        Returns
+        -------
+        FieldDict
+            Tapered FieldDict.
+        """
+        return self.__class__({k: v.taper(**kwargs) for k, v in self.items()})
+
+    def crop(self, start=None, end=None, copy=True):
+        """Crop each component.
+
+        Parameters
+        ----------
+        start : float or Quantity, optional
+            Start time.
+        end : float or Quantity, optional
+            End time.
+        copy : bool, optional
+            Whether to copy data. Default is True.
+
+        Returns
+        -------
+        FieldDict
+            Cropped FieldDict.
+        """
+        return self.__class__({k: v.crop(start=start, end=end, copy=copy) for k, v in self.items()})
+
+    def pad(self, pad_width, **kwargs):
+        """Pad each component.
+
+        Parameters
+        ----------
+        pad_width : int or tuple
+            Number of values to pad.
+        **kwargs
+            Additional arguments passed to ScalarField.pad().
+
+        Returns
+        -------
+        FieldDict
+            Padded FieldDict.
+        """
+        return self.__class__({k: v.pad(pad_width, **kwargs) for k, v in self.items()})
+
+    # Mathematical operations
+    def abs(self):
+        """Compute absolute value of each component.
+
+        Returns
+        -------
+        FieldDict
+            Absolute values.
+        """
+        return self.__class__({k: v.abs() for k, v in self.items()})
+
+    def sqrt(self):
+        """Compute square root of each component.
+
+        Returns
+        -------
+        FieldDict
+            Square root values.
+        """
+        return self.__class__({k: v.sqrt() for k, v in self.items()})
+
+    def mean(self, axis=None, **kwargs):
+        """Compute mean of each component.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute mean.
+        **kwargs
+            Additional arguments.
+
+        Returns
+        -------
+        FieldDict
+            Mean values.
+        """
+        return self.__class__({k: v.mean(axis=axis, **kwargs) for k, v in self.items()})
+
+    def median(self, axis=None, **kwargs):
+        """Compute median of each component.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute median.
+        **kwargs
+            Additional arguments.
+
+        Returns
+        -------
+        FieldDict
+            Median values.
+        """
+        return self.__class__({k: v.median(axis=axis, **kwargs) for k, v in self.items()})
+
+    def std(self, axis=None, **kwargs):
+        """Compute standard deviation of each component.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute std.
+        **kwargs
+            Additional arguments.
+
+        Returns
+        -------
+        FieldDict
+            Standard deviation values.
+        """
+        return self.__class__({k: v.std(axis=axis, **kwargs) for k, v in self.items()})
+
+    def rms(self, axis=None):
+        """Compute RMS of each component.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute RMS.
+
+        Returns
+        -------
+        FieldDict
+            RMS values.
+        """
+        return self.__class__({k: v.rms(axis=axis) for k, v in self.items()})
+
+    # Advanced signal processing
+    def whiten(self, **kwargs):
+        """Whiten each component.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments passed to ScalarField.whiten().
+
+        Returns
+        -------
+        FieldDict
+            Whitened FieldDict.
+        """
+        return self.__class__({k: v.whiten(**kwargs) for k, v in self.items()})
+
+    def convolve(self, fir, **kwargs):
+        """Convolve each component with FIR filter.
+
+        Parameters
+        ----------
+        fir : array_like
+            Filter coefficients.
+        **kwargs
+            Additional arguments passed to ScalarField.convolve().
+
+        Returns
+        -------
+        FieldDict
+            Convolved FieldDict.
+        """
+        return self.__class__({k: v.convolve(fir, **kwargs) for k, v in self.items()})
+
+    def inject(self, other, alpha=1.0):
+        """Inject signal into each component.
+
+        Parameters
+        ----------
+        other : FieldDict or ScalarField
+            Signal to inject. If ScalarField, injects into all components.
+            If FieldDict, injects matching components.
+        alpha : float, optional
+            Scaling factor. Default is 1.0.
+
+        Returns
+        -------
+        FieldDict
+            FieldDict with injected signal.
+        """
+        if isinstance(other, FieldDict):
+            return self.__class__({k: v.inject(other[k], alpha=alpha) for k, v in self.items()})
+        else:
+            # Inject same signal into all components
+            return self.__class__({k: v.inject(other, alpha=alpha) for k, v in self.items()})
+
+    # Cross-spectral analysis
+    def csd(self, other, **kwargs):
+        """Compute CSD between corresponding components.
+
+        Parameters
+        ----------
+        other : FieldDict
+            Other FieldDict with matching keys.
+        **kwargs
+            Arguments passed to ScalarField.csd().
+
+        Returns
+        -------
+        FieldDict
+            CSD for each component pair.
+        """
+        if not isinstance(other, FieldDict):
+            raise TypeError("other must be a FieldDict")
+        return self.__class__({k: v.csd(other[k], **kwargs) for k, v in self.items() if k in other})
+
+    def coherence(self, other, **kwargs):
+        """Compute coherence between corresponding components.
+
+        Parameters
+        ----------
+        other : FieldDict
+            Other FieldDict with matching keys.
+        **kwargs
+            Arguments passed to ScalarField.coherence().
+
+        Returns
+        -------
+        FieldDict
+            Coherence for each component pair.
+        """
+        if not isinstance(other, FieldDict):
+            raise TypeError("other must be a FieldDict")
+        return self.__class__({k: v.coherence(other[k], **kwargs) for k, v in self.items() if k in other})
+
+    def spectrogram(self, stride, **kwargs):
+        """Compute spectrogram of each component.
+
+        Parameters
+        ----------
+        stride : float
+            Time step between consecutive spectrograms.
+        **kwargs
+            Arguments passed to ScalarField.spectrogram().
+
+        Returns
+        -------
+        FieldDict
+            Spectrogram for each component.
+        """
+        return self.__class__({k: v.spectrogram(stride, **kwargs) for k, v in self.items()})
+
+    # Time series utilities
+    def append(self, other, **kwargs):
+        """Append another FieldDict.
+
+        Parameters
+        ----------
+        other : FieldDict
+            FieldDict to append.
+        **kwargs
+            Arguments passed to ScalarField.append().
+
+        Returns
+        -------
+        FieldDict
+            Concatenated FieldDict.
+        """
+        if not isinstance(other, FieldDict):
+            raise TypeError("other must be a FieldDict")
+        return self.__class__({k: v.append(other[k], **kwargs) for k, v in self.items() if k in other})
+
+    def prepend(self, other, **kwargs):
+        """Prepend another FieldDict.
+
+        Parameters
+        ----------
+        other : FieldDict
+            FieldDict to prepend.
+        **kwargs
+            Arguments passed to ScalarField.prepend().
+
+        Returns
+        -------
+        FieldDict
+            Concatenated FieldDict.
+        """
+        if not isinstance(other, FieldDict):
+            raise TypeError("other must be a FieldDict")
+        return self.__class__({k: v.prepend(other[k], **kwargs) for k, v in self.items() if k in other})

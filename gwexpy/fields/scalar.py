@@ -2443,3 +2443,1448 @@ class ScalarField(FieldBase):
         filter : General filter method
         """
         return self.filter(frequency, type='notch', **kwargs)
+
+    def zpk(self, zeros, poles, gain, **kwargs):
+        """Apply zero-pole-gain filter to time axis.
+
+        Parameters
+        ----------
+        zeros : array_like
+            Filter zeros in the complex plane.
+        poles : array_like
+            Filter poles in the complex plane.
+        gain : float
+            System gain.
+        **kwargs
+            Additional arguments passed to filter().
+            Common options: filtfilt (default True), analog (default False).
+
+        Returns
+        -------
+        ScalarField
+            Filtered field.
+
+        Examples
+        --------
+        >>> # Custom IIR filter from zpk representation
+        >>> zeros = [0]
+        >>> poles = [-1, -1+1j, -1-1j]
+        >>> gain = 1.0
+        >>> filtered = field.zpk(zeros, poles, gain)
+
+        See Also
+        --------
+        filter : General filter method
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("zpk requires axis0_domain='time'")
+
+        # Reshape to (time, points)
+        orig_shape = self.shape
+        data_2d = self.value.reshape(orig_shape[0], -1)
+
+        # Get sample rate
+        fs = (1.0 / (self._axis0_index[1] - self._axis0_index[0])).to("Hz").value
+        from scipy import signal as scipy_signal
+
+        analog = kwargs.pop("analog", False)
+        filtfilt = kwargs.pop("filtfilt", True)
+
+        # Convert to second-order sections for numerical stability
+        sos = scipy_signal.zpk2sos(zeros, poles, gain)
+
+        # Apply filter along axis 0
+        new_data_2d = (
+            scipy_signal.sosfiltfilt(sos, data_2d, axis=0)
+            if filtfilt
+            else scipy_signal.sosfilt(sos, data_2d, axis=0)
+        )
+
+        # Reshape back
+        return ScalarField(
+            new_data_2d.reshape(orig_shape),
+            unit=self.unit,
+            axis0=self._axis0_index,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
+    # =========================================================================
+    # Basic Preprocessing Methods
+    # =========================================================================
+
+    def detrend(self, type="linear"):
+        """Remove polynomial trend from time axis.
+
+        Wraps `scipy.signal.detrend()` to remove linear or constant trends
+        that can distort spectral analysis and filtering operations.
+
+        Parameters
+        ----------
+        type : str, optional
+            Type of detrending:
+            - 'linear': Remove linear trend (default)
+            - 'constant': Remove mean value
+            Default is 'linear'.
+
+        Returns
+        -------
+        ScalarField
+            Detrended field.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Examples
+        --------
+        >>> # Remove linear drift
+        >>> detrended = field.detrend('linear')
+        >>> # Remove DC offset only
+        >>> detrended = field.detrend('constant')
+
+        See Also
+        --------
+        taper : Apply window to endpoints
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("detrend requires axis0_domain='time'")
+
+        from scipy import signal as scipy_signal
+
+        # Apply detrend along axis 0
+        detrended_data = scipy_signal.detrend(self.value, axis=0, type=type)
+
+        return ScalarField(
+            detrended_data,
+            unit=self.unit,
+            axis0=self._axis0_index,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
+    def taper(self, side="leftright", duration=None, nsamples=None):
+        """Apply Tukey window to data endpoints.
+
+        Applies a smooth windowing function to suppress ringing artifacts
+        in FFTs caused by sharp discontinuities at segment boundaries.
+
+        Parameters
+        ----------
+        side : str, optional
+            Which sides to taper:
+            - 'leftright': Both sides (default)
+            - 'left': Left side only
+            - 'right': Right side only
+        duration : float or Quantity, optional
+            Duration of taper in seconds. If None, uses nsamples.
+        nsamples : int, optional
+            Number of samples to taper on each side. If None and duration
+            is None, defaults to 1 second.
+
+        Returns
+        -------
+        ScalarField
+            Tapered field.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Examples
+        --------
+        >>> # Taper both ends with 1 second
+        >>> tapered = field.taper(duration=1.0)
+        >>> # Taper left side only
+        >>> tapered = field.taper(side='left', nsamples=100)
+
+        See Also
+        --------
+        detrend : Remove polynomial trends
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("taper requires axis0_domain='time'")
+
+        # Determine number of samples to taper
+        if nsamples is None:
+            if duration is None:
+                duration = 1.0 * u.s
+            elif not hasattr(duration, "unit"):
+                duration = duration * u.s
+            dt = self._axis0_index[1] - self._axis0_index[0]
+            nsamples = int(round((duration / dt).decompose().value))
+
+        nsamples = min(nsamples, self.shape[0] // 2)
+
+        # Create Tukey window
+        # alpha = 2 * nsamples / N gives taper on both ends
+        N = self.shape[0]
+        alpha = 2.0 * nsamples / N
+
+        from scipy import signal as scipy_signal
+
+        if side == "leftright":
+            window = scipy_signal.windows.tukey(N, alpha=alpha)
+        elif side == "left":
+            window = np.ones(N)
+            half_window = scipy_signal.windows.tukey(2 * nsamples, alpha=1.0)
+            window[:nsamples] = half_window[:nsamples]
+        elif side == "right":
+            window = np.ones(N)
+            half_window = scipy_signal.windows.tukey(2 * nsamples, alpha=1.0)
+            window[-nsamples:] = half_window[-nsamples:]
+        else:
+            raise ValueError(f"Invalid side '{side}'. Must be 'left', 'right', or 'leftright'.")
+
+        # Apply window (broadcast over spatial dimensions)
+        window_4d = window[:, np.newaxis, np.newaxis, np.newaxis]
+        tapered_data = self.value * window_4d
+
+        return ScalarField(
+            tapered_data,
+            unit=self.unit,
+            axis0=self._axis0_index,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
+    def crop(self, start=None, end=None, copy=True):
+        """Extract a time segment between specified times.
+
+        Parameters
+        ----------
+        start : float or Quantity, optional
+            Start time. If None, uses the beginning of the data.
+        end : float or Quantity, optional
+            End time. If None, uses the end of the data.
+        copy : bool, optional
+            If True, return a copy of the data. Default is True.
+
+        Returns
+        -------
+        ScalarField
+            Cropped field.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Examples
+        --------
+        >>> from astropy import units as u
+        >>> # Extract segment from 10s to 20s
+        >>> segment = field.crop(start=10*u.s, end=20*u.s)
+        >>> # Extract from beginning to 15s
+        >>> segment = field.crop(end=15*u.s)
+
+        See Also
+        --------
+        pad : Extend data with padding
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("crop requires axis0_domain='time'")
+
+        from gwexpy.plot._coord import nearest_index
+
+        # Find start index
+        if start is None:
+            i_start = 0
+        else:
+            if not hasattr(start, "unit"):
+                start = start * self._axis0_index.unit
+            i_start = nearest_index(self._axis0_index, start)
+
+        # Find end index
+        if end is None:
+            i_end = self.shape[0]
+        else:
+            if not hasattr(end, "unit"):
+                end = end * self._axis0_index.unit
+            i_end = nearest_index(self._axis0_index, end) + 1
+
+        # Extract segment
+        cropped = self[i_start:i_end, :, :, :]
+
+        if copy:
+            return cropped.copy()
+        return cropped
+
+    def pad(self, pad_width, mode="constant", **kwargs):
+        """Extend data with padding.
+
+        Wraps `numpy.pad()` to add padding to the time axis. Useful for
+        FFT operations requiring power-of-2 lengths and reducing edge effects.
+
+        Parameters
+        ----------
+        pad_width : int or tuple
+            Number of values to pad. If int, pads both sides equally.
+            If tuple (left, right), pads asymmetrically.
+        mode : str, optional
+            Padding mode (see numpy.pad documentation):
+            - 'constant': Pad with constant value (default, uses 0)
+            - 'edge': Pad with edge values
+            - 'reflect': Reflect values at boundaries
+            - 'symmetric': Symmetric reflection
+            - 'wrap': Wrap around to opposite edge
+        **kwargs
+            Additional arguments passed to numpy.pad (e.g., constant_values).
+
+        Returns
+        -------
+        ScalarField
+            Padded field.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Examples
+        --------
+        >>> # Pad 100 samples on each end with zeros
+        >>> padded = field.pad(100)
+        >>> # Pad asymmetrically
+        >>> padded = field.pad((50, 150), mode='edge')
+        >>> # Pad with specific value
+        >>> padded = field.pad(100, mode='constant', constant_values=1.0)
+
+        See Also
+        --------
+        crop : Extract time segment
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("pad requires axis0_domain='time'")
+
+        # Convert pad_width to tuple if needed
+        if isinstance(pad_width, int):
+            pad_width = (pad_width, pad_width)
+
+        # Create pad_width for all axes (only pad axis 0)
+        pad_width_4d = [pad_width, (0, 0), (0, 0), (0, 0)]
+
+        # Pad the data
+        padded_data = np.pad(self.value, pad_width_4d, mode=mode, **kwargs)
+
+        # Extend time axis
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        t0 = self._axis0_index[0]
+        n_left, n_right = pad_width
+
+        # Create new time axis
+        new_times = np.arange(
+            -n_left, self.shape[0] + n_right
+        ) * dt + t0
+
+        return ScalarField(
+            padded_data,
+            unit=self.unit,
+            axis0=new_times,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
+    def value_at(self, t):
+        """Extract field values at specific time(s).
+
+        Parameters
+        ----------
+        t : float, Quantity, or array-like
+            Time(s) at which to extract values. Can be scalar or array.
+
+        Returns
+        -------
+        array or ScalarField
+            If t is scalar, returns 3D array of spatial values at that time.
+            If t is array, returns ScalarField with new time axis.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Examples
+        --------
+        >>> from astropy import units as u
+        >>> # Get values at single time
+        >>> values_3d = field.value_at(5.0 * u.s)
+        >>> # Get values at multiple times
+        >>> times = [1.0, 2.0, 3.0] * u.s
+        >>> subset = field.value_at(times)
+
+        See Also
+        --------
+        extract_points : Extract time series at spatial points
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("value_at requires axis0_domain='time'")
+
+        from gwexpy.plot._coord import nearest_index
+
+        # Handle scalar vs array
+        if np.isscalar(t) or (hasattr(t, "isscalar") and t.isscalar):
+            # Scalar time
+            if not hasattr(t, "unit"):
+                t = t * self._axis0_index.unit
+            idx = nearest_index(self._axis0_index, t)
+            return self.value[idx, :, :, :]
+        else:
+            # Array of times
+            if not hasattr(t, "unit"):
+                t = t * self._axis0_index.unit
+            indices = [nearest_index(self._axis0_index, ti) for ti in t]
+            return self[indices, :, :, :]
+
+    # =========================================================================
+    # Mathematical Operations
+    # =========================================================================
+
+    def abs(self):
+        """Compute absolute value of the field.
+
+        Returns
+        -------
+        ScalarField
+            Field with absolute values.
+
+        Examples
+        --------
+        >>> abs_field = field.abs()
+        >>> # Equivalent to np.abs(field)
+        """
+        return ScalarField(
+            np.abs(self.value),
+            unit=self.unit,
+            axis0=self._axis0_index,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain=self._axis0_domain,
+            space_domain=self._space_domains,
+        )
+
+    def sqrt(self):
+        """Compute square root of the field.
+
+        Returns
+        -------
+        ScalarField
+            Field with square root values.
+
+        Examples
+        --------
+        >>> sqrt_field = field.sqrt()
+        """
+        result_unit = self.unit ** 0.5 if self.unit is not None else None
+        return ScalarField(
+            np.sqrt(self.value),
+            unit=result_unit,
+            axis0=self._axis0_index,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain=self._axis0_domain,
+            space_domain=self._space_domains,
+        )
+
+    def mean(self, axis=None, **kwargs):
+        """Compute mean along specified axis.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute mean. If None, computes global mean.
+        **kwargs
+            Additional arguments passed to numpy.mean.
+
+        Returns
+        -------
+        ScalarField or Quantity
+            Mean field or scalar value.
+
+        Examples
+        --------
+        >>> # Global mean
+        >>> mean_val = field.mean()
+        >>> # Mean along time axis
+        >>> time_mean = field.mean(axis=0)
+        """
+        if axis is not None:
+            if isinstance(axis, str):
+                axis = self._get_axis_index(axis)
+            result = np.mean(self.value, axis=axis, keepdims=True, **kwargs)
+
+            # Create new axis indices
+            new_indices = [
+                self._axis0_index if i != axis else self._axis0_index[:1]
+                for i in range(4)
+            ]
+
+            return ScalarField(
+                result,
+                unit=self.unit,
+                axis0=new_indices[0],
+                axis1=new_indices[1],
+                axis2=new_indices[2],
+                axis3=new_indices[3],
+                axis_names=self.axis_names,
+                axis0_domain=self._axis0_domain,
+                space_domain=self._space_domains,
+            )
+        else:
+            result = np.mean(self.value, **kwargs)
+            return result * self.unit if self.unit is not None else result
+
+    def median(self, axis=None, **kwargs):
+        """Compute median along specified axis.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute median. If None, computes global median.
+        **kwargs
+            Additional arguments passed to numpy.median.
+
+        Returns
+        -------
+        ScalarField or Quantity
+            Median field or scalar value.
+
+        Examples
+        --------
+        >>> # Global median
+        >>> median_val = field.median()
+        >>> # Median along time axis
+        >>> time_median = field.median(axis=0)
+        """
+        if axis is not None:
+            if isinstance(axis, str):
+                axis = self._get_axis_index(axis)
+            result = np.median(self.value, axis=axis, keepdims=True, **kwargs)
+
+            # Create new axis indices
+            new_indices = [
+                self._axis0_index if i != axis else self._axis0_index[:1]
+                for i in range(4)
+            ]
+
+            return ScalarField(
+                result,
+                unit=self.unit,
+                axis0=new_indices[0],
+                axis1=new_indices[1],
+                axis2=new_indices[2],
+                axis3=new_indices[3],
+                axis_names=self.axis_names,
+                axis0_domain=self._axis0_domain,
+                space_domain=self._space_domains,
+            )
+        else:
+            result = np.median(self.value, **kwargs)
+            return result * self.unit if self.unit is not None else result
+
+    def std(self, axis=None, **kwargs):
+        """Compute standard deviation along specified axis.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute std. If None, computes global std.
+        **kwargs
+            Additional arguments passed to numpy.std.
+
+        Returns
+        -------
+        ScalarField or Quantity
+            Standard deviation field or scalar value.
+
+        Examples
+        --------
+        >>> # Global standard deviation
+        >>> std_val = field.std()
+        >>> # Std along time axis
+        >>> time_std = field.std(axis=0)
+        """
+        if axis is not None:
+            if isinstance(axis, str):
+                axis = self._get_axis_index(axis)
+            result = np.std(self.value, axis=axis, keepdims=True, **kwargs)
+
+            # Create new axis indices
+            new_indices = [
+                self._axis0_index if i != axis else self._axis0_index[:1]
+                for i in range(4)
+            ]
+
+            return ScalarField(
+                result,
+                unit=self.unit,
+                axis0=new_indices[0],
+                axis1=new_indices[1],
+                axis2=new_indices[2],
+                axis3=new_indices[3],
+                axis_names=self.axis_names,
+                axis0_domain=self._axis0_domain,
+                space_domain=self._space_domains,
+            )
+        else:
+            result = np.std(self.value, **kwargs)
+            return result * self.unit if self.unit is not None else result
+
+    def rms(self, axis=None):
+        """Compute root-mean-square along specified axis.
+
+        Parameters
+        ----------
+        axis : int or str, optional
+            Axis along which to compute RMS. If None, computes global RMS.
+
+        Returns
+        -------
+        ScalarField or Quantity
+            RMS field or scalar value.
+
+        Examples
+        --------
+        >>> # Global RMS
+        >>> rms_val = field.rms()
+        >>> # RMS along time axis
+        >>> time_rms = field.rms(axis=0)
+        """
+        if axis is not None:
+            if isinstance(axis, str):
+                axis = self._get_axis_index(axis)
+            result = np.sqrt(np.mean(self.value**2, axis=axis, keepdims=True))
+
+            # Create new axis indices
+            new_indices = [
+                self._axis0_index if i != axis else self._axis0_index[:1]
+                for i in range(4)
+            ]
+
+            return ScalarField(
+                result,
+                unit=self.unit,
+                axis0=new_indices[0],
+                axis1=new_indices[1],
+                axis2=new_indices[2],
+                axis3=new_indices[3],
+                axis_names=self.axis_names,
+                axis0_domain=self._axis0_domain,
+                space_domain=self._space_domains,
+            )
+        else:
+            result = np.sqrt(np.mean(self.value**2))
+            return result * self.unit if self.unit is not None else result
+
+    # =========================================================================
+    # Advanced Signal Processing
+    # =========================================================================
+
+    def whiten(self, fftlength=None, overlap=0, method="welch", **kwargs):
+        """Normalize the amplitude spectral density (whitening).
+
+        Divides the data by its ASD to flatten the spectrum, enhancing
+        higher-frequency content. Essential preprocessing for matched filtering.
+
+        Parameters
+        ----------
+        fftlength : float, optional
+            Length of FFT segments in seconds for ASD estimation.
+            If None, uses the entire data length.
+        overlap : float, optional
+            Overlap between segments in seconds. Default is 0.
+        method : str, optional
+            Method for ASD estimation: 'welch' or 'median'. Default is 'welch'.
+        **kwargs
+            Additional arguments passed to psd().
+
+        Returns
+        -------
+        ScalarField
+            Whitened field (dimensionless).
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Examples
+        --------
+        >>> # Whiten using 2-second segments
+        >>> whitened = field.whiten(fftlength=2.0, overlap=1.0)
+
+        See Also
+        --------
+        psd : Power spectral density estimation
+        asd : Amplitude spectral density
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("whiten requires axis0_domain='time'")
+
+        # Compute ASD
+        asd_field = self.asd(axis=0, fftlength=fftlength, overlap=overlap, method=method, **kwargs)
+
+        # FFT to frequency domain
+        freq_field = self.fft_time()
+
+        # Divide by ASD (broadcasting over frequency axis)
+        # asd_field has shape (n_freq, nx, ny, nz)
+        # freq_field has shape (n_freq, nx, ny, nz)
+        whitened_freq = freq_field.value / asd_field.value
+
+        # Create whitened frequency field
+        whitened_freq_field = ScalarField(
+            whitened_freq,
+            unit=u.dimensionless_unscaled,
+            axis0=freq_field._axis0_index,
+            axis1=freq_field._axis1_index,
+            axis2=freq_field._axis2_index,
+            axis3=freq_field._axis3_index,
+            axis_names=freq_field.axis_names,
+            axis0_domain="frequency",
+            space_domain=freq_field._space_domains,
+        )
+
+        # IFFT back to time domain
+        whitened = whitened_freq_field.ifft_time()
+
+        return whitened
+
+    def convolve(self, fir, **kwargs):
+        """Apply FIR filter via time-domain convolution.
+
+        Parameters
+        ----------
+        fir : array_like
+            Finite impulse response filter coefficients.
+        **kwargs
+            Additional arguments passed to scipy.signal.convolve.
+            Common options: mode ('full', 'same', 'valid').
+
+        Returns
+        -------
+        ScalarField
+            Convolved field.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Notes
+        -----
+        Convolution introduces boundary effects equal to half the filter
+        length at each end. Consider using mode='same' to maintain the
+        same output length as input.
+
+        Examples
+        --------
+        >>> # Matched filter
+        >>> template = [1, 2, 3, 2, 1]  # Simple template
+        >>> matched = field.convolve(template, mode='same')
+
+        See Also
+        --------
+        filter : General filtering interface
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("convolve requires axis0_domain='time'")
+
+        from scipy import signal as scipy_signal
+
+        mode = kwargs.pop("mode", "same")
+
+        # Reshape for efficient computation
+        orig_shape = self.shape
+        data_2d = self.value.reshape(orig_shape[0], -1)
+
+        # Convolve along axis 0
+        fir = np.asarray(fir)
+        convolved_2d = scipy_signal.convolve(
+            data_2d, fir[:, np.newaxis], mode=mode, **kwargs
+        )
+
+        # Handle different output sizes
+        if mode == "same":
+            new_times = self._axis0_index
+        elif mode == "full":
+            dt = self._axis0_index[1] - self._axis0_index[0]
+            n_extra = len(fir) - 1
+            new_times = (
+                np.arange(orig_shape[0] + n_extra) * dt + self._axis0_index[0]
+            )
+        elif mode == "valid":
+            n_out = max(orig_shape[0] - len(fir) + 1, 0)
+            dt = self._axis0_index[1] - self._axis0_index[0]
+            offset = (len(fir) - 1) // 2
+            new_times = (
+                np.arange(n_out) * dt + self._axis0_index[0] + offset * dt
+            )
+        else:
+            raise ValueError(f"Unknown mode '{mode}'")
+
+        # Reshape back
+        new_shape = [convolved_2d.shape[0]] + list(orig_shape[1:])
+        return ScalarField(
+            convolved_2d.reshape(new_shape),
+            unit=self.unit,
+            axis0=new_times,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
+    def inject(self, other, alpha=1.0):
+        """Add a simulated signal into the data.
+
+        Parameters
+        ----------
+        other : ScalarField
+            Signal to inject. Must have compatible shape and axes.
+        alpha : float, optional
+            Scaling factor for the injected signal. Default is 1.0.
+
+        Returns
+        -------
+        ScalarField
+            Field with injected signal.
+
+        Raises
+        ------
+        ValueError
+            If fields have incompatible shapes or axes.
+
+        Examples
+        --------
+        >>> # Inject a simulated signal
+        >>> signal = ScalarField.simulate('plane_wave', ...)
+        >>> injected = field.inject(signal, alpha=0.5)
+
+        See Also
+        --------
+        simulate : Generate simulated fields
+        """
+        if self.shape != other.shape:
+            raise ValueError(f"Shape mismatch: {self.shape} vs {other.shape}")
+
+        if self._axis0_domain != other._axis0_domain:
+            raise ValueError(
+                f"Domain mismatch: {self._axis0_domain} vs {other._axis0_domain}"
+            )
+
+        # Simple addition with scaling
+        injected_data = self.value + alpha * other.value
+
+        return ScalarField(
+            injected_data,
+            unit=self.unit,
+            axis0=self._axis0_index,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain=self._axis0_domain,
+            space_domain=self._space_domains,
+        )
+
+    # =========================================================================
+    # Cross-Spectral Analysis
+    # =========================================================================
+
+    def csd(self, other, fftlength=None, overlap=0, window="hann", **kwargs):
+        """Calculate cross-spectral density with another field.
+
+        Computes the cross power between two signals using Welch's method.
+        Essential for analyzing relationships between different channels.
+
+        Parameters
+        ----------
+        other : ScalarField
+            Second field for cross-spectral analysis. Must have same shape.
+        fftlength : float, optional
+            Length of FFT segments in seconds. If None, uses entire length.
+        overlap : float, optional
+            Overlap between segments in seconds. Default is 0.
+        window : str or tuple, optional
+            Window function name. Default is 'hann'.
+        **kwargs
+            Additional arguments (nfft, noverlap can override time-based params).
+
+        Returns
+        -------
+        ScalarField
+            Cross-spectral density field with axis0_domain='frequency'.
+            Units are (self.unit * other.unit / Hz).
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time' or shapes don't match.
+
+        Examples
+        --------
+        >>> # CSD between two fields
+        >>> csd_result = field1.csd(field2, fftlength=2.0, overlap=1.0)
+
+        See Also
+        --------
+        psd : Power spectral density
+        coherence : Frequency-coherence
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("csd requires axis0_domain='time'")
+        if other._axis0_domain != "time":
+            raise ValueError("other must have axis0_domain='time'")
+        if self.shape != other.shape:
+            raise ValueError(f"Shape mismatch: {self.shape} vs {other.shape}")
+
+        from scipy import signal as scipy_signal
+
+        # Get sample rate
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        fs = (1.0 / dt).to("Hz").value
+
+        # Convert time-based to sample-based parameters
+        if "nfft" not in kwargs and fftlength is not None:
+            kwargs["nperseg"] = int(round(fftlength * fs))
+        if "noverlap" not in kwargs and overlap > 0:
+            kwargs["noverlap"] = int(round(overlap * fs))
+
+        # Set defaults
+        kwargs.setdefault("nperseg", min(256, self.shape[0]))
+        kwargs.setdefault("scaling", "density")
+
+        # Reshape for efficient computation
+        orig_shape = self.shape
+        data1_2d = self.value.reshape(orig_shape[0], -1)
+        data2_2d = other.value.reshape(orig_shape[0], -1)
+
+        # Compute CSD for each spatial point
+        freqs, csd_2d = scipy_signal.csd(
+            data1_2d,
+            data2_2d,
+            fs=fs,
+            window=window,
+            axis=0,
+            **kwargs,
+        )
+
+        # Reshape back
+        new_shape = [len(freqs)] + list(orig_shape[1:])
+        csd_data = csd_2d.reshape(new_shape)
+
+        # Result units
+        if self.unit is not None and other.unit is not None:
+            result_unit = (self.unit * other.unit) / u.Hz
+        elif self.unit is not None:
+            result_unit = self.unit**2 / u.Hz
+        elif other.unit is not None:
+            result_unit = other.unit**2 / u.Hz
+        else:
+            result_unit = 1 / u.Hz
+
+        return ScalarField(
+            csd_data,
+            unit=result_unit,
+            axis0=freqs * u.Hz,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=[
+                self._FREQ_AXIS_NAME,
+                self._axis1_name,
+                self._axis2_name,
+                self._axis3_name,
+            ],
+            axis0_domain="frequency",
+            space_domain=self._space_domains,
+        )
+
+    def coherence(self, other, fftlength=None, overlap=0, window="hann", **kwargs):
+        """Compute frequency-coherence with another field.
+
+        Returns values between 0-1 indicating correlation at each frequency.
+        Critical for identifying correlated noise sources.
+
+        Parameters
+        ----------
+        other : ScalarField
+            Second field for coherence analysis. Must have same shape.
+        fftlength : float, optional
+            Length of FFT segments in seconds. If None, uses entire length.
+        overlap : float, optional
+            Overlap between segments in seconds. Default is 0.
+        window : str or tuple, optional
+            Window function name. Default is 'hann'.
+        **kwargs
+            Additional arguments (nfft, noverlap can override time-based params).
+
+        Returns
+        -------
+        ScalarField
+            Coherence field (dimensionless, values 0-1) with
+            axis0_domain='frequency'.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time' or shapes don't match.
+
+        Examples
+        --------
+        >>> # Coherence between two fields
+        >>> coh = field1.coherence(field2, fftlength=2.0, overlap=1.0)
+
+        See Also
+        --------
+        csd : Cross-spectral density
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("coherence requires axis0_domain='time'")
+        if other._axis0_domain != "time":
+            raise ValueError("other must have axis0_domain='time'")
+        if self.shape != other.shape:
+            raise ValueError(f"Shape mismatch: {self.shape} vs {other.shape}")
+
+        from scipy import signal as scipy_signal
+
+        # Get sample rate
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        fs = (1.0 / dt).to("Hz").value
+
+        # Convert time-based to sample-based parameters
+        if "nfft" not in kwargs and fftlength is not None:
+            kwargs["nperseg"] = int(round(fftlength * fs))
+        if "noverlap" not in kwargs and overlap > 0:
+            kwargs["noverlap"] = int(round(overlap * fs))
+
+        # Set defaults
+        kwargs.setdefault("nperseg", min(256, self.shape[0]))
+
+        # Reshape for efficient computation
+        orig_shape = self.shape
+        data1_2d = self.value.reshape(orig_shape[0], -1)
+        data2_2d = other.value.reshape(orig_shape[0], -1)
+
+        # Compute coherence for each spatial point
+        freqs, coh_2d = scipy_signal.coherence(
+            data1_2d,
+            data2_2d,
+            fs=fs,
+            window=window,
+            axis=0,
+            **kwargs,
+        )
+
+        # Reshape back
+        new_shape = [len(freqs)] + list(orig_shape[1:])
+        coh_data = coh_2d.reshape(new_shape)
+
+        return ScalarField(
+            coh_data,
+            unit=u.dimensionless_unscaled,
+            axis0=freqs * u.Hz,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=[
+                self._FREQ_AXIS_NAME,
+                self._axis1_name,
+                self._axis2_name,
+                self._axis3_name,
+            ],
+            axis0_domain="frequency",
+            space_domain=self._space_domains,
+        )
+
+    def spectrogram(self, stride, fftlength=None, overlap=0, window="hann", method="welch", **kwargs):
+        """Generate time-frequency spectrogram.
+
+        Shows how spectral content evolves over time. Fundamental for
+        visualizing transient signals and time-varying noise.
+
+        Parameters
+        ----------
+        stride : float
+            Time step between consecutive spectrograms in seconds.
+        fftlength : float, optional
+            Length of FFT segments in seconds. If None, uses stride.
+        overlap : float, optional
+            Overlap between FFT segments in seconds. Default is 0.
+        window : str or tuple, optional
+            Window function name. Default is 'hann'.
+        method : str, optional
+            Method for PSD estimation: 'welch' or 'median'. Default is 'welch'.
+        **kwargs
+            Additional arguments passed to scipy.signal.spectrogram.
+
+        Returns
+        -------
+        ScalarField
+            Spectrogram with shape (n_times, n_freqs, nx, ny, nz).
+            Note: axis0 represents time segments, not original time axis.
+            axis1 represents frequency.
+
+        Raises
+        ------
+        ValueError
+            If ``axis0_domain`` is not 'time'.
+
+        Notes
+        -----
+        The returned field has a modified structure where axis0 represents
+        time segments and contains frequency information along a pseudo-axis.
+        For standard usage, consider using `plot_spectrogram()` instead.
+
+        Examples
+        --------
+        >>> # Generate spectrogram with 1s stride and 2s FFT length
+        >>> spec = field.spectrogram(stride=1.0, fftlength=2.0, overlap=1.0)
+
+        See Also
+        --------
+        psd : Power spectral density
+        """
+        if self._axis0_domain != "time":
+            raise ValueError("spectrogram requires axis0_domain='time'")
+
+        from scipy import signal as scipy_signal
+
+        # Get sample rate
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        fs = (1.0 / dt).to("Hz").value
+
+        if fftlength is None:
+            fftlength = stride
+
+        # Convert to samples
+        nperseg = int(round(fftlength * fs))
+        noverlap = int(round(overlap * fs))
+        stride_samples = int(round(stride * fs))
+
+        # Reshape for efficient computation
+        orig_shape = self.shape
+        data_2d = self.value.reshape(orig_shape[0], -1)
+
+        # Compute spectrogram for each spatial point
+        freqs, times, spec_2d = scipy_signal.spectrogram(
+            data_2d,
+            fs=fs,
+            window=window,
+            nperseg=nperseg,
+            noverlap=noverlap,
+            axis=0,
+            **kwargs,
+        )
+
+        # Reshape: spec has shape (n_freqs, n_times, n_spatial_points)
+        # We want (n_times, n_freqs, nx, ny, nz)
+        n_freqs, n_times = spec_2d.shape[0], spec_2d.shape[1]
+        n_spatial = np.prod(orig_shape[1:])
+
+        # Reshape to (n_freqs, n_times, nx, ny, nz)
+        spec_5d = spec_2d.reshape(n_freqs, n_times, *orig_shape[1:])
+
+        # Transpose to (n_times, n_freqs, nx, ny, nz)
+        spec_5d = np.transpose(spec_5d, (1, 0, 2, 3, 4))
+
+        # For now, flatten frequency into the data
+        # Store as (n_times, n_freqs*nx, ny, nz) to maintain 4D structure
+        # This is a temporary solution; ideally we'd have a Spectrogram class
+        spec_4d = spec_5d.reshape(n_times, n_freqs * orig_shape[1], orig_shape[2], orig_shape[3])
+
+        # Time axis for spectrogram segments
+        t0 = self._axis0_index[0]
+        seg_times = times * dt.unit + t0
+
+        # Result units (power spectral density)
+        if self.unit is not None:
+            result_unit = self.unit**2 / u.Hz
+        else:
+            result_unit = 1 / u.Hz
+
+        # Store frequency information in metadata
+        result = ScalarField(
+            spec_4d,
+            unit=result_unit,
+            axis0=seg_times,
+            axis1=np.arange(n_freqs * orig_shape[1]) * u.dimensionless_unscaled,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=[
+                "t_seg",
+                "freq_space",
+                self._axis2_name,
+                self._axis3_name,
+            ],
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
+        # Store frequency and original spatial axis info
+        result._spectrogram_freqs = freqs * u.Hz
+        result._spectrogram_orig_axis1 = self._axis1_index
+
+        return result
+
+    # =========================================================================
+    # Time Series Utilities
+    # =========================================================================
+
+    def is_compatible(self, other):
+        """Check if two fields can be combined.
+
+        Validates matching sample rate, units, spatial axes, and domains.
+
+        Parameters
+        ----------
+        other : ScalarField
+            Field to check compatibility with.
+
+        Returns
+        -------
+        bool
+            True if fields are compatible for concatenation/combination.
+
+        Examples
+        --------
+        >>> if field1.is_compatible(field2):
+        ...     combined = field1.append(field2)
+        """
+        if not isinstance(other, ScalarField):
+            return False
+
+        # Check domains
+        if self._axis0_domain != other._axis0_domain:
+            return False
+        if self._space_domains != other._space_domains:
+            return False
+
+        # Check spatial dimensions
+        if self.shape[1:] != other.shape[1:]:
+            return False
+
+        # Check units
+        if self.unit != other.unit:
+            # Check if equivalent
+            try:
+                if self.unit is not None and other.unit is not None:
+                    if not self.unit.is_equivalent(other.unit):
+                        return False
+                elif self.unit != other.unit:  # One is None, other isn't
+                    return False
+            except:
+                return False
+
+        # Check sample rate (for time domain)
+        if self._axis0_domain == "time":
+            dt1 = self._axis0_index[1] - self._axis0_index[0]
+            dt2 = other._axis0_index[1] - other._axis0_index[0]
+            if not np.isclose(dt1.value, dt2.value, rtol=1e-6):
+                return False
+
+        # Check spatial axes
+        for i in range(1, 4):
+            ax1 = [self._axis1_index, self._axis2_index, self._axis3_index][i - 1]
+            ax2 = [other._axis1_index, other._axis2_index, other._axis3_index][i - 1]
+            if ax1.shape != ax2.shape:
+                return False
+            if not np.allclose(ax1.value, ax2.value, rtol=1e-9, atol=1e-12):
+                return False
+
+        return True
+
+    def is_contiguous(self, other, tol=None):
+        """Test if two segments are adjacent in time.
+
+        Parameters
+        ----------
+        other : ScalarField
+            Field to check contiguity with.
+        tol : float or Quantity, optional
+            Tolerance for time gap. If None, uses half the sample period.
+
+        Returns
+        -------
+        bool
+            True if fields are contiguous (this ends where other begins).
+
+        Examples
+        --------
+        >>> if field1.is_contiguous(field2):
+        ...     combined = field1.append(field2, gap='ignore')
+        """
+        if not self.is_compatible(other):
+            return False
+
+        if self._axis0_domain != "time":
+            return False
+
+        # Get sample period
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        if tol is None:
+            tol = dt / 2
+
+        # Check if self ends where other begins
+        gap = abs(other._axis0_index[0] - self._axis0_index[-1] - dt)
+
+        return gap <= tol
+
+    def append(self, other, gap="raise", pad=0.0, resize=True):
+        """Concatenate another field in time.
+
+        Parameters
+        ----------
+        other : ScalarField
+            Field to append (comes after self).
+        gap : {'raise', 'ignore', 'pad'}, optional
+            How to handle gaps:
+            - 'raise': Raise error if gap exists (default)
+            - 'ignore': Concatenate anyway, time axis may be discontinuous
+            - 'pad': Fill gap with constant value
+        pad : float, optional
+            Value to use for padding if gap='pad'. Default is 0.0.
+        resize : bool, optional
+            Whether to allow different time axis lengths. Default is True.
+
+        Returns
+        -------
+        ScalarField
+            Concatenated field.
+
+        Raises
+        ------
+        ValueError
+            If fields are not compatible or gap handling fails.
+
+        Examples
+        --------
+        >>> # Append contiguous segment
+        >>> combined = field1.append(field2)
+        >>> # Append with gap padding
+        >>> combined = field1.append(field2, gap='pad', pad=0.0)
+
+        See Also
+        --------
+        prepend : Prepend another field
+        is_contiguous : Check if fields are adjacent
+        """
+        if not self.is_compatible(other):
+            raise ValueError("Fields are not compatible for concatenation")
+
+        if self._axis0_domain != "time":
+            raise ValueError("append only works for time-domain fields")
+
+        # Check for gap
+        dt = self._axis0_index[1] - self._axis0_index[0]
+        expected_start = self._axis0_index[-1] + dt
+        actual_start = other._axis0_index[0]
+        time_gap = actual_start - expected_start
+
+        if gap == "raise" and abs(time_gap) > dt / 2:
+            raise ValueError(
+                f"Gap detected: {time_gap}. "
+                f"Use gap='ignore' or gap='pad' to handle gaps."
+            )
+
+        if gap == "pad" and abs(time_gap) > dt / 2:
+            # Create padding segment
+            n_pad = int(round((time_gap / dt).decompose().value))
+            if n_pad > 0:
+                pad_data = np.full(
+                    (n_pad, *self.shape[1:]), pad, dtype=self.value.dtype
+                )
+                pad_times = np.arange(n_pad) * dt + expected_start
+
+                pad_field = ScalarField(
+                    pad_data,
+                    unit=self.unit,
+                    axis0=pad_times,
+                    axis1=self._axis1_index,
+                    axis2=self._axis2_index,
+                    axis3=self._axis3_index,
+                    axis_names=self.axis_names,
+                    axis0_domain="time",
+                    space_domain=self._space_domains,
+                )
+
+                # Concatenate self, pad, other
+                combined_data = np.concatenate(
+                    [self.value, pad_data, other.value], axis=0
+                )
+                combined_times = np.concatenate(
+                    [self._axis0_index, pad_times, other._axis0_index]
+                )
+            else:
+                combined_data = np.concatenate([self.value, other.value], axis=0)
+                combined_times = np.concatenate(
+                    [self._axis0_index, other._axis0_index]
+                )
+        else:
+            # Simple concatenation
+            combined_data = np.concatenate([self.value, other.value], axis=0)
+            combined_times = np.concatenate([self._axis0_index, other._axis0_index])
+
+        return ScalarField(
+            combined_data,
+            unit=self.unit,
+            axis0=combined_times,
+            axis1=self._axis1_index,
+            axis2=self._axis2_index,
+            axis3=self._axis3_index,
+            axis_names=self.axis_names,
+            axis0_domain="time",
+            space_domain=self._space_domains,
+        )
+
+    def prepend(self, other, **kwargs):
+        """Concatenate another field before this one.
+
+        Parameters
+        ----------
+        other : ScalarField
+            Field to prepend (comes before self).
+        **kwargs
+            Additional arguments passed to append().
+
+        Returns
+        -------
+        ScalarField
+            Concatenated field.
+
+        Examples
+        --------
+        >>> # Prepend segment
+        >>> combined = field2.prepend(field1)
+        >>> # Equivalent to field1.append(field2)
+
+        See Also
+        --------
+        append : Append another field
+        """
+        return other.append(self, **kwargs)
