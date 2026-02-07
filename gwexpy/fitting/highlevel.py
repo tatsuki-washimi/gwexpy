@@ -34,6 +34,8 @@ def fit_bootstrap_spectrum(
     window: str = "hann",
     fftlength=None,
     overlap=None,
+    nfft: Optional[int] = None,
+    noverlap: Optional[int] = None,
     n_boot: int = 1000,
     initial_params: Optional[dict[str, float]] = None,
     bounds: Optional[dict[str, tuple[float, float]]] = None,
@@ -87,6 +89,13 @@ def fit_bootstrap_spectrum(
     overlap : float or Quantity, optional
         Overlap between FFT segments in seconds. If None, defaults to
         the recommended overlap for *window* (50 % for Hann).
+        Cannot be used with `noverlap`.
+    nfft : int, optional
+        FFT segment length in samples. Alternative to `fftlength`.
+        Cannot be used with `fftlength`.
+    noverlap : int, optional
+        Overlap length in samples. Must be used with `nfft`.
+        Cannot be used with `overlap`.
     n_boot : int, optional
         Number of bootstrap resamples. Default is 1000.
     initial_params : dict, optional
@@ -203,6 +212,8 @@ def fit_bootstrap_spectrum(
         window=window,
         fftlength=fftlength,
         overlap=overlap,
+        nfft=nfft,
+        noverlap=noverlap,
         block_size=block_size,
         rebin_width=rebin_width,
         return_map=True,  # Always get covariance map for GLS
