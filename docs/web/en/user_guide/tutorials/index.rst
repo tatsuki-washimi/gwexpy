@@ -38,13 +38,15 @@ Handling multiple channels efficiently using Matrix classes.
 
 III. High-dimensional Fields
 ----------------------------
-Next-generation API for scalar, vector, and tensor fields.
+Next-generation API for scalar, vector, and tensor fields in 4D spacetime.
 
 .. toctree::
    :maxdepth: 1
    :caption: Fields API
 
    Scalar Field Basics <field_scalar_intro>
+   Vector Field Basics <field_vector_intro>
+   Tensor Field Basics <field_tensor_intro>
    Scalar Field Signals <field_scalar_signal>
 
 IV. Advanced Signal Processing

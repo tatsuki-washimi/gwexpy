@@ -5,10 +5,11 @@ GWexpy extends GWpy with additional containers and analysis utilities for time a
 
 **Key Features:**
 
-* TimeSeries/FrequencySeries matrix support
-* High-dimensional Field API (ScalarField, VectorField, TensorField)
-* Numerical stability enhancements
-* Utilities for experimental data analysis
+* **Matrix containers**: Efficient multi-channel TimeSeries/FrequencySeries processing
+* **Field API**: 4D spacetime fields (ScalarField, VectorField, TensorField) with time↔frequency and real↔k-space FFT
+* **Enhanced signal processing**: Advanced fitting, HHT, ARIMA, correlation methods
+* **Numerical stability**: Validated algorithms with comprehensive testing
+* **ML/DL integration**: PyTorch, TensorFlow, and scikit-learn interoperability
 
 .. admonition:: Quick Start
    :class: tip
