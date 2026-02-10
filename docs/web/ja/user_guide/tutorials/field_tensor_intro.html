@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TensorField クラス入門 &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="スカラーフィールド信号処理 (ScalarField Signal Processing)" href="field_scalar_signal.html" />
+    <link rel="prev" title="VectorField クラス入門" href="field_vector_intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">視覚的な例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id3">実例ギャラリー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id4">ユーザー別学習パス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id5">主要ドキュメント</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">実例集 (Examples)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id6">次のステップ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
+      <li class="breadcrumb-item active">TensorField クラス入門</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/field_tensor_intro.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tensorfield">
+<h1>TensorField クラス入門<a class="headerlink" href="#tensorfield" title="Link to this heading"></a></h1>
+<p>このチュートリアルでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TensorField</span></code> クラスを紹介します。これは4次元時空におけるテンソル値場を表現するクラスです。</p>
+<section id="id1">
+<h2>TensorField とは<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TensorField</span></code> は、各テンソル成分が <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> であるようなテンソル値物理場を管理するコンテナです。テンソルは、スカラー（ランク0）、ベクトル（ランク1）を高次に一般化した数学的対象で、相対論、応力/ひずみ解析、電磁気理論などで一般的に登場します。</p>
+<p><strong>主な機能:</strong></p>
+<ul class="simple">
+<li><p><strong>任意のランク</strong>: ランク2、ランク3、それ以上のテンソルをサポート</p></li>
+<li><p><strong>成分インデックス</strong>: タプルインデックスによる成分アクセス（例: <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0)</span></code>, <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">2)</span></code>）</p></li>
+<li><p><strong>テンソル演算</strong>: トレース、縮約、その他のテンソル代数</p></li>
+<li><p><strong>一貫した構造</strong>: すべての成分が同一の時空軸を共有</p></li>
+</ul>
+<p><strong>一般的な使用例:</strong></p>
+<ul class="simple">
+<li><p><strong>ランク2テンソル</strong>: 応力テンソル、ひずみテンソル、計量テンソル、リッチテンソル</p></li>
+<li><p><strong>電磁テンソル</strong>: 場の強さテンソル F_μν</p></li>
+<li><p><strong>高次ランク</strong>: リーマン曲率テンソル（ランク4）など</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>基本的な使い方<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>ランク2 TensorField の作成<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>簡単な2×2応力テンソル場を作成してみましょう:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span><span class="p">,</span> <span class="n">TensorField</span>
+
+<span class="c1"># 時空グリッドのセットアップ</span>
+<span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nt</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+
+<span class="c1"># 応力テンソル σ を作成</span>
+<span class="c1"># σ_00: x方向の垂直応力</span>
+<span class="n">data_00</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span>  <span class="c1"># 100 Pa</span>
+<span class="n">field_00</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_00</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">Pa</span><span class="p">,</span> <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># σ_11: y方向の垂直応力</span>
+<span class="n">data_11</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">))</span> <span class="o">*</span> <span class="mi">80</span>  <span class="c1"># 80 Pa</span>
+<span class="n">field_11</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_11</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">Pa</span><span class="p">,</span> <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># σ_01 = σ_10: せん断応力（対称）</span>
+<span class="n">data_01</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">*</span> <span class="mi">20</span>
+<span class="n">field_01</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_01</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">Pa</span><span class="p">,</span> <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># TensorField を作成</span>
+<span class="c1"># キーはテンソルインデックスを表すタプル</span>
+<span class="n">stress_tensor</span> <span class="o">=</span> <span class="n">TensorField</span><span class="p">({</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="n">field_00</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="n">field_01</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="n">field_01</span><span class="p">,</span>  <span class="c1"># 対称: σ_10 = σ_01</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="n">field_11</span><span class="p">,</span>
+<span class="p">},</span> <span class="n">rank</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;テンソルのランク: </span><span class="si">{</span><span class="n">stress_tensor</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;成分: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">stress_tensor</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3>成分へのアクセス<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>成分はタプルインデックスを使用してアクセスします:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 対角成分にアクセス</span>
+<span class="n">sigma_xx</span> <span class="o">=</span> <span class="n">stress_tensor</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="n">sigma_yy</span> <span class="o">=</span> <span class="n">stress_tensor</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+
+<span class="c1"># 非対角（せん断）成分にアクセス</span>
+<span class="n">sigma_xy</span> <span class="o">=</span> <span class="n">stress_tensor</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>テンソルのトレースの計算<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>ランク2テンソルの場合、トレースは対角要素の和です:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># トレースを計算: Tr(σ) = σ_00 + σ_11</span>
+<span class="n">trace</span> <span class="o">=</span> <span class="n">stress_tensor</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;トレースの型: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># ScalarField を返す</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;平均トレース値: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Pa&quot;</span><span class="p">)</span>
+<span class="c1"># 期待値: ~180 Pa (100 + 80)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2>実用例: 電磁場テンソル<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>電磁場テンソル F_μν は、特殊相対論において電場と磁場を統一するランク2の反対称テンソルです。</p>
+<section id="id7">
+<h3>数学的背景<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p>場テンソルは以下のように定義されます:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">F_μν</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">0</span>    <span class="o">-</span><span class="n">Ex</span><span class="o">/</span><span class="n">c</span>  <span class="o">-</span><span class="n">Ey</span><span class="o">/</span><span class="n">c</span>  <span class="o">-</span><span class="n">Ez</span><span class="o">/</span><span class="n">c</span> <span class="p">]</span>
+       <span class="p">[</span> <span class="n">Ex</span><span class="o">/</span><span class="n">c</span>   <span class="mi">0</span>     <span class="o">-</span><span class="n">Bz</span>    <span class="n">By</span>   <span class="p">]</span>
+       <span class="p">[</span> <span class="n">Ey</span><span class="o">/</span><span class="n">c</span>   <span class="n">Bz</span>     <span class="mi">0</span>     <span class="o">-</span><span class="n">Bx</span>  <span class="p">]</span>
+       <span class="p">[</span> <span class="n">Ez</span><span class="o">/</span><span class="n">c</span>  <span class="o">-</span><span class="n">By</span>     <span class="n">Bx</span>     <span class="mi">0</span>   <span class="p">]</span>
+</pre></div>
+</div>
+<p>ここで、E は電場、B は磁場、c は光速です。</p>
+</section>
+<section id="id8">
+<h3>実装例<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">c</span>
+
+<span class="c1"># 簡略化されたEおよびB場を作成</span>
+<span class="c1"># ... (実装の詳細は英語版を参照)</span>
+
+<span class="c1"># F_μν を構築</span>
+<span class="n">F_field</span> <span class="o">=</span> <span class="n">TensorField</span><span class="p">({</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="n">zero_field</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="n">Ex_over_c_field</span><span class="p">,</span>  <span class="c1"># -Ex/c</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="n">minus_Ex_over_c_field</span><span class="p">,</span>  <span class="c1"># Ex/c</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="n">zero_field</span><span class="p">,</span>
+<span class="p">},</span> <span class="n">rank</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># トレースを確認（電磁場テンソルではゼロであるべき）</span>
+<span class="n">trace_F</span> <span class="o">=</span> <span class="n">F_field</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;電磁テンソルのトレース（~0であるべき）: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">trace_F</span><span class="o">.</span><span class="n">value</span><span class="p">))</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id9">
+<h2>変換と演算<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> や <code class="docutils literal notranslate"><span class="pre">VectorField</span></code> と同様に、各テンソル成分は独立に変換できます:</p>
+<section id="fft">
+<h3>時間-周波数FFT<a class="headerlink" href="#fft" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># すべての成分を周波数領域に変換</span>
+<span class="n">stress_tensor_freq</span> <span class="o">=</span> <span class="n">TensorField</span><span class="p">({</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">field</span><span class="o">.</span><span class="n">fft_time</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">stress_tensor</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">},</span> <span class="n">rank</span><span class="o">=</span><span class="n">stress_tensor</span><span class="o">.</span><span class="n">rank</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h3>空間FFT<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># k空間に変換</span>
+<span class="n">stress_tensor_k</span> <span class="o">=</span> <span class="n">TensorField</span><span class="p">({</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">field</span><span class="o">.</span><span class="n">fft_space</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">stress_tensor</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">},</span> <span class="n">rank</span><span class="o">=</span><span class="n">stress_tensor</span><span class="o">.</span><span class="n">rank</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id11">
+<h2>まとめ<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TensorField</span></code> は時空における洗練されたテンソル計算を可能にします:</p>
+<ul class="simple">
+<li><p><strong>柔軟なランク</strong>: ランク2、ランク3、それ以上のテンソルをサポート</p></li>
+<li><p><strong>成分アクセス</strong>: タプルベースのインデックス（例: <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code>）</p></li>
+<li><p><strong>テンソル演算</strong>: トレース、縮約など</p></li>
+<li><p><strong>変換</strong>: 各成分へのFFTと信号処理</p></li>
+<li><p><strong>物理応用</strong>: 応力、ひずみ、電磁場、一般相対論</p></li>
+</ul>
+<section id="field">
+<h3>各Fieldクラスの使い分け<a class="headerlink" href="#field" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field クラス</p></th>
+<th class="head"><p>使用例</p></th>
+<th class="head"><p>例</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>ScalarField</strong></p></td>
+<td><p>単一値場</p></td>
+<td><p>温度、圧力、ポテンシャル</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>VectorField</strong></p></td>
+<td><p>方向性のある場</p></td>
+<td><p>速度、力、電場、磁場</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>TensorField</strong></p></td>
+<td><p>多成分テンソル</p></td>
+<td><p>応力、ひずみ、計量、曲率</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id12">
+<h3>次のステップ<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>VectorField</strong>: <a class="reference internal" href="field_vector_intro.html"><span class="std std-doc">ベクトル場入門</span></a></p></li>
+<li><p><strong>ScalarField</strong>: <a class="reference internal" href="field_scalar_intro.html"><span class="std std-doc">スカラー場入門</span></a></p></li>
+<li><p><strong>高度なトピック</strong>: テンソル縮約、ローレンツ変換など</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="field_vector_intro.html" class="btn btn-neutral float-left" title="VectorField クラス入門" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="field_scalar_signal.html" class="btn btn-neutral float-right" title="スカラーフィールド信号処理 (ScalarField Signal Processing)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

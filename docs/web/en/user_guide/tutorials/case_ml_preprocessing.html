@@ -112,7 +112,7 @@
   <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This page was generated from a Jupyter Notebook.
-<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_ml_preprocessing.ipynb">Download the notebook (.ipynb)</a>.</p>
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_ml_preprocessing.ipynb">Download the notebook (.ipynb)</a></p>
 </div>
 <section id="Machine-Learning-Preprocessing-Pipeline">
 <h1>Machine Learning Preprocessing Pipeline<a class="headerlink" href="#Machine-Learning-Preprocessing-Pipeline" title="Link to this heading"></a></h1>
@@ -123,7 +123,18 @@
 <li><p><strong>Standardization</strong>: Channel-wise normalization (Z-score or robust MAD-based)</p></li>
 </ul>
 <p>This preprocessing is applicable to any machine learning model (DeepClean, Random Forest, XGBoost, etc.), not just deep learning.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Suppress warnings for cleaner documentation output</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="s1">&#39;Wswiglal-redir-stdio&#39;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;gwpy.time&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -147,36 +158,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/washimi/miniforge3/envs/gwexpy/lib/python3.11/site-packages/gwpy/time/__init__.py:36: UserWarning: Wswiglal-redir-stdio:
-
-SWIGLAL standard output/error redirection is enabled in IPython.
-This may lead to performance penalties. To disable locally, use:
-
-with lal.no_swig_redirect_standard_output_error():
-    ...
-
-To disable globally, use:
-
-lal.swig_redirect_standard_output_error(False)
-
-Note however that this will likely lead to error messages from
-LAL functions being either misdirected or lost when called from
-Jupyter notebooks.
-
-To suppress this warning, use:
-
-import warnings
-warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
-import lal
-
-  from lal import LIGOTimeGPS
-</pre></div></div>
 </div>
 <section id="Basic-Usage">
 <h2>Basic Usage<a class="headerlink" href="#Basic-Usage" title="Link to this heading"></a></h2>
@@ -336,7 +317,7 @@ Output units: X=, y=
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_8_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_8_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_9_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_9_0.png" />
 </div>
 </div>
 </section>
@@ -388,7 +369,7 @@ Output units: X=, y=
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_10_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_10_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_11_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_11_0.png" />
 </div>
 </div>
 <section id="Frequency-Domain-Analysis">
@@ -420,7 +401,7 @@ Output units: X=, y=
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_12_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_12_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_13_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_13_0.png" />
 </div>
 </div>
 </section>
@@ -459,7 +440,8 @@ Output units: X=, y=
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">DataLoader created with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span><span class="si">}</span><span class="s2"> batches&quot;</span><span class="p">)</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PyTorch integration skipped: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: PyTorch integration example skipped (PyTorch not installed in docs build environment)&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;To try this example, install: pip install torch&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -468,7 +450,8 @@ Output units: X=, y=
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-PyTorch integration skipped: No module named &#39;torch&#39;
+Note: PyTorch integration example skipped (PyTorch not installed in docs build environment)
+To try this example, install: pip install torch
 </pre></div></div>
 </div>
 </section>
@@ -537,7 +520,7 @@ Number of filter bands: 2
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_16_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_16_1.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_17_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_17_1.png" />
 </div>
 </div>
 </section>
@@ -597,7 +580,7 @@ Number of filter bands: 2
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_18_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_18_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_19_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_19_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">

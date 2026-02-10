@@ -1,0 +1,625 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ML Preprocessing Methods - Individual Techniques &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Linear Algebra for Gravitational Wave Analysis" href="advanced_linear_algebra.html" />
+    <link rel="prev" title="Statistical Correlation Features" href="advanced_correlation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../migration_fftlength.html">Migration Guide: nperseg/noverlap → fftlength/overlap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="case_ml_preprocessing.html">Machine Learning Preprocessing Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">ML Preprocessing Methods - Individual Techniques</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/ml_preprocessing_methods.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ml-preprocessing-methods-individual-techniques">
+<h1>ML Preprocessing Methods - Individual Techniques<a class="headerlink" href="#ml-preprocessing-methods-individual-techniques" title="Link to this heading"></a></h1>
+<p>This tutorial explains each machine learning preprocessing method available in gwexpy <strong>individually</strong>, before combining them into a pipeline.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Machine learning models for gravitational wave analysis require careful data preprocessing:</p>
+<ol class="arabic simple">
+<li><p><strong>Whitening</strong>: Remove colored noise → flat spectrum</p></li>
+<li><p><strong>Bandpass Filtering</strong>: Extract specific frequency bands</p></li>
+<li><p><strong>Normalization</strong>: Standardize amplitudes across channels</p></li>
+<li><p><strong>Segmentation</strong>: Split data into train/validation sets</p></li>
+</ol>
+<p>This tutorial demonstrates each method <strong>separately</strong> so you understand:</p>
+<ul class="simple">
+<li><p>What each method does</p></li>
+<li><p>When to use it</p></li>
+<li><p>How to configure it</p></li>
+<li><p>What to expect as output</p></li>
+</ul>
+</section>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">sine</span><span class="p">,</span> <span class="n">gaussian</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.signal.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">whitening</span><span class="p">,</span> <span class="n">standardization</span>
+
+<span class="c1"># Create sample data: 60 Hz signal + colored noise</span>
+<span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">4096</span>  <span class="c1"># Hz</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># seconds</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">sample_rate</span><span class="p">)</span>
+
+<span class="c1"># Signal: 60 Hz sine wave</span>
+<span class="n">signal</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Colored noise (1/f noise + white noise)</span>
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="mi">1</span><span class="o">/</span><span class="n">sample_rate</span><span class="p">)</span>
+<span class="n">noise_fft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">))</span>
+<span class="n">noise_fft</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>  <span class="c1"># 1/f coloring</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">noise_fft</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="o">.</span><span class="n">real</span> <span class="o">*</span> <span class="mf">0.5</span>
+
+<span class="c1"># Combined data</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">+</span> <span class="n">noise</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;strain&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;H1:GDS-CALIB_STRAIN&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples (</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="method-1-whitening">
+<h2>Method 1: Whitening<a class="headerlink" href="#method-1-whitening" title="Link to this heading"></a></h2>
+<section id="what-is-whitening">
+<h3>What is Whitening?<a class="headerlink" href="#what-is-whitening" title="Link to this heading"></a></h3>
+<p><strong>Purpose</strong>: Transform colored noise (frequency-dependent PSD) to white noise (flat PSD)</p>
+<p><strong>Why needed</strong>: ML models often assume stationary, white noise. Gravitational wave data has strong colored noise (1/f, violin modes, etc.)</p>
+</section>
+<section id="how-whitening-works">
+<h3>How Whitening Works<a class="headerlink" href="#how-whitening-works" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Estimate PSD of the data</p></li>
+<li><p>Compute whitening filter: <code class="docutils literal notranslate"><span class="pre">H(f)</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">/</span> <span class="pre">√PSD(f)</span></code></p></li>
+<li><p>Apply filter in frequency domain</p></li>
+<li><p>Transform back to time domain</p></li>
+</ol>
+</section>
+<section id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.signal.preprocessing.whitening</span><span class="w"> </span><span class="kn">import</span> <span class="n">WhiteningModel</span>
+
+<span class="c1"># Create whitening model</span>
+<span class="n">whitening_model</span> <span class="o">=</span> <span class="n">WhiteningModel</span><span class="p">(</span>
+    <span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>  <span class="c1"># 4-second segments for PSD estimation</span>
+    <span class="n">overlap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>    <span class="c1"># 50% overlap</span>
+    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;welch&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Fit the model (estimates PSD)</span>
+<span class="n">whitening_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
+<span class="c1"># Apply whitening</span>
+<span class="n">ts_whitened</span> <span class="o">=</span> <span class="n">whitening_model</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Whitened data: </span><span class="si">{</span><span class="n">ts_whitened</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="visualization-before-and-after">
+<h3>Visualization: Before and After<a class="headerlink" href="#visualization-before-and-after" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="c1"># Time domain - before</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="mi">1000</span><span class="p">],</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="mi">1000</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original Signal (Time Domain)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Strain&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># Time domain - after</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_whitened</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="mi">1000</span><span class="p">],</span> <span class="n">ts_whitened</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="mi">1000</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Whitened Signal (Time Domain)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Whitened Strain&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># PSD - before</span>
+<span class="n">psd_original</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_original</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">psd_original</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original PSD (Colored)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;PSD&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+
+<span class="c1"># PSD - after</span>
+<span class="n">psd_whitened</span> <span class="o">=</span> <span class="n">ts_whitened</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_whitened</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">psd_whitened</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Whitened PSD (Flat)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;PSD&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Expected Result:</strong></p>
+<ul class="simple">
+<li><p><strong>Before</strong>: PSD slopes down at high frequencies (colored noise)</p></li>
+<li><p><strong>After</strong>: PSD approximately flat (white noise)</p></li>
+</ul>
+</section>
+<section id="when-to-use">
+<h3>When to Use<a class="headerlink" href="#when-to-use" title="Link to this heading"></a></h3>
+<p>✅ <strong>Use whitening when:</strong></p>
+<ul class="simple">
+<li><p>Input data has strong colored noise</p></li>
+<li><p>ML model assumes white noise</p></li>
+<li><p>You want to emphasize features across all frequencies equally</p></li>
+</ul>
+<p>❌ <strong>Don’t use whitening when:</strong></p>
+<ul class="simple">
+<li><p>You specifically want to preserve spectral shape</p></li>
+<li><p>Signal is already white</p></li>
+<li><p>You’re doing frequency-domain analysis (use PSD normalization instead)</p></li>
+</ul>
+</section>
+</section>
+<section id="method-2-bandpass-filtering">
+<h2>Method 2: Bandpass Filtering<a class="headerlink" href="#method-2-bandpass-filtering" title="Link to this heading"></a></h2>
+<section id="what-is-bandpass-filtering">
+<h3>What is Bandpass Filtering?<a class="headerlink" href="#what-is-bandpass-filtering" title="Link to this heading"></a></h3>
+<p><strong>Purpose</strong>: Extract signal in specific frequency range, reject noise outside that range</p>
+<p><strong>Why needed</strong>: Gravitational wave signals often occupy narrow frequency bands (e.g., 20-500 Hz for CBC). Filtering improves SNR.</p>
+</section>
+<section id="id1">
+<h3>Implementation<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Apply bandpass filter: 50-100 Hz</span>
+<span class="n">ts_filtered</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filtered to </span><span class="si">{</span><span class="mi">50</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="mi">100</span><span class="si">}</span><span class="s2"> Hz band&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="visualization-frequency-response">
+<h3>Visualization: Frequency Response<a class="headerlink" href="#visualization-frequency-response" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="c1"># Time domain comparison</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span>
+            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Original&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_filtered</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span> <span class="n">ts_filtered</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span>
+            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Bandpass (50-100 Hz)&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Strain&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Bandpass Filter Effect (Time Domain)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># Frequency domain comparison</span>
+<span class="n">psd_filtered</span> <span class="o">=</span> <span class="n">ts_filtered</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_original</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">psd_original</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+              <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Original&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">psd_filtered</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">psd_filtered</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+              <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Bandpass (50-100 Hz)&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Pass band&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;PSD&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Bandpass Filter Effect (Frequency Domain)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Expected Result:</strong></p>
+<ul class="simple">
+<li><p>PSD suppressed outside 50-100 Hz</p></li>
+<li><p>Signal preserved inside pass band</p></li>
+<li><p>Smooth roll-off at edges (determined by filter order)</p></li>
+</ul>
+</section>
+<section id="multiple-bands">
+<h3>Multiple Bands<a class="headerlink" href="#multiple-bands" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Apply multiple bandpass filters and sum</span>
+<span class="n">bands</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">150</span><span class="p">)]</span>
+<span class="n">ts_multiband</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">for</span> <span class="n">f_low</span><span class="p">,</span> <span class="n">f_high</span> <span class="ow">in</span> <span class="n">bands</span><span class="p">:</span>
+    <span class="n">ts_band</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="n">f_low</span><span class="p">,</span> <span class="n">f_high</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ts_multiband</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ts_multiband</span> <span class="o">=</span> <span class="n">ts_band</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ts_multiband</span> <span class="o">=</span> <span class="n">ts_multiband</span> <span class="o">+</span> <span class="n">ts_band</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Applied </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span><span class="si">}</span><span class="s2"> bandpass filters&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3>When to Use<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>✅ <strong>Use bandpass when:</strong></p>
+<ul class="simple">
+<li><p>Signal has known frequency range</p></li>
+<li><p>You want to reject out-of-band noise</p></li>
+<li><p>Preprocessing for ML models with limited frequency range</p></li>
+</ul>
+<p>❌ <strong>Don’t use bandpass when:</strong></p>
+<ul class="simple">
+<li><p>Signal frequency is unknown or broadband</p></li>
+<li><p>You need full spectrum information</p></li>
+<li><p>Filter ringing artifacts are problematic</p></li>
+</ul>
+</section>
+</section>
+<section id="method-3-normalization-standardization">
+<h2>Method 3: Normalization/Standardization<a class="headerlink" href="#method-3-normalization-standardization" title="Link to this heading"></a></h2>
+<section id="what-is-normalization">
+<h3>What is Normalization?<a class="headerlink" href="#what-is-normalization" title="Link to this heading"></a></h3>
+<p><strong>Purpose</strong>: Scale data to consistent range, remove mean</p>
+<p><strong>Why needed</strong>: ML models (especially neural networks) converge faster with normalized inputs</p>
+</section>
+<section id="methods-available">
+<h3>Methods Available<a class="headerlink" href="#methods-available" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Z-score normalization</strong>: <code class="docutils literal notranslate"><span class="pre">(x</span> <span class="pre">-</span> <span class="pre">mean)</span> <span class="pre">/</span> <span class="pre">std</span></code></p></li>
+<li><p><strong>Robust normalization</strong>: <code class="docutils literal notranslate"><span class="pre">(x</span> <span class="pre">-</span> <span class="pre">median)</span> <span class="pre">/</span> <span class="pre">MAD</span></code> (robust to outliers)</p></li>
+<li><p><strong>Min-Max scaling</strong>: <code class="docutils literal notranslate"><span class="pre">(x</span> <span class="pre">-</span> <span class="pre">min)</span> <span class="pre">/</span> <span class="pre">(max</span> <span class="pre">-</span> <span class="pre">min)</span></code></p></li>
+</ol>
+</section>
+<section id="id3">
+<h3>Implementation<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="c1"># Z-score normalization</span>
+<span class="n">ts_zscore</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;zscore&#39;</span><span class="p">)</span>
+
+<span class="c1"># Robust normalization (uses Median Absolute Deviation)</span>
+<span class="n">ts_robust</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;zscore&#39;</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original: mean=</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, std=</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Z-score:  mean=</span><span class="si">{</span><span class="n">ts_zscore</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, std=</span><span class="si">{</span><span class="n">ts_zscore</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Robust:   median=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">ts_robust</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, MAD*1.4826=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ts_robust</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">ts_robust</span><span class="o">.</span><span class="n">value</span><span class="p">)))</span><span class="o">*</span><span class="mf">1.4826</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Expected Output:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Original: mean=0.023, std=0.891
+Z-score:  mean≈0.0, std≈1.0
+Robust:   median≈0.0, MAD*1.4826≈1.0
+</pre></div>
+</div>
+</section>
+<section id="visualization-distribution-comparison">
+<h3>Visualization: Distribution Comparison<a class="headerlink" href="#visualization-distribution-comparison" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="c1"># Original distribution</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Original</span><span class="se">\n</span><span class="s1">μ=</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">, σ=</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Strain&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># Z-score distribution</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ts_zscore</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Z-score Normalized</span><span class="se">\n</span><span class="s1">μ≈0, σ≈1&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Normalized Strain&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># Robust distribution</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ts_robust</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Robust Normalized</span><span class="se">\n</span><span class="s1">Median≈0, MAD≈1&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Normalized Strain&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="comparison-z-score-vs-robust-with-outliers">
+<h3>Comparison: Z-score vs Robust (with outliers)<a class="headerlink" href="#comparison-z-score-vs-robust-with-outliers" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add artificial outliers</span>
+<span class="n">ts_with_outliers</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">ts_with_outliers</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1000</span><span class="p">:</span><span class="mi">1010</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span>  <span class="c1"># Large spike</span>
+
+<span class="c1"># Normalize both ways</span>
+<span class="n">ts_zscore_out</span> <span class="o">=</span> <span class="n">ts_with_outliers</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;zscore&#39;</span><span class="p">)</span>
+<span class="n">ts_robust_out</span> <span class="o">=</span> <span class="n">ts_with_outliers</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;zscore&#39;</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Plot comparison</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">time_window</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">900</span><span class="p">,</span> <span class="mi">1100</span><span class="p">)</span>  <span class="c1"># Around outlier</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">time_window</span><span class="p">]</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">ts_with_outliers</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">time_window</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original (with outliers)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Strain&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">ts_zscore_out</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">time_window</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Z-score (sensitive to outliers)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Normalized&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">ts_robust_out</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">time_window</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Robust (resistant to outliers)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Normalized&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Expected Result:</strong></p>
+<ul class="simple">
+<li><p>Z-score: Entire signal squashed due to large outlier variance</p></li>
+<li><p>Robust: Outlier visible but rest of signal maintains structure</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>When to Use<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>✅ <strong>Use z-score when:</strong></p>
+<ul class="simple">
+<li><p>Data is approximately Gaussian</p></li>
+<li><p>No significant outliers</p></li>
+<li><p>Standard ML preprocessing</p></li>
+</ul>
+<p>✅ <strong>Use robust when:</strong></p>
+<ul class="simple">
+<li><p>Data contains glitches/outliers</p></li>
+<li><p>Non-Gaussian noise</p></li>
+<li><p>Want to preserve signal structure despite artifacts</p></li>
+</ul>
+</section>
+</section>
+<section id="method-4-train-validation-split">
+<h2>Method 4: Train/Validation Split<a class="headerlink" href="#method-4-train-validation-split" title="Link to this heading"></a></h2>
+<section id="what-is-segmentation">
+<h3>What is Segmentation?<a class="headerlink" href="#what-is-segmentation" title="Link to this heading"></a></h3>
+<p><strong>Purpose</strong>: Divide data into non-overlapping training and validation sets</p>
+<p><strong>Why needed</strong>: ML models need separate data for training and performance evaluation</p>
+</section>
+<section id="time-ordered-split">
+<h3>Time-Ordered Split<a class="headerlink" href="#time-ordered-split" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Split: 80% train, 20% validation</span>
+<span class="n">train_fraction</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">split_point</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span> <span class="o">*</span> <span class="n">train_fraction</span><span class="p">)</span>
+
+<span class="n">ts_train</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[:</span><span class="n">split_point</span><span class="p">]</span>
+<span class="n">ts_valid</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="n">split_point</span><span class="p">:]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Train: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_train</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_train</span><span class="p">)</span><span class="o">/</span><span class="n">sample_rate</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Valid: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_valid</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_valid</span><span class="p">)</span><span class="o">/</span><span class="n">sample_rate</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">s)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Expected Output:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Train</span><span class="p">:</span> <span class="mi">32768</span> <span class="n">samples</span> <span class="p">(</span><span class="mf">8.0</span><span class="n">s</span><span class="p">)</span>
+<span class="n">Valid</span><span class="p">:</span> <span class="mi">8192</span> <span class="n">samples</span> <span class="p">(</span><span class="mf">2.0</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="visualization">
+<h3>Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Full Data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">ts_train</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Train/Valid Split&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ts_train</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Training Set&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">ts_train</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span>
+           <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Validation Set&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Strain&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Train/Validation Split (Time-Ordered)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>When to Use<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>✅ <strong>Time-ordered split when:</strong></p>
+<ul class="simple">
+<li><p>Temporal dependencies exist (autocorrelation)</p></li>
+<li><p>Testing future prediction capability</p></li>
+<li><p>Standard practice for time series</p></li>
+</ul>
+<p>❌ <strong>Random split when:</strong></p>
+<ul class="simple">
+<li><p>Data is i.i.d. (independent and identically distributed)</p></li>
+<li><p><strong>Warning</strong>: Usually not appropriate for GW data!</p></li>
+</ul>
+</section>
+</section>
+<section id="summary-decision-matrix">
+<h2>Summary: Decision Matrix<a class="headerlink" href="#summary-decision-matrix" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Input</p></th>
+<th class="head"><p>Output</p></th>
+<th class="head"><p>When to Use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Whitening</strong></p></td>
+<td><p>Colored noise</p></td>
+<td><p>White noise</p></td>
+<td><p>Always for ML with GW data</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Bandpass</strong></p></td>
+<td><p>Broadband signal</p></td>
+<td><p>Narrow-band signal</p></td>
+<td><p>Known frequency range</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Z-score</strong></p></td>
+<td><p>Arbitrary scale</p></td>
+<td><p>Mean=0, Std=1</p></td>
+<td><p>Gaussian data, no outliers</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Robust</strong></p></td>
+<td><p>With outliers</p></td>
+<td><p>Median=0, MAD=1</p></td>
+<td><p>Glitchy data</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Train/Val Split</strong></p></td>
+<td><p>Full dataset</p></td>
+<td><p>Train + Valid sets</p></td>
+<td><p>All supervised learning</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="combining-methods">
+<h2>Combining Methods<a class="headerlink" href="#combining-methods" title="Link to this heading"></a></h2>
+<p>See <a class="reference internal" href="case_ml_preprocessing.html"><span class="std std-doc">ML Preprocessing Pipeline</span></a> for a complete workflow combining these methods in the optimal order.</p>
+<p><strong>Recommended order:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Bandpass</strong> (if applicable) - Removes out-of-band noise first</p></li>
+<li><p><strong>Whitening</strong> - Flattens spectrum</p></li>
+<li><p><strong>Normalization</strong> - Standardizes scale</p></li>
+<li><p><strong>Split</strong> - Creates train/valid sets</p></li>
+</ol>
+<hr class="docutils" />
+<p><strong>See Also:</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="case_ml_preprocessing.html"><span class="std std-doc">Complete ML Pipeline</span></a> - End-to-end workflow</p></li>
+<li><p><a class="reference internal" href="../numerical_stability.html"><span class="std std-doc">Numerical Stability Guide</span></a> - Precision considerations</p></li>
+<li><p><a class="reference internal" href="advanced_correlation.html"><span class="std std-doc">Advanced Correlation</span></a> - Feature engineering</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="advanced_correlation.html" class="btn btn-neutral float-left" title="Statistical Correlation Features" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_linear_algebra.html" class="btn btn-neutral float-right" title="Linear Algebra for Gravitational Wave Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

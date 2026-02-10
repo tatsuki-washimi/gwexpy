@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction to TensorField Class &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Signal Processing on Physical Fields (ScalarField)" href="field_scalar_signal.html" />
+    <link rel="prev" title="Introduction to VectorField Class" href="field_vector_intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../migration_fftlength.html">Migration Guide: nperseg/noverlap → fftlength/overlap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="case_ml_preprocessing.html">Machine Learning Preprocessing Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Introduction to TensorField Class</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/field_tensor_intro.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction-to-tensorfield-class">
+<h1>Introduction to TensorField Class<a class="headerlink" href="#introduction-to-tensorfield-class" title="Link to this heading"></a></h1>
+<p>This tutorial introduces the <code class="docutils literal notranslate"><span class="pre">TensorField</span></code> class in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>, which represents tensor-valued fields in 4D spacetime.</p>
+<section id="what-is-tensorfield">
+<h2>What is TensorField?<a class="headerlink" href="#what-is-tensorfield" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TensorField</span></code> is a container for managing tensor-valued physical fields where each tensor component is a <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>. Tensors are mathematical objects that generalize scalars (rank-0), vectors (rank-1) to higher ranks, commonly appearing in relativity, stress/strain analysis, and electromagnetic theory.</p>
+<p><strong>Key Features:</strong></p>
+<ul class="simple">
+<li><p><strong>Arbitrary rank</strong>: Support for rank-2, rank-3, and higher tensors</p></li>
+<li><p><strong>Component indexing</strong>: Access components via tuple indices (e.g., <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">0)</span></code>, <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">2)</span></code>)</p></li>
+<li><p><strong>Tensor operations</strong>: Trace, contraction, and other tensor algebra</p></li>
+<li><p><strong>Consistent structure</strong>: All components share identical spacetime axes</p></li>
+</ul>
+<p><strong>Common Use Cases:</strong></p>
+<ul class="simple">
+<li><p><strong>Rank-2 tensors</strong>: Stress tensor, strain tensor, metric tensor, Ricci tensor</p></li>
+<li><p><strong>Electromagnetic tensor</strong>: Field strength tensor F_μν</p></li>
+<li><p><strong>Higher ranks</strong>: Riemann curvature tensor (rank-4), etc.</p></li>
+</ul>
+</section>
+<section id="basic-usage">
+<h2>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h2>
+<section id="creating-a-rank-2-tensorfield">
+<h3>Creating a Rank-2 TensorField<a class="headerlink" href="#creating-a-rank-2-tensorfield" title="Link to this heading"></a></h3>
+<p>Let’s create a simple 2×2 stress tensor field:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span><span class="p">,</span> <span class="n">TensorField</span>
+
+<span class="c1"># Setup spacetime grid</span>
+<span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nt</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+
+<span class="c1"># Create a simple stress tensor σ</span>
+<span class="c1"># σ_00: Normal stress in x-direction</span>
+<span class="n">data_00</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span>  <span class="c1"># 100 Pa</span>
+<span class="n">field_00</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_00</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">Pa</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># σ_11: Normal stress in y-direction</span>
+<span class="n">data_11</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">))</span> <span class="o">*</span> <span class="mi">80</span>  <span class="c1"># 80 Pa</span>
+<span class="n">field_11</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_11</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">Pa</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># σ_01 = σ_10: Shear stress (symmetric)</span>
+<span class="n">data_01</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">*</span> <span class="mi">20</span>
+<span class="n">field_01</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_01</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">Pa</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Create TensorField</span>
+<span class="c1"># Keys are tuples representing tensor indices</span>
+<span class="n">stress_tensor</span> <span class="o">=</span> <span class="n">TensorField</span><span class="p">({</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="n">field_00</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="n">field_01</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="n">field_01</span><span class="p">,</span>  <span class="c1"># Symmetric: σ_10 = σ_01</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="n">field_11</span><span class="p">,</span>
+<span class="p">},</span> <span class="n">rank</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor rank: </span><span class="si">{</span><span class="n">stress_tensor</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Components: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">stress_tensor</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="accessing-components">
+<h3>Accessing Components<a class="headerlink" href="#accessing-components" title="Link to this heading"></a></h3>
+<p>Components are accessed using tuple indices:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Access diagonal components</span>
+<span class="n">sigma_xx</span> <span class="o">=</span> <span class="n">stress_tensor</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="n">sigma_yy</span> <span class="o">=</span> <span class="n">stress_tensor</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+
+<span class="c1"># Access off-diagonal (shear) component</span>
+<span class="n">sigma_xy</span> <span class="o">=</span> <span class="n">stress_tensor</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;σ_xx shape: </span><span class="si">{</span><span class="n">sigma_xx</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;σ_xy unit: </span><span class="si">{</span><span class="n">sigma_xy</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="computing-tensor-trace">
+<h3>Computing Tensor Trace<a class="headerlink" href="#computing-tensor-trace" title="Link to this heading"></a></h3>
+<p>For rank-2 tensors, the trace is the sum of diagonal elements:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute trace: Tr(σ) = σ_00 + σ_11</span>
+<span class="n">trace</span> <span class="o">=</span> <span class="n">stress_tensor</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trace type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Returns ScalarField</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trace shape: </span><span class="si">{</span><span class="n">trace</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean trace value: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Pa&quot;</span><span class="p">)</span>
+<span class="c1"># Expected: ~180 Pa (100 + 80)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="practical-example-electromagnetic-field-tensor">
+<h2>Practical Example: Electromagnetic Field Tensor<a class="headerlink" href="#practical-example-electromagnetic-field-tensor" title="Link to this heading"></a></h2>
+<p>The electromagnetic field tensor F_μν is a rank-2 antisymmetric tensor that unifies electric and magnetic fields in special relativity.</p>
+<section id="mathematical-background">
+<h3>Mathematical Background<a class="headerlink" href="#mathematical-background" title="Link to this heading"></a></h3>
+<p>The field tensor is defined as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">F_μν</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">0</span>    <span class="o">-</span><span class="n">Ex</span><span class="o">/</span><span class="n">c</span>  <span class="o">-</span><span class="n">Ey</span><span class="o">/</span><span class="n">c</span>  <span class="o">-</span><span class="n">Ez</span><span class="o">/</span><span class="n">c</span> <span class="p">]</span>
+       <span class="p">[</span> <span class="n">Ex</span><span class="o">/</span><span class="n">c</span>   <span class="mi">0</span>     <span class="o">-</span><span class="n">Bz</span>    <span class="n">By</span>   <span class="p">]</span>
+       <span class="p">[</span> <span class="n">Ey</span><span class="o">/</span><span class="n">c</span>   <span class="n">Bz</span>     <span class="mi">0</span>     <span class="o">-</span><span class="n">Bx</span>  <span class="p">]</span>
+       <span class="p">[</span> <span class="n">Ez</span><span class="o">/</span><span class="n">c</span>  <span class="o">-</span><span class="n">By</span>     <span class="n">Bx</span>     <span class="mi">0</span>   <span class="p">]</span>
+</pre></div>
+</div>
+<p>where E is the electric field, B is the magnetic field, and c is the speed of light.</p>
+</section>
+<section id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">c</span>
+
+<span class="c1"># Create simplified E and B fields</span>
+<span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nt</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">nz</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+
+<span class="c1"># Plane wave: E_x and B_y components</span>
+<span class="n">omega</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># 5 Hz</span>
+<span class="n">k</span> <span class="o">=</span> <span class="n">omega</span> <span class="o">/</span> <span class="n">c</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># Wave number</span>
+
+<span class="c1"># E-field in x direction</span>
+<span class="n">Ex_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">omega</span> <span class="o">*</span> <span class="n">t</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">))</span>
+<span class="n">Ex_field</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">Ex_data</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="o">/</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># B-field in y direction (phase-matched with E)</span>
+<span class="n">By_data</span> <span class="o">=</span> <span class="n">Ex_data</span> <span class="o">/</span> <span class="n">c</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># B = E/c for EM wave</span>
+<span class="n">By_field</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">By_data</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>  <span class="c1"># Tesla</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Zero fields for other components</span>
+<span class="n">zero_field</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">)),</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="o">/</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Build F_μν (simplified 2D version: only x and y)</span>
+<span class="c1"># F_01 = -Ex/c, F_10 = Ex/c (antisymmetric)</span>
+<span class="c1"># Note: In full 4D spacetime, indices run 0-3 (t, x, y, z)</span>
+<span class="n">F_field</span> <span class="o">=</span> <span class="n">TensorField</span><span class="p">({</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="n">zero_field</span><span class="p">,</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="n">ScalarField</span><span class="p">(</span><span class="o">-</span><span class="n">Ex_field</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                        <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+                        <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">],</span>
+                        <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span> <span class="n">ScalarField</span><span class="p">(</span><span class="n">Ex_field</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                        <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+                        <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">],</span>
+                        <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="n">zero_field</span><span class="p">,</span>
+<span class="p">},</span> <span class="n">rank</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EM tensor rank: </span><span class="si">{</span><span class="n">F_field</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EM tensor components: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">F_field</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check trace (should be zero for EM field tensor)</span>
+<span class="n">trace_F</span> <span class="o">=</span> <span class="n">F_field</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EM tensor trace (should be ~0): </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">trace_F</span><span class="o">.</span><span class="n">value</span><span class="p">))</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="higher-rank-tensors">
+<h2>Higher-Rank Tensors<a class="headerlink" href="#higher-rank-tensors" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TensorField</span></code> supports arbitrary rank. For example, the Riemann curvature tensor in general relativity is rank-4:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a rank-4 tensor component (example)</span>
+<span class="n">R_0101</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">),</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s1">&#39;real&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Partial Riemann tensor (just showing structure)</span>
+<span class="n">riemann_partial</span> <span class="o">=</span> <span class="n">TensorField</span><span class="p">({</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="n">R_0101</span><span class="p">,</span>
+    <span class="c1"># ... other components ...</span>
+<span class="p">},</span> <span class="n">rank</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Riemann tensor rank: </span><span class="si">{</span><span class="n">riemann_partial</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="transformations-and-operations">
+<h2>Transformations and Operations<a class="headerlink" href="#transformations-and-operations" title="Link to this heading"></a></h2>
+<p>Like <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> and <code class="docutils literal notranslate"><span class="pre">VectorField</span></code>, each tensor component can be transformed independently:</p>
+<section id="time-frequency-fft">
+<h3>Time-Frequency FFT<a class="headerlink" href="#time-frequency-fft" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Transform all components to frequency domain</span>
+<span class="n">stress_tensor_freq</span> <span class="o">=</span> <span class="n">TensorField</span><span class="p">({</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">field</span><span class="o">.</span><span class="n">fft_time</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">stress_tensor</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">},</span> <span class="n">rank</span><span class="o">=</span><span class="n">stress_tensor</span><span class="o">.</span><span class="n">rank</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency domain: </span><span class="si">{</span><span class="n">stress_tensor_freq</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="spatial-fft">
+<h3>Spatial FFT<a class="headerlink" href="#spatial-fft" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Transform to k-space</span>
+<span class="n">stress_tensor_k</span> <span class="o">=</span> <span class="n">TensorField</span><span class="p">({</span>
+    <span class="n">key</span><span class="p">:</span> <span class="n">field</span><span class="o">.</span><span class="n">fft_space</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">stress_tensor</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">},</span> <span class="n">rank</span><span class="o">=</span><span class="n">stress_tensor</span><span class="o">.</span><span class="n">rank</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;K-space: </span><span class="si">{</span><span class="n">stress_tensor_k</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="copy-and-manipulation">
+<h2>Copy and Manipulation<a class="headerlink" href="#copy-and-manipulation" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a copy</span>
+<span class="n">stress_copy</span> <span class="o">=</span> <span class="n">stress_tensor</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1"># Modify components</span>
+<span class="n">stress_copy</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">stress_copy</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">*</span> <span class="mf">1.5</span>  <span class="c1"># Increase σ_xx by 50%</span>
+
+<span class="c1"># Original is unchanged</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original σ_xx mean: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stress_tensor</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Pa&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modified σ_xx mean: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stress_copy</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Pa&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TensorField</span></code> enables sophisticated tensor calculus in spacetime:</p>
+<ul class="simple">
+<li><p><strong>Flexible rank</strong>: Support for rank-2, rank-3, and higher tensors</p></li>
+<li><p><strong>Component access</strong>: Tuple-based indexing (e.g., <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">1)</span></code>)</p></li>
+<li><p><strong>Tensor operations</strong>: Trace, contraction, etc.</p></li>
+<li><p><strong>Transformations</strong>: FFT and signal processing on each component</p></li>
+<li><p><strong>Physical applications</strong>: Stress, strain, EM fields, general relativity</p></li>
+</ul>
+<section id="when-to-use-each-field-class">
+<h3>When to Use Each Field Class<a class="headerlink" href="#when-to-use-each-field-class" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field Class</p></th>
+<th class="head"><p>Use Case</p></th>
+<th class="head"><p>Example</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>ScalarField</strong></p></td>
+<td><p>Single-valued fields</p></td>
+<td><p>Temperature, pressure, potential</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>VectorField</strong></p></td>
+<td><p>Directional fields</p></td>
+<td><p>Velocity, force, E-field, B-field</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>TensorField</strong></p></td>
+<td><p>Multi-component tensors</p></td>
+<td><p>Stress, strain, metric, curvature</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="next-steps">
+<h3>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>VectorField</strong>: <a class="reference internal" href="field_vector_intro.html"><span class="std std-doc">Vector Field Introduction</span></a></p></li>
+<li><p><strong>ScalarField</strong>: <a class="reference internal" href="field_scalar_intro.html"><span class="std std-doc">Scalar Field Introduction</span></a></p></li>
+<li><p><strong>Advanced topics</strong>: Tensor contraction, Lorentz transformations, etc.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="field_vector_intro.html" class="btn btn-neutral float-left" title="Introduction to VectorField Class" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="field_scalar_signal.html" class="btn btn-neutral float-right" title="Signal Processing on Physical Fields (ScalarField)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
