@@ -40,11 +40,17 @@ III. 高次元フィールド (Field API)
 ---------------------------------
 4次元時空におけるスカラ場、ベクトル場、テンソル場を扱うための次世代 API について説明します。
 
+.. note::
+   スカラー場基礎ノートブックは現在、埋め込み出力がありません。
+   可視化のプレビューは :doc:`ScalarField 期待される出力 <field_scalar_intro_outputs>` を参照するか、
+   ノートブックをダウンロードしてローカルで実行してすべてのプロットを確認してください。
+
 .. toctree::
    :maxdepth: 1
    :caption: フィールド API
 
    field_scalar_intro
+   ScalarField 期待される出力 <field_scalar_intro_outputs>
    field_vector_intro
    field_tensor_intro
    field_scalar_signal
