@@ -48,13 +48,17 @@ napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 napoleon_use_admonition_for_notes = True
 
-# Add a consistent download link on notebook pages.
+# Add a consistent download link on notebook pages - language-aware using Jinja2
 nbsphinx_prolog = r"""
-
+{% if '/ja/' in env.docname %}
+.. note::
+   このページは Jupyter Notebook から生成されました。
+   `ノートブックをダウンロード (.ipynb) <https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
+{% else %}
 .. note::
    This page was generated from a Jupyter Notebook.
-   `Download the notebook (.ipynb) <https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_.
-
+   `Download the notebook (.ipynb) <https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
+{% endif %}
 """
 
 # Ignore nitpick errors for well-known external symbols to keep -n builds manageable.
