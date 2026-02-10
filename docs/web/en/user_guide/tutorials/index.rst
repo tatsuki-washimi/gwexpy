@@ -67,8 +67,12 @@ Statistical analysis and advanced transforms.
    Bootstrap PSD & GLS Fitting <case_bootstrap_gls_fitting>
    Peak Detection <advanced_peak_detection>
    HHT Analysis <advanced_hht>
+   Time-Frequency Methods Comparison <time_frequency_comparison>
    ARIMA Forecasting <advanced_arima>
    Nonlinear Correlation <advanced_correlation>
+   ML Preprocessing Methods <ml_preprocessing_methods>
+   Linear Algebra for GW Analysis <advanced_linear_algebra>
+   Field × Advanced Analysis Integration <field_advanced_integration>
 
 V. Specialized Tools
 --------------------
