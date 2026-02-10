@@ -38,13 +38,21 @@ Handling multiple channels efficiently using Matrix classes.
 
 III. High-dimensional Fields
 ----------------------------
-Next-generation API for scalar, vector, and tensor fields.
+Next-generation API for scalar, vector, and tensor fields in 4D spacetime.
+
+.. note::
+   The ScalarField Basics notebook currently lacks embedded outputs.
+   See :doc:`ScalarField Expected Outputs <field_scalar_intro_outputs>` for visualization previews,
+   or download and run the notebook locally to see all plots.
 
 .. toctree::
    :maxdepth: 1
    :caption: Fields API
 
    Scalar Field Basics <field_scalar_intro>
+   ScalarField Expected Outputs <field_scalar_intro_outputs>
+   Vector Field Basics <field_vector_intro>
+   Tensor Field Basics <field_tensor_intro>
    Scalar Field Signals <field_scalar_signal>
 
 IV. Advanced Signal Processing
@@ -59,8 +67,13 @@ Statistical analysis and advanced transforms.
    Bootstrap PSD & GLS Fitting <case_bootstrap_gls_fitting>
    Peak Detection <advanced_peak_detection>
    HHT Analysis <advanced_hht>
+   Time-Frequency Analysis Comparison (Interactive) <time_frequency_analysis_comparison>
+   Time-Frequency Methods Comparison <time_frequency_comparison>
    ARIMA Forecasting <advanced_arima>
    Nonlinear Correlation <advanced_correlation>
+   ML Preprocessing Methods <ml_preprocessing_methods>
+   Linear Algebra for GW Analysis <advanced_linear_algebra>
+   Field × Advanced Analysis Integration <field_advanced_integration>
 
 V. Specialized Tools
 --------------------

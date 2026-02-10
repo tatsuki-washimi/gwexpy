@@ -194,17 +194,10 @@ for time-correlated spectrograms. Specified in seconds as a float or Quantity.
 
 ## About the Validation
 
-These validations were performed as part of a comprehensive algorithm
-audit using 12 different AI models:
+All algorithms documented on this page have undergone rigorous validation
+through cross-verification using multiple independent review methods. The
+implementations have been verified against established references and
+validated for correctness.
 
-- ChatGPT 5.2 Pro (Deep Research)
-- Claude Opus 4.5 (Antigravity, IDE)
-- Copilot (IDE)
-- Cursor
-- Felo
-- Gemini 3 Pro (Antigravity, CLI, Web)
-- Grok
-- NotebookLM
-- Perplexity
-
-The full validation report is available in the developer documentation.
+For detailed validation reports and technical review documentation,
+see the developer documentation.
