@@ -66,8 +66,12 @@ IV. 高度な信号処理
    advanced_fitting
    advanced_peak_detection
    advanced_hht
+   時間-周波数解析手法の比較 <time_frequency_comparison>
    advanced_arima
    advanced_correlation
+   ML前処理手法 <ml_preprocessing_methods>
+   重力波解析のための線形代数 <advanced_linear_algebra>
+   Field API × 高度な解析統合 <field_advanced_integration>
 
 V. 特殊ツール
 --------------
