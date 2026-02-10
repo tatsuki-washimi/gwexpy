@@ -38,13 +38,15 @@ Matrixクラスを使用して、複数のチャンネルを効率的に扱う�
 
 III. 高次元フィールド (Field API)
 ---------------------------------
-スカラ場、ベクトル場、テンソル場を扱うための次世代 API について説明します。
+4次元時空におけるスカラ場、ベクトル場、テンソル場を扱うための次世代 API について説明します。
 
 .. toctree::
    :maxdepth: 1
    :caption: フィールド API
 
    field_scalar_intro
+   field_vector_intro
+   field_tensor_intro
    field_scalar_signal
 
 IV. 高度な信号処理
