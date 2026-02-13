@@ -40,6 +40,11 @@ jobs:
 
       - name: Build documentation
         shell: bash -l {0}
+        env:
+          # Enable notebook execution for complete documentation
+          NBS_EXECUTE: always
+          # Allow notebook errors to not block deployment (warnings will be logged)
+          NBS_ALLOW_ERRORS: "true"
         run: |
           # Publish docs under /docs/... so URLs become /gwexpy/docs/web/{en,ja}/.
           mkdir -p docs/_build/html
