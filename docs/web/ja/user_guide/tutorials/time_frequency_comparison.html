@@ -120,7 +120,7 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>スペクトログラム</strong></p></td>
+<tr class="row-even"><td><p><strong>スペクトログラム (STFT)</strong></p></td>
 <td><p>汎用</p></td>
 <td><p>良好</p></td>
 <td><p>良好</p></td>
@@ -130,20 +130,30 @@
 <td><p>適応的</p></td>
 <td><p>適応的（定数Q）</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>HHT</strong></p></td>
-<td><p>非定常、非線形</p></td>
+<tr class="row-even"><td><p><strong>ウェーブレット (CWT)</strong></p></td>
+<td><p>マルチスケール特徴、チャープ</p></td>
+<td><p>スケール依存</p></td>
+<td><p>スケール依存</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>HHT</strong></p></td>
+<td><p>瞬時周波数</p></td>
 <td><p>優秀</p></td>
 <td><p>データ適応的</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>STFT</strong></p></td>
-<td><p>定常セグメント</p></td>
-<td><p>固定（窓）</p></td>
-<td><p>固定（窓）</p></td>
+<tr class="row-even"><td><p><strong>STLT</strong></p></td>
+<td><p>減衰振動</p></td>
+<td><p>良好</p></td>
+<td><p>良好（+減衰率σ）</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ウェーブレット</strong></p></td>
-<td><p>マルチスケール特徴</p></td>
-<td><p>スケール依存</p></td>
-<td><p>スケール依存</p></td>
+<tr class="row-odd"><td><p><strong>ケプストラム</strong></p></td>
+<td><p>エコー検出、周期性</p></td>
+<td><p>N/A</p></td>
+<td><p>ケフレンシー領域</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>DCT</strong></p></td>
+<td><p>圧縮、平滑特徴</p></td>
+<td><p>N/A</p></td>
+<td><p>N/A（基底係数）</p></td>
 </tr>
 </tbody>
 </table>
@@ -339,18 +349,68 @@
 </ul>
 </section>
 </section>
-<section id="hht">
-<h2>手法 3: ヒルベルト・ファン変換（HHT）<a class="headerlink" href="#hht" title="Link to this heading"></a></h2>
+<section id="cwt">
+<h2>手法 3: ウェーブレット変換 (CWT)<a class="headerlink" href="#cwt" title="Link to this heading"></a></h2>
 <section id="id14">
 <h3>手法の説明<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p><strong>連続ウェーブレット変換 (CWT)</strong>: 拡張・移動されたウェーブレットを用いたマルチスケール解析</p>
+<p><strong>式</strong>: <code class="docutils literal notranslate"><span class="pre">W(a,</span> <span class="pre">b)</span> <span class="pre">=</span> <span class="pre">∫</span> <span class="pre">x(t)</span> <span class="pre">ψ*((t-b)/a)</span> <span class="pre">dt</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>: スケールパラメータ（周波数に反比例）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code>: 時間シフトパラメータ</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ψ</span></code>: マザーウェーブレット（例：Morlet）</p></li>
+</ul>
+</section>
+<section id="id15">
+<h3>利点と欠点<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p>自然なスケールマッチング（ウェーブレットが信号に追従するように「伸縮」）</p></li>
+<li><p>STFTより優れた時間-周波数局在化</p></li>
+<li><p>チャープとマルチスケール過渡現象に最適</p></li>
+<li><p>リッジ抽出により精密な周波数軌跡を提供</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>STFTより高い計算コスト</p></li>
+<li><p>ウェーブレット選択が必要（Morlet、Mexican hatなど）</p></li>
+<li><p>冗長表現（過完備）</p></li>
+<li><p>信号境界でのエッジ効果</p></li>
+</ul>
+</section>
+<section id="id16">
+<h3>いつ使用するか<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<p>✅ <strong>ウェーブレットを使用する場合:</strong></p>
+<ul class="simple">
+<li><p>複数オクターブにまたがるチャープを解析</p></li>
+<li><p>STFTより良好な周波数追跡が必要</p></li>
+<li><p>信号がマルチスケール構造を持つ</p></li>
+<li><p>時間-周波数分解能のトレードオフが重要</p></li>
+</ul>
+<p>❌ <strong>使用しない場合:</strong></p>
+<ul class="simple">
+<li><p>信号が純粋に定常（STFTで十分）</p></li>
+<li><p>最速の計算が必要（STFTを使用）</p></li>
+<li><p>周波数範囲が狭い（Q変換の方が良い場合がある）</p></li>
+</ul>
+</section>
+<section id="id17">
+<h3>実装<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<p>詳細な実装例、可視化、定量評価は英語版ドキュメントまたは <code class="docutils literal notranslate"><span class="pre">time_frequency_analysis_comparison.ipynb</span></code> を参照してください。</p>
+</section>
+</section>
+<section id="hht">
+<h2>手法 4: ヒルベルト・ファン変換（HHT）<a class="headerlink" href="#hht" title="Link to this heading"></a></h2>
+<section id="id18">
+<h3>手法の説明<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
 <p><strong>経験的モード分解（EMD）+ ヒルベルト変換</strong>:</p>
 <ol class="arabic simple">
 <li><p>信号を固有モード関数（IMF）に分解</p></li>
 <li><p>ヒルベルト変換により瞬時周波数を計算</p></li>
 </ol>
 </section>
-<section id="id15">
-<h3>実装<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<section id="id19">
+<h3>実装<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># EMD を実行</span>
 <span class="n">imfs</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">emd</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;emd&#39;</span><span class="p">,</span> <span class="n">max_imf</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
@@ -371,8 +431,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id16">
-<h3>瞬時周波数<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<section id="id20">
+<h3>瞬時周波数<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 支配的な IMF の瞬時周波数を計算</span>
 <span class="n">imf_main</span> <span class="o">=</span> <span class="n">imfs</span><span class="p">[</span><span class="s1">&#39;IMF0&#39;</span><span class="p">]</span>
 <span class="n">inst_freq</span> <span class="o">=</span> <span class="n">imf_main</span><span class="o">.</span><span class="n">instantaneous_frequency</span><span class="p">()</span>
@@ -399,8 +459,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id17">
-<h3>長所と短所<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<section id="id21">
+<h3>長所と短所<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
 <p>✅ <strong>利点:</strong></p>
 <ul class="simple">
 <li><p>データ適応的（窓選択不要）</p></li>
@@ -415,8 +475,8 @@
 <li><p>STFT/Q変換ほど確立されていない</p></li>
 </ul>
 </section>
-<section id="id18">
-<h3>いつ使用するか<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<section id="id22">
+<h3>いつ使用するか<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
 <p>✅ <strong>HHT を使用する場合:</strong></p>
 <ul class="simple">
 <li><p>信号が高度に非定常</p></li>
@@ -432,8 +492,148 @@
 </ul>
 </section>
 </section>
-<section id="id19">
-<h2>比較例: 同じ信号に対するすべての手法<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<section id="stlt">
+<h2>手法 5: 短時間ラプラス変換 (STLT)<a class="headerlink" href="#stlt" title="Link to this heading"></a></h2>
+<section id="id23">
+<h3>手法の説明<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<p><strong>STLT</strong>: 信号を<strong>周波数ωと減衰率σの両方</strong>の成分に分解</p>
+<p><strong>式</strong>: <code class="docutils literal notranslate"><span class="pre">STLT(t,</span> <span class="pre">σ,</span> <span class="pre">ω)</span> <span class="pre">=</span> <span class="pre">∫</span> <span class="pre">x(τ)</span> <span class="pre">w(τ-t)</span> <span class="pre">e^(-(σ+iω)τ)</span> <span class="pre">dτ</span></code></p>
+<p>周波数のみを示すSTFTとは異なり、STLTは減衰係数を明らかにします。</p>
+</section>
+<section id="id24">
+<h3>利点と欠点<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p><strong>周波数と減衰率の両方</strong>でモードを分離する独自の能力</p></li>
+<li><p>リングダウン品質因子推定に不可欠</p></li>
+<li><p>2D σ-ω表現が減衰構造を明らかにする</p></li>
+<li><p>合体後波形に直接適用可能</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>高い計算コスト（2D変換）</p></li>
+<li><p>慎重なパラメータ選択が必要</p></li>
+<li><p>STFT/Q変換ほど一般的ではない</p></li>
+<li><p>解釈にはσ-ω平面の理解が必要</p></li>
+</ul>
+</section>
+<section id="id25">
+<h3>いつ使用するか<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<p>✅ <strong>STLTを使用する場合:</strong></p>
+<ul class="simple">
+<li><p>リングダウンモードを解析（ブラックホール準固有モード）</p></li>
+<li><p>品質因子や減衰時間を推定する必要がある</p></li>
+<li><p>複数の減衰振動が周波数で重なる</p></li>
+<li><p>減衰率情報が科学的に重要</p></li>
+</ul>
+<p>❌ <strong>使用しない場合:</strong></p>
+<ul class="simple">
+<li><p>信号に減衰がない（代わりにSTFTを使用）</p></li>
+<li><p>周波数情報のみが必要</p></li>
+<li><p>計算リソースが限られている</p></li>
+</ul>
+</section>
+<section id="id26">
+<h3>実装<a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
+<p>詳細な実装例、可視化、定量評価は英語版ドキュメントまたは <code class="docutils literal notranslate"><span class="pre">time_frequency_analysis_comparison.ipynb</span></code> を参照してください。</p>
+</section>
+</section>
+<section id="id27">
+<h2>手法 6: ケプストラム<a class="headerlink" href="#id27" title="Link to this heading"></a></h2>
+<section id="id28">
+<h3>手法の説明<a class="headerlink" href="#id28" title="Link to this heading"></a></h3>
+<p><strong>ケプストラム</strong>: 「ケフレンシー」によるスペクトルの周期性解析</p>
+<p><strong>式</strong>: <code class="docutils literal notranslate"><span class="pre">C(τ)</span> <span class="pre">=</span> <span class="pre">IFFT(log|FFT(x)|)</span></code></p>
+<p>スペクトルの周期性を時間領域の遅延時間のピークに変換します。</p>
+</section>
+<section id="id29">
+<h3>利点と欠点<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p>エコー遅延の直接検出（ケフレンシーピーク）</p></li>
+<li><p>スペクトルの周期構造を明らかにする</p></li>
+<li><p>ピッチ検出と高調波解析に有用</p></li>
+<li><p>計算効率が高い（二重FFT）</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>対数が必要（低振幅に敏感）</p></li>
+<li><p>時間局在化されていない（グローバル解析）</p></li>
+<li><p>時間-周波数手法ほど直感的ではない</p></li>
+<li><p>明確なエコーがある信号に最適</p></li>
+</ul>
+</section>
+<section id="id30">
+<h3>いつ使用するか<a class="headerlink" href="#id30" title="Link to this heading"></a></h3>
+<p>✅ <strong>ケプストラムを使用する場合:</strong></p>
+<ul class="simple">
+<li><p>エコーや反射を検出</p></li>
+<li><p>スペクトルの周期構造を解析</p></li>
+<li><p>残響信号の遅延時間を測定</p></li>
+<li><p>ピッチ検出または高調波解析</p></li>
+</ul>
+<p>❌ <strong>使用しない場合:</strong></p>
+<ul class="simple">
+<li><p>時間局在化解析が必要</p></li>
+<li><p>信号にエコーや周期性がない</p></li>
+<li><p>低SNR（対数演算がノイズを増幅）</p></li>
+</ul>
+</section>
+<section id="id31">
+<h3>実装<a class="headerlink" href="#id31" title="Link to this heading"></a></h3>
+<p>詳細な実装例、可視化、定量評価は英語版ドキュメントまたは <code class="docutils literal notranslate"><span class="pre">time_frequency_analysis_comparison.ipynb</span></code> を参照してください。</p>
+</section>
+</section>
+<section id="dct">
+<h2>手法 7: 離散コサイン変換 (DCT)<a class="headerlink" href="#dct" title="Link to this heading"></a></h2>
+<section id="id32">
+<h3>手法の説明<a class="headerlink" href="#id32" title="Link to this heading"></a></h3>
+<p><strong>DCT</strong>: コサイン基底への変換、平滑信号の圧縮に優れる</p>
+<p><strong>式</strong>: <code class="docutils literal notranslate"><span class="pre">X(k)</span> <span class="pre">=</span> <span class="pre">Σ</span> <span class="pre">x(n)</span> <span class="pre">cos(πk(2n+1)/(2N))</span></code></p>
+<p>平滑信号では低周波係数にエネルギーが集中します。</p>
+</section>
+<section id="id33">
+<h3>利点と欠点<a class="headerlink" href="#id33" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p>平滑信号の優れた圧縮</p></li>
+<li><p>スパース表現（少数の係数でエネルギーの大部分をキャプチャ）</p></li>
+<li><p>高速計算（FFT類似）</p></li>
+<li><p>境界アーティファクトなし（Fourierとは異なる）</p></li>
+<li><p>特徴抽出とノイズ除去に理想的</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>時間局在化されていない</p></li>
+<li><p>不連続な信号には効果が低い</p></li>
+<li><p>時間-周波数手法ほど直感的ではない</p></li>
+<li><p>グローバル解析のみ</p></li>
+</ul>
+</section>
+<section id="id34">
+<h3>いつ使用するか<a class="headerlink" href="#id34" title="Link to this heading"></a></h3>
+<p>✅ <strong>DCTを使用する場合:</strong></p>
+<ul class="simple">
+<li><p>平滑信号を圧縮</p></li>
+<li><p>特徴抽出（低次係数）</p></li>
+<li><p>平滑背景のノイズ除去</p></li>
+<li><p>機械学習前のデータ削減</p></li>
+<li><p>緩やかなトレンドのモデリング</p></li>
+</ul>
+<p>❌ <strong>使用しない場合:</strong></p>
+<ul class="simple">
+<li><p>時間局在化解析が必要</p></li>
+<li><p>信号に急激な過渡現象がある</p></li>
+<li><p>周波数内容が時間的に急速に変化</p></li>
+</ul>
+</section>
+<section id="id35">
+<h3>実装<a class="headerlink" href="#id35" title="Link to this heading"></a></h3>
+<p>詳細な実装例、可視化、定量評価は英語版ドキュメントまたは <code class="docutils literal notranslate"><span class="pre">time_frequency_analysis_comparison.ipynb</span></code> を参照してください。</p>
+</section>
+</section>
+<section id="id36">
+<h2>比較例: 同じ信号に対するすべての手法<a class="headerlink" href="#id36" title="Link to this heading"></a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
 
 <span class="c1"># 元の信号</span>
@@ -479,123 +679,219 @@
 </pre></div>
 </div>
 </section>
-<section id="id20">
-<h2>決定木<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>信号の特性は...
+<section id="id37">
+<h2>決定木<a class="headerlink" href="#id37" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>どのような情報が必要ですか？
 
-1. 定常または緩やかに変化？
-   はい → **スペクトログラム** を使用
-   いいえ → 質問2へ
+1. 一般的な時間-周波数ビュー？
+   → **スペクトログラム (STFT)** を使用
 
-2. チャープまたは急速な過渡現象？
-   はい → **Q変換** を使用
-   いいえ → 質問3へ
+2. 適応分解能による過渡現象検出？
+   → **Q変換** を使用
 
-3. 高度に非定常または非線形？
-   はい → **HHT** を使用
-   いいえ → まず**スペクトログラム**、次にQ変換
+3. チャープ周波数追跡（マルチスケール）？
+   → **ウェーブレット (CWT)** を使用
 
-4. 瞬時周波数が必要？
-   はい → **HHT** を使用
-   いいえ → **スペクトログラム**または**Q変換**
+4. 単一値曲線としての瞬時周波数？
+   → **HHT** を使用
 
-5. 高速計算が必要？
-   はい → **スペクトログラム** を使用
-   いいえ → すべての手法が使用可能
+5. 減衰率と周波数（リングダウン）？
+   → **STLT** を使用
+
+6. エコー検出またはスペクトル周期性？
+   → **ケプストラム** を使用
+
+7. 信号圧縮または平滑特徴抽出？
+   → **DCT** を使用
+
+クイック決定パス:
+├─ 定常信号？ → スペクトログラム
+├─ 過渡現象/バースト？ → Q変換
+├─ オクターブにまたがるチャープ？ → ウェーブレット
+├─ 瞬時周波数が必要？ → HHT
+├─ 減衰振動？ → STLT
+├─ エコーがある？ → ケプストラム
+└─ 平滑、圧縮が必要？ → DCT
 </pre></div>
 </div>
 </section>
-<section id="id21">
-<h2>性能比較<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<section id="id38">
+<h2>性能比較<a class="headerlink" href="#id38" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>手法</p></th>
 <th class="head"><p>計算時間*</p></th>
 <th class="head"><p>メモリ</p></th>
-<th class="head"><p>周波数追跡</p></th>
+<th class="head"><p>最適な用途</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>スペクトログラム</p></td>
+<tr class="row-even"><td><p>スペクトログラム (STFT)</p></td>
 <td><p>1×（基準）</p></td>
 <td><p>低</p></td>
-<td><p>遅い変化に適している</p></td>
+<td><p>汎用</p></td>
 </tr>
-<tr class="row-odd"><td><p>Q変換</p></td>
+<tr class="row-odd"><td><p>DCT</p></td>
+<td><p>1-2×</p></td>
+<td><p>低</p></td>
+<td><p>圧縮</p></td>
+</tr>
+<tr class="row-even"><td><p>Q変換</p></td>
 <td><p>5-10×</p></td>
 <td><p>中</p></td>
-<td><p>チャープに優秀</p></td>
+<td><p>過渡現象</p></td>
+</tr>
+<tr class="row-odd"><td><p>ウェーブレット (CWT)</p></td>
+<td><p>8-15×</p></td>
+<td><p>中-高</p></td>
+<td><p>チャープ</p></td>
+</tr>
+<tr class="row-even"><td><p>ケプストラム</p></td>
+<td><p>3-5×</p></td>
+<td><p>中</p></td>
+<td><p>エコー検出</p></td>
+</tr>
+<tr class="row-odd"><td><p>STLT</p></td>
+<td><p>15-25×</p></td>
+<td><p>高</p></td>
+<td><p>リングダウンモード</p></td>
 </tr>
 <tr class="row-even"><td><p>HHT</p></td>
 <td><p>20-50×</p></td>
 <td><p>高</p></td>
-<td><p>すべてに優秀</p></td>
+<td><p>瞬時周波数</p></td>
 </tr>
 </tbody>
 </table>
-<p>*おおよそ、パラメータに依存</p>
+<p>*おおよそ、パラメータと信号長に依存</p>
 </section>
-<section id="id22">
-<h2>まとめ表<a class="headerlink" href="#id22" title="Link to this heading"></a></h2>
+<section id="id39">
+<h2>まとめ表<a class="headerlink" href="#id39" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>特徴</p></th>
-<th class="head"><p>スペクトログラム</p></th>
+<th class="head"><p>STFT</p></th>
 <th class="head"><p>Q変換</p></th>
+<th class="head"><p>ウェーブレット</p></th>
 <th class="head"><p>HHT</p></th>
+<th class="head"><p>STLT</p></th>
+<th class="head"><p>ケプストラム</p></th>
+<th class="head"><p>DCT</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>時間-周波数分解能</strong></p></td>
+<tr class="row-even"><td><p><strong>分解能</strong></p></td>
 <td><p>固定</p></td>
-<td><p>適応的（定数Q）</p></td>
-<td><p>データ適応的</p></td>
+<td><p>適応Q</p></td>
+<td><p>スケール適応</p></td>
+<td><p>データ適応</p></td>
+<td><p>固定</p></td>
+<td><p>ケフレンシー</p></td>
+<td><p>N/A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>最適な信号タイプ</strong></p></td>
+<tr class="row-odd"><td><p><strong>最適な信号</strong></p></td>
 <td><p>定常</p></td>
 <td><p>チャープ</p></td>
-<td><p>非定常</p></td>
+<td><p>マルチスケール</p></td>
+<td><p>AM/FM</p></td>
+<td><p>減衰</p></td>
+<td><p>エコー</p></td>
+<td><p>平滑</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>計算コスト</strong></p></td>
 <td><p>低</p></td>
 <td><p>中</p></td>
+<td><p>中-高</p></td>
+<td><p>非常に高</p></td>
 <td><p>高</p></td>
+<td><p>中</p></td>
+<td><p>低</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>周波数追跡</strong></p></td>
-<td><p>良好</p></td>
-<td><p>優秀</p></td>
-<td><p>優秀</p></td>
+<tr class="row-odd"><td><p><strong>出力</strong></p></td>
+<td><p>2D (t,f)</p></td>
+<td><p>2D (t,f)</p></td>
+<td><p>2D (t,f)</p></td>
+<td><p>f(t) 曲線</p></td>
+<td><p>3D (t,σ,ω)</p></td>
+<td><p>τ スペクトル</p></td>
+<td><p>係数</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>解釈の容易さ</strong></p></td>
-<td><p>容易</p></td>
-<td><p>中程度</p></td>
-<td><p>複雑</p></td>
+<tr class="row-even"><td><p><strong>時間局在化</strong></p></td>
+<td><p>あり</p></td>
+<td><p>あり</p></td>
+<td><p>あり</p></td>
+<td><p>あり</p></td>
+<td><p>あり</p></td>
+<td><p>なし</p></td>
+<td><p>なし</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>標準的な重力波利用</strong></p></td>
+<tr class="row-odd"><td><p><strong>独自情報</strong></p></td>
+<td><p>—</p></td>
+<td><p>適応分解能</p></td>
+<td><p>マルチスケール</p></td>
+<td><p>瞬時周波数</p></td>
+<td><p>減衰率σ</p></td>
+<td><p>遅延</p></td>
+<td><p>圧縮</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>重力波利用</strong></p></td>
 <td><p>汎用</p></td>
 <td><p>過渡現象</p></td>
-<td><p>特殊ケース</p></td>
+<td><p>チャープ</p></td>
+<td><p>グリッチ</p></td>
+<td><p>リングダウン</p></td>
+<td><p>反射</p></td>
+<td><p>特徴</p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="id23">
-<h2>実践的な推奨事項<a class="headerlink" href="#id23" title="Link to this heading"></a></h2>
-<section id="id24">
-<h3>日常的な解析<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
-<p><strong>スペクトログラム</strong>から始める - 高速でよく理解されており、ほとんどのケースで十分。</p>
+<section id="id40">
+<h2>実践的な推奨事項<a class="headerlink" href="#id40" title="Link to this heading"></a></h2>
+<section id="id41">
+<h3>日常的な解析<a class="headerlink" href="#id41" title="Link to this heading"></a></h3>
+<p><strong>スペクトログラム (STFT)</strong> から始める - 高速でよく理解されており、ほとんどのケースで十分。</p>
 </section>
-<section id="id25">
-<h3>過渡現象検出<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
-<p><strong>Q変換</strong>を使用 - 重力波バースト探索の標準。</p>
+<section id="id42">
+<h3>過渡現象検出<a class="headerlink" href="#id42" title="Link to this heading"></a></h3>
+<p><strong>Q変換</strong> を使用 - 重力波バースト探索の標準。</p>
 </section>
-<section id="id26">
-<h3>詳細な特性評価<a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
-<p><strong>HHT</strong>を使用 - 精密な瞬時周波数が必要な場合、または他の手法が失敗する場合。</p>
+<section id="id43">
+<h3>チャープ解析<a class="headerlink" href="#id43" title="Link to this heading"></a></h3>
+<p><strong>ウェーブレット (CWT)</strong> を使用 - 複数スケールにわたる精密な周波数軌跡追跡。</p>
 </section>
-<section id="id27">
-<h3>論文掲載<a class="headerlink" href="#id27" title="Link to this heading"></a></h3>
-<p><strong>スペクトログラム</strong>（読者に馴染みがある）と手法固有の解析（Q変換またはHHT）の両方を含め、ロバスト性を示す。</p>
+<section id="id44">
+<h3>瞬時周波数<a class="headerlink" href="#id44" title="Link to this heading"></a></h3>
+<p><strong>HHT</strong> を使用 - 単一値瞬時周波数が必要な場合（時間-周波数不確定性なし）。</p>
+</section>
+<section id="id45">
+<h3>リングダウン解析<a class="headerlink" href="#id45" title="Link to this heading"></a></h3>
+<p><strong>STLT</strong> を使用 - 周波数と減衰率（品質因子）を同時に推定。</p>
+</section>
+<section id="id46">
+<h3>エコー検出<a class="headerlink" href="#id46" title="Link to this heading"></a></h3>
+<p><strong>ケプストラム</strong> を使用 - 遅延時間とスペクトルの周期構造を特定。</p>
+</section>
+<section id="id47">
+<h3>データ削減<a class="headerlink" href="#id47" title="Link to this heading"></a></h3>
+<p><strong>DCT</strong> を使用 - 平滑信号の効率的な圧縮と特徴抽出。</p>
+</section>
+<section id="id48">
+<h3>論文掲載<a class="headerlink" href="#id48" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>スペクトログラム</strong>（読者に馴染みのある基準線）を含める</p></li>
+<li><p>独自の物理を明らかにする専門的手法を追加（チャープにはウェーブレット、瞬時周波数にはHHT、リングダウンにはSTLTなど）</p></li>
+<li><p>ロバスト性を示す：主要な結果が複数の手法で成立することを実証</p></li>
+</ul>
+</section>
+<section id="id49">
+<h3>一般的な戦略<a class="headerlink" href="#id49" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>シンプルから始める</strong>: 常にスペクトログラムから開始</p></li>
+<li><p><strong>限界を特定</strong>: STFTが重要な特徴を示せない場所は？</p></li>
+<li><p><strong>専門的手法を選択</strong>: ニーズに合った「独自情報」を持つ手法を選ぶ（まとめ表参照）</p></li>
+<li><p><strong>検証</strong>: 可能であれば別の手法でクロスチェック</p></li>
+</ol>
 <hr class="docutils" />
 <p><strong>関連項目:</strong></p>
 <ul class="simple">

@@ -121,7 +121,7 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>Spectrogram</strong></p></td>
+<tr class="row-even"><td><p><strong>Spectrogram (STFT)</strong></p></td>
 <td><p>General purpose</p></td>
 <td><p>Good</p></td>
 <td><p>Good</p></td>
@@ -131,20 +131,30 @@
 <td><p>Adaptive</p></td>
 <td><p>Adaptive (constant Q)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>HHT</strong></p></td>
-<td><p>Non-stationary, nonlinear</p></td>
+<tr class="row-even"><td><p><strong>Wavelet (CWT)</strong></p></td>
+<td><p>Multi-scale features, chirps</p></td>
+<td><p>Scale-dependent</p></td>
+<td><p>Scale-dependent</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>HHT</strong></p></td>
+<td><p>Instantaneous frequency</p></td>
 <td><p>Excellent</p></td>
 <td><p>Data-adaptive</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>STFT</strong></p></td>
-<td><p>Stationary segments</p></td>
-<td><p>Fixed (window)</p></td>
-<td><p>Fixed (window)</p></td>
+<tr class="row-even"><td><p><strong>STLT</strong></p></td>
+<td><p>Damped oscillations</p></td>
+<td><p>Good</p></td>
+<td><p>Good (+ decay rate σ)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Wavelet</strong></p></td>
-<td><p>Multi-scale features</p></td>
-<td><p>Scale-dependent</p></td>
-<td><p>Scale-dependent</p></td>
+<tr class="row-odd"><td><p><strong>Cepstrum</strong></p></td>
+<td><p>Echo detection, periodicity</p></td>
+<td><p>N/A</p></td>
+<td><p>Quefrency domain</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>DCT</strong></p></td>
+<td><p>Compression, smooth features</p></td>
+<td><p>N/A</p></td>
+<td><p>N/A (basis coefficients)</p></td>
 </tr>
 </tbody>
 </table>
@@ -340,18 +350,161 @@
 </ul>
 </section>
 </section>
-<section id="method-3-hilbert-huang-transform-hht">
-<h2>Method 3: Hilbert-Huang Transform (HHT)<a class="headerlink" href="#method-3-hilbert-huang-transform-hht" title="Link to this heading"></a></h2>
+<section id="method-3-wavelet-transform-cwt">
+<h2>Method 3: Wavelet Transform (CWT)<a class="headerlink" href="#method-3-wavelet-transform-cwt" title="Link to this heading"></a></h2>
 <section id="id6">
 <h3>What it is<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p><strong>Continuous Wavelet Transform (CWT)</strong>: Multi-scale analysis using dilated/translated wavelets</p>
+<p><strong>Formula</strong>: <code class="docutils literal notranslate"><span class="pre">W(a,</span> <span class="pre">b)</span> <span class="pre">=</span> <span class="pre">∫</span> <span class="pre">x(t)</span> <span class="pre">ψ*((t-b)/a)</span> <span class="pre">dt</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>: scale parameter (inversely proportional to frequency)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code>: time shift parameter</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ψ</span></code>: mother wavelet (e.g., Morlet)</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>Implementation<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pywt</span>
+
+<span class="c1"># Create isolated chirp signal for clarity</span>
+<span class="n">chirp_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+<span class="n">chirp_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">t_chirp</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">chirp_mask</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span>
+<span class="n">f0</span><span class="p">,</span> <span class="n">f1</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">150</span>
+<span class="n">phase</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">f0</span><span class="o">*</span><span class="n">t_chirp</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">f1</span><span class="o">-</span><span class="n">f0</span><span class="p">)</span><span class="o">*</span><span class="n">t_chirp</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">chirp_signal</span><span class="p">[</span><span class="n">chirp_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+<span class="n">chirp_signal</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.05</span>
+
+<span class="c1"># Compute Continuous Wavelet Transform</span>
+<span class="n">scales</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+<span class="n">frequencies_wavelet</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">scales</span><span class="p">)</span>
+<span class="n">coefficients</span><span class="p">,</span> <span class="n">frequencies_pywt</span> <span class="o">=</span> <span class="n">pywt</span><span class="o">.</span><span class="n">cwt</span><span class="p">(</span>
+    <span class="n">chirp_signal</span><span class="p">,</span>
+    <span class="n">scales</span><span class="p">,</span>
+    <span class="s1">&#39;morl&#39;</span><span class="p">,</span>  <span class="c1"># Morlet wavelet</span>
+    <span class="n">sampling_period</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CWT shape: </span><span class="si">{</span><span class="n">coefficients</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># (scales, time)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency range: </span><span class="si">{</span><span class="n">frequencies_wavelet</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">frequencies_wavelet</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3>Visualization<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Original signal</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">chirp_signal</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Chirp Signal (20→150 Hz over 3s)&#39;</span><span class="p">)</span>
+
+<span class="c1"># STFT for comparison</span>
+<span class="n">spec_chirp</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">im1</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+    <span class="n">spec_chirp</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">spec_chirp</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">spec_chirp</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+    <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span>
+<span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;STFT Spectrogram (smeared trajectory)&#39;</span><span class="p">)</span>
+
+<span class="c1"># Wavelet scalogram</span>
+<span class="n">im2</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">frequencies_wavelet</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coefficients</span><span class="p">),</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+    <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span>
+<span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Wavelet (CWT) Scalogram (sharp trajectory)&#39;</span><span class="p">)</span>
+
+<span class="c1"># Overlay true frequency</span>
+<span class="n">t_true</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">chirp_mask</span><span class="p">]</span>
+<span class="n">f_true</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">+</span> <span class="p">(</span><span class="mi">150</span> <span class="o">-</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_true</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_true</span><span class="p">,</span> <span class="n">f_true</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;True frequency&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_true</span><span class="p">,</span> <span class="n">f_true</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;True frequency&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="quantitative-evaluation">
+<h3>Quantitative Evaluation<a class="headerlink" href="#quantitative-evaluation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ridge extraction: find frequency of maximum energy at each time</span>
+<span class="n">ridge_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coefficients</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">f_ridge</span> <span class="o">=</span> <span class="n">frequencies_wavelet</span><span class="p">[</span><span class="n">ridge_indices</span><span class="p">]</span>
+
+<span class="c1"># Compute MSE over chirp region</span>
+<span class="n">chirp_time_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">f_ridge_chirp</span> <span class="o">=</span> <span class="n">f_ridge</span><span class="p">[</span><span class="n">chirp_time_mask</span><span class="p">]</span>
+<span class="n">f_true_interp</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">+</span> <span class="p">(</span><span class="mi">150</span> <span class="o">-</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">chirp_time_mask</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+
+<span class="n">valid_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_ridge_chirp</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f_ridge_chirp</span> <span class="o">&lt;=</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">mse_wavelet</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">f_ridge_chirp</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">f_true_interp</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">rmse_wavelet</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mse_wavelet</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency Tracking RMSE: </span><span class="si">{</span><span class="n">rmse_wavelet</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;STFT uncertainty (0.5s window): ~10-20 Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Improvement: </span><span class="si">{</span><span class="mi">10</span><span class="o">/</span><span class="n">rmse_wavelet</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">× better precision&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h3>Pros and Cons<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<p>✅ <strong>Advantages:</strong></p>
+<ul class="simple">
+<li><p>Natural scale matching (wavelet “stretches” to follow signal)</p></li>
+<li><p>Better time-frequency localization than STFT</p></li>
+<li><p>Excellent for chirps and multi-scale transients</p></li>
+<li><p>Ridge extraction provides precise frequency trajectories</p></li>
+</ul>
+<p>❌ <strong>Disadvantages:</strong></p>
+<ul class="simple">
+<li><p>Higher computational cost than STFT</p></li>
+<li><p>Requires wavelet selection (Morlet, Mexican hat, etc.)</p></li>
+<li><p>Redundant representation (overcomplete)</p></li>
+<li><p>Edge effects at signal boundaries</p></li>
+</ul>
+</section>
+<section id="id10">
+<h3>When to Use<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<p>✅ <strong>Use Wavelet when:</strong></p>
+<ul class="simple">
+<li><p>Analyzing chirps spanning multiple octaves</p></li>
+<li><p>Need better frequency tracking than STFT</p></li>
+<li><p>Signal has multi-scale structure</p></li>
+<li><p>Time-frequency resolution tradeoff is critical</p></li>
+</ul>
+<p>❌ <strong>Don’t use when:</strong></p>
+<ul class="simple">
+<li><p>Signal is purely stationary (STFT sufficient)</p></li>
+<li><p>Need fastest computation (use STFT)</p></li>
+<li><p>Frequency range is narrow (Q-transform may be better)</p></li>
+</ul>
+</section>
+</section>
+<section id="method-4-hilbert-huang-transform-hht">
+<h2>Method 4: Hilbert-Huang Transform (HHT)<a class="headerlink" href="#method-4-hilbert-huang-transform-hht" title="Link to this heading"></a></h2>
+<section id="id11">
+<h3>What it is<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
 <p><strong>Empirical Mode Decomposition (EMD) + Hilbert Transform</strong>:</p>
 <ol class="arabic simple">
 <li><p>Decompose signal into Intrinsic Mode Functions (IMFs)</p></li>
 <li><p>Compute instantaneous frequency via Hilbert transform</p></li>
 </ol>
 </section>
-<section id="id7">
-<h3>Implementation<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id12">
+<h3>Implementation<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Perform EMD</span>
 <span class="n">imfs</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">emd</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;emd&#39;</span><span class="p">,</span> <span class="n">max_imf</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
@@ -400,8 +553,8 @@
 </pre></div>
 </div>
 </section>
-<section id="id8">
-<h3>Pros and Cons<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<section id="id13">
+<h3>Pros and Cons<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
 <p>✅ <strong>Advantages:</strong></p>
 <ul class="simple">
 <li><p>Data-adaptive (no window choice)</p></li>
@@ -416,8 +569,8 @@
 <li><p>Less established than STFT/Q-transform</p></li>
 </ul>
 </section>
-<section id="id9">
-<h3>When to Use<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<section id="id14">
+<h3>When to Use<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
 <p>✅ <strong>Use HHT when:</strong></p>
 <ul class="simple">
 <li><p>Signal is highly non-stationary</p></li>
@@ -430,6 +583,448 @@
 <li><p>Signal is stationary (overkill)</p></li>
 <li><p>Need fast computation</p></li>
 <li><p>Standard spectrograms suffice</p></li>
+</ul>
+</section>
+</section>
+<section id="method-5-short-time-laplace-transform-stlt">
+<h2>Method 5: Short-Time Laplace Transform (STLT)<a class="headerlink" href="#method-5-short-time-laplace-transform-stlt" title="Link to this heading"></a></h2>
+<section id="id15">
+<h3>What it is<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p><strong>STLT</strong>: Decomposes signals into <strong>both frequency ω and decay rate σ</strong> components</p>
+<p><strong>Formula</strong>: <code class="docutils literal notranslate"><span class="pre">STLT(t,</span> <span class="pre">σ,</span> <span class="pre">ω)</span> <span class="pre">=</span> <span class="pre">∫</span> <span class="pre">x(τ)</span> <span class="pre">w(τ-t)</span> <span class="pre">e^(-(σ+iω)τ)</span> <span class="pre">dτ</span></code></p>
+<p>Unlike STFT which only shows frequency, STLT reveals damping coefficients.</p>
+</section>
+<section id="id16">
+<h3>Implementation<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create multi-mode ringdown</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+<span class="n">ringdown_multi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+<span class="c1"># Mode 1: f=100 Hz, τ=0.2s (high damping)</span>
+<span class="n">mode1_mask</span> <span class="o">=</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">mode1_mask</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">tau1</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">ringdown_multi</span><span class="p">[</span><span class="n">mode1_mask</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t1</span><span class="o">/</span><span class="n">tau1</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">100</span><span class="o">*</span><span class="n">t</span><span class="p">[</span><span class="n">mode1_mask</span><span class="p">])</span>
+
+<span class="c1"># Mode 2: f=150 Hz, τ=0.8s (low damping)</span>
+<span class="n">mode2_mask</span> <span class="o">=</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">2</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">mode2_mask</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span>
+<span class="n">tau2</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">ringdown_multi</span><span class="p">[</span><span class="n">mode2_mask</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t2</span><span class="o">/</span><span class="n">tau2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">150</span><span class="o">*</span><span class="n">t</span><span class="p">[</span><span class="n">mode2_mask</span><span class="p">])</span>
+
+<span class="c1"># Mode 3: f=120 Hz, τ=0.5s (medium damping)</span>
+<span class="n">mode3_mask</span> <span class="o">=</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+<span class="n">t3</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">mode3_mask</span><span class="p">]</span> <span class="o">-</span> <span class="mi">3</span>
+<span class="n">tau3</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">ringdown_multi</span><span class="p">[</span><span class="n">mode3_mask</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t3</span><span class="o">/</span><span class="n">tau3</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">120</span><span class="o">*</span><span class="n">t</span><span class="p">[</span><span class="n">mode3_mask</span><span class="p">])</span>
+
+<span class="n">ringdown_multi</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.05</span>
+
+<span class="n">ts_ringdown</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">ringdown_multi</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;strain&#39;</span><span class="p">)</span>
+
+<span class="c1"># Compute STLT</span>
+<span class="n">stlt</span> <span class="o">=</span> <span class="n">ts_ringdown</span><span class="o">.</span><span class="n">stlt</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;STLT shape: </span><span class="si">{</span><span class="n">stlt</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># (time, sigma, omega)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;STLT reveals both ω (frequency) and σ (decay rate)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h3>Visualization<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># Original signal</span>
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">ringdown_multi</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Multi-Mode Ringdown (3 modes with different decay rates)&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
+
+<span class="c1"># STFT (only shows frequency, not decay)</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">spec_ringdown</span> <span class="o">=</span> <span class="n">ts_ringdown</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<span class="n">im1</span> <span class="o">=</span> <span class="n">ax2</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+    <span class="n">spec_ringdown</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">spec_ringdown</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">spec_ringdown</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+    <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span>
+<span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;STFT: Shows frequencies but decay rates invisible&#39;</span><span class="p">)</span>
+
+<span class="c1"># STLT (shows both frequency and decay rate)</span>
+<span class="n">ax3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="c1"># Average over time for 2D σ-ω visualization</span>
+<span class="n">stlt_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">stlt</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">stlt_avg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stlt_power</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Get sigma and omega axes</span>
+<span class="n">sigma_axis</span> <span class="o">=</span> <span class="n">stlt</span><span class="o">.</span><span class="n">sigma</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">stlt</span><span class="p">,</span> <span class="s1">&#39;sigma&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">stlt</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">omega_axis</span> <span class="o">=</span> <span class="n">stlt</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">stlt</span><span class="p">,</span> <span class="s1">&#39;frequencies&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">stlt</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+<span class="n">im2</span> <span class="o">=</span> <span class="n">ax3</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">omega_axis</span><span class="p">,</span> <span class="n">sigma_axis</span><span class="p">,</span> <span class="n">stlt_avg</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;hot&#39;</span><span class="p">,</span> <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Decay Rate σ (1/s)&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;STLT: 2D σ-ω plane reveals BOTH frequency and decay rate&#39;</span><span class="p">)</span>
+
+<span class="c1"># Annotate expected modes</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">tau1</span><span class="p">,</span> <span class="s1">&#39;ro&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Mode 1: 100 Hz, τ=</span><span class="si">{</span><span class="n">tau1</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">tau2</span><span class="p">,</span> <span class="s1">&#39;go&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Mode 2: 150 Hz, τ=</span><span class="si">{</span><span class="n">tau2</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">tau3</span><span class="p">,</span> <span class="s1">&#39;bo&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Mode 3: 120 Hz, τ=</span><span class="si">{</span><span class="n">tau3</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id18">
+<h3>Quantitative Evaluation<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract σ peaks for each mode</span>
+<span class="n">modes_info</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">100</span><span class="p">,</span> <span class="n">tau1</span><span class="p">),</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="n">tau2</span><span class="p">),</span> <span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="n">tau3</span><span class="p">)]</span>
+<span class="n">abs_errors</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">freq</span><span class="p">,</span> <span class="n">tau</span> <span class="ow">in</span> <span class="n">modes_info</span><span class="p">:</span>
+    <span class="c1"># Find frequency index</span>
+    <span class="n">freq_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">omega_axis</span> <span class="o">-</span> <span class="n">freq</span><span class="p">))</span>
+
+    <span class="c1"># Find sigma with maximum power</span>
+    <span class="n">sigma_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">stlt_avg</span><span class="p">[:,</span> <span class="n">freq_idx</span><span class="p">])</span>
+    <span class="n">sigma_est</span> <span class="o">=</span> <span class="n">sigma_axis</span><span class="p">[</span><span class="n">sigma_idx</span><span class="p">]</span>
+    <span class="n">sigma_true</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">tau</span>
+
+    <span class="n">abs_error</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sigma_est</span> <span class="o">-</span> <span class="n">sigma_true</span><span class="p">)</span>
+    <span class="n">abs_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">abs_error</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mode </span><span class="si">{</span><span class="n">freq</span><span class="si">}</span><span class="s2"> Hz: σ_true = </span><span class="si">{</span><span class="n">sigma_true</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, σ_est = </span><span class="si">{</span><span class="n">sigma_est</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, error = </span><span class="si">{</span><span class="n">abs_error</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mae_stlt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">abs_errors</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Mean Absolute Error: </span><span class="si">{</span><span class="n">mae_stlt</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s⁻¹&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;STFT cannot estimate decay rates at all.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id19">
+<h3>Pros and Cons<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<p>✅ <strong>Advantages:</strong></p>
+<ul class="simple">
+<li><p>Unique ability to separate modes by <strong>both</strong> frequency and decay rate</p></li>
+<li><p>Essential for ringdown quality factor estimation</p></li>
+<li><p>2D σ-ω representation reveals damping structure</p></li>
+<li><p>Directly applicable to post-merger waveforms</p></li>
+</ul>
+<p>❌ <strong>Disadvantages:</strong></p>
+<ul class="simple">
+<li><p>High computational cost (2D transform)</p></li>
+<li><p>Requires careful parameter selection</p></li>
+<li><p>Less familiar than STFT/Q-transform</p></li>
+<li><p>Interpretation requires understanding σ-ω plane</p></li>
+</ul>
+</section>
+<section id="id20">
+<h3>When to Use<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<p>✅ <strong>Use STLT when:</strong></p>
+<ul class="simple">
+<li><p>Analyzing ringdown modes (black hole quasi-normal modes)</p></li>
+<li><p>Need to estimate quality factors or damping times</p></li>
+<li><p>Multiple damped oscillations overlap in frequency</p></li>
+<li><p>Decay rate information is scientifically important</p></li>
+</ul>
+<p>❌ <strong>Don’t use when:</strong></p>
+<ul class="simple">
+<li><p>Signal has no damping (use STFT instead)</p></li>
+<li><p>Only frequency information needed</p></li>
+<li><p>Computational resources are limited</p></li>
+</ul>
+</section>
+</section>
+<section id="method-6-cepstrum">
+<h2>Method 6: Cepstrum<a class="headerlink" href="#method-6-cepstrum" title="Link to this heading"></a></h2>
+<section id="id21">
+<h3>What it is<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<p><strong>Cepstrum</strong>: Analysis of periodicity in the spectrum via “quefrency”</p>
+<p><strong>Formula</strong>: <code class="docutils literal notranslate"><span class="pre">C(τ)</span> <span class="pre">=</span> <span class="pre">IFFT(log|FFT(x)|)</span></code></p>
+<p>Converts spectral periodicity → time-domain peaks at delay times.</p>
+</section>
+<section id="id22">
+<h3>Implementation<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create signal with echo</span>
+<span class="n">original_sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+<span class="n">pulse_time</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">pulse_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pulse_time</span> <span class="o">*</span> <span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">pulse_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+<span class="c1"># Broadband pulse</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">pulse_width</span><span class="p">)</span>
+<span class="n">pulse_window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">n</span> <span class="o">-</span> <span class="n">pulse_width</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">original_sig</span><span class="p">[</span><span class="n">pulse_idx</span><span class="p">:</span><span class="n">pulse_idx</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">pulse_window</span><span class="p">)]</span> <span class="o">=</span> <span class="n">pulse_window</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">100</span><span class="o">*</span><span class="n">t</span><span class="p">[</span><span class="n">pulse_idx</span><span class="p">:</span><span class="n">pulse_idx</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">pulse_window</span><span class="p">)])</span>
+
+<span class="c1"># Add echo with 80ms delay</span>
+<span class="n">echo_delay</span> <span class="o">=</span> <span class="mf">0.08</span>  <span class="c1"># seconds</span>
+<span class="n">echo_amplitude</span> <span class="o">=</span> <span class="mf">0.4</span>
+<span class="n">echo_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">echo_delay</span> <span class="o">*</span> <span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">echo_sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+<span class="n">echo_sig</span><span class="p">[</span><span class="n">echo_samples</span><span class="p">:]</span> <span class="o">=</span> <span class="n">echo_amplitude</span> <span class="o">*</span> <span class="n">original_sig</span><span class="p">[:</span><span class="o">-</span><span class="n">echo_samples</span><span class="p">]</span>
+
+<span class="n">signal_with_echo</span> <span class="o">=</span> <span class="n">original_sig</span> <span class="o">+</span> <span class="n">echo_sig</span>
+<span class="n">signal_with_echo</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.02</span>
+
+<span class="n">ts_echo</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">signal_with_echo</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;strain&#39;</span><span class="p">)</span>
+
+<span class="c1"># Compute cepstrum</span>
+<span class="n">spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">signal_with_echo</span><span class="p">)</span>
+<span class="n">log_spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">cepstrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">log_spectrum</span><span class="p">)</span>
+<span class="n">quefrency</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cepstrum</span><span class="p">))</span> <span class="o">/</span> <span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cepstrum computed. Quefrency range: 0 to </span><span class="si">{</span><span class="n">quefrency</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id23">
+<h3>Visualization<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+
+<span class="c1"># Original signal</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">signal_with_echo</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Signal with Echo (delay = </span><span class="si">{</span><span class="n">echo_delay</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> ms)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">pulse_time</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Original&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">pulse_time</span> <span class="o">+</span> <span class="n">echo_delay</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Echo&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="c1"># STFT</span>
+<span class="n">spec_echo</span> <span class="o">=</span> <span class="n">ts_echo</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.125</span><span class="p">)</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+    <span class="n">spec_echo</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">spec_echo</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">spec_echo</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+    <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span>
+<span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;STFT: Echo causes spectral ripples (hard to interpret)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Power spectrum</span>
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">signal_with_echo</span><span class="p">),</span> <span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">spectrum</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;|Spectrum|&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Power Spectrum: Periodic ripples from echo (comb filter)&#39;</span><span class="p">)</span>
+
+<span class="c1"># Cepstrum</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">quefrency</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.2</span><span class="o">*</span><span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)],</span>
+            <span class="n">cepstrum</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.2</span><span class="o">*</span><span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)],</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">echo_delay</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+               <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;True delay = </span><span class="si">{</span><span class="n">echo_delay</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> ms&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Quefrency (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Cepstrum&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Cepstrum: Clear peak at echo delay&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id24">
+<h3>Quantitative Evaluation<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find peak in cepstrum</span>
+<span class="n">search_region</span> <span class="o">=</span> <span class="p">(</span><span class="n">quefrency</span> <span class="o">&gt;</span> <span class="mf">0.03</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">quefrency</span> <span class="o">&lt;</span> <span class="mf">0.12</span><span class="p">)</span>
+<span class="n">peak_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cepstrum</span><span class="p">[</span><span class="n">search_region</span><span class="p">]))</span>
+<span class="n">detected_delay</span> <span class="o">=</span> <span class="n">quefrency</span><span class="p">[</span><span class="n">search_region</span><span class="p">][</span><span class="n">peak_idx</span><span class="p">]</span>
+
+<span class="n">error_ms</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">detected_delay</span> <span class="o">-</span> <span class="n">echo_delay</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;True echo delay: </span><span class="si">{</span><span class="n">echo_delay</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected peak: </span><span class="si">{</span><span class="n">detected_delay</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detection error: </span><span class="si">{</span><span class="n">error_ms</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cepstrum converts spectral periodicity → time-domain peak&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id25">
+<h3>Pros and Cons<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<p>✅ <strong>Advantages:</strong></p>
+<ul class="simple">
+<li><p>Direct detection of echo delays (quefrency peaks)</p></li>
+<li><p>Reveals periodic structure in spectrum</p></li>
+<li><p>Useful for pitch detection and harmonic analysis</p></li>
+<li><p>Computationally efficient (double FFT)</p></li>
+</ul>
+<p>❌ <strong>Disadvantages:</strong></p>
+<ul class="simple">
+<li><p>Requires logarithm (sensitivity to low amplitude)</p></li>
+<li><p>Not time-localized (global analysis)</p></li>
+<li><p>Less intuitive than time-frequency methods</p></li>
+<li><p>Best for signals with clear echoes</p></li>
+</ul>
+</section>
+<section id="id26">
+<h3>When to Use<a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
+<p>✅ <strong>Use Cepstrum when:</strong></p>
+<ul class="simple">
+<li><p>Detecting echoes or reflections</p></li>
+<li><p>Analyzing periodic structure in spectrum</p></li>
+<li><p>Measuring delay times in reverberant signals</p></li>
+<li><p>Pitch detection or harmonic analysis</p></li>
+</ul>
+<p>❌ <strong>Don’t use when:</strong></p>
+<ul class="simple">
+<li><p>Need time-localized analysis</p></li>
+<li><p>Signal has no echoes or periodicity</p></li>
+<li><p>Low SNR (log operation amplifies noise)</p></li>
+</ul>
+</section>
+</section>
+<section id="method-7-discrete-cosine-transform-dct">
+<h2>Method 7: Discrete Cosine Transform (DCT)<a class="headerlink" href="#method-7-discrete-cosine-transform-dct" title="Link to this heading"></a></h2>
+<section id="id27">
+<h3>What it is<a class="headerlink" href="#id27" title="Link to this heading"></a></h3>
+<p><strong>DCT</strong>: Transform to cosine basis, excellent for compressing smooth signals</p>
+<p><strong>Formula</strong>: <code class="docutils literal notranslate"><span class="pre">X(k)</span> <span class="pre">=</span> <span class="pre">Σ</span> <span class="pre">x(n)</span> <span class="pre">cos(πk(2n+1)/(2N))</span></code></p>
+<p>Energy concentrates in low-frequency coefficients for smooth signals.</p>
+</section>
+<section id="id28">
+<h3>Implementation<a class="headerlink" href="#id28" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.fftpack</span><span class="w"> </span><span class="kn">import</span> <span class="n">dct</span><span class="p">,</span> <span class="n">idct</span>
+
+<span class="c1"># Create smooth signal with perturbations</span>
+<span class="n">smooth_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+<span class="n">smooth_signal</span> <span class="o">+=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">3</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="n">smooth_signal</span> <span class="o">+=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">7</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="n">smooth_signal</span> <span class="o">+=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">12</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="n">smooth_signal</span> <span class="o">+=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">50</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="n">smooth_signal</span> <span class="o">+=</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">80</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="n">smooth_signal</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="o">*</span> <span class="mf">0.05</span>
+
+<span class="n">ts_smooth</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">smooth_signal</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;strain&#39;</span><span class="p">)</span>
+
+<span class="c1"># Compute DCT</span>
+<span class="n">dct_coeffs</span> <span class="o">=</span> <span class="n">dct</span><span class="p">(</span><span class="n">smooth_signal</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;ortho&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DCT computed: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="p">)</span><span class="si">}</span><span class="s2"> coefficients&quot;</span><span class="p">)</span>
+
+<span class="c1"># Reconstruct with different numbers of coefficients</span>
+<span class="n">n_coeffs_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">n_coeffs</span> <span class="ow">in</span> <span class="n">n_coeffs_list</span><span class="p">:</span>
+    <span class="n">coeffs_truncated</span> <span class="o">=</span> <span class="n">dct_coeffs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">coeffs_truncated</span><span class="p">[</span><span class="n">n_coeffs</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">recon</span> <span class="o">=</span> <span class="n">idct</span><span class="p">(</span><span class="n">coeffs_truncated</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;ortho&#39;</span><span class="p">)</span>
+
+    <span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">smooth_signal</span> <span class="o">-</span> <span class="n">recon</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">energy_kept</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="p">[:</span><span class="n">n_coeffs</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_coeffs</span><span class="si">}</span><span class="s2"> coeffs: </span><span class="si">{</span><span class="n">energy_kept</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% energy, RMSE = </span><span class="si">{</span><span class="n">rmse</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id29">
+<h3>Visualization<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># Original signal</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span> <span class="n">smooth_signal</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original Signal (smooth + small perturbations)&#39;</span><span class="p">)</span>
+
+<span class="c1"># DCT coefficients</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="p">[:</span><span class="mi">500</span><span class="p">]),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;|DCT Coefficient|&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;DCT: Rapid decay (energy in low coefficients)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Reconstructions</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n_coeffs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">n_coeffs_list</span><span class="p">):</span>
+    <span class="n">coeffs_truncated</span> <span class="o">=</span> <span class="n">dct_coeffs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">coeffs_truncated</span><span class="p">[</span><span class="n">n_coeffs</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">recon</span> <span class="o">=</span> <span class="n">idct</span><span class="p">(</span><span class="n">coeffs_truncated</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;ortho&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Reconstruction</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span> <span class="n">smooth_signal</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                     <span class="n">color</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Original&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span> <span class="n">recon</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+                     <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">n_coeffs</span><span class="si">}</span><span class="s1"> coeffs&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reconstruction (</span><span class="si">{</span><span class="n">n_coeffs</span><span class="si">}</span><span class="s1"> coefficients)&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+    <span class="c1"># Error</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">smooth_signal</span> <span class="o">-</span> <span class="n">recon</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span> <span class="n">error</span><span class="p">[:</span><span class="mi">2048</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Error&#39;</span><span class="p">)</span>
+    <span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">error</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">compression</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_coeffs</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error (RMSE=</span><span class="si">{</span><span class="n">rmse</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">compression</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">× compression)&#39;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id30">
+<h3>Quantitative Evaluation<a class="headerlink" href="#id30" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">total_energy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DCT Compression Analysis:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n_coeffs</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">]:</span>
+    <span class="n">energy_kept</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="p">[:</span><span class="n">n_coeffs</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_energy</span>
+    <span class="n">compression_ratio</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_coeffs</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">n_coeffs</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> coeffs (</span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">n_coeffs</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="p">)</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">%): &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">energy_kept</span><span class="si">:</span><span class="s2">5.2f</span><span class="si">}</span><span class="s2">% energy, </span><span class="si">{</span><span class="n">compression_ratio</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">× compression&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">50 coefficients (3</span><span class="si">% o</span><span class="s2">f data) capture &gt;99</span><span class="si">% e</span><span class="s2">nergy&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Compression ratio ~30× with negligible error&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id31">
+<h3>Pros and Cons<a class="headerlink" href="#id31" title="Link to this heading"></a></h3>
+<p>✅ <strong>Advantages:</strong></p>
+<ul class="simple">
+<li><p>Excellent compression for smooth signals</p></li>
+<li><p>Sparse representation (few coefficients capture most energy)</p></li>
+<li><p>Fast computation (FFT-like)</p></li>
+<li><p>No boundary artifacts (unlike Fourier)</p></li>
+<li><p>Ideal for feature extraction and denoising</p></li>
+</ul>
+<p>❌ <strong>Disadvantages:</strong></p>
+<ul class="simple">
+<li><p>Not time-localized</p></li>
+<li><p>Less effective for discontinuous signals</p></li>
+<li><p>Interpretation less intuitive than time-frequency</p></li>
+<li><p>Global analysis only</p></li>
+</ul>
+</section>
+<section id="id32">
+<h3>When to Use<a class="headerlink" href="#id32" title="Link to this heading"></a></h3>
+<p>✅ <strong>Use DCT when:</strong></p>
+<ul class="simple">
+<li><p>Compressing smooth signals</p></li>
+<li><p>Feature extraction (low-order coefficients)</p></li>
+<li><p>Denoising smooth backgrounds</p></li>
+<li><p>Data reduction before machine learning</p></li>
+<li><p>Modeling slow trends</p></li>
+</ul>
+<p>❌ <strong>Don’t use when:</strong></p>
+<ul class="simple">
+<li><p>Need time-localized analysis</p></li>
+<li><p>Signal has sharp transients</p></li>
+<li><p>Frequency content varies rapidly in time</p></li>
 </ul>
 </section>
 </section>
@@ -482,27 +1077,37 @@
 </section>
 <section id="decision-tree">
 <h2>Decision Tree<a class="headerlink" href="#decision-tree" title="Link to this heading"></a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Is your signal...
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>What information do you need?
 
-1. Stationary or slowly varying?
-   YES → Use **Spectrogram**
-   NO → Continue to 2
+1. General time-frequency view?
+   → Use **Spectrogram (STFT)**
 
-2. A chirp or rapid transient?
-   YES → Use **Q-transform**
-   NO → Continue to 3
+2. Transient detection with adaptive resolution?
+   → Use **Q-transform**
 
-3. Highly non-stationary or nonlinear?
-   YES → Use **HHT**
-   NO → Try **Spectrogram** first, then Q-transform
+3. Chirp frequency tracking (multi-scale)?
+   → Use **Wavelet (CWT)**
 
-4. Need instantaneous frequency?
-   YES → Use **HHT**
-   NO → Use **Spectrogram** or **Q-transform**
+4. Instantaneous frequency as single-valued curve?
+   → Use **HHT**
 
-5. Need fast computation?
-   YES → Use **Spectrogram**
-   NO → Any method works
+5. Decay rates AND frequencies (ringdown)?
+   → Use **STLT**
+
+6. Echo detection or spectral periodicity?
+   → Use **Cepstrum**
+
+7. Signal compression or smooth feature extraction?
+   → Use **DCT**
+
+Quick decision path:
+├─ Stationary signal? → Spectrogram
+├─ Transient/burst? → Q-transform
+├─ Chirp spanning octaves? → Wavelet
+├─ Need inst. frequency? → HHT
+├─ Damped oscillations? → STLT
+├─ Has echoes? → Cepstrum
+└─ Smooth, need compression? → DCT
 </pre></div>
 </div>
 </section>
@@ -513,69 +1118,126 @@
 <tr class="row-odd"><th class="head"><p>Method</p></th>
 <th class="head"><p>Computation Time*</p></th>
 <th class="head"><p>Memory</p></th>
-<th class="head"><p>Frequency Tracking</p></th>
+<th class="head"><p>Best For</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Spectrogram</p></td>
+<tr class="row-even"><td><p>Spectrogram (STFT)</p></td>
 <td><p>1× (baseline)</p></td>
 <td><p>Low</p></td>
-<td><p>Good for slow changes</p></td>
+<td><p>General purpose</p></td>
 </tr>
-<tr class="row-odd"><td><p>Q-transform</p></td>
+<tr class="row-odd"><td><p>DCT</p></td>
+<td><p>1-2×</p></td>
+<td><p>Low</p></td>
+<td><p>Compression</p></td>
+</tr>
+<tr class="row-even"><td><p>Q-transform</p></td>
 <td><p>5-10×</p></td>
 <td><p>Medium</p></td>
-<td><p>Excellent for chirps</p></td>
+<td><p>Transients</p></td>
+</tr>
+<tr class="row-odd"><td><p>Wavelet (CWT)</p></td>
+<td><p>8-15×</p></td>
+<td><p>Medium-High</p></td>
+<td><p>Chirps</p></td>
+</tr>
+<tr class="row-even"><td><p>Cepstrum</p></td>
+<td><p>3-5×</p></td>
+<td><p>Medium</p></td>
+<td><p>Echo detection</p></td>
+</tr>
+<tr class="row-odd"><td><p>STLT</p></td>
+<td><p>15-25×</p></td>
+<td><p>High</p></td>
+<td><p>Ringdown modes</p></td>
 </tr>
 <tr class="row-even"><td><p>HHT</p></td>
 <td><p>20-50×</p></td>
 <td><p>High</p></td>
-<td><p>Excellent for all</p></td>
+<td><p>Instantaneous freq.</p></td>
 </tr>
 </tbody>
 </table>
-<p>*Approximate, depends on parameters</p>
+<p>*Approximate, depends on parameters and signal length</p>
 </section>
 <section id="summary-table">
 <h2>Summary Table<a class="headerlink" href="#summary-table" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Feature</p></th>
-<th class="head"><p>Spectrogram</p></th>
+<th class="head"><p>STFT</p></th>
 <th class="head"><p>Q-transform</p></th>
+<th class="head"><p>Wavelet</p></th>
 <th class="head"><p>HHT</p></th>
+<th class="head"><p>STLT</p></th>
+<th class="head"><p>Cepstrum</p></th>
+<th class="head"><p>DCT</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><strong>Time-frequency resolution</strong></p></td>
+<tr class="row-even"><td><p><strong>Resolution</strong></p></td>
 <td><p>Fixed</p></td>
-<td><p>Adaptive (constant Q)</p></td>
+<td><p>Adaptive Q</p></td>
+<td><p>Scale-adaptive</p></td>
 <td><p>Data-adaptive</p></td>
+<td><p>Fixed</p></td>
+<td><p>Quefrency</p></td>
+<td><p>N/A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Best signal type</strong></p></td>
+<tr class="row-odd"><td><p><strong>Best signal</strong></p></td>
 <td><p>Stationary</p></td>
 <td><p>Chirps</p></td>
-<td><p>Non-stationary</p></td>
+<td><p>Multi-scale</p></td>
+<td><p>AM/FM</p></td>
+<td><p>Damped</p></td>
+<td><p>Echoes</p></td>
+<td><p>Smooth</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Computational cost</strong></p></td>
+<tr class="row-even"><td><p><strong>Comp. cost</strong></p></td>
 <td><p>Low</p></td>
 <td><p>Medium</p></td>
+<td><p>Med-High</p></td>
+<td><p>Very High</p></td>
 <td><p>High</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Frequency tracking</strong></p></td>
-<td><p>Good</p></td>
-<td><p>Excellent</p></td>
-<td><p>Excellent</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Ease of interpretation</strong></p></td>
-<td><p>Easy</p></td>
 <td><p>Medium</p></td>
-<td><p>Complex</p></td>
+<td><p>Low</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Standard GW use</strong></p></td>
+<tr class="row-odd"><td><p><strong>Output</strong></p></td>
+<td><p>2D (t,f)</p></td>
+<td><p>2D (t,f)</p></td>
+<td><p>2D (t,f)</p></td>
+<td><p>f(t) curve</p></td>
+<td><p>3D (t,σ,ω)</p></td>
+<td><p>τ spectrum</p></td>
+<td><p>Coeffs</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Time-localized</strong></p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>Yes</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Unique info</strong></p></td>
+<td><p>—</p></td>
+<td><p>Adaptive res.</p></td>
+<td><p>Multi-scale</p></td>
+<td><p>Inst. freq.</p></td>
+<td><p>Decay rate σ</p></td>
+<td><p>Delays</p></td>
+<td><p>Compression</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>GW use</strong></p></td>
 <td><p>General</p></td>
 <td><p>Transients</p></td>
-<td><p>Special cases</p></td>
+<td><p>Chirps</p></td>
+<td><p>Glitches</p></td>
+<td><p>Ringdown</p></td>
+<td><p>Reflections</p></td>
+<td><p>Features</p></td>
 </tr>
 </tbody>
 </table>
@@ -584,19 +1246,48 @@
 <h2>Practical Recommendations<a class="headerlink" href="#practical-recommendations" title="Link to this heading"></a></h2>
 <section id="for-routine-analysis">
 <h3>For Routine Analysis<a class="headerlink" href="#for-routine-analysis" title="Link to this heading"></a></h3>
-<p>Start with <strong>Spectrogram</strong> - it’s fast, well-understood, and sufficient for most cases.</p>
+<p>Start with <strong>Spectrogram (STFT)</strong> - it’s fast, well-understood, and sufficient for most cases.</p>
 </section>
 <section id="for-transient-detection">
 <h3>For Transient Detection<a class="headerlink" href="#for-transient-detection" title="Link to this heading"></a></h3>
 <p>Use <strong>Q-transform</strong> - it’s the standard for gravitational wave burst searches.</p>
 </section>
-<section id="for-detailed-characterization">
-<h3>For Detailed Characterization<a class="headerlink" href="#for-detailed-characterization" title="Link to this heading"></a></h3>
-<p>Use <strong>HHT</strong> when you need precise instantaneous frequency or when other methods fail.</p>
+<section id="for-chirp-analysis">
+<h3>For Chirp Analysis<a class="headerlink" href="#for-chirp-analysis" title="Link to this heading"></a></h3>
+<p>Use <strong>Wavelet (CWT)</strong> for precise frequency trajectory tracking across multiple scales.</p>
+</section>
+<section id="for-instantaneous-frequency">
+<h3>For Instantaneous Frequency<a class="headerlink" href="#for-instantaneous-frequency" title="Link to this heading"></a></h3>
+<p>Use <strong>HHT</strong> when you need single-valued instantaneous frequency (no time-frequency uncertainty).</p>
+</section>
+<section id="for-ringdown-analysis">
+<h3>For Ringdown Analysis<a class="headerlink" href="#for-ringdown-analysis" title="Link to this heading"></a></h3>
+<p>Use <strong>STLT</strong> to estimate both frequencies and decay rates (quality factors) simultaneously.</p>
+</section>
+<section id="for-echo-detection">
+<h3>For Echo Detection<a class="headerlink" href="#for-echo-detection" title="Link to this heading"></a></h3>
+<p>Use <strong>Cepstrum</strong> to identify delay times and periodic structure in the spectrum.</p>
+</section>
+<section id="for-data-reduction">
+<h3>For Data Reduction<a class="headerlink" href="#for-data-reduction" title="Link to this heading"></a></h3>
+<p>Use <strong>DCT</strong> for efficient compression and feature extraction of smooth signals.</p>
 </section>
 <section id="for-publication">
 <h3>For Publication<a class="headerlink" href="#for-publication" title="Link to this heading"></a></h3>
-<p>Include both <strong>Spectrogram</strong> (familiar to readers) and method-specific analysis (Q-transform or HHT) to show robustness.</p>
+<ul class="simple">
+<li><p>Include <strong>Spectrogram</strong> (familiar baseline for readers)</p></li>
+<li><p>Add specialized method(s) that reveal unique physics (Wavelet for chirps, HHT for inst. freq., STLT for ringdown, etc.)</p></li>
+<li><p>Show robustness: demonstrate that key results hold across multiple methods</p></li>
+</ul>
+</section>
+<section id="general-strategy">
+<h3>General Strategy<a class="headerlink" href="#general-strategy" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Start simple</strong>: Always begin with Spectrogram</p></li>
+<li><p><strong>Identify limitations</strong>: Where does STFT fail to show important features?</p></li>
+<li><p><strong>Choose specialized method</strong>: Pick the method whose “unique info” matches your needs (see Summary Table)</p></li>
+<li><p><strong>Validate</strong>: Cross-check with another method if possible</p></li>
+</ol>
 <hr class="docutils" />
 <p><strong>See Also:</strong></p>
 <ul class="simple">
