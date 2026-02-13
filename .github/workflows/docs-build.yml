@@ -55,6 +55,10 @@ jobs:
           # Install gwexpy in development mode
           pip install --no-deps -e .
 
+      - name: Register Jupyter kernel
+        run: |
+          python -m ipykernel install --user --name python3
+
       - name: Build documentation (strict mode)
         env:
           # Force notebook execution
