@@ -12,6 +12,8 @@ on:
 
 permissions:
   contents: read
+  issues: write
+  pull-requests: write
 
 concurrency:
   group: docs-quality-${{ github.ref }}
@@ -69,7 +71,7 @@ jobs:
           cd docs
           # Use -W to turn warnings into errors, -D to override config
           sphinx-build -b html -W --keep-going \
-            -D nbsphinx_allow_errors=False \
+            -D nbsphinx_allow_errors=0 \
             . _build/html
 
       - name: Check for SWIG warnings in build log
