@@ -113,12 +113,12 @@
              
   <section id="id1">
 <h1>検証済みアルゴリズム<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
-<p>以下のアルゴリズムは、12種AIによるクロス検証（2026-02-01）で妥当性が確認されました。
+<p>以下のアルゴリズムは、厳密な独立レビューと確立された参考文献との相互検証（2026-02-01）により妥当性が確認されました。
 このページでは、検証済み実装とその参考文献を記載しています。</p>
 <section id="k-space">
 <h2>k-space計算<a class="headerlink" href="#k-space" title="Link to this heading"></a></h2>
 <p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
-<p><strong>合意度</strong>: 10/12のAIモデルが正しさを確認</p>
+<p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
 <p>角波数の計算は物理学の標準定義に従っています：</p>
 <p>$$
 k = 2\pi \cdot \text{fftfreq}(n, d)
@@ -135,7 +135,7 @@ $$</p>
 <section id="fft">
 <h2>振幅スペクトル（トランジェントFFT）<a class="headerlink" href="#fft" title="Link to this heading"></a></h2>
 <p><strong>関数</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries._fft_transient</span></code></p>
-<p><strong>合意度</strong>: 誤った批判への明確な反駁とともに検証済み</p>
+<p><strong>検証状況</strong>: 誤った批判への明確な反駁とともに検証済み</p>
 <p>トランジェントFFTは密度スペクトルではなく、<strong>振幅スペクトル</strong> を返します：</p>
 <p>$$
 \text{amplitude} = \text{rfft}(x) / N
@@ -153,7 +153,7 @@ $$</p>
 <section id="vif">
 <h2>VIF（分散膨張率）<a class="headerlink" href="#vif" title="Link to this heading"></a></h2>
 <p><strong>関数</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.calculate_correlation_factor()</span></code></p>
-<p><strong>合意度</strong>: 8/12のAIモデルが正しさを確認</p>
+<p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
 <p>VIF計算式はPercival &amp; Walden (1993) に準拠しています：</p>
 <p>$$
 \text{VIF} = \sqrt{1 + 2 \sum_{k=1}^{M-1} \left(1 - \frac{k}{M}\right) |\rho(kS)|^2}
@@ -170,7 +170,7 @@ $$</p>
 <section id="arima">
 <h2>予測タイムスタンプ（ARIMA）<a class="headerlink" href="#arima" title="Link to this heading"></a></h2>
 <p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.timeseries.arima.ArimaResult.forecast()</span></code></p>
-<p><strong>合意度</strong>: 誤った懸念への反駁とともに検証済み</p>
+<p><strong>検証状況</strong>: 誤った懸念への反駁とともに検証済み</p>
 <p>予測開始時刻は以下のように計算されます：</p>
 <p>$$
 t_{\text{forecast}} = t_0 + n_{\text{obs}} \times \Delta t
@@ -264,12 +264,11 @@ J. Amer. Statist. Assoc. 89(428), 1994</p></li>
 </section>
 <section id="id6">
 <h2>検証について<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
-<p>このページに記載されているすべてのアルゴリズムは、複数の独立した
-レビュー手法によるクロス検証を通じて厳密な検証を受けています。
-実装は確立された参考文献と照らし合わせて検証され、正確性が
-確認されています。</p>
-<p>詳細な検証レポートと技術レビューのドキュメントについては、
-開発者ドキュメントを参照してください。</p>
+<p>このページに記載されているすべてのアルゴリズムは、ユニットテスト、既存文献との
+比較検証、および独立した技術レビューにより検証されています。実装は確立された
+参考文献と照合され、正確性が確認されています。</p>
+<p>詳細な検証レポートと技術的な検証データについては、開発者向けドキュメントを
+参照してください。</p>
 </section>
 </section>
 

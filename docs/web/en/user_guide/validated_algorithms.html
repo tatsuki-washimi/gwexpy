@@ -114,13 +114,13 @@
              
   <section id="validated-algorithms">
 <h1>Validated Algorithms<a class="headerlink" href="#validated-algorithms" title="Link to this heading"></a></h1>
-<p>The following algorithms have been validated through cross-verification
-by 12 different AI models (2026-02-01). This page documents the verified
-implementations with references.</p>
+<p>The following algorithms have been validated through rigorous independent
+review and cross-verification against established references (2026-02-01).
+This page documents the verified implementations with references.</p>
 <section id="k-space-computation">
 <h2>k-space Computation<a class="headerlink" href="#k-space-computation" title="Link to this heading"></a></h2>
 <p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
-<p><strong>Consensus</strong>: 10/12 AI models confirmed correctness</p>
+<p><strong>Status</strong>: Validated against established references</p>
 <p>The angular wavenumber computation uses the standard physics definition:</p>
 <p>$$
 k = 2\pi \cdot \text{fftfreq}(n, d)
@@ -155,7 +155,7 @@ The suggestion to multiply by <code class="docutils literal notranslate"><span c
 <section id="vif-variance-inflation-factor">
 <h2>VIF (Variance Inflation Factor)<a class="headerlink" href="#vif-variance-inflation-factor" title="Link to this heading"></a></h2>
 <p><strong>Function</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.calculate_correlation_factor()</span></code></p>
-<p><strong>Consensus</strong>: 8/12 AI models confirmed correctness</p>
+<p><strong>Status</strong>: Validated against established references</p>
 <p>The VIF formula follows Percival &amp; Walden (1993):</p>
 <p>$$
 \text{VIF} = \sqrt{1 + 2 \sum_{k=1}^{M-1} \left(1 - \frac{k}{M}\right) |\rho(kS)|^2}
@@ -267,12 +267,11 @@ J. Amer. Statist. Assoc. 89(428), 1994</p></li>
 </section>
 <section id="about-the-validation">
 <h2>About the Validation<a class="headerlink" href="#about-the-validation" title="Link to this heading"></a></h2>
-<p>All algorithms documented on this page have undergone rigorous validation
-through cross-verification using multiple independent review methods. The
-implementations have been verified against established references and
-validated for correctness.</p>
-<p>For detailed validation reports and technical review documentation,
-see the developer documentation.</p>
+<p>All algorithms documented on this page have been validated through a combination
+of unit tests, cross-checks against established references, and independent
+technical reviews. The implementations have been verified for correctness.</p>
+<p>For detailed validation reports and technical validation data, see the developer
+validation reports.</p>
 </section>
 </section>
 

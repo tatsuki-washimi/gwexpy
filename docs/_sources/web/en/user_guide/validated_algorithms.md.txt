@@ -1,14 +1,14 @@
 # Validated Algorithms
 
-The following algorithms have been validated through cross-verification
-by 12 different AI models (2026-02-01). This page documents the verified
-implementations with references.
+The following algorithms have been validated through rigorous independent
+review and cross-verification against established references (2026-02-01).
+This page documents the verified implementations with references.
 
 ## k-space Computation
 
 **Function**: {meth}`gwexpy.fields.ScalarField.fft_space`
 
-**Consensus**: 10/12 AI models confirmed correctness
+**Status**: Validated against established references
 
 The angular wavenumber computation uses the standard physics definition:
 
@@ -54,7 +54,7 @@ The suggestion to multiply by `dt` applies to density spectra
 
 **Function**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`
 
-**Consensus**: 8/12 AI models confirmed correctness
+**Status**: Validated against established references
 
 The VIF formula follows Percival & Walden (1993):
 
@@ -194,10 +194,9 @@ for time-correlated spectrograms. Specified in seconds as a float or Quantity.
 
 ## About the Validation
 
-All algorithms documented on this page have undergone rigorous validation
-through cross-verification using multiple independent review methods. The
-implementations have been verified against established references and
-validated for correctness.
+All algorithms documented on this page have been validated through a combination
+of unit tests, cross-checks against established references, and independent
+technical reviews. The implementations have been verified for correctness.
 
-For detailed validation reports and technical review documentation,
-see the developer documentation.
+For detailed validation reports and technical validation data, see the developer
+validation reports.

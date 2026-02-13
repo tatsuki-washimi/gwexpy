@@ -25,7 +25,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="ScalarField Tutorial - Expected Outputs" href="field_scalar_intro_outputs.html" />
+    <link rel="next" title="Introduction to VectorField Class" href="field_vector_intro.html" />
     <link rel="prev" title="SpectrogramMatrix Tutorial" href="matrix_spectrogram.html" /> 
 </head>
 
@@ -132,7 +132,64 @@
 <h2>Setup<a class="headerlink" href="#Setup" title="Link to this heading"></a></h2>
 <p>Import the necessary libraries.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Suppress SWIGLAL and other warnings for clean output</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;Wswiglal-redir-stdio&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+
+<span class="c1"># Helper functions for visualization</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_field_info</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Field Information&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Display field metadata as a formatted table&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Property&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Shape&#39;</span><span class="p">,</span> <span class="s1">&#39;Time Domain&#39;</span><span class="p">,</span> <span class="s1">&#39;Space Domains&#39;</span><span class="p">,</span> <span class="s1">&#39;Axis 0&#39;</span><span class="p">,</span> <span class="s1">&#39;Axis 1&#39;</span><span class="p">,</span> <span class="s1">&#39;Axis 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Axis 3&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;Value&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+            <span class="n">field</span><span class="o">.</span><span class="n">time_domain</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">space_domains</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">axis0_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> points)&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">axis1_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> points)&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">axis2_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> points)&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">axis3_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2"> points)&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&lt;h4&gt;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&lt;/h4&gt;&quot;</span><span class="p">))</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">compare_fields</span><span class="p">(</span><span class="n">field1</span><span class="p">,</span> <span class="n">field2</span><span class="p">,</span> <span class="n">name1</span><span class="o">=</span><span class="s2">&quot;Original&quot;</span><span class="p">,</span> <span class="n">name2</span><span class="o">=</span><span class="s2">&quot;Processed&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compare two fields side by side&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+    <span class="n">comparison</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Property&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Shape&#39;</span><span class="p">,</span> <span class="s1">&#39;Time Domain&#39;</span><span class="p">,</span> <span class="s1">&#39;Space Domains&#39;</span><span class="p">,</span> <span class="s1">&#39;Max Difference&#39;</span><span class="p">],</span>
+        <span class="n">name1</span><span class="p">:</span> <span class="p">[</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">field1</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+            <span class="n">field1</span><span class="o">.</span><span class="n">time_domain</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">field1</span><span class="o">.</span><span class="n">space_domains</span><span class="p">),</span>
+            <span class="s1">&#39;N/A&#39;</span>
+        <span class="p">],</span>
+        <span class="n">name2</span><span class="p">:</span> <span class="p">[</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">field2</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+            <span class="n">field2</span><span class="o">.</span><span class="n">time_domain</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">field2</span><span class="o">.</span><span class="n">space_domains</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field1</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">field2</span><span class="o">.</span><span class="n">value</span><span class="p">))</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">comparison</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">HTML</span><span class="p">(</span><span class="s2">&quot;&lt;h4&gt;Field Comparison&lt;/h4&gt;&quot;</span><span class="p">))</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">border</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -150,8 +207,8 @@
 <section id="1.-ScalarField-Initialization-and-Metadata">
 <h2>1. ScalarField Initialization and Metadata<a class="headerlink" href="#1.-ScalarField-Initialization-and-Metadata" title="Link to this heading"></a></h2>
 <p>Create a <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> object and check its metadata.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create 4D data (10 time points × 8×8×8 spatial grid)</span>
@@ -185,6 +242,18 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Shape: (10, 8, 8, 8)
+Unit: V
+Axis names: (&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;)
+Axis0 domain: time
+Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
+</pre></div></div>
+</div>
 <section id="Checking-Metadata">
 <h3>Checking Metadata<a class="headerlink" href="#Checking-Metadata" title="Link to this heading"></a></h3>
 <ul class="simple">
@@ -198,8 +267,8 @@
 <section id="2.-Slicing-with-4D-Structure-Preservation">
 <h2>2. Slicing with 4D Structure Preservation<a class="headerlink" href="#2.-Slicing-with-4D-Structure-Preservation" title="Link to this heading"></a></h2>
 <p>An important feature of <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> is that it <strong>always maintains 4 dimensions even when sliced</strong>. Even when using integer indices, they are automatically converted to length-1 slices.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Slice with integer index (would become 3D with regular ndarray)</span>
@@ -212,8 +281,19 @@
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original shape: (10, 8, 8, 8)
+Sliced shape: (1, 8, 8, 8)
+Type: &lt;class &#39;gwexpy.fields.scalar.ScalarField&#39;&gt;
+Axis names preserved: (&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use integer indices on multiple axes</span>
@@ -224,13 +304,22 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Multi-sliced shape: (1, 1, 1, 1)
+Value: [[[[-0.51827022]]]]
+</pre></div></div>
+</div>
 <p>This behavior maintains the consistency of ScalarField objects, and metadata (axis names and domain information) are never lost.</p>
 </section>
 <section id="3.-Time-Frequency-Transformation-(FFT-on-Axis-0)">
 <h2>3. Time-Frequency Transformation (FFT on Axis 0)<a class="headerlink" href="#3.-Time-Frequency-Transformation-(FFT-on-Axis-0)" title="Link to this heading"></a></h2>
 <p>You can transform the time axis to the frequency axis using the <code class="docutils literal notranslate"><span class="pre">fft_time()</span></code> and <code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code> methods. The same normalization as GWpy’s <code class="docutils literal notranslate"><span class="pre">TimeSeries.fft()</span></code> is adopted.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create ScalarField in time domain (sine wave)</span>
@@ -263,8 +352,18 @@
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Time domain shape: (128, 4, 4, 4)
+Frequency domain shape: (65, 4, 4, 4)
+Axis0 domain changed: time → frequency
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot frequency spectrum (select one point in x,y,z)</span>
@@ -293,11 +392,26 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_field_scalar_intro_13_0.png" src="../../../../_images/web_en_user_guide_tutorials_field_scalar_intro_13_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Peak frequency: 10.16 Hz (expected: 10.0 Hz)
+</pre></div></div>
+</div>
 <section id="Inverse-FFT-(Frequency-→-Time)">
 <h3>Inverse FFT (Frequency → Time)<a class="headerlink" href="#Inverse-FFT-(Frequency-→-Time)" title="Link to this heading"></a></h3>
 <p>You can return to the original time domain with <code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code>.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Inverse FFT</span>
@@ -325,13 +439,28 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_field_scalar_intro_15_0.png" src="../../../../_images/web_en_user_guide_tutorials_field_scalar_intro_15_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Max reconstruction error: 4.44e-16 V
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="4.-Real-Space-K-Space-Transformation-(FFT-on-Spatial-Axes)">
 <h2>4. Real Space-K Space Transformation (FFT on Spatial Axes)<a class="headerlink" href="#4.-Real-Space-K-Space-Transformation-(FFT-on-Spatial-Axes)" title="Link to this heading"></a></h2>
 <p>You can transform spatial axes to wavenumber space (K-space) using <code class="docutils literal notranslate"><span class="pre">fft_space()</span></code> and <code class="docutils literal notranslate"><span class="pre">ifft_space()</span></code>. Signed FFT with angular wavenumber k = 2π / λ is used.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create data with periodic structure in space</span>
@@ -368,8 +497,18 @@
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
+After fft_space: {&#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;}
+Axis names: (&#39;t&#39;, &#39;kx&#39;, &#39;y&#39;, &#39;z&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot K-space spectrum</span>
@@ -396,11 +535,26 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_field_scalar_intro_18_0.png" src="../../../../_images/web_en_user_guide_tutorials_field_scalar_intro_18_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Peak wavenumber: 1.57 rad/m (expected: ±1.57 rad/m)
+</pre></div></div>
+</div>
 <section id="Wavelength-Calculation">
 <h3>Wavelength Calculation<a class="headerlink" href="#Wavelength-Calculation" title="Link to this heading"></a></h3>
 <p>In K-space, you can calculate the wavelength using the <code class="docutils literal notranslate"><span class="pre">wavelength()</span></code> method.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate wavelength</span>
@@ -413,12 +567,21 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Wavelength at k=1.57: 4.00 m
+Calculated wavelengths range: 1.00 - 8.00 m
+</pre></div></div>
+</div>
 </section>
 <section id="FFT-on-All-Spatial-Axes">
 <h3>FFT on All Spatial Axes<a class="headerlink" href="#FFT-on-All-Spatial-Axes" title="Link to this heading"></a></h3>
 <p>If you omit the <code class="docutils literal notranslate"><span class="pre">axes</span></code> parameter, you can FFT all spatial axes together.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FFT on all spatial axes</span>
@@ -435,6 +598,16 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+All spatial axes in K space: {&#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;, &#39;kz&#39;: &#39;k&#39;}
+Back to real space: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
+Max reconstruction error: 2.29e-16
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="5.-Batch-Operations-with-FieldList-and-FieldDict">
@@ -443,8 +616,8 @@
 <section id="FieldList">
 <h3>FieldList<a class="headerlink" href="#FieldList" title="Link to this heading"></a></h3>
 <p>Manage multiple fields in list format and apply FFT operations in bulk.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create three ScalarFields with different amplitudes</span>
@@ -472,8 +645,16 @@
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Number of fields: 3
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Execute time FFT in bulk</span>
@@ -485,12 +666,23 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+All fields transformed to frequency domain:
+  Field 0: axis0_domain = frequency
+  Field 1: axis0_domain = frequency
+  Field 2: axis0_domain = frequency
+</pre></div></div>
+</div>
 </section>
 <section id="FieldDict">
 <h3>FieldDict<a class="headerlink" href="#FieldDict" title="Link to this heading"></a></h3>
 <p>Manage named fields in dictionary format.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create dictionary of named fields</span>
@@ -503,8 +695,16 @@
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Field names: [&#39;channel_A&#39;, &#39;channel_B&#39;, &#39;channel_C&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Execute spatial FFT in bulk</span>
@@ -514,6 +714,16 @@
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+channel_A: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
+channel_B: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
+channel_C: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
+</pre></div></div>
 </div>
 </section>
 </section>
@@ -526,8 +736,8 @@
 <li><p><strong>Cross-correlation</strong>: Estimate signal propagation delays</p></li>
 <li><p><strong>Coherence map</strong>: Visualize spatial coherence</p></li>
 </ol>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate simulation data</span>
@@ -569,11 +779,273 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ScalarField([[[[ 0.08684844],
+               [ 0.36739322],
+               [ 0.20264566],
+               [ 0.24368612],
+               [ 0.29709332]],
+
+              [[-0.42828167],
+               [-0.2788319 ],
+               [-0.63601112],
+               [-0.43725569],
+               [-0.45766302]],
+
+              [[-0.50234469],
+               [-0.39848957],
+               [-0.33841909],
+               [-0.30672809],
+               [-0.35290641]],
+
+              ...,
+
+              [[-0.24582327],
+               [-0.36331307],
+               [-0.35576048],
+               [-0.30664571],
+               [-0.29873314]],
+
+              [[-0.25188483],
+               [-0.10460112],
+               [-0.20704192],
+               [-0.17437447],
+               [-0.06699974]],
+
+              [[-0.01857532],
+               [ 0.03160235],
+               [ 0.09463293],
+               [-0.13609984],
+               [-0.18043362]]],
+
+
+             [[[ 0.4965515 ],
+               [ 0.51114119],
+               [ 0.66836178],
+               [ 0.47774925],
+               [ 0.54391374]],
+
+              [[ 0.00870382],
+               [ 0.05797381],
+               [ 0.19497677],
+               [-0.1841482 ],
+               [ 0.06961271]],
+
+              [[-0.44467682],
+               [-0.63003207],
+               [-0.4931782 ],
+               [-0.72115671],
+               [-0.66144024]],
+
+              ...,
+
+              [[-0.26696884],
+               [-0.02335534],
+               [-0.2955512 ],
+               [ 0.03365938],
+               [-0.16675011]],
+
+              [[-0.01148699],
+               [ 0.02693153],
+               [ 0.23230027],
+               [-0.12005181],
+               [-0.1327343 ]],
+
+              [[ 0.0960591 ],
+               [ 0.17476004],
+               [-0.00103139],
+               [ 0.17377965],
+               [ 0.34090044]]],
+
+
+             [[[ 0.48591277],
+               [ 0.44150349],
+               [ 0.40895599],
+               [ 0.5606232 ],
+               [ 0.38818876]],
+
+              [[ 0.59176168],
+               [ 0.60045806],
+               [ 0.43279717],
+               [ 0.40597058],
+               [ 0.51018807]],
+
+              [[-0.48896672],
+               [-0.67904575],
+               [-0.65110209],
+               [-0.73068132],
+               [-0.55754008]],
+
+              ...,
+
+              [[-0.00889405],
+               [ 0.0246277 ],
+               [-0.00934052],
+               [-0.28479022],
+               [ 0.00294349]],
+
+              [[-0.05809312],
+               [ 0.21557047],
+               [ 0.08898029],
+               [ 0.19601207],
+               [-0.00748609]],
+
+              [[ 0.31327382],
+               [ 0.04965958],
+               [ 0.12931156],
+               [ 0.09634759],
+               [ 0.02072857]]],
+
+
+             ...,
+
+
+             [[[-0.47088405],
+               [-0.44093954],
+               [-0.50808846],
+               [-0.53825154],
+               [-0.52270623]],
+
+              [[-0.27016794],
+               [-0.05885403],
+               [-0.03014553],
+               [-0.11945106],
+               [-0.22574645]],
+
+              [[ 0.67186813],
+               [ 0.65758934],
+               [ 0.61808806],
+               [ 0.68006628],
+               [ 0.64916691]],
+
+              ...,
+
+              [[ 0.33427533],
+               [ 0.1238872 ],
+               [ 0.23921193],
+               [ 0.13288922],
+               [ 0.17767688]],
+
+              [[-0.09293398],
+               [ 0.04599217],
+               [-0.04333049],
+               [-0.14249861],
+               [-0.14613857]],
+
+              [[-0.17523055],
+               [-0.08070457],
+               [-0.3736138 ],
+               [-0.21547623],
+               [-0.24905171]]],
+
+
+             [[[-0.33979978],
+               [-0.52516958],
+               [-0.43117016],
+               [-0.55575497],
+               [-0.30922288]],
+
+              [[-0.57172495],
+               [-0.36253384],
+               [-0.47323134],
+               [-0.56822764],
+               [-0.41788518]],
+
+              [[ 0.60000133],
+               [ 0.69520425],
+               [ 0.58067915],
+               [ 0.59044121],
+               [ 0.60903589]],
+
+              ...,
+
+              [[ 0.09738152],
+               [-0.03127321],
+               [ 0.10558964],
+               [ 0.02092155],
+               [ 0.12403775]],
+
+              [[-0.17854237],
+               [-0.15159656],
+               [-0.13889632],
+               [-0.10361625],
+               [-0.07109176]],
+
+              [[-0.30326966],
+               [-0.18659539],
+               [-0.17075845],
+               [ 0.12720352],
+               [-0.09463939]]],
+
+
+             [[[-0.13293935],
+               [-0.26827271],
+               [-0.16340608],
+               [ 0.0859768 ],
+               [-0.29470039]],
+
+              [[-0.59042514],
+               [-0.43746394],
+               [-0.34756977],
+               [-0.58880771],
+               [-0.50722801]],
+
+              [[ 0.19803234],
+               [ 0.1693735 ],
+               [ 0.13092929],
+               [ 0.23941187],
+               [ 0.22039804]],
+
+              ...,
+
+              [[-0.17123032],
+               [-0.04474158],
+               [-0.08665946],
+               [-0.00431457],
+               [-0.00958998]],
+
+              [[-0.12704775],
+               [-0.18034525],
+               [-0.24545939],
+               [-0.26021225],
+               [-0.27972791]],
+
+              [[-0.10539607],
+               [ 0.00241909],
+               [ 0.01135068],
+               [-0.2382848 ],
+               [-0.06614197]]]]
+            unit: V,
+            name: Environmental Field,
+            epoch: None,
+            channel: None,
+            axis_names: [&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+            axis0_name: t,
+            axis1_name: x,
+            axis2_name: y,
+            axis3_name: z,
+            axis0_index: [0.00000000e+00 3.90625000e-03 7.81250000e-03 ... 3.98828125e+00
+                           3.99218750e+00 3.99609375e+00] s,
+            axis1_index: [0.         0.26315789 0.52631579 0.78947368 1.05263158
+                           1.31578947 1.57894737 1.84210526 2.10526316 2.36842105
+                           2.63157895 2.89473684 3.15789474 3.42105263 3.68421053
+                           3.94736842 4.21052632 4.47368421 4.73684211 5.        ] m,
+            axis2_index: [0.  0.5 1.  1.5 2. ] m,
+            axis3_index: [0.] m,
+            axis0_domain: time,
+            space_domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;},
+            axis0_offset: None)
+</pre></div></div>
+</div>
 <section id="Power-Spectral-Density-(PSD)">
 <h3>Power Spectral Density (PSD)<a class="headerlink" href="#Power-Spectral-Density-(PSD)" title="Link to this heading"></a></h3>
 <p>Calculate the PSD at a specific location and check frequency components.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare PSD at source position (x=1m) and far field (x=4m)</span>
@@ -591,29 +1063,70 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 1000x600 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_field_scalar_intro_33_1.png" src="../../../../_images/web_en_user_guide_tutorials_field_scalar_intro_33_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_field_scalar_intro_33_2.png" src="../../../../_images/web_en_user_guide_tutorials_field_scalar_intro_33_2.png" />
+</div>
+</div>
 </section>
-<section id="Frequency-Space-Mapping">
-<h3>Frequency-Space Mapping<a class="headerlink" href="#Frequency-Space-Mapping" title="Link to this heading"></a></h3>
-<p>Use <code class="docutils literal notranslate"><span class="pre">plot_freq_space</span></code> to visualize changes in the frequency spectrum along spatial axes.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<section id="Frequency-Space-Mapping-(Coming-Soon)">
+<h3>Frequency-Space Mapping (Coming Soon)<a class="headerlink" href="#Frequency-Space-Mapping-(Coming-Soon)" title="Link to this heading"></a></h3>
+<p><strong>Note</strong>: The <code class="docutils literal notranslate"><span class="pre">plot_freq_space()</span></code> visualization method is planned for a future release.</p>
+<p>For now, you can manually extract and plot frequency-space data using standard matplotlib:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract PSD at different spatial positions</span>
+<span class="c1"># (Manual visualization example - coming in v0.2.0)</span>
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">field_sig</span><span class="o">.</span><span class="n">plot_freq_space</span><span class="p">(</span>
-    <span class="n">space_axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
-    <span class="n">fixed_coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">},</span>
-    <span class="n">freq_range</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
-    <span class="n">log_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
+<p>This section will be updated once the visualization API is implemented.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualization method plot_freq_space() will be available in v0.2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Example usage (future):</span>
+<span class="c1"># field_sig.plot_freq_space(</span>
+<span class="c1">#     space_axis=&quot;x&quot;,</span>
+<span class="c1">#     fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},</span>
+<span class="c1">#     freq_range=(10, 100),</span>
+<span class="c1">#     log_scale=True,</span>
+<span class="c1"># )</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Note: Frequency-space visualization will be added in a future release&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Note: Frequency-space visualization will be added in a future release
+</pre></div></div>
 </div>
 </section>
 <section id="Cross-Correlation-and-Delay-Estimation">
 <h3>Cross-Correlation and Delay Estimation<a class="headerlink" href="#Cross-Correlation-and-Delay-Estimation" title="Link to this heading"></a></h3>
 <p>Calculate cross-correlation between a reference point (source position) and other locations to visualize signal propagation delays.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use x=1.0m (source) as reference point</span>
@@ -629,13 +1142,37 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[20]</span><span class="ansi-green-fg">, line 5</span>
+<span class="ansi-green-fg">      2</span> ref_point = (<span class="ansi-green-fg">1.0</span> * u.m, <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-green-fg">0.0</span> * u.m)
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Calculate and plot cross-correlation</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> lags, corrs = <span class="ansi-yellow-bg">field_sig</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">plot_cross_correlation</span>(
+<span class="ansi-green-fg">      6</span>     ref_point=ref_point,
+<span class="ansi-green-fg">      7</span>     scan_axis=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">      8</span>     fixed_coords={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m},
+<span class="ansi-green-fg">      9</span>     max_lag=<span class="ansi-green-fg">0.5</span>,
+<span class="ansi-green-fg">     10</span> )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/.venv-docs-exec/lib/python3.12/site-packages/gwpy/types/array.py:207</span>, in <span class="ansi-cyan-fg">Array.__getattr__</span><span class="ansi-blue-fg">(self, attr)</span>
+<span class="ansi-green-fg">    206</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(<span style="color: rgb(0,135,0)">self</span>, attr):
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">207</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-blue-fg ansi-yellow-bg">__getattribute__</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">attr</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-red-fg">AttributeError</span>: &#39;ScalarField&#39; object has no attribute &#39;plot_cross_correlation&#39;
+</pre></div></div>
+</div>
 <p>The V-shaped pattern shows that the signal propagates from x=1.0m in both directions.</p>
 </section>
 <section id="Coherence-Map">
 <h3>Coherence Map<a class="headerlink" href="#Coherence-Map" title="Link to this heading"></a></h3>
 <p>Display spatial coherence at a specific frequency (here 30Hz).</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">field_sig</span><span class="o">.</span><span class="n">plot_coherence_map</span><span class="p">(</span>
@@ -647,13 +1184,35 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[21]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">field_sig</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">plot_coherence_map</span>(
+<span class="ansi-green-fg">      2</span>     target_freq=<span class="ansi-green-fg">30.0</span>,
+<span class="ansi-green-fg">      3</span>     ref_point=ref_point,
+<span class="ansi-green-fg">      4</span>     scan_axis=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">      5</span>     fixed_coords={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m},
+<span class="ansi-green-fg">      6</span> )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/.venv-docs-exec/lib/python3.12/site-packages/gwpy/types/array.py:207</span>, in <span class="ansi-cyan-fg">Array.__getattr__</span><span class="ansi-blue-fg">(self, attr)</span>
+<span class="ansi-green-fg">    206</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(<span style="color: rgb(0,135,0)">self</span>, attr):
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">207</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-blue-fg ansi-yellow-bg">__getattribute__</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">attr</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-red-fg">AttributeError</span>: &#39;ScalarField&#39; object has no attribute &#39;plot_coherence_map&#39;
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="6.-Verification-of-Numerical-Invariants">
 <h2>6. Verification of Numerical Invariants<a class="headerlink" href="#6.-Verification-of-Numerical-Invariants" title="Link to this heading"></a></h2>
 <p>To verify the accuracy of FFT transformations, we confirm that round-trip transformations can reconstruct the original data.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Time FFT invariant check: ifft_time(fft_time(f)) ≈ f</span>
@@ -682,6 +1241,15 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Time FFT Round-trip max error: 9.99e-16
+Time FFT invariant check: PASSED
+</pre></div></div>
+</div>
 </section>
 </section>
 
@@ -690,7 +1258,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="matrix_spectrogram.html" class="btn btn-neutral float-left" title="SpectrogramMatrix Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="field_scalar_intro_outputs.html" class="btn btn-neutral float-right" title="ScalarField Tutorial - Expected Outputs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="field_vector_intro.html" class="btn btn-neutral float-right" title="Introduction to VectorField Class" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
