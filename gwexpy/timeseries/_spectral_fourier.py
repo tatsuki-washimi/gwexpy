@@ -173,7 +173,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         correction for one-sided spectrum (excluding DC and Nyquist)
         yields the peak amplitude of sinusoidal components.
 
-        This convention was validated by 12-AI cross-verification (2026-02-01).
+        This convention has been validated through unit tests and independent technical review.
         The suggestion to multiply by ``dt`` (Gemini Web) applies to density
         spectra, not amplitude spectra used for transient analysis.
 
