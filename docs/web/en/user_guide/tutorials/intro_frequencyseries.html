@@ -117,11 +117,11 @@
 <section id="Advanced-Features-and-Operations-of-FrequencySeries">
 <h1>Advanced Features and Operations of FrequencySeries<a class="headerlink" href="#Advanced-Features-and-Operations-of-FrequencySeries" title="Link to this heading"></a></h1>
 <p>This notebook introduces the new methods and features of the <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> class extended in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>. We will focus on handling complex spectra, calculus operations, filtering (smoothing), and integration with other libraries.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
@@ -132,14 +132,123 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/miniconda3/envs/docs/lib/python3.11/site-packages/gwpy/time/_ligotimegps.py:42: UserWarning: Wswiglal-redir-stdio:
+
+SWIGLAL standard output/error redirection is enabled in IPython.
+This may lead to performance penalties. To disable locally, use:
+
+with lal.no_swig_redirect_standard_output_error():
+    ...
+
+To disable globally, use:
+
+lal.swig_redirect_standard_output_error(False)
+
+Note however that this will likely lead to error messages from
+LAL functions being either misdirected or lost when called from
+Jupyter notebooks.
+
+To suppress this warning, use:
+
+import warnings
+warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
+import lal
+
+  from lal import LIGOTimeGPS
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 4</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
+<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">frequencyseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FrequencySeries
+<span class="ansi-green-fg">      5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Plot
+<span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
+<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     46</span> )
+<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     50</span>     astro,
+<span class="ansi-green-fg">     51</span>     detector,
+<span class="ansi-green-fg">     52</span>     frequencyseries,
+<span class="ansi-green-fg">     53</span>     interop,
+<span class="ansi-green-fg">     54</span>     io,
+<span class="ansi-green-fg">     55</span>     noise,
+<span class="ansi-green-fg">     56</span>     plot,
+<span class="ansi-green-fg">     57</span>     segments,
+<span class="ansi-green-fg">     58</span>     signal,
+<span class="ansi-green-fg">     59</span>     spectral,
+<span class="ansi-green-fg">     60</span>     spectrogram,
+<span class="ansi-green-fg">     61</span>     table,
+<span class="ansi-green-fg">     62</span>     time,
+<span class="ansi-green-fg">     63</span>     timeseries,
+<span class="ansi-green-fg">     64</span>     types,
+<span class="ansi-green-fg">     65</span> )
+<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
+<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
+<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
+<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
+<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     21</span> )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
+<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
+<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
+<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-fg">    223</span>     )
+<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
+<span class="ansi-green-fg">    226</span>         fmt,
+<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
+<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
+<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">    230</span>     )
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
+</pre></div></div>
+</div>
 <section id="1.-Data-Preparation">
 <h2>1. Data Preparation<a class="headerlink" href="#1.-Data-Preparation" title="Link to this heading"></a></h2>
 <p>First, we create a <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> from a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> using FFT. Here, we generate a test signal with specific frequency components.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span> <span class="o">=</span> <span class="mi">1024</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span> <span class="o">=</span> <span class="mi">1024</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
 <span class="n">exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span> <span class="o">/</span> <span class="mf">1.5</span><span class="p">)</span>
 <span class="n">exp</span><span class="p">[:</span> <span class="nb">int</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -160,17 +269,38 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 10</span>
+<span class="ansi-green-fg">      4</span> exp[: <span style="color: rgb(0,135,0)">int</span>(exp.size / <span class="ansi-green-fg">4</span>)] = <span class="ansi-green-fg">0</span>
+<span class="ansi-green-fg">      5</span> data = (
+<span class="ansi-green-fg">      6</span>     np.sin(<span class="ansi-green-fg">2</span> * np.pi * <span class="ansi-green-fg">10.1</span> * t)
+<span class="ansi-green-fg">      7</span>     + <span class="ansi-green-fg">5</span> * exp * np.sin(<span class="ansi-green-fg">2</span> * np.pi * <span class="ansi-green-fg">100.1</span> * t)
+<span class="ansi-green-fg">      8</span>     + np.random.normal(scale=<span class="ansi-green-fg">0.3</span>, size=<span style="color: rgb(0,135,0)">len</span>(t))
+<span class="ansi-green-fg">      9</span> )
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">10</span> ts = <span class="ansi-yellow-bg">TimeSeries</span>(data, dt=<span class="ansi-green-fg">1</span> / fs, unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">um</span><span class="ansi-yellow-fg">&#34;</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Test Signal</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     11</span> <span style="color: rgb(0,135,0)">print</span>(ts)
+<span class="ansi-green-fg">     12</span> ts.plot(title=ts.name)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeries&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="2.-Visualization-and-Conversion-of-Complex-Spectra">
 <h2>2. Visualization and Conversion of Complex Spectra<a class="headerlink" href="#2.-Visualization-and-Conversion-of-Complex-Spectra" title="Link to this heading"></a></h2>
 <section id="Phase-and-Amplitude">
 <h3>Phase and Amplitude<a class="headerlink" href="#Phase-and-Amplitude" title="Link to this heading"></a></h3>
 <p>Using the <code class="docutils literal notranslate"><span class="pre">phase()</span></code>, <code class="docutils literal notranslate"><span class="pre">degree()</span></code>, and <code class="docutils literal notranslate"><span class="pre">to_db()</span></code> methods, you can convert complex spectra into intuitive units.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert amplitude to dB (ref=1.0, 20*log10)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert amplitude to dB (ref=1.0, 20*log10)</span>
 <span class="n">spec_db</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_db</span><span class="p">()</span>
 
 <span class="c1"># Get phase (in degrees, unwrap=True for continuity)</span>
@@ -189,16 +319,32 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Convert amplitude to dB (ref=1.0, 20*log10)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> spec_db = <span class="ansi-yellow-bg">spec</span>.to_db()
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Get phase (in degrees, unwrap=True for continuity)</span>
+<span class="ansi-green-fg">      5</span> spec_phase = spec.degree(unwrap=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="3.-Calculus-in-Frequency-Domain">
 <h2>3. Calculus in Frequency Domain<a class="headerlink" href="#3.-Calculus-in-Frequency-Domain" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">differentiate()</span></code> and <code class="docutils literal notranslate"><span class="pre">integrate()</span></code> methods allow you to perform differentiation and integration in the frequency domain. You can specify the order using the <code class="docutils literal notranslate"><span class="pre">order</span></code> argument (default is 1). This feature makes it easy to convert between displacement, velocity, and acceleration (multiplication/division by <span class="math notranslate nohighlight">\((2 \pi i f)^n\)</span>).</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Differentiate from displacement (m) to velocity (m/s) (order=1)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Differentiate from displacement (m) to velocity (m/s) (order=1)</span>
 <span class="n">vel_spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">differentiate</span><span class="p">()</span>
 
 <span class="c1"># Differentiate from displacement (m) to acceleration (m/s^2) (order=2)</span>
@@ -222,17 +368,33 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Differentiate from displacement (m) to velocity (m/s) (order=1)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> vel_spec = <span class="ansi-yellow-bg">spec</span>.differentiate()
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Differentiate from displacement (m) to acceleration (m/s^2) (order=2)</span>
+<span class="ansi-green-fg">      5</span> accel_spec = spec.differentiate(order=<span class="ansi-green-fg">2</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="4.-Spectrum-Smoothing-and-Peak-Detection">
 <h2>4. Spectrum Smoothing and Peak Detection<a class="headerlink" href="#4.-Spectrum-Smoothing-and-Peak-Detection" title="Link to this heading"></a></h2>
 <section id="Smoothing">
 <h3>Smoothing<a class="headerlink" href="#Smoothing" title="Link to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">smooth()</span></code> method enables smoothing of the spectrum using moving averages and other techniques.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Smooth in amplitude domain with 11 samples</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Smooth in amplitude domain with 11 samples</span>
 <span class="n">spec_smooth</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
 
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">spec_smooth</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
@@ -248,15 +410,31 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Smooth in amplitude domain with 11 samples</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> spec_smooth = <span class="ansi-yellow-bg">spec</span>.smooth(width=<span class="ansi-green-fg">11</span>)
+<span class="ansi-green-fg">      4</span> plot = Plot(spec.abs(), spec_smooth.abs(), xscale=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">log</span><span class="ansi-yellow-fg">&#34;</span>, yscale=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">log</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span> ax = plot.gca()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="Peak-Detection">
 <h3>Peak Detection<a class="headerlink" href="#Peak-Detection" title="Link to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">find_peaks()</span></code> method wraps <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code>, making it easy to extract peaks above a specific threshold.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find peaks with amplitude &gt;= 0.2</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find peaks with amplitude &gt;= 0.2</span>
 <span class="n">peaks</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">abs</span><span class="p">())</span>
@@ -273,6 +451,22 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Find peaks with amplitude &gt;= 0.2</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> peaks, props = <span class="ansi-yellow-bg">spec</span>.find_peaks(threshold=<span class="ansi-green-fg">0.2</span>)
+<span class="ansi-green-fg">      4</span> plot = Plot(spec.abs())
+<span class="ansi-green-fg">      5</span> ax = plot.gca()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="5.-Advanced-Analysis-Features">
@@ -280,11 +474,11 @@
 <section id="Group-Delay">
 <h3>Group Delay<a class="headerlink" href="#Group-Delay" title="Link to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">group_delay()</span></code> method calculates the group delay (delay of the signal envelope) from the frequency derivative of the phase.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gd</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">group_delay</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gd</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">group_delay</span><span class="p">()</span>
 
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">gd</span><span class="p">)</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
@@ -296,15 +490,30 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> gd = <span class="ansi-yellow-bg">spec</span>.group_delay()
+<span class="ansi-green-fg">      3</span> plot = Plot(gd)
+<span class="ansi-green-fg">      4</span> ax = plot.gca()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="Inverse-FFT-(ifft)">
 <h3>Inverse FFT (ifft)<a class="headerlink" href="#Inverse-FFT-(ifft)" title="Link to this heading"></a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">ifft()</span></code> method returns a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>. Even for results from FFT with <code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code>, it can inherit the information and control restoration to the original length (trim=True).</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert back to TimeSeries with inverse FFT</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert back to TimeSeries with inverse FFT</span>
 <span class="c1"># mode=&quot;auto&quot; reads the transient information from the input FrequencySeries and processes it appropriately</span>
 <span class="n">inv_ts</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
 <span class="n">red_ts</span> <span class="o">=</span> <span class="n">inv_ts</span> <span class="o">-</span> <span class="n">ts</span>
@@ -325,16 +534,33 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[8]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Convert back to TimeSeries with inverse FFT</span>
+<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># mode=&#34;auto&#34; reads the transient information from the input FrequencySeries and processes it appropriately</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> inv_ts = <span class="ansi-yellow-bg">spec</span>.ifft(mode=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">auto</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      4</span> red_ts = inv_ts - ts
+<span class="ansi-green-fg">      6</span> plot = Plot(ts, inv_ts, red_ts)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="6.-Integration-with-Other-Libraries">
 <h2>6. Integration with Other Libraries<a class="headerlink" href="#6.-Integration-with-Other-Libraries" title="Link to this heading"></a></h2>
 <p>Interconversion with Pandas, xarray, and control libraries has been added.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert to Pandas Series</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert to Pandas Series</span>
 <span class="n">pd_series</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pandas index sample:&quot;</span><span class="p">,</span> <span class="n">pd_series</span><span class="o">.</span><span class="n">index</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
 <span class="n">display</span><span class="p">(</span><span class="n">pd_series</span><span class="p">)</span>
@@ -357,15 +583,31 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Convert to Pandas Series</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> pd_series = <span class="ansi-yellow-bg">spec</span>.to_pandas()
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Pandas index sample:</span><span class="ansi-yellow-fg">&#34;</span>, pd_series.index[:<span class="ansi-green-fg">5</span>])
+<span class="ansi-green-fg">      4</span> display(pd_series)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="7.-Integration-with-Python-Control-Library">
 <h2>7. Integration with Python Control Library<a class="headerlink" href="#7.-Integration-with-Python-Control-Library" title="Link to this heading"></a></h2>
 <p>Interconversion with the <strong>Frequency Response Data (FRD)</strong> object from the <code class="docutils literal notranslate"><span class="pre">control</span></code> library, which is standard in the field of control engineering, is possible. This allows transfer functions measured with GWExPy to be directly used for control system design and analysis.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">control</span>
 
     <span class="c1"># Convert FrequencySeries -&gt; control.FRD</span>
@@ -389,15 +631,23 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Python Control Systems Library is not installed.
+</pre></div></div>
+</div>
 </section>
 <section id="8.-Quadrature-Sum">
 <h2>8. Quadrature Sum<a class="headerlink" href="#8.-Quadrature-Sum" title="Link to this heading"></a></h2>
 <p>This feature calculates the sum of orthogonal components.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate noisy data</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate noisy data</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
 <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
@@ -437,6 +687,23 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[11]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Generate noisy data</span>
+<span class="ansi-green-fg">      2</span> np.random.seed(<span class="ansi-green-fg">42</span>)
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> f = <span class="ansi-yellow-bg">spec</span>.frequencies.value
+<span class="ansi-green-fg">      4</span> noise = np.abs(np.random.randn(f.size))
+<span class="ansi-green-fg">      5</span> peak = <span class="ansi-green-fg">10.0</span> * np.exp(-((f - <span class="ansi-green-fg">200</span>) ** <span class="ansi-green-fg">2</span>) / <span class="ansi-green-fg">50.0</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 </section>

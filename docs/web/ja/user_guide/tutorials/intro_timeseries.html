@@ -121,7 +121,7 @@
 <h2>目次:nbsphinx-math:<cite>n1</cite>. 環境セットアップ:nbsphinx-math:<cite>n2</cite>. 信号処理と復調 (Hilbert, Phase, Demodulation):nbsphinx-math:<cite>n3</cite>. スペクトル解析と相関 (FFT, Transfer Function, xcorr):nbsphinx-math:<cite>n4</cite>. ヒルベルト・ファン変換 (HHT):nbsphinx-math:<cite>n5</cite>. 統計・前処理 (Impute, Standardize, ARIMA, Hurst, Rolling):nbsphinx-math:<cite>n6</cite>. リサンプリングと再インデックス (asfreq, resample):nbsphinx-math:<cite>n7</cite>. 関数によるフィッティング (fit):nbsphinx-math:<cite>n8</cite>. 相互運用性 (Pandas, Xarray, Torch, and more)<a class="headerlink" href="#目次:nbsphinx-math:n1.-環境セットアップ:nbsphinx-math:n2.-信号処理と復調-(Hilbert,-Phase,-Demodulation):nbsphinx-math:n3.-スペクトル解析と相関-(FFT,-Transfer-Function,-xcorr):nbsphinx-math:n4.-ヒルベルト・ファン変換-(HHT):nbsphinx-math:n5.-統計・前処理-(Impute,-Standardize,-ARIMA,-Hurst,-Rolling):nbsphinx-math:n6.-リサンプリングと再インデックス-(asfreq,-resample):nbsphinx-math:n7.-関数によるフィッティング-(fit):nbsphinx-math:n8.-相互運用性-(Pandas,-Xarray,-Torch,-and-more)" title="Link to this heading"></a></h2>
 <p>## 1. 環境セットアップ</p>
 <p>まずは必要なライブラリをインポートし、デモ用のサンプルデータを生成します。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -157,6 +157,115 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/miniconda3/envs/docs/lib/python3.11/site-packages/gwpy/time/_ligotimegps.py:42: UserWarning: Wswiglal-redir-stdio:
+
+SWIGLAL standard output/error redirection is enabled in IPython.
+This may lead to performance penalties. To disable locally, use:
+
+with lal.no_swig_redirect_standard_output_error():
+    ...
+
+To disable globally, use:
+
+lal.swig_redirect_standard_output_error(False)
+
+Note however that this will likely lead to error messages from
+LAL functions being either misdirected or lost when called from
+Jupyter notebooks.
+
+To suppress this warning, use:
+
+import warnings
+warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
+import lal
+
+  from lal import LIGOTimeGPS
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 5</span>
+<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
+<span class="ansi-green-fg">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">astropy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> units <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> u
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">noise</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">wave</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> chirp, exponential, gaussian, sine
+<span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Plot
+<span class="ansi-green-fg">      7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
+<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     46</span> )
+<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     50</span>     astro,
+<span class="ansi-green-fg">     51</span>     detector,
+<span class="ansi-green-fg">     52</span>     frequencyseries,
+<span class="ansi-green-fg">     53</span>     interop,
+<span class="ansi-green-fg">     54</span>     io,
+<span class="ansi-green-fg">     55</span>     noise,
+<span class="ansi-green-fg">     56</span>     plot,
+<span class="ansi-green-fg">     57</span>     segments,
+<span class="ansi-green-fg">     58</span>     signal,
+<span class="ansi-green-fg">     59</span>     spectral,
+<span class="ansi-green-fg">     60</span>     spectrogram,
+<span class="ansi-green-fg">     61</span>     table,
+<span class="ansi-green-fg">     62</span>     time,
+<span class="ansi-green-fg">     63</span>     timeseries,
+<span class="ansi-green-fg">     64</span>     types,
+<span class="ansi-green-fg">     65</span> )
+<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
+<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
+<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
+<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
+<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     21</span> )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
+<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
+<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
+<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-fg">    223</span>     )
+<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
+<span class="ansi-green-fg">    226</span>         fmt,
+<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
+<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
+<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">    230</span>     )
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
+</pre></div></div>
+</div>
 <p>## 2. 信号処理と復調</p>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> では、ヒルベルト変換や包絡線、瞬時周波数の計算、さらにロックインアンプのような復調機能が統合されています。</p>
 <section id="ヒルベルト変換と包絡線">
@@ -188,8 +297,17 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_5_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 分析信号 (Analytic Signal) の計算</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> ts_analytic = <span class="ansi-yellow-bg">ts2</span>.hilbert()
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># 包絡線 (Envelope) の計算</span>
+<span class="ansi-green-fg">      4</span> ts_env = ts2.envelope()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts2&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="瞬時位相と瞬時周波数">
@@ -220,8 +338,17 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_7_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_7_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 瞬時位相 (unwrap=True で位相跳びを解消)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> phase_rad = <span class="ansi-yellow-bg">ts2</span>.instantaneous_phase(unwrap=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">      3</span> phase_deg = ts2.instantaneous_phase(deg=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, unwrap=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># 瞬時周波数</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts2&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="混合と復調-(Mix-down,-Baseband,-Lock-in)">
@@ -257,37 +384,21 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-TimeSeries([1.03481507, 0.96203914, 1.26042756, 1.07545387,
-            0.85431812, 0.86408565, 1.00513351, 1.08458243,
-            0.97558374, 1.02132729, 1.1182754 , 1.04892109,
-            1.0532585 , 0.98106536, 0.79733538, 0.98581482,
-            0.92058138, 1.06299188, 1.09037351, 0.93625037,
-            0.99950949, 1.13805062, 0.99513265, 1.13102761,
-            1.14067506, 1.02879789, 1.06228927, 1.14770241,
-            0.91021493, 0.94481575, 1.08763264, 0.90287389,
-            1.03999359, 0.91981346, 1.06551456, 1.18556526,
-            0.92602146, 1.05984894, 1.15023769, 1.11556909,
-            1.013073  , 0.97225309, 1.18268113, 1.0056054 ,
-            1.09119002, 0.9003583 , 0.90698603, 1.19031095,
-            0.96490867, 1.10367259]
-           unit: V,
-           t0: 0.0 s,
-           dt: 0.1 s,
-           name: Sensor 1,
-           channel: None)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_9_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_9_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 1. mix_down: 特定の周波数 f0 で複調 (複素信号になる)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> ts_mixed = <span class="ansi-yellow-bg">ts1</span>.mix_down(f0=<span class="ansi-green-fg">10</span>)
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># 2. baseband: demodulation + lowpass + resampling を一括実行</span>
+<span class="ansi-green-fg">      5</span> ts_base = ts1.baseband(f0=<span class="ansi-green-fg">10</span>, lowpass=<span class="ansi-green-fg">5</span>, output_rate=<span class="ansi-green-fg">20</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
+</pre></div></div>
 </div>
 <p>## 3. スペクトル解析と相関</p>
 <p>GWpy の機能を継承しつつ、過渡信号向けの <code class="docutils literal notranslate"><span class="pre">transient</span></code> モード FFT や、FFT の直接比による伝達関数計算が追加されています。</p>
@@ -323,8 +434,20 @@ TimeSeries([1.03481507, 0.96203914, 1.26042756, 1.07545387,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_12_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_12_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 通常の FFT (GWpy互換)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> fs_gwpy = <span class="ansi-yellow-bg">ts1</span>.fft()
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Transient モード:</span>
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># pad_left/right でパディング量を指定。nfft_mode=&#34;next_fast_len&#34; で計算効率の良い長さに調整。</span>
+<span class="ansi-green-fg">      6</span> fs_trans = ts1.fft(
+<span class="ansi-green-fg">      7</span>     mode=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">transient</span><span class="ansi-yellow-fg">&#34;</span>, pad_left=<span class="ansi-green-fg">0.5</span>, pad_right=<span class="ansi-green-fg">0.5</span>, nfft_mode=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">next_fast_len</span><span class="ansi-yellow-fg">&#34;</span>
+<span class="ansi-green-fg">      8</span> )
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="伝達関数-(Transfer-Function)-と相互相関-(xcorr)">
@@ -363,16 +486,27 @@ TimeSeries([1.03481507, 0.96203914, 1.26042756, 1.07545387,
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_14_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_14_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 伝達関数の計算 (Sensor 1 に対する Chirp Signal の伝達関数)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> tf_welch = <span class="ansi-yellow-bg">ts2</span>.transfer_function(ts1, fftlength=<span class="ansi-green-fg">1</span>)
+<span class="ansi-green-fg">      3</span> tf_fft = ts2.transfer_function(
+<span class="ansi-green-fg">      4</span>     ts1, mode=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">transient</span><span class="ansi-yellow-fg">&#34;</span>
+<span class="ansi-green-fg">      5</span> )  <span style="color: rgb(95,135,135)"># 全区間FFT比 (過渡応答解析などに有用)</span>
+<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># 相互相関 (xcorr)</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts2&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="STLT-(Short-Time-Laplace-Transform)">
 <h3>STLT (Short-Time Laplace Transform)<a class="headerlink" href="#STLT-(Short-Time-Laplace-Transform)" title="Link to this heading"></a></h3>
 <p>STLT (Short-Time Laplace Transform) は、信号の時間変化に伴う局所構造を抽出するための変換です。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> では STLT の結果は <strong>(time × sigma × frequency)</strong> の3D変換として <code class="docutils literal notranslate"><span class="pre">TimePlaneTransform</span></code> / <code class="docutils literal notranslate"><span class="pre">LaplaceGram</span></code> で表現されます。</p>
 <p>以下は、<code class="docutils literal notranslate"><span class="pre">stlt</span></code> メソッドを使用して STLT を計算し、特定時刻のスライス (<code class="docutils literal notranslate"><span class="pre">Plane2D</span></code>) を抽出する例です。 この例では <code class="docutils literal notranslate"><span class="pre">frequencies</span></code>（Hz）を指定し、任意周波数点で STLT を評価します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># データの準備 (デモ用)</span>
@@ -403,6 +537,24 @@ TimeSeries([1.03481507, 0.96203914, 1.26042756, 1.07545387,
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis 2: </span><span class="si">{</span><span class="n">plane_at_5s</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 7</span>
+<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Plot
+<span class="ansi-green-fg">      6</span> t = np.linspace(<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">1000</span>)
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">7</span> data = <span class="ansi-yellow-bg">TimeSeries</span>(np.sin(<span class="ansi-green-fg">2</span> * np.pi * <span class="ansi-green-fg">1</span> * t), times=t * u.s, unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">V</span><span class="ansi-yellow-fg">&#34;</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Demo Data</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      9</span> <span style="color: rgb(95,135,135)"># STLT の実行</span>
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># stride: 時間ステップ, window: 解析ウィンドウ長</span>
+<span class="ansi-green-fg">     11</span> freqs = np.array([<span class="ansi-green-fg">0.5</span>, <span class="ansi-green-fg">1.0</span>, <span class="ansi-green-fg">1.5</span>])  <span style="color: rgb(95,135,135)"># Hz</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeries&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 </section>
@@ -464,20 +616,13 @@ TimeSeries([1.03481507, 0.96203914, 1.26042756, 1.07545387,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Extracted IMFs: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#39;]
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_18_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_18_1.png" />
-</div>
+<div class="highlight"><pre>
+HHT Error: name &#39;ts2&#39; is not defined
+</pre></div></div>
 </div>
 <p>## 5. 統計・前処理</p>
 <p>欠損値補完、標準化、ARIMAモデル、ハースト指数、およびローリング統計量が TimeSeries メソッドとして利用可能です。</p>
@@ -513,8 +658,17 @@ Extracted IMFs: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_20_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_20_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 欠損値を含むデータのテスト</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> ts_nan = <span class="ansi-yellow-bg">ts1</span>.copy()
+<span class="ansi-green-fg">      3</span> ts_nan.value[<span class="ansi-green-fg">100</span>:<span class="ansi-green-fg">150</span>] = np.nan
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># 1. impute: 欠損値補完 (interpolation など)</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
+</pre></div></div>
 </div>
 <section id="ピーク検出-(Find-Peaks)">
 <h3>ピーク検出 (Find Peaks)<a class="headerlink" href="#ピーク検出-(Find-Peaks)" title="Link to this heading"></a></h3>
@@ -552,27 +706,25 @@ Extracted IMFs: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Found 9 peaks
-First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
-            0.81881855]
-           unit: V,
-           t0: 0.5 s,
-           dt: 0.5 s,
-           name: Chirp Signal_peaks,
-           channel: None)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_22_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_22_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 6</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># ピーク検出 (Find Peaks)</span>
+<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># height, threshold, distance, prominence, width などのパラメータを指定可能</span>
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># 単位付きの閾値指定も可能です</span>
+<span class="ansi-green-fg">      4</span>
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># ts2 (Chirp + Sine) からピークを探す</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">6</span> peaks, props = <span class="ansi-yellow-bg">ts2</span>.find_peaks(height=<span class="ansi-green-fg">0.0</span>, distance=<span class="ansi-green-fg">50</span>)
+<span class="ansi-green-fg">      8</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Found </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">len</span>(peaks)<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> peaks</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      9</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">len</span>(peaks) &gt; <span class="ansi-green-fg">0</span>:
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts2&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="ARIMAモデルとハースト指数">
@@ -640,19 +792,13 @@ First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_24_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_24_0.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hurst.
+ARIMA skipping: name &#39;ts1&#39; is not defined
+Hurst skipping: name &#39;ts1&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -696,8 +842,17 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_26_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_26_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[12]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> rw = <span class="ansi-green-fg">0.5</span> * u.s  <span style="color: rgb(95,135,135)"># 0.5秒窓</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> rmean = <span class="ansi-yellow-bg">ts1</span>.rolling_mean(rw)
+<span class="ansi-green-fg">      3</span> rstd = ts1.rolling_std(rw)
+<span class="ansi-green-fg">      4</span> rmed = ts1.rolling_median(rw)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
+</pre></div></div>
 </div>
 <p>## 6. リサンプリングと再インデックス</p>
 <p><code class="docutils literal notranslate"><span class="pre">asfreq</span></code> メソッドによる固定グリッドへの割り当てや、<code class="docutils literal notranslate"><span class="pre">resample</span></code> メソッドでの「時間ビン集計」が可能になりました。</p>
@@ -712,21 +867,21 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;matplotlib.legend.Legend at 0x7d1c9e115820&gt;
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_28_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_28_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[13]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 1. asfreq: Pandasライクな名付け規則 (&#39;50ms&#39; など) で再インデックス</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> ts_reindexed = <span class="ansi-yellow-bg">ts1</span>.asfreq(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">50ms</span><span class="ansi-yellow-fg">&#34;</span>, method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">pad</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      3</span> Plot(ts1, ts_reindexed)
+<span class="ansi-green-fg">      4</span> plt.legend([<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">.asfreq(</span><span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">50ms</span><span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">, method=</span><span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">pad</span><span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">)</span><span class="ansi-yellow-fg">&#34;</span>])
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
@@ -762,8 +917,18 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_29_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_29_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[14]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 2. resample:</span>
+<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># 数値 (10Hz) を指定すると信号処理的なリサンプリング (GWpy標準)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> ts_sig = <span class="ansi-yellow-bg">ts1</span>.resample(<span class="ansi-green-fg">10</span>)
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># 文字列 (&#39;200ms&#39;) を指定すると、その時間幅のビンごとの統計量をとる (新機能)</span>
+<span class="ansi-green-fg">      5</span> ts_binned = ts1.resample(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">200ms</span><span class="ansi-yellow-fg">&#34;</span>)  <span style="color: rgb(95,135,135)"># デフォルトは mean</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 </section>
@@ -798,47 +963,23 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-┌─────────────────────────────────────────────────────────────────────────┐
-│                                Migrad                                   │
-├──────────────────────────────────┬──────────────────────────────────────┤
-│ FCN = 0.0005703 (χ²/ndof = 0.0)  │              Nfcn = 324              │
-│ EDM = 0.000176 (Goal: 0.0002)    │                                      │
-├──────────────────────────────────┼──────────────────────────────────────┤
-│          Valid Minimum           │   Below EDM threshold (goal x 10)    │
-├──────────────────────────────────┼──────────────────────────────────────┤
-│      No parameters at limit      │           Below call limit           │
-├──────────────────────────────────┼──────────────────────────────────────┤
-│             Hesse ok             │         Covariance accurate          │
-└──────────────────────────────────┴──────────────────────────────────────┘
-┌───┬──────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐
-│   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
-├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
-│ 0 │ A    │   1.00    │   0.06    │            │            │         │         │       │
-│ 1 │ tau  │     0     │  0.06e6   │            │            │         │         │       │
-│ 2 │ f    │  1.0000   │  0.0025   │            │            │         │         │       │
-│ 3 │ phi  │   -0.00   │   0.09    │            │            │         │         │       │
-└───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
-┌─────┬─────────────────────────────────────────────────────┐
-│     │            A          tau            f          phi │
-├─────┼─────────────────────────────────────────────────────┤
-│   A │      0.00354 -2.4033831e3         3e-6      -0.0001 │
-│ tau │ -2.4033831e3     3.78e+09    -8.714e-3       38.287 │
-│   f │         3e-6    -8.714e-3     6.05e-06      -190e-6 │
-│ phi │      -0.0001       38.287      -190e-6      0.00796 │
-└─────┴─────────────────────────────────────────────────────┘
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_31_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_timeseries_31_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[15]</span><span class="ansi-green-fg">, line 5</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fitting</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">models</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> damped_oscillation
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># 減衰振動モデルでフィット (関数を直接渡す)</span>
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># 初期値: A=0.5, tau=0.5, f=15, phi=0</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> result = <span class="ansi-yellow-bg">data</span>.fit(damped_oscillation, A=<span class="ansi-green-fg">0.5</span>, tau=<span class="ansi-green-fg">0.5</span>, f=<span class="ansi-green-fg">15</span>, phi=<span class="ansi-green-fg">0</span>)
+<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># 結果の表示 (iminuit形式)</span>
+<span class="ansi-green-fg">      8</span> <span style="color: rgb(0,135,0)">print</span>(result)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;data&#39; is not defined
+</pre></div></div>
 </div>
 <p>## 8. 相互運用性</p>
 <p>主要なデータサイエンス・機械学習ライブラリとの相互変換が非常にスムーズです。</p>
@@ -877,539 +1018,22 @@ Hurst skipping: No Hurst backend found. Install hurst, hurst-exponent, or exp-hu
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Pandas interop OK
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-time_utc
-1980-01-06 00:00:19+00:00          -0.636382
-1980-01-06 00:00:19.010000+00:00    0.676415
-1980-01-06 00:00:19.020000+00:00    1.116014
-1980-01-06 00:00:19.030000+00:00    0.759203
-1980-01-06 00:00:19.040000+00:00    0.781264
-                                      ...
-1980-01-06 00:00:23.950000+00:00   -0.055949
-1980-01-06 00:00:23.960000+00:00   -0.751523
-1980-01-06 00:00:23.970000+00:00   -0.942458
-1980-01-06 00:00:23.980000+00:00   -1.047283
-1980-01-06 00:00:23.990000+00:00   -0.317186
-Name: Sensor 1, Length: 500, dtype: float64
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Xarray interop OK
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area rendered_html docutils container">
-<div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
-<defs>
-<symbol id="icon-database" viewBox="0 0 32 32">
-<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
-<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
-<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
-</symbol>
-<symbol id="icon-file-text2" viewBox="0 0 32 32">
-<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
-<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-</symbol>
-</defs>
-</svg>
-<style>/* CSS stylesheet for displaying xarray objects in notebooks */
-
-:root {
-  --xr-font-color0: var(
-    --jp-content-font-color0,
-    var(--pst-color-text-base rgba(0, 0, 0, 1))
-  );
-  --xr-font-color2: var(
-    --jp-content-font-color2,
-    var(--pst-color-text-base, rgba(0, 0, 0, 0.54))
-  );
-  --xr-font-color3: var(
-    --jp-content-font-color3,
-    var(--pst-color-text-base, rgba(0, 0, 0, 0.38))
-  );
-  --xr-border-color: var(
-    --jp-border-color2,
-    hsl(from var(--pst-color-on-background, white) h s calc(l - 10))
-  );
-  --xr-disabled-color: var(
-    --jp-layout-color3,
-    hsl(from var(--pst-color-on-background, white) h s calc(l - 40))
-  );
-  --xr-background-color: var(
-    --jp-layout-color0,
-    var(--pst-color-on-background, white)
-  );
-  --xr-background-color-row-even: var(
-    --jp-layout-color1,
-    hsl(from var(--pst-color-on-background, white) h s calc(l - 5))
-  );
-  --xr-background-color-row-odd: var(
-    --jp-layout-color2,
-    hsl(from var(--pst-color-on-background, white) h s calc(l - 15))
-  );
-}
-
-html[theme="dark"],
-html[data-theme="dark"],
-body[data-theme="dark"],
-body.vscode-dark {
-  --xr-font-color0: var(
-    --jp-content-font-color0,
-    var(--pst-color-text-base, rgba(255, 255, 255, 1))
-  );
-  --xr-font-color2: var(
-    --jp-content-font-color2,
-    var(--pst-color-text-base, rgba(255, 255, 255, 0.54))
-  );
-  --xr-font-color3: var(
-    --jp-content-font-color3,
-    var(--pst-color-text-base, rgba(255, 255, 255, 0.38))
-  );
-  --xr-border-color: var(
-    --jp-border-color2,
-    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 10))
-  );
-  --xr-disabled-color: var(
-    --jp-layout-color3,
-    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 40))
-  );
-  --xr-background-color: var(
-    --jp-layout-color0,
-    var(--pst-color-on-background, #111111)
-  );
-  --xr-background-color-row-even: var(
-    --jp-layout-color1,
-    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 5))
-  );
-  --xr-background-color-row-odd: var(
-    --jp-layout-color2,
-    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 15))
-  );
-}
-
-.xr-wrap {
-  display: block !important;
-  min-width: 300px;
-  max-width: 700px;
-  line-height: 1.6;
-}
-
-.xr-text-repr-fallback {
-  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
-  display: none;
-}
-
-.xr-header {
-  padding-top: 6px;
-  padding-bottom: 6px;
-  margin-bottom: 4px;
-  border-bottom: solid 1px var(--xr-border-color);
-}
-
-.xr-header > div,
-.xr-header > ul {
-  display: inline;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.xr-obj-type,
-.xr-obj-name,
-.xr-group-name {
-  margin-left: 2px;
-  margin-right: 10px;
-}
-
-.xr-group-name::before {
-  content: "📁";
-  padding-right: 0.3em;
-}
-
-.xr-group-name,
-.xr-obj-type {
-  color: var(--xr-font-color2);
-}
-
-.xr-sections {
-  padding-left: 0 !important;
-  display: grid;
-  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
-  margin-block-start: 0;
-  margin-block-end: 0;
-}
-
-.xr-section-item {
-  display: contents;
-}
-
-.xr-section-item input {
-  display: inline-block;
-  opacity: 0;
-  height: 0;
-  margin: 0;
-}
-
-.xr-section-item input + label {
-  color: var(--xr-disabled-color);
-  border: 2px solid transparent !important;
-}
-
-.xr-section-item input:enabled + label {
-  cursor: pointer;
-  color: var(--xr-font-color2);
-}
-
-.xr-section-item input:focus + label {
-  border: 2px solid var(--xr-font-color0) !important;
-}
-
-.xr-section-item input:enabled + label:hover {
-  color: var(--xr-font-color0);
-}
-
-.xr-section-summary {
-  grid-column: 1;
-  color: var(--xr-font-color2);
-  font-weight: 500;
-}
-
-.xr-section-summary > span {
-  display: inline-block;
-  padding-left: 0.5em;
-}
-
-.xr-section-summary-in:disabled + label {
-  color: var(--xr-font-color2);
-}
-
-.xr-section-summary-in + label:before {
-  display: inline-block;
-  content: "►";
-  font-size: 11px;
-  width: 15px;
-  text-align: center;
-}
-
-.xr-section-summary-in:disabled + label:before {
-  color: var(--xr-disabled-color);
-}
-
-.xr-section-summary-in:checked + label:before {
-  content: "▼";
-}
-
-.xr-section-summary-in:checked + label > span {
-  display: none;
-}
-
-.xr-section-summary,
-.xr-section-inline-details {
-  padding-top: 4px;
-}
-
-.xr-section-inline-details {
-  grid-column: 2 / -1;
-}
-
-.xr-section-details {
-  display: none;
-  grid-column: 1 / -1;
-  margin-top: 4px;
-  margin-bottom: 5px;
-}
-
-.xr-section-summary-in:checked ~ .xr-section-details {
-  display: contents;
-}
-
-.xr-group-box {
-  display: inline-grid;
-  grid-template-columns: 0px 20px auto;
-  width: 100%;
-}
-
-.xr-group-box-vline {
-  grid-column-start: 1;
-  border-right: 0.2em solid;
-  border-color: var(--xr-border-color);
-  width: 0px;
-}
-
-.xr-group-box-hline {
-  grid-column-start: 2;
-  grid-row-start: 1;
-  height: 1em;
-  width: 20px;
-  border-bottom: 0.2em solid;
-  border-color: var(--xr-border-color);
-}
-
-.xr-group-box-contents {
-  grid-column-start: 3;
-}
-
-.xr-array-wrap {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 20px auto;
-}
-
-.xr-array-wrap > label {
-  grid-column: 1;
-  vertical-align: top;
-}
-
-.xr-preview {
-  color: var(--xr-font-color3);
-}
-
-.xr-array-preview,
-.xr-array-data {
-  padding: 0 5px !important;
-  grid-column: 2;
-}
-
-.xr-array-data,
-.xr-array-in:checked ~ .xr-array-preview {
-  display: none;
-}
-
-.xr-array-in:checked ~ .xr-array-data,
-.xr-array-preview {
-  display: inline-block;
-}
-
-.xr-dim-list {
-  display: inline-block !important;
-  list-style: none;
-  padding: 0 !important;
-  margin: 0;
-}
-
-.xr-dim-list li {
-  display: inline-block;
-  padding: 0;
-  margin: 0;
-}
-
-.xr-dim-list:before {
-  content: "(";
-}
-
-.xr-dim-list:after {
-  content: ")";
-}
-
-.xr-dim-list li:not(:last-child):after {
-  content: ",";
-  padding-right: 5px;
-}
-
-.xr-has-index {
-  font-weight: bold;
-}
-
-.xr-var-list,
-.xr-var-item {
-  display: contents;
-}
-
-.xr-var-item > div,
-.xr-var-item label,
-.xr-var-item > .xr-var-name span {
-  background-color: var(--xr-background-color-row-even);
-  border-color: var(--xr-background-color-row-odd);
-  margin-bottom: 0;
-  padding-top: 2px;
-}
-
-.xr-var-item > .xr-var-name:hover span {
-  padding-right: 5px;
-}
-
-.xr-var-list > li:nth-child(odd) > div,
-.xr-var-list > li:nth-child(odd) > label,
-.xr-var-list > li:nth-child(odd) > .xr-var-name span {
-  background-color: var(--xr-background-color-row-odd);
-  border-color: var(--xr-background-color-row-even);
-}
-
-.xr-var-name {
-  grid-column: 1;
-}
-
-.xr-var-dims {
-  grid-column: 2;
-}
-
-.xr-var-dtype {
-  grid-column: 3;
-  text-align: right;
-  color: var(--xr-font-color2);
-}
-
-.xr-var-preview {
-  grid-column: 4;
-}
-
-.xr-index-preview {
-  grid-column: 2 / 5;
-  color: var(--xr-font-color2);
-}
-
-.xr-var-name,
-.xr-var-dims,
-.xr-var-dtype,
-.xr-preview,
-.xr-attrs dt {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 10px;
-}
-
-.xr-var-name:hover,
-.xr-var-dims:hover,
-.xr-var-dtype:hover,
-.xr-attrs dt:hover {
-  overflow: visible;
-  width: auto;
-  z-index: 1;
-}
-
-.xr-var-attrs,
-.xr-var-data,
-.xr-index-data {
-  display: none;
-  border-top: 2px dotted var(--xr-background-color);
-  padding-bottom: 20px !important;
-  padding-top: 10px !important;
-}
-
-.xr-var-attrs-in + label,
-.xr-var-data-in + label,
-.xr-index-data-in + label {
-  padding: 0 1px;
-}
-
-.xr-var-attrs-in:checked ~ .xr-var-attrs,
-.xr-var-data-in:checked ~ .xr-var-data,
-.xr-index-data-in:checked ~ .xr-index-data {
-  display: block;
-}
-
-.xr-var-data > table {
-  float: right;
-}
-
-.xr-var-data > pre,
-.xr-index-data > pre,
-.xr-var-data > table > tbody > tr {
-  background-color: transparent !important;
-}
-
-.xr-var-name span,
-.xr-var-data,
-.xr-index-name div,
-.xr-index-data,
-.xr-attrs {
-  padding-left: 25px !important;
-}
-
-.xr-attrs,
-.xr-var-attrs,
-.xr-var-data,
-.xr-index-data {
-  grid-column: 1 / -1;
-}
-
-dl.xr-attrs {
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: 125px auto;
-}
-
-.xr-attrs dt,
-.xr-attrs dd {
-  padding: 0;
-  margin: 0;
-  float: left;
-  padding-right: 10px;
-  width: auto;
-}
-
-.xr-attrs dt {
-  font-weight: normal;
-  grid-column: 1;
-}
-
-.xr-attrs dt:hover span {
-  display: inline-block;
-  background: var(--xr-background-color);
-  padding-right: 10px;
-}
-
-.xr-attrs dd {
-  grid-column: 2;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.xr-icon-database,
-.xr-icon-file-text2,
-.xr-no-icon {
-  display: inline-block;
-  vertical-align: middle;
-  width: 1em;
-  height: 1.5em !important;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-}
-
-.xr-var-attrs-in:checked + label > .xr-icon-file-text2,
-.xr-var-data-in:checked + label > .xr-icon-database,
-.xr-index-data-in:checked + label > .xr-icon-database {
-  color: var(--xr-font-color0);
-  filter: drop-shadow(1px 1px 5px var(--xr-font-color2));
-  stroke-width: 0.8px;
-}
-</style><pre class='xr-text-repr-fallback'>&lt;xarray.DataArray &#x27;Sensor 1&#x27; (time: 500)&gt; Size: 4kB
-array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
-       -1.04728331, -0.31718558], shape=(500,))
-Coordinates:
-  * time     (time) datetime64[ns] 4kB 1980-01-06T00:00:19 ... 1980-01-06T00:...
-Attributes:
-    unit:        V
-    name:        Sensor 1
-    channel:     None
-    epoch:       0.0
-    time_coord:  datetime</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-obj-name'>&#x27;Sensor 1&#x27;</div><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 500</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-cefac307-59cf-4112-80c4-b3120a43ba65' class='xr-array-in' type='checkbox' checked><label for='section-cefac307-59cf-4112-80c4-b3120a43ba65' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>-0.6364 0.6764 1.116 0.7592 0.7813 ... -0.7515 -0.9425 -1.047 -0.3172</span></div><div class='xr-array-data'><pre>array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
-       -1.04728331, -0.31718558], shape=(500,))</pre></div></div></li><li class='xr-section-item'><input id='section-134b0b03-0449-465c-83cc-bd86334ee12b' class='xr-section-summary-in' type='checkbox'  checked><label for='section-134b0b03-0449-465c-83cc-bd86334ee12b' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>1980-01-06T00:00:19 ... 1980-01-...</div><input id='attrs-3b0f89a4-d082-4122-9ac8-53c39be8fb51' class='xr-var-attrs-in' type='checkbox' disabled><label for='attrs-3b0f89a4-d082-4122-9ac8-53c39be8fb51' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-90e8e303-c651-452f-a4db-cabb7ca23f92' class='xr-var-data-in' type='checkbox'><label for='data-90e8e303-c651-452f-a4db-cabb7ca23f92' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'></dl></div><div class='xr-var-data'><pre>array([&#x27;1980-01-06T00:00:19.000000000&#x27;, &#x27;1980-01-06T00:00:19.010000000&#x27;,
-       &#x27;1980-01-06T00:00:19.020000000&#x27;, ..., &#x27;1980-01-06T00:00:23.970000000&#x27;,
-       &#x27;1980-01-06T00:00:23.980000000&#x27;, &#x27;1980-01-06T00:00:23.990000000&#x27;],
-      shape=(500,), dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-dc4f82fa-9fc7-46a4-8524-c0e64cdb54ad' class='xr-section-summary-in' type='checkbox'  checked><label for='section-dc4f82fa-9fc7-46a4-8524-c0e64cdb54ad' class='xr-section-summary' >Attributes: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>unit :</span></dt><dd>V</dd><dt><span>name :</span></dt><dd>Sensor 1</dd><dt><span>channel :</span></dt><dd>None</dd><dt><span>epoch :</span></dt><dd>0.0</dd><dt><span>time_coord :</span></dt><dd>datetime</dd></dl></div></li></ul></div></div></div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[16]</span><span class="ansi-green-fg">, line 9</span>
+<span class="ansi-green-fg">      7</span> warnings.filterwarnings(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>, module=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">google.protobuf</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      8</span> warnings.filterwarnings(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">9</span> df = <span class="ansi-yellow-bg">ts1</span>.to_pandas(index=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">datetime</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     10</span> ts_p = TimeSeries.from_pandas(df)
+<span class="ansi-green-fg">     11</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Pandas interop OK</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
+</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
@@ -1426,23 +1050,24 @@ Attributes:
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-SQLite interop OK: my_sensor
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;sqlite3.Connection at 0x7d1c8e18d990&gt;
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[17]</span><span class="ansi-green-fg">, line 5</span>
+<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">sqlite3</span>
+<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> sqlite3.connect(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">:memory:</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> conn:
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span>     <span class="ansi-yellow-bg">ts1</span>.to_sqlite(conn, series_id=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">my_sensor</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      6</span>     ts_sql = TimeSeries.from_sqlite(conn, series_id=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">my_sensor</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      7</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">SQLite interop OK: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>ts_sql.name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
@@ -1466,123 +1091,7 @@ SQLite interop OK: my_sensor
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Torch interop OK (Shape: torch.Size([500]))
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-tensor([-6.3638e-01,  6.7641e-01,  1.1160e+00,  7.5920e-01,  7.8126e-01,
-         1.3657e-01, -2.6177e-01, -7.3862e-01, -1.1639e+00, -7.1264e-01,
-         1.2782e-01,  3.6579e-01,  1.1532e+00,  7.0006e-01,  1.0020e+00,
-        -4.6525e-04, -6.7079e-01, -6.4592e-01, -9.8670e-01, -4.9694e-01,
-        -3.6860e-01,  8.6309e-01,  1.2715e+00,  1.2569e+00,  6.5845e-01,
-         6.4535e-02, -9.9536e-01, -1.1450e+00, -1.0607e+00, -5.4277e-01,
-        -1.5301e-01,  9.0327e-01,  9.6816e-01,  1.2301e+00,  5.2238e-01,
-        -9.2898e-02, -3.7634e-01, -9.8054e-01, -1.0980e+00, -4.2510e-01,
-         5.6261e-02,  6.4215e-01,  7.3113e-01,  7.9744e-01,  4.2517e-01,
-         3.4529e-02, -4.1318e-01, -8.8279e-01, -8.3199e-01, -5.3721e-01,
-        -9.0744e-04,  6.4147e-01,  1.0070e+00,  6.4092e-01,  4.3695e-01,
-         9.5694e-04, -7.6384e-01, -6.5442e-01, -6.8422e-01, -6.5023e-01,
-        -2.1650e-01,  5.9195e-01,  8.6410e-01,  7.7726e-01,  6.0960e-01,
-         2.1116e-01, -8.8103e-01, -9.4545e-01, -9.3727e-01, -7.4963e-01,
-        -2.8700e-02,  6.9192e-01,  7.4163e-01,  1.3361e+00,  9.4958e-01,
-        -6.1763e-01, -6.4311e-01, -7.9876e-01, -1.1970e+00, -3.3396e-01,
-         6.1007e-02,  7.5786e-01,  9.9856e-01,  7.9373e-01,  5.4001e-01,
-        -2.7069e-02, -5.5873e-01, -8.6877e-01, -7.2471e-01, -9.6357e-01,
-        -2.5661e-01,  6.5114e-01,  1.0268e+00,  7.4454e-01,  7.3579e-01,
-        -1.8972e-02, -6.0452e-01, -7.1839e-01, -1.3672e+00, -4.4196e-01,
-         3.0173e-01,  4.9634e-01,  8.2261e-01,  8.7831e-01,  7.9364e-01,
-        -5.3706e-01, -4.8186e-01, -1.6434e+00, -8.6148e-01, -8.9989e-01,
-        -3.1784e-03,  1.7921e-01,  8.7111e-01,  1.0472e+00,  8.9261e-01,
-         2.1520e-01, -6.2104e-01, -9.3042e-01, -1.1791e+00, -5.8179e-01,
-        -2.9092e-01,  8.6254e-01,  5.2193e-01,  8.8639e-01,  6.6124e-01,
-         3.5460e-02, -3.2722e-01, -1.2308e+00, -1.3842e+00, -5.5664e-01,
-        -1.0241e-01,  6.4978e-01,  8.6346e-01,  8.5417e-01,  6.9292e-01,
-        -4.2478e-01, -6.3406e-01, -5.5574e-01, -1.2147e+00, -7.2476e-01,
-         1.9084e-01,  3.3760e-01,  5.8700e-01,  8.2358e-01,  6.5142e-01,
-        -7.8208e-02, -5.5255e-01, -6.9083e-01, -8.6221e-01, -4.4560e-01,
-        -9.6294e-02,  4.0081e-01,  1.0242e+00,  1.3146e+00,  3.8421e-01,
-         2.4865e-02, -5.4191e-01, -9.6942e-01, -7.3908e-01, -5.0855e-01,
-        -9.5777e-02,  6.7380e-01,  9.4548e-01,  1.0025e+00,  5.6348e-01,
-         3.9798e-01, -6.8343e-01, -5.9873e-01, -7.8043e-01, -5.0606e-01,
-        -6.2500e-02,  8.1899e-01,  7.5552e-01,  1.1723e+00,  5.6911e-01,
-         1.2597e-01, -8.0608e-01, -8.3604e-01, -1.1160e+00, -5.7039e-01,
-        -9.3086e-02,  6.4493e-01,  1.2995e+00,  9.4864e-01,  4.8078e-01,
-         3.3034e-01, -5.8550e-01, -1.1274e+00, -1.0370e+00, -4.2450e-01,
-         6.8504e-02,  6.1352e-01,  7.9583e-01,  6.6160e-01,  5.0435e-01,
-        -3.6722e-01, -9.5470e-01, -1.0149e+00, -7.5449e-01, -4.7328e-01,
-        -1.9107e-01,  5.8703e-01,  7.5926e-01,  8.5751e-01,  3.0853e-01,
-         1.2966e-01, -4.6353e-01, -1.1628e+00, -1.0573e+00, -9.0094e-01,
-        -1.2727e-01,  5.9735e-01,  1.1456e+00,  1.1399e+00,  5.3929e-01,
-         1.5000e-01, -6.7051e-01, -1.0820e+00, -1.1361e+00, -5.8206e-01,
-         3.9915e-01,  4.2464e-01,  1.0827e+00,  1.1296e+00,  4.6833e-01,
-        -5.9938e-02, -4.6909e-01, -7.3688e-01, -1.0265e+00, -6.6582e-01,
-        -8.9836e-02,  6.1641e-01,  9.5619e-01,  1.2051e+00,  6.7386e-01,
-        -6.4407e-02, -4.9532e-01, -1.0066e+00, -1.2643e+00, -6.4568e-01,
-        -2.7575e-02,  7.5624e-01,  1.1008e+00,  1.1856e+00,  4.6571e-01,
-         2.3059e-01, -9.3990e-01, -8.2802e-01, -1.0490e+00, -8.0488e-01,
-        -2.5584e-01,  5.6379e-01,  6.2477e-01,  1.3896e+00,  6.2948e-01,
-        -1.5103e-01, -4.2666e-01, -9.4321e-01, -8.8529e-01, -8.3132e-01,
-         5.1499e-02,  7.8214e-01,  9.1642e-01,  1.0213e+00,  6.5815e-01,
-         6.0050e-02, -9.8273e-01, -9.8268e-01, -7.5888e-01, -6.3304e-01,
-        -5.8662e-02,  4.6378e-01,  1.1307e+00,  1.1574e+00,  7.8416e-01,
-        -2.4404e-01, -6.9463e-01, -1.1879e+00, -7.4371e-01, -9.8793e-01,
-        -2.3735e-01,  5.2249e-01,  1.1107e+00,  7.9962e-01,  5.8551e-01,
-         4.3762e-01, -2.5446e-01, -1.0948e+00, -6.4674e-01, -4.0147e-01,
-         1.2068e-01,  3.9736e-01,  1.1049e+00,  7.9655e-01,  4.7364e-01,
-        -1.5081e-01, -5.4113e-01, -8.4360e-01, -8.4831e-01, -8.0948e-01,
-         1.5246e-01,  5.4047e-01,  1.0736e+00,  9.3266e-01,  6.7679e-01,
-         1.6012e-01, -7.4484e-01, -1.1145e+00, -1.0464e+00, -5.4539e-01,
-        -1.9740e-01,  1.1780e-01,  1.0492e+00,  9.4982e-01,  6.5403e-01,
-         5.2777e-01, -7.0338e-01, -8.4149e-01, -6.7412e-01, -3.8964e-01,
-         1.7975e-01,  2.7576e-01,  1.2365e+00,  1.3625e+00,  5.2295e-01,
-        -1.7426e-02, -7.5603e-01, -9.1407e-01, -7.6402e-01, -3.5380e-01,
-        -2.5199e-01,  3.0022e-01,  1.2446e+00,  8.5517e-01,  1.3271e-01,
-        -1.6105e-01, -7.2224e-01, -9.0989e-01, -1.1625e+00,  2.1464e-01,
-         9.9925e-02,  6.6522e-01,  1.1383e+00,  9.4246e-01,  7.9605e-01,
-         5.4794e-02, -4.9515e-01, -9.5789e-01, -8.5802e-01, -7.9534e-01,
-         1.8644e-01,  6.5431e-01,  7.9577e-01,  1.0953e+00,  7.4103e-01,
-        -6.4670e-02, -7.2105e-01, -1.5253e+00, -1.0335e+00, -7.6243e-01,
-        -8.2993e-02,  4.5922e-01,  1.2096e+00,  9.4637e-01,  5.6968e-01,
-        -2.9099e-02, -5.4460e-01, -6.6125e-01, -8.6894e-01, -3.3902e-01,
-        -3.1590e-01,  6.7426e-01,  1.0201e+00,  6.6829e-01,  8.9959e-01,
-        -2.1811e-02, -8.4027e-01, -8.3044e-01, -9.5808e-01, -9.3775e-01,
-        -6.9966e-02,  6.1574e-01,  9.2618e-01,  1.0452e+00,  5.1286e-01,
-        -3.5872e-01, -8.2034e-01, -1.0533e+00, -1.3295e+00, -7.7849e-01,
-         1.0286e-01,  4.7753e-01,  1.2227e+00,  1.1164e+00,  5.0470e-01,
-        -2.5514e-01, -6.3390e-01, -9.9684e-01, -9.8914e-01, -8.7038e-01,
-         1.8209e-02,  2.6530e-01,  8.2612e-01,  9.4441e-01,  8.0652e-01,
-        -3.2462e-02, -6.9176e-01, -9.8582e-01, -9.5322e-01, -8.0845e-01,
-        -3.0934e-01,  5.7734e-01,  7.0783e-01,  1.0123e+00,  8.5944e-01,
-         1.1071e-01, -3.8784e-01, -6.6907e-01, -9.7191e-01, -7.7359e-01,
-         3.5439e-01,  8.3590e-01,  9.6693e-01,  8.6037e-01,  7.8054e-01,
-        -1.1467e-01, -8.8561e-01, -1.2529e+00, -1.1716e+00, -5.8219e-01,
-        -1.6079e-02,  6.4736e-01,  1.0612e+00,  1.0101e+00,  5.8696e-01,
-         1.0695e-02, -5.1202e-01, -6.9059e-01, -9.5483e-01, -7.8234e-01,
-         3.4276e-02,  7.5282e-01,  1.0358e+00,  8.4272e-01,  4.9329e-01,
-        -1.7179e-01, -6.7215e-01, -1.2013e+00, -1.1622e+00, -4.2640e-01,
-        -4.2038e-01,  4.3034e-01,  8.1882e-01,  8.3635e-01,  3.6387e-01,
-        -1.7863e-01, -6.3739e-01, -1.0032e+00, -1.0368e+00, -2.4604e-01,
-        -1.4373e-01,  1.9569e-01,  8.8210e-01,  1.0729e+00,  4.6905e-01,
-        -5.9037e-03, -5.7981e-01, -1.0684e+00, -6.8551e-01, -4.6180e-01,
-        -4.2030e-02,  5.4248e-01,  1.2287e+00,  1.3280e+00,  7.0356e-01,
-        -2.1004e-01, -8.6234e-01, -8.6845e-01, -1.1801e+00, -5.6203e-01,
-        -1.1960e-01,  5.2928e-01,  6.5498e-01,  1.0602e+00,  7.1368e-01,
-        -2.7387e-01, -4.0585e-01, -8.7202e-01, -1.1227e+00, -5.4000e-01,
-        -2.5969e-01,  7.7238e-01,  1.2223e+00,  1.0280e+00,  6.7696e-01,
-        -5.5949e-02, -7.5152e-01, -9.4246e-01, -1.0473e+00, -3.1719e-01],
-       dtype=torch.float64)
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
@@ -1610,33 +1119,7 @@ tensor([-6.3638e-01,  6.7641e-01,  1.1160e+00,  7.5920e-01,  7.8126e-01,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-To enable the following instructions: AVX2 AVX512F AVX512_VNNI AVX512_BF16 AVX512_FP16 AVX_VNNI AMX_TILE AMX_INT8 AMX_BF16 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-TensorFlow interop OK
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;tf.Tensor: shape=(500,), dtype=float64, numpy=
-array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
-       -1.04728331, -0.31718558], shape=(500,))&gt;
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
@@ -1659,22 +1142,6 @@ array([-0.63638168,  0.67641478,  1.11601357, ..., -0.94245798,
     <span class="k">pass</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-ObsPy interop OK: .Sensor 1..
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-.Sensor 1.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:04.990000Z | 100.0 Hz, 500 samples
-</pre></div></div>
 </div>
 </section>
 <section id="まとめ">

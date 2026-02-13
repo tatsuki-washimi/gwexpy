@@ -118,25 +118,132 @@
 <h1>SpectrogramList and SpectrogramDict Tutorial<a class="headerlink" href="#SpectrogramList-and-SpectrogramDict-Tutorial" title="Link to this heading"></a></h1>
 <p>This notebook introduces the newly added <code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> and <code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code> classes in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>.</p>
 <p>These classes are containers for managing multiple spectrogram data (<code class="docutils literal notranslate"><span class="pre">gwpy.spectrogram.Spectrogram</span></code>) collectively and performing batch operations (cropping, rebinning, plotting, etc.). They have a similar interface to <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> which handle time series data, but are specialized for 2D data (time × frequency).</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">sine</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramDict</span><span class="p">,</span> <span class="n">SpectrogramList</span>
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/miniconda3/envs/docs/lib/python3.11/site-packages/gwpy/time/_ligotimegps.py:42: UserWarning: Wswiglal-redir-stdio:
+
+SWIGLAL standard output/error redirection is enabled in IPython.
+This may lead to performance penalties. To disable locally, use:
+
+with lal.no_swig_redirect_standard_output_error():
+    ...
+
+To disable globally, use:
+
+lal.swig_redirect_standard_output_error(False)
+
+Note however that this will likely lead to error messages from
+LAL functions being either misdirected or lost when called from
+Jupyter notebooks.
+
+To suppress this warning, use:
+
+import warnings
+warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
+import lal
+
+  from lal import LIGOTimeGPS
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">noise</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">wave</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> gaussian, sine
+<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">spectrogram</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> SpectrogramDict, SpectrogramList
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
+<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     46</span> )
+<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     50</span>     astro,
+<span class="ansi-green-fg">     51</span>     detector,
+<span class="ansi-green-fg">     52</span>     frequencyseries,
+<span class="ansi-green-fg">     53</span>     interop,
+<span class="ansi-green-fg">     54</span>     io,
+<span class="ansi-green-fg">     55</span>     noise,
+<span class="ansi-green-fg">     56</span>     plot,
+<span class="ansi-green-fg">     57</span>     segments,
+<span class="ansi-green-fg">     58</span>     signal,
+<span class="ansi-green-fg">     59</span>     spectral,
+<span class="ansi-green-fg">     60</span>     spectrogram,
+<span class="ansi-green-fg">     61</span>     table,
+<span class="ansi-green-fg">     62</span>     time,
+<span class="ansi-green-fg">     63</span>     timeseries,
+<span class="ansi-green-fg">     64</span>     types,
+<span class="ansi-green-fg">     65</span> )
+<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
+<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
+<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
+<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
+<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     21</span> )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
+<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
+<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
+<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-fg">    223</span>     )
+<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
+<span class="ansi-green-fg">    226</span>         fmt,
+<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
+<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
+<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">    230</span>     )
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
+</pre></div></div>
+</div>
 <section id="1.-Data-Preparation">
 <h2>1. Data Preparation<a class="headerlink" href="#1.-Data-Preparation" title="Link to this heading"></a></h2>
 <p>First, let’s create demo spectrogram data. Here, we generate time series data containing sine waves at different frequencies and convert them using the <code class="docutils literal notranslate"><span class="pre">spectrogram()</span></code> method.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create sample data</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create sample data</span>
 <span class="n">duration</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># seconds</span>
 <span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">128</span>  <span class="c1"># Hz</span>
 
@@ -169,15 +276,38 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 18</span>
+<span class="ansi-green-fg">     14</span>     ts.override_unit(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">strain</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     15</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> ts
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">18</span> ts1 = <span class="ansi-yellow-bg">make_signal</span><span class="ansi-yellow-bg">(</span><span class="ansi-green-fg ansi-yellow-bg">10</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">Signal 10Hz</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">     19</span> ts2 = make_signal(<span class="ansi-green-fg">30</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Signal 30Hz</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     20</span> ts3 = make_signal(<span class="ansi-green-fg">50</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Signal 50Hz</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 10</span>, in <span class="ansi-cyan-fg">make_signal</span><span class="ansi-blue-fg">(freq, name)</span>
+<span class="ansi-green-fg">      9</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">make_signal</span>(freq, name):
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">10</span>     s = <span class="ansi-yellow-bg">sine</span>(duration=duration, sample_rate=sample_rate, frequency=freq, amplitude=<span class="ansi-green-fg">1.0</span>)
+<span class="ansi-green-fg">     11</span>     n = gaussian(duration=duration, sample_rate=sample_rate, std=noise_amp)
+<span class="ansi-green-fg">     12</span>     ts = s + n
+
+<span class="ansi-red-fg">NameError</span>: name &#39;sine&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="2.-Basic-Operations-with-SpectrogramList">
 <h2>2. Basic Operations with SpectrogramList<a class="headerlink" href="#2.-Basic-Operations-with-SpectrogramList" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> behaves like a list, but can only store <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> objects. You can pass a list during initialization or add items using the <code class="docutils literal notranslate"><span class="pre">append()</span></code> method.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a list</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a list</span>
 <span class="n">spec_list</span> <span class="o">=</span> <span class="n">SpectrogramList</span><span class="p">([</span><span class="n">spec1</span><span class="p">,</span> <span class="n">spec2</span><span class="p">])</span>
 
 <span class="c1"># Append</span>
@@ -188,14 +318,30 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Create a list</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> spec_list = <span class="ansi-yellow-bg">SpectrogramList</span>([spec1, spec2])
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Append</span>
+<span class="ansi-green-fg">      5</span> spec_list.append(spec3)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SpectrogramList&#39; is not defined
+</pre></div></div>
+</div>
 <section id="Batch-Processing:-Cropping-Time-Axis-(crop)">
 <h3>Batch Processing: Cropping Time Axis (<code class="docutils literal notranslate"><span class="pre">crop</span></code>)<a class="headerlink" href="#Batch-Processing:-Cropping-Time-Axis-(crop)" title="Link to this heading"></a></h3>
 <p>Performs batch cropping of the time axis for all spectrograms in the list. <strong>Note:</strong> Since spectrograms have large data volumes, operations like cropping may return new objects (copies) without modifying the original data.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crop to 5-15 second range</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crop to 5-15 second range</span>
 <span class="n">cropped_list</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original range:&quot;</span><span class="p">,</span> <span class="n">spec_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">xspan</span><span class="p">)</span>
@@ -203,15 +349,31 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Crop to 5-15 second range</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> cropped_list = <span class="ansi-yellow-bg">spec_list</span>.crop(<span class="ansi-green-fg">5</span>, <span class="ansi-green-fg">15</span>)
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original range:</span><span class="ansi-yellow-fg">&#34;</span>, spec_list[<span class="ansi-green-fg">0</span>].xspan)
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Cropped range:</span><span class="ansi-yellow-fg">&#34;</span>, cropped_list[<span class="ansi-green-fg">0</span>].xspan)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec_list&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="Batch-Processing:-Cropping-Frequency-Axis-(crop_frequencies)">
 <h3>Batch Processing: Cropping Frequency Axis (<code class="docutils literal notranslate"><span class="pre">crop_frequencies</span></code>)<a class="headerlink" href="#Batch-Processing:-Cropping-Frequency-Axis-(crop_frequencies)" title="Link to this heading"></a></h3>
 <p>If there’s a compatible method in gwpy’s <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code>, it will be used; otherwise, filtering is performed by specifying the frequency axis.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crop to 0Hz - 40Hz range</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crop to 0Hz - 40Hz range</span>
 <span class="n">freq_cropped</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">crop_frequencies</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original yspan:&quot;</span><span class="p">,</span> <span class="n">spec_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">yspan</span><span class="p">)</span>
@@ -220,46 +382,92 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Crop to 0Hz - 40Hz range</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> freq_cropped = <span class="ansi-yellow-bg">spec_list</span>.crop_frequencies(<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">40</span>)
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original yspan:</span><span class="ansi-yellow-fg">&#34;</span>, spec_list[<span class="ansi-green-fg">0</span>].yspan)
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Cropped yspan:</span><span class="ansi-yellow-fg">&#34;</span>, freq_cropped[<span class="ansi-green-fg">0</span>].yspan)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec_list&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="3.-Using-SpectrogramDict">
 <h2>3. Using SpectrogramDict<a class="headerlink" href="#3.-Using-SpectrogramDict" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code> is convenient when you want to manage spectrograms with names (keys).</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spec_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">({</span><span class="s2">&quot;low_freq&quot;</span><span class="p">:</span> <span class="n">spec1</span><span class="p">,</span> <span class="s2">&quot;mid_freq&quot;</span><span class="p">:</span> <span class="n">spec2</span><span class="p">,</span> <span class="s2">&quot;high_freq&quot;</span><span class="p">:</span> <span class="n">spec3</span><span class="p">})</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spec_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">({</span><span class="s2">&quot;low_freq&quot;</span><span class="p">:</span> <span class="n">spec1</span><span class="p">,</span> <span class="s2">&quot;mid_freq&quot;</span><span class="p">:</span> <span class="n">spec2</span><span class="p">,</span> <span class="s2">&quot;high_freq&quot;</span><span class="p">:</span> <span class="n">spec3</span><span class="p">})</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Keys:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">spec_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> spec_dict = <span class="ansi-yellow-bg">SpectrogramDict</span>({<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">low_freq</span><span class="ansi-yellow-fg">&#34;</span>: spec1, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">mid_freq</span><span class="ansi-yellow-fg">&#34;</span>: spec2, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">high_freq</span><span class="ansi-yellow-fg">&#34;</span>: spec3})
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Keys:</span><span class="ansi-yellow-fg">&#34;</span>, <span style="color: rgb(0,135,0)">list</span>(spec_dict.keys()))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;SpectrogramDict&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="4.-Visualization-(plot)">
 <h2>4. Visualization (<code class="docutils literal notranslate"><span class="pre">plot</span></code>)<a class="headerlink" href="#4.-Visualization-(plot)" title="Link to this heading"></a></h2>
 <p>Calling the <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> method on a list or dictionary allows you to plot all contained spectrograms together. Internally, it uses <code class="docutils literal notranslate"><span class="pre">gwpy.plot.Plot</span></code>.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Batch plotting</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Batch plotting</span>
 <span class="c1"># Setting sharex=True, sharey=True shares axes for easier comparison</span>
 <span class="n">plot</span> <span class="o">=</span> <span class="n">spec_dict</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Batch plotting</span>
+<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># Setting sharex=True, sharey=True shares axes for easier comparison</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> plot = <span class="ansi-yellow-bg">spec_dict</span>.plot(figsize=(<span class="ansi-green-fg">12</span>, <span class="ansi-green-fg">8</span>), sharex=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, sharey=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">      4</span> plt.show()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec_dict&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="5.-Conversion-to-Matrix-Format-and-Deep-Learning-Integration">
 <h2>5. Conversion to Matrix Format and Deep Learning Integration<a class="headerlink" href="#5.-Conversion-to-Matrix-Format-and-Deep-Learning-Integration" title="Link to this heading"></a></h2>
 <p>Using <code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code>, you can create a <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> object with a 3D array <code class="docutils literal notranslate"><span class="pre">(Channels,</span> <span class="pre">Time,</span> <span class="pre">Frequency)</span></code> that stacks each spectrogram.</p>
 <p>This is very convenient when creating inputs for machine learning models (PyTorch, TensorFlow, etc.).</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">matrix</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">matrix</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matrix Type:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">matrix</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matrix Shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -270,6 +478,21 @@
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Freq axis shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[8]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> matrix = <span class="ansi-yellow-bg">spec_list</span>.to_matrix()
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Matrix Type:</span><span class="ansi-yellow-fg">&#34;</span>, <span style="color: rgb(0,135,0)">type</span>(matrix))
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Matrix Shape:</span><span class="ansi-yellow-fg">&#34;</span>, matrix.shape)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec_list&#39; is not defined
+</pre></div></div>
 </div>
 <p>If PyTorch or CuPy is installed, you can directly convert to Tensors, etc.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert to PyTorch Tensor</span>

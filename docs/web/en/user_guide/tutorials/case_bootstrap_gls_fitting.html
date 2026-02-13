@@ -170,12 +170,12 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/washimi/miniforge3/envs/gwexpy/lib/python3.11/site-packages/gwpy/time/__init__.py:36: UserWarning: Wswiglal-redir-stdio:
+/home/runner/miniconda3/envs/docs/lib/python3.11/site-packages/gwpy/time/_ligotimegps.py:42: UserWarning: Wswiglal-redir-stdio:
 
 SWIGLAL standard output/error redirection is enabled in IPython.
 This may lead to performance penalties. To disable locally, use:
@@ -198,6 +198,85 @@ warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
 import lal
 
   from lal import LIGOTimeGPS
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 5</span>
+<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
+<span class="ansi-green-fg">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">scipy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> signal
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
+<span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">frequencyseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FrequencySeries, BifrequencyMap
+<span class="ansi-green-fg">      7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">noise</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">colored</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> power_law
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
+<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     46</span> )
+<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     50</span>     astro,
+<span class="ansi-green-fg">     51</span>     detector,
+<span class="ansi-green-fg">     52</span>     frequencyseries,
+<span class="ansi-green-fg">     53</span>     interop,
+<span class="ansi-green-fg">     54</span>     io,
+<span class="ansi-green-fg">     55</span>     noise,
+<span class="ansi-green-fg">     56</span>     plot,
+<span class="ansi-green-fg">     57</span>     segments,
+<span class="ansi-green-fg">     58</span>     signal,
+<span class="ansi-green-fg">     59</span>     spectral,
+<span class="ansi-green-fg">     60</span>     spectrogram,
+<span class="ansi-green-fg">     61</span>     table,
+<span class="ansi-green-fg">     62</span>     time,
+<span class="ansi-green-fg">     63</span>     timeseries,
+<span class="ansi-green-fg">     64</span>     types,
+<span class="ansi-green-fg">     65</span> )
+<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
+<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
+<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
+<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
+<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     21</span> )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
+<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
+<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
+<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-fg">    223</span>     )
+<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
+<span class="ansi-green-fg">    226</span>         fmt,
+<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
+<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
+<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">    230</span>     )
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -282,10 +361,23 @@ import lal
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Generated TimeSeries: [5.37162147e-21 4.33009695e-21 7.21963683e-21 ... 1.15146116e-21
- 1.66017477e-21 3.00924358e-21]
-Duration: 256.0 s
-Sample rate: 2048 Hz
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 6</span>
+<span class="ansi-green-fg">      3</span> frequencies = np.arange(df, fs / <span class="ansi-green-fg">2</span>, df)
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># Create power-law background ASD</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">6</span> background_asd = <span class="ansi-yellow-bg">power_law</span>(
+<span class="ansi-green-fg">      7</span>     exponent=noise_exponent,
+<span class="ansi-green-fg">      8</span>     amplitude=noise_amp,
+<span class="ansi-green-fg">      9</span>     f_ref=f_ref,
+<span class="ansi-green-fg">     10</span>     frequencies=frequencies,
+<span class="ansi-green-fg">     11</span>     unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">1/Hz**(1/2)</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     12</span>     name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Background ASD</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     13</span> )
+<span class="ansi-green-fg">     15</span> <span style="color: rgb(95,135,135)"># Add Lorentzian peak to the ASD</span>
+<span class="ansi-green-fg">     16</span> gamma = peak_freq / peak_Q  <span style="color: rgb(95,135,135)"># Half-width at half-maximum</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;power_law&#39; is not defined
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -322,11 +414,28 @@ Sample rate: 2048 Hz
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 6</span>
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Time-domain plot</span>
+<span class="ansi-green-fg">      5</span> ax1 = axes[<span class="ansi-green-fg">0</span>]
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">6</span> t_plot = <span class="ansi-yellow-bg">data</span>.crop(<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">2</span>)
+<span class="ansi-green-fg">      7</span> ax1.plot(t_plot.times.value, t_plot.value, linewidth=<span class="ansi-green-fg">0.5</span>)
+<span class="ansi-green-fg">      8</span> ax1.set_xlabel(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Time [s]</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;data&#39; is not defined
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_6_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_6_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_6_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_6_1.png" />
 </div>
 </div>
 </section>
@@ -433,11 +542,25 @@ Expected frequency bin correlation: ~0.50
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Spectrogram shape: (63, 8193)
-Time bins: 63
-Frequency bins: 8193
-Actual overlap: 50.0% stride
-Expected correlation from overlap: ~0.50
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 12</span>
+<span class="ansi-green-fg">      8</span> noverlap_between = <span style="color: rgb(0,135,0)">int</span>(overlap_between_bins * fs)  <span style="color: rgb(95,135,135)"># 4096 samples (25% of nperseg)</span>
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Generate spectrogram with scipy (allows noverlap independent of Welch averaging)</span>
+<span class="ansi-green-fg">     11</span> freqs_scipy, times_scipy, Sxx_scipy = scipy_signal.spectrogram(
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">12</span>     <span class="ansi-yellow-bg">data</span>.value,
+<span class="ansi-green-fg">     13</span>     fs=fs,
+<span class="ansi-green-fg">     14</span>     window=window,
+<span class="ansi-green-fg">     15</span>     nperseg=nperseg,
+<span class="ansi-green-fg">     16</span>     noverlap=noverlap_between,
+<span class="ansi-green-fg">     17</span>     scaling=<span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">density</span><span class="ansi-yellow-fg">&#39;</span>,
+<span class="ansi-green-fg">     18</span>     mode=<span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">psd</span><span class="ansi-yellow-fg">&#39;</span>,
+<span class="ansi-green-fg">     19</span>     detrend=<span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">constant</span><span class="ansi-yellow-fg">&#39;</span>,
+<span class="ansi-green-fg">     20</span> )
+<span class="ansi-green-fg">     22</span> <span style="color: rgb(95,135,135)"># Convert to gwexpy Spectrogram object</span>
+<span class="ansi-green-fg">     23</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">spectrogram</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Spectrogram
+
+<span class="ansi-red-fg">NameError</span>: name &#39;data&#39; is not defined
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -487,11 +610,33 @@ Expected correlation from overlap: ~0.50
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 6</span>
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Spectrogram plot (time-frequency)</span>
+<span class="ansi-green-fg">      5</span> ax1 = axes[<span class="ansi-green-fg">0</span>]
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">6</span> freq_idx = <span class="ansi-yellow-bg">spectrogram</span>.frequencies.value &lt; <span class="ansi-green-fg">200</span>
+<span class="ansi-green-fg">      7</span> spec_plot = spectrogram.value[:, freq_idx]
+<span class="ansi-green-fg">      8</span> extent = [
+<span class="ansi-green-fg">      9</span>     spectrogram.times.value[<span class="ansi-green-fg">0</span>],
+<span class="ansi-green-fg">     10</span>     spectrogram.times.value[-<span class="ansi-green-fg">1</span>],
+<span class="ansi-green-fg">     11</span>     spectrogram.frequencies.value[freq_idx][<span class="ansi-green-fg">0</span>],
+<span class="ansi-green-fg">     12</span>     spectrogram.frequencies.value[freq_idx][-<span class="ansi-green-fg">1</span>],
+<span class="ansi-green-fg">     13</span> ]
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spectrogram&#39; is not defined
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_11_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_11_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_11_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_11_1.png" />
 </div>
 </div>
 </section>
@@ -586,14 +731,27 @@ Note: No rebinning preserves correlations but increases computation time.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Run bootstrap PSD estimation</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> psd_boot, cov_map = <span class="ansi-yellow-bg">bootstrap_spectrogram</span>(
+<span class="ansi-green-fg">      3</span>     spectrogram,
+<span class="ansi-green-fg">      4</span>     n_boot=n_boot,
+<span class="ansi-green-fg">      5</span>     method=method,
+<span class="ansi-green-fg">      6</span>     ci=ci,
+<span class="ansi-green-fg">      7</span>     window=window,
+<span class="ansi-green-fg">      8</span>     fftlength=fftlength,
+<span class="ansi-green-fg">      9</span>     overlap=overlap,
+<span class="ansi-green-fg">     10</span>     block_size=block_size,
+<span class="ansi-green-fg">     11</span>     rebin_width=rebin_width,
+<span class="ansi-green-fg">     12</span>     return_map=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">     13</span>     ignore_nan=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">     14</span> )
+<span class="ansi-green-fg">     16</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">Bootstrap PSD:</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     17</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">  Frequency bins: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">len</span>(psd_boot)<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
 
-Bootstrap PSD:
-  Frequency bins: 8193
-  Frequency range: 0.00 - 1024.00 Hz
-
-Covariance Map:
-  Shape: (8193, 8193)
-  Unit: 1 / Hz2
+<span class="ansi-red-fg">NameError</span>: name &#39;bootstrap_spectrogram&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -747,21 +905,29 @@ Interpretation: Variance is inflated by factor of 1.01 due to overlap in Welch a
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_19_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_19_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[11]</span><span class="ansi-green-fg">, line 5</span>
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># 1. PSD with error bands</span>
+<span class="ansi-green-fg">      4</span> ax1 = axes[<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>]
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> freqs = <span class="ansi-yellow-bg">psd_boot</span>.frequencies.value
+<span class="ansi-green-fg">      6</span> ax1.loglog(freqs, np.sqrt(psd_boot.value), <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">b-</span><span class="ansi-yellow-fg">&#34;</span>, linewidth=<span class="ansi-green-fg">1</span>, label=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Bootstrap PSD</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      7</span> ax1.fill_between(
+<span class="ansi-green-fg">      8</span>     freqs,
+<span class="ansi-green-fg">      9</span>     np.sqrt(psd_boot.error_low.value),
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     13</span>     label=<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>ci*<span class="ansi-green-fg">100</span><span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.0f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">% CI</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     14</span> )
+
+<span class="ansi-red-fg">NameError</span>: name &#39;psd_boot&#39; is not defined
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-
-=== Correlation Verification ===
-Mean correlation (adjacent bins): 0.247 ± 0.165
-Target correlation: ~0.2
-Range: [-0.398, 0.721]
-✓ Target correlation achieved!
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_19_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_19_1.png" />
+</div>
 </div>
 <p><strong>Key Observations:</strong></p>
 <ul class="simple">
@@ -873,11 +1039,17 @@ Range: [-0.398, 0.721]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-PSD frequency bins: 720
-Covariance indices: 720
-Fitting range: 60 - 150 Hz
-Number of frequency bins: 720
-Covariance matrix shape: (720, 720)
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[13]</span><span class="ansi-green-fg">, line 7</span>
+<span class="ansi-green-fg">      4</span> freq_min, freq_max = <span class="ansi-green-fg">60</span>, <span class="ansi-green-fg">150</span>
+<span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># Crop PSD to fitting range</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">7</span> psd_fit = <span class="ansi-yellow-bg">psd_boot</span>.crop(freq_min, freq_max)
+<span class="ansi-green-fg">      8</span> freq_vals = psd_fit.frequencies.value
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Find matching indices in covariance matrix</span>
+<span class="ansi-green-fg">     11</span> <span style="color: rgb(95,135,135)"># Use psd_fit frequencies to find corresponding indices in cov_map</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;psd_boot&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -980,160 +1152,27 @@ Initial guesses:
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-GLS Fit Results:
-==================================================
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[16]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># GLS fit using full covariance matrix</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> result_gls = <span class="ansi-yellow-bg">fit_series</span>(
+<span class="ansi-green-fg">      3</span>     psd_fit,
+<span class="ansi-green-fg">      4</span>     psd_model,
+<span class="ansi-green-fg">      5</span>     cov=cov_fit,
+<span class="ansi-green-fg">      6</span>     p0=p0,
+<span class="ansi-green-fg">      7</span>     limits=bounds,
+<span class="ansi-green-fg">      8</span> )
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">GLS Fit Results:</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     11</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">=</span><span class="ansi-yellow-fg">&#34;</span> * <span class="ansi-green-fg">50</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;fit_series&#39; is not defined
 </pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<table>
-    <tr>
-        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
-    </tr>
-    <tr>
-        <td style="text-align:left" title="Minimum value of function"> FCN = 2.292e+04 (χ²/ndof = 32.1) </td>
-        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 495 </td>
-    </tr>
-    <tr>
-        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 0.000158 (Goal: 0.0002) </td>
-        <td style="text-align:center" title="Total run time of algorithms">  </td>
-    </tr>
-    <tr>
-        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
-        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
-    </tr>
-    <tr>
-        <td style="text-align:center;background-color:#FFF79A;color:black"> SOME parameters at limit </td>
-        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
-    </tr>
-    <tr>
-        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
-        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
-    </tr>
-</table><table>
-    <tr>
-        <td></td>
-        <th title="Variable name"> Name </th>
-        <th title="Value of parameter"> Value </th>
-        <th title="Hesse error"> Hesse Error </th>
-        <th title="Minos lower error"> Minos Error- </th>
-        <th title="Minos upper error"> Minos Error+ </th>
-        <th title="Lower limit of the parameter"> Limit- </th>
-        <th title="Upper limit of the parameter"> Limit+ </th>
-        <th title="Is the parameter fixed in the fit"> Fixed </th>
-    </tr>
-    <tr>
-        <th> 0 </th>
-        <td> A_bg </td>
-        <td> 5.188e-45 </td>
-        <td> 0.023e-45 </td>
-        <td>  </td>
-        <td>  </td>
-        <td> 1E-46 </td>
-        <td> 1E-42 </td>
-        <td>  </td>
-    </tr>
-    <tr>
-        <th> 1 </th>
-        <td> alpha </td>
-        <td> -0.925 </td>
-        <td> 0.011 </td>
-        <td>  </td>
-        <td>  </td>
-        <td> -3 </td>
-        <td> 0 </td>
-        <td>  </td>
-    </tr>
-    <tr>
-        <th> 2 </th>
-        <td> A_peak </td>
-        <td> 1.356e-42 </td>
-        <td> 0.009e-42 </td>
-        <td>  </td>
-        <td>  </td>
-        <td> 1E-44 </td>
-        <td> 1E-40 </td>
-        <td>  </td>
-    </tr>
-    <tr>
-        <th> 3 </th>
-        <td> f0 </td>
-        <td> 99.020 </td>
-        <td> 0.022 </td>
-        <td>  </td>
-        <td>  </td>
-        <td> 90 </td>
-        <td> 110 </td>
-        <td>  </td>
-    </tr>
-    <tr>
-        <th> 4 </th>
-        <td style="background-color:#FFF79A;color:black"> Q </td>
-        <td> 50.000 </td>
-        <td> 0.007 </td>
-        <td>  </td>
-        <td>  </td>
-        <td> 5 </td>
-        <td style="background-color:#FFF79A;color:black"> 50 </td>
-        <td>  </td>
-    </tr>
-</table><table>
-    <tr>
-        <td></td>
-        <th> A_bg </th>
-        <th> alpha </th>
-        <th> A_peak </th>
-        <th> f0 </th>
-        <th> Q </th>
-    </tr>
-    <tr>
-        <th> A_bg </th>
-        <td> 5.31e-94 </td>
-        <td style="background-color:rgb(248,248,250);color:black"> -3.9772630599381324500996015558484941720962524e-51 <strong>(-0.015)</strong> </td>
-        <td style="background-color:rgb(166,166,250);color:black"> -130.2e-93 <strong>(-0.648)</strong> </td>
-        <td style="background-color:rgb(203,203,250);color:black"> -185.0706210798732342937000794336199760437011719e-51 <strong>(-0.360)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -46.3541386668320711805790779180824757e-60 </td>
-    </tr>
-    <tr>
-        <th> alpha </th>
-        <td style="background-color:rgb(248,248,250);color:black"> -3.9772630599381324500996015558484941720962524e-51 <strong>(-0.015)</strong> </td>
-        <td> 0.000127 </td>
-        <td style="background-color:rgb(244,244,250);color:black"> -4.19487836345594633513655935530550777912140e-48 <strong>(-0.043)</strong> </td>
-        <td style="background-color:rgb(230,230,250);color:black"> -0.04e-3 <strong>(-0.157)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -0 </td>
-    </tr>
-    <tr>
-        <th> A_peak </th>
-        <td style="background-color:rgb(166,166,250);color:black"> -130.2e-93 <strong>(-0.648)</strong> </td>
-        <td style="background-color:rgb(244,244,250);color:black"> -4.19487836345594633513655935530550777912140e-48 <strong>(-0.043)</strong> </td>
-        <td> 7.61e-89 </td>
-        <td style="background-color:rgb(250,175,175);color:black"> 97.00218915878822656395641388371586799621582e-48 <strong>(0.498)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 39.43706566671831126313918503001332283e-54 </td>
-    </tr>
-    <tr>
-        <th> f0 </th>
-        <td style="background-color:rgb(203,203,250);color:black"> -185.0706210798732342937000794336199760437011719e-51 <strong>(-0.360)</strong> </td>
-        <td style="background-color:rgb(230,230,250);color:black"> -0.04e-3 <strong>(-0.157)</strong> </td>
-        <td style="background-color:rgb(250,175,175);color:black"> 97.00218915878822656395641388371586799621582e-48 <strong>(0.498)</strong> </td>
-        <td> 0.000499 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 0 </td>
-    </tr>
-    <tr>
-        <th> Q </th>
-        <td style="background-color:rgb(250,250,250);color:black"> -46.3541386668320711805790779180824757e-60 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -0 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 39.43706566671831126313918503001332283e-54 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 0 </td>
-        <td> 1.33e-08 </td>
-    </tr>
-</table></div>
 </div>
 </section>
 <section id="4.5-Analyze-Fit-Results">
@@ -1172,19 +1211,15 @@ GLS Fit Results:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[17]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Extract parameters and errors</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> params_gls = <span class="ansi-yellow-bg">result_gls</span>.params
+<span class="ansi-green-fg">      3</span> errors_gls = result_gls.errors
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">Parameter Comparison (GLS Fit):</span><span class="ansi-yellow-fg">&#34;</span>)
 
-Parameter Comparison (GLS Fit):
-======================================================================
-Parameter  Fitted          Error        True                Pull
-----------------------------------------------------------------------
-A_bg       5.188e-45       2.304e-47    1.000e-44        -208.89
-alpha      -0.9253         0.0113       -1.0000             6.63
-A_peak     1.356e-42       8.723e-45    4.000e-42        -303.13
-f0         99.0197         0.0223       100.0000          -43.88
-Q          50.0000         0.0074       20.0000          4047.10
-----------------------------------------------------------------------
-
-χ²/ndof = 22919.5 / 715 = 32.055
+<span class="ansi-red-fg">NameError</span>: name &#39;result_gls&#39; is not defined
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1237,11 +1272,31 @@ Q          50.0000         0.0074       20.0000          4047.10
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[18]</span><span class="ansi-green-fg">, line 8</span>
+<span class="ansi-green-fg">      5</span> ax1 = axes[<span class="ansi-green-fg">0</span>]
+<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># Data with error bars (from diagonal of covariance)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">8</span> diag_err = np.sqrt(np.maximum(np.diag(<span class="ansi-yellow-bg">cov_fit</span>.value), <span class="ansi-green-fg">0</span>))
+<span class="ansi-green-fg">      9</span> ax1.errorbar(
+<span class="ansi-green-fg">     10</span>     freq_vals, psd_fit.value, yerr=diag_err,
+<span class="ansi-green-fg">     11</span>     fmt=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">o</span><span class="ansi-yellow-fg">&#34;</span>, markersize=<span class="ansi-green-fg">3</span>, alpha=<span class="ansi-green-fg">0.6</span>, label=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Data</span><span class="ansi-yellow-fg">&#34;</span>, capsize=<span class="ansi-green-fg">2</span>,
+<span class="ansi-green-fg">     12</span> )
+<span class="ansi-green-fg">     14</span> <span style="color: rgb(95,135,135)"># Best-fit model</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;cov_fit&#39; is not defined
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_32_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_32_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_32_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_32_1.png" />
 </div>
 </div>
 </section>
@@ -1287,7 +1342,7 @@ Q          50.0000         0.0074       20.0000          4047.10
 <div class="highlight"><pre>
 Running MCMC with 32 walkers, 3000 steps...
 Burn-in: 500 steps
-MCMC requires &#39;emcee&#39; package: Please install &#39;emcee&#39; and &#39;corner&#39; to use MCMC features.
+MCMC error: name &#39;result_gls&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -1403,160 +1458,25 @@ MCMC requires &#39;emcee&#39; package: Please install &#39;emcee&#39; and &#39;c
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-OLS Fit Results:
-==================================================
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[23]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Create diagonal-only covariance (for OLS)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> diag_variances = np.diag(<span class="ansi-yellow-bg">cov_fit</span>.value)
+<span class="ansi-green-fg">      3</span> cov_diag_matrix = np.diag(diag_variances)
+<span class="ansi-green-fg">      5</span> cov_ols = BifrequencyMap.from_points(
+<span class="ansi-green-fg">      6</span>     cov_diag_matrix,
+<span class="ansi-green-fg">      7</span>     f2=cov_fit.frequency2,
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     10</span>     name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Diagonal Covariance (OLS)</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     11</span> )
+
+<span class="ansi-red-fg">NameError</span>: name &#39;cov_fit&#39; is not defined
 </pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<table>
-    <tr>
-        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
-    </tr>
-    <tr>
-        <td style="text-align:left" title="Minimum value of function"> FCN = 2238 (χ²/ndof = 3.1) </td>
-        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 558 </td>
-    </tr>
-    <tr>
-        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 4.17e-06 (Goal: 0.0002) </td>
-        <td style="text-align:center" title="Total run time of algorithms">  </td>
-    </tr>
-    <tr>
-        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
-        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
-    </tr>
-    <tr>
-        <td style="text-align:center;background-color:#FFF79A;color:black"> SOME parameters at limit </td>
-        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
-    </tr>
-    <tr>
-        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
-        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
-    </tr>
-</table><table>
-    <tr>
-        <td></td>
-        <th title="Variable name"> Name </th>
-        <th title="Value of parameter"> Value </th>
-        <th title="Hesse error"> Hesse Error </th>
-        <th title="Minos lower error"> Minos Error- </th>
-        <th title="Minos upper error"> Minos Error+ </th>
-        <th title="Lower limit of the parameter"> Limit- </th>
-        <th title="Upper limit of the parameter"> Limit+ </th>
-        <th title="Is the parameter fixed in the fit"> Fixed </th>
-    </tr>
-    <tr>
-        <th> 0 </th>
-        <td> A_bg </td>
-        <td> 5.19e-45 </td>
-        <td> 0.07e-45 </td>
-        <td>  </td>
-        <td>  </td>
-        <td> 1E-46 </td>
-        <td> 1E-42 </td>
-        <td>  </td>
-    </tr>
-    <tr>
-        <th> 1 </th>
-        <td> alpha </td>
-        <td> -1.01 </td>
-        <td> 0.04 </td>
-        <td>  </td>
-        <td>  </td>
-        <td> -3 </td>
-        <td> 0 </td>
-        <td>  </td>
-    </tr>
-    <tr>
-        <th> 2 </th>
-        <td> A_peak </td>
-        <td> 1.379e-42 </td>
-        <td> 0.027e-42 </td>
-        <td>  </td>
-        <td>  </td>
-        <td> 1E-44 </td>
-        <td> 1E-40 </td>
-        <td>  </td>
-    </tr>
-    <tr>
-        <th> 3 </th>
-        <td> f0 </td>
-        <td> 99.45 </td>
-        <td> 0.10 </td>
-        <td>  </td>
-        <td>  </td>
-        <td> 90 </td>
-        <td> 110 </td>
-        <td>  </td>
-    </tr>
-    <tr>
-        <th> 4 </th>
-        <td style="background-color:#FFF79A;color:black"> Q </td>
-        <td> 50.00 </td>
-        <td> 0.08 </td>
-        <td>  </td>
-        <td>  </td>
-        <td> 5 </td>
-        <td style="background-color:#FFF79A;color:black"> 50 </td>
-        <td>  </td>
-    </tr>
-</table><table>
-    <tr>
-        <td></td>
-        <th> A_bg </th>
-        <th> alpha </th>
-        <th> A_peak </th>
-        <th> f0 </th>
-        <th> Q </th>
-    </tr>
-    <tr>
-        <th> A_bg </th>
-        <td> 5.15e-93 </td>
-        <td style="background-color:rgb(250,247,247);color:black"> 48.646821888524655719265865627676248550415039e-51 <strong>(0.019)</strong> </td>
-        <td style="background-color:rgb(162,162,250);color:black"> -1.282e-90 <strong>(-0.675)</strong> </td>
-        <td style="background-color:rgb(221,221,250);color:black"> -1.696586629671420265452752573764882981777191162e-48 <strong>(-0.226)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -2.302013077925457729122626915341243148e-57 </td>
-    </tr>
-    <tr>
-        <th> alpha </th>
-        <td style="background-color:rgb(250,247,247);color:black"> 48.646821888524655719265865627676248550415039e-51 <strong>(0.019)</strong> </td>
-        <td> 0.00134 </td>
-        <td style="background-color:rgb(238,238,250);color:black"> -90.0763207817346653882850660011172294616699e-48 <strong>(-0.093)</strong> </td>
-        <td style="background-color:rgb(209,209,250);color:black"> -0.0012 <strong>(-0.319)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -0 </td>
-    </tr>
-    <tr>
-        <th> A_peak </th>
-        <td style="background-color:rgb(162,162,250);color:black"> -1.282e-90 <strong>(-0.675)</strong> </td>
-        <td style="background-color:rgb(238,238,250);color:black"> -90.0763207817346653882850660011172294616699e-48 <strong>(-0.093)</strong> </td>
-        <td> 7e-88 </td>
-        <td style="background-color:rgb(250,210,210);color:black"> 740.3550856017402566067175939679145812988281e-48 <strong>(0.268)</strong> </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -1.8505391636398063059942842301097698510e-51 </td>
-    </tr>
-    <tr>
-        <th> f0 </th>
-        <td style="background-color:rgb(221,221,250);color:black"> -1.696586629671420265452752573764882981777191162e-48 <strong>(-0.226)</strong> </td>
-        <td style="background-color:rgb(209,209,250);color:black"> -0.0012 <strong>(-0.319)</strong> </td>
-        <td style="background-color:rgb(250,210,210);color:black"> 740.3550856017402566067175939679145812988281e-48 <strong>(0.268)</strong> </td>
-        <td> 0.0109 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 0 </td>
-    </tr>
-    <tr>
-        <th> Q </th>
-        <td style="background-color:rgb(250,250,250);color:black"> -2.302013077925457729122626915341243148e-57 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -0 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> -1.8505391636398063059942842301097698510e-51 </td>
-        <td style="background-color:rgb(250,250,250);color:black"> 0 </td>
-        <td> 3.03e-08 </td>
-    </tr>
-</table></div>
 </div>
 </section>
 <section id="6.2-Compare-GLS-and-OLS-Results">
@@ -1597,19 +1517,14 @@ OLS Fit Results:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[24]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> params_ols = <span class="ansi-yellow-bg">result_ols</span>.params
+<span class="ansi-green-fg">      2</span> errors_ols = result_ols.errors
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">GLS vs OLS Comparison:</span><span class="ansi-yellow-fg">&#34;</span>)
 
-GLS vs OLS Comparison:
-=====================================================================================
-Parameter  GLS Value      GLS Error    OLS Value      OLS Error       Ratio
--------------------------------------------------------------------------------------
-A_bg       5.188e-45      2.304e-47    5.191e-45      7.176e-47        0.32
-alpha      -0.9253        0.0113       -1.0067        0.0366           0.31
-A_peak     1.356e-42      8.723e-45    1.379e-42      2.646e-44        0.33
-f0         99.0197        0.0223       99.4465        0.1045           0.21
-Q          50.0000        0.0074       50.0000        0.0796           0.09
--------------------------------------------------------------------------------------
-
-χ²/ndof:  GLS = 32.055    OLS = 3.130
+<span class="ansi-red-fg">NameError</span>: name &#39;result_ols&#39; is not defined
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1652,11 +1567,28 @@ Q          50.0000        0.0074       50.0000        0.0796           0.09
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[25]</span><span class="ansi-green-fg">, line 4</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Visualize error ratio comparison</span>
+<span class="ansi-green-fg">      2</span> fig, ax = plt.subplots(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">5</span>))
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> names = [r[<span class="ansi-green-fg">0</span>] <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> r <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span class="ansi-yellow-bg">error_ratios</span>]
+<span class="ansi-green-fg">      5</span> ratios = [r[<span class="ansi-green-fg">1</span>] <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> r <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> error_ratios]
+<span class="ansi-green-fg">      7</span> x = np.arange(<span style="color: rgb(0,135,0)">len</span>(names))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;error_ratios&#39; is not defined
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_44_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_44_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_44_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_bootstrap_gls_fitting_44_1.png" />
 </div>
 </div>
 </section>
@@ -1769,13 +1701,17 @@ Q          50.0000        0.0074       50.0000        0.0796           0.09
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Inverse shape: (720, 720)
-Inverse unit: Hz2
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[26]</span><span class="ansi-green-fg">, line 4</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Example BifrequencyMap operations</span>
+<span class="ansi-green-fg">      2</span>
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># 1. Get inverse (for manual GLS)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> cov_inv = <span class="ansi-yellow-bg">cov_fit</span>.inverse()
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Inverse shape: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>cov_inv.shape<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      6</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Inverse unit: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>cov_inv.unit<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
 
-Diagonal extracted: 720 values
-Correlation range: [-0.693, 1.000]
-
-Created test BifrequencyMap: (10, 10)
+<span class="ansi-red-fg">NameError</span>: name &#39;cov_fit&#39; is not defined
 </pre></div></div>
 </div>
 </section>

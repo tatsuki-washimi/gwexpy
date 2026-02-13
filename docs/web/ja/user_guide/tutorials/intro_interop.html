@@ -241,12 +241,12 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/gwpy/time/__init__.py:36: UserWarning: Wswiglal-redir-stdio:
+/home/runner/miniconda3/envs/docs/lib/python3.11/site-packages/gwpy/time/_ligotimegps.py:42: UserWarning: Wswiglal-redir-stdio:
 
 SWIGLAL standard output/error redirection is enabled in IPython.
 This may lead to performance penalties. To disable locally, use:
@@ -271,6 +271,85 @@ import lal
   from lal import LIGOTimeGPS
 </pre></div></div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 9</span>
+<span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">astropy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> units <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> u
+<span class="ansi-green-fg">      7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">time</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> LIGOTimeGPS
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">9</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
+<span class="ansi-green-fg">     11</span> warnings.filterwarnings(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Wswiglal-redir-stdio</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     12</span> warnings.filterwarnings(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>)
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
+<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     46</span> )
+<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     50</span>     astro,
+<span class="ansi-green-fg">     51</span>     detector,
+<span class="ansi-green-fg">     52</span>     frequencyseries,
+<span class="ansi-green-fg">     53</span>     interop,
+<span class="ansi-green-fg">     54</span>     io,
+<span class="ansi-green-fg">     55</span>     noise,
+<span class="ansi-green-fg">     56</span>     plot,
+<span class="ansi-green-fg">     57</span>     segments,
+<span class="ansi-green-fg">     58</span>     signal,
+<span class="ansi-green-fg">     59</span>     spectral,
+<span class="ansi-green-fg">     60</span>     spectrogram,
+<span class="ansi-green-fg">     61</span>     table,
+<span class="ansi-green-fg">     62</span>     time,
+<span class="ansi-green-fg">     63</span>     timeseries,
+<span class="ansi-green-fg">     64</span>     types,
+<span class="ansi-green-fg">     65</span> )
+<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
+<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
+<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
+<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
+<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     21</span> )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
+<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
+<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
+<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-fg">    223</span>     )
+<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
+<span class="ansi-green-fg">    226</span>         fmt,
+<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
+<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
+<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">    230</span>     )
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
+</pre></div></div>
+</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -292,27 +371,22 @@ import lal
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Original TimeSeries:
-TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: demo_signal,
-           channel: None)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_4_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_4_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 11</span>
+<span class="ansi-green-fg">      8</span> times = np.arange(size) * dt.value
+<span class="ansi-green-fg">      9</span> data = np.sin(<span class="ansi-green-fg">2</span> * np.pi * <span class="ansi-green-fg">1.0</span> * times)  <span style="color: rgb(95,135,135)"># 1Hz sine wave</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> ts = <span class="ansi-yellow-bg">TimeSeries</span>(data, t0=t0, dt=dt, unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">V</span><span class="ansi-yellow-fg">&#34;</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">demo_signal</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     12</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original TimeSeries:</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     13</span> <span style="color: rgb(0,135,0)">print</span>(ts)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeries&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="1.-汎用データ形式・データ基盤">
@@ -355,56 +429,21 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
---- Converted to Pandas Series ---
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-time_utc
-2019-02-18 23:31:49+00:00           0.000000
-2019-02-18 23:31:49.010000+00:00    0.062791
-2019-02-18 23:31:49.020000+00:00    0.125333
-2019-02-18 23:31:49.030000+00:00    0.187381
-2019-02-18 23:31:49.040000+00:00    0.248690
-                                      ...
-2019-02-18 23:31:58.949991+00:00   -0.309017
-2019-02-18 23:31:58.959991+00:00   -0.248690
-2019-02-18 23:31:58.969990+00:00   -0.187381
-2019-02-18 23:31:58.979990+00:00   -0.125333
-2019-02-18 23:31:58.989990+00:00   -0.062791
-Name: demo_signal, Length: 1000, dtype: float64
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_8_2.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_8_2.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">      2</span>     <span style="color: rgb(95,135,135)"># Pandas Series への変換 (デフォルトは datetime index)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span>     s_pd = <span class="ansi-yellow-bg">ts</span>.to_pandas(index=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">datetime</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      4</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">--- Converted to Pandas Series ---</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span>     display(s_pd)
 
---- Restored TimeSeries from Pandas ---
-TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567927.0 s,
-           dt: 0.009999990463256836 s,
-           name: demo_signal,
-           channel: None)
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -447,45 +486,12 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
---- Polars DataFrame ---
-shape: (5, 2)
-┌────────────────────────────┬─────────────┐
-│ time                       ┆ demo_signal │
-│ ---                        ┆ ---         │
-│ object                     ┆ f64         │
-╞════════════════════════════╪═════════════╡
-│ 2019-02-18 23:31:12        ┆ 0.0         │
-│ 2019-02-18 23:31:12.010000 ┆ 0.062791    │
-│ 2019-02-18 23:31:12.020000 ┆ 0.125333    │
-│ 2019-02-18 23:31:12.030000 ┆ 0.187381    │
-│ 2019-02-18 23:31:12.040000 ┆ 0.24869     │
-└────────────────────────────┴─────────────┘
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_10_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_10_1.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Recovered from Polars: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: dimensionless,
-           t0: 1234567890.0 s,
-           dt: None,
-           name: demo_signal,
-           channel: None)
+Polars not installed.
 </pre></div></div>
 </div>
 </section>
@@ -524,48 +530,21 @@ Recovered from Polars: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
---- Converted to Xarray DataArray ---
-&lt;xarray.DataArray &#39;demo_signal&#39; (time: 1000)&gt; Size: 8kB
-array([ 0.        ,  0.06279052,  0.12533323, ..., -0.18738131,
-       -0.12533323, -0.06279052], shape=(1000,))
-Coordinates:
-  * time     (time) datetime64[ns] 8kB 2019-02-18T23:31:49 ... 2019-02-18T23:...
-Attributes:
-    unit:        V
-    name:        demo_signal
-    channel:     None
-    epoch:       1234567890.0
-    time_coord:  datetime
-Attributes: {&#39;unit&#39;: &#39;V&#39;, &#39;name&#39;: &#39;demo_signal&#39;, &#39;channel&#39;: &#39;None&#39;, &#39;epoch&#39;: 1234567890.0, &#39;time_coord&#39;: &#39;datetime&#39;}
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_12_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_12_1.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">      2</span>     <span style="color: rgb(95,135,135)"># Xarray DataArray への変換</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span>     da = <span class="ansi-yellow-bg">ts</span>.to_xarray()
+<span class="ansi-green-fg">      4</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">--- Converted to Xarray DataArray ---</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span>     <span style="color: rgb(0,135,0)">print</span>(da)
 
---- Restored TimeSeries from Xarray ---
-TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567927.0 s,
-           dt: 0.009999990463256836 s,
-           name: demo_signal,
-           channel: None)
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -603,16 +582,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-
---- Converted to Dask Array ---
-dask.array&lt;array, shape=(1000,), dtype=float64, chunksize=(1000,), chunktype=numpy.ndarray&gt;
-Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
+Dask not installed.
 </pre></div></div>
 </div>
 </section>
@@ -650,57 +620,21 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
---- JSON Representation (Partial) ---
-{
-  &#34;t0&#34;: 1234567890.0,
-  &#34;dt&#34;: 0.01,
-  &#34;unit&#34;: &#34;V&#34;,
-  &#34;name&#34;: &#34;demo_signal&#34;,
-  &#34;data&#34;: [
-    0.0,
-    0.06279051952931337,
-    0.12533323356430426,
-    0.1873813145857246,
-    0.2486898871648548,
-    0.3090169943749474,
-    0.3681245526846779,
-    0.4257792915650727,
-    0.4817536741017153,
-    0.5358267949789967,
-    0.5877852522924731,
-    0.6374239897486896,
-    0.6845471059286886,
-    0.7289686274214116,
-    0.7705132427757893,
-    0.8090169943749475,
-    0.8443279255020151,
-    0.876306680...
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_16_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_16_1.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Recovered from JSON: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 s,
-           dt: 0.01 s,
-           name: demo_signal,
-           channel: None)
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[8]</span><span class="ansi-green-fg">, line 4</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">json</span>
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># TimeSeries -&gt; JSON string</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> ts_json = <span class="ansi-yellow-bg">ts</span>.to_json()
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">--- JSON Representation (Partial) ---</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      6</span> <span style="color: rgb(0,135,0)">print</span>(ts_json[:<span class="ansi-green-fg">500</span>] + <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">...</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -751,29 +685,23 @@ Recovered from JSON: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
---- HDF5 Dataset Info ---
-Shape: (1000,), Dtype: float64
-Attributes: {&#39;dt&#39;: np.float64(0.01), &#39;name&#39;: &#39;demo_signal&#39;, &#39;t0&#39;: np.float64(1234567890.0), &#39;unit&#39;: &#39;V&#39;}
-Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 s,
-           dt: 0.01 s,
-           name: demo_signal,
-           channel: None)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_19_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_19_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 9</span>
+<span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> tempfile.NamedTemporaryFile(suffix=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">.h5</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> tmp:
+<span class="ansi-green-fg">      7</span>     <span style="color: rgb(95,135,135)"># TimeSeries -&gt; HDF5</span>
+<span class="ansi-green-fg">      8</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> h5py.File(tmp.name, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">w</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> f:
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">9</span>         <span class="ansi-yellow-bg">ts</span>.to_hdf5_dataset(f, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">dataset_01</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     11</span>     <span style="color: rgb(95,135,135)"># Read back and display</span>
+<span class="ansi-green-fg">     12</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> h5py.File(tmp.name, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> f:
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="2.2.-SQLite-[GWExPy-New]">
@@ -813,28 +741,22 @@ Recovered from HDF5: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Saved to SQLite with ID: test_series
-Metadata from SQL: (&#39;test_series&#39;, &#39;&#39;, &#39;V&#39;, 1234567890.0, 0.01, 1000, &#39;{&#34;name&#34;: &#34;demo_signal&#34;}&#39;)
-Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 s,
-           dt: 0.01 s,
-           name: test_series,
-           channel: None)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_21_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_21_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 6</span>
+<span class="ansi-green-fg">      3</span> conn = sqlite3.connect(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">:memory:</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># TimeSeries -&gt; SQLite</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">6</span> series_id = <span class="ansi-yellow-bg">ts</span>.to_sqlite(conn, series_id=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">test_series</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      7</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Saved to SQLite with ID: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>series_id<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      9</span> <span style="color: rgb(95,135,135)"># Verify data in SQL</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="2.3.-Zarr-[GWExPy-New]">
@@ -881,40 +803,13 @@ Recovered from SQLite: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
---- Zarr Array Info ---
-Type               : Array
-Zarr format        : 3
-Data type          : Float64(endianness=&#39;little&#39;)
-Fill value         : 0.0
-Shape              : (1000,)
-Chunk shape        : (1000,)
-Order              : C
-Read-only          : True
-Store type         : LocalStore
-Filters            : ()
-Serializer         : BytesCodec(endian=&lt;Endian.little: &#39;little&#39;&gt;)
-Compressors        : (ZstdCodec(level=0, checksum=False),)
-No. bytes          : 8000 (7.8K)
-Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 s,
-           dt: 0.01 s,
-           name: demo_signal,
-           channel: None)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_23_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_23_1.png" />
-</div>
+<div class="highlight"><pre>
+zarr not installed.
+</pre></div></div>
 </div>
 </section>
 <section id="2.4.-netCDF4-[GWExPy-New]">
@@ -960,36 +855,13 @@ Recovered from Zarr: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
---- netCDF4 Variable Info ---
-&lt;class &#39;netCDF4.Variable&#39;&gt;
-float64 my_signal(time)
-    t0: 1234567890.0
-    dt: 0.01
-    units: V
-    long_name: demo_signal
-unlimited dimensions:
-current shape = (1000,)
-filling on, default _FillValue of 9.969209968386869e+36 used
-Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 s,
-           dt: 0.01 s,
-           name: demo_signal,
-           channel: None)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_25_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_25_1.png" />
-</div>
+<div class="highlight"><pre>
+netCDF4 not installed.
+</pre></div></div>
 </div>
 </section>
 </section>
@@ -1034,18 +906,7 @@ Recovered from netCDF4: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-
---- Converted to PyTorch Tensor ---
-Tensor shape: torch.Size([1000]), dtype: torch.float32
-
---- Restored from Torch ---
-TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
+PyTorch is not installed.
 </pre></div></div>
 </div>
 </section>
@@ -1091,35 +952,12 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
---- CuPy Array (on GPU) ---
-[ 0.          0.06279052  0.12533323 ... -0.18738131 -0.12533323
- -0.06279052]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_30_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_30_1.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Recovered from CuPy: TimeSeries([ 0.        ,  0.12558104,  0.25066647, ...,
-            -0.37476263, -0.25066647, -0.12558104]
-           unit: dimensionless,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
+CuPy or CUDA driver not available.
 </pre></div></div>
 </div>
 </section>
@@ -1170,17 +1008,7 @@ Recovered from CuPy: TimeSeries([ 0.        ,  0.12558104,  0.25066647, ...,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-
---- Converted to TensorFlow Tensor ---
-Tensor shape: (1000,)
-Tensor dtype: &lt;dtype: &#39;float64&#39;&gt;
-Recovered from TF: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
+TensorFlow not installed.
 </pre></div></div>
 </div>
 </section>
@@ -1218,29 +1046,12 @@ Recovered from TF: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING:2026-01-25 20:56:36,683:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-
---- Converted to JAX Array ---
-Array shape: (1000,)
-Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
+JAX not installed.
 </pre></div></div>
 </div>
 </section>
@@ -1290,43 +1101,21 @@ Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-
---- Converted to Astropy TimeSeries ---
-     time            value
-------------- -------------------
- 1234567890.0                 0.0
-1234567890.01 0.06279051952931337
-1234567890.02 0.12533323356430426
-1234567890.03  0.1873813145857246
-1234567890.04  0.2486898871648548
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_38_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_38_1.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[17]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">      2</span>     <span style="color: rgb(95,135,135)"># Astropy TimeSeries への変換</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span>     ap_ts = <span class="ansi-yellow-bg">ts</span>.to_astropy_timeseries()
+<span class="ansi-green-fg">      4</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">--- Converted to Astropy TimeSeries ---</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span>     <span style="color: rgb(0,135,0)">print</span>(ap_ts[:<span class="ansi-green-fg">5</span>])
 
---- Restored from Astropy ---
-TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: dimensionless,
-           t0: 1234567890.0 s,
-           dt: 0.009999990463256836 s,
-           name: None,
-           channel: None)
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -1371,13 +1160,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-specutils Spectrum1D: Spectrum (length=100)
-Flux=[0.76947961 0.77852583 0.20217518 ... 0.73100724 0.63882659
-      0.18566241] Jy,  mean=0.43060 Jy
-Spectral Axis=[ 10.          10.90909091  11.81818182 ...
-                98.18181818  99.09090909 100.        ] Hz,  mean=55.00000 Hz
-Spectral axis unit: Hz
-Restored FrequencySeries unit: Jy
+specutils library not found. Skipping example.
 </pre></div></div>
 </div>
 </section>
@@ -1486,8 +1269,7 @@ pyspeckit library not found. Skipping example.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Created TGraph: signal with 1000 points
-Created TH1D: signal with 1000 bins
+ROOT is not installed. Skipping ROOT examples.
 </pre></div></div>
 </div>
 </section>
@@ -1562,34 +1344,12 @@ Created TH1D: signal with 1000 bins
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
---- ObsPy Trace ---
-.signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.000000Z | 99.9 Hz, 1000 samples
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_50_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_50_1.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Recovered from ObsPy: TimeSeries([ 0.65027877, -0.06123054, -0.46661033, ...,
-            -0.01863597, -0.58434576,  0.41377832]
-           unit: dimensionless,
-           t0: 0.0 s,
-           dt: 0.01001001001001001 s,
-           name: .signal..,
-           channel: None)
+ObsPy not installed.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1615,7 +1375,7 @@ Recovered from ObsPy: TimeSeries([ 0.65027877, -0.06123054, -0.46661033, ...,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ObsPy Trace: .signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.000000Z | 99.9 Hz, 1000 samples
+ObsPy not installed.
 </pre></div></div>
 </div>
 </section>
@@ -1665,8 +1425,7 @@ ObsPy Trace: .signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.00000
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-SimPEG TDEM data shape: (100,)
-SimPEG FDEM data shape: (10,)
+SimPEG library not found. Skipping example.
 </pre></div></div>
 </div>
 </section>
@@ -1714,65 +1473,13 @@ SimPEG FDEM data shape: (10,)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.431698+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterSurvey, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.432932+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Reports, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.672727+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Standards, skipping from_dict.</span>
-<span class="ansi-bold">2026-01-25T20:56:39.678086+0900 | INFO | mth5.mth5 | _initialize_file | Initialized MTH5 0.2.0 file /tmp/tmp8ceso69r.h5 in mode a</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.681710+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterStation, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.682543+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Reports, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.683581+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Filters, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.923706+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Standards, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.930230+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Station, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.933714+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for TransferFunctions, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.934433+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterFC, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.935043+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for MasterFeatures, skipping from_dict.</span>
-<span class="ansi-yellow-intense-fg ansi-bold">2026-01-25T20:56:39.936129+0900 | WARNING | mth5.groups.base | read_metadata | No metadata found for Run, skipping from_dict.</span>
-<span class="ansi-bold">2026-01-25T20:56:39.950396+0900 | INFO | mth5.mth5 | close_mth5 | Flushing and closing /tmp/tmp8ceso69r.h5</span>
-Saved to MTH5 file: /tmp/tmp8ceso69r.h5
-<span class="ansi-bold">2026-01-25T20:56:39.961567+0900 | INFO | mth5.mth5 | close_mth5 | Flushing and closing /tmp/tmp8ceso69r.h5</span>
-Recovered from MTH5: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.48362728,
-            -0.96553122, -0.70018454, -0.08524377,  0.99799384,
-            -0.82295412, -1.06086331, -1.50269587,  0.58525061,
-             0.96779232,  0.35802838, -1.24321113,  0.62656488,
-            -0.57134632,  0.41579589, -2.0817127 ,  1.27706321,
-             0.69441331,  1.45134997,  1.05988574, -1.11001549,
-             0.68599805,  0.17873185, -1.05380419,  1.4889685 ,
-            -0.32326462,  0.47210844, -1.58942958, -0.55613864,
-             0.56195833, -0.44565946,  1.19371384,  0.29236831,
-            -0.95442692, -0.06685253, -1.84991027, -0.89180937,
-            -1.02650529, -1.1641888 , -0.19633189,  0.35450968,
-             0.83668577,  1.58025183, -0.49110584,  0.68944012,
-             0.36510761,  0.59129525, -1.50778215,  1.21943731,
-             1.8128744 , -0.21861869,  1.32687524, -1.21533771,
-             0.18979871,  0.53607996,  1.40211139, -0.08524264,
-             0.76481784, -2.84872041,  0.14370894,  1.44605315,
-             0.71567087,  1.12744524,  1.41941416,  1.45615169,
-            -0.87680923, -0.47460987, -1.17364865,  0.89696646,
-            -0.23824109,  0.11302793, -1.12196987,  0.74600902,
-            -0.43916108, -1.70279169, -0.61829908,  1.02956078,
-            -0.36119488, -0.55727432, -0.56320475, -0.47863558,
-            -0.19090784, -0.83583309, -0.56740253, -0.30680165,
-             0.63053984,  1.12227422, -0.82175944,  0.07673619,
-             0.42627604,  1.48997376,  0.46014614,  1.18616558,
-            -0.24757655, -1.04212506,  1.8282951 , -1.44792572]
-           unit: dimensionless,
-           t0: 0.0 s,
-           dt: 1.0 s,
-           name: Ex,
-           channel: None)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_55_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_55_1.png" />
-</div>
+<div class="highlight"><pre>
+mth5 not installed.
+</pre></div></div>
 </div>
 </section>
 </section>
@@ -1819,57 +1526,12 @@ Recovered from MTH5: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.48362
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
---- Librosa Data ---
-Signal shape: (100,), Sample rate: 100
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_58_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_58_1.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Recovered from Librosa: TimeSeries([ 1.3769792 ,  2.7460036 ,  0.5730398 , -0.4836273 ,
-            -0.96553123, -0.7001845 , -0.08524377,  0.9979938 ,
-            -0.8229541 , -1.0608633 , -1.5026959 ,  0.5852506 ,
-             0.96779233,  0.35802838, -1.2432112 ,  0.62656486,
-            -0.57134634,  0.4157959 , -2.0817127 ,  1.2770633 ,
-             0.6944133 ,  1.45135   ,  1.0598857 , -1.1100155 ,
-             0.685998  ,  0.17873184, -1.0538042 ,  1.4889685 ,
-            -0.32326463,  0.47210845, -1.5894296 , -0.55613863,
-             0.5619583 , -0.44565946,  1.1937138 ,  0.2923683 ,
-            -0.95442694, -0.06685253, -1.8499103 , -0.89180934,
-            -1.0265052 , -1.1641887 , -0.19633189,  0.35450968,
-             0.8366858 ,  1.5802518 , -0.49110582,  0.68944013,
-             0.36510763,  0.59129524, -1.5077821 ,  1.2194374 ,
-             1.8128744 , -0.21861869,  1.3268752 , -1.2153378 ,
-             0.18979871,  0.53607994,  1.4021114 , -0.08524264,
-             0.76481783, -2.8487203 ,  0.14370894,  1.4460531 ,
-             0.7156709 ,  1.1274452 ,  1.4194142 ,  1.4561517 ,
-            -0.87680924, -0.47460988, -1.1736486 ,  0.89696646,
-            -0.23824109,  0.11302793, -1.1219698 ,  0.746009  ,
-            -0.43916106, -1.7027917 , -0.61829907,  1.0295608 ,
-            -0.36119488, -0.55727434, -0.56320477, -0.47863558,
-            -0.19090784, -0.8358331 , -0.56740254, -0.30680165,
-             0.63053983,  1.1222743 , -0.82175946,  0.07673619,
-             0.42627603,  1.4899738 ,  0.46014613,  1.1861656 ,
-            -0.24757655, -1.0421251 ,  1.8282951 , -1.4479257 ]
-           unit: dimensionless,
-           t0: 0.0 s,
-           dt: 0.01 s,
-           name: None,
-           channel: None)
+Librosa not installed.
 </pre></div></div>
 </div>
 </section>
@@ -1916,53 +1578,7 @@ Recovered from Librosa: TimeSeries([ 1.3769792 ,  2.7460036 ,  0.5730398 , -0.48
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Creating RawArray with float64 data, n_channels=1, n_times=100
-    Range : 0 ... 99 =      0.000 ...     0.990 secs
-Ready.
---- MNE Raw ---
-&lt;RawArray | 1 x 100 (1.0 s), ~6 KiB, data loaded&gt;
-&lt;Info | 7 non-empty values
- bads: []
- ch_names: ch0
- chs: 1 misc
- custom_ref_applied: False
- highpass: 0.0 Hz
- lowpass: 50.0 Hz
- meas_date: unspecified
- nchan: 1
- projs: []
- sfreq: 100.0 Hz
-&gt;
-Recovered from MNE: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.48362728,
-            -0.96553122, -0.70018454, -0.08524377,  0.99799384,
-            -0.82295412, -1.06086331, -1.50269587,  0.58525061,
-             0.96779232,  0.35802838, -1.24321113,  0.62656488,
-            -0.57134632,  0.41579589, -2.0817127 ,  1.27706321,
-             0.69441331,  1.45134997,  1.05988574, -1.11001549,
-             0.68599805,  0.17873185, -1.05380419,  1.4889685 ,
-            -0.32326462,  0.47210844, -1.58942958, -0.55613864,
-             0.56195833, -0.44565946,  1.19371384,  0.29236831,
-            -0.95442692, -0.06685253, -1.84991027, -0.89180937,
-            -1.02650529, -1.1641888 , -0.19633189,  0.35450968,
-             0.83668577,  1.58025183, -0.49110584,  0.68944012,
-             0.36510761,  0.59129525, -1.50778215,  1.21943731,
-             1.8128744 , -0.21861869,  1.32687524, -1.21533771,
-             0.18979871,  0.53607996,  1.40211139, -0.08524264,
-             0.76481784, -2.84872041,  0.14370894,  1.44605315,
-             0.71567087,  1.12744524,  1.41941416,  1.45615169,
-            -0.87680923, -0.47460987, -1.17364865,  0.89696646,
-            -0.23824109,  0.11302793, -1.12196987,  0.74600902,
-            -0.43916108, -1.70279169, -0.61829908,  1.02956078,
-            -0.36119488, -0.55727432, -0.56320475, -0.47863558,
-            -0.19090784, -0.83583309, -0.56740253, -0.30680165,
-             0.63053984,  1.12227422, -0.82175944,  0.07673619,
-             0.42627604,  1.48997376,  0.46014614,  1.18616558,
-            -0.24757655, -1.04212506,  1.8282951 , -1.44792572]
-           unit: dimensionless,
-           t0: 0.0 s,
-           dt: 0.01 s,
-           name: ch0,
-           channel: None)
+MNE not installed.
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1987,10 +1603,7 @@ Recovered from MNE: TimeSeries([ 1.37697923,  2.74600371,  0.57303984, -0.483627
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Creating RawArray with float64 data, n_channels=1, n_times=100
-    Range : 0 ... 99 =      0.000 ...     0.990 secs
-Ready.
-MNE Raw: &lt;RawArray | 1 x 100 (1.0 s), ~6 KiB, data loaded&gt;
+MNE not installed.
 </pre></div></div>
 </div>
 </section>
@@ -2034,33 +1647,7 @@ MNE Raw: &lt;RawArray | 1 x 100 (1.0 s), ~6 KiB, data loaded&gt;
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Quantities object: [ 15.81608925 752.98483078  24.72547363 144.51628594
- 214.32932705 200.42267588 739.82568485 135.47985311
- 640.01545789 559.50533316   5.69614253 200.02784218
- 768.04102342 903.95362763 395.33110766 489.09599556
- 180.3017241  426.32334648 574.85398845 820.69910971
- 964.17971075 578.39473516 212.14270287 142.49981321
- 731.86090217 311.377196   557.94520695 584.93105318
-  40.80640136 631.68944016 836.03253181 329.13934202
- 402.7914657   73.93266668  61.06459887 866.72322773
- 453.00444668 497.81654835 576.19232129 390.48186662
-  88.95723072 197.64563216 125.14799417 635.59725698
- 435.48720445 463.36157347 718.48503157 943.63542519
-  91.65132826 320.40017851 528.74706589 288.93260417
- 683.23507876 606.7956871  413.8774318  250.05522479
- 209.12606513 497.85663591 635.85855813 130.81356845
- 707.52091187 130.21639147 325.76429004 952.1717244
- 707.27537209 872.99294786 246.98162862 809.39348485
- 722.67100602 372.64538896 222.55272929 335.34166876
- 809.63936761 798.69696411  45.91659748 272.46810133
- 464.05535142 466.21621639 956.4247953  956.44925196
- 225.93556811 832.20650191 279.59647914 945.65024325
- 920.82419018 695.11479443 961.78123501 267.099643
-  31.41421421 716.3175536  317.37072499 841.58027036
- 885.86855259 161.63614016 391.13172992 533.67246916
- 429.88138345 325.70097236 431.24374014 932.7890833
- 645.36612443] mV
-Restored FrequencySeries unit: mV
+quantities library not found. Skipping example.
 </pre></div></div>
 </div>
 </section>
@@ -2116,146 +1703,12 @@ Restored FrequencySeries unit: mV
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
---- Neo AnalogSignal ---
-[[ 1.37697923]
- [ 2.74600371]
- [ 0.57303984]
- [-0.48362728]
- [-0.96553122]
- [-0.70018454]
- [-0.08524377]
- [ 0.99799384]
- [-0.82295412]
- [-1.06086331]
- [-1.50269587]
- [ 0.58525061]
- [ 0.96779232]
- [ 0.35802838]
- [-1.24321113]
- [ 0.62656488]
- [-0.57134632]
- [ 0.41579589]
- [-2.0817127 ]
- [ 1.27706321]
- [ 0.69441331]
- [ 1.45134997]
- [ 1.05988574]
- [-1.11001549]
- [ 0.68599805]
- [ 0.17873185]
- [-1.05380419]
- [ 1.4889685 ]
- [-0.32326462]
- [ 0.47210844]
- [-1.58942958]
- [-0.55613864]
- [ 0.56195833]
- [-0.44565946]
- [ 1.19371384]
- [ 0.29236831]
- [-0.95442692]
- [-0.06685253]
- [-1.84991027]
- [-0.89180937]
- [-1.02650529]
- [-1.1641888 ]
- [-0.19633189]
- [ 0.35450968]
- [ 0.83668577]
- [ 1.58025183]
- [-0.49110584]
- [ 0.68944012]
- [ 0.36510761]
- [ 0.59129525]
- [-1.50778215]
- [ 1.21943731]
- [ 1.8128744 ]
- [-0.21861869]
- [ 1.32687524]
- [-1.21533771]
- [ 0.18979871]
- [ 0.53607996]
- [ 1.40211139]
- [-0.08524264]
- [ 0.76481784]
- [-2.84872041]
- [ 0.14370894]
- [ 1.44605315]
- [ 0.71567087]
- [ 1.12744524]
- [ 1.41941416]
- [ 1.45615169]
- [-0.87680923]
- [-0.47460987]
- [-1.17364865]
- [ 0.89696646]
- [-0.23824109]
- [ 0.11302793]
- [-1.12196987]
- [ 0.74600902]
- [-0.43916108]
- [-1.70279169]
- [-0.61829908]
- [ 1.02956078]
- [-0.36119488]
- [-0.55727432]
- [-0.56320475]
- [-0.47863558]
- [-0.19090784]
- [-0.83583309]
- [-0.56740253]
- [-0.30680165]
- [ 0.63053984]
- [ 1.12227422]
- [-0.82175944]
- [ 0.07673619]
- [ 0.42627604]
- [ 1.48997376]
- [ 0.46014614]
- [ 1.18616558]
- [-0.24757655]
- [-1.04212506]
- [ 1.8282951 ]
- [-1.44792572]] dimensionless
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_interop_66_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_interop_66_1.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Recovered from Neo: SeriesMatrix(shape=(1, 1, 100),  name=&#39;&#39;)
-  epoch   : 0.0
-  x0      : 0.0 s
-  dx      : 0.01 s
-  xunit   : s
-  samples : 100
-
-[ Row metadata ]
-     name channel unit
-key
-row0
-
-[ Column metadata ]
-     name channel unit
-key
-col0
-
-[ Elements metadata ]
-  unit  name channel  row  col
-0       None    None    0    0
+neo not installed.
 </pre></div></div>
 </div>
 </section>

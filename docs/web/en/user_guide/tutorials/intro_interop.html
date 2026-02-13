@@ -237,12 +237,12 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/washimi/miniforge3/envs/ws-base/lib/python3.12/site-packages/gwpy/time/__init__.py:36: UserWarning: Wswiglal-redir-stdio:
+/home/runner/miniconda3/envs/docs/lib/python3.11/site-packages/gwpy/time/_ligotimegps.py:42: UserWarning: Wswiglal-redir-stdio:
 
 SWIGLAL standard output/error redirection is enabled in IPython.
 This may lead to performance penalties. To disable locally, use:
@@ -267,7 +267,86 @@ import lal
   from lal import LIGOTimeGPS
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 8</span>
+<span class="ansi-green-fg">      5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">astropy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> units <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> u
+<span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">time</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> LIGOTimeGPS
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
+<span class="ansi-green-fg">     10</span> warnings.filterwarnings(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Wswiglal-redir-stdio</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     11</span> warnings.filterwarnings(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>)
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
+<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     46</span> )
+<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     50</span>     astro,
+<span class="ansi-green-fg">     51</span>     detector,
+<span class="ansi-green-fg">     52</span>     frequencyseries,
+<span class="ansi-green-fg">     53</span>     interop,
+<span class="ansi-green-fg">     54</span>     io,
+<span class="ansi-green-fg">     55</span>     noise,
+<span class="ansi-green-fg">     56</span>     plot,
+<span class="ansi-green-fg">     57</span>     segments,
+<span class="ansi-green-fg">     58</span>     signal,
+<span class="ansi-green-fg">     59</span>     spectral,
+<span class="ansi-green-fg">     60</span>     spectrogram,
+<span class="ansi-green-fg">     61</span>     table,
+<span class="ansi-green-fg">     62</span>     time,
+<span class="ansi-green-fg">     63</span>     timeseries,
+<span class="ansi-green-fg">     64</span>     types,
+<span class="ansi-green-fg">     65</span> )
+<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
+<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
+<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
+<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
+<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     21</span> )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
+<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
+<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
+<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-fg">    223</span>     )
+<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
+<span class="ansi-green-fg">    226</span>         fmt,
+<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
+<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
+<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">    230</span>     )
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
@@ -288,6 +367,23 @@ import lal
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 11</span>
+<span class="ansi-green-fg">      8</span> times = np.arange(size) * dt.value
+<span class="ansi-green-fg">      9</span> data = np.sin(<span class="ansi-green-fg">2</span> * np.pi * <span class="ansi-green-fg">1.0</span> * times)  <span style="color: rgb(95,135,135)"># 1Hz sine wave</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> ts = <span class="ansi-yellow-bg">TimeSeries</span>(data, t0=t0, dt=dt, unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">V</span><span class="ansi-yellow-fg">&#34;</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">demo_signal</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     12</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original TimeSeries:</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     13</span> <span style="color: rgb(0,135,0)">print</span>(ts)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeries&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="1.-General-Data-Formats-&amp;-Data-Infrastructure">
 <h2>1. General Data Formats &amp; Data Infrastructure<a class="headerlink" href="#1.-General-Data-Formats-&-Data-Infrastructure" title="Link to this heading"></a></h2>
@@ -304,7 +400,7 @@ import lal
 <div><p><strong>Pandas</strong>: Pandas is a powerful library for data analysis and manipulation, providing flexible data structures through DataFrame and Series. 📚 <a class="reference external" href="https://pandas.pydata.org/">Pandas Documentation</a></p>
 </div></blockquote>
 <p>Using the <code class="docutils literal notranslate"><span class="pre">to_pandas()</span></code> method, you can convert <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> to <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>. The index can be selected from <code class="docutils literal notranslate"><span class="pre">datetime</span></code> (UTC), <code class="docutils literal notranslate"><span class="pre">gps</span></code>, or <code class="docutils literal notranslate"><span class="pre">seconds</span></code> (Unix timestamp).</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -329,6 +425,23 @@ import lal
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">      2</span>     <span style="color: rgb(95,135,135)"># Convert to Pandas Series (default is datetime index)</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span>     s_pd = <span class="ansi-yellow-bg">ts</span>.to_pandas(index=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">datetime</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      4</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">--- Converted to Pandas Series ---</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span>     display(s_pd)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="1.3.-Polars-[GWExPy-New]">
 <h3>1.3. Polars [GWExPy New]<a class="headerlink" href="#1.3.-Polars-[GWExPy-New]" title="Link to this heading"></a></h3>
@@ -336,7 +449,7 @@ import lal
 <div><p><strong>Polars</strong>: Polars is a high-performance DataFrame library implemented in Rust, excelling at large-scale data processing. 📚 <a class="reference external" href="https://pola.rs/">Polars Documentation</a></p>
 </div></blockquote>
 <p>You can convert to Polars DataFrame/Series with <code class="docutils literal notranslate"><span class="pre">to_polars()</span></code>.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
@@ -369,6 +482,14 @@ import lal
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Polars not installed.
+</pre></div></div>
+</div>
 </section>
 <section id="1.4.-Xarray-Integration-[Original-GWpy]">
 <h3>1.4. Xarray Integration [Original GWpy]<a class="headerlink" href="#1.4.-Xarray-Integration-[Original-GWpy]" title="Link to this heading"></a></h3>
@@ -376,7 +497,7 @@ import lal
 <div><p><strong>xarray</strong>: xarray is a library for multidimensional labeled arrays, widely used for manipulating NetCDF data and analyzing meteorological and earth science data. 📚 <a class="reference external" href="https://docs.xarray.dev/">xarray Documentation</a></p>
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">xarray</span></code> is a powerful library for handling multidimensional labeled arrays. You can convert with <code class="docutils literal notranslate"><span class="pre">to_xarray()</span></code> while preserving metadata.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
@@ -404,6 +525,23 @@ import lal
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Xarray is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">      2</span>     <span style="color: rgb(95,135,135)"># Convert to Xarray DataArray</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span>     da = <span class="ansi-yellow-bg">ts</span>.to_xarray()
+<span class="ansi-green-fg">      4</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">--- Converted to Xarray DataArray ---</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span>     <span style="color: rgb(0,135,0)">print</span>(da)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="1.5.-Dask-Integration-[GWExPy-New]">
@@ -440,16 +578,7 @@ import lal
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-
---- Converted to Dask Array ---
-dask.array&lt;array, shape=(1000,), dtype=float64, chunksize=(1000,), chunktype=numpy.ndarray&gt;
-Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
+Dask not installed.
 </pre></div></div>
 </div>
 </section>
@@ -459,7 +588,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div><p><strong>JSON</strong>: JSON (JavaScript Object Notation) is a lightweight data exchange format supported by the Python standard library. 📚 <a class="reference external" href="https://docs.python.org/3/library/json.html">JSON Documentation</a></p>
 </div></blockquote>
 <p>You can output JSON-compatible dictionary format with <code class="docutils literal notranslate"><span class="pre">to_json()</span></code> or <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code>.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
@@ -487,6 +616,23 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[8]</span><span class="ansi-green-fg">, line 4</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">json</span>
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># TimeSeries -&gt; JSON string</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> ts_json = <span class="ansi-yellow-bg">ts</span>.to_json()
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">--- JSON Representation (Partial) ---</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      6</span> <span style="color: rgb(0,135,0)">print</span>(ts_json[:<span class="ansi-green-fg">500</span>] + <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">...</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="2.-Database-&amp;-Storage-Layer">
@@ -497,7 +643,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div><p><strong>HDF5</strong>: HDF5 is a hierarchical data format for efficiently storing and managing large-scale scientific data. It can be accessed from Python via the h5py library. 📚 <a class="reference external" href="https://www.h5py.org/">HDF5 Documentation</a></p>
 </div></blockquote>
 <p>Supports saving to HDF5 with <code class="docutils literal notranslate"><span class="pre">to_hdf5_dataset()</span></code>.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
@@ -535,6 +681,24 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 9</span>
+<span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> tempfile.NamedTemporaryFile(suffix=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">.h5</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> tmp:
+<span class="ansi-green-fg">      7</span>     <span style="color: rgb(95,135,135)"># TimeSeries -&gt; HDF5</span>
+<span class="ansi-green-fg">      8</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> h5py.File(tmp.name, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">w</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> f:
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">9</span>         <span class="ansi-yellow-bg">ts</span>.to_hdf5_dataset(f, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">dataset_01</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     11</span>     <span style="color: rgb(95,135,135)"># Read back and display</span>
+<span class="ansi-green-fg">     12</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> h5py.File(tmp.name, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> f:
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="2.2.-SQLite-[GWExPy-New]">
 <h3>2.2. SQLite [GWExPy New]<a class="headerlink" href="#2.2.-SQLite-[GWExPy-New]" title="Link to this heading"></a></h3>
@@ -542,7 +706,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div><p><strong>SQLite</strong>: SQLite is a lightweight embedded SQL database engine included in the Python standard library. 📚 <a class="reference external" href="https://docs.python.org/3/library/sqlite3.html">SQLite Documentation</a></p>
 </div></blockquote>
 <p>Supports database persistence with <code class="docutils literal notranslate"><span class="pre">to_sqlite()</span></code>.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
@@ -573,6 +737,23 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 6</span>
+<span class="ansi-green-fg">      3</span> conn = sqlite3.connect(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">:memory:</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># TimeSeries -&gt; SQLite</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">6</span> series_id = <span class="ansi-yellow-bg">ts</span>.to_sqlite(conn, series_id=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">test_series</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      7</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Saved to SQLite with ID: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>series_id<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      9</span> <span style="color: rgb(95,135,135)"># Verify data in SQL</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="2.3.-Zarr-[GWExPy-New]">
 <h3>2.3. Zarr [GWExPy New]<a class="headerlink" href="#2.3.-Zarr-[GWExPy-New]" title="Link to this heading"></a></h3>
@@ -580,7 +761,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div><p><strong>Zarr</strong>: Zarr is a storage format for chunked, compressed multidimensional arrays with excellent cloud storage integration. 📚 <a class="reference external" href="https://zarr.dev/">Zarr Documentation</a></p>
 </div></blockquote>
 <p>Supports cloud storage-friendly formats with <code class="docutils literal notranslate"><span class="pre">to_zarr()</span></code>.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
@@ -618,6 +799,14 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+zarr not installed.
+</pre></div></div>
+</div>
 </section>
 <section id="2.4.-netCDF4-[GWExPy-New]">
 <h3>2.4. netCDF4 [GWExPy New]<a class="headerlink" href="#2.4.-netCDF4-[GWExPy-New]" title="Link to this heading"></a></h3>
@@ -625,7 +814,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div><p><strong>netCDF4</strong>: netCDF4 is a standard format for meteorological, oceanographic, and earth science data with self-describing data structures. 📚 <a class="reference external" href="https://unidata.github.io/netcdf4-python/">netCDF4 Documentation</a></p>
 </div></blockquote>
 <p>Supports meteorological and oceanographic data standards with <code class="docutils literal notranslate"><span class="pre">to_netcdf4()</span></code>.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
@@ -661,6 +850,14 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;netCDF4 not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+netCDF4 not installed.
+</pre></div></div>
 </div>
 </section>
 </section>
@@ -705,18 +902,7 @@ Recovered from Dask: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-
---- Converted to PyTorch Tensor ---
-Tensor shape: torch.Size([1000]), dtype: torch.float32
-
---- Restored from Torch ---
-TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
+PyTorch is not installed.
 </pre></div></div>
 </div>
 </section>
@@ -726,7 +912,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div><p><strong>CuPy</strong>: CuPy is a NumPy-compatible GPU array library that enables high-speed computation using NVIDIA CUDA. 📚 <a class="reference external" href="https://cupy.dev/">CuPy Documentation</a></p>
 </div></blockquote>
 <p>You can convert to CuPy arrays for GPU-based computation.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
@@ -761,6 +947,14 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy or CUDA driver not available.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+CuPy or CUDA driver not available.
+</pre></div></div>
 </div>
 </section>
 <section id="3.3.-TensorFlow-Integration-[GWExPy-New]">
@@ -810,17 +1004,7 @@ TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-
---- Converted to TensorFlow Tensor ---
-Tensor shape: (1000,)
-Tensor dtype: &lt;dtype: &#39;float64&#39;&gt;
-Recovered from TF: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
+TensorFlow not installed.
 </pre></div></div>
 </div>
 </section>
@@ -858,29 +1042,12 @@ Recovered from TF: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING:2026-01-25 20:56:36,683:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-
---- Converted to JAX Array ---
-Array shape: (1000,)
-Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
-            -0.18738131, -0.12533323, -0.06279052]
-           unit: V,
-           t0: 1234567890.0 1 / Hz,
-           dt: 0.01 1 / Hz,
-           name: None,
-           channel: None)
+JAX not installed.
 </pre></div></div>
 </div>
 </section>
@@ -903,7 +1070,7 @@ Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 <div><p><strong>Astropy</strong>: Astropy is a Python library for astronomy, supporting coordinate transformations, time system conversions, unit systems, and more. 📚 <a class="reference external" href="https://www.astropy.org/">Astropy Documentation</a></p>
 </div></blockquote>
 <p>Also supports interconversion with <code class="docutils literal notranslate"><span class="pre">astropy.timeseries.TimeSeries</span></code>, which is standard in the astronomy field.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
@@ -929,6 +1096,23 @@ Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Astropy is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[17]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">      2</span>     <span style="color: rgb(95,135,135)"># Convert to Astropy TimeSeries</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span>     ap_ts = <span class="ansi-yellow-bg">ts</span>.to_astropy_timeseries()
+<span class="ansi-green-fg">      4</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">--- Converted to Astropy TimeSeries ---</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span>     <span style="color: rgb(0,135,0)">print</span>(ap_ts[:<span class="ansi-green-fg">5</span>])
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="4.3.-Specutils-Integration-[GWExPy-New]">
@@ -972,13 +1156,7 @@ Recovered from JAX: TimeSeries([ 0.        ,  0.06279052,  0.12533323, ...,
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-specutils Spectrum1D: Spectrum (length=100)
-Flux=[0.76947961 0.77852583 0.20217518 ... 0.73100724 0.63882659
-      0.18566241] Jy,  mean=0.43060 Jy
-Spectral Axis=[ 10.          10.90909091  11.81818182 ...
-                98.18181818  99.09090909 100.        ] Hz,  mean=55.00000 Hz
-Spectral axis unit: Hz
-Restored FrequencySeries unit: Jy
+specutils library not found. Skipping example.
 </pre></div></div>
 </div>
 </section>
@@ -1087,8 +1265,7 @@ pyspeckit library not found. Skipping example.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Created TGraph: signal with 1000 points
-Created TH1D: signal with 1000 bins
+ROOT is not installed. Skipping ROOT examples.
 </pre></div></div>
 </div>
 </section>
@@ -1134,7 +1311,7 @@ Created TH1D: signal with 1000 bins
 <div><p><strong>ObsPy</strong>: ObsPy is a Python library for acquiring, processing, and analyzing seismological data, supporting formats like MiniSEED. 📚 <a class="reference external" href="https://docs.obspy.org/">ObsPy Documentation</a></p>
 </div></blockquote>
 <p>Supports interoperability with ObsPy, which is standard in seismology.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
@@ -1163,6 +1340,14 @@ Created TH1D: signal with 1000 bins
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ObsPy not installed.
+</pre></div></div>
+</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
@@ -1186,7 +1371,7 @@ Created TH1D: signal with 1000 bins
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ObsPy Trace: .signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.000000Z | 99.9 Hz, 1000 samples
+ObsPy not installed.
 </pre></div></div>
 </div>
 </section>
@@ -1236,8 +1421,7 @@ ObsPy Trace: .signal.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:10.00000
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-SimPEG TDEM data shape: (100,)
-SimPEG FDEM data shape: (10,)
+SimPEG library not found. Skipping example.
 </pre></div></div>
 </div>
 </section>
@@ -1247,7 +1431,7 @@ SimPEG FDEM data shape: (10,)
 <div><p><strong>MTH5</strong>: MTH5 is an HDF5-based data format for magnetotelluric (MT) data. 📚 <a class="reference external" href="https://mth5.readthedocs.io/">MTH5 Documentation</a></p>
 </div></blockquote>
 <p>Supports MTH5 storage for magnetotelluric method data.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
@@ -1285,6 +1469,14 @@ SimPEG FDEM data shape: (10,)
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+mth5 not installed.
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="7.-Acoustics-&amp;-Audio-Analysis">
@@ -1298,7 +1490,7 @@ SimPEG FDEM data shape: (10,)
 <div><p><strong>librosa</strong>: librosa is a library for audio and music analysis, providing features like spectral analysis and beat detection. 📚 <a class="reference external" href="https://librosa.org/">librosa Documentation</a></p>
 </div></blockquote>
 <p>Supports integration with audio processing libraries Librosa and Pydub.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
@@ -1330,6 +1522,14 @@ SimPEG FDEM data shape: (10,)
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Librosa not installed.
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="8.-Medical-&amp;-Biosignal-Analysis">
@@ -1340,7 +1540,7 @@ SimPEG FDEM data shape: (10,)
 <div><p><strong>MNE</strong>: MNE-Python is a library for analyzing EEG and MEG data, widely used in neuroscience research. 📚 <a class="reference external" href="https://mne.tools/">MNE Documentation</a></p>
 </div></blockquote>
 <p>Integration with MNE for electroencephalography (EEG/MEG) analysis packages.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
@@ -1369,7 +1569,15 @@ SimPEG FDEM data shape: (10,)
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+MNE not installed.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
@@ -1385,6 +1593,14 @@ SimPEG FDEM data shape: (10,)
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MNE not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+MNE not installed.
+</pre></div></div>
 </div>
 </section>
 <section id="8.2.-Elephant-/-quantities-Integration-[GWExPy-New]">
@@ -1427,33 +1643,7 @@ SimPEG FDEM data shape: (10,)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Quantities object: [ 15.81608925 752.98483078  24.72547363 144.51628594
- 214.32932705 200.42267588 739.82568485 135.47985311
- 640.01545789 559.50533316   5.69614253 200.02784218
- 768.04102342 903.95362763 395.33110766 489.09599556
- 180.3017241  426.32334648 574.85398845 820.69910971
- 964.17971075 578.39473516 212.14270287 142.49981321
- 731.86090217 311.377196   557.94520695 584.93105318
-  40.80640136 631.68944016 836.03253181 329.13934202
- 402.7914657   73.93266668  61.06459887 866.72322773
- 453.00444668 497.81654835 576.19232129 390.48186662
-  88.95723072 197.64563216 125.14799417 635.59725698
- 435.48720445 463.36157347 718.48503157 943.63542519
-  91.65132826 320.40017851 528.74706589 288.93260417
- 683.23507876 606.7956871  413.8774318  250.05522479
- 209.12606513 497.85663591 635.85855813 130.81356845
- 707.52091187 130.21639147 325.76429004 952.1717244
- 707.27537209 872.99294786 246.98162862 809.39348485
- 722.67100602 372.64538896 222.55272929 335.34166876
- 809.63936761 798.69696411  45.91659748 272.46810133
- 464.05535142 466.21621639 956.4247953  956.44925196
- 225.93556811 832.20650191 279.59647914 945.65024325
- 920.82419018 695.11479443 961.78123501 267.099643
-  31.41421421 716.3175536  317.37072499 841.58027036
- 885.86855259 161.63614016 391.13172992 533.67246916
- 429.88138345 325.70097236 431.24374014 932.7890833
- 645.36612443] mV
-Restored FrequencySeries unit: mV
+quantities library not found. Skipping example.
 </pre></div></div>
 </div>
 </section>
@@ -1463,7 +1653,7 @@ Restored FrequencySeries unit: mV
 <div><p><strong>Neo</strong>: Neo is a data structure library for electrophysiology data (neuroscience), supporting input/output to various formats. 📚 <a class="reference external" href="https://neo.readthedocs.io/">Neo Documentation</a></p>
 </div></blockquote>
 <p>Supports conversion to Neo, a common standard for electrophysiological data.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
@@ -1508,6 +1698,14 @@ Restored FrequencySeries unit: mV
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;neo not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+neo not installed.
+</pre></div></div>
 </div>
 </section>
 </section>

@@ -117,7 +117,7 @@
 <h1>SpectrogramMatrix Tutorial<a class="headerlink" href="#SpectrogramMatrix-Tutorial" title="Link to this heading"></a></h1>
 <p>このノートブックでは <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> クラスの基本的な使い方を紹介します。</p>
 <p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は、複数の <code class="docutils literal notranslate"><span class="pre">gwpy.spectrogram.Spectrogram</span></code> オブジェクトを 3次元 (Batch, Time, Frequency) の行列として効率的に扱うためのクラスです。<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> を継承しており、高速な数値計算や PyTorch/CuPy との連携が可能です。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -131,6 +131,115 @@
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/runner/miniconda3/envs/docs/lib/python3.11/site-packages/gwpy/time/_ligotimegps.py:42: UserWarning: Wswiglal-redir-stdio:
+
+SWIGLAL standard output/error redirection is enabled in IPython.
+This may lead to performance penalties. To disable locally, use:
+
+with lal.no_swig_redirect_standard_output_error():
+    ...
+
+To disable globally, use:
+
+lal.swig_redirect_standard_output_error(False)
+
+Note however that this will likely lead to error messages from
+LAL functions being either misdirected or lost when called from
+Jupyter notebooks.
+
+To suppress this warning, use:
+
+import warnings
+warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
+import lal
+
+  from lal import LIGOTimeGPS
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 5</span>
+<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
+<span class="ansi-green-fg">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeriesMatrix
+<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># 乱数シードの固定</span>
+<span class="ansi-green-fg">      8</span> np.random.seed(<span class="ansi-green-fg">42</span>)
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
+<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     46</span> )
+<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     50</span>     astro,
+<span class="ansi-green-fg">     51</span>     detector,
+<span class="ansi-green-fg">     52</span>     frequencyseries,
+<span class="ansi-green-fg">     53</span>     interop,
+<span class="ansi-green-fg">     54</span>     io,
+<span class="ansi-green-fg">     55</span>     noise,
+<span class="ansi-green-fg">     56</span>     plot,
+<span class="ansi-green-fg">     57</span>     segments,
+<span class="ansi-green-fg">     58</span>     signal,
+<span class="ansi-green-fg">     59</span>     spectral,
+<span class="ansi-green-fg">     60</span>     spectrogram,
+<span class="ansi-green-fg">     61</span>     table,
+<span class="ansi-green-fg">     62</span>     time,
+<span class="ansi-green-fg">     63</span>     timeseries,
+<span class="ansi-green-fg">     64</span>     types,
+<span class="ansi-green-fg">     65</span> )
+<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
+<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
+<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
+<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
+<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     21</span> )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
+<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
+<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
+<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-fg">    223</span>     )
+<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
+<span class="ansi-green-fg">    226</span>         fmt,
+<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
+<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
+<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">    230</span>     )
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
+</pre></div></div>
 </div>
 <section id="1.-データの準備">
 <h2>1. データの準備<a class="headerlink" href="#1.-データの準備" title="Link to this heading"></a></h2>
@@ -178,121 +287,32 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<h3>SeriesMatrix: shape=(2, 2, 512), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 s, <b>dx:</b> 0.0078125 s, <b>N_samples:</b> 512</li><li><b>xunit:</b> s</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>channel</th>
-      <th>unit</th>
-    </tr>
-    <tr>
-      <th>key</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>r0</th>
-      <td>row0</td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>r1</th>
-      <td>row1</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table><h4>Column Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>channel</th>
-      <th>unit</th>
-    </tr>
-    <tr>
-      <th>key</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>c0</th>
-      <td>col0</td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>c1</th>
-      <td>col1</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table><h4>Element Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>unit</th>
-      <th>name</th>
-      <th>channel</th>
-      <th>row</th>
-      <th>col</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>V</td>
-      <td>ch00</td>
-      <td>X:A</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>V</td>
-      <td>ch01</td>
-      <td>X:B</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>V</td>
-      <td>ch10</td>
-      <td>Y:A</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>V</td>
-      <td>ch11</td>
-      <td>Y:B</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_3_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_3_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 23</span>
+<span class="ansi-green-fg">     20</span> names = [[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ch00</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ch01</span><span class="ansi-yellow-fg">&#34;</span>], [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ch10</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ch11</span><span class="ansi-yellow-fg">&#34;</span>]]
+<span class="ansi-green-fg">     21</span> channels = [[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">X:A</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">X:B</span><span class="ansi-yellow-fg">&#34;</span>], [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Y:A</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Y:B</span><span class="ansi-yellow-fg">&#34;</span>]]
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">23</span> tsm = <span class="ansi-yellow-bg">TimeSeriesMatrix</span>(
+<span class="ansi-green-fg">     24</span>     data,
+<span class="ansi-green-fg">     25</span>     dt=dt,
+<span class="ansi-green-fg">     26</span>     t0=t0,
+<span class="ansi-green-fg">     27</span>     units=units,
+<span class="ansi-green-fg">     28</span>     names=names,
+<span class="ansi-green-fg">     29</span>     channels=channels,
+<span class="ansi-green-fg">     30</span>     rows={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r0</span><span class="ansi-yellow-fg">&#34;</span>: {<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">name</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">row0</span><span class="ansi-yellow-fg">&#34;</span>}, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r1</span><span class="ansi-yellow-fg">&#34;</span>: {<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">name</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">row1</span><span class="ansi-yellow-fg">&#34;</span>}},
+<span class="ansi-green-fg">     31</span>     cols={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">c0</span><span class="ansi-yellow-fg">&#34;</span>: {<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">name</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">col0</span><span class="ansi-yellow-fg">&#34;</span>}, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">c1</span><span class="ansi-yellow-fg">&#34;</span>: {<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">name</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">col1</span><span class="ansi-yellow-fg">&#34;</span>}},
+<span class="ansi-green-fg">     32</span>     name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">demo</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     33</span> )
+<span class="ansi-green-fg">     35</span> display(tsm)
+<span class="ansi-green-fg">     36</span> tsm.plot()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeriesMatrix&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="2.-SpectrogramMatrix-の作成">
@@ -310,21 +330,20 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Type: &lt;class &#39;gwexpy.spectrogram.matrix.SpectrogramMatrix&#39;&gt;
-Shape: (2, 2, 2, 33)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_5_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_5_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> spec_matrix = <span class="ansi-yellow-bg">tsm</span>.spectrogram(<span class="ansi-green-fg">2</span>, fftlength=<span class="ansi-green-fg">0.5</span>, overlap=<span class="ansi-green-fg">0.25</span>)
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Type:</span><span class="ansi-yellow-fg">&#34;</span>, <span style="color: rgb(0,135,0)">type</span>(spec_matrix))
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Shape:</span><span class="ansi-yellow-fg">&#34;</span>, spec_matrix.shape)  <span style="color: rgb(95,135,135)"># (Batch, Time, Freq)</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+</pre></div></div>
 </div>
 <section id="属性へのアクセス">
 <h3>属性へのアクセス<a class="headerlink" href="#属性へのアクセス" title="Link to this heading"></a></h3>
@@ -344,9 +363,14 @@ Shape: (2, 2, 2, 33)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Time axis (first 5): [0. 2.] s
-Freq axis (first 5): [0. 2. 4. 6. 8.] Hz
-Unit: V2 / Hz
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Time axis (first 5):</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-bg">spec_matrix</span>.times[:<span class="ansi-green-fg">5</span>])
+<span class="ansi-green-fg">      2</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Freq axis (first 5):</span><span class="ansi-yellow-fg">&#34;</span>, spec_matrix.frequencies[:<span class="ansi-green-fg">5</span>])
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Unit:</span><span class="ansi-yellow-fg">&#34;</span>, spec_matrix.unit)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec_matrix&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -372,7 +396,15 @@ Unit: V2 / Hz
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Mean Data Shape: (2, 2, 33)
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># axis=0 (Batch軸) で平均を取る</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> mean_spectrogram_data = <span class="ansi-yellow-bg">spec_matrix</span>.mean(axis=<span class="ansi-green-fg">0</span>)
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Mean Data Shape:</span><span class="ansi-yellow-fg">&#34;</span>, mean_spectrogram_data.shape)
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># 結果は (Time, Freq) の2次元配列になります</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec_matrix&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -392,8 +424,15 @@ Mean Data Shape: (2, 2, 33)
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_11_0.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_11_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> plot = <span class="ansi-yellow-bg">spec_matrix</span>.plot(title=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Mean Spectrogram (All Channels)</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      2</span> plt.show()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec_matrix&#39; is not defined
+</pre></div></div>
 </div>
 <p>特定のチャネルだけをプロットしたい場合は、<code class="docutils literal notranslate"><span class="pre">monitor</span></code> 引数にインデックスを指定します。</p>
 <div class="nbinput docutils container">
@@ -410,19 +449,21 @@ Mean Data Shape: (2, 2, 33)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_13_0.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_13_0.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_13_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_13_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 最初のチャネル (Channel_0) をプロット</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> plot0 = <span class="ansi-yellow-bg">spec_matrix</span>.plot(monitor=<span class="ansi-green-fg">0</span>, title=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Channel 0 Spectrogram</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      3</span> plot0.show()
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># 5番目のチャネル (Channel_5) をプロット</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;spec_matrix&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="5.-外部ライブラリとの連携">
@@ -460,10 +501,8 @@ Mean Data Shape: (2, 2, 33)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-PyTorch Tensor: &lt;class &#39;torch.Tensor&#39;&gt;
-Shape: torch.Size([2, 2, 2, 33])
-CuPy Array: &lt;class &#39;cupy.ndarray&#39;&gt;
-Shape: (2, 2, 2, 33)
+PyTorch is not installed.
+CuPy is not installed or GPU driver is not working.
 </pre></div></div>
 </div>
 </section>

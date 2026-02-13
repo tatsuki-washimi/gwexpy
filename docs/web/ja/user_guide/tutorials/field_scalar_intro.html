@@ -130,7 +130,7 @@
 <section id="セットアップ">
 <h2>セットアップ<a class="headerlink" href="#セットアップ" title="Link to this heading"></a></h2>
 <p>必要なライブラリをインポートします。</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -149,6 +149,85 @@
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 10</span>
+<span class="ansi-green-fg">      7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">astropy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> units <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> u
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">10</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField
+<span class="ansi-green-fg">     12</span> <span style="color: rgb(95,135,135)"># 再現性のためのシード設定</span>
+<span class="ansi-green-fg">     13</span> np.random.seed(<span class="ansi-green-fg">42</span>)
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
+<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     46</span> )
+<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     50</span>     astro,
+<span class="ansi-green-fg">     51</span>     detector,
+<span class="ansi-green-fg">     52</span>     frequencyseries,
+<span class="ansi-green-fg">     53</span>     interop,
+<span class="ansi-green-fg">     54</span>     io,
+<span class="ansi-green-fg">     55</span>     noise,
+<span class="ansi-green-fg">     56</span>     plot,
+<span class="ansi-green-fg">     57</span>     segments,
+<span class="ansi-green-fg">     58</span>     signal,
+<span class="ansi-green-fg">     59</span>     spectral,
+<span class="ansi-green-fg">     60</span>     spectrogram,
+<span class="ansi-green-fg">     61</span>     table,
+<span class="ansi-green-fg">     62</span>     time,
+<span class="ansi-green-fg">     63</span>     timeseries,
+<span class="ansi-green-fg">     64</span>     types,
+<span class="ansi-green-fg">     65</span> )
+<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
+<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
+<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
+<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
+<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
+<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
+<span class="ansi-green-fg">     21</span> )
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
+<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
+<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
+<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-fg">    223</span>     )
+<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
+<span class="ansi-green-fg">    226</span>         fmt,
+<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
+<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
+<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">    230</span>     )
+
+<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
+</pre></div></div>
 </div>
 </section>
 <section id="1.-ScalarField-の初期化とメタデータ">
@@ -194,11 +273,26 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Shape: (10, 8, 8, 8)
-Unit: V
-Axis names: (&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;)
-Axis0 domain: time
-Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 12</span>
+<span class="ansi-green-fg">      9</span> z = np.arange(nz) * <span class="ansi-green-fg">0.5</span> * u.m
+<span class="ansi-green-fg">     11</span> <span style="color: rgb(95,135,135)"># ScalarField オブジェクトの作成</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">12</span> field = <span class="ansi-yellow-bg">ScalarField</span>(
+<span class="ansi-green-fg">     13</span>     data,
+<span class="ansi-green-fg">     14</span>     unit=u.V,
+<span class="ansi-green-fg">     15</span>     axis0=t,
+<span class="ansi-green-fg">     16</span>     axis1=x,
+<span class="ansi-green-fg">     17</span>     axis2=y,
+<span class="ansi-green-fg">     18</span>     axis3=z,
+<span class="ansi-green-fg">     19</span>     axis_names=[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">t</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>],
+<span class="ansi-green-fg">     20</span>     axis0_domain=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">time</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     21</span>     space_domain=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">real</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     22</span> )
+<span class="ansi-green-fg">     24</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Shape: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>field.shape<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     25</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Unit: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>field.unit<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ScalarField&#39; is not defined
 </pre></div></div>
 </div>
 <section id="メタデータの確認">
@@ -233,10 +327,15 @@ Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Original shape: (10, 8, 8, 8)
-Sliced shape: (1, 8, 8, 8)
-Type: &lt;class &#39;gwexpy.fields.scalar.ScalarField&#39;&gt;
-Axis names preserved: (&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;)
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 整数インデックスでスライス（通常のndarrayなら3Dになる）</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> sliced = <span class="ansi-yellow-bg">field</span>[<span class="ansi-green-fg">0</span>, :, :, :]
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original shape: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>field.shape<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Sliced shape: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>sliced.shape<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)  <span style="color: rgb(95,135,135)"># (1, 8, 8, 8) - 4Dを維持！</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;field&#39; is not defined
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -256,8 +355,15 @@ Axis names preserved: (&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Multi-sliced shape: (1, 1, 1, 1)
-Value: [[[[-0.51827022]]]]
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 複数の軸で整数インデックスを使用</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> sliced_multi = <span class="ansi-yellow-bg">field</span>[<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">1</span>, <span class="ansi-green-fg">2</span>, <span class="ansi-green-fg">3</span>]
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Multi-sliced shape: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>sliced_multi.shape<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)  <span style="color: rgb(95,135,135)"># (1, 1, 1, 1) - やはり4D</span>
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Value: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>sliced_multi.value<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;field&#39; is not defined
 </pre></div></div>
 </div>
 <p>この挙動により、ScalarFieldオブジェクトの一貫性が保たれ、メタデータ（軸名やドメイン情報）が失われることがありません。</p>
@@ -304,9 +410,26 @@ Value: [[[[-0.51827022]]]]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Time domain shape: (128, 4, 4, 4)
-Frequency domain shape: (65, 4, 4, 4)
-Axis0 domain changed: time → frequency
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 10</span>
+<span class="ansi-green-fg">      7</span> data_signal = np.sin(<span class="ansi-green-fg">2</span> * np.pi * signal_freq * t_dense.value)[:, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>]
+<span class="ansi-green-fg">      8</span> data_signal = np.tile(data_signal, (<span class="ansi-green-fg">1</span>, <span class="ansi-green-fg">4</span>, <span class="ansi-green-fg">4</span>, <span class="ansi-green-fg">4</span>))
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">10</span> field_time = <span class="ansi-yellow-bg">ScalarField</span>(
+<span class="ansi-green-fg">     11</span>     data_signal,
+<span class="ansi-green-fg">     12</span>     unit=u.V,
+<span class="ansi-green-fg">     13</span>     axis0=t_dense,
+<span class="ansi-green-fg">     14</span>     axis1=x_small,
+<span class="ansi-green-fg">     15</span>     axis2=x_small.copy(),
+<span class="ansi-green-fg">     16</span>     axis3=x_small.copy(),
+<span class="ansi-green-fg">     17</span>     axis_names=[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">t</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>],
+<span class="ansi-green-fg">     18</span>     axis0_domain=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">time</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     19</span>     space_domain=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">real</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     20</span> )
+<span class="ansi-green-fg">     22</span> <span style="color: rgb(95,135,135)"># FFT実行</span>
+<span class="ansi-green-fg">     23</span> field_freq = field_time.fft_time()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ScalarField&#39; is not defined
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -339,19 +462,21 @@ Axis0 domain changed: time → frequency
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_12_0.png" src="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_12_0.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Peak frequency: 10.16 Hz (expected: 10.0 Hz)
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 周波数スペクトルをプロット（1点のx,y,zを選択）</span>
+<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># Note: スライスしても4D構造が維持されるため、squeeze()で次元を削減</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> spectrum = np.abs(<span class="ansi-yellow-bg">field_freq</span>[:, <span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>].value).squeeze()
+<span class="ansi-green-fg">      4</span> freqs = field_freq._axis0_index.value
+<span class="ansi-green-fg">      6</span> plt.figure(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">4</span>))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;field_freq&#39; is not defined
 </pre></div></div>
 </div>
 <section id="逆FFT（周波数-→-時間）">
@@ -386,19 +511,21 @@ Peak frequency: 10.16 Hz (expected: 10.0 Hz)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_14_0.png" src="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_14_0.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Max reconstruction error: 4.44e-16 V
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 逆FFT</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> field_reconstructed = <span class="ansi-yellow-bg">field_freq</span>.ifft_time()
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># 元の信号と比較</span>
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># Note: 4D構造を維持するため、squeeze()で1次元に</span>
+<span class="ansi-green-fg">      6</span> original = field_time[:, <span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>].value.squeeze()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;field_freq&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -449,9 +576,26 @@ Max reconstruction error: 4.44e-16 V
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Original space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
-After fft_space: {&#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;}
-Axis names: (&#39;t&#39;, &#39;kx&#39;, &#39;y&#39;, &#39;z&#39;)
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[8]</span><span class="ansi-green-fg">, line 14</span>
+<span class="ansi-green-fg">     11</span> data_spatial = np.sin(<span class="ansi-green-fg">2</span> * np.pi * x_grid.value / wavelength)[<span class="ansi-bold" style="color: rgb(0,135,0)">None</span>, :, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>]
+<span class="ansi-green-fg">     12</span> data_spatial = np.tile(data_spatial, (<span class="ansi-green-fg">4</span>, <span class="ansi-green-fg">1</span>, ny, nz))
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">14</span> field_real = <span class="ansi-yellow-bg">ScalarField</span>(
+<span class="ansi-green-fg">     15</span>     data_spatial,
+<span class="ansi-green-fg">     16</span>     unit=u.V,
+<span class="ansi-green-fg">     17</span>     axis0=np.arange(<span class="ansi-green-fg">4</span>) * <span class="ansi-green-fg">0.1</span> * u.s,
+<span class="ansi-green-fg">     18</span>     axis1=x_grid,
+<span class="ansi-green-fg">     19</span>     axis2=y_grid,
+<span class="ansi-green-fg">     20</span>     axis3=z_grid,
+<span class="ansi-green-fg">     21</span>     axis_names=[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">t</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>],
+<span class="ansi-green-fg">     22</span>     axis0_domain=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">time</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     23</span>     space_domain=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">real</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     24</span> )
+<span class="ansi-green-fg">     26</span> <span style="color: rgb(95,135,135)"># X軸のみFFT</span>
+<span class="ansi-green-fg">     27</span> field_kx = field_real.fft_space(axes=[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>])
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ScalarField&#39; is not defined
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -482,19 +626,21 @@ Axis names: (&#39;t&#39;, &#39;kx&#39;, &#39;y&#39;, &#39;z&#39;)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_17_0.png" src="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_17_0.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Peak wavenumber: 1.57 rad/m (expected: ±1.57 rad/m)
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># K空間スペクトルをプロット</span>
+<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># Note: squeeze()で次元削減</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> kx_spectrum = np.abs(<span class="ansi-yellow-bg">field_kx</span>[<span class="ansi-green-fg">0</span>, :, <span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>].value).squeeze()
+<span class="ansi-green-fg">      4</span> kx_values = field_kx._axis1_index.value
+<span class="ansi-green-fg">      6</span> plt.figure(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">4</span>))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;field_kx&#39; is not defined
 </pre></div></div>
 </div>
 <section id="波長の計算">
@@ -519,8 +665,17 @@ Peak wavenumber: 1.57 rad/m (expected: ±1.57 rad/m)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Wavelength at k=1.57: 4.00 m
-Calculated wavelengths range: 1.00 - 8.00 m
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 波長を計算</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> wavelengths = <span class="ansi-yellow-bg">field_kx</span>.wavelength(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">kx</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Wavelength at k=</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>k_expected<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.2f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span class="ansi-green-fg">2</span><span style="color: rgb(188,188,188)"> </span>*<span style="color: rgb(188,188,188)"> </span>np.pi<span style="color: rgb(188,188,188)"> </span>/<span style="color: rgb(188,188,188)"> </span>k_expected<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.2f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> m</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(
+<span class="ansi-green-fg">      6</span>     <span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Calculated wavelengths range: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>wavelengths.value[wavelengths.value<span style="color: rgb(188,188,188)"> </span>&gt;<span style="color: rgb(188,188,188)"> </span><span class="ansi-green-fg">0</span>].min()<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.2f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> - </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>wavelengths.value[wavelengths.value<span style="color: rgb(188,188,188)"> </span>&lt;<span style="color: rgb(188,188,188)"> </span>np.inf].max()<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.2f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> m</span><span class="ansi-yellow-fg">&#34;</span>
+<span class="ansi-green-fg">      7</span> )
+
+<span class="ansi-red-fg">NameError</span>: name &#39;field_kx&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -550,9 +705,15 @@ Calculated wavelengths range: 1.00 - 8.00 m
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-All spatial axes in K space: {&#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;, &#39;kz&#39;: &#39;k&#39;}
-Back to real space: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
-Max reconstruction error: 2.29e-16
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[11]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 全空間軸をFFT</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> field_k_all = <span class="ansi-yellow-bg">field_real</span>.fft_space()
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">All spatial axes in K space: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>field_k_all.space_domains<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># 逆FFTで元に戻す</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;field_real&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -597,7 +758,26 @@ Max reconstruction error: 2.29e-16
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Number of fields: 3
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[12]</span><span class="ansi-green-fg">, line 7</span>
+<span class="ansi-green-fg">      5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> amp <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> amplitudes:
+<span class="ansi-green-fg">      6</span>     data_temp = amp * np.random.randn(<span class="ansi-green-fg">8</span>, <span class="ansi-green-fg">4</span>, <span class="ansi-green-fg">4</span>, <span class="ansi-green-fg">4</span>)
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">7</span>     field_temp = <span class="ansi-yellow-bg">ScalarField</span>(
+<span class="ansi-green-fg">      8</span>         data_temp,
+<span class="ansi-green-fg">      9</span>         unit=u.V,
+<span class="ansi-green-fg">     10</span>         axis0=np.arange(<span class="ansi-green-fg">8</span>) * <span class="ansi-green-fg">0.1</span> * u.s,
+<span class="ansi-green-fg">     11</span>         axis1=np.arange(<span class="ansi-green-fg">4</span>) * <span class="ansi-green-fg">0.5</span> * u.m,
+<span class="ansi-green-fg">     12</span>         axis2=np.arange(<span class="ansi-green-fg">4</span>) * <span class="ansi-green-fg">0.5</span> * u.m,
+<span class="ansi-green-fg">     13</span>         axis3=np.arange(<span class="ansi-green-fg">4</span>) * <span class="ansi-green-fg">0.5</span> * u.m,
+<span class="ansi-green-fg">     14</span>         axis_names=[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">t</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>],
+<span class="ansi-green-fg">     15</span>         axis0_domain=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">time</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     16</span>         space_domain=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">real</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     17</span>     )
+<span class="ansi-green-fg">     18</span>     fields.append(field_temp)
+<span class="ansi-green-fg">     20</span> <span style="color: rgb(95,135,135)"># FieldList を作成</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ScalarField&#39; is not defined
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -618,10 +798,15 @@ Number of fields: 3
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-All fields transformed to frequency domain:
-  Field 0: axis0_domain = frequency
-  Field 1: axis0_domain = frequency
-  Field 2: axis0_domain = frequency
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[13]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 一括で時間FFTを実行</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> field_list_freq = <span class="ansi-yellow-bg">field_list</span>.fft_time_all()
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">All fields transformed to frequency domain:</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">      5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> i, field <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">enumerate</span>(field_list_freq):
+
+<span class="ansi-red-fg">NameError</span>: name &#39;field_list&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -647,7 +832,17 @@ All fields transformed to frequency domain:
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Field names: [&#39;channel_A&#39;, &#39;channel_B&#39;, &#39;channel_C&#39;]
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[14]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 名前付きフィールドの辞書を作成</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> field_dict = <span class="ansi-yellow-bg">FieldDict</span>(
+<span class="ansi-green-fg">      3</span>     {<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">channel_A</span><span class="ansi-yellow-fg">&#34;</span>: fields[<span class="ansi-green-fg">0</span>], <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">channel_B</span><span class="ansi-yellow-fg">&#34;</span>: fields[<span class="ansi-green-fg">1</span>], <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">channel_C</span><span class="ansi-yellow-fg">&#34;</span>: fields[<span class="ansi-green-fg">2</span>]},
+<span class="ansi-green-fg">      4</span>     validate=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">      5</span> )
+<span class="ansi-green-fg">      7</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Field names: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">list</span>(field_dict.keys())<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;FieldDict&#39; is not defined
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -667,9 +862,15 @@ Field names: [&#39;channel_A&#39;, &#39;channel_B&#39;, &#39;channel_C&#39;]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-channel_A: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
-channel_B: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
-channel_C: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[15]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 一括で空間FFTを実行</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> field_dict_k = <span class="ansi-yellow-bg">field_dict</span>.fft_space_all(axes=[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>])
+<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> name, field <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> field_dict_k.items():
+<span class="ansi-green-fg">      5</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>field.space_domains<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;field_dict&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -731,261 +932,23 @@ channel_C: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-ScalarField([[[[ 0.08684844],
-               [ 0.36739322],
-               [ 0.20264566],
-               [ 0.24368612],
-               [ 0.29709332]],
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[16]</span><span class="ansi-green-fg">, line 27</span>
+<span class="ansi-green-fg">     24</span>     amp = <span class="ansi-green-fg">1.0</span> / (<span class="ansi-green-fg">1.0</span> + dist)
+<span class="ansi-green-fg">     25</span>     data_sig[:, i, :, <span class="ansi-green-fg">0</span>] += amp * sig_delayed[:, np.newaxis]
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">27</span> field_sig = <span class="ansi-yellow-bg">ScalarField</span>(
+<span class="ansi-green-fg">     28</span>     data_sig,
+<span class="ansi-green-fg">     29</span>     unit=u.V,
+<span class="ansi-green-fg">     30</span>     axis0=t * u.s,
+<span class="ansi-green-fg">     31</span>     axis1=x * u.m,
+<span class="ansi-green-fg">     32</span>     axis2=y * u.m,
+<span class="ansi-green-fg">     33</span>     axis3=z * u.m,
+<span class="ansi-green-fg">     34</span>     name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Environmental Field</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     35</span> )
+<span class="ansi-green-fg">     36</span> <span style="color: rgb(0,135,0)">print</span>(field_sig)
 
-              [[-0.42828167],
-               [-0.2788319 ],
-               [-0.63601112],
-               [-0.43725569],
-               [-0.45766302]],
-
-              [[-0.50234469],
-               [-0.39848957],
-               [-0.33841909],
-               [-0.30672809],
-               [-0.35290641]],
-
-              ...,
-
-              [[-0.24582327],
-               [-0.36331307],
-               [-0.35576048],
-               [-0.30664571],
-               [-0.29873314]],
-
-              [[-0.25188483],
-               [-0.10460112],
-               [-0.20704192],
-               [-0.17437447],
-               [-0.06699974]],
-
-              [[-0.01857532],
-               [ 0.03160235],
-               [ 0.09463293],
-               [-0.13609984],
-               [-0.18043362]]],
-
-
-             [[[ 0.4965515 ],
-               [ 0.51114119],
-               [ 0.66836178],
-               [ 0.47774925],
-               [ 0.54391374]],
-
-              [[ 0.00870382],
-               [ 0.05797381],
-               [ 0.19497677],
-               [-0.1841482 ],
-               [ 0.06961271]],
-
-              [[-0.44467682],
-               [-0.63003207],
-               [-0.4931782 ],
-               [-0.72115671],
-               [-0.66144024]],
-
-              ...,
-
-              [[-0.26696884],
-               [-0.02335534],
-               [-0.2955512 ],
-               [ 0.03365938],
-               [-0.16675011]],
-
-              [[-0.01148699],
-               [ 0.02693153],
-               [ 0.23230027],
-               [-0.12005181],
-               [-0.1327343 ]],
-
-              [[ 0.0960591 ],
-               [ 0.17476004],
-               [-0.00103139],
-               [ 0.17377965],
-               [ 0.34090044]]],
-
-
-             [[[ 0.48591277],
-               [ 0.44150349],
-               [ 0.40895599],
-               [ 0.5606232 ],
-               [ 0.38818876]],
-
-              [[ 0.59176168],
-               [ 0.60045806],
-               [ 0.43279717],
-               [ 0.40597058],
-               [ 0.51018807]],
-
-              [[-0.48896672],
-               [-0.67904575],
-               [-0.65110209],
-               [-0.73068132],
-               [-0.55754008]],
-
-              ...,
-
-              [[-0.00889405],
-               [ 0.0246277 ],
-               [-0.00934052],
-               [-0.28479022],
-               [ 0.00294349]],
-
-              [[-0.05809312],
-               [ 0.21557047],
-               [ 0.08898029],
-               [ 0.19601207],
-               [-0.00748609]],
-
-              [[ 0.31327382],
-               [ 0.04965958],
-               [ 0.12931156],
-               [ 0.09634759],
-               [ 0.02072857]]],
-
-
-             ...,
-
-
-             [[[-0.47088405],
-               [-0.44093954],
-               [-0.50808846],
-               [-0.53825154],
-               [-0.52270623]],
-
-              [[-0.27016794],
-               [-0.05885403],
-               [-0.03014553],
-               [-0.11945106],
-               [-0.22574645]],
-
-              [[ 0.67186813],
-               [ 0.65758934],
-               [ 0.61808806],
-               [ 0.68006628],
-               [ 0.64916691]],
-
-              ...,
-
-              [[ 0.33427533],
-               [ 0.1238872 ],
-               [ 0.23921193],
-               [ 0.13288922],
-               [ 0.17767688]],
-
-              [[-0.09293398],
-               [ 0.04599217],
-               [-0.04333049],
-               [-0.14249861],
-               [-0.14613857]],
-
-              [[-0.17523055],
-               [-0.08070457],
-               [-0.3736138 ],
-               [-0.21547623],
-               [-0.24905171]]],
-
-
-             [[[-0.33979978],
-               [-0.52516958],
-               [-0.43117016],
-               [-0.55575497],
-               [-0.30922288]],
-
-              [[-0.57172495],
-               [-0.36253384],
-               [-0.47323134],
-               [-0.56822764],
-               [-0.41788518]],
-
-              [[ 0.60000133],
-               [ 0.69520425],
-               [ 0.58067915],
-               [ 0.59044121],
-               [ 0.60903589]],
-
-              ...,
-
-              [[ 0.09738152],
-               [-0.03127321],
-               [ 0.10558964],
-               [ 0.02092155],
-               [ 0.12403775]],
-
-              [[-0.17854237],
-               [-0.15159656],
-               [-0.13889632],
-               [-0.10361625],
-               [-0.07109176]],
-
-              [[-0.30326966],
-               [-0.18659539],
-               [-0.17075845],
-               [ 0.12720352],
-               [-0.09463939]]],
-
-
-             [[[-0.13293935],
-               [-0.26827271],
-               [-0.16340608],
-               [ 0.0859768 ],
-               [-0.29470039]],
-
-              [[-0.59042514],
-               [-0.43746394],
-               [-0.34756977],
-               [-0.58880771],
-               [-0.50722801]],
-
-              [[ 0.19803234],
-               [ 0.1693735 ],
-               [ 0.13092929],
-               [ 0.23941187],
-               [ 0.22039804]],
-
-              ...,
-
-              [[-0.17123032],
-               [-0.04474158],
-               [-0.08665946],
-               [-0.00431457],
-               [-0.00958998]],
-
-              [[-0.12704775],
-               [-0.18034525],
-               [-0.24545939],
-               [-0.26021225],
-               [-0.27972791]],
-
-              [[-0.10539607],
-               [ 0.00241909],
-               [ 0.01135068],
-               [-0.2382848 ],
-               [-0.06614197]]]]
-            unit: V,
-            name: Environmental Field,
-            epoch: None,
-            channel: None,
-            axis_names: [&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
-            axis0_name: t,
-            axis1_name: x,
-            axis2_name: y,
-            axis3_name: z,
-            axis0_index: [0.00000000e+00 3.90625000e-03 7.81250000e-03 ... 3.98828125e+00
-                           3.99218750e+00 3.99609375e+00] s,
-            axis1_index: [0.         0.26315789 0.52631579 0.78947368 1.05263158
-                           1.31578947 1.57894737 1.84210526 2.10526316 2.36842105
-                           2.63157895 2.89473684 3.15789474 3.42105263 3.68421053
-                           3.94736842 4.21052632 4.47368421 4.73684211 5.        ] m,
-            axis2_index: [0.  0.5 1.  1.5 2. ] m,
-            axis3_index: [0.] m,
-            axis0_domain: time,
-            space_domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;},
-            axis0_offset: None)
+<span class="ansi-red-fg">NameError</span>: name &#39;ScalarField&#39; is not defined
 </pre></div></div>
 </div>
 <section id="パワースペクトル密度-(PSD)">
@@ -1010,27 +973,21 @@ ScalarField([[[[ 0.08684844],
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;Figure size 1000x600 with 0 Axes&gt;
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_32_1.png" src="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_32_1.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_32_2.png" src="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_32_2.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[17]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># ソース位置(x=1m)と遠方(x=4m)でのPSDを比較</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> psd_source = <span class="ansi-yellow-bg">field_sig</span>.psd(point_or_region=(<span class="ansi-green-fg">1.0</span> * u.m, <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-green-fg">0.0</span> * u.m))
+<span class="ansi-green-fg">      3</span> psd_far = field_sig.psd(point_or_region=(<span class="ansi-green-fg">4.0</span> * u.m, <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-green-fg">0.0</span> * u.m))
+<span class="ansi-green-fg">      5</span> plt.figure(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">6</span>))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;field_sig&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="周波数-空間マッピング">
@@ -1055,20 +1012,16 @@ ScalarField([[[[ 0.08684844],
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 <span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
 <span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[18]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">field_sig</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">plot_freq_space</span>(
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">field_sig</span>.plot_freq_space(
 <span class="ansi-green-fg">      2</span>     space_axis=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>,
 <span class="ansi-green-fg">      3</span>     fixed_coords={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m},
 <span class="ansi-green-fg">      4</span>     freq_range=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">100</span>),
 <span class="ansi-green-fg">      5</span>     log_scale=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
 <span class="ansi-green-fg">      6</span> )
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/.venv-docs-exec/lib/python3.12/site-packages/gwpy/types/array.py:207</span>, in <span class="ansi-cyan-fg">Array.__getattr__</span><span class="ansi-blue-fg">(self, attr)</span>
-<span class="ansi-green-fg">    206</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(<span style="color: rgb(0,135,0)">self</span>, attr):
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">207</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-blue-fg ansi-yellow-bg">__getattribute__</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">attr</span><span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-red-fg">AttributeError</span>: &#39;ScalarField&#39; object has no attribute &#39;plot_freq_space&#39;
+<span class="ansi-red-fg">NameError</span>: name &#39;field_sig&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -1098,22 +1051,18 @@ ScalarField([[[[ 0.08684844],
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 <span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
 <span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[19]</span><span class="ansi-green-fg">, line 5</span>
 <span class="ansi-green-fg">      2</span> ref_point = (<span class="ansi-green-fg">1.0</span> * u.m, <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-green-fg">0.0</span> * u.m)
 <span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># 相互相関の計算とプロット</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> lags, corrs = <span class="ansi-yellow-bg">field_sig</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">plot_cross_correlation</span>(
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> lags, corrs = <span class="ansi-yellow-bg">field_sig</span>.plot_cross_correlation(
 <span class="ansi-green-fg">      6</span>     ref_point=ref_point,
 <span class="ansi-green-fg">      7</span>     scan_axis=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>,
 <span class="ansi-green-fg">      8</span>     fixed_coords={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m},
 <span class="ansi-green-fg">      9</span>     max_lag=<span class="ansi-green-fg">0.5</span>,
 <span class="ansi-green-fg">     10</span> )
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/.venv-docs-exec/lib/python3.12/site-packages/gwpy/types/array.py:207</span>, in <span class="ansi-cyan-fg">Array.__getattr__</span><span class="ansi-blue-fg">(self, attr)</span>
-<span class="ansi-green-fg">    206</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(<span style="color: rgb(0,135,0)">self</span>, attr):
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">207</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-blue-fg ansi-yellow-bg">__getattribute__</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">attr</span><span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-red-fg">AttributeError</span>: &#39;ScalarField&#39; object has no attribute &#39;plot_cross_correlation&#39;
+<span class="ansi-red-fg">NameError</span>: name &#39;field_sig&#39; is not defined
 </pre></div></div>
 </div>
 <p>傾きがV字型になっていることから、信号が x=1.0m から両側に伝搬していることがわかります。</p>
@@ -1140,20 +1089,16 @@ ScalarField([[[[ 0.08684844],
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 <span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
 <span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[20]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">field_sig</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">plot_coherence_map</span>(
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">field_sig</span>.plot_coherence_map(
 <span class="ansi-green-fg">      2</span>     target_freq=<span class="ansi-green-fg">30.0</span>,
 <span class="ansi-green-fg">      3</span>     ref_point=ref_point,
 <span class="ansi-green-fg">      4</span>     scan_axis=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>,
 <span class="ansi-green-fg">      5</span>     fixed_coords={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m},
 <span class="ansi-green-fg">      6</span> )
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/.venv-docs-exec/lib/python3.12/site-packages/gwpy/types/array.py:207</span>, in <span class="ansi-cyan-fg">Array.__getattr__</span><span class="ansi-blue-fg">(self, attr)</span>
-<span class="ansi-green-fg">    206</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(<span style="color: rgb(0,135,0)">self</span>, attr):
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">207</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-blue-fg ansi-yellow-bg">__getattribute__</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">attr</span><span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-red-fg">AttributeError</span>: &#39;ScalarField&#39; object has no attribute &#39;plot_coherence_map&#39;
+<span class="ansi-red-fg">NameError</span>: name &#39;field_sig&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -1196,8 +1141,26 @@ ScalarField([[[[ 0.08684844],
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-時間FFT Round-trip max error: 9.99e-16
-✅ 時間FFT不変量チェック: PASSED
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[21]</span><span class="ansi-green-fg">, line 4</span>
+<span class="ansi-green-fg">      2</span> np.random.seed(<span class="ansi-green-fg">42</span>)
+<span class="ansi-green-fg">      3</span> data_test = np.random.randn(<span class="ansi-green-fg">64</span>, <span class="ansi-green-fg">4</span>, <span class="ansi-green-fg">4</span>, <span class="ansi-green-fg">4</span>)
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> field_test = <span class="ansi-yellow-bg">ScalarField</span>(
+<span class="ansi-green-fg">      5</span>     data_test,
+<span class="ansi-green-fg">      6</span>     unit=u.V,
+<span class="ansi-green-fg">      7</span>     axis0=np.arange(<span class="ansi-green-fg">64</span>) * <span class="ansi-green-fg">0.01</span> * u.s,
+<span class="ansi-green-fg">      8</span>     axis1=np.arange(<span class="ansi-green-fg">4</span>) * u.m,
+<span class="ansi-green-fg">      9</span>     axis2=np.arange(<span class="ansi-green-fg">4</span>) * u.m,
+<span class="ansi-green-fg">     10</span>     axis3=np.arange(<span class="ansi-green-fg">4</span>) * u.m,
+<span class="ansi-green-fg">     11</span>     axis_names=[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">t</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>],
+<span class="ansi-green-fg">     12</span>     axis0_domain=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">time</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     13</span>     space_domain=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">real</span><span class="ansi-yellow-fg">&#34;</span>,
+<span class="ansi-green-fg">     14</span> )
+<span class="ansi-green-fg">     16</span> <span style="color: rgb(95,135,135)"># Round-trip</span>
+<span class="ansi-green-fg">     17</span> field_roundtrip = field_test.fft_time().ifft_time()
+
+<span class="ansi-red-fg">NameError</span>: name &#39;ScalarField&#39; is not defined
 </pre></div></div>
 </div>
 </section>

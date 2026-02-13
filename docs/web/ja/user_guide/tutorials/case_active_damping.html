@@ -128,7 +128,7 @@
 <li><p><strong>ダンピング制御器の設計</strong>: センサー信号をモード座標に変換し、モードごとにダンピングをかける「モード制御」を設計します。</p></li>
 <li><p><strong>閉ループ検証</strong>: インパルス応答とASD比較により制振性能を確認します。</p></li>
 </ol>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -141,6 +141,21 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrix</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ModuleNotFoundError</span>                       Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">control</span>
+<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
+<span class="ansi-green-fg">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
+
+<span class="ansi-red-fg">ModuleNotFoundError</span>: No module named &#39;control&#39;
+</pre></div></div>
 </div>
 <section id="1.-6自由度アクティブ防振装置のシミュレーション-(Plant-Model)">
 <h2>1. 6自由度アクティブ防振装置のシミュレーション (Plant Model)<a class="headerlink" href="#1.-6自由度アクティブ防振装置のシミュレーション-(Plant-Model)" title="Link to this heading"></a></h2>
@@ -241,49 +256,16 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Actuator Transform Matrix T_act:
-[[ 1.    0.   -0.5 ]
- [ 1.    0.43  0.25]
- [ 1.   -0.43  0.25]]
-Sensor Transform Matrix T_sen:
-[[ 1.    0.43 -0.25]
- [ 1.    0.    0.5 ]
- [ 1.   -0.43 -0.25]]
-&lt;StateSpace&gt;: sys[0]
-Inputs (3): [&#39;ACT1&#39;, &#39;ACT2&#39;, &#39;ACT3&#39;]
-Outputs (3): [&#39;SEN1&#39;, &#39;SEN2&#39;, &#39;SEN3&#39;]
-States (6): [&#39;x[0]&#39;, &#39;x[1]&#39;, &#39;x[2]&#39;, &#39;x[3]&#39;, &#39;x[4]&#39;, &#39;x[5]&#39;]
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 14</span>
+<span class="ansi-green-fg">     11</span> R = <span class="ansi-green-fg">0.5</span>  <span style="color: rgb(95,135,135)"># [m]</span>
+<span class="ansi-green-fg">     13</span> <span style="color: rgb(95,135,135)"># 角度設定 (deg -&gt; rad)</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">14</span> deg2rad = <span class="ansi-yellow-bg">np</span>.pi / <span class="ansi-green-fg">180.0</span>
+<span class="ansi-green-fg">     15</span> <span style="color: rgb(95,135,135)"># アクチュエータ: 足の位置</span>
+<span class="ansi-green-fg">     16</span> angles_act = np.array([<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">120</span>, <span class="ansi-green-fg">240</span>]) * deg2rad
 
-A = [[ 0.00000000e+00  0.00000000e+00  0.00000000e+00
-       1.00000000e+00  0.00000000e+00  0.00000000e+00]
-     [ 0.00000000e+00  0.00000000e+00  0.00000000e+00
-       0.00000000e+00  1.00000000e+00  0.00000000e+00]
-     [ 0.00000000e+00  0.00000000e+00  0.00000000e+00
-       0.00000000e+00  0.00000000e+00  1.00000000e+00]
-     [-6.00000000e+01 -3.33955086e-15 -2.16715534e-15
-      -6.00000000e-03 -3.68259567e-19 -2.35922393e-19]
-     [-1.70530257e-14 -3.75000000e+01  9.61481343e-15
-      -2.08166817e-18 -3.75000000e-03  9.61481343e-19]
-     [-1.13686838e-14  9.93438680e-15 -3.75000000e+01
-      -1.04083409e-18  9.61481343e-19 -3.75000000e-03]]
-
-B = [[ 0.          0.          0.        ]
-     [ 0.          0.          0.        ]
-     [ 0.          0.          0.        ]
-     [ 0.01        0.01        0.01      ]
-     [ 0.          0.02165064 -0.02165064]
-     [-0.025       0.0125      0.0125    ]]
-
-C = [[ 1.00000000e+00  4.33012702e-01 -2.50000000e-01
-       0.00000000e+00  0.00000000e+00  0.00000000e+00]
-     [ 1.00000000e+00  6.12323400e-17  5.00000000e-01
-       0.00000000e+00  0.00000000e+00  0.00000000e+00]
-     [ 1.00000000e+00 -4.33012702e-01 -2.50000000e-01
-       0.00000000e+00  0.00000000e+00  0.00000000e+00]]
-
-D = [[0. 0. 0.]
-     [0. 0. 0.]
-     [0. 0. 0.]]
+<span class="ansi-red-fg">NameError</span>: name &#39;np&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -351,8 +333,18 @@ D = [[0. 0. 0.]
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_case_active_damping_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_active_damping_5_0.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> fs = <span class="ansi-green-fg">64</span>
+<span class="ansi-green-fg">      2</span> duration = <span class="ansi-green-fg">1024.0</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> t = <span class="ansi-yellow-bg">np</span>.arange(<span class="ansi-green-fg">0</span>, duration, <span class="ansi-green-fg">1</span> / fs)
+<span class="ansi-green-fg">      4</span> n_samples = <span style="color: rgb(0,135,0)">len</span>(t)
+<span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># 入力信号: 3ch ホワイトノイズ</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;np&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 <section id="3-&amp;-4.-モード制御系の設計-(Modal-Control-Design)">
@@ -448,15 +440,18 @@ D = [[0. 0. 0.]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Sensing Matrix (Sensor -&gt; Mode):
-[[ 0.33  0.33  0.33]
- [ 1.15 -0.   -1.15]
- [-0.67  1.33 -0.67]]
-Actuation Matrix (Mode Force -&gt; Actuator):
-[[ 0.33 -0.   -1.33]
- [ 0.33  1.15  0.67]
- [ 0.33 -1.15  0.67]]
-MIMO Controller States: 6
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 4</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># --- 1. Sensing &amp; Actuation Matrix の準備 ---</span>
+<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># 推定モデルに基づいて変換行列を用意します（ここでは真値を使用）</span>
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Sensing Matrix: y -&gt; q</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> S_sensing = <span class="ansi-yellow-bg">np</span>.linalg.inv(T_sen)
+<span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># Actuation Matrix: F_modal -&gt; u</span>
+<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># F_modal = T_act.T * u  =&gt;  u = inv(T_act.T) * F_modal</span>
+<span class="ansi-green-fg">      8</span> D_actuation = np.linalg.inv(T_act.T)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;np&#39; is not defined
 </pre></div></div>
 </div>
 </section>
@@ -535,19 +530,21 @@ MIMO Controller States: 6
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_case_active_damping_9_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_active_damping_9_0.png" />
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_case_active_damping_9_1.png" src="../../../../_images/web_ja_user_guide_tutorials_case_active_damping_9_1.png" />
-</div>
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 閉ループシステム</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> sys_cl = <span class="ansi-yellow-bg">control</span>.feedback(sys, K_mimo, sign=-<span class="ansi-green-fg">1</span>)
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># --- Impulse Response ---</span>
+<span class="ansi-green-fg">      5</span> u_impulse = np.zeros((<span class="ansi-green-fg">3</span>, n_samples))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;control&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 </section>

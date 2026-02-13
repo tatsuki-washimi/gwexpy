@@ -129,11 +129,11 @@
 <li><p><strong>Damping Controller Design</strong>: Design “modal control” that converts sensor signals to modal coordinates and applies damping to each mode.</p></li>
 <li><p><strong>Closed-Loop Verification</strong>: Confirm vibration suppression performance through impulse response and ASD comparison.</p></li>
 </ol>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">control</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">control</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
@@ -142,6 +142,21 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrix</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ModuleNotFoundError</span>                       Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">control</span>
+<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
+<span class="ansi-green-fg">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
+
+<span class="ansi-red-fg">ModuleNotFoundError</span>: No module named &#39;control&#39;
+</pre></div></div>
 </div>
 <section id="1.-Simulation-of-6-DOF-Active-Vibration-Isolation-System-(Plant-Model)">
 <h2>1. Simulation of 6-DOF Active Vibration Isolation System (Plant Model)<a class="headerlink" href="#1.-Simulation-of-6-DOF-Active-Vibration-Isolation-System-(Plant-Model)" title="Link to this heading"></a></h2>
@@ -152,11 +167,11 @@
 <li><p>Sensor physical coordinates <span class="math notranslate nohighlight">\(p_{sen}\)</span>: <span class="math notranslate nohighlight">\(60^\circ, 180^\circ, 300^\circ\)</span></p></li>
 </ul>
 <p>We define the transformation matrices <span class="math notranslate nohighlight">\(T_{act}, T_{sen}\)</span> for each and incorporate them into the state-space model.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Physical parameters</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Physical parameters</span>
 <span class="n">m</span> <span class="o">=</span> <span class="mf">100.0</span>  <span class="c1"># mass [kg]</span>
 <span class="n">I_x</span> <span class="o">=</span> <span class="mf">20.0</span>  <span class="c1"># moment of inertia [kg m^2]</span>
 <span class="n">I_y</span> <span class="o">=</span> <span class="mf">20.0</span>
@@ -237,15 +252,32 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 14</span>
+<span class="ansi-green-fg">     11</span> R = <span class="ansi-green-fg">0.5</span>  <span style="color: rgb(95,135,135)"># [m]</span>
+<span class="ansi-green-fg">     13</span> <span style="color: rgb(95,135,135)"># Angle settings (deg -&gt; rad)</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">14</span> deg2rad = <span class="ansi-yellow-bg">np</span>.pi / <span class="ansi-green-fg">180.0</span>
+<span class="ansi-green-fg">     15</span> <span style="color: rgb(95,135,135)"># Actuators: leg positions</span>
+<span class="ansi-green-fg">     16</span> angles_act = np.array([<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">120</span>, <span class="ansi-green-fg">240</span>]) * deg2rad
+
+<span class="ansi-red-fg">NameError</span>: name &#39;np&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="2.-MIMO-Transfer-Function-Measurement">
 <h2>2. MIMO Transfer Function Measurement<a class="headerlink" href="#2.-MIMO-Transfer-Function-Measurement" title="Link to this heading"></a></h2>
 <p>Since the sensor and actuator positions differ, strong responses should appear not only in the diagonal components (ACT1-&gt;SEN1) but also in the off-diagonal components.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span> <span class="o">=</span> <span class="mi">64</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span> <span class="o">=</span> <span class="mi">64</span>
 <span class="n">duration</span> <span class="o">=</span> <span class="mf">1024.0</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
 <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -298,6 +330,23 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> fs = <span class="ansi-green-fg">64</span>
+<span class="ansi-green-fg">      2</span> duration = <span class="ansi-green-fg">1024.0</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> t = <span class="ansi-yellow-bg">np</span>.arange(<span class="ansi-green-fg">0</span>, duration, <span class="ansi-green-fg">1</span> / fs)
+<span class="ansi-green-fg">      4</span> n_samples = <span style="color: rgb(0,135,0)">len</span>(t)
+<span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># Input signal: 3ch white noise</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;np&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="3-&amp;-4.-Modal-Control-Design">
 <h2>3 &amp; 4. Modal Control Design<a class="headerlink" href="#3-&-4.-Modal-Control-Design" title="Link to this heading"></a></h2>
@@ -320,11 +369,11 @@
 <p>Overall, the MIMO controller <span class="math notranslate nohighlight">\(K_{MIMO}\)</span> becomes:</p>
 <div class="math notranslate nohighlight">
 \[K_{MIMO}(s) = (T_{act}^T)^{-1} \cdot \mathrm{diag}(K_{z}(s), K_{\theta x}(s), K_{\theta y}(s)) \cdot T_{sen}^{-1}\]</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- 1. Preparation of Sensing &amp; Actuation Matrices ---</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- 1. Preparation of Sensing &amp; Actuation Matrices ---</span>
 <span class="c1"># Prepare transformation matrices based on the estimated model (here we use the true values)</span>
 <span class="c1"># Sensing Matrix: y -&gt; q</span>
 <span class="n">S_sensing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">T_sen</span><span class="p">)</span>
@@ -387,15 +436,34 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 4</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># --- 1. Preparation of Sensing &amp; Actuation Matrices ---</span>
+<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># Prepare transformation matrices based on the estimated model (here we use the true values)</span>
+<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Sensing Matrix: y -&gt; q</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> S_sensing = <span class="ansi-yellow-bg">np</span>.linalg.inv(T_sen)
+<span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># Actuation Matrix: F_modal -&gt; u</span>
+<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># F_modal = T_act.T * u  =&gt;  u = inv(T_act.T) * F_modal</span>
+<span class="ansi-green-fg">      8</span> D_actuation = np.linalg.inv(T_act.T)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;np&#39; is not defined
+</pre></div></div>
+</div>
 </section>
 <section id="5-&amp;-6.-Closed-Loop-Verification-(Impulse-Response-&amp;-ASD)">
 <h2>5 &amp; 6. Closed-Loop Verification (Impulse Response &amp; ASD)<a class="headerlink" href="#5-&-6.-Closed-Loop-Verification-(Impulse-Response-&-ASD)" title="Link to this heading"></a></h2>
 <p>Using the constructed modal control system, we perform closed-loop simulation. We verify the response to an impulse disturbance on actuator 1 and to steady-state ground vibration on all axes.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Closed-loop system</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Closed-loop system</span>
 <span class="n">sys_cl</span> <span class="o">=</span> <span class="n">control</span><span class="o">.</span><span class="n">feedback</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">K_mimo</span><span class="p">,</span> <span class="n">sign</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># --- Impulse Response ---</span>
@@ -462,6 +530,22 @@
 <span class="c1"># effective damping is achieved through appropriate modal coordinate transformation.</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Closed-loop system</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> sys_cl = <span class="ansi-yellow-bg">control</span>.feedback(sys, K_mimo, sign=-<span class="ansi-green-fg">1</span>)
+<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># --- Impulse Response ---</span>
+<span class="ansi-green-fg">      5</span> u_impulse = np.zeros((<span class="ansi-green-fg">3</span>, n_samples))
+
+<span class="ansi-red-fg">NameError</span>: name &#39;control&#39; is not defined
+</pre></div></div>
 </div>
 </section>
 </section>
