@@ -48,6 +48,7 @@ Next-generation API for scalar, vector, and tensor fields in 4D spacetime.
    Vector Field Basics <field_vector_intro>
    Tensor Field Basics <field_tensor_intro>
    Scalar Field Signals <field_scalar_signal>
+   Field × Advanced Analysis Workflow <field_advanced_workflow>
 
 IV. Advanced Signal Processing
 ------------------------------
