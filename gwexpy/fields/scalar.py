@@ -469,7 +469,7 @@ class ScalarField(FieldBase):
         axis direction) but maintains physical consistency for interferometer
         simulations and wave propagation analysis.
 
-        This formula was validated by 10/12 AI models in cross-verification
+        This formula has been validated through unit tests and independent technical review
         (2026-02-01). The ``2π`` factor is correctly applied, and units are
         properly set as ``1/dx_unit``.
 

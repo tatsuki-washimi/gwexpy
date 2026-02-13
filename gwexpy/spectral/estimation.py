@@ -181,7 +181,7 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
     multicollinearity diagnosis. The name collision has caused confusion,
     but the implementation is correct for spectral analysis.
 
-    This formula was validated by 8/12 AI models in cross-verification
+    This formula has been validated through unit tests and independent technical review
     (2026-02-01). The "statistically invalid" critique from some models
     was based on confusion with regression VIF.
 

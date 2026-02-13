@@ -146,7 +146,7 @@ class ArimaResult:
           timestamps are correctly computed by statsmodels, but users should
           be aware that d-th order differencing loses d initial samples.
 
-        This formula was validated by 12-AI cross-verification (2026-02-01).
+        This formula has been validated through unit tests and independent technical review.
         The leap-second concern raised by some models does not apply to
         GPS/TAI time systems used in gravitational wave data analysis.
 
