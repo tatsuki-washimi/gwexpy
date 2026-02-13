@@ -608,7 +608,7 @@ class FitResult:
             \\log p(y|\\theta) = -\\frac{1}{2} r^T \\Sigma^{-1} r
             - \\frac{1}{2} \\log|\\Sigma| - \\frac{N}{2}\\log 2\\pi
 
-        This assumption was validated by 12-AI cross-verification (2026-02-01).
+        This assumption has been validated through unit tests and independent technical review.
         All models agreed that the current implementation is correct for
         fixed-covariance use cases.
 
