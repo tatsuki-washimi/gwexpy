@@ -194,9 +194,9 @@ for time-correlated spectrograms. Specified in seconds as a float or Quantity.
 
 ## About the Validation
 
-All algorithms documented on this page have undergone rigorous validation
-through independent review and verification against established references.
-The implementations have been validated for correctness.
+All algorithms documented on this page have been validated through a combination
+of unit tests, cross-checks against established references, and independent
+technical reviews. The implementations have been verified for correctness.
 
-For detailed validation reports and technical review documentation,
-see the developer documentation.
+For detailed validation reports and technical validation data, see the developer
+validation reports.

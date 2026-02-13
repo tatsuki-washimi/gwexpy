@@ -24,8 +24,13 @@ extensions = [
 
 # nbsphinx configuration
 # Default to skipping execution so docs builds don't require a registered Jupyter kernel.
+# For local development: NBS_EXECUTE=never (fast, no execution)
+# For CI/production builds: NBS_EXECUTE=always (ensure notebooks execute correctly)
 nbsphinx_execute = os.environ.get("NBS_EXECUTE", "never")
-nbsphinx_allow_errors = True  # Allow notebooks with execution errors to be included
+
+# Allow errors in notebooks during local development
+# For CI/production: set NBS_ALLOW_ERRORS=false to catch notebook errors
+nbsphinx_allow_errors = os.environ.get("NBS_ALLOW_ERRORS", "true").lower() == "true"
 
 autosummary_generate = True
 autosummary_imported_members = False
