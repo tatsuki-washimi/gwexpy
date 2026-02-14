@@ -80,13 +80,11 @@
       ~FrequencySeries.is_compatible
       ~FrequencySeries.is_contiguous
       ~FrequencySeries.item
-      ~FrequencySeries.itemset
       ~FrequencySeries.kurtosis
       ~FrequencySeries.max
       ~FrequencySeries.mean
       ~FrequencySeries.median
       ~FrequencySeries.min
-      ~FrequencySeries.newbyteorder
       ~FrequencySeries.nonzero
       ~FrequencySeries.override_unit
       ~FrequencySeries.pad
@@ -95,7 +93,6 @@
       ~FrequencySeries.plot
       ~FrequencySeries.prepend
       ~FrequencySeries.prod
-      ~FrequencySeries.ptp
       ~FrequencySeries.put
       ~FrequencySeries.quadrature_sum
       ~FrequencySeries.ravel
@@ -123,6 +120,7 @@
       ~FrequencySeries.to_control_frd
       ~FrequencySeries.to_cupy
       ~FrequencySeries.to_db
+      ~FrequencySeries.to_device
       ~FrequencySeries.to_hdf5_dataset
       ~FrequencySeries.to_jax
       ~FrequencySeries.to_lal
@@ -170,6 +168,7 @@
       ~FrequencySeries.channel
       ~FrequencySeries.ctypes
       ~FrequencySeries.data
+      ~FrequencySeries.device
       ~FrequencySeries.df
       ~FrequencySeries.dtype
       ~FrequencySeries.dx
@@ -183,10 +182,14 @@
       ~FrequencySeries.info
       ~FrequencySeries.is_regular
       ~FrequencySeries.isscalar
+      ~FrequencySeries.itemset
       ~FrequencySeries.itemsize
+      ~FrequencySeries.mT
       ~FrequencySeries.name
       ~FrequencySeries.nbytes
       ~FrequencySeries.ndim
+      ~FrequencySeries.newbyteorder
+      ~FrequencySeries.ptp
       ~FrequencySeries.real
       ~FrequencySeries.shape
       ~FrequencySeries.si

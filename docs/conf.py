@@ -161,6 +161,9 @@ source_suffix = {
 
 # MyST: enable heading anchors so internal markdown `#...` links work.
 myst_heading_anchors = 3
+myst_enable_extensions = [
+    "colon_fence",
+]
 
 # nbformat emits noisy warnings when notebooks omit cell IDs (valid for older nbformat).
 try:  # pragma: no cover

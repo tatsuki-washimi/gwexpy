@@ -66,6 +66,7 @@
       ~TimeSeries.ediff1d
       ~TimeSeries.emd
       ~TimeSeries.envelope
+      ~TimeSeries.fastmi
       ~TimeSeries.fetch
       ~TimeSeries.fetch_open_data
       ~TimeSeries.fft
@@ -120,7 +121,6 @@
       ~TimeSeries.is_compatible
       ~TimeSeries.is_contiguous
       ~TimeSeries.item
-      ~TimeSeries.itemset
       ~TimeSeries.ktau
       ~TimeSeries.kurtosis
       ~TimeSeries.laplace
@@ -135,11 +135,11 @@
       ~TimeSeries.mic
       ~TimeSeries.min
       ~TimeSeries.mix_down
-      ~TimeSeries.newbyteorder
       ~TimeSeries.nonzero
       ~TimeSeries.notch
       ~TimeSeries.override_unit
       ~TimeSeries.pad
+      ~TimeSeries.partial_correlation
       ~TimeSeries.partition
       ~TimeSeries.pcc
       ~TimeSeries.phase
@@ -147,7 +147,6 @@
       ~TimeSeries.prepend
       ~TimeSeries.prod
       ~TimeSeries.psd
-      ~TimeSeries.ptp
       ~TimeSeries.put
       ~TimeSeries.q_gram
       ~TimeSeries.q_transform
@@ -192,6 +191,7 @@
       ~TimeSeries.to_astropy_timeseries
       ~TimeSeries.to_cupy
       ~TimeSeries.to_dask
+      ~TimeSeries.to_device
       ~TimeSeries.to_dict
       ~TimeSeries.to_hdf5_dataset
       ~TimeSeries.to_jax
@@ -248,6 +248,7 @@
       ~TimeSeries.channel
       ~TimeSeries.ctypes
       ~TimeSeries.data
+      ~TimeSeries.device
       ~TimeSeries.dt
       ~TimeSeries.dtype
       ~TimeSeries.duration
@@ -260,10 +261,14 @@
       ~TimeSeries.info
       ~TimeSeries.is_regular
       ~TimeSeries.isscalar
+      ~TimeSeries.itemset
       ~TimeSeries.itemsize
+      ~TimeSeries.mT
       ~TimeSeries.name
       ~TimeSeries.nbytes
       ~TimeSeries.ndim
+      ~TimeSeries.newbyteorder
+      ~TimeSeries.ptp
       ~TimeSeries.real
       ~TimeSeries.sample_rate
       ~TimeSeries.shape
