@@ -1,5 +1,18 @@
 # Time-Frequency Methods: Comparison and Selection Guide
 
+:::{admonition} Interactive Version Available
+:class: tip
+
+**Looking for the version with plots and executable code?**
+
+This theory guide has a corresponding fully-executable Jupyter Notebook version:
+- [Time-Frequency Analysis Comparison (Interactive)](time_frequency_analysis_comparison.html)
+- 8 complete plots, quantitative evaluation, and benchmark signals
+
+**This page**: Theory for each method, usage guidelines, decision matrices
+**Notebook version**: Full implementation examples, embedded outputs, copy-paste code
+:::
+
 This tutorial compares different time-frequency analysis methods in gwexpy and helps you choose the right one for your analysis.
 
 ## Overview

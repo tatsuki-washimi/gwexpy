@@ -60,8 +60,8 @@ IV. 高度な信号処理
    advanced_fitting
    advanced_peak_detection
    advanced_hht
-   時間-周波数解析の包括的比較 (Notebook) <time_frequency_analysis_comparison>
-   時間-周波数解析手法の比較 <time_frequency_comparison>
+   時間-周波数解析: インタラクティブ例 <time_frequency_analysis_comparison>
+   時間-周波数手法: 理論ガイド <time_frequency_comparison>
    advanced_arima
    advanced_correlation
    ML前処理手法 <ml_preprocessing_methods>
