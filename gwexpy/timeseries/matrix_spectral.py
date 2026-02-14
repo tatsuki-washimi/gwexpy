@@ -61,7 +61,11 @@ class TimeSeriesMatrixSpectralMixin:
         from scipy.signal import welch
 
         from gwexpy.frequencyseries import FrequencySeriesMatrix
-        from gwexpy.utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+        from gwexpy.utils.fft_args import (
+            check_deprecated_kwargs,
+            get_default_overlap,
+            parse_fftlength_or_overlap,
+        )
 
         check_deprecated_kwargs(**kwargs)
 
@@ -117,7 +121,11 @@ class TimeSeriesMatrixSpectralMixin:
         from scipy.signal import csd
 
         from gwexpy.frequencyseries import FrequencySeriesMatrix
-        from gwexpy.utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+        from gwexpy.utils.fft_args import (
+            check_deprecated_kwargs,
+            get_default_overlap,
+            parse_fftlength_or_overlap,
+        )
 
         check_deprecated_kwargs(**kwargs)
 
@@ -167,7 +175,11 @@ class TimeSeriesMatrixSpectralMixin:
         from scipy.signal import coherence
 
         from gwexpy.frequencyseries import FrequencySeriesMatrix
-        from gwexpy.utils.fft_args import check_deprecated_kwargs, get_default_overlap, parse_fftlength_or_overlap
+        from gwexpy.utils.fft_args import (
+            check_deprecated_kwargs,
+            get_default_overlap,
+            parse_fftlength_or_overlap,
+        )
 
         check_deprecated_kwargs(**kwargs)
 

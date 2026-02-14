@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import logging
+import warnings
 from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 import numpy as np
 from astropy import units as u
-import warnings
 
 logger = logging.getLogger(__name__)
 
