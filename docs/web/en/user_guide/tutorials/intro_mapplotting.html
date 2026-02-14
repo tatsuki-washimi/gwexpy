@@ -156,36 +156,6 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/runner/miniconda3/envs/docs/lib/python3.11/site-packages/gwpy/time/_ligotimegps.py:42: UserWarning: Wswiglal-redir-stdio:
-
-SWIGLAL standard output/error redirection is enabled in IPython.
-This may lead to performance penalties. To disable locally, use:
-
-with lal.no_swig_redirect_standard_output_error():
-    ...
-
-To disable globally, use:
-
-lal.swig_redirect_standard_output_error(False)
-
-Note however that this will likely lead to error messages from
-LAL functions being either misdirected or lost when called from
-Jupyter notebooks.
-
-To suppress this warning, use:
-
-import warnings
-warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
-import lal
-
-  from lal import LIGOTimeGPS
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
@@ -200,30 +170,30 @@ import lal
 <span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># Create SkyMap with Mollweide projection (default)</span>
 <span class="ansi-green-fg">      7</span> fig = SkyMap(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">5</span>), projection=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">mollweide</span><span class="ansi-yellow-fg">&#34;</span>)
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
-<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     46</span> )
-<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     50</span>     astro,
-<span class="ansi-green-fg">     51</span>     detector,
-<span class="ansi-green-fg">     52</span>     frequencyseries,
-<span class="ansi-green-fg">     53</span>     interop,
-<span class="ansi-green-fg">     54</span>     io,
-<span class="ansi-green-fg">     55</span>     noise,
-<span class="ansi-green-fg">     56</span>     plot,
-<span class="ansi-green-fg">     57</span>     segments,
-<span class="ansi-green-fg">     58</span>     signal,
-<span class="ansi-green-fg">     59</span>     spectral,
-<span class="ansi-green-fg">     60</span>     spectrogram,
-<span class="ansi-green-fg">     61</span>     table,
-<span class="ansi-green-fg">     62</span>     time,
-<span class="ansi-green-fg">     63</span>     timeseries,
-<span class="ansi-green-fg">     64</span>     types,
-<span class="ansi-green-fg">     65</span> )
-<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
+<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     48</span> )
+<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     52</span>     astro,
+<span class="ansi-green-fg">     53</span>     detector,
+<span class="ansi-green-fg">     54</span>     frequencyseries,
+<span class="ansi-green-fg">     55</span>     interop,
+<span class="ansi-green-fg">     56</span>     io,
+<span class="ansi-green-fg">     57</span>     noise,
+<span class="ansi-green-fg">     58</span>     plot,
+<span class="ansi-green-fg">     59</span>     segments,
+<span class="ansi-green-fg">     60</span>     signal,
+<span class="ansi-green-fg">     61</span>     spectral,
+<span class="ansi-green-fg">     62</span>     spectrogram,
+<span class="ansi-green-fg">     63</span>     table,
+<span class="ansi-green-fg">     64</span>     time,
+<span class="ansi-green-fg">     65</span>     timeseries,
+<span class="ansi-green-fg">     66</span>     types,
+<span class="ansi-green-fg">     67</span> )
+<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
 
 <span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
 <span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>

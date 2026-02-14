@@ -109,15 +109,17 @@
 <p>GWexpy requires Python 3.9+ and depends on GWpy, NumPy, SciPy, and Astropy.</p>
 <section id="basic-install">
 <h2>Basic install<a class="headerlink" href="#basic-install" title="Link to this heading"></a></h2>
-<p>:::{note}
-GWexpy is currently in <strong>Pre-release</strong>. We plan to publish it on PyPI soon, but for now, we recommend installing directly from GitHub to get the latest features and bug fixes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GWexpy is currently in <strong>Pre-release</strong>. We plan to publish it on PyPI soon, but for now, we recommend installing directly from GitHub to get the latest features and bug fixes.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># From GitHub (recommended)</span>
 pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/tatsuki-washimi/gwexpy.git
 </pre></div>
 </div>
-<p>:::</p>
-<p>:::{important}
-<strong>For Gravitational Wave Data Analysis (LIGO/Virgo/KAGRA, etc.)</strong></p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>For Gravitational Wave Data Analysis (LIGO/Virgo/KAGRA, etc.)</strong></p>
 <p>Some dependencies in the <code class="docutils literal notranslate"><span class="pre">[gw]</span></code> extra, such as <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> and <code class="docutils literal notranslate"><span class="pre">python-framel</span></code>, are <strong>not available on PyPI</strong> due to complex system-level dependencies.
 To use these features, we strongly recommend installing them via <strong>Conda (Miniforge/Anaconda)</strong> first:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Install external dependencies</span>
@@ -127,7 +129,7 @@ conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> <
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[gw] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
 </pre></div>
 </div>
-<p>:::</p>
+</div>
 </section>
 <section id="development-install">
 <h2>Development install<a class="headerlink" href="#development-install" title="Link to this heading"></a></h2>
@@ -161,14 +163,15 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git&quot;</span>
 </pre></div>
 </div>
-<p>:::{note}
-The <code class="docutils literal notranslate"><span class="pre">[gw]</span></code> extra includes dependencies like <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> which are <strong>not available on PyPI</strong>.
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">[gw]</span></code> extra includes dependencies like <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code> which are <strong>not available on PyPI</strong>.
 To use these features, you must install dependencies via <strong>Conda</strong> first:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>python-nds2-client<span class="w"> </span>python-framel<span class="w"> </span>ldas-tools-framecpp
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;.[gw]&quot;</span>
 </pre></div>
 </div>
-<p>:::</p>
+</div>
 </section>
 <section id="next-steps">
 <h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>

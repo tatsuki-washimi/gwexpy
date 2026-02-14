@@ -117,9 +117,21 @@
 <h1>gwexpy TimeSeries 新機能チュートリアル<a class="headerlink" href="#gwexpy-TimeSeries-新機能チュートリアル" title="Link to this heading"></a></h1>
 <p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwpy</span></code> を拡張した <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> クラスに追加された新しいメソッドとその使い方を解説します。</p>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は GWpy との高い互換性を維持しつつ、信号処理、統計解析、他ライブラリとの相互運用性を大幅に強化しています。</p>
-<section id="目次:nbsphinx-math:n1.-環境セットアップ:nbsphinx-math:n2.-信号処理と復調-(Hilbert,-Phase,-Demodulation):nbsphinx-math:n3.-スペクトル解析と相関-(FFT,-Transfer-Function,-xcorr):nbsphinx-math:n4.-ヒルベルト・ファン変換-(HHT):nbsphinx-math:n5.-統計・前処理-(Impute,-Standardize,-ARIMA,-Hurst,-Rolling):nbsphinx-math:n6.-リサンプリングと再インデックス-(asfreq,-resample):nbsphinx-math:n7.-関数によるフィッティング-(fit):nbsphinx-math:n8.-相互運用性-(Pandas,-Xarray,-Torch,-and-more)">
-<h2>目次:nbsphinx-math:<cite>n1</cite>. 環境セットアップ:nbsphinx-math:<cite>n2</cite>. 信号処理と復調 (Hilbert, Phase, Demodulation):nbsphinx-math:<cite>n3</cite>. スペクトル解析と相関 (FFT, Transfer Function, xcorr):nbsphinx-math:<cite>n4</cite>. ヒルベルト・ファン変換 (HHT):nbsphinx-math:<cite>n5</cite>. 統計・前処理 (Impute, Standardize, ARIMA, Hurst, Rolling):nbsphinx-math:<cite>n6</cite>. リサンプリングと再インデックス (asfreq, resample):nbsphinx-math:<cite>n7</cite>. 関数によるフィッティング (fit):nbsphinx-math:<cite>n8</cite>. 相互運用性 (Pandas, Xarray, Torch, and more)<a class="headerlink" href="#目次:nbsphinx-math:n1.-環境セットアップ:nbsphinx-math:n2.-信号処理と復調-(Hilbert,-Phase,-Demodulation):nbsphinx-math:n3.-スペクトル解析と相関-(FFT,-Transfer-Function,-xcorr):nbsphinx-math:n4.-ヒルベルト・ファン変換-(HHT):nbsphinx-math:n5.-統計・前処理-(Impute,-Standardize,-ARIMA,-Hurst,-Rolling):nbsphinx-math:n6.-リサンプリングと再インデックス-(asfreq,-resample):nbsphinx-math:n7.-関数によるフィッティング-(fit):nbsphinx-math:n8.-相互運用性-(Pandas,-Xarray,-Torch,-and-more)" title="Link to this heading"></a></h2>
-<p>## 1. 環境セットアップ</p>
+<section id="目次">
+<h2>目次<a class="headerlink" href="#目次" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>環境セットアップ</p></li>
+<li><p>信号処理と復調 (Hilbert, Phase, Demodulation)</p></li>
+<li><p>スペクトル解析と相関 (FFT, Transfer Function, xcorr)</p></li>
+<li><p>ヒルベルト・ファン変換 (HHT)</p></li>
+<li><p>統計・前処理 (Impute, Standardize, ARIMA, Hurst, Rolling)</p></li>
+<li><p>リサンプリングと再インデックス (asfreq, resample)</p></li>
+<li><p>関数によるフィッティング (fit)</p></li>
+<li><p>相互運用性 (Pandas, Xarray, Torch, and more)</p></li>
+</ol>
+</section>
+<section id="1.-環境セットアップ">
+<h2>1. 環境セットアップ<a class="headerlink" href="#1.-環境セットアップ" title="Link to this heading"></a></h2>
 <p>まずは必要なライブラリをインポートし、デモ用のサンプルデータを生成します。</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -157,36 +169,6 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/runner/miniconda3/envs/docs/lib/python3.11/site-packages/gwpy/time/_ligotimegps.py:42: UserWarning: Wswiglal-redir-stdio:
-
-SWIGLAL standard output/error redirection is enabled in IPython.
-This may lead to performance penalties. To disable locally, use:
-
-with lal.no_swig_redirect_standard_output_error():
-    ...
-
-To disable globally, use:
-
-lal.swig_redirect_standard_output_error(False)
-
-Note however that this will likely lead to error messages from
-LAL functions being either misdirected or lost when called from
-Jupyter notebooks.
-
-To suppress this warning, use:
-
-import warnings
-warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
-import lal
-
-  from lal import LIGOTimeGPS
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
@@ -201,30 +183,30 @@ import lal
 <span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Plot
 <span class="ansi-green-fg">      7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
-<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     46</span> )
-<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     50</span>     astro,
-<span class="ansi-green-fg">     51</span>     detector,
-<span class="ansi-green-fg">     52</span>     frequencyseries,
-<span class="ansi-green-fg">     53</span>     interop,
-<span class="ansi-green-fg">     54</span>     io,
-<span class="ansi-green-fg">     55</span>     noise,
-<span class="ansi-green-fg">     56</span>     plot,
-<span class="ansi-green-fg">     57</span>     segments,
-<span class="ansi-green-fg">     58</span>     signal,
-<span class="ansi-green-fg">     59</span>     spectral,
-<span class="ansi-green-fg">     60</span>     spectrogram,
-<span class="ansi-green-fg">     61</span>     table,
-<span class="ansi-green-fg">     62</span>     time,
-<span class="ansi-green-fg">     63</span>     timeseries,
-<span class="ansi-green-fg">     64</span>     types,
-<span class="ansi-green-fg">     65</span> )
-<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
+<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     48</span> )
+<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     52</span>     astro,
+<span class="ansi-green-fg">     53</span>     detector,
+<span class="ansi-green-fg">     54</span>     frequencyseries,
+<span class="ansi-green-fg">     55</span>     interop,
+<span class="ansi-green-fg">     56</span>     io,
+<span class="ansi-green-fg">     57</span>     noise,
+<span class="ansi-green-fg">     58</span>     plot,
+<span class="ansi-green-fg">     59</span>     segments,
+<span class="ansi-green-fg">     60</span>     signal,
+<span class="ansi-green-fg">     61</span>     spectral,
+<span class="ansi-green-fg">     62</span>     spectrogram,
+<span class="ansi-green-fg">     63</span>     table,
+<span class="ansi-green-fg">     64</span>     time,
+<span class="ansi-green-fg">     65</span>     timeseries,
+<span class="ansi-green-fg">     66</span>     types,
+<span class="ansi-green-fg">     67</span> )
+<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
 
 <span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
 <span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
@@ -266,7 +248,9 @@ import lal
 <span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
 </pre></div></div>
 </div>
-<p>## 2. 信号処理と復調</p>
+</section>
+<section id="2.-信号処理と復調">
+<h2>2. 信号処理と復調<a class="headerlink" href="#2.-信号処理と復調" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> では、ヒルベルト変換や包絡線、瞬時周波数の計算、さらにロックインアンプのような復調機能が統合されています。</p>
 <section id="ヒルベルト変換と包絡線">
 <h3>ヒルベルト変換と包絡線<a class="headerlink" href="#ヒルベルト変換と包絡線" title="Link to this heading"></a></h3>
@@ -400,9 +384,11 @@ import lal
 <span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
 </pre></div></div>
 </div>
-<p>## 3. スペクトル解析と相関</p>
-<p>GWpy の機能を継承しつつ、過渡信号向けの <code class="docutils literal notranslate"><span class="pre">transient</span></code> モード FFT や、FFT の直接比による伝達関数計算が追加されています。</p>
 </section>
+</section>
+<section id="3.-スペクトル解析と相関">
+<h2>3. スペクトル解析と相関<a class="headerlink" href="#3.-スペクトル解析と相関" title="Link to this heading"></a></h2>
+<p>GWpy の機能を継承しつつ、過渡信号向けの <code class="docutils literal notranslate"><span class="pre">transient</span></code> モード FFT や、FFT の直接比による伝達関数計算が追加されています。</p>
 <section id="拡張された-FFT">
 <h3>拡張された FFT<a class="headerlink" href="#拡張された-FFT" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> を使用すると、ゼロパディングや高速な長さへの調整、左右個別のパディング指定が可能です。</p>
@@ -624,7 +610,9 @@ import lal
 HHT Error: name &#39;ts2&#39; is not defined
 </pre></div></div>
 </div>
-<p>## 5. 統計・前処理</p>
+</section>
+<section id="5.-統計・前処理">
+<h2>5. 統計・前処理<a class="headerlink" href="#5.-統計・前処理" title="Link to this heading"></a></h2>
 <p>欠損値補完、標準化、ARIMAモデル、ハースト指数、およびローリング統計量が TimeSeries メソッドとして利用可能です。</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -854,7 +842,10 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 <span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
 </pre></div></div>
 </div>
-<p>## 6. リサンプリングと再インデックス</p>
+</section>
+</section>
+<section id="6.-リサンプリングと再インデックス">
+<h2>6. リサンプリングと再インデックス<a class="headerlink" href="#6.-リサンプリングと再インデックス" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">asfreq</span></code> メソッドによる固定グリッドへの割り当てや、<code class="docutils literal notranslate"><span class="pre">resample</span></code> メソッドでの「時間ビン集計」が可能になりました。</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
@@ -931,7 +922,6 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 </pre></div></div>
 </div>
 </section>
-</section>
 <section id="7.-関数によるフィッティング">
 <h2>7. 関数によるフィッティング<a class="headerlink" href="#7.-関数によるフィッティング" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> では <code class="docutils literal notranslate"><span class="pre">iminuit</span></code> をベースとした強力なフィッティング機能を提供しています。GWpy の元のクラスを汚染しないよう、<code class="docutils literal notranslate"><span class="pre">.fit()</span></code> メソッドはオプトイン方式になっています。</p>
@@ -981,7 +971,9 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 <span class="ansi-red-fg">NameError</span>: name &#39;data&#39; is not defined
 </pre></div></div>
 </div>
-<p>## 8. 相互運用性</p>
+</section>
+<section id="8.-相互運用性">
+<h2>8. 相互運用性<a class="headerlink" href="#8.-相互運用性" title="Link to this heading"></a></h2>
 <p>主要なデータサイエンス・機械学習ライブラリとの相互変換が非常にスムーズです。</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
@@ -1012,7 +1004,7 @@ Hurst skipping: name &#39;ts1&#39; is not defined
     <span class="n">xr</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
     <span class="n">ts_xr</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_xarray</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Xarray interop OK&quot;</span><span class="p">)</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">pass</span>
 </pre></div>

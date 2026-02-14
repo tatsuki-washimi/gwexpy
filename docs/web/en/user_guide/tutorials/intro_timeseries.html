@@ -116,8 +116,20 @@
 </div>
 <section id="gwexpy-TimeSeries-New-Features-Tutorial">
 <h1>gwexpy TimeSeries New Features Tutorial<a class="headerlink" href="#gwexpy-TimeSeries-New-Features-Tutorial" title="Link to this heading"></a></h1>
-<p>This notebook introduces the new methods added to the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>, an extension of <code class="docutils literal notranslate"><span class="pre">gwpy</span></code>, and explains how to use them. <span class="math">\n</span><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> maintains high compatibility with GWpy while significantly enhancing signal processing, statistical analysis, and interoperability with other libraries.:nbsphinx-math:<cite>n</cite><span class="math">\n`## Table of Contents:nbsphinx-math:</span>n1`. Environment Setup:nbsphinx-math:<cite>n2</cite>. Signal Processing and Demodulation (Hilbert, Phase,
-Demodulation):nbsphinx-math:<cite>n3</cite>. Spectral Analysis and Correlation (FFT, Transfer Function, xcorr):nbsphinx-math:<cite>n4</cite>. Hilbert-Huang Transform (HHT):nbsphinx-math:<cite>n5</cite>. Statistics and Preprocessing (Impute, Standardize, ARIMA, Hurst, Rolling):nbsphinx-math:<cite>n6</cite>. Resampling and Reindexing (asfreq, resample):nbsphinx-math:<cite>n7</cite>. Function Fitting (fit):nbsphinx-math:<cite>n8</cite>. Interoperability (Pandas, Xarray, Torch, and more)</p>
+<p>This notebook introduces the new methods added to the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>, an extension of <code class="docutils literal notranslate"><span class="pre">gwpy</span></code>, and explains how to use them.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> maintains high compatibility with GWpy while significantly enhancing signal processing, statistical analysis, and interoperability with other libraries.</p>
+<section id="Table-of-Contents">
+<h2>Table of Contents<a class="headerlink" href="#Table-of-Contents" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Environment Setup</p></li>
+<li><p>Signal Processing and Demodulation (Hilbert, Phase, Demodulation)</p></li>
+<li><p>Spectral Analysis and Correlation (FFT, Transfer Function, xcorr)</p></li>
+<li><p>Hilbert-Huang Transform (HHT)</p></li>
+<li><p>Statistics and Preprocessing (Impute, Standardize, ARIMA, Hurst, Rolling)</p></li>
+<li><p>Resampling and Reindexing (asfreq, resample)</p></li>
+<li><p>Function Fitting (fit)</p></li>
+<li><p>Interoperability (Pandas, Xarray, Torch, and more)</p></li>
+</ol>
 <p>## 1. Environment SetupFirst, we import the necessary libraries and generate sample data for demonstration.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -155,36 +167,6 @@ Demodulation):nbsphinx-math:<cite>n3</cite>. Spectral Analysis and Correlation (
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/runner/miniconda3/envs/docs/lib/python3.11/site-packages/gwpy/time/_ligotimegps.py:42: UserWarning: Wswiglal-redir-stdio:
-
-SWIGLAL standard output/error redirection is enabled in IPython.
-This may lead to performance penalties. To disable locally, use:
-
-with lal.no_swig_redirect_standard_output_error():
-    ...
-
-To disable globally, use:
-
-lal.swig_redirect_standard_output_error(False)
-
-Note however that this will likely lead to error messages from
-LAL functions being either misdirected or lost when called from
-Jupyter notebooks.
-
-To suppress this warning, use:
-
-import warnings
-warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
-import lal
-
-  from lal import LIGOTimeGPS
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
@@ -199,30 +181,30 @@ import lal
 <span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Plot
 <span class="ansi-green-fg">      7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:49</span>
-<span class="ansi-green-fg">     44</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     45</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     46</span> )
-<span class="ansi-green-fg">     48</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     50</span>     astro,
-<span class="ansi-green-fg">     51</span>     detector,
-<span class="ansi-green-fg">     52</span>     frequencyseries,
-<span class="ansi-green-fg">     53</span>     interop,
-<span class="ansi-green-fg">     54</span>     io,
-<span class="ansi-green-fg">     55</span>     noise,
-<span class="ansi-green-fg">     56</span>     plot,
-<span class="ansi-green-fg">     57</span>     segments,
-<span class="ansi-green-fg">     58</span>     signal,
-<span class="ansi-green-fg">     59</span>     spectral,
-<span class="ansi-green-fg">     60</span>     spectrogram,
-<span class="ansi-green-fg">     61</span>     table,
-<span class="ansi-green-fg">     62</span>     time,
-<span class="ansi-green-fg">     63</span>     timeseries,
-<span class="ansi-green-fg">     64</span>     types,
-<span class="ansi-green-fg">     65</span> )
-<span class="ansi-green-fg">     66</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     67</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
+<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
+<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
+<span class="ansi-green-fg">     48</span> )
+<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     52</span>     astro,
+<span class="ansi-green-fg">     53</span>     detector,
+<span class="ansi-green-fg">     54</span>     frequencyseries,
+<span class="ansi-green-fg">     55</span>     interop,
+<span class="ansi-green-fg">     56</span>     io,
+<span class="ansi-green-fg">     57</span>     noise,
+<span class="ansi-green-fg">     58</span>     plot,
+<span class="ansi-green-fg">     59</span>     segments,
+<span class="ansi-green-fg">     60</span>     signal,
+<span class="ansi-green-fg">     61</span>     spectral,
+<span class="ansi-green-fg">     62</span>     spectrogram,
+<span class="ansi-green-fg">     63</span>     table,
+<span class="ansi-green-fg">     64</span>     time,
+<span class="ansi-green-fg">     65</span>     timeseries,
+<span class="ansi-green-fg">     66</span>     types,
+<span class="ansi-green-fg">     67</span> )
+<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
+<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
 
 <span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
 <span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
@@ -266,7 +248,7 @@ import lal
 </div>
 <p>## 2. Signal Processing and Demodulation<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> integrates Hilbert transforms, envelope calculations, instantaneous frequency computation, and demodulation functions like lock-in amplifiers.</p>
 <section id="Hilbert-Transform-and-EnvelopeUse-hilbert-and-envelope.">
-<h2>Hilbert Transform and EnvelopeUse <code class="docutils literal notranslate"><span class="pre">hilbert</span></code> and <code class="docutils literal notranslate"><span class="pre">envelope</span></code>.<a class="headerlink" href="#Hilbert-Transform-and-EnvelopeUse-hilbert-and-envelope." title="Link to this heading"></a></h2>
+<h3>Hilbert Transform and EnvelopeUse <code class="docutils literal notranslate"><span class="pre">hilbert</span></code> and <code class="docutils literal notranslate"><span class="pre">envelope</span></code>.<a class="headerlink" href="#Hilbert-Transform-and-EnvelopeUse-hilbert-and-envelope." title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -307,7 +289,7 @@ import lal
 </div>
 </section>
 <section id="Instantaneous-Phase-and-Instantaneous-FrequencyUse-instantaneous_phase-and-instantaneous_frequency.-You-can-specify-phase-unwrapping-(unwrap)-and-degree-units-(deg).">
-<h2>Instantaneous Phase and Instantaneous FrequencyUse <code class="docutils literal notranslate"><span class="pre">instantaneous_phase</span></code> and <code class="docutils literal notranslate"><span class="pre">instantaneous_frequency</span></code>. You can specify phase unwrapping (<code class="docutils literal notranslate"><span class="pre">unwrap</span></code>) and degree units (<code class="docutils literal notranslate"><span class="pre">deg</span></code>).<a class="headerlink" href="#Instantaneous-Phase-and-Instantaneous-FrequencyUse-instantaneous_phase-and-instantaneous_frequency.-You-can-specify-phase-unwrapping-(unwrap)-and-degree-units-(deg)." title="Link to this heading"></a></h2>
+<h3>Instantaneous Phase and Instantaneous FrequencyUse <code class="docutils literal notranslate"><span class="pre">instantaneous_phase</span></code> and <code class="docutils literal notranslate"><span class="pre">instantaneous_frequency</span></code>. You can specify phase unwrapping (<code class="docutils literal notranslate"><span class="pre">unwrap</span></code>) and degree units (<code class="docutils literal notranslate"><span class="pre">deg</span></code>).<a class="headerlink" href="#Instantaneous-Phase-and-Instantaneous-FrequencyUse-instantaneous_phase-and-instantaneous_frequency.-You-can-specify-phase-unwrapping-(unwrap)-and-degree-units-(deg)." title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -347,7 +329,7 @@ import lal
 </div>
 </section>
 <section id="Mixing-and-Demodulation-(Mix-down,-Baseband,-Lock-in)Functions-for-extracting-specific-frequency-components-or-bringing-them-down-to-baseband.">
-<h2>Mixing and Demodulation (Mix-down, Baseband, Lock-in)Functions for extracting specific frequency components or bringing them down to baseband.<a class="headerlink" href="#Mixing-and-Demodulation-(Mix-down,-Baseband,-Lock-in)Functions-for-extracting-specific-frequency-components-or-bringing-them-down-to-baseband." title="Link to this heading"></a></h2>
+<h3>Mixing and Demodulation (Mix-down, Baseband, Lock-in)Functions for extracting specific frequency components or bringing them down to baseband.<a class="headerlink" href="#Mixing-and-Demodulation-(Mix-down,-Baseband,-Lock-in)Functions-for-extracting-specific-frequency-components-or-bringing-them-down-to-baseband." title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -399,7 +381,7 @@ import lal
 <p>## 3. Spectral Analysis and CorrelationWhile inheriting GWpy’s functionality, <code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> FFT for transient signals and transfer function calculation via direct FFT ratio have been added.</p>
 </section>
 <section id="Extended-FFTUsing-mode=%22transient%22-enables-zero-padding,-adjustment-to-fast-lengths,-and-individual-left/right-padding-specifications.">
-<h2>Extended FFTUsing <code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> enables zero-padding, adjustment to fast lengths, and individual left/right padding specifications.<a class="headerlink" href="#Extended-FFTUsing-mode=%22transient%22-enables-zero-padding,-adjustment-to-fast-lengths,-and-individual-left/right-padding-specifications." title="Link to this heading"></a></h2>
+<h3>Extended FFTUsing <code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> enables zero-padding, adjustment to fast lengths, and individual left/right padding specifications.<a class="headerlink" href="#Extended-FFTUsing-mode=%22transient%22-enables-zero-padding,-adjustment-to-fast-lengths,-and-individual-left/right-padding-specifications." title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -445,7 +427,7 @@ import lal
 </div>
 </section>
 <section id="Transfer-Function-and-Cross-Correlation-(xcorr)With-transfer_function,-you-can-choose-not-only-the-Welch-method-(mode=%22steady%22)-but-also-direct-FFT-ratio-(mode=%22transient%22).">
-<h2>Transfer Function and Cross-Correlation (xcorr)With <code class="docutils literal notranslate"><span class="pre">transfer_function</span></code>, you can choose not only the Welch method (<code class="docutils literal notranslate"><span class="pre">mode=&quot;steady&quot;</span></code>) but also direct FFT ratio (<code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code>).<a class="headerlink" href="#Transfer-Function-and-Cross-Correlation-(xcorr)With-transfer_function,-you-can-choose-not-only-the-Welch-method-(mode=%22steady%22)-but-also-direct-FFT-ratio-(mode=%22transient%22)." title="Link to this heading"></a></h2>
+<h3>Transfer Function and Cross-Correlation (xcorr)With <code class="docutils literal notranslate"><span class="pre">transfer_function</span></code>, you can choose not only the Welch method (<code class="docutils literal notranslate"><span class="pre">mode=&quot;steady&quot;</span></code>) but also direct FFT ratio (<code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code>).<a class="headerlink" href="#Transfer-Function-and-Cross-Correlation-(xcorr)With-transfer_function,-you-can-choose-not-only-the-Welch-method-(mode=%22steady%22)-but-also-direct-FFT-ratio-(mode=%22transient%22)." title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -495,7 +477,7 @@ import lal
 </div>
 </section>
 <section id="STLT-(Short-Time-Laplace-Transform)STLT-(Short-Time-Laplace-Transform)-is-a-transform-for-extracting-local-structures-that-change-over-time-in-a-signal.In-gwexpy,-the-STLT-result-is-a-3D-transform-with-axes-(time-×-sigma-×-frequency),-represented-by-TimePlaneTransform-/-LaplaceGram.Below-is-an-example-of-calculating-STLT-using-the-stlt-method-and-extracting-a-slice-(Plane2D)-at-a-specific-time.This-example-also-demonstrates-specifying-frequencies-(Hz)-to-evaluate-STLT-at-arbitrary-frequency-points.">
-<h2>STLT (Short-Time Laplace Transform)STLT (Short-Time Laplace Transform) is a transform for extracting local structures that change over time in a signal.In <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>, the STLT result is a 3D transform with axes <strong>(time × sigma × frequency)</strong>, represented by <code class="docutils literal notranslate"><span class="pre">TimePlaneTransform</span></code> / <code class="docutils literal notranslate"><span class="pre">LaplaceGram</span></code>.Below is an example of calculating STLT using the <code class="docutils literal notranslate"><span class="pre">stlt</span></code> method and extracting a slice (<code class="docutils literal notranslate"><span class="pre">Plane2D</span></code>) at a specific time.This example also demonstrates specifying <code class="docutils literal notranslate"><span class="pre">frequencies</span></code> (Hz) to evaluate STLT at arbitrary frequency points.<a class="headerlink" href="#STLT-(Short-Time-Laplace-Transform)STLT-(Short-Time-Laplace-Transform)-is-a-transform-for-extracting-local-structures-that-change-over-time-in-a-signal.In-gwexpy,-the-STLT-result-is-a-3D-transform-with-axes-(time-×-sigma-×-frequency),-represented-by-TimePlaneTransform-/-LaplaceGram.Below-is-an-example-of-calculating-STLT-using-the-stlt-method-and-extracting-a-slice-(Plane2D)-at-a-specific-time.This-example-also-demonstrates-specifying-frequencies-(Hz)-to-evaluate-STLT-at-arbitrary-frequency-points." title="Link to this heading"></a></h2>
+<h3>STLT (Short-Time Laplace Transform)STLT (Short-Time Laplace Transform) is a transform for extracting local structures that change over time in a signal.In <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>, the STLT result is a 3D transform with axes <strong>(time × sigma × frequency)</strong>, represented by <code class="docutils literal notranslate"><span class="pre">TimePlaneTransform</span></code> / <code class="docutils literal notranslate"><span class="pre">LaplaceGram</span></code>.Below is an example of calculating STLT using the <code class="docutils literal notranslate"><span class="pre">stlt</span></code> method and extracting a slice (<code class="docutils literal notranslate"><span class="pre">Plane2D</span></code>) at a specific time.This example also demonstrates specifying <code class="docutils literal notranslate"><span class="pre">frequencies</span></code> (Hz) to evaluate STLT at arbitrary frequency points.<a class="headerlink" href="#STLT-(Short-Time-Laplace-Transform)STLT-(Short-Time-Laplace-Transform)-is-a-transform-for-extracting-local-structures-that-change-over-time-in-a-signal.In-gwexpy,-the-STLT-result-is-a-3D-transform-with-axes-(time-×-sigma-×-frequency),-represented-by-TimePlaneTransform-/-LaplaceGram.Below-is-an-example-of-calculating-STLT-using-the-stlt-method-and-extracting-a-slice-(Plane2D)-at-a-specific-time.This-example-also-demonstrates-specifying-frequencies-(Hz)-to-evaluate-STLT-at-arbitrary-frequency-points." title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -547,8 +529,10 @@ import lal
 <span class="ansi-red-fg">NameError</span>: name &#39;TimeSeries&#39; is not defined
 </pre></div></div>
 </div>
+</section>
+</section>
 <section id="4.-Hilbert-Huang-Transform-(HHT)Hilbert-Huang-Transform-(HHT)-functionality-for-nonlinear-and-non-stationary-signal-analysis.Combines-Empirical-Mode-Decomposition-(EMD)-and-Hilbert-spectral-analysis.">
-<h3>4. Hilbert-Huang Transform (HHT)Hilbert-Huang Transform (HHT) functionality for nonlinear and non-stationary signal analysis.Combines Empirical Mode Decomposition (EMD) and Hilbert spectral analysis.<a class="headerlink" href="#4.-Hilbert-Huang-Transform-(HHT)Hilbert-Huang-Transform-(HHT)-functionality-for-nonlinear-and-non-stationary-signal-analysis.Combines-Empirical-Mode-Decomposition-(EMD)-and-Hilbert-spectral-analysis." title="Link to this heading"></a></h3>
+<h2>4. Hilbert-Huang Transform (HHT)Hilbert-Huang Transform (HHT) functionality for nonlinear and non-stationary signal analysis.Combines Empirical Mode Decomposition (EMD) and Hilbert spectral analysis.<a class="headerlink" href="#4.-Hilbert-Huang-Transform-(HHT)Hilbert-Huang-Transform-(HHT)-functionality-for-nonlinear-and-non-stationary-signal-analysis.Combines-Empirical-Mode-Decomposition-(EMD)-and-Hilbert-spectral-analysis." title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -657,10 +641,8 @@ HHT Error: name &#39;ts2&#39; is not defined
 <span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
 </pre></div></div>
 </div>
-</section>
-</section>
 <section id="Peak-Detection-(Find-Peaks)Wraps-scipy.signal.find_peaks-to-detect-peaks-in-time-series-data.">
-<h2>Peak Detection (Find Peaks)Wraps <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> to detect peaks in time series data.<a class="headerlink" href="#Peak-Detection-(Find-Peaks)Wraps-scipy.signal.find_peaks-to-detect-peaks-in-time-series-data." title="Link to this heading"></a></h2>
+<h3>Peak Detection (Find Peaks)Wraps <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> to detect peaks in time series data.<a class="headerlink" href="#Peak-Detection-(Find-Peaks)Wraps-scipy.signal.find_peaks-to-detect-peaks-in-time-series-data." title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
@@ -716,7 +698,7 @@ HHT Error: name &#39;ts2&#39; is not defined
 </div>
 </section>
 <section id="ARIMA-Model-and-Hurst-ExponentNote:-These-features-require-libraries-such-as-statsmodels-and-hurst.">
-<h2>ARIMA Model and Hurst ExponentNote: These features require libraries such as <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> and <code class="docutils literal notranslate"><span class="pre">hurst</span></code>.<a class="headerlink" href="#ARIMA-Model-and-Hurst-ExponentNote:-These-features-require-libraries-such-as-statsmodels-and-hurst." title="Link to this heading"></a></h2>
+<h3>ARIMA Model and Hurst ExponentNote: These features require libraries such as <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> and <code class="docutils literal notranslate"><span class="pre">hurst</span></code>.<a class="headerlink" href="#ARIMA-Model-and-Hurst-ExponentNote:-These-features-require-libraries-such-as-statsmodels-and-hurst." title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
@@ -790,7 +772,7 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 </div>
 </section>
 <section id="Rolling-StatisticsSimilar-to-Pandas,-rolling_mean,-std,-median,-min,-max-are-available.">
-<h2>Rolling StatisticsSimilar to Pandas, <code class="docutils literal notranslate"><span class="pre">rolling_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">std</span></code>, <code class="docutils literal notranslate"><span class="pre">median</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code> are available.<a class="headerlink" href="#Rolling-StatisticsSimilar-to-Pandas,-rolling_mean,-std,-median,-min,-max-are-available." title="Link to this heading"></a></h2>
+<h3>Rolling StatisticsSimilar to Pandas, <code class="docutils literal notranslate"><span class="pre">rolling_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">std</span></code>, <code class="docutils literal notranslate"><span class="pre">median</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code> are available.<a class="headerlink" href="#Rolling-StatisticsSimilar-to-Pandas,-rolling_mean,-std,-median,-min,-max-are-available." title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
@@ -915,8 +897,10 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 <span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
 </pre></div></div>
 </div>
+</section>
+</section>
 <section id="7.-Function-Fittinggwexpy-provides-powerful-fitting-functionality-based-on-iminuit.-To-avoid-polluting-GWpy's-original-classes,-the-.fit()-method-is-opt-in.">
-<h3>7. Function Fitting<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides powerful fitting functionality based on <code class="docutils literal notranslate"><span class="pre">iminuit</span></code>. To avoid polluting GWpy’s original classes, the <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> method is opt-in.<a class="headerlink" href="#7.-Function-Fittinggwexpy-provides-powerful-fitting-functionality-based-on-iminuit.-To-avoid-polluting-GWpy's-original-classes,-the-.fit()-method-is-opt-in." title="Link to this heading"></a></h3>
+<h2>7. Function Fitting<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides powerful fitting functionality based on <code class="docutils literal notranslate"><span class="pre">iminuit</span></code>. To avoid polluting GWpy’s original classes, the <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> method is opt-in.<a class="headerlink" href="#7.-Function-Fittinggwexpy-provides-powerful-fitting-functionality-based-on-iminuit.-To-avoid-polluting-GWpy's-original-classes,-the-.fit()-method-is-opt-in." title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
@@ -993,7 +977,7 @@ Hurst skipping: name &#39;ts1&#39; is not defined
     <span class="n">xr</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
     <span class="n">ts_xr</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_xarray</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Xarray interop OK&quot;</span><span class="p">)</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="k">pass</span>
 </pre></div>
@@ -1126,7 +1110,7 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 </div>
 </section>
 <section id="Summary">
-<h3>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h3>
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
 <p>In this tutorial, we have covered the key enhancements in <code class="docutils literal notranslate"><span class="pre">gwexpy.TimeSeries</span></code>:</p>
 <ul class="simple">
 <li><p><strong>Signal Processing</strong>: Hilbert transform, demodulation, and extended FFT modes.</p></li>
@@ -1134,15 +1118,14 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 <li><p><strong>Data Cleaning</strong>: Missing value imputation and standardization.</p></li>
 <li><p><strong>Interoperability</strong>: Seamless conversion to/from Pandas, Xarray, PyTorch, TensorFlow, and ObsPy.</p></li>
 </ul>
-</section>
-</section>
 <section id="Next-Steps">
-<h2>Next Steps<a class="headerlink" href="#Next-Steps" title="Link to this heading"></a></h2>
+<h3>Next Steps<a class="headerlink" href="#Next-Steps" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>Multichannel Data</strong>: Learn about <a class="reference internal" href="matrix_timeseries.html"><span class="doc">TimeSeriesMatrix</span></a> for handling many channels simultaneously.</p></li>
 <li><p><strong>Spectral Analysis</strong>: Explore <a class="reference internal" href="intro_frequencyseries.html"><span class="doc">FrequencySeries</span></a>.</p></li>
 <li><p><strong>4D Fields</strong>: Check out <a class="reference internal" href="field_scalar_intro.html"><span class="doc">ScalarField</span></a> for spacetime analysis.</p></li>
 </ul>
+</section>
 </section>
 </section>
 
