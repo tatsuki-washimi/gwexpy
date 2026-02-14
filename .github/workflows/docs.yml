@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         shell: bash -l {0}
         run: |
-          conda install -y "scipy<1.14" pandas matplotlib h5py gwpy nds2-client lalsuite framel \
+          conda install -y "numpy<2" "scipy<1.14" pandas matplotlib h5py gwpy nds2-client lalsuite framel \
             sphinx sphinx_rtd_theme myst-parser nbsphinx pandoc ipykernel
           pip install sphinx-intl sphinx-design
           pip install --no-deps .
@@ -46,10 +46,10 @@ jobs:
       - name: Build documentation
         shell: bash -l {0}
         env:
-          # Enable notebook execution for complete documentation
-          NBS_EXECUTE: always
-          # Allow notebook errors to not block deployment (warnings will be logged)
-          NBS_ALLOW_ERRORS: "true"
+          # Publish pre-executed notebooks (avoid CI-only execution errors and path leaks)
+          NBS_EXECUTE: never
+          # If execution is enabled elsewhere, do not allow silent failures
+          NBS_ALLOW_ERRORS: "false"
         run: |
           # Publish docs under /docs/... so URLs become /gwexpy/docs/web/{en,ja}/.
           mkdir -p docs/_build/html
