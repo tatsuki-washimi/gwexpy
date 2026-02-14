@@ -13,6 +13,10 @@ from typing import TYPE_CHECKING, Any
 
 from astropy.utils.exceptions import AstropyWarning
 
+# Keep docs/tutorial output readable by suppressing known noisy warnings.
+# This must run before importing GWpy/LAL (which can emit warnings at import time).
+warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
+
 # -----------------------------------------------------------------------------
 # Compatibility: some minimal or newer gwpy builds used in docs/CI may lack
 # `gwpy.io.registry.register_reader` / `register_identifier` / `register_writer`.
@@ -34,8 +38,6 @@ try:  # pragma: no cover - defensive
 except (ImportError, AttributeError):
     pass
 
-# Keep docs/tutorial output readable by suppressing known noisy warnings.
-warnings.filterwarnings("ignore", "Wswiglal-redir-stdio")
 warnings.filterwarnings("ignore", category=UserWarning, module="gwpy")
 warnings.filterwarnings("ignore", category=UserWarning, module="scipy")
 warnings.filterwarnings("ignore", category=AstropyWarning)
