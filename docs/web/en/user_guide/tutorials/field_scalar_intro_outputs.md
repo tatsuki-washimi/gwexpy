@@ -4,7 +4,10 @@ This document describes the expected visual outputs and results from the ScalarF
 
 ## Note on Execution
 
-The ScalarField tutorial notebook currently **does not include embedded output cells**. To see the full visual demonstrations:
+The ScalarField tutorial notebook now includes embedded outputs for implemented sections.
+You can view the main plots directly on the documentation page.
+
+Run locally if you want to regenerate outputs or modify parameters:
 
 1. **Download the notebook** from the documentation page
 2. **Set up your environment**:
@@ -69,26 +72,17 @@ Peak wavenumber: ±1.57 rad/m (expected: ±1.57 rad/m)
 - Demonstrates ScalarField.psd() method for spectral analysis
 
 **Plot 5: Frequency-Space Mapping**
-- 2D heatmap showing how frequency content varies along spatial axis
-- X-axis: Spatial position (m)
-- Y-axis: Frequency (Hz), range 10-100 Hz
-- Color: Log-scale PSD
-- Shows signal strength decreasing with distance from source
-- Demonstrates ScalarField.plot_freq_space() visualization
+- **Current status**: This dedicated visualization is not implemented yet.
+- The notebook currently includes a "Coming Soon" section and a future usage example for `plot_freq_space()`.
+- Available output today: PSD analysis (Plot 4) and accompanying text outputs.
 
 **Plot 6: Cross-Correlation**
-- X-axis: Spatial position along x-axis (m)
-- Y-axis: Time lag (s)
-- V-shaped pattern centered at x=1.0m (source position)
-- Demonstrates signal propagation delays
-- Uses ScalarField.plot_cross_correlation()
+- **Current status**: `plot_cross_correlation()` visualization is planned for a future release.
+- The notebook currently includes placeholder code and usage notes only.
 
 **Plot 7: Coherence Map**
-- X-axis: Spatial position (m)
-- Y-axis: Coherence at 30 Hz
-- Peak coherence at source position (x=1.0m)
-- Decreasing coherence with distance
-- Demonstrates ScalarField.plot_coherence_map()
+- **Current status**: `plot_coherence_map()` visualization is planned for a future release.
+- The notebook currently includes placeholder code and usage notes only.
 
 ### Section 7: Numerical Invariants
 
@@ -108,8 +102,9 @@ Confirms numerical stability and precision of FFT implementations.
 1. **FFT Accuracy**: All transformations are numerically precise (errors < 1e-10)
 2. **4D Structure Preservation**: Slicing always maintains 4 dimensions
 3. **Domain Tracking**: Metadata correctly tracks time/frequency and real/k-space domains
-4. **Signal Processing**: PSD, cross-correlation, coherence all work seamlessly on 4D fields
-5. **Physical Interpretation**: Visualizations clearly show wave propagation and spatial dependence
+4. **Signal Processing**: PSD workflow is currently demonstrated with embedded outputs
+5. **API Roadmap Clarity**: Frequency-space, cross-correlation, and coherence visualizations are marked as upcoming
+6. **Physical Interpretation**: Current plots clearly show wave propagation and spatial dependence
 
 ## Generating These Plots
 
@@ -147,6 +142,6 @@ jupyter nbconvert --to notebook --execute \
 
 ---
 
-**Last Updated**: 2026-02-10
-**Status**: Plots need to be generated via local execution
+**Last Updated**: 2026-02-14
+**Status**: Main outputs are embedded; three visualization methods remain marked as coming soon
 **Priority**: High (before PyPI release recommended, not required)
