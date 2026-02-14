@@ -1086,16 +1086,21 @@ Note: Frequency-space visualization will be added in a future release
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use x=1.0m (source) as reference point</span>
-<span class="n">ref_point</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot_cross_correlation() visualization method will be available in v0.2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Example usage (future):</span>
+<span class="c1"># Use x=1.0m (source) as reference point</span>
+<span class="c1"># ref_point = (1.0 * u.m, 0.0 * u.m, 0.0 * u.m)</span>
+<span class="c1">#</span>
+<span class="c1"># # Calculate and plot cross-correlation</span>
+<span class="c1"># lags, corrs = field_sig.plot_cross_correlation(</span>
+<span class="c1">#     ref_point=ref_point,</span>
+<span class="c1">#     scan_axis=&quot;x&quot;,</span>
+<span class="c1">#     fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},</span>
+<span class="c1">#     max_lag=0.5,</span>
+<span class="c1"># )</span>
 
-<span class="c1"># Calculate and plot cross-correlation</span>
-<span class="n">lags</span><span class="p">,</span> <span class="n">corrs</span> <span class="o">=</span> <span class="n">field_sig</span><span class="o">.</span><span class="n">plot_cross_correlation</span><span class="p">(</span>
-    <span class="n">ref_point</span><span class="o">=</span><span class="n">ref_point</span><span class="p">,</span>
-    <span class="n">scan_axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
-    <span class="n">fixed_coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">},</span>
-    <span class="n">max_lag</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Note: Cross-correlation visualization will be added in a future release&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1104,19 +1109,7 @@ Note: Frequency-space visualization will be added in a future release
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[20]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      2</span> ref_point = (<span class="ansi-green-fg">1.0</span> * u.m, <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-green-fg">0.0</span> * u.m)
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Calculate and plot cross-correlation</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> lags, corrs = <span class="ansi-yellow-bg">field_sig</span>.plot_cross_correlation(
-<span class="ansi-green-fg">      6</span>     ref_point=ref_point,
-<span class="ansi-green-fg">      7</span>     scan_axis=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      8</span>     fixed_coords={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m},
-<span class="ansi-green-fg">      9</span>     max_lag=<span class="ansi-green-fg">0.5</span>,
-<span class="ansi-green-fg">     10</span> )
-
-<span class="ansi-red-fg">NameError</span>: name &#39;field_sig&#39; is not defined
+Note: Cross-correlation visualization will be added in a future release
 </pre></div></div>
 </div>
 <p>The V-shaped pattern shows that the signal propagates from x=1.0m in both directions.</p>
@@ -1128,12 +1121,17 @@ Note: Frequency-space visualization will be added in a future release
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">field_sig</span><span class="o">.</span><span class="n">plot_coherence_map</span><span class="p">(</span>
-    <span class="n">target_freq</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
-    <span class="n">ref_point</span><span class="o">=</span><span class="n">ref_point</span><span class="p">,</span>
-    <span class="n">scan_axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
-    <span class="n">fixed_coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">},</span>
-<span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot_coherence_map() visualization method will be available in v0.2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Example usage (future):</span>
+<span class="c1"># field_sig.plot_coherence_map(</span>
+<span class="c1">#     target_freq=30.0,</span>
+<span class="c1">#     ref_point=ref_point,</span>
+<span class="c1">#     scan_axis=&quot;x&quot;,</span>
+<span class="c1">#     fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},</span>
+<span class="c1"># )</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Note: Coherence map visualization will be added in a future release&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1142,17 +1140,7 @@ Note: Frequency-space visualization will be added in a future release
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[21]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">field_sig</span>.plot_coherence_map(
-<span class="ansi-green-fg">      2</span>     target_freq=<span class="ansi-green-fg">30.0</span>,
-<span class="ansi-green-fg">      3</span>     ref_point=ref_point,
-<span class="ansi-green-fg">      4</span>     scan_axis=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">x</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      5</span>     fixed_coords={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">y</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">z</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.0</span> * u.m},
-<span class="ansi-green-fg">      6</span> )
-
-<span class="ansi-red-fg">NameError</span>: name &#39;field_sig&#39; is not defined
+Note: Coherence map visualization will be added in a future release
 </pre></div></div>
 </div>
 </section>
