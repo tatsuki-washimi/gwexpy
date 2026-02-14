@@ -572,35 +572,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesWindowDataset</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-
-    <span class="c1"># Create dataset with 8-second windows, 0.0625-second stride</span>
-    <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">TimeSeriesWindowDataset</span><span class="p">(</span>
-        <span class="n">X_train_proc</span><span class="p">,</span>
-        <span class="n">labels</span><span class="o">=</span><span class="n">y_train_proc</span><span class="p">,</span>
-        <span class="n">window</span><span class="o">=</span><span class="mi">8</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">,</span>
-        <span class="n">stride</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.0625</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">),</span>
-    <span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2"> windows&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Get a batch</span>
-    <span class="n">x_batch</span><span class="p">,</span> <span class="n">y_batch</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch shapes: X=</span><span class="si">{</span><span class="n">x_batch</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="n">y_batch</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;X dtype: </span><span class="si">{</span><span class="n">x_batch</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y dtype: </span><span class="si">{</span><span class="n">y_batch</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Create DataLoader</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
-
-    <span class="n">train_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">DataLoader created with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span><span class="si">}</span><span class="s2"> batches&quot;</span><span class="p">)</span>
-
-<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Note: PyTorch integration example skipped (PyTorch not installed in docs build environment)&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;To try this example, install: pip install torch&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesWindowDataset</span>    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>    <span class="c1"># Create dataset with 8-second windows, 0.0625-second stride    train_dataset = TimeSeriesWindowDataset(        X_train_proc,        labels=y_train_proc,        window=8 * sample_rate,        stride=int(0.0625 * sample_rate),    )    print(f&quot;Dataset size: {len(train_dataset)} windows&quot;)    # Get a batch    x_batch, y_batch = train_dataset[0]    print(f&quot;Batch shapes: X={x_batch.shape}, y={y_batch.shape}&quot;)    print(f&quot;X dtype: {x_batch.dtype}&quot;)    print(f&quot;y dtype: {y_batch.dtype}&quot;)    # Create DataLoader    from torch.utils.data import DataLoader    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)    print(f&quot;\nDataLoader created with {len(train_loader)} batches&quot;)except ImportError as e:    from IPython.display import Markdown, display    display(Markdown(&quot;&quot;&quot;**注意**: PyTorchがインストールされていません。この機械学習統合の例を試すには：```bashpip install torch```ノートブックの残りの部分は継続できます。&quot;&quot;&quot;))</span>
 </pre></div>
 </div>
 </div>
@@ -609,8 +581,11 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Note: PyTorch integration example skipped (PyTorch not installed in docs build environment)
-To try this example, install: pip install torch
+  <span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-red-fg">    </span><span class="ansi-red-fg">try:    from gwexpy.interop import TimeSeriesWindowDataset    import torch    # Create dataset with 8-second windows, 0.0625-second stride    train_dataset = TimeSeriesWindowDataset(        X_train_proc,        labels=y_train_proc,        window=8 * sample_rate,        stride=int(0.0625 * sample_rate),    )    print(f&#34;Dataset size: {len(train_dataset)} windows&#34;)    # Get a batch    x_batch, y_batch = train_dataset[0]    print(f&#34;Batch shapes: X={x_batch.shape}, y={y_batch.shape}&#34;)    print(f&#34;X dtype: {x_batch.dtype}&#34;)    print(f&#34;y dtype: {y_batch.dtype}&#34;)    # Create DataLoader    from torch.utils.data import DataLoader    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)    print(f&#34;\nDataLoader created with {len(train_loader)} batches&#34;)except ImportError as e:    from IPython.display import Markdown, display    display(Markdown(&#34;&#34;&#34;**注意**: PyTorchがインストールされていません。この機械学習統合の例を試すには：```bashpip install torch```ノートブックの残りの部分は継続できます。&#34;&#34;&#34;))</span>
+                                                                  ^
+<span class="ansi-red-fg">SyntaxError</span><span class="ansi-red-fg">:</span> invalid syntax
+
 </pre></div></div>
 </div>
 </section>

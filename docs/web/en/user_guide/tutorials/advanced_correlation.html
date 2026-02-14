@@ -807,49 +807,13 @@ Note: Gaussian distributions have Skewness~0, Kurtosis~0 (Fisher definition).
 <section id="Estimating-Causality-(Granger-Causality)">
 <h2>Estimating Causality (Granger Causality)<a class="headerlink" href="#Estimating-Causality-(Granger-Causality)" title="Link to this heading"></a></h2>
 <p>Tests whether past values of one time series help predict future values of another time series.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate data with causal relationship (X -&gt; Y)</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">n</span> <span class="o">=</span> <span class="mi">200</span>
-<span class="n">x_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-<span class="n">y_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-<span class="c1"># Y depends on the value of X one step before</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-    <span class="n">y_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">y_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">x_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
-
-<span class="n">ts_x</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">x_val</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cause (X)&quot;</span><span class="p">)</span>
-<span class="n">ts_y</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Effect (Y)&quot;</span><span class="p">)</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="c1"># Does X cause Y? (Does X help predict Y?) -&gt; p-value should be small</span>
-    <span class="n">p_xy</span> <span class="o">=</span> <span class="n">ts_y</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_x</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-
-    <span class="c1"># Does Y cause X? -&gt; p-value should be large</span>
-    <span class="n">p_yx</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Granger Causality X -&gt; Y (p-value): </span><span class="si">{</span><span class="n">p_xy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_xy</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Granger Causality Y -&gt; X (p-value): </span><span class="si">{</span><span class="n">p_yx</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_yx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="p">)</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="s2">&quot;statsmodels package is not installed. Install it with: pip install statsmodels&quot;</span>
-    <span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate data with causal relationship (X -&gt; Y)np.random.seed(0)n = 200x_val = np.random.randn(n)y_val = np.zeros(n)# Y depends on the value of X one step beforefor i in range(1, n):    y_val[i] = 0.5 * y_val[i - 1] + 0.8 * x_val[i - 1] + 0.1 * np.random.randn()ts_x = TimeSeries(x_val, dt=1, name=&quot;Cause (X)&quot;)ts_y = TimeSeries(y_val, dt=1, name=&quot;Effect (Y)&quot;)try:    # Does X cause Y? (Does X help predict Y?) -&gt; p-value should be small    p_xy = ts_y.granger_causality(ts_x, maxlag=5)    # Does Y cause X? -&gt; p-value should be large    p_yx = ts_x.granger_causality(ts_y, maxlag=5)    print(        f&quot;Granger Causality X -&gt; Y (p-value): {p_xy:.4f} {&#39;(Significant)&#39; if p_xy &lt; 0.05 else &#39;&#39;}&quot;    )    print(        f&quot;Granger Causality Y -&gt; X (p-value): {p_yx:.4f} {&#39;(Significant)&#39; if p_yx &lt; 0.05 else &#39;&#39;}&quot;    )except ImportError:    from IPython.display import Markdown, display    display(Markdown(&quot;&quot;&quot;**注意**: statsmodelsパッケージがインストールされていません。Granger因果性分析を実行するには：```bashpip install statsmodels```ノートブックの残りの部分は継続できます。&quot;&quot;&quot;))</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-statsmodels package is not installed. Install it with: pip install statsmodels
-</pre></div></div>
 </div>
 </section>
 <section id="Fast-Mutual-Information-(fastmi)">
@@ -867,22 +831,13 @@ statsmodels package is not installed. Install it with: pip install statsmodels
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Mutual Information (x, y): 0.0195 nats
-Mutual Information (x, z): 0.0000 nats
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/runner/work/gwexpy/gwexpy/gwexpy/timeseries/_statistics.py:260: UserWarning: Sample rates do not match. Resampling &#39;other&#39; to match &#39;self&#39;.
-  warnings.warn(
+Mutual Information (x, y): 0.0893 nats
+Mutual Information (x, z): 0.1132 nats
 </pre></div></div>
 </div>
 </section>

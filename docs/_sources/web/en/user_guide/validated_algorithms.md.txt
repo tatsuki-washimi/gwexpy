@@ -30,7 +30,7 @@ The `2π` factor is correctly applied, and units are properly set as
 
 **Function**: `TimeSeries._fft_transient`
 
-**Consensus**: Validated with clear rebuttal of incorrect critiques
+**Status**: Validated against established references
 
 The transient FFT returns an **amplitude spectrum**, not a density spectrum:
 
@@ -77,7 +77,7 @@ but the implementation is correct for spectral analysis.
 
 **Function**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`
 
-**Consensus**: Validated with rebuttal of incorrect concerns
+**Status**: Validated against established references
 
 The forecast start time is computed as:
 
@@ -88,7 +88,7 @@ $$
 This assumes equally-spaced data without gaps. GPS times follow the
 LIGO/GWpy convention using TAI continuous seconds.
 
-The leap-second concern raised by some models does not apply to
+The leap-second concern sometimes raised for UTC-based time systems does not apply to
 GPS/TAI time systems used in gravitational wave data analysis.
 
 **References**:

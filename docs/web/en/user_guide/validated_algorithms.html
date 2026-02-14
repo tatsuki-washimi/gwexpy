@@ -137,7 +137,7 @@ $$</p>
 <section id="amplitude-spectrum-transient-fft">
 <h2>Amplitude Spectrum (Transient FFT)<a class="headerlink" href="#amplitude-spectrum-transient-fft" title="Link to this heading"></a></h2>
 <p><strong>Function</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries._fft_transient</span></code></p>
-<p><strong>Consensus</strong>: Validated with clear rebuttal of incorrect critiques</p>
+<p><strong>Status</strong>: Validated against established references</p>
 <p>The transient FFT returns an <strong>amplitude spectrum</strong>, not a density spectrum:</p>
 <p>$$
 \text{amplitude} = \text{rfft}(x) / N
@@ -173,14 +173,14 @@ but the implementation is correct for spectral analysis.</p>
 <section id="forecast-timestamp-arima">
 <h2>Forecast Timestamp (ARIMA)<a class="headerlink" href="#forecast-timestamp-arima" title="Link to this heading"></a></h2>
 <p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.timeseries.arima.ArimaResult.forecast()</span></code></p>
-<p><strong>Consensus</strong>: Validated with rebuttal of incorrect concerns</p>
+<p><strong>Status</strong>: Validated against established references</p>
 <p>The forecast start time is computed as:</p>
 <p>$$
 t_{\text{forecast}} = t_0 + n_{\text{obs}} \times \Delta t
 $$</p>
 <p>This assumes equally-spaced data without gaps. GPS times follow the
 LIGO/GWpy convention using TAI continuous seconds.</p>
-<p>The leap-second concern raised by some models does not apply to
+<p>The leap-second concern sometimes raised for UTC-based time systems does not apply to
 GPS/TAI time systems used in gravitational wave data analysis.</p>
 <p><strong>References</strong>:</p>
 <ul class="simple">

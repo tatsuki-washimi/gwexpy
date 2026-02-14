@@ -135,7 +135,7 @@ $$</p>
 <section id="fft">
 <h2>振幅スペクトル（トランジェントFFT）<a class="headerlink" href="#fft" title="Link to this heading"></a></h2>
 <p><strong>関数</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries._fft_transient</span></code></p>
-<p><strong>検証状況</strong>: 誤った批判への明確な反駁とともに検証済み</p>
+<p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
 <p>トランジェントFFTは密度スペクトルではなく、<strong>振幅スペクトル</strong> を返します：</p>
 <p>$$
 \text{amplitude} = \text{rfft}(x) / N
@@ -170,14 +170,14 @@ $$</p>
 <section id="arima">
 <h2>予測タイムスタンプ（ARIMA）<a class="headerlink" href="#arima" title="Link to this heading"></a></h2>
 <p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.timeseries.arima.ArimaResult.forecast()</span></code></p>
-<p><strong>検証状況</strong>: 誤った懸念への反駁とともに検証済み</p>
+<p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
 <p>予測開始時刻は以下のように計算されます：</p>
 <p>$$
 t_{\text{forecast}} = t_0 + n_{\text{obs}} \times \Delta t
 $$</p>
 <p>これは等間隔・ギャップなしのデータを前提としています。
 GPS時刻はTAI連続秒数を使用するLIGO/GWpy規約に従っています。</p>
-<p>一部モデルが提起したうるう秒の懸念は、重力波データ解析で使用される
+<p>UTC時刻系で時々指摘されるうるう秒の懸念は、重力波データ解析で使用される
 GPS/TAI時刻系には該当しません。</p>
 <p><strong>参考文献</strong>:</p>
 <ul class="simple">
