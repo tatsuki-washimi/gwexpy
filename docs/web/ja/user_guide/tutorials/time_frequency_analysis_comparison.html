@@ -1,0 +1,160 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>時間-周波数解析比較（インタラクティブ） &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="時間-周波数解析手法: 比較と選択ガイド" href="time_frequency_comparison.html" />
+    <link rel="prev" title="Hilbert-Huang Transform (HHT) 解析チュートリアル" href="advanced_hht.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">視覚的な例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id3">実例ギャラリー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id4">ユーザー別学習パス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id5">主要ドキュメント</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">実例集 (Examples)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id6">次のステップ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
+      <li class="breadcrumb-item active">時間-周波数解析比較（インタラクティブ）</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/time_frequency_analysis_comparison.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>時間-周波数解析比較（インタラクティブ）<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>:::{admonition} 現在の提供状況
+:class: note</p>
+<p>このインタラクティブ版チュートリアルは、現在は英語版を提供しています。<br />
+日本語版は準備中です。
+:::</p>
+<p>英語版のインタラクティブページはこちら：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#../../../en/user_guide/tutorials/time_frequency_analysis_comparison.html"><span class="xref myst">Time-Frequency Analysis Methods: Comprehensive Comparison (EN)</span></a></p></li>
+</ul>
+<p>ノートブック本体（<code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>）はこちら：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb">time_frequency_analysis_comparison.ipynb (GitHub)</a></p></li>
+</ul>
+<p>関連する日本語の理論ガイド：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#time_frequency_comparison.html"><span class="xref myst">時間-周波数解析手法: 比較と選択ガイド</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="advanced_hht.html" class="btn btn-neutral float-left" title="Hilbert-Huang Transform (HHT) 解析チュートリアル" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="time_frequency_comparison.html" class="btn btn-neutral float-right" title="時間-周波数解析手法: 比較と選択ガイド" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

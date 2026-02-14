@@ -77,7 +77,9 @@
 <p>This document describes the expected visual outputs and results from the ScalarField tutorial notebook (<code class="docutils literal notranslate"><span class="pre">field_scalar_intro.ipynb</span></code>).</p>
 <section id="note-on-execution">
 <h2>Note on Execution<a class="headerlink" href="#note-on-execution" title="Link to this heading"></a></h2>
-<p>The ScalarField tutorial notebook currently <strong>does not include embedded output cells</strong>. To see the full visual demonstrations:</p>
+<p>The ScalarField tutorial notebook now includes embedded outputs for implemented sections.
+You can view the main plots directly on the documentation page.</p>
+<p>Run locally if you want to regenerate outputs or modify parameters:</p>
 <ol class="arabic">
 <li><p><strong>Download the notebook</strong> from the documentation page</p></li>
 <li><p><strong>Set up your environment</strong>:</p>
@@ -152,28 +154,19 @@
 </ul>
 <p><strong>Plot 5: Frequency-Space Mapping</strong></p>
 <ul class="simple">
-<li><p>2D heatmap showing how frequency content varies along spatial axis</p></li>
-<li><p>X-axis: Spatial position (m)</p></li>
-<li><p>Y-axis: Frequency (Hz), range 10-100 Hz</p></li>
-<li><p>Color: Log-scale PSD</p></li>
-<li><p>Shows signal strength decreasing with distance from source</p></li>
-<li><p>Demonstrates ScalarField.plot_freq_space() visualization</p></li>
+<li><p><strong>Current status</strong>: This dedicated visualization is not implemented yet.</p></li>
+<li><p>The notebook currently includes a “Coming Soon” section and a future usage example for <code class="docutils literal notranslate"><span class="pre">plot_freq_space()</span></code>.</p></li>
+<li><p>Available output today: PSD analysis (Plot 4) and accompanying text outputs.</p></li>
 </ul>
 <p><strong>Plot 6: Cross-Correlation</strong></p>
 <ul class="simple">
-<li><p>X-axis: Spatial position along x-axis (m)</p></li>
-<li><p>Y-axis: Time lag (s)</p></li>
-<li><p>V-shaped pattern centered at x=1.0m (source position)</p></li>
-<li><p>Demonstrates signal propagation delays</p></li>
-<li><p>Uses ScalarField.plot_cross_correlation()</p></li>
+<li><p><strong>Current status</strong>: <code class="docutils literal notranslate"><span class="pre">plot_cross_correlation()</span></code> visualization is planned for a future release.</p></li>
+<li><p>The notebook currently includes placeholder code and usage notes only.</p></li>
 </ul>
 <p><strong>Plot 7: Coherence Map</strong></p>
 <ul class="simple">
-<li><p>X-axis: Spatial position (m)</p></li>
-<li><p>Y-axis: Coherence at 30 Hz</p></li>
-<li><p>Peak coherence at source position (x=1.0m)</p></li>
-<li><p>Decreasing coherence with distance</p></li>
-<li><p>Demonstrates ScalarField.plot_coherence_map()</p></li>
+<li><p><strong>Current status</strong>: <code class="docutils literal notranslate"><span class="pre">plot_coherence_map()</span></code> visualization is planned for a future release.</p></li>
+<li><p>The notebook currently includes placeholder code and usage notes only.</p></li>
 </ul>
 </section>
 <section id="section-7-numerical-invariants">
@@ -195,8 +188,9 @@
 <li><p><strong>FFT Accuracy</strong>: All transformations are numerically precise (errors &lt; 1e-10)</p></li>
 <li><p><strong>4D Structure Preservation</strong>: Slicing always maintains 4 dimensions</p></li>
 <li><p><strong>Domain Tracking</strong>: Metadata correctly tracks time/frequency and real/k-space domains</p></li>
-<li><p><strong>Signal Processing</strong>: PSD, cross-correlation, coherence all work seamlessly on 4D fields</p></li>
-<li><p><strong>Physical Interpretation</strong>: Visualizations clearly show wave propagation and spatial dependence</p></li>
+<li><p><strong>Signal Processing</strong>: PSD workflow is currently demonstrated with embedded outputs</p></li>
+<li><p><strong>API Roadmap Clarity</strong>: Frequency-space, cross-correlation, and coherence visualizations are marked as upcoming</p></li>
+<li><p><strong>Physical Interpretation</strong>: Current plots clearly show wave propagation and spatial dependence</p></li>
 </ol>
 </section>
 <section id="generating-these-plots">
@@ -236,8 +230,8 @@ jupyter<span class="w"> </span>nbconvert<span class="w"> </span>--to<span class=
 <li><p>[ ] Demonstrate multi-field batch processing with FieldList/FieldDict</p></li>
 </ul>
 <hr class="docutils" />
-<p><strong>Last Updated</strong>: 2026-02-10
-<strong>Status</strong>: Plots need to be generated via local execution
+<p><strong>Last Updated</strong>: 2026-02-14
+<strong>Status</strong>: Main outputs are embedded; three visualization methods remain marked as coming soon
 <strong>Priority</strong>: High (before PyPI release recommended, not required)</p>
 </section>
 </section>

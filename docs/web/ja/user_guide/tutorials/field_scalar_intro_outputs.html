@@ -77,7 +77,9 @@
 <p>このドキュメントは、ScalarField チュートリアルノートブック (<code class="docutils literal notranslate"><span class="pre">field_scalar_intro.ipynb</span></code>) から得られる期待される視覚的出力と結果を説明します。</p>
 <section id="id1">
 <h2>実行に関する注意<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<p>ScalarField チュートリアルノートブックは現在<strong>出力セルが埋め込まれていません</strong>。完全な視覚的デモンストレーションを見るには：</p>
+<p>ScalarField チュートリアルノートブックは、実装済みセクションについては出力が埋め込まれています。
+主要プロットはドキュメントページ上でそのまま確認できます。</p>
+<p>再生成やパラメータ変更を行う場合のみ、ローカル実行してください：</p>
 <ol class="arabic">
 <li><p><strong>ノートブックをダウンロード</strong> - ドキュメントページから</p></li>
 <li><p><strong>環境をセットアップ</strong>:</p>
@@ -152,28 +154,19 @@
 </ul>
 <p><strong>プロット 5: 周波数-空間マッピング</strong></p>
 <ul class="simple">
-<li><p>周波数成分が空間軸に沿ってどのように変化するかを示す2Dヒートマップ</p></li>
-<li><p>X軸: 空間位置 (m)</p></li>
-<li><p>Y軸: 周波数 (Hz)、範囲 10-100 Hz</p></li>
-<li><p>色: 対数スケール PSD</p></li>
-<li><p>ソースからの距離とともに信号強度が減少することを示す</p></li>
-<li><p>ScalarField.plot_freq_space() 可視化を実証</p></li>
+<li><p><strong>現状</strong>: 専用可視化APIはまだ未実装です。</p></li>
+<li><p>ノートブックでは <code class="docutils literal notranslate"><span class="pre">plot_freq_space()</span></code> の「近日公開」セクションと将来の使用例を掲載しています。</p></li>
+<li><p>現在確認できる出力は、PSD解析（プロット 4）と関連するテキスト出力です。</p></li>
 </ul>
 <p><strong>プロット 6: 相互相関</strong></p>
 <ul class="simple">
-<li><p>X軸: x軸に沿った空間位置 (m)</p></li>
-<li><p>Y軸: 時間遅延 (s)</p></li>
-<li><p>x=1.0m（ソース位置）を中心としたV字型パターン</p></li>
-<li><p>信号伝播遅延を実証</p></li>
-<li><p>ScalarField.plot_cross_correlation() を使用</p></li>
+<li><p><strong>現状</strong>: <code class="docutils literal notranslate"><span class="pre">plot_cross_correlation()</span></code> 可視化は将来リリース予定です。</p></li>
+<li><p>ノートブックではプレースホルダコードと使用メモのみを掲載しています。</p></li>
 </ul>
 <p><strong>プロット 7: コヒーレンスマップ</strong></p>
 <ul class="simple">
-<li><p>X軸: 空間位置 (m)</p></li>
-<li><p>Y軸: 30 Hz でのコヒーレンス</p></li>
-<li><p>ソース位置 (x=1.0m) でコヒーレンスがピーク</p></li>
-<li><p>距離とともにコヒーレンスが減少</p></li>
-<li><p>ScalarField.plot_coherence_map() を実証</p></li>
+<li><p><strong>現状</strong>: <code class="docutils literal notranslate"><span class="pre">plot_coherence_map()</span></code> 可視化は将来リリース予定です。</p></li>
+<li><p>ノートブックではプレースホルダコードと使用メモのみを掲載しています。</p></li>
 </ul>
 </section>
 <section id="id5">
@@ -195,8 +188,9 @@
 <li><p><strong>FFT 精度</strong>: すべての変換は数値的に高精度（誤差 &lt; 1e-10）</p></li>
 <li><p><strong>4D 構造の保持</strong>: スライス操作は常に4次元を維持</p></li>
 <li><p><strong>領域追跡</strong>: メタデータは時間/周波数および実空間/k空間領域を正しく追跡</p></li>
-<li><p><strong>信号処理</strong>: PSD、相互相関、コヒーレンスはすべて4Dフィールドでシームレスに動作</p></li>
-<li><p><strong>物理的解釈</strong>: 可視化は波の伝播と空間依存性を明確に示す</p></li>
+<li><p><strong>信号処理</strong>: 現時点では PSD ワークフローを埋め込み出力で確認可能</p></li>
+<li><p><strong>APIロードマップ</strong>: 周波数-空間、相互相関、コヒーレンス可視化は今後提供予定として明示済み</p></li>
+<li><p><strong>物理的解釈</strong>: 現在のプロットでも波の伝播と空間依存性を明確に確認できる</p></li>
 </ol>
 </section>
 <section id="id7">
@@ -236,8 +230,8 @@ jupyter<span class="w"> </span>nbconvert<span class="w"> </span>--to<span class=
 <li><p>[ ] FieldList/FieldDict を使用した複数フィールドのバッチ処理を実証</p></li>
 </ul>
 <hr class="docutils" />
-<p><strong>最終更新</strong>: 2026-02-10
-<strong>状態</strong>: プロットはローカル実行により生成が必要
+<p><strong>最終更新</strong>: 2026-02-14
+<strong>状態</strong>: 主要出力は埋め込み済み、3つの可視化メソッドは近日公開
 <strong>優先度</strong>: 高（PyPI リリース前の推奨、必須ではない）</p>
 </section>
 </section>
