@@ -49,10 +49,15 @@ jobs:
 
           # Scientific stack
           pip install 'numpy<2.0' 'scipy<1.14' pandas matplotlib astropy h5py
+          pip install 'gwpy>=3.0.5' lalsuite
 
           # Optional dependencies for notebook examples
-          pip install pywt || echo "Warning: pywt not installed"
-          pip install EMD-signal || echo "Warning: PyEMD not installed"
+          pip install control
+          pip install statsmodels
+          pip install PyWavelets
+          pip install EMD-signal
+          pip install ligo.skymap astropy-healpix
+          pip install gwinc inspiral-range
 
           # Install gwexpy in development mode
           pip install --no-deps -e .
