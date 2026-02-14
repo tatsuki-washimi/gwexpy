@@ -189,8 +189,9 @@ class MLPreprocessor:
         self : MLPreprocessor
             fitted preprocessor
         """
-        from gwexpy.signal.preprocessing import standardize
         from scipy.signal import butter
+
+        from gwexpy.signal.preprocessing import standardize
 
         # 1. Xの標準化パラメータを学習
         X_val = self._extract_value(X)  # ndarray取得

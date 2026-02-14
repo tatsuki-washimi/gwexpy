@@ -5,7 +5,8 @@ Stat-info utilities: association edge extraction and lightweight graph builder.
 from __future__ import annotations
 
 import logging
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 import numpy as np
 
