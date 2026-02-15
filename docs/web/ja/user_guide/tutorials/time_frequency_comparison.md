@@ -6,7 +6,7 @@
 **プロットと実行可能なコード付きのバージョンをお探しですか？**
 
 この理論ガイドに対応する、完全に実行可能な Jupyter Notebook 版があります：
-- [時間-周波数解析比較（インタラクティブ）](time_frequency_analysis_comparison.html)
+- [時間-周波数解析比較（インタラクティブ）](time_frequency_analysis_comparison.md)
 - 8つの完全なプロット、定量評価、ベンチマーク信号
 
 **このページ**: 各手法の理論、使い方ガイド、決定マトリックス
@@ -609,4 +609,4 @@ plt.show()
 **関連項目:**
 - [スペクトログラムチュートリアル](intro_spectrogram.ipynb)
 - [HHT チュートリアル](advanced_hht.ipynb)
-- [Q変換ドキュメント](../reference/api/qtransform.rst)
+- Q変換 (GWpy)

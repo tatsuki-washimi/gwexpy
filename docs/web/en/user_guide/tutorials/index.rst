@@ -67,6 +67,7 @@ Statistical analysis and advanced transforms.
    ARIMA Forecasting <advanced_arima>
    Nonlinear Correlation <advanced_correlation>
    ML Preprocessing Methods <ml_preprocessing_methods>
+   ML Preprocessing Pipeline <case_ml_preprocessing>
    Linear Algebra for GW Analysis <advanced_linear_algebra>
    Field × Advanced Analysis Integration <field_advanced_integration>
 
@@ -81,6 +82,6 @@ Tools for specific noise hunting and diagnostics tasks.
    Noise Hunting with Bruco <advanced_bruco>
 
 .. note::
-   Practical case studies and applications are consolidated in :doc:`../examples/index`.
+   Practical case studies and applications are consolidated in :doc:`../../examples/index`.
    See the examples section for real-world applications like noise budget analysis,
    transfer function calculations, and active damping.
