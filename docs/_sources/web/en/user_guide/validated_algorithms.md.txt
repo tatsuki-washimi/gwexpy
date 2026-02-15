@@ -1,7 +1,7 @@
 # Validated Algorithms
 
 The following algorithms have been validated through rigorous independent
-review and cross-verification against established references (2026-02-01).
+review and cross-verification against established references.
 This page documents the verified implementations with references.
 
 ## k-space Computation
@@ -18,13 +18,12 @@ $$
 
 This satisfies $k = 2\pi / \lambda$ and is consistent with:
 
-- Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2
+- Press et al., _Numerical Recipes_ (3rd ed., 2007), §12.3.2
 - NumPy `fftfreq` documentation
 - GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)
 
 The `2π` factor is correctly applied, and units are properly set as
 `1/dx_unit` (rad/length).
-
 
 ## Amplitude Spectrum (Transient FFT)
 
@@ -46,9 +45,8 @@ The suggestion to multiply by `dt` applies to density spectra
 
 **References**:
 
-- Oppenheim & Schafer, *Discrete-Time Signal Processing* (3rd ed., 2010), §8.6.2
+- Oppenheim & Schafer, _Discrete-Time Signal Processing_ (3rd ed., 2010), §8.6.2
 - SciPy `rfft` documentation
-
 
 ## VIF (Variance Inflation Factor)
 
@@ -68,10 +66,9 @@ but the implementation is correct for spectral analysis.
 
 **References**:
 
-- Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications*
+- Percival, D.B. & Walden, A.T., _Spectral Analysis for Physical Applications_
   (1993), Ch. 7.3.2, Eq.(56)
-- Bendat, J.S. & Piersol, A.G., *Random Data* (4th ed., 2010)
-
+- Bendat, J.S. & Piersol, A.G., _Random Data_ (4th ed., 2010)
 
 ## Forecast Timestamp (ARIMA)
 
@@ -95,14 +92,12 @@ GPS/TAI time systems used in gravitational wave data analysis.
 
 - GWpy TimeSeries.epoch documentation
 - LIGO GPS time convention (LIGO-T980044)
-- Box, G.E.P. & Jenkins, G.M., *Time Series Analysis* (1976), Ch. 4
-
+- Box, G.E.P. & Jenkins, G.M., _Time Series Analysis_ (1976), Ch. 4
 
 # Assumptions and Conventions
 
 The following sections document important assumptions and conventions
 that users should be aware of when using these algorithms.
-
 
 ## MCMC Fixed Covariance Assumption
 
@@ -126,9 +121,8 @@ distribution (equal variance for real and imaginary parts).
 
 **References**:
 
-- Rasmussen & Williams, *Gaussian Processes for Machine Learning* (2006), Ch. 2.2
-- Gelman et al., *Bayesian Data Analysis* (3rd ed., 2013), §14.2
-
+- Rasmussen & Williams, _Gaussian Processes for Machine Learning_ (2006), Ch. 2.2
+- Gelman et al., _Bayesian Data Analysis_ (3rd ed., 2013), §14.2
 
 ## Angular vs Cycle Wavenumber
 
@@ -141,7 +135,6 @@ NOT cycle wavenumber [1/length].
 - Cycle wavenumber: $\nu = 1 / \lambda$
 - Conversion: $\nu = k / (2\pi)$
 
-
 ## Sign Convention for Descending Axes
 
 **Function**: {meth}`gwexpy.fields.ScalarField.fft_space`
@@ -153,8 +146,7 @@ convention $e^{+ikx}$.
 This ensures that positive `k` corresponds to waves propagating in
 the positive x direction, regardless of the data storage order.
 
-**Reference**: Jackson, *Classical Electrodynamics* (3rd ed., 1998), §4.2
-
+**Reference**: Jackson, _Classical Electrodynamics_ (3rd ed., 1998), §4.2
 
 ## VIF Application in Bootstrap
 
@@ -169,7 +161,6 @@ the positive x direction, regardless of the data storage order.
 
 This prevents over-inflation of variance estimates when both block
 structure and analytical VIF would be applied simultaneously.
-
 
 ## Bootstrap Stationarity Assumption
 
@@ -191,12 +182,8 @@ for time-correlated spectrograms. Specified in seconds as a float or Quantity.
 - Politis, D.N. & Romano, J.P., "The stationary bootstrap",
   J. Amer. Statist. Assoc. 89(428), 1994
 
-
 ## About the Validation
 
 All algorithms documented on this page have been validated through a combination
 of unit tests, cross-checks against established references, and independent
 technical reviews. The implementations have been verified for correctness.
-
-For detailed validation reports and technical validation data, see the developer
-validation reports.
