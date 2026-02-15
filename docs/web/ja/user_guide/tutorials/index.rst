@@ -48,6 +48,7 @@ III. 高次元フィールド (Field API)
    field_vector_intro
    field_tensor_intro
    field_scalar_signal
+   Field × 高度な解析ワークフロー <field_advanced_workflow>
 
 IV. 高度な信号処理
 ------------------
@@ -58,6 +59,7 @@ IV. 高度な信号処理
    :caption: 高度な解析
 
    advanced_fitting
+   Bootstrap PSD & GLS フィッティング <case_bootstrap_gls_fitting>
    advanced_peak_detection
    advanced_hht
    時間-周波数解析: インタラクティブ例 <time_frequency_analysis_comparison>
@@ -65,6 +67,7 @@ IV. 高度な信号処理
    advanced_arima
    advanced_correlation
    ML前処理手法 <ml_preprocessing_methods>
+   ML前処理パイプライン <case_ml_preprocessing>
    重力波解析のための線形代数 <advanced_linear_algebra>
    Field API × 高度な解析統合 <field_advanced_integration>
 

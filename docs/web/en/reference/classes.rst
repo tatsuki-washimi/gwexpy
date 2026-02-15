@@ -38,4 +38,5 @@ Class Index
    fitting
    Spectral
    FFT_Conventions
+   Bruco
    SeriesMatrix
