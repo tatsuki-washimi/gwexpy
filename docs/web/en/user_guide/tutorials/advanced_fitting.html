@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwexpy.fitting: iminuit ベースのフィッティング機能 &mdash; GWexpy Documentation</title>
+  <title>gwexpy.fitting: iminuit-based Fitting Capabilities &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -98,7 +98,7 @@
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
           <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
-      <li class="breadcrumb-item active">gwexpy.fitting: iminuit ベースのフィッティング機能</li>
+      <li class="breadcrumb-item active">gwexpy.fitting: iminuit-based Fitting Capabilities</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_fitting.ipynb" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -113,9 +113,9 @@
 <p>This page was generated from a Jupyter Notebook.
 <a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/advanced_fitting.ipynb">Download the notebook (.ipynb)</a></p>
 </div>
-<section id="gwexpy.fitting:-iminuit-ベースのフィッティング機能">
-<h1>gwexpy.fitting: iminuit ベースのフィッティング機能<a class="headerlink" href="#gwexpy.fitting:-iminuit-ベースのフィッティング機能" title="Link to this heading"></a></h1>
-<p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code> モジュールを使用して、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> や <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> データに対して簡単にフィッティングを行う方法を紹介します。 バックエンドには <code class="docutils literal notranslate"><span class="pre">iminuit</span></code> を使用しており、誤差を考慮した最小二乗法フィッティングが可能です。</p>
+<section id="gwexpy.fitting:-iminuit-based-Fitting-Capabilities">
+<h1>gwexpy.fitting: iminuit-based Fitting Capabilities<a class="headerlink" href="#gwexpy.fitting:-iminuit-based-Fitting-Capabilities" title="Link to this heading"></a></h1>
+<p>This notebook demonstrates how to easily fit <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> or <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> data using the <code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code> module. The backend uses <code class="docutils literal notranslate"><span class="pre">iminuit</span></code>, enabling least-squares fitting with error consideration.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -131,26 +131,26 @@
 </pre></div>
 </div>
 </div>
-<section id="1.-データの準備">
-<h2>1. データの準備<a class="headerlink" href="#1.-データの準備" title="Link to this heading"></a></h2>
-<p>ここでは、ガウス関数にノイズを加えたダミーデータを作成します。</p>
+<section id="1.-Data-Preparation">
+<h2>1. Data Preparation<a class="headerlink" href="#1.-Data-Preparation" title="Link to this heading"></a></h2>
+<p>Here we create dummy data by adding noise to a Gaussian function.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># モデル関数の定義 (ガウス関数)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define model function (Gaussian)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
 
-<span class="c1"># ダミーデータの生成</span>
+<span class="c1"># Generate dummy data</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">true_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;mu&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">}</span>
 <span class="n">y_true</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">true_params</span><span class="p">)</span>
 <span class="n">y_noise</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 
-<span class="c1"># TimeSeries オブジェクトの作成</span>
+<span class="c1"># Create TimeSeries object</span>
 <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">y_noise</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Noisy Gaussian&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
 <span class="n">ts</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Noisy Data for Gaussian Fit&quot;</span><span class="p">);</span>
 </pre></div>
@@ -164,18 +164,18 @@
 </div>
 </div>
 </section>
-<section id="2.-フィッティングの実行">
-<h2>2. フィッティングの実行<a class="headerlink" href="#2.-フィッティングの実行" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">ts.fit()</span></code> メソッドを使用してフィッティングを行います。 引数にはモデル関数と、パラメータの初期値 <code class="docutils literal notranslate"><span class="pre">p0</span></code> を指定します。</p>
+<section id="2.-Performing-the-Fit">
+<h2>2. Performing the Fit<a class="headerlink" href="#2.-Performing-the-Fit" title="Link to this heading"></a></h2>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">ts.fit()</span></code> method to perform fitting. Specify the model function and initial parameter values <code class="docutils literal notranslate"><span class="pre">p0</span></code> as arguments.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># フィッティング</span>
-<span class="c1"># p0 で初期値を指定します</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fitting</span>
+<span class="c1"># Specify initial values with p0</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">gaussian</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;mu&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
 
-<span class="c1"># 結果の表示</span>
+<span class="c1"># Display results</span>
 <span class="n">display</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -281,9 +281,9 @@
 </table></div>
 </div>
 </section>
-<section id="3.-結果の取得とプロット">
-<h2>3. 結果の取得とプロット<a class="headerlink" href="#3.-結果の取得とプロット" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">FitResult</span></code> オブジェクトから、ベストフィットパラメータや誤差、Chi2 値などを取得できます。 また、<code class="docutils literal notranslate"><span class="pre">.plot()</span></code> メソッドで簡単に結果を可視化できます。</p>
+<section id="3.-Retrieving-Results-and-Plotting">
+<h2>3. Retrieving Results and Plotting<a class="headerlink" href="#3.-Retrieving-Results-and-Plotting" title="Link to this heading"></a></h2>
+<p>You can retrieve the best-fit parameters, errors, Chi2 values, etc. from the <code class="docutils literal notranslate"><span class="pre">FitResult</span></code> object. Additionally, the <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> method makes it easy to visualize the results.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -293,11 +293,11 @@
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Chi2:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">chi2</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NDOF:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">ndof</span><span class="p">)</span>
 
-<span class="c1"># プロット</span>
+<span class="c1"># Plot</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="n">result</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Gaussian Fit Demo&quot;</span><span class="p">)</span>
-<span class="c1"># auto-gps を使う場合は、xlabel は GWpy に任せる（epoch を含むラベルになる）</span>
+<span class="c1"># When using auto-gps, let GWpy handle xlabel (includes epoch)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -322,21 +322,21 @@ NDOF: 97
 </div>
 </div>
 </section>
-<section id="3.-文字列によるモデル指定">
-<h2>3. 文字列によるモデル指定<a class="headerlink" href="#3.-文字列によるモデル指定" title="Link to this heading"></a></h2>
-<p>モデル関数を定義する代わりに、定義済みのモデル名を文字列で指定することもできます。 現在サポートされているモデル: <code class="docutils literal notranslate"><span class="pre">'gaus'</span></code>, <code class="docutils literal notranslate"><span class="pre">'exp'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pol0'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pol1'</span></code>, … <code class="docutils literal notranslate"><span class="pre">'pol9'</span></code>, <code class="docutils literal notranslate"><span class="pre">'landau'</span></code> など。</p>
-<p>以下は <code class="docutils literal notranslate"><span class="pre">'gaus'</span></code> を指定してフィッティングを行う例です。</p>
+<section id="4.-Specifying-Models-by-String">
+<h2>4. Specifying Models by String<a class="headerlink" href="#4.-Specifying-Models-by-String" title="Link to this heading"></a></h2>
+<p>Instead of defining a model function, you can specify a predefined model name as a string. Currently supported models: <code class="docutils literal notranslate"><span class="pre">'gaus'</span></code>, <code class="docutils literal notranslate"><span class="pre">'exp'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pol0'</span></code>, <code class="docutils literal notranslate"><span class="pre">'pol1'</span></code>, … <code class="docutils literal notranslate"><span class="pre">'pol9'</span></code>, <code class="docutils literal notranslate"><span class="pre">'landau'</span></code>, etc.</p>
+<p>Below is an example of fitting using <code class="docutils literal notranslate"><span class="pre">'gaus'</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 文字列 &#39;gaus&#39; を指定してフィッティング</span>
-<span class="c1"># 注意: 定義済みモデルのパラメータ名はモデルごとに決まっています (Gaussianの場合は A, mu, sigma)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit using string &#39;gaus&#39;</span>
+<span class="c1"># Note: Parameter names for predefined models are fixed (for Gaussian: A, mu, sigma)</span>
 <span class="n">result_str</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
     <span class="s2">&quot;gaus&quot;</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;mu&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">},</span> <span class="n">x_range</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.8</span>
 <span class="p">)</span>
 
-<span class="c1"># 結果の表示</span>
+<span class="c1"># Display results</span>
 <span class="n">display</span><span class="p">(</span><span class="n">result_str</span><span class="p">)</span>
 <span class="n">result_str</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
 </pre></div>
@@ -450,14 +450,14 @@ NDOF: 97
 </div>
 </div>
 </section>
-<section id="4.-複素数フィッティング-(伝達関数)">
-<h2>4. 複素数フィッティング (伝達関数)<a class="headerlink" href="#4.-複素数フィッティング-(伝達関数)" title="Link to this heading"></a></h2>
-<p>伝達関数などの複素数データに対してもフィッティングを行えます。 コスト関数として <span class="math notranslate nohighlight">\(\chi^2 = \sum (Re_{diff})^2 + \sum (Im_{diff})^2\)</span> を最小化し、実部と虚部を同時にフィットします。 結果のプロットは自動的にボード線図（振幅・位相）になります。</p>
+<section id="5.-Complex-Number-Fitting-(Transfer-Functions)">
+<h2>5. Complex Number Fitting (Transfer Functions)<a class="headerlink" href="#5.-Complex-Number-Fitting-(Transfer-Functions)" title="Link to this heading"></a></h2>
+<p>You can also fit complex data such as transfer functions. The cost function <span class="math notranslate nohighlight">\(\chi^2 = \sum (Re_{diff})^2 + \sum (Im_{diff})^2\)</span> is minimized, fitting real and imaginary parts simultaneously. The result plots automatically become Bode plots (magnitude and phase).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. 複素数モデルの定義 (単純な極)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Define complex model (simple pole)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">pole_model</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
     <span class="c1"># H(f) = A / (1 + i * Q * (f/f0 - f0/f))</span>
     <span class="c1"># Low-pass filter like but simplified. Let&#39;s use standard mechanical transfer function:</span>
@@ -467,18 +467,18 @@ NDOF: 97
     <span class="k">return</span> <span class="n">A</span> <span class="o">/</span> <span class="p">((</span><span class="n">omega0</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">omega</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">omega0</span> <span class="o">*</span> <span class="n">omega</span> <span class="o">/</span> <span class="n">Q</span><span class="p">))</span>
 
 
-<span class="c1"># 2. データ生成</span>
+<span class="c1"># 2. Generate data</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 <span class="n">p_true</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mf">1e7</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
 <span class="n">data_clean</span> <span class="o">=</span> <span class="n">pole_model</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">**</span><span class="n">p_true</span><span class="p">)</span>
 
-<span class="c1"># ノイズ付加 (実部・虚部独立)</span>
+<span class="c1"># Add noise (real and imaginary parts independent)</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">noise_re</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 <span class="n">noise_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 <span class="n">data_noisy</span> <span class="o">=</span> <span class="n">data_clean</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="n">noise_re</span> <span class="o">+</span> <span class="mf">0.2</span><span class="n">j</span> <span class="o">*</span> <span class="n">noise_im</span>
 
-<span class="c1"># FrequencySeries 作成</span>
+<span class="c1"># Create FrequencySeries</span>
 <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data_noisy</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Transfer Function&quot;</span><span class="p">)</span>
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">fs</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">imag</span><span class="p">,</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;symlog&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;|H(f)|&quot;</span><span class="p">,</span> <span class="s2">&quot;Re(H(f))&quot;</span><span class="p">,</span> <span class="s2">&quot;Im(H(f))&quot;</span><span class="p">])</span>
@@ -499,16 +499,16 @@ NDOF: 97
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. フィッティング</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. Fitting</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fit Start...&quot;</span><span class="p">)</span>
-<span class="c1"># 初期値はずらしておく</span>
+<span class="c1"># Use shifted initial values</span>
 <span class="n">result_complex</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">pole_model</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mf">0.8e7</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="mi">320</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">})</span>
 
-<span class="c1"># 結果表示</span>
+<span class="c1"># Display results</span>
 <span class="n">display</span><span class="p">(</span><span class="n">result_complex</span><span class="p">)</span>
 
-<span class="c1"># 4. プロット (ボード線図)</span>
-<span class="c1"># 自動的に振幅と位相のプロットになります</span>
+<span class="c1"># 4. Plot (Bode plot)</span>
+<span class="c1"># Automatically becomes amplitude and phase plots</span>
 <span class="n">result_complex</span><span class="o">.</span><span class="n">bode_plot</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span><span class="o">.</span><span class="n">get_axes</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">1e-1</span><span class="p">,</span> <span class="mf">1e2</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
@@ -632,23 +632,23 @@ Fit Start...
 </div>
 </div>
 </section>
-<section id="5.-MCMC-解析-(emcee)">
-<h2>5. MCMC 解析 (emcee)<a class="headerlink" href="#5.-MCMC-解析-(emcee)" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">iminuit</span></code> で得られた最尤推定値を初期値として、<code class="docutils literal notranslate"><span class="pre">emcee</span></code> を用いた MCMC (Markov Chain Monte Carlo) 解析を行うことができます。</p>
+<section id="6.-MCMC-Analysis-(emcee)">
+<h2>6. MCMC Analysis (emcee)<a class="headerlink" href="#6.-MCMC-Analysis-(emcee)" title="Link to this heading"></a></h2>
+<p>Using the maximum likelihood estimate obtained from <code class="docutils literal notranslate"><span class="pre">iminuit</span></code> as the initial value, you can perform MCMC (Markov Chain Monte Carlo) analysis using <code class="docutils literal notranslate"><span class="pre">emcee</span></code>.</p>
 <blockquote>
-<div><p><strong>Note:</strong> この機能を使用するには <code class="docutils literal notranslate"><span class="pre">emcee</span></code> と <code class="docutils literal notranslate"><span class="pre">corner</span></code> がインストールされている必要があります。</p>
+<div><p><strong>Note:</strong> To use this feature, <code class="docutils literal notranslate"><span class="pre">emcee</span></code> and <code class="docutils literal notranslate"><span class="pre">corner</span></code> must be installed.</p>
 </div></blockquote>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># MCMCの実行</span>
-<span class="c1"># n_walkers: walkerの数, n_steps: ステップ数, burn_in: 捨て去る初期ステップ数</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run MCMC</span>
+<span class="c1"># n_walkers: number of walkers, n_steps: number of steps, burn_in: number of initial steps to discard</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">sampler</span> <span class="o">=</span> <span class="n">result_complex</span><span class="o">.</span><span class="n">run_mcmc</span><span class="p">(</span><span class="n">n_walkers</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">burn_in</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
 
-    <span class="c1"># コーナープロットの作成 (事後分布の可視化)</span>
-    <span class="c1"># 真値（または最尤推定値）を青線で表示します</span>
+    <span class="c1"># Create corner plot (visualize posterior distribution)</span>
+    <span class="c1"># Display true values (or maximum likelihood estimates) with blue lines</span>
     <span class="n">result_complex</span><span class="o">.</span><span class="n">plot_corner</span><span class="p">()</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -676,9 +676,9 @@ Fit Start...
 </div>
 </div>
 </section>
-<section id="新しい共通モデルの使用例">
-<h2>新しい共通モデルの使用例<a class="headerlink" href="#新しい共通モデルの使用例" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy.fitting.models</span></code> に追加された <code class="docutils literal notranslate"><span class="pre">power_law</span></code> と <code class="docutils literal notranslate"><span class="pre">damped_oscillation</span></code> の使用例です。</p>
+<section id="Example-Usage-of-New-Common-Models">
+<h2>Example Usage of New Common Models<a class="headerlink" href="#Example-Usage-of-New-Common-Models" title="Link to this heading"></a></h2>
+<p>These are usage examples of <code class="docutils literal notranslate"><span class="pre">power_law</span></code> and <code class="docutils literal notranslate"><span class="pre">damped_oscillation</span></code> added to <code class="docutils literal notranslate"><span class="pre">gwexpy.fitting.models</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>

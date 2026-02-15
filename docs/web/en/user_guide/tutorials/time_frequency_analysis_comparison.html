@@ -26,7 +26,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="Time-Frequency Methods: Comparison and Selection Guide" href="time_frequency_comparison.html" />
-    <link rel="prev" title="Hilbert-Huang Transform (HHT) 解析チュートリアル" href="advanced_hht.html" /> 
+    <link rel="prev" title="Hilbert-Huang Transform (HHT) Analysis Tutorial" href="advanced_hht.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -597,112 +597,8 @@ Takeaway: Use Wavelet for chirps and multi-scale transients.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create AM-FM signal</span>
-<span class="n">amfm_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nt</span><span class="p">)</span>
-<span class="n">f_carrier</span> <span class="o">=</span> <span class="mi">80</span>  <span class="c1"># Hz</span>
-<span class="n">f_mod</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Hz modulation frequency</span>
-<span class="n">mod_depth</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># Hz frequency deviation</span>
-
-<span class="c1"># Frequency modulation</span>
-<span class="n">instant_freq</span> <span class="o">=</span> <span class="n">f_carrier</span> <span class="o">+</span> <span class="n">mod_depth</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_mod</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
-<span class="n">phase_fm</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">instant_freq</span><span class="p">)</span> <span class="o">/</span> <span class="n">SAMPLE_RATE</span>
-
-<span class="c1"># Amplitude modulation</span>
-<span class="n">amp_mod</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
-
-<span class="n">amfm_signal</span> <span class="o">=</span> <span class="n">amp_mod</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase_fm</span><span class="p">)</span>
-<span class="n">amfm_signal</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nt</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.05</span>
-
-<span class="n">ts_amfm</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">amfm_signal</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">SAMPLE_RATE</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-<span class="c1"># Compute HHT</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">imfs</span> <span class="o">=</span> <span class="n">ts_amfm</span><span class="o">.</span><span class="n">emd</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;emd&#39;</span><span class="p">,</span> <span class="n">max_imf</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">imf_main</span> <span class="o">=</span> <span class="n">imfs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">imfs</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="k">else</span> <span class="n">imfs</span>
-    <span class="n">inst_freq_result</span> <span class="o">=</span> <span class="n">imf_main</span><span class="o">.</span><span class="n">instantaneous_frequency</span><span class="p">()</span>
-    <span class="c1"># Handle both TimeSeries and TimeSeriesDict</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">inst_freq_result</span><span class="p">,</span> <span class="s1">&#39;times&#39;</span><span class="p">):</span>
-        <span class="n">inst_freq_hht</span> <span class="o">=</span> <span class="n">inst_freq_result</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># If it&#39;s a dict, get the first value</span>
-        <span class="n">inst_freq_hht</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inst_freq_result</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">inst_freq_result</span><span class="p">,</span> <span class="s1">&#39;values&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">inst_freq_result</span>
-
-    <span class="c1"># Plot comparison</span>
-    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="c1"># Original signal</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">amfm_signal</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;AM-FM Signal (carrier 80 Hz ± 20 Hz modulation)&#39;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">DURATION</span><span class="p">)</span>
-
-    <span class="c1"># STFT</span>
-    <span class="n">ts_amfm_gwpy</span> <span class="o">=</span> <span class="n">GWpyTimeSeries</span><span class="p">(</span><span class="n">amfm_signal</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">SAMPLE_RATE</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">spec_amfm</span> <span class="o">=</span> <span class="n">ts_amfm_gwpy</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
-    <span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">spec_amfm</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">spec_amfm</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                           <span class="n">spec_amfm</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;STFT: Shows frequency band (width ~20 Hz)&#39;</span><span class="p">)</span>
-
-    <span class="c1"># HHT instantaneous frequency</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">inst_freq_hht</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">inst_freq_hht</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
-                <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;HHT Instantaneous Frequency&#39;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">instant_freq</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
-                <span class="n">label</span><span class="o">=</span><span class="s1">&#39;True Instantaneous Frequency&#39;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;HHT: Instantaneous frequency as single-valued curve&#39;</span><span class="p">)</span>
-    <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-
-    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-    <span class="c1"># Quantitative evaluation: compute MSE</span>
-    <span class="c1"># Interpolate true frequency to HHT time grid</span>
-    <span class="n">f_true_interp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">inst_freq_hht</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">instant_freq</span><span class="p">)</span>
-
-    <span class="c1"># Compute MSE (filter out edge effects and outliers)</span>
-    <span class="n">valid_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">inst_freq_hht</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">40</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">inst_freq_hht</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">120</span><span class="p">)</span>
-    <span class="n">mse_hht</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">inst_freq_hht</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">-</span> <span class="n">f_true_interp</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-
-    <span class="c1"># Display quantitative result</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Markdown</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">### Quantitative Evaluation</span>
-
-<span class="s2">| Metric | Value |</span>
-<span class="s2">|--------|-------|</span>
-<span class="s2">| **Instantaneous Frequency MSE** | </span><span class="si">{</span><span class="n">mse_hht</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz² |</span>
-<span class="s2">| **RMSE** | </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mse_hht</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz |</span>
-<span class="s2">| **Modulation Range** | </span><span class="si">{</span><span class="n">f_carrier</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">mod_depth</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">f_carrier</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">mod_depth</span><span class="si">}</span><span class="s2"> Hz |</span>
-
-<span class="s2">**Interpretation**: HHT tracks instantaneous frequency with RMSE of </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mse_hht</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz. STFT cannot provide single-valued instantaneous frequency - it shows a </span><span class="si">{</span><span class="n">mod_depth</span><span class="o">*</span><span class="mi">2</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> Hz wide band instead.</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">))</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HHT Result:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  ✓ Instantaneous frequency extracted as precise curve&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  ✓ Tracks true FM modulation accurately&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  ✓ No time-frequency uncertainty tradeoff&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  ✓ Data-adaptive (no window choice needed)&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ✓ Instantaneous frequency RMSE: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mse_hht</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Takeaway: Use HHT when instantaneous frequency matters (non-stationary FM signals).&quot;</span><span class="p">)</span>
-
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span><span class="p">,</span> <span class="n">display</span>
-    <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">**注意**: PyEMDがインストールされていません。このセクションはHHT解析（Hilbert-Huang Transform）を示しますが、PyEMDパッケージが必要です。</span>
-
-<span class="s2">実行するには：</span>
-<span class="s2">```bash</span>
-<span class="s2">pip install EMD-signal</span>
-<span class="s2">```</span>
-
-<span class="s2">ノートブックの残りの部分は継続できます。</span>
-<span class="s2">&quot;&quot;&quot;</span><span class="p">))</span>
-</pre></div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create AM-FM signalamfm_signal = np.zeros(nt)f_carrier = 80  # Hzf_mod = 3  # Hz modulation frequencymod_depth = 20  # Hz frequency deviation# Frequency modulationinstant_freq = f_carrier + mod_depth * np.sin(2*np.pi*f_mod*t)phase_fm = 2*np.pi * np.cumsum(instant_freq) / SAMPLE_RATE# Amplitude modulationamp_mod = 1 + 0.5 * np.sin(2*np.pi*2*t)amfm_signal = amp_mod * np.sin(phase_fm)amfm_signal += np.random.randn(nt) * 0.05ts_amfm = TimeSeries(amfm_signal, sample_rate=SAMPLE_RATE, t0=0)# Compute HHTtry:    imfs = ts_amfm.emd(method=&#39;emd&#39;, max_imf=3)    imf_main = imfs[0] if isinstance(imfs, (list, tuple)) else imfs    inst_freq_result = imf_main.instantaneous_frequency()    # Handle both TimeSeries and TimeSeriesDict    if hasattr(inst_freq_result, &#39;times&#39;):        inst_freq_hht = inst_freq_result    else:        # If it&#39;s a dict, get the first value        inst_freq_hht = list(inst_freq_result.values())[0] if hasattr(inst_freq_result, &#39;values&#39;) else inst_freq_result        # Plot comparison    fig, axes = plt.subplots(3, 1, figsize=(14, 10), sharex=True)        # Original signal    axes[0].plot(t, amfm_signal, linewidth=0.5, color=&#39;black&#39;)    axes[0].set_ylabel(&#39;Amplitude&#39;)    axes[0].set_title(&#39;AM-FM Signal (carrier 80 Hz ± 20 Hz modulation)&#39;)    axes[0].set_xlim(0, DURATION)        # STFT    ts_amfm_gwpy = GWpyTimeSeries(amfm_signal, sample_rate=SAMPLE_RATE, t0=0)    spec_amfm = ts_amfm_gwpy.spectrogram(0.5, fftlength=0.5, overlap=0.25)    im = axes[1].pcolormesh(spec_amfm.times.value, spec_amfm.frequencies.value,                           spec_amfm.value.T, cmap=&#39;viridis&#39;, shading=&#39;auto&#39;)    axes[1].set_ylim(40, 120)    axes[1].set_ylabel(&#39;Frequency (Hz)&#39;)    axes[1].set_title(&#39;STFT: Shows frequency band (width ~20 Hz)&#39;)        # HHT instantaneous frequency    axes[2].plot(inst_freq_hht.times.value, inst_freq_hht.value, linewidth=1.5,                color=&#39;blue&#39;, label=&#39;HHT Instantaneous Frequency&#39;)    axes[2].plot(t, instant_freq, &#39;r--&#39;, linewidth=2, alpha=0.7,                label=&#39;True Instantaneous Frequency&#39;)    axes[2].set_ylim(40, 120)    axes[2].set_ylabel(&#39;Frequency (Hz)&#39;)    axes[2].set_xlabel(&#39;Time (s)&#39;)    axes[2].set_title(&#39;HHT: Instantaneous frequency as single-valued curve&#39;)    axes[2].legend()        plt.tight_layout()    plt.show()        # Quantitative evaluation: compute MSE    # Interpolate true frequency to HHT time grid    f_true_interp = np.interp(inst_freq_hht.times.value, t, instant_freq)        # Compute MSE (filter out edge effects and outliers)    valid_mask = (inst_freq_hht.value &gt;= 40) &amp; (inst_freq_hht.value &lt;= 120)    mse_hht = np.mean((inst_freq_hht.value[valid_mask] - f_true_interp[valid_mask])**2)        # Display quantitative result    from IPython.display import display, Markdown    display(Markdown(f&quot;&quot;&quot;### Quantitative Evaluation| Metric | Value ||--------|-------|| **Instantaneous Frequency MSE** | {mse_hht:.2f} Hz² || **RMSE** | {np.sqrt(mse_hht):.2f} Hz || **Modulation Range** | {f_carrier - mod_depth} → {f_carrier + mod_depth} Hz |**Interpretation**: HHT tracks instantaneous frequency with RMSE of {np.sqrt(mse_hht):.2f} Hz. STFT cannot provide single-valued instantaneous frequency - it shows a {mod_depth*2:.0f} Hz wide band instead.&quot;&quot;&quot;))        print(&quot;HHT Result:&quot;)    print(&quot;  ✓ Instantaneous frequency extracted as precise curve&quot;)    print(&quot;  ✓ Tracks true FM modulation accurately&quot;)    print(&quot;  ✓ No time-frequency uncertainty tradeoff&quot;)    print(&quot;  ✓ Data-adaptive (no window choice needed)&quot;)    print(f&quot;  ✓ Instantaneous frequency RMSE: {np.sqrt(mse_hht):.2f} Hz&quot;)    print(&quot;&quot;)    print(&quot;Takeaway: Use HHT when instantaneous frequency matters (non-stationary FM signals).&quot;)    except ImportError:    from IPython.display import Markdown, display    display(Markdown(&quot;&quot;&quot;**Note**: PyEMD is not installed. This section demonstrates HHT (Hilbert-Huang Transform) analysis, which requires the PyEMD package.To install:```bashpip install EMD-signal```You can continue with the rest of the notebook.&quot;&quot;&quot;))</span>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1666,7 +1562,7 @@ Takeaway: Use DCT for signal compression, smooth background modeling, and featur
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="advanced_hht.html" class="btn btn-neutral float-left" title="Hilbert-Huang Transform (HHT) 解析チュートリアル" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_hht.html" class="btn btn-neutral float-left" title="Hilbert-Huang Transform (HHT) Analysis Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="time_frequency_comparison.html" class="btn btn-neutral float-right" title="Time-Frequency Methods: Comparison and Selection Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
