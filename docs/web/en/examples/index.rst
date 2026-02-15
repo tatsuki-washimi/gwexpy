@@ -1,38 +1,11 @@
-Examples
-========
-
-Gallery of GWexpy usage examples.
-
-Basic Examples
---------------
-
-These examples demonstrate the fundamental features of GWexpy.
-
-.. toctree::
-   :maxdepth: 1
-
-   ../user_guide/tutorials/intro_timeseries
-   ../user_guide/tutorials/intro_frequencyseries
-   ../user_guide/tutorials/intro_spectrogram
-   ../user_guide/tutorials/intro_plotting
-
-Advanced Examples
------------------
-
-Multi-dimensional data structures and advanced signal processing.
-
-.. toctree::
-   :maxdepth: 1
-
-   ../user_guide/tutorials/field_scalar_intro
-   ../user_guide/tutorials/matrix_timeseries
-   ../user_guide/tutorials/advanced_peak_detection
-   ../user_guide/tutorials/advanced_arima
-
 Case Studies
-------------
+============
 
-Real-world applications and practical workflows.
+Practical, end-to-end workflows that demonstrate how GWexpy can be used to solve
+real analysis tasks.
+
+If you're looking for feature-by-feature explanations (API usage, parameters,
+and basic patterns), start with :doc:`../user_guide/tutorials/index`.
 
 .. toctree::
    :maxdepth: 1

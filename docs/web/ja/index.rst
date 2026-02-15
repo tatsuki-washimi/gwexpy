@@ -108,7 +108,7 @@ GWexpy は GWpy を拡張し、時系列および周波数系列データ解析�
      - :doc:`インストール <user_guide/installation>`, :doc:`クイックスタート <user_guide/quickstart>`
      - :doc:`はじめに <user_guide/getting_started>`, :doc:`チュートリアル <user_guide/tutorials/index>`
    * - 実験系研究者
-     - :doc:`実例集 <examples/index>`
+     - :doc:`ケーススタディ <examples/index>`
      - :doc:`高度な信号処理 <user_guide/tutorials/index>`, :doc:`APIリファレンス <reference/index>`
    * - GWpyユーザー
      - :doc:`GWpy移行ガイド <user_guide/gwexpy_for_gwpy_users_ja>`
@@ -125,21 +125,27 @@ GWexpy は GWpy を拡張し、時系列および周波数系列データ解析�
    user_guide/installation
    user_guide/quickstart
    user_guide/getting_started
-   user_guide/tutorials/index
    user_guide/gwexpy_for_gwpy_users_ja
 
 .. toctree::
-   :hidden:
+   :maxdepth: 2
+   :caption: チュートリアル
+
+   user_guide/tutorials/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: ケーススタディ
+
+   examples/index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: 高度なガイド
 
    user_guide/numerical_stability
    user_guide/scalarfield_slicing
    user_guide/validated_algorithms
-
-.. toctree::
-   :maxdepth: 2
-   :caption: 実例集 (Examples)
-
-   examples/index
 
 .. toctree::
    :maxdepth: 2

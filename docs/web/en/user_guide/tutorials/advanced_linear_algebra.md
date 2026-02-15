@@ -324,5 +324,5 @@ Linear algebra methods in gwexpy enable:
 
 **See Also:**
 - [TimeSeriesMatrix Tutorial](matrix_timeseries.ipynb)
-- [Noise Budget Analysis Example](../examples/case_noise_budget.ipynb)
+- [Noise Budget Analysis (Case Study)](case_noise_budget.ipynb)
 - [Advanced Correlation Methods](advanced_correlation.ipynb)

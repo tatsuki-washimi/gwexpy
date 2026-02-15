@@ -9,7 +9,7 @@
 
 英語版のインタラクティブページはこちら：
 
-- [Time-Frequency Analysis Methods: Comprehensive Comparison (EN)](../../../en/user_guide/tutorials/time_frequency_analysis_comparison.html)
+- [Time-Frequency Analysis Methods: Comprehensive Comparison (EN)](../../../en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb)
 
 ノートブック本体（`.ipynb`）はこちら：
 
@@ -17,4 +17,4 @@
 
 関連する日本語の理論ガイド：
 
-- [時間-周波数解析手法: 比較と選択ガイド](time_frequency_comparison.html)
+- [時間-周波数解析手法: 比較と選択ガイド](time_frequency_comparison.md)

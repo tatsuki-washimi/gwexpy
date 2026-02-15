@@ -12,5 +12,6 @@ API Reference
    analysis
    noise
    preprocessing
+   fitting
    types
    extra
