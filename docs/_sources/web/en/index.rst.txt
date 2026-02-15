@@ -36,7 +36,7 @@ Choose Your Guide
         :link: examples/index
         :link-type: doc
 
-        Learn from examples
+        Learn from case studies
 
         * Basic usage examples
         * Advanced signal processing
@@ -107,7 +107,7 @@ Learning Path by User Level
      - :doc:`Installation <user_guide/installation>`, :doc:`Quick Start <user_guide/quickstart>`
      - :doc:`Getting Started <user_guide/getting_started>`, :doc:`Tutorials <user_guide/tutorials/index>`
    * - Researchers
-     - :doc:`Examples <examples/index>`
+     - :doc:`Case Studies <examples/index>`
      - :doc:`Advanced Signal Processing <user_guide/tutorials/index>`, :doc:`API Reference <reference/index>`
    * - GWpy Users
      - :doc:`Migration Guide <user_guide/getting_started>`
@@ -124,22 +124,27 @@ Main Documentation
    user_guide/installation
    user_guide/quickstart
    user_guide/getting_started
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorials
+
    user_guide/tutorials/index
 
 .. toctree::
-   :hidden:
+   :maxdepth: 2
+   :caption: Case Studies
+
+   examples/index
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Advanced Guides
 
    user_guide/migration_fftlength
    user_guide/numerical_stability
    user_guide/scalarfield_slicing
    user_guide/validated_algorithms
-   user_guide/tutorials/case_ml_preprocessing
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Examples
-
-   examples/index
 
 .. toctree::
    :maxdepth: 2
@@ -155,7 +160,7 @@ To continue learning:
 
 * :doc:`Getting Started <user_guide/getting_started>` - Detailed learning path
 * :doc:`Tutorials <user_guide/tutorials/index>` - All tutorials
-* :doc:`Examples <examples/index>` - Real-world case studies
+* :doc:`Case Studies <examples/index>` - Real-world case studies
 * :doc:`API Reference <reference/index>` - Class and function details
 
 **Advanced Topics:**

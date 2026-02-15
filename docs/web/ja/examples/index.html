@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>実例集 (Examples) &mdash; GWexpy Documentation</title>
+  <title>ケーススタディ &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="ノイズバジェッティングと多チャンネル相関解析" href="../user_guide/tutorials/case_noise_budget.html" />
-    <link rel="prev" title="検証済みアルゴリズム" href="../user_guide/validated_algorithms.html" /> 
+    <link rel="prev" title="Bruco (Brute force coherence) Pythonチュートリアル" href="../user_guide/tutorials/advanced_bruco.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -56,18 +56,18 @@
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/installation.html">インストール</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/quickstart.html">クイックスタート</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/getting_started.html">はじめに (Getting Started)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ケーススタディ</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_noise_budget.html">ノイズバジェッティングと多チャンネル相関解析</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_transfer_function.html">チュートリアル: 伝達関数の測定</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_active_damping.html">6自由度アクティブ防振装置のアクティブダンピング (非コロケート配置)</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/numerical_stability.html">数値的安定性と精度</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">検証済みアルゴリズム</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html#id2">前提条件と規約</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">実例集 (Examples)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">基本的な使用例</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">高度な使用例</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">ケーススタディ</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
 </ul>
 </li>
@@ -92,7 +92,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
-      <li class="breadcrumb-item active">実例集 (Examples)</li>
+      <li class="breadcrumb-item active">ケーススタディ</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/examples/index.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -102,36 +102,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="examples">
-<h1>実例集 (Examples)<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
-<p>GWexpyの使用例ギャラリーです。</p>
-<section id="id1">
-<h2>基本的な使用例<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<p>GWexpyの基本機能を実演する例です。</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/intro_timeseries.html">gwexpy TimeSeries 新機能チュートリアル</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/intro_frequencyseries.html">FrequencySeries の新機能と高度な操作</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/intro_spectrogram.html">SpectrogramList と SpectrogramDict のチュートリアル</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/intro_plotting.html">gwexpy Plotting Introduction</a></li>
-</ul>
-</div>
-</section>
-<section id="id2">
-<h2>高度な使用例<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
-<p>多次元データ構造と高度な信号処理の例です。</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/field_scalar_intro.html">ScalarField クラス入門</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/matrix_timeseries.html">TimeSeriesMatrix チュートリアル</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/advanced_peak_detection.html">Peak Detection (ピーク検出)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/advanced_arima.html">ARIMAモデルによる時系列予測</a></li>
-</ul>
-</div>
-</section>
-<section id="id3">
-<h2>ケーススタディ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<p>実世界の応用例と実践的なワークフローです。</p>
+  <section id="id1">
+<h1>ケーススタディ<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>実際の解析タスクを想定した、実践的なワークフロー集です。</p>
+<p>機能ごとの使い方（API、引数、基本パターン）を学ぶ場合は
+<a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">チュートリアル</span></a> を参照してください。</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/case_noise_budget.html">ノイズバジェッティングと多チャンネル相関解析</a></li>
@@ -140,13 +115,12 @@
 </ul>
 </div>
 </section>
-</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../user_guide/validated_algorithms.html" class="btn btn-neutral float-left" title="検証済みアルゴリズム" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../user_guide/tutorials/advanced_bruco.html" class="btn btn-neutral float-left" title="Bruco (Brute force coherence) Pythonチュートリアル" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../user_guide/tutorials/case_noise_budget.html" class="btn btn-neutral float-right" title="ノイズバジェッティングと多チャンネル相関解析" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

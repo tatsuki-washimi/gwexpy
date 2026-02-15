@@ -418,7 +418,7 @@ plt.show()
 
 ## 手法の組み合わせ
 
-これらの手法を最適な順序で組み合わせた完全なワークフローについては、[ML 前処理パイプライン](case_ml_preprocessing.ipynb)を参照してください。
+これらの手法を最適な順序で組み合わせた完全なワークフローについては、英語版の [ML 前処理パイプライン](../../../en/user_guide/tutorials/case_ml_preprocessing.ipynb) を参照してください。
 
 **推奨順序:**
 1. **バンドパス**（該当する場合） - 最初に帯域外ノイズを除去
@@ -429,6 +429,6 @@ plt.show()
 ---
 
 **関連項目:**
-- [完全な ML パイプライン](case_ml_preprocessing.ipynb) - エンドツーエンドのワークフロー
+- [完全な ML パイプライン（英語）](../../../en/user_guide/tutorials/case_ml_preprocessing.ipynb) - エンドツーエンドのワークフロー
 - [数値安定性ガイド](../numerical_stability.md) - 精度に関する考慮事項
 - [高度な相関解析](advanced_correlation.ipynb) - 特徴エンジニアリング

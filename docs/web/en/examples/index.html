@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Examples &mdash; GWexpy Documentation</title>
+  <title>Case Studies &mdash; GWexpy Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Noise Budgeting and Multi-Channel Correlation Analysis" href="../user_guide/tutorials/case_noise_budget.html" />
-    <link rel="prev" title="Machine Learning Preprocessing Pipeline" href="../user_guide/tutorials/case_ml_preprocessing.html" /> 
+    <link rel="prev" title="Bruco (Brute force coherence) Python Tutorial" href="../user_guide/tutorials/advanced_bruco.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -56,18 +56,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/quickstart.html">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Case Studies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_noise_budget.html">Noise Budgeting and Multi-Channel Correlation Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_transfer_function.html">Tutorial: Transfer Function Measurement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../user_guide/tutorials/case_active_damping.html">Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated Configuration)</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/migration_fftlength.html">Migration Guide: nperseg/noverlap → fftlength/overlap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/case_ml_preprocessing.html">Machine Learning Preprocessing Pipeline</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#basic-examples">Basic Examples</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#advanced-examples">Advanced Examples</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#case-studies">Case Studies</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
 </ul>
 </li>
@@ -93,7 +92,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
-      <li class="breadcrumb-item active">Examples</li>
+      <li class="breadcrumb-item active">Case Studies</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/examples/index.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -103,36 +102,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
-<p>Gallery of GWexpy usage examples.</p>
-<section id="basic-examples">
-<h2>Basic Examples<a class="headerlink" href="#basic-examples" title="Link to this heading"></a></h2>
-<p>These examples demonstrate the fundamental features of GWexpy.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/intro_timeseries.html">gwexpy TimeSeries New Features Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/intro_frequencyseries.html">Advanced Features and Operations of FrequencySeries</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/intro_spectrogram.html">SpectrogramList and SpectrogramDict Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/intro_plotting.html">gwexpy Plotting Introduction</a></li>
-</ul>
-</div>
-</section>
-<section id="advanced-examples">
-<h2>Advanced Examples<a class="headerlink" href="#advanced-examples" title="Link to this heading"></a></h2>
-<p>Multi-dimensional data structures and advanced signal processing.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/field_scalar_intro.html">Introduction to ScalarField Class</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/matrix_timeseries.html">TimeSeriesMatrix Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/advanced_peak_detection.html">Peak Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/advanced_arima.html">Time Series Forecasting with ARIMA Models</a></li>
-</ul>
-</div>
-</section>
-<section id="case-studies">
-<h2>Case Studies<a class="headerlink" href="#case-studies" title="Link to this heading"></a></h2>
-<p>Real-world applications and practical workflows.</p>
+  <section id="case-studies">
+<h1>Case Studies<a class="headerlink" href="#case-studies" title="Link to this heading"></a></h1>
+<p>Practical, end-to-end workflows that demonstrate how GWexpy can be used to solve
+real analysis tasks.</p>
+<p>If you’re looking for feature-by-feature explanations (API usage, parameters,
+and basic patterns), start with <a class="reference internal" href="../user_guide/tutorials/index.html"><span class="doc">Tutorials</span></a>.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../user_guide/tutorials/case_noise_budget.html">Noise Budgeting and Multi-Channel Correlation Analysis</a></li>
@@ -141,13 +116,12 @@
 </ul>
 </div>
 </section>
-</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../user_guide/tutorials/case_ml_preprocessing.html" class="btn btn-neutral float-left" title="Machine Learning Preprocessing Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../user_guide/tutorials/advanced_bruco.html" class="btn btn-neutral float-left" title="Bruco (Brute force coherence) Python Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../user_guide/tutorials/case_noise_budget.html" class="btn btn-neutral float-right" title="Noise Budgeting and Multi-Channel Correlation Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -1,38 +1,10 @@
-実例集 (Examples)
-=================
-
-GWexpyの使用例ギャラリーです。
-
-基本的な使用例
---------------
-
-GWexpyの基本機能を実演する例です。
-
-.. toctree::
-   :maxdepth: 1
-
-   ../user_guide/tutorials/intro_timeseries
-   ../user_guide/tutorials/intro_frequencyseries
-   ../user_guide/tutorials/intro_spectrogram
-   ../user_guide/tutorials/intro_plotting
-
-高度な使用例
-------------
-
-多次元データ構造と高度な信号処理の例です。
-
-.. toctree::
-   :maxdepth: 1
-
-   ../user_guide/tutorials/field_scalar_intro
-   ../user_guide/tutorials/matrix_timeseries
-   ../user_guide/tutorials/advanced_peak_detection
-   ../user_guide/tutorials/advanced_arima
-
 ケーススタディ
---------------
+==============
 
-実世界の応用例と実践的なワークフローです。
+実際の解析タスクを想定した、実践的なワークフロー集です。
+
+機能ごとの使い方（API、引数、基本パターン）を学ぶ場合は
+:doc:`../user_guide/tutorials/index` を参照してください。
 
 .. toctree::
    :maxdepth: 1

@@ -6,7 +6,7 @@
 **Looking for the version with plots and executable code?**
 
 This theory guide has a corresponding fully-executable Jupyter Notebook version:
-- [Time-Frequency Analysis Comparison (Interactive)](time_frequency_analysis_comparison.html)
+- [Time-Frequency Analysis Comparison (Interactive)](time_frequency_analysis_comparison.ipynb)
 - 8 complete plots, quantitative evaluation, and benchmark signals
 
 **This page**: Theory for each method, usage guidelines, decision matrices
@@ -1004,4 +1004,4 @@ Use **DCT** for efficient compression and feature extraction of smooth signals.
 **See Also:**
 - [Spectrogram Tutorial](intro_spectrogram.ipynb)
 - [HHT Tutorial](advanced_hht.ipynb)
-- [Q-transform Documentation](../reference/api/qtransform.rst)
+- Q-transform (GWpy)

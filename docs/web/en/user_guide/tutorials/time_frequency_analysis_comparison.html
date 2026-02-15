@@ -66,13 +66,12 @@
 <li class="toctree-l4"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Case Studies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../migration_fftlength.html">Migration Guide: nperseg/noverlap → fftlength/overlap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">Numerical Stability and Precision</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">Validated Algorithms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="case_ml_preprocessing.html">Machine Learning Preprocessing Pipeline</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
 </ul>
 </li>
@@ -116,11 +115,6 @@
 </div>
 <section id="Time-Frequency-Analysis-Methods:-Comprehensive-Comparison">
 <h1>Time-Frequency Analysis Methods: Comprehensive Comparison<a class="headerlink" href="#Time-Frequency-Analysis-Methods:-Comprehensive-Comparison" title="Link to this heading"></a></h1>
-<p>:::{admonition} Theory Guide Available :class: info</p>
-<p>For theoretical background, usage guidelines, and decision matrices, see:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="time_frequency_comparison.html">Time-Frequency Methods Comparison</a> ::</p></li>
-</ul>
 <section id="1.-Introduction">
 <h2>1. Introduction<a class="headerlink" href="#1.-Introduction" title="Link to this heading"></a></h2>
 <section id="Purpose">
@@ -149,6 +143,11 @@
 <li><p><strong>Target method results</strong>: Clear visual advantage</p></li>
 <li><p><strong>Takeaway</strong>: When to use this method</p></li>
 </ol>
+<div class="info admonition">
+<p class="admonition-title">Theory Guide Available</p>
+<p>For theoretical background, usage guidelines, and decision matrices, see:
+<a class="reference internal" href="time_frequency_comparison.html"><span class="doc">Time-Frequency Methods: Theory Guide</span></a>.</p>
+</div>
 </section>
 </section>
 <section id="2.-Common-Setup">
@@ -290,7 +289,7 @@ Setup complete: 2048 Hz, 8s duration
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_4_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_4_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_5_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_5_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -346,7 +345,7 @@ Benchmark signal contains:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_6_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_6_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_7_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_7_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -401,7 +400,7 @@ STFT Spectrogram shows:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_8_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_8_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_9_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_9_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -534,7 +533,7 @@ Q-transform shows:
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_10_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_10_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_11_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_11_0.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -710,7 +709,7 @@ Takeaway: Use Wavelet for chirps and multi-scale transients.
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_12_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_12_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_13_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_13_0.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -912,7 +911,7 @@ Takeaway: Use HHT when instantaneous frequency matters (non-stationary FM signal
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_14_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_14_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_15_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_15_0.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -1082,7 +1081,7 @@ Takeaway: Use STLT for ringdown analysis when decay rates (quality factors) matt
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_16_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_16_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_17_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_17_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1210,7 +1209,7 @@ Takeaway: Use Cepstrum for echo detection, pitch analysis, and periodic spectrum
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_18_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_18_0.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_19_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_19_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
