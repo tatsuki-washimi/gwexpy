@@ -16,6 +16,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
+    "sphinx.ext.mathjax",
     "myst_parser",
     "sphinx.ext.intersphinx",
     "nbsphinx",
@@ -163,6 +164,8 @@ source_suffix = {
 myst_heading_anchors = 3
 myst_enable_extensions = [
     "colon_fence",
+    "dollarmath",
+    "amsmath",
 ]
 
 # nbformat emits noisy warnings when notebooks omit cell IDs (valid for older nbformat).

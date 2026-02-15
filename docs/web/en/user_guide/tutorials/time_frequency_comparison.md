@@ -761,7 +761,7 @@ for n_coeffs in n_coeffs_list:
     rmse = np.sqrt(np.mean((smooth_signal - recon)**2))
     energy_kept = 100 * np.sum(dct_coeffs[:n_coeffs]**2) / np.sum(dct_coeffs**2)
 
-    print(f"{n_coeffs} coeffs: {energy_kept:.2f}% energy, RMSE = {rmse:.4f}")
+    print(f"{n_coeffs} coeffs: {energy_kept:.2f}%" " energy, RMSE = {rmse:.4f}")
 ```
 
 ### Visualization
@@ -821,9 +821,9 @@ for n_coeffs in [10, 50, 100, 200]:
     compression_ratio = len(dct_coeffs) / n_coeffs
 
     print(f"  {n_coeffs:4d} coeffs ({100*n_coeffs/len(dct_coeffs):5.1f}%): "
-          f"{energy_kept:5.2f}% energy, {compression_ratio:5.1f}× compression")
+          f"{energy_kept:5.2f}%" " energy, {compression_ratio:5.1f}× compression")
 
-print("\n50 coefficients (3% of data) capture >99% energy")
+print("\n50 coefficients (3%" " of data) capture >99%" " energy")
 print("Compression ratio ~30× with negligible error")
 ```
 
