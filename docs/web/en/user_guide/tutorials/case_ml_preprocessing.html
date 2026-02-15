@@ -134,7 +134,7 @@
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -158,84 +158,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 17</span>
-<span class="ansi-green-fg">     14</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
-<span class="ansi-green-fg">     15</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">17</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">signal</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">preprocessing</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> MLPreprocessor
-<span class="ansi-green-fg">     18</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries, TimeSeriesMatrix
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
-</pre></div></div>
 </div>
 <section id="Basic-Usage">
 <h2>Basic Usage<a class="headerlink" href="#Basic-Usage" title="Link to this heading"></a></h2>
@@ -282,22 +204,9 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 9</span>
-<span class="ansi-green-fg">      6</span> n_channels = <span class="ansi-green-fg">3</span>
-<span class="ansi-green-fg">      8</span> <span style="color: rgb(95,135,135)"># Witness channels (auxiliary sensors)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">9</span> witnesses = <span class="ansi-yellow-bg">TimeSeriesMatrix</span>(
-<span class="ansi-green-fg">     10</span>     np.random.randn(n_channels, n_samples) * <span class="ansi-green-fg">10</span> + <span class="ansi-green-fg">50</span>,  <span style="color: rgb(95,135,135)"># Different mean/std</span>
-<span class="ansi-green-fg">     11</span>     t0=<span class="ansi-green-fg">0</span>,
-<span class="ansi-green-fg">     12</span>     dt=<span class="ansi-green-fg">1</span> / sample_rate,
-<span class="ansi-green-fg">     13</span>     unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">m/s^2</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">     14</span>     channel_names=[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">SEIS-X</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">SEIS-Y</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">SEIS-Z</span><span class="ansi-yellow-fg">&#34;</span>],
-<span class="ansi-green-fg">     15</span> )
-<span class="ansi-green-fg">     17</span> <span style="color: rgb(95,135,135)"># Target strain channel with 60Hz noise</span>
-<span class="ansi-green-fg">     18</span> t = np.arange(n_samples) / sample_rate
-
-<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeriesMatrix&#39; is not defined
+Witnesses shape: (3, 1, 40960)
+Strain length: 40960
+Duration: 10 seconds
 </pre></div></div>
 </div>
 <section id="Preprocessing-Pipeline">
@@ -334,21 +243,8 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Create preprocessor with 55-65 Hz bandpass filter</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> preprocessor = <span class="ansi-yellow-bg">MLPreprocessor</span>(
-<span class="ansi-green-fg">      3</span>     sample_rate=sample_rate,
-<span class="ansi-green-fg">      4</span>     freq_low=[<span class="ansi-green-fg">55.0</span>],
-<span class="ansi-green-fg">      5</span>     freq_high=[<span class="ansi-green-fg">65.0</span>],
-<span class="ansi-green-fg">      6</span>     valid_frac=<span class="ansi-green-fg">0.2</span>,  <span style="color: rgb(95,135,135)"># 20% validation</span>
-<span class="ansi-green-fg">      7</span>     standardization_method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">zscore</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      8</span> )
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Split data</span>
-<span class="ansi-green-fg">     11</span> X_train, y_train, X_valid, y_valid = preprocessor.split(witnesses, strain)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;MLPreprocessor&#39; is not defined
+Training samples: 32768 (8.0s)
+Validation samples: 8192 (2.0s)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -373,15 +269,9 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Fit on training data</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> <span class="ansi-yellow-bg">preprocessor</span>.fit(X_train, y_train)
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Transform both train and validation</span>
-<span class="ansi-green-fg">      5</span> X_train_proc, y_train_proc = preprocessor.transform(X_train, y_train)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;preprocessor&#39; is not defined
+Processed train X shape: (3, 1, 32768)
+Processed train y length: 32768
+Output units: X=, y=
 </pre></div></div>
 </div>
 </section>
@@ -423,33 +313,11 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 4</span>
-<span class="ansi-green-fg">      1</span> fig, axes = plt.subplots(<span class="ansi-green-fg">2</span>, <span class="ansi-green-fg">1</span>, figsize=(<span class="ansi-green-fg">12</span>, <span class="ansi-green-fg">6</span>), sharex=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Plot original strain</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> axes[<span class="ansi-green-fg">0</span>].plot(<span class="ansi-yellow-bg">strain</span>.times.value, strain.value, alpha=<span class="ansi-green-fg">0.7</span>, label=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      5</span> axes[<span class="ansi-green-fg">0</span>].axvline(
-<span class="ansi-green-fg">      6</span>     y_train.t0.value + <span style="color: rgb(0,135,0)">len</span>(y_train) * y_train.dt.value,
-<span class="ansi-green-fg">      7</span>     color=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      8</span>     linestyle=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">--</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      9</span>     label=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Train/Valid split</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">     10</span> )
-<span class="ansi-green-fg">     11</span> axes[<span class="ansi-green-fg">0</span>].set_ylabel(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Strain</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;strain&#39; is not defined
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_9_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_9_1.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_9_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_9_0.png" />
 </div>
 </div>
 </section>
@@ -497,28 +365,11 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 4</span>
-<span class="ansi-green-fg">      1</span> fig, axes = plt.subplots(<span class="ansi-green-fg">2</span>, <span class="ansi-green-fg">2</span>, figsize=(<span class="ansi-green-fg">14</span>, <span class="ansi-green-fg">8</span>))
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Original witness channel (first 2 seconds)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> time_mask = <span class="ansi-yellow-bg">X_train</span>.times.value &lt; <span class="ansi-green-fg">2</span>
-<span class="ansi-green-fg">      5</span> axes[<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>].plot(X_train.times.value[time_mask], X_train.value[<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>, time_mask])
-<span class="ansi-green-fg">      6</span> axes[<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>].set_title(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Witness (Original)</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;X_train&#39; is not defined
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_11_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_11_1.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_11_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_11_0.png" />
 </div>
 </div>
 <section id="Frequency-Domain-Analysis">
@@ -550,18 +401,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[8]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Compute PSDs</span>
-<span class="ansi-green-fg">      2</span> fft_length = <span class="ansi-green-fg">4</span>  <span style="color: rgb(95,135,135)"># seconds</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> psd_original = <span class="ansi-yellow-bg">y_train</span>.psd(fftlength=fft_length)
-<span class="ansi-green-fg">      4</span> psd_filtered = y_train_proc.psd(fftlength=fft_length)
-<span class="ansi-green-fg">      6</span> plt.figure(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">5</span>))
-
-<span class="ansi-red-fg">NameError</span>: name &#39;y_train&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_13_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_13_0.png" />
+</div>
 </div>
 </section>
 </section>
@@ -617,13 +458,14 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<p><strong>注意</strong>: PyTorchがインストールされていません。</p>
-<p>この機械学習統合の例を試すには：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>torch
-</pre></div>
-</div>
-<p>ノートブックの残りの部分は継続できます。</p>
-</div>
+<div class="highlight"><pre>
+Dataset size: 1 windows
+Batch shapes: X=torch.Size([3, 32768]), y=torch.Size([1])
+X dtype: torch.float64
+y dtype: torch.float64
+
+DataLoader created with 1 batches
+</pre></div></div>
 </div>
 </section>
 <section id="Advanced-Topics">
@@ -679,26 +521,20 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Add 120 Hz noise to original data</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> signal_120hz = <span class="ansi-green-fg">1.5</span> * np.sin(<span class="ansi-green-fg">2</span> * np.pi * <span class="ansi-green-fg">120</span> * <span class="ansi-yellow-bg">t</span>)
-<span class="ansi-green-fg">      3</span> strain_multi = TimeSeries(
-<span class="ansi-green-fg">      4</span>     signal_60hz + signal_120hz + np.random.randn(n_samples) * <span class="ansi-green-fg">0.5</span>,
-<span class="ansi-green-fg">      5</span>     t0=<span class="ansi-green-fg">0</span>,
-<span class="ansi-green-fg">      6</span>     dt=<span class="ansi-green-fg">1</span> / sample_rate,
-<span class="ansi-green-fg">      7</span>     unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">strain</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      8</span> )
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Preprocessor with two bands</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;t&#39; is not defined
+Number of filter bands: 2
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_17_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_17_1.png" />
+</div>
 </div>
 </section>
 <section id="Robust-Standardization">
@@ -753,23 +589,20 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_19_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_ml_preprocessing_19_0.png" />
+</div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[11]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      3</span> data_with_outliers = np.random.randn(n_channels, n_samples)
-<span class="ansi-green-fg">      4</span> data_with_outliers[<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">1000</span>:<span class="ansi-green-fg">1010</span>] = <span class="ansi-green-fg">100</span>  <span style="color: rgb(95,135,135)"># Inject outliers</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> witnesses_outliers = <span class="ansi-yellow-bg">TimeSeriesMatrix</span>(
-<span class="ansi-green-fg">      6</span>     data_with_outliers, t0=<span class="ansi-green-fg">0</span>, dt=<span class="ansi-green-fg">1</span> / sample_rate, unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">m/s^2</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">      7</span> )
-<span class="ansi-green-fg">      9</span> <span style="color: rgb(95,135,135)"># Compare z-score vs robust</span>
-<span class="ansi-green-fg">     10</span> prep_zscore = MLPreprocessor(sample_rate=sample_rate, standardization_method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">zscore</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeriesMatrix&#39; is not defined
+Z-score: mean=-0.000, std=1.000
+Robust:  median=-0.000, MAD*1.4826=1.000
 </pre></div></div>
 </div>
 </section>

@@ -151,78 +151,7 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 4</span>
-<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
-<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
-<span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># Check PyEMD availability</span>
-<span class="ansi-green-fg">      7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
+PyEMD is installed and ready.
 </pre></div></div>
 </div>
 <section id="1.-シミュレーションデータの作成">
@@ -259,18 +188,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 11</span>
-<span class="ansi-green-fg">      8</span> trend = <span class="ansi-green-fg">2.0</span> * t  <span style="color: rgb(95,135,135)"># 線形トレンド</span>
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># TimeSeries の作成</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> data = <span class="ansi-yellow-bg">TimeSeries</span>(s1 + s2 + trend, dt=dt, unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">V</span><span class="ansi-yellow-fg">&#34;</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Simulation Data</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">     13</span> <span style="color: rgb(95,135,135)"># プロット</span>
-<span class="ansi-green-fg">     14</span> plot = data.plot(title=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original Simulation Signal</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeries&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_3_0.png" />
+</div>
 </div>
 </section>
 <section id="2.-推奨ワークフロー:-TimeSeries.hht()">
@@ -320,35 +239,19 @@
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_5_0.png" />
+</div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 12</span>
-<span class="ansi-green-fg">      1</span> emd_kwargs = {
-<span class="ansi-green-fg">      2</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">eemd_trials</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">20</span>,
-<span class="ansi-green-fg">      3</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">random_state</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">42</span>,
-<span class="ansi-green-fg">      4</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">sift_max_iter</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">200</span>,
-<span class="ansi-green-fg">      5</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">stopping_criterion</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.2</span>,
-<span class="ansi-green-fg">      6</span> }
-<span class="ansi-green-fg">      7</span> hilbert_kwargs = {
-<span class="ansi-green-fg">      8</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">pad</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">100</span>,
-<span class="ansi-green-fg">      9</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">if_smooth</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">11</span>,
-<span class="ansi-green-fg">     10</span> }
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">12</span> result = <span class="ansi-yellow-bg">data</span>.hht(
-<span class="ansi-green-fg">     13</span>     emd_method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">eemd</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">     14</span>     emd_kwargs=emd_kwargs,
-<span class="ansi-green-fg">     15</span>     hilbert_kwargs=hilbert_kwargs,
-<span class="ansi-green-fg">     16</span>     output=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">dict</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">     17</span> )
-<span class="ansi-green-fg">     19</span> imfs = result[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">imfs</span><span class="ansi-yellow-fg">&#34;</span>]
-<span class="ansi-green-fg">     20</span> plot = imfs.plot(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">10</span>), sharex=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, title=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">IMFs (EEMD)</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;data&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_5_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_5_1.png" />
+</div>
 </div>
 <section id="解釈（IMFs-と-IF）">
 <h3>解釈（IMFs と IF）<a class="headerlink" href="#解釈（IMFs-と-IF）" title="Link to this heading"></a></h3>
@@ -382,25 +285,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> spec = <span class="ansi-yellow-bg">data</span>.hht(
-<span class="ansi-green-fg">      2</span>     output=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">spectrogram</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      3</span>     emd_method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">eemd</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      4</span>     emd_kwargs=emd_kwargs,
-<span class="ansi-green-fg">      5</span>     hilbert_kwargs=hilbert_kwargs,
-<span class="ansi-green-fg">      6</span>     fmin=<span class="ansi-green-fg">0</span>,
-<span class="ansi-green-fg">      7</span>     fmax=<span class="ansi-green-fg">200</span>,
-<span class="ansi-green-fg">      8</span>     n_bins=<span class="ansi-green-fg">120</span>,
-<span class="ansi-green-fg">      9</span>     weight=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ia2</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">     10</span> )
-<span class="ansi-green-fg">     12</span> plot = spec.plot(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">5</span>))
-<span class="ansi-green-fg">     13</span> plot.show()
-
-<span class="ansi-red-fg">NameError</span>: name &#39;data&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_8_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_hht_8_0.png" />
+</div>
 </div>
 </section>
 <section id="4.-低レベルAPIについて（任意）">

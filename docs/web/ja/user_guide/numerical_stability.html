@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -101,16 +103,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1>数値的安定性と精度<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、重力波データ解析で頻繁に扱われる極めて広いダイナミックレンジを持つデータを処理できるように設計されています。
-重力波のひずみ信号（strain）は典型的には $10^{-21}$ のオーダーですが、中間処理では 1 に近い値を扱うこともあります。</p>
+重力波のひずみ信号（strain）は典型的には <span class="math notranslate nohighlight">\(10^{-21}\)</span> のオーダーですが、中間処理では 1 に近い値を扱うこともあります。</p>
 <p>科学的な正確性を保証し、数値的なアーティファクト（”Death Floats” や信号消失など）を防ぐため、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は堅牢な数値安定化戦略を実装しています。</p>
 <section id="id2">
 <h2>主な機能<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <section id="adaptive-whitening">
 <h3>1. アダプティブ・ホワイトニング (Adaptive Whitening)<a class="headerlink" href="#adaptive-whitening" title="Link to this heading"></a></h3>
-<p>標準的なホワイトニングアルゴリズムは、ゼロ除算を防ぐために固定の正規化パラメータ（<code class="docutils literal notranslate"><span class="pre">eps</span></code>）を使用することがよくあります。このパラメータが大きすぎる（例: <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>）と、物理的に意味のある微小な信号（$10^{-21}$ のひずみなど）が埋もれてしまう可能性があります。</p>
+<p>標準的なホワイトニングアルゴリズムは、ゼロ除算を防ぐために固定の正規化パラメータ（<code class="docutils literal notranslate"><span class="pre">eps</span></code>）を使用することがよくあります。このパラメータが大きすぎる（例: <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>）と、物理的に意味のある微小な信号（<span class="math notranslate nohighlight">\(10^{-21}\)</span> のひずみなど）が埋もれてしまう可能性があります。</p>
 <section id="id3">
 <h4>問題: 単純なホワイトニングは失敗する可能性がある<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>

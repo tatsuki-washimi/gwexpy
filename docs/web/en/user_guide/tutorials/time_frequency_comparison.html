@@ -106,7 +106,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="time-frequency-methods-comparison-and-selection-guide">
+  <section class="tex2jax_ignore mathjax_ignore" id="time-frequency-methods-comparison-and-selection-guide">
 <h1>Time-Frequency Methods: Comparison and Selection Guide<a class="headerlink" href="#time-frequency-methods-comparison-and-selection-guide" title="Link to this heading"></a></h1>
 <div class="tip admonition">
 <p class="admonition-title">Interactive Version Available</p>
@@ -936,7 +936,7 @@
     <span class="n">rmse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">smooth_signal</span> <span class="o">-</span> <span class="n">recon</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
     <span class="n">energy_kept</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="p">[:</span><span class="n">n_coeffs</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_coeffs</span><span class="si">}</span><span class="s2"> coeffs: </span><span class="si">{</span><span class="n">energy_kept</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% energy, RMSE = </span><span class="si">{</span><span class="n">rmse</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_coeffs</span><span class="si">}</span><span class="s2"> coeffs: </span><span class="si">{</span><span class="n">energy_kept</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span> <span class="s2">&quot; energy, RMSE = </span><span class="si">{rmse:.4f}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -996,9 +996,9 @@
     <span class="n">compression_ratio</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_coeffs</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">n_coeffs</span><span class="si">:</span><span class="s2">4d</span><span class="si">}</span><span class="s2"> coeffs (</span><span class="si">{</span><span class="mi">100</span><span class="o">*</span><span class="n">n_coeffs</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">dct_coeffs</span><span class="p">)</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">%): &quot;</span>
-          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">energy_kept</span><span class="si">:</span><span class="s2">5.2f</span><span class="si">}</span><span class="s2">% energy, </span><span class="si">{</span><span class="n">compression_ratio</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">× compression&quot;</span><span class="p">)</span>
+          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">energy_kept</span><span class="si">:</span><span class="s2">5.2f</span><span class="si">}</span><span class="s2">%&quot;</span> <span class="s2">&quot; energy, </span><span class="si">{compression_ratio:5.1f}</span><span class="s2">× compression&quot;</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">50 coefficients (3</span><span class="si">% o</span><span class="s2">f data) capture &gt;99</span><span class="si">% e</span><span class="s2">nergy&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">50 coefficients (3%&quot;</span> <span class="s2">&quot; of data) capture &gt;99%&quot;</span> <span class="s2">&quot; energy&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Compression ratio ~30× with negligible error&quot;</span><span class="p">)</span>
 </pre></div>
 </div>

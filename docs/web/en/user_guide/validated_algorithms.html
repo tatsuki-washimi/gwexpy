@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -112,7 +114,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="validated-algorithms">
+  <section class="tex2jax_ignore mathjax_ignore" id="validated-algorithms">
 <h1>Validated Algorithms<a class="headerlink" href="#validated-algorithms" title="Link to this heading"></a></h1>
 <p>The following algorithms have been validated through rigorous independent
 review and cross-verification against established references (2026-02-01).
@@ -122,10 +124,11 @@ This page documents the verified implementations with references.</p>
 <p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
 <p><strong>Status</strong>: Validated against established references</p>
 <p>The angular wavenumber computation uses the standard physics definition:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 k = 2\pi \cdot \text{fftfreq}(n, d)
-$$</p>
-<p>This satisfies $k = 2\pi / \lambda$ and is consistent with:</p>
+\]</div>
+<p>This satisfies <span class="math notranslate nohighlight">\(k = 2\pi / \lambda\)</span> and is consistent with:</p>
 <ul class="simple">
 <li><p>Press et al., <em>Numerical Recipes</em> (3rd ed., 2007), §12.3.2</p></li>
 <li><p>NumPy <code class="docutils literal notranslate"><span class="pre">fftfreq</span></code> documentation</p></li>
@@ -139,9 +142,10 @@ $$</p>
 <p><strong>Function</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries._fft_transient</span></code></p>
 <p><strong>Status</strong>: Validated against established references</p>
 <p>The transient FFT returns an <strong>amplitude spectrum</strong>, not a density spectrum:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \text{amplitude} = \text{rfft}(x) / N
-$$</p>
+\]</div>
 <p>with one-sided values (excluding DC and Nyquist) doubled.</p>
 <p>This convention allows direct reading of sinusoidal peak amplitudes.
 The suggestion to multiply by <code class="docutils literal notranslate"><span class="pre">dt</span></code> applies to density spectra
@@ -157,9 +161,10 @@ The suggestion to multiply by <code class="docutils literal notranslate"><span c
 <p><strong>Function</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.calculate_correlation_factor()</span></code></p>
 <p><strong>Status</strong>: Validated against established references</p>
 <p>The VIF formula follows Percival &amp; Walden (1993):</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \text{VIF} = \sqrt{1 + 2 \sum_{k=1}^{M-1} \left(1 - \frac{k}{M}\right) |\rho(kS)|^2}
-$$</p>
+\]</div>
 <p><strong>Important</strong>: This is NOT the regression VIF (1/(1-R²)) used for
 multicollinearity diagnosis. The name collision caused confusion,
 but the implementation is correct for spectral analysis.</p>
@@ -175,9 +180,10 @@ but the implementation is correct for spectral analysis.</p>
 <p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.timeseries.arima.ArimaResult.forecast()</span></code></p>
 <p><strong>Status</strong>: Validated against established references</p>
 <p>The forecast start time is computed as:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 t_{\text{forecast}} = t_0 + n_{\text{obs}} \times \Delta t
-$$</p>
+\]</div>
 <p>This assumes equally-spaced data without gaps. GPS times follow the
 LIGO/GWpy convention using TAI continuous seconds.</p>
 <p>The leap-second concern sometimes raised for UTC-based time systems does not apply to
@@ -190,7 +196,7 @@ GPS/TAI time systems used in gravitational wave data analysis.</p>
 </ul>
 </section>
 </section>
-<section id="assumptions-and-conventions">
+<section class="tex2jax_ignore mathjax_ignore" id="assumptions-and-conventions">
 <h1>Assumptions and Conventions<a class="headerlink" href="#assumptions-and-conventions" title="Link to this heading"></a></h1>
 <p>The following sections document important assumptions and conventions
 that users should be aware of when using these algorithms.</p>
@@ -200,9 +206,10 @@ that users should be aware of when using these algorithms.</p>
 <p><strong>Assumption</strong>: The covariance matrix Σ is <strong>parameter-independent (fixed)</strong>.</p>
 <p>Under this assumption, the log determinant term <code class="docutils literal notranslate"><span class="pre">log|Σ|</span></code> is constant
 and can be correctly omitted from the log likelihood:</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r + \text{const}
-$$</p>
+\]</div>
 <p>If Σ depends on model parameters θ, the full log likelihood including
 <code class="docutils literal notranslate"><span class="pre">log|Σ|</span></code> must be used, which requires modifying the implementation.</p>
 <p><strong>Complex Data</strong>: For complex-valued data, the Hermitian form
@@ -220,9 +227,9 @@ distribution (equal variance for real and imaginary parts).</p>
 <p><strong>Convention</strong>: The <code class="docutils literal notranslate"><span class="pre">k</span></code> axis returns <strong>angular wavenumber</strong> [rad/length],
 NOT cycle wavenumber [1/length].</p>
 <ul class="simple">
-<li><p>Angular wavenumber: $k = 2\pi / \lambda$</p></li>
-<li><p>Cycle wavenumber: $\nu = 1 / \lambda$</p></li>
-<li><p>Conversion: $\nu = k / (2\pi)$</p></li>
+<li><p>Angular wavenumber: <span class="math notranslate nohighlight">\(k = 2\pi / \lambda\)</span></p></li>
+<li><p>Cycle wavenumber: <span class="math notranslate nohighlight">\(\nu = 1 / \lambda\)</span></p></li>
+<li><p>Conversion: <span class="math notranslate nohighlight">\(\nu = k / (2\pi)\)</span></p></li>
 </ul>
 </section>
 <section id="sign-convention-for-descending-axes">
@@ -230,7 +237,7 @@ NOT cycle wavenumber [1/length].</p>
 <p><strong>Function</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
 <p><strong>Convention</strong>: If the spatial axis is descending (dx &lt; 0), the k-axis is
 <strong>sign-flipped</strong> to preserve physical consistency with the phase factor
-convention $e^{+ikx}$.</p>
+convention <span class="math notranslate nohighlight">\(e^{+ikx}\)</span>.</p>
 <p>This ensures that positive <code class="docutils literal notranslate"><span class="pre">k</span></code> corresponds to waves propagating in
 the positive x direction, regardless of the data storage order.</p>
 <p><strong>Reference</strong>: Jackson, <em>Classical Electrodynamics</em> (3rd ed., 1998), §4.2</p>

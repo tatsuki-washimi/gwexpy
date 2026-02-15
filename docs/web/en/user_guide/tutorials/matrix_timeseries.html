@@ -125,7 +125,7 @@
 <li><p>Display methods (<code class="docutils literal notranslate"><span class="pre">plot</span></code>, <code class="docutils literal notranslate"><span class="pre">step</span></code>, <code class="docutils literal notranslate"><span class="pre">repr</span></code>, <code class="docutils literal notranslate"><span class="pre">_repr_html_</span></code>) work out of the box</p></li>
 </ul>
 <p>In this notebook, we do not define additional utility functions but directly call class methods to verify their behavior.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -136,83 +136,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
-<span class="ansi-green-fg">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">astropy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> units <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> u
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries, TimeSeriesMatrix
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
-</pre></div></div>
 </div>
 <section id="Prepare-Representative-Data">
 <h2>Prepare Representative Data<a class="headerlink" href="#Prepare-Representative-Data" title="Link to this heading"></a></h2>
@@ -262,32 +185,121 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<h3>SeriesMatrix: shape=(2, 2, 1024), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 s, <b>dx:</b> 0.00390625 s, <b>N_samples:</b> 1024</li><li><b>xunit:</b> s</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>r0</th>
+      <td>row0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>r1</th>
+      <td>row1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Column Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>c0</th>
+      <td>col0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>c1</th>
+      <td>col1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Element Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>unit</th>
+      <th>name</th>
+      <th>channel</th>
+      <th>row</th>
+      <th>col</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>V</td>
+      <td>ch00</td>
+      <td>X:A</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>V</td>
+      <td>ch01</td>
+      <td>X:B</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>V</td>
+      <td>ch10</td>
+      <td>Y:A</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>V</td>
+      <td>ch11</td>
+      <td>Y:B</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 23</span>
-<span class="ansi-green-fg">     20</span> names = [[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ch00</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ch01</span><span class="ansi-yellow-fg">&#34;</span>], [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ch10</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ch11</span><span class="ansi-yellow-fg">&#34;</span>]]
-<span class="ansi-green-fg">     21</span> channels = [[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">X:A</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">X:B</span><span class="ansi-yellow-fg">&#34;</span>], [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Y:A</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Y:B</span><span class="ansi-yellow-fg">&#34;</span>]]
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">23</span> tsm = <span class="ansi-yellow-bg">TimeSeriesMatrix</span>(
-<span class="ansi-green-fg">     24</span>     data,
-<span class="ansi-green-fg">     25</span>     dt=dt,
-<span class="ansi-green-fg">     26</span>     t0=t0,
-<span class="ansi-green-fg">     27</span>     units=units,
-<span class="ansi-green-fg">     28</span>     names=names,
-<span class="ansi-green-fg">     29</span>     channels=channels,
-<span class="ansi-green-fg">     30</span>     rows={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r0</span><span class="ansi-yellow-fg">&#34;</span>: {<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">name</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">row0</span><span class="ansi-yellow-fg">&#34;</span>}, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r1</span><span class="ansi-yellow-fg">&#34;</span>: {<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">name</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">row1</span><span class="ansi-yellow-fg">&#34;</span>}},
-<span class="ansi-green-fg">     31</span>     cols={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">c0</span><span class="ansi-yellow-fg">&#34;</span>: {<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">name</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">col0</span><span class="ansi-yellow-fg">&#34;</span>}, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">c1</span><span class="ansi-yellow-fg">&#34;</span>: {<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">name</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">col1</span><span class="ansi-yellow-fg">&#34;</span>}},
-<span class="ansi-green-fg">     32</span>     name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">demo</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">     33</span> )
-<span class="ansi-green-fg">     35</span> display(tsm)
-<span class="ansi-green-fg">     36</span> tsm.plot();
-
-<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeriesMatrix&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_3_1.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_3_1.png" />
+</div>
 </div>
 </section>
 <section id="Various-Input-Patterns-(Constructor-Examples)">
@@ -339,32 +351,18 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-=== TimeSeriesMatrix Constructor Examples ===
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">=== TimeSeriesMatrix Constructor Examples ===</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> times = <span class="ansi-yellow-bg">tsm</span>.times
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Case 1: Specify sample_rate (instead of dt)</span>
-<span class="ansi-green-fg">      5</span> tsm_sr = TimeSeriesMatrix(
-<span class="ansi-green-fg">      6</span>     data,
-<span class="ansi-green-fg">      7</span>     sample_rate=<span class="ansi-green-fg">256</span> * u.Hz,
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     11</span>     channels=channels,
-<span class="ansi-green-fg">     12</span> )
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+=== TimeSeriesMatrix Constructor Examples ===
+case1 sample_rate dt 0.00390625 s sample_rate 256.0 Hz
+case2 times dt 0.00390625 s t0 0.0 s N 1024
+case3 from TimeSeries (2, 2, 1024) dt 0.00390625 s
+case4 Quantity meta unit mV
+error {&#39;dt&#39;: &lt;Quantity 0.00390625 s&gt;, &#39;sample_rate&#39;: &lt;Quantity 256. Hz&gt;, &#39;t0&#39;: &lt;Quantity 0. s&gt;} -&gt; ValueError give only one of sample_rate or dt
+error {&#39;dt&#39;: &lt;Quantity 0.00390625 s&gt;, &#39;t0&#39;: &lt;Quantity 0. s&gt;, &#39;epoch&#39;: &lt;Quantity 0. s&gt;} -&gt; ValueError give only one of epoch or t0
 </pre></div></div>
 </div>
 </section>
@@ -393,20 +391,30 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> s00 = <span class="ansi-yellow-bg">tsm</span>[<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>]
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">[0,0]</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">type</span><span class="ansi-yellow-fg">&#34;</span>, <span style="color: rgb(0,135,0)">type</span>(s00), <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">dt</span><span class="ansi-yellow-fg">&#34;</span>, s00.dt, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">t0</span><span class="ansi-yellow-fg">&#34;</span>, s00.t0, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">unit</span><span class="ansi-yellow-fg">&#34;</span>, s00.unit)
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">[0,0]</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">name</span><span class="ansi-yellow-fg">&#34;</span>, s00.name, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">channel</span><span class="ansi-yellow-fg">&#34;</span>, s00.channel)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+[0,0] type &lt;class &#39;gwexpy.timeseries.timeseries.TimeSeries&#39;&gt; dt 0.00390625 s t0 0.0 s unit V
+[0,0] name ch00 channel X:A
+[r0,c1] name ch01 channel X:B
+tsm[:,0] -&gt; &lt;class &#39;gwexpy.timeseries.matrix.TimeSeriesMatrix&#39;&gt; (2, 1, 1024)
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_7_1.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_7_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_7_2.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_7_2.png" />
+</div>
 </div>
 </section>
 <section id="Sample-Axis-Editing">
@@ -433,20 +441,36 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> cropped = <span class="ansi-yellow-bg">tsm</span>.crop(start=<span class="ansi-green-fg">1</span> * u.s, end=<span class="ansi-green-fg">2</span> * u.s).view(TimeSeriesMatrix)
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">cropped</span><span class="ansi-yellow-fg">&#34;</span>, <span style="color: rgb(0,135,0)">type</span>(cropped), cropped.shape, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">span</span><span class="ansi-yellow-fg">&#34;</span>, cropped.span)
-<span class="ansi-green-fg">      3</span> cropped.plot(subplots=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, xscale=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">seconds</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+cropped &lt;class &#39;gwexpy.timeseries.matrix.TimeSeriesMatrix&#39;&gt; (2, 2, 256) span (&lt;Quantity 1. s&gt;, &lt;Quantity 2. s&gt;)
+diffed (2, 2, 1023) dt 0.00390625 s
+padded (2, 2, 1124) t0 -0.1953125 s
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_9_1.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_9_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_9_2.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_9_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_9_3.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_9_3.png" />
+</div>
 </div>
 </section>
 <section id="Time-Domain-Processing-(Element-wise-Application-of-TimeSeries-Methods)">
@@ -469,20 +493,29 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> detr = <span class="ansi-yellow-bg">tsm</span>.detrend(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">constant</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      2</span> bp = detr.bandpass(<span class="ansi-green-fg">5</span>, <span class="ansi-green-fg">40</span>)
-<span class="ansi-green-fg">      3</span> rs = bp.resample(<span class="ansi-green-fg">128</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+original (2, 2, 1024) sample_rate 256.0 Hz
+bandpass (2, 2, 1024) sample_rate 256.0 Hz
+resample (2, 2, 512) sample_rate 128.0 Hz
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_11_1.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_11_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_11_2.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_11_2.png" />
+</div>
 </div>
 </section>
 <section id="Missing-Value-Imputation">
@@ -510,15 +543,8 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Create data with missing values (for demo)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> tsm_miss = <span class="ansi-yellow-bg">tsm</span>.copy()
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Set some values to NaN in the first channel (note how to access: tsm[0,0] is a time series)</span>
-<span class="ansi-green-fg">      4</span> tsm_miss[<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>].value[<span class="ansi-green-fg">50</span>:<span class="ansi-green-fg">60</span>] = np.nan
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+Before impute (Has NaN): False
+After impute (Has NaN): False
 </pre></div></div>
 </div>
 </section>
@@ -546,16 +572,8 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[8]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Standardize: Scale to mean 0, variance 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> tsm_std = <span class="ansi-yellow-bg">tsm</span>.standardize(method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">zscore</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Whiten: Remove inter-channel correlation (covariance)</span>
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># Use PCA to decorrelate</span>
-<span class="ansi-green-fg">      6</span> tsm_white, w_model = tsm_std.whiten_channels(return_model=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+Standardized shape: (2, 2, 1024)
+Whitened shape: (4, 1, 1024)
 </pre></div></div>
 </div>
 </section>
@@ -587,22 +605,36 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Principal Component Analysis (PCA)</span>
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># Dimensionality reduction (e.g., 3 channels -&gt; 2 principal components)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> n_comp = <span style="color: rgb(0,135,0)">min</span>(<span class="ansi-green-fg">2</span>, <span class="ansi-yellow-bg">tsm</span>.shape[<span class="ansi-green-fg">0</span>])
-<span class="ansi-green-fg">      4</span> pca_scores, pca_res = tsm_std.pca(n_components=n_comp, return_model=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">      6</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">PCA Scores shape:</span><span class="ansi-yellow-fg">&#34;</span>, pca_scores.shape)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+PCA Scores shape: (2, 1, 1024)
+Explained variance ratio: [0.57128681 0.41742564]
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_17_1.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_17_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ICA Sources shape: (2, 1, 1024)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_17_3.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_17_3.png" />
+</div>
 </div>
 </section>
 <section id="Interoperability-Introduction">
@@ -629,7 +661,7 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-PyTorch not installed
+Converted to PyTorch: torch.Size([2, 2, 1024])
 </pre></div></div>
 </div>
 </section>
@@ -654,20 +686,22 @@ PyTorch not installed
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[11]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> fft = <span class="ansi-yellow-bg">tsm</span>.fft()
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">fft</span><span class="ansi-yellow-fg">&#34;</span>, <span style="color: rgb(0,135,0)">type</span>(fft), fft.shape, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">df</span><span class="ansi-yellow-fg">&#34;</span>, fft.df, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">f0</span><span class="ansi-yellow-fg">&#34;</span>, fft.f0)
-<span class="ansi-green-fg">      4</span> psd = tsm.psd(fftlength=<span class="ansi-green-fg">1</span>, overlap=<span class="ansi-green-fg">0.5</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+fft &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 513) df 0.25 Hz f0 0.0 Hz
+psd (2, 2, 129) unit V2 / Hz
+asd (2, 2, 129) unit V / Hz(1/2)
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_21_1.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_21_1.png" />
+</div>
 </div>
 </section>
 <section id="Bivariate-Spectral-Analysis-(Coherence-Example)">
@@ -693,20 +727,21 @@ PyTorch not installed
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[12]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> ref = <span class="ansi-yellow-bg">tsm</span>[<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>]
-<span class="ansi-green-fg">      2</span> coh = tsm.coherence(ref, fftlength=<span class="ansi-green-fg">1</span>, overlap=<span class="ansi-green-fg">0.5</span>)
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">coherence</span><span class="ansi-yellow-fg">&#34;</span>, <span style="color: rgb(0,135,0)">type</span>(coh), coh.shape, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">unit</span><span class="ansi-yellow-fg">&#34;</span>, coh[<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0</span>].unit)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+coherence &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 129) unit coherence
+shape mismatch -&gt; IndexError index 1 is out of bounds for axis 1 with size 1
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_23_1.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_23_1.png" />
+</div>
 </div>
 </section>
 <section id="Display-Methods:-repr-/-plot-/-step">
@@ -728,20 +763,161 @@ PyTorch not installed
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[13]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">repr:</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-bg">tsm</span>)
-<span class="ansi-green-fg">      2</span> display(tsm)
-<span class="ansi-green-fg">      4</span> tsm.plot(subplots=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, xscale=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">seconds</span><span class="ansi-yellow-fg">&#34;</span>)
+repr:
+ SeriesMatrix(shape=(2, 2, 1024),  name=&#39;demo&#39;)
+  epoch   : 0.0 s
+  x0      : 0.0 s
+  dx      : 0.00390625 s
+  xunit   : s
+  samples : 1024
 
-<span class="ansi-red-fg">NameError</span>: name &#39;tsm&#39; is not defined
+[ Row metadata ]
+     name channel unit
+key
+r0   row0
+r1   row1
+
+[ Column metadata ]
+     name channel unit
+key
+c0   col0
+c1   col1
+
+[ Elements metadata ]
+  unit  name channel  row  col
+0    V  ch00     X:A    0    0
+1    V  ch01     X:B    0    1
+2    V  ch10     Y:A    1    0
+3    V  ch11     Y:B    1    1
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<h3>SeriesMatrix: shape=(2, 2, 1024), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 s, <b>dx:</b> 0.00390625 s, <b>N_samples:</b> 1024</li><li><b>xunit:</b> s</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>r0</th>
+      <td>row0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>r1</th>
+      <td>row1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Column Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>c0</th>
+      <td>col0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>c1</th>
+      <td>col1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Element Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>unit</th>
+      <th>name</th>
+      <th>channel</th>
+      <th>row</th>
+      <th>col</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>V</td>
+      <td>ch00</td>
+      <td>X:A</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>V</td>
+      <td>ch01</td>
+      <td>X:B</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>V</td>
+      <td>ch10</td>
+      <td>Y:A</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>V</td>
+      <td>ch11</td>
+      <td>Y:B</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_25_2.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_25_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_25_3.png" src="../../../../_images/web_en_user_guide_tutorials_matrix_timeseries_25_3.png" />
+</div>
 </div>
 </section>
 <section id="Summary">

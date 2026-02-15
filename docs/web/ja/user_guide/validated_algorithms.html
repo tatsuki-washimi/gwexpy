@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -111,7 +113,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1>検証済みアルゴリズム<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
 <p>以下のアルゴリズムは、厳密な独立レビューと確立された参考文献との相互検証（2026-02-01）により妥当性が確認されました。
 このページでは、検証済み実装とその参考文献を記載しています。</p>
@@ -120,10 +122,11 @@
 <p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
 <p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
 <p>角波数の計算は物理学の標準定義に従っています：</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 k = 2\pi \cdot \text{fftfreq}(n, d)
-$$</p>
-<p>これは $k = 2\pi / \lambda$ を満たし、以下と一致しています：</p>
+\]</div>
+<p>これは <span class="math notranslate nohighlight">\(k = 2\pi / \lambda\)</span> を満たし、以下と一致しています：</p>
 <ul class="simple">
 <li><p>Press et al., <em>Numerical Recipes</em> (3rd ed., 2007), §12.3.2</p></li>
 <li><p>NumPy <code class="docutils literal notranslate"><span class="pre">fftfreq</span></code> ドキュメント</p></li>
@@ -137,9 +140,10 @@ $$</p>
 <p><strong>関数</strong>: <code class="docutils literal notranslate"><span class="pre">TimeSeries._fft_transient</span></code></p>
 <p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
 <p>トランジェントFFTは密度スペクトルではなく、<strong>振幅スペクトル</strong> を返します：</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \text{amplitude} = \text{rfft}(x) / N
-$$</p>
+\]</div>
 <p>DCとナイキスト周波数を除く片側成分は2倍されます。</p>
 <p>この規約により、正弦波のピーク振幅を直接読み取ることができます。
 <code class="docutils literal notranslate"><span class="pre">dt</span></code> を掛けるべきという提案は密度スペクトル (V/√Hz) に適用されるもので、
@@ -155,9 +159,10 @@ $$</p>
 <p><strong>関数</strong>: <code class="xref py py-func docutils literal notranslate"><span class="pre">gwexpy.spectral.estimation.calculate_correlation_factor()</span></code></p>
 <p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
 <p>VIF計算式はPercival &amp; Walden (1993) に準拠しています：</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \text{VIF} = \sqrt{1 + 2 \sum_{k=1}^{M-1} \left(1 - \frac{k}{M}\right) |\rho(kS)|^2}
-$$</p>
+\]</div>
 <p><strong>重要</strong>: これは多重共線性診断に使用される回帰VIF (1/(1-R²)) とは異なります。
 名称の衝突が混乱を招きましたが、スペクトル解析においては実装は正しいです。</p>
 <p><strong>参考文献</strong>:</p>
@@ -172,9 +177,10 @@ $$</p>
 <p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.timeseries.arima.ArimaResult.forecast()</span></code></p>
 <p><strong>状態</strong>: 確立された参考文献に対して検証済み</p>
 <p>予測開始時刻は以下のように計算されます：</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 t_{\text{forecast}} = t_0 + n_{\text{obs}} \times \Delta t
-$$</p>
+\]</div>
 <p>これは等間隔・ギャップなしのデータを前提としています。
 GPS時刻はTAI連続秒数を使用するLIGO/GWpy規約に従っています。</p>
 <p>UTC時刻系で時々指摘されるうるう秒の懸念は、重力波データ解析で使用される
@@ -187,7 +193,7 @@ GPS/TAI時刻系には該当しません。</p>
 </ul>
 </section>
 </section>
-<section id="id2">
+<section class="tex2jax_ignore mathjax_ignore" id="id2">
 <h1>前提条件と規約<a class="headerlink" href="#id2" title="Link to this heading"></a></h1>
 <p>以下のセクションでは、これらのアルゴリズムを使用する際に
 ユーザーが認識すべき重要な前提条件と規約を説明します。</p>
@@ -197,9 +203,10 @@ GPS/TAI時刻系には該当しません。</p>
 <p><strong>前提</strong>: 共分散行列 Σ は <strong>パラメータ非依存（固定）</strong> であること。</p>
 <p>この前提の下では、対数行列式項 <code class="docutils literal notranslate"><span class="pre">log|Σ|</span></code> は定数であり、
 対数尤度から正しく省略できます：</p>
-<p>$$
+<div class="math notranslate nohighlight">
+\[
 \log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r + \text{const}
-$$</p>
+\]</div>
 <p>Σ がモデルパラメータ θ に依存する場合は、<code class="docutils literal notranslate"><span class="pre">log|Σ|</span></code> を含む
 完全な対数尤度を使用する必要があり、実装の修正が必要です。</p>
 <p><strong>複素データ</strong>: 複素数値データの場合、エルミート形式
@@ -217,16 +224,16 @@ $$</p>
 <p><strong>規約</strong>: <code class="docutils literal notranslate"><span class="pre">k</span></code> 軸は <strong>角波数</strong> [rad/length] を返します。
 サイクル波数 [1/length] ではありません。</p>
 <ul class="simple">
-<li><p>角波数: $k = 2\pi / \lambda$</p></li>
-<li><p>サイクル波数: $\nu = 1 / \lambda$</p></li>
-<li><p>変換: $\nu = k / (2\pi)$</p></li>
+<li><p>角波数: <span class="math notranslate nohighlight">\(k = 2\pi / \lambda\)</span></p></li>
+<li><p>サイクル波数: <span class="math notranslate nohighlight">\(\nu = 1 / \lambda\)</span></p></li>
+<li><p>変換: <span class="math notranslate nohighlight">\(\nu = k / (2\pi)\)</span></p></li>
 </ul>
 </section>
 <section id="id3">
 <h2>降順軸の符号規約<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <p><strong>関数</strong>: <code class="xref py py-meth docutils literal notranslate"><span class="pre">gwexpy.fields.ScalarField.fft_space()</span></code></p>
 <p><strong>規約</strong>: 空間軸が降順 (dx &lt; 0) の場合、k軸は位相因子規約
-$e^{+ikx}$ との物理的整合性を保つために <strong>符号反転</strong> されます。</p>
+<span class="math notranslate nohighlight">\(e^{+ikx}\)</span> との物理的整合性を保つために <strong>符号反転</strong> されます。</p>
 <p>これにより、データ格納順序に関係なく、正の <code class="docutils literal notranslate"><span class="pre">k</span></code> が
 正のx方向に伝播する波に対応することが保証されます。</p>
 <p><strong>参考文献</strong>: Jackson, <em>Classical Electrodynamics</em> (3rd ed., 1998), §4.2</p>

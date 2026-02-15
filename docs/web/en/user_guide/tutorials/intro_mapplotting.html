@@ -130,7 +130,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">SkyMap</span>
 
 <span class="c1"># Create SkyMap with Mollweide projection (default)</span>
-<span class="n">fig</span> <span class="o">=</span> <span class="n">SkyMap</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">projection</span><span class="o">=</span><span class="s2">&quot;mollweide&quot;</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">SkyMap</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">projection</span><span class="o">=</span><span class="s2">&quot;astro hours mollweide&quot;</span><span class="p">)</span>
 
 <span class="c1"># Add synthetic HEALPix data if ligo.skymap is available</span>
 <span class="k">try</span><span class="p">:</span>
@@ -160,80 +160,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 4</span>
-<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
-<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> SkyMap
-<span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># Create SkyMap with Mollweide projection (default)</span>
-<span class="ansi-green-fg">      7</span> fig = SkyMap(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">5</span>), projection=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">mollweide</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_mapplotting_2_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_mapplotting_2_0.png" />
+</div>
 </div>
 </section>
 <section id="2.-GeoMap:-Geographic-Maps-with-PyGMT">
@@ -273,9 +201,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-pygmt is required for GeoMap. Install with: pip install pygmt (details: No module named &#39;pygmt&#39;)
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_mapplotting_4_0.png" class="no-scaled-link" src="../../../../_images/web_en_user_guide_tutorials_intro_mapplotting_4_0.png" style="width: 500px;" />
+</div>
 </div>
 </section>
 <section id="3.-Close-up-View-of-Japan-Region">
@@ -285,50 +212,37 @@ pygmt is required for GeoMap. Install with: pip install pygmt (details: No modul
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoMap</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoMap</span>
 
-<span class="c1"># Display Japan region (specify region=&#39;JP&#39;)</span>
-<span class="c1"># Use Mercator projection for zoomed view, with detailed frame annotations (frame=&#39;afg&#39;)</span>
-<span class="n">geo_jp</span> <span class="o">=</span> <span class="n">GeoMap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Mercator&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;JP&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;afg&quot;</span><span class="p">)</span>
+    <span class="c1"># Display Japan region (specify region=&#39;JP&#39;)</span>
+    <span class="c1"># Use Mercator projection for zoomed view, with detailed frame annotations (frame=&#39;afg&#39;)</span>
+    <span class="n">geo_jp</span> <span class="o">=</span> <span class="n">GeoMap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Mercator&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;JP&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;afg&quot;</span><span class="p">)</span>
 
-<span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_oceans</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span><span class="p">)</span>
-<span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_continents</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">)</span>
-<span class="n">geo_jp</span><span class="o">.</span><span class="n">add_coastlines</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>  <span class="c1"># Draw coastlines with higher resolution</span>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_oceans</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span><span class="p">)</span>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_continents</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">)</span>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">add_coastlines</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>  <span class="c1"># Draw coastlines with higher resolution</span>
 
-<span class="c1"># Plot KAGRA detector</span>
-<span class="n">geo_jp</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="s2">&quot;K1&quot;</span><span class="p">)</span>
+    <span class="c1"># Plot KAGRA detector</span>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="s2">&quot;K1&quot;</span><span class="p">)</span>
 
-<span class="c1"># Add scale bar (500km width, at bottom-left with 0.5cm offset)</span>
-<span class="n">geo_jp</span><span class="o">.</span><span class="n">add_scale_bar</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="s2">&quot;500k&quot;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;jBL&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="s2">&quot;0.5c/0.5c&quot;</span><span class="p">)</span>
+    <span class="c1"># Add scale bar (500km width, at bottom-left with 0.5cm offset)</span>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">add_scale_bar</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="s2">&quot;500k&quot;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;jBL&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="s2">&quot;0.5c/0.5c&quot;</span><span class="p">)</span>
 
-<span class="n">geo_jp</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ImportError</span>                               Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> GeoMap
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Display Japan region (specify region=&#39;JP&#39;)</span>
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Use Mercator projection for zoomed view, with detailed frame annotations (frame=&#39;afg&#39;)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> geo_jp = <span class="ansi-yellow-bg">GeoMap</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">projection</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">Mercator</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">region</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">JP</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">frame</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">afg</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">      7</span> geo_jp.fill_oceans(color=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">azure</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      8</span> geo_jp.fill_continents(color=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">lightgray</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/plot/geomap.py:80</span>, in <span class="ansi-cyan-fg">GeoMap.__init__</span><span class="ansi-blue-fg">(self, projection, center_lon, width, **kwargs)</span>
-<span class="ansi-green-fg">     78</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> _PYGMT_IMPORT_ERROR <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">     79</span>         message = <span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>message<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> (details: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>_PYGMT_IMPORT_ERROR<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">)</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">80</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ImportError</span>(message)
-<span class="ansi-green-fg">     82</span> <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> pygmt <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
-<span class="ansi-green-fg">     83</span> <span style="color: rgb(0,135,0)">self</span>.fig = pygmt.Figure()
-
-<span class="ansi-red-fg">ImportError</span>: pygmt is required for GeoMap. Install with: pip install pygmt (details: No module named &#39;pygmt&#39;)
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_mapplotting_6_0.png" class="no-scaled-link" src="../../../../_images/web_en_user_guide_tutorials_intro_mapplotting_6_0.png" style="width: 500px;" />
+</div>
 </div>
 <section id="Commonly-Used-ISO-Country-Codes-(alpha-2)">
 <h3>Commonly Used ISO Country Codes (alpha-2)<a class="headerlink" href="#Commonly-Used-ISO-Country-Codes-(alpha-2)" title="Link to this heading"></a></h3>

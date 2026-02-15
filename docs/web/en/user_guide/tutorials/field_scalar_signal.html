@@ -19,6 +19,8 @@
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -106,7 +108,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="signal-processing-on-physical-fields-scalarfield">
+  <section class="tex2jax_ignore mathjax_ignore" id="signal-processing-on-physical-fields-scalarfield">
 <h1>Signal Processing on Physical Fields (ScalarField)<a class="headerlink" href="#signal-processing-on-physical-fields-scalarfield" title="Link to this heading"></a></h1>
 <p>This tutorial explains advanced signal processing techniques using the <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> class, focusing on domain transformations between spatial and wavenumber (K) domains, and data extraction at specific coordinates.</p>
 <section id="spatial-fft">
@@ -129,7 +131,7 @@
 </section>
 <section id="point-extraction-time-series-at-specific-coordinates">
 <h2>3. Point Extraction (Time-series at specific coordinates)<a class="headerlink" href="#point-extraction-time-series-at-specific-coordinates" title="Link to this heading"></a></h2>
-<p>You can extract a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> at any spatial coordinate $(x, y, z)$ from the 4D field. If the specified coordinates are not on the grid, interpolation is automatically performed.</p>
+<p>You can extract a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> at any spatial coordinate <span class="math notranslate nohighlight">\((x, y, z)\)</span> from the 4D field. If the specified coordinates are not on the grid, interpolation is automatically performed.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract time-series at coordinates (0.5, 0.5, 0.5)</span>
 <span class="n">ts_at_point</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">extract_points</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 

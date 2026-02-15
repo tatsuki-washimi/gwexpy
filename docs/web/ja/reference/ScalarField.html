@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -103,7 +105,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="scalarfield">
+  <section class="tex2jax_ignore mathjax_ignore" id="scalarfield">
 <h1>ScalarField<a class="headerlink" href="#scalarfield" title="Link to this heading"></a></h1>
 <p><strong>継承:</strong> <code class="docutils literal notranslate"><span class="pre">FieldBase</span></code>, <code class="docutils literal notranslate"><span class="pre">Array4D</span></code>, <code class="docutils literal notranslate"><span class="pre">AxisApiMixin</span></code>, <code class="docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="docutils literal notranslate"><span class="pre">GwpyArray</span></code></p>
 <p>明示的なドメインメタデータを持つ4次元スカラー場クラスです。軸構造は常に <code class="docutils literal notranslate"><span class="pre">(axis0,</span> <span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">z)</span></code> を保持し、スライスしても軸は削除されず長さ1のまま残ります。時間/周波数と位置/波数のドメインを軸ごとに保持し、FFT操作後もドメインと単位の整合性を検証します。</p>
@@ -131,7 +133,7 @@
 </section>
 <section id="fft-space-axes-none-n-none">
 <h4><code class="docutils literal notranslate"><span class="pre">fft_space(axes=None,</span> <span class="pre">n=None)</span></code><a class="headerlink" href="#fft-space-axes-none-n-none" title="Link to this heading"></a></h4>
-<p>空間軸に対して符号付き両側 FFT を実行。ドメインを <code class="docutils literal notranslate"><span class="pre">real</span> <span class="pre">→</span> <span class="pre">k</span></code> に、軸名を <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">→</span> <span class="pre">kx</span></code> などに更新。波数は $k = 2\pi/\lambda$ として計算。</p>
+<p>空間軸に対して符号付き両側 FFT を実行。ドメインを <code class="docutils literal notranslate"><span class="pre">real</span> <span class="pre">→</span> <span class="pre">k</span></code> に、軸名を <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">→</span> <span class="pre">kx</span></code> などに更新。波数は <span class="math notranslate nohighlight">\(k = 2\pi/\lambda\)</span> として計算。</p>
 </section>
 <section id="ifft-space-axes-none-n-none">
 <h4><code class="docutils literal notranslate"><span class="pre">ifft_space(axes=None,</span> <span class="pre">n=None)</span></code><a class="headerlink" href="#ifft-space-axes-none-n-none" title="Link to this heading"></a></h4>

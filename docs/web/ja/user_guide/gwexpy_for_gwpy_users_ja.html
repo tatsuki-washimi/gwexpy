@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -106,7 +108,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gwexpy-gwpy">
+  <section class="tex2jax_ignore mathjax_ignore" id="gwexpy-gwpy">
 <h1>GWexpy 機能一覧 (GWpyユーザー向け)<a class="headerlink" href="#gwexpy-gwpy" title="Link to this heading"></a></h1>
 <p>本ドキュメントでは、GWexpy で GWpy に対して拡張・追加された機能を網羅的にリストアップします。
 ここに含まれる機能は、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> をインポートすることで利用可能になります。</p>
@@ -258,7 +260,7 @@
 <p>GWpyのスペクトログラムとQ変換に加えて、様々な時間周波数解析手法を提供します。</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">hht()</span></code>: ヒルベルト・ファン変換 (HHT)。EMD (Empirical Mode Decomposition) によるIMF分解と瞬時周波数解析。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stlt()</span></code>: 短時間ラプラス変換 (Short-Time Laplace Transform)。減衰定数 $\sigma$ を考慮した解析。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stlt()</span></code>: 短時間ラプラス変換 (Short-Time Laplace Transform)。減衰定数 <span class="math notranslate nohighlight">\(\sigma\)</span> を考慮した解析。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cepstrum()</span></code>: ケプストラム解析 (倒周波数)。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cwt()</span></code>: 連続ウェーブレット変換 (<code class="docutils literal notranslate"><span class="pre">pywt</span></code> ラッパー)。</p></li>
 </ul>

@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -104,7 +106,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gwexpy-fitting">
+  <section class="tex2jax_ignore mathjax_ignore" id="gwexpy-fitting">
 <h1>gwexpy.fitting<a class="headerlink" href="#gwexpy-fitting" title="Link to this heading"></a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code> module provides advanced fitting functionality using iminuit.</p>
 <section id="overview">
@@ -604,8 +606,8 @@
 <ul class="simple">
 <li><p><strong>Unit Propagation</strong>: When a model is evaluated via <code class="docutils literal notranslate"><span class="pre">result.model(x)</span></code>, it automatically respects the units of the input data.</p>
 <ul>
-<li><p>If input <code class="docutils literal notranslate"><span class="pre">x</span></code> is in $Hz$, the model evaluates using frequency units.</p></li>
-<li><p>The output <code class="docutils literal notranslate"><span class="pre">y</span></code> retains the unit of the fitted data (e.g., $m$, $V^2/Hz$).</p></li>
+<li><p>If input <code class="docutils literal notranslate"><span class="pre">x</span></code> is in <span class="math notranslate nohighlight">\(Hz\)</span>, the model evaluates using frequency units.</p></li>
+<li><p>The output <code class="docutils literal notranslate"><span class="pre">y</span></code> retains the unit of the fitted data (e.g., <span class="math notranslate nohighlight">\(m\)</span>, <span class="math notranslate nohighlight">\(V^2/Hz\)</span>).</p></li>
 </ul>
 </li>
 <li><p><strong>Parameter Access</strong>: <code class="docutils literal notranslate"><span class="pre">result.params['name']</span></code> returns an object with <code class="docutils literal notranslate"><span class="pre">.value</span></code> and <code class="docutils literal notranslate"><span class="pre">.error</span></code> attributes, decoupling the numerical value from statistical uncertainty.</p></li>

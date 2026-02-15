@@ -129,7 +129,7 @@
 <section id="Use-Case:-Seismic-Array-Analysis">
 <h2>Use Case: Seismic Array Analysis<a class="headerlink" href="#Use-Case:-Seismic-Array-Analysis" title="Link to this heading"></a></h2>
 <p>We’ll analyze a 3D seismic array where each spatial point records time-varying ground motion.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -144,85 +144,6 @@
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 4</span>
-<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
-<span class="ansi-green-fg">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">astropy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> units <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> u
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> ScalarField, FieldList
-<span class="ansi-green-fg">      5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
-<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># Suppress warnings</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
-</pre></div></div>
 </div>
 </section>
 <section id="Step-1:-Create-Synthetic-Seismic-Field">
@@ -277,18 +198,19 @@
 <span class="c1"># Create ScalarField</span>
 <span class="n">field_seismic</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span>
-    <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
-    <span class="n">x0</span><span class="o">=</span><span class="mi">0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mi">10</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
-    <span class="n">y0</span><span class="o">=</span><span class="mi">0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">dy</span><span class="o">=</span><span class="mi">10</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
-    <span class="n">z0</span><span class="o">=</span><span class="mi">0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
-    <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span>  <span class="c1"># Ground displacement</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Seismic Field&#39;</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t_axis</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">x_axis</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">y_axis</span><span class="p">,</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">z_axis</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>  <span class="c1"># Ground displacement</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Seismic Field&#39;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created seismic field: </span><span class="si">{</span><span class="n">field_seismic</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time span: </span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spatial extent: </span><span class="si">{</span><span class="n">nx</span><span class="o">*</span><span class="mi">10</span><span class="si">}</span><span class="s2">m × </span><span class="si">{</span><span class="n">ny</span><span class="o">*</span><span class="mi">10</span><span class="si">}</span><span class="s2">m × </span><span class="si">{</span><span class="n">nz</span><span class="o">*</span><span class="mi">5</span><span class="si">}</span><span class="s2">m&quot;</span><span class="p">)</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -296,24 +218,9 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 44</span>
-<span class="ansi-green-fg">     41</span> data += np.random.randn(*data.shape) * <span class="ansi-green-fg">0.1</span>
-<span class="ansi-green-fg">     43</span> <span style="color: rgb(95,135,135)"># Create ScalarField</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">44</span> field_seismic = <span class="ansi-yellow-bg">ScalarField</span>(
-<span class="ansi-green-fg">     45</span>     data,
-<span class="ansi-green-fg">     46</span>     t0=<span class="ansi-green-fg">0</span>*u.s, dt=(<span class="ansi-green-fg">1</span>/fs)*u.s,
-<span class="ansi-green-fg">     47</span>     x0=<span class="ansi-green-fg">0</span>*u.m, dx=<span class="ansi-green-fg">10</span>*u.m,
-<span class="ansi-green-fg">     48</span>     y0=<span class="ansi-green-fg">0</span>*u.m, dy=<span class="ansi-green-fg">10</span>*u.m,
-<span class="ansi-green-fg">     49</span>     z0=<span class="ansi-green-fg">0</span>*u.m, dz=<span class="ansi-green-fg">5</span>*u.m,
-<span class="ansi-green-fg">     50</span>     unit=<span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">m</span><span class="ansi-yellow-fg">&#39;</span>,  <span style="color: rgb(95,135,135)"># Ground displacement</span>
-<span class="ansi-green-fg">     51</span>     name=<span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">Seismic Field</span><span class="ansi-yellow-fg">&#39;</span>
-<span class="ansi-green-fg">     52</span> )
-<span class="ansi-green-fg">     54</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Created seismic field: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>field_seismic.shape<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">     55</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Time span: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>duration<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.2f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> s</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ScalarField&#39; is not defined
+Created seismic field: (256, 8, 8, 4)
+Time span: 2.56 s
+Spatial extent: 80m × 80m × 20m
 </pre></div></div>
 </div>
 </section>
@@ -325,8 +232,13 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract time-series at corner (near source) and far point</span>
-<span class="n">ts_near</span> <span class="o">=</span> <span class="n">field_seismic</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_timeseries</span><span class="p">()</span>  <span class="c1"># Near source</span>
-<span class="n">ts_far</span> <span class="o">=</span> <span class="n">field_seismic</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_timeseries</span><span class="p">()</span>   <span class="c1"># Far from source</span>
+<span class="n">slice_near</span> <span class="o">=</span> <span class="n">field_seismic</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Near source (keeps 4D structure)</span>
+<span class="n">slice_far</span> <span class="o">=</span> <span class="n">field_seismic</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># Far from source</span>
+
+<span class="c1"># Convert point-slices to 1D TimeSeries</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">slice_near</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+<span class="n">ts_near</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">slice_near</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">slice_near</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Near source&#39;</span><span class="p">)</span>
+<span class="n">ts_far</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">slice_far</span><span class="o">.</span><span class="n">value</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">slice_far</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Far point&#39;</span><span class="p">)</span>
 
 <span class="c1"># Plot</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -345,8 +257,15 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Extracted TimeSeries for analysis&quot;</span><span class="p">)</span>
-</pre></div>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Extracted TimeSeries for analysis&#39;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_field_advanced_workflow_5_0.png" src="../../../../_images/web_en_user_guide_tutorials_field_advanced_workflow_5_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -354,15 +273,7 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Extract time-series at corner (near source) and far point</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> ts_near = <span class="ansi-yellow-bg">field_seismic</span>[:, <span class="ansi-green-fg">1</span>, <span class="ansi-green-fg">1</span>, <span class="ansi-green-fg">0</span>].to_timeseries()  <span style="color: rgb(95,135,135)"># Near source</span>
-<span class="ansi-green-fg">      3</span> ts_far = field_seismic[:, <span class="ansi-green-fg">6</span>, <span class="ansi-green-fg">6</span>, <span class="ansi-green-fg">0</span>].to_timeseries()   <span style="color: rgb(95,135,135)"># Far from source</span>
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># Plot</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;field_seismic&#39; is not defined
+Extracted TimeSeries for analysis
 </pre></div></div>
 </div>
 </section>
@@ -387,15 +298,9 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Apply STLT to detect damping (geometric spreading + attenuation)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> stlt_result = <span class="ansi-yellow-bg">ts_far</span>.stlt(fftlength=<span class="ansi-green-fg">1.0</span>, overlap=<span class="ansi-green-fg">0.5</span>)
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">STLT result shape: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>stlt_result.shape<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Use STLT to identify decay rates (σ) at different frequencies (ω)</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts_far&#39; is not defined
+STLT result shape: (4, 1, 51)
+Use STLT to identify decay rates (σ) at different frequencies (ω)
+Note: Actual visualization would show σ-ω plane with decay rate information
 </pre></div></div>
 </div>
 </section>
@@ -412,7 +317,7 @@
 <span class="p">]</span>
 
 <span class="c1"># Create FieldList</span>
-<span class="n">field_list</span> <span class="o">=</span> <span class="n">FieldList</span><span class="p">(</span><span class="n">slices_at_depths</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Depth Slices&#39;</span><span class="p">)</span>
+<span class="n">field_list</span> <span class="o">=</span> <span class="n">FieldList</span><span class="p">(</span><span class="n">slices_at_depths</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created FieldList with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">field_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> depth slices&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Each slice shape: </span><span class="si">{</span><span class="n">field_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -432,25 +337,14 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Extract horizontal slices at different depths</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> slices_at_depths = <span class="ansi-yellow-bg">[</span>
-<span class="ansi-green-fg">      3</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">field_seismic</span><span class="ansi-yellow-bg">[</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">iz</span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">for</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">iz</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(175,0,255)">in</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">range</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">nz</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">      4</span> <span class="ansi-yellow-bg">]</span>
-<span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># Create FieldList</span>
-<span class="ansi-green-fg">      7</span> field_list = FieldList(slices_at_depths, name=<span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">Depth Slices</span><span class="ansi-yellow-fg">&#39;</span>)
+Created FieldList with 4 depth slices
+Each slice shape: (256, 8, 8, 1)
 
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 3</span>, in <span class="ansi-cyan-fg">&lt;listcomp&gt;</span><span class="ansi-blue-fg">(.0)</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Extract horizontal slices at different depths</span>
-<span class="ansi-green-fg">      2</span> slices_at_depths = [
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span>     <span class="ansi-yellow-bg">field_seismic</span>[:, :, :, iz] <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> iz <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">range</span>(nz)
-<span class="ansi-green-fg">      4</span> ]
-<span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># Create FieldList</span>
-<span class="ansi-green-fg">      7</span> field_list = FieldList(slices_at_depths, name=<span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">Depth Slices</span><span class="ansi-yellow-fg">&#39;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;field_seismic&#39; is not defined
+Batch processing workflow:
+  1. Extract slices → FieldList
+  2. Apply transform → [field.fft_time() for field in field_list]
+  3. Aggregate results → stack or average
+  4. Reconstruct Field → combine processed slices
 </pre></div></div>
 </div>
 </section>
@@ -465,7 +359,8 @@
 <span class="n">field_freq</span> <span class="o">=</span> <span class="n">field_seismic</span><span class="o">.</span><span class="n">fft_time</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency-domain field: </span><span class="si">{</span><span class="n">field_freq</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time domain: </span><span class="si">{</span><span class="n">field_freq</span><span class="o">.</span><span class="n">time_domain</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis0 domain: </span><span class="si">{</span><span class="n">field_freq</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Space domains: </span><span class="si">{</span><span class="n">field_freq</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># Inverse transform</span>
 <span class="n">field_reconstructed</span> <span class="o">=</span> <span class="n">field_freq</span><span class="o">.</span><span class="n">ifft_time</span><span class="p">()</span>
@@ -474,7 +369,7 @@
 <span class="n">max_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field_seismic</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">field_reconstructed</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Reconstruction error: </span><span class="si">{</span><span class="n">max_error</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4D structure preserved through FFT → IFFT cycle ✓&quot;</span><span class="p">)</span>
-</pre></div>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -482,15 +377,12 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Example: FFT in time, then reconstruct</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> field_freq = <span class="ansi-yellow-bg">field_seismic</span>.fft_time()
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Frequency-domain field: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>field_freq.shape<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Time domain: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>field_freq.time_domain<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
+Frequency-domain field: (129, 8, 8, 4)
+Axis0 domain: frequency
+Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
 
-<span class="ansi-red-fg">NameError</span>: name &#39;field_seismic&#39; is not defined
+Reconstruction error: 1.33e-15 m
+4D structure preserved through FFT → IFFT cycle ✓
 </pre></div></div>
 </div>
 </section>

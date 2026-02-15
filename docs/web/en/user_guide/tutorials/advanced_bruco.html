@@ -163,7 +163,7 @@
 <section id="Setup-and-Mock-Data-Generation">
 <h3>Setup and Mock Data Generation<a class="headerlink" href="#Setup-and-Mock-Data-Generation" title="Link to this heading"></a></h3>
 <p><strong>What we do</strong>: Create pseudo-data for target/auxiliary channels and prepare <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> to feed into Bruco. <strong>Why it’s important</strong>: In actual operations, data is acquired from NDS or frames, but being able to freely design signals in a notebook accelerates hypothesis testing.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -182,85 +182,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 6</span>
-<span class="ansi-green-fg">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
-<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">analysis</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Bruco
-<span class="ansi-green-fg">      7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">analysis</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">bruco</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FastCoherenceEngine
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">astro</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> inspiral_range
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
-</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -336,30 +257,36 @@
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 12</span>
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Get aLIGO sensitivity curve (ASD)</span>
-<span class="ansi-green-fg">     11</span> fmax = sample_rate / <span class="ansi-green-fg">2</span>  <span style="color: rgb(95,135,135)"># Nyquist frequency</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">12</span> asd_aligo = <span class="ansi-yellow-bg">from_pygwinc</span>(
-<span class="ansi-green-fg">     13</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">aLIGO</span><span class="ansi-yellow-fg">&#34;</span>, fmin=<span class="ansi-green-fg">4.0</span>, fmax=fmax, df=<span class="ansi-green-fg">1.0</span> / duration, quantity=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">strain</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">     14</span> )
-<span class="ansi-green-fg">     16</span> <span style="color: rgb(95,135,135)"># Generate target noise based on aLIGO sensitivity curve</span>
-<span class="ansi-green-fg">     17</span> target = from_asd(asd_aligo, duration, sample_rate, t0=<span class="ansi-green-fg">0</span>, rng=rng).highpass(<span class="ansi-green-fg">1</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;from_pygwinc&#39; is not defined
+aLIGO ASD at 100 Hz: 3.71e-24 strain/sqrt(Hz)
+Target data std: 5.08e-19
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.legend.Legend at 0x7cf6e87f7ec0&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_3_2.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_3_2.png" />
+</div>
 </div>
 </section>
 <section id="Section-1:-Running-Basic-Bruco-Analysis-(Reproduction-in-Jupyter)">
 <h3>Section 1: Running Basic Bruco Analysis (Reproduction in Jupyter)<a class="headerlink" href="#Section-1:-Running-Basic-Bruco-Analysis-(Reproduction-in-Jupyter)" title="Link to this heading"></a></h3>
 <p><strong>What we do</strong>: Run brute force coherence analysis with the <code class="docutils literal notranslate"><span class="pre">Bruco</span></code> class and verify results with tables and plots. <strong>Why it’s important</strong>: With the Python API, you can quickly try “culprit searches” while interactively changing conditions and visualizations.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
@@ -382,27 +309,6 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Initialize Bruco.</span>
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># Since we manually pass all data here, specify an empty list for auto-fetch channel list (aux_channels).</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> bruco = <span class="ansi-yellow-bg">Bruco</span>(target_channel=target.name, aux_channels=[])
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># By passing target_data and aux_data to the compute method, you can skip internal fetching and run the analysis.</span>
-<span class="ansi-green-fg">      6</span> result = bruco.compute(
-<span class="ansi-green-fg">      7</span>     start=<span class="ansi-green-fg">0</span>,
-<span class="ansi-green-fg">      8</span>     duration=<span style="color: rgb(0,135,0)">int</span>(duration),
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     15</span>     aux_data=aux_dict,  <span style="color: rgb(95,135,135)"># Pre-generated auxiliary channel data dictionary</span>
-<span class="ansi-green-fg">     16</span> )
-
-<span class="ansi-red-fg">NameError</span>: name &#39;Bruco&#39; is not defined
-</pre></div></div>
-</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -421,24 +327,159 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> df = <span class="ansi-yellow-bg">result</span>.to_dataframe(ranks=[<span class="ansi-green-fg">0</span>])
-<span class="ansi-green-fg">      3</span> df_sorted = (
-<span class="ansi-green-fg">      4</span>     df.sort_values(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">coherence</span><span class="ansi-yellow-fg">&#34;</span>, ascending=<span class="ansi-bold" style="color: rgb(0,135,0)">False</span>)
-<span class="ansi-green-fg">      5</span>     .dropna(subset=[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">channel</span><span class="ansi-yellow-fg">&#34;</span>])
-<span class="ansi-green-fg">      6</span>     .head(<span class="ansi-green-fg">15</span>)
-<span class="ansi-green-fg">      7</span>     .reset_index(drop=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">      8</span> )
-<span class="ansi-green-fg">     10</span> df_sorted
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-<span class="ansi-red-fg">NameError</span>: name &#39;result&#39; is not defined
-</pre></div></div>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>frequency</th>
+      <th>rank</th>
+      <th>channel</th>
+      <th>coherence</th>
+      <th>projection</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>60.00</td>
+      <td>1</td>
+      <td>H1:AUX1_FAST</td>
+      <td>0.998699</td>
+      <td>1.118712e-22</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>59.75</td>
+      <td>1</td>
+      <td>H1:AUX1_FAST</td>
+      <td>0.994909</td>
+      <td>5.587699e-23</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>60.25</td>
+      <td>1</td>
+      <td>H1:AUX1_FAST</td>
+      <td>0.994519</td>
+      <td>5.570859e-23</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>7.25</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.973445</td>
+      <td>1.888851e-21</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>7.00</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.968398</td>
+      <td>2.211076e-21</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>62.25</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.709532</td>
+      <td>2.210663e-23</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>62.50</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.695847</td>
+      <td>1.435894e-23</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>7.50</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.680465</td>
+      <td>2.682833e-22</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>6.75</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.641778</td>
+      <td>5.413037e-22</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>62.00</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.615101</td>
+      <td>7.153501e-24</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>131.25</td>
+      <td>1</td>
+      <td>H1:AUX1_FAST</td>
+      <td>0.482609</td>
+      <td>1.772034e-24</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>203.75</td>
+      <td>1</td>
+      <td>H1:AUX1_FAST</td>
+      <td>0.471606</td>
+      <td>1.572731e-24</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>57.75</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.451528</td>
+      <td>1.428494e-23</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>57.50</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.440484</td>
+      <td>9.442593e-24</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>67.25</td>
+      <td>1</td>
+      <td>H1:AUX2_SLOW</td>
+      <td>0.430697</td>
+      <td>3.624043e-24</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -454,20 +495,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_7_0.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_7_0.png" />
+</div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">result</span>.plot_projection(coherence_threshold=<span class="ansi-green-fg">0.5</span>)
-<span class="ansi-green-fg">      2</span> plt.xlim(<span class="ansi-green-fg">4</span>, <span class="ansi-green-fg">1000</span>)
-<span class="ansi-green-fg">      3</span> plt.show()
-
-<span class="ansi-red-fg">NameError</span>: name &#39;result&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_7_1.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_7_1.png" />
+</div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -479,24 +519,19 @@
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> report_path = <span class="ansi-yellow-bg">result</span>.generate_report(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">bruco_report</span><span class="ansi-yellow-fg">&#34;</span>, coherence_threshold=<span class="ansi-green-fg">0.4</span>)
-<span class="ansi-green-fg">      2</span> report_path
-
-<span class="ansi-red-fg">NameError</span>: name &#39;result&#39; is not defined
+&#39;bruco_report/index.html&#39;
 </pre></div></div>
 </div>
 </section>
 <section id="Section-2:-Advanced-Preprocessing-and-Hypothesis-Testing-(Deep-Dive:-Nonlinear-&amp;-Bilinear)">
 <h3>Section 2: Advanced Preprocessing and Hypothesis Testing (Deep Dive: Nonlinear &amp; Bilinear)<a class="headerlink" href="#Section-2:-Advanced-Preprocessing-and-Hypothesis-Testing-(Deep-Dive:-Nonlinear-&-Bilinear)" title="Link to this heading"></a></h3>
 <p><strong>What we do</strong>: Assume noise that cannot be explained by existing linear correlations and test hypotheses of nonlinear coupling (squared) and modulation (product). <strong>Why it’s important</strong>: Using <code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine</span></code>, you can rapidly test virtual channels without recalculating the target FFT.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
@@ -508,22 +543,7 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> ts_sq = <span class="ansi-yellow-bg">aux1</span>**<span class="ansi-green-fg">2</span>
-<span class="ansi-green-fg">      2</span> ts_sq.name = <span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>aux1.name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">^2</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">      4</span> ts_prod = aux1 * aux2
-
-<span class="ansi-red-fg">NameError</span>: name &#39;aux1&#39; is not defined
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
@@ -536,21 +556,6 @@
 <span class="n">freqs</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">frequencies</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[8]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> engine = <span class="ansi-yellow-bg">FastCoherenceEngine</span>(target, fftlength=fftlength, overlap=overlap)
-<span class="ansi-green-fg">      3</span> coh_linear = engine.compute_coherence(aux1)
-<span class="ansi-green-fg">      4</span> coh_sq = engine.compute_coherence(ts_sq)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;FastCoherenceEngine&#39; is not defined
-</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -570,27 +575,11 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> fig, ax = plt.subplots(figsize=(<span class="ansi-green-fg">12</span>, <span class="ansi-green-fg">6</span>))
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> ax.semilogx(<span class="ansi-yellow-bg">freqs</span>, coh_linear, label=<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Linear: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>aux1.name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      3</span> ax.semilogx(freqs, coh_sq, label=<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Squared: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>ts_sq.name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      4</span> ax.semilogx(freqs, coh_prod, label=<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Product: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>ts_prod.name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;freqs&#39; is not defined
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_12_1.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_12_1.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_12_0.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_12_0.png" />
 </div>
 </div>
 </section>
@@ -641,23 +630,21 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_14_0.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_14_0.png" />
+</div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> target_asd = <span class="ansi-yellow-bg">target</span>.asd(fftlength=fftlength, overlap=overlap)
-<span class="ansi-green-fg">      2</span> target_asd_vals = target_asd.value
-<span class="ansi-green-fg">      4</span> coh_map = {
-<span class="ansi-green-fg">      5</span>     aux1.name: coh_linear,
-<span class="ansi-green-fg">      6</span>     ts_sq.name: coh_sq,
-<span class="ansi-green-fg">      7</span>     ts_prod.name: coh_prod,
-<span class="ansi-green-fg">      8</span> }
-
-<span class="ansi-red-fg">NameError</span>: name &#39;target&#39; is not defined
+Dominant hypothesis: H1:AUX1_FAST
+BNS range (before): 182.48 Mpc
+BNS range (after):  186.24 Mpc
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -709,20 +696,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[11]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> virtual_channels = {
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span>     <span class="ansi-yellow-bg">aux1</span>.name: aux1,
-<span class="ansi-green-fg">      3</span>     ts_sq.name: ts_sq,
-<span class="ansi-green-fg">      4</span>     ts_prod.name: ts_prod,
-<span class="ansi-green-fg">      5</span> }
-<span class="ansi-green-fg">      7</span> culprit_channels = [dominant_label]
-<span class="ansi-green-fg">      8</span> witnesses = TimeSeriesDict({name: virtual_channels[name] <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> name <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> culprit_channels})
-
-<span class="ansi-red-fg">NameError</span>: name &#39;aux1&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_15_0.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_15_0.png" />
+</div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
@@ -751,28 +726,21 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[12]</span><span class="ansi-green-fg">, line 7</span>
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># Overlay original and cleaned data (first 1 second)</span>
-<span class="ansi-green-fg">      6</span> plot_duration = <span class="ansi-green-fg">1.0</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">7</span> <span class="ansi-yellow-bg">target</span>.crop(end=target.t0.value + plot_duration).plot(
-<span class="ansi-green-fg">      8</span>     ax=ax, label=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original</span><span class="ansi-yellow-fg">&#34;</span>, alpha=<span class="ansi-green-fg">0.7</span>
-<span class="ansi-green-fg">      9</span> )  <span style="color: rgb(95,135,135)"># noqa: F821</span>
-<span class="ansi-green-fg">     10</span> cleaned_ts.crop(end=target.t0.value + plot_duration).plot(
-<span class="ansi-green-fg">     11</span>     ax=ax, label=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Cleaned (Bruco)</span><span class="ansi-yellow-fg">&#34;</span>, linestyle=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">--</span><span class="ansi-yellow-fg">&#34;</span>, alpha=<span class="ansi-green-fg">0.8</span>
-<span class="ansi-green-fg">     12</span> )  <span style="color: rgb(95,135,135)"># noqa: F821</span>
-<span class="ansi-green-fg">     14</span> ax.set_title(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Noise Subtraction Result (First </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>plot_duration<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">s)</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;target&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_16_0.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_16_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_16_1.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_16_1.png" />
+</div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_16_1.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_16_1.png" />
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_16_2.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_bruco_16_2.png" />
 </div>
 </div>
 </section>

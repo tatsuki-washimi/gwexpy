@@ -122,7 +122,7 @@
 <li><p><strong>Kendall (Ktau)</strong>: 順位相関（外れ値に強く、ノンパラメトリック）。</p></li>
 <li><p><strong>MIC</strong>: Maximal Information Coefficient（非線形関係に対してロバスト、<code class="docutils literal notranslate"><span class="pre">minepy</span></code>が必要）。</p></li>
 </ul>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -144,84 +144,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 15</span>
-<span class="ansi-green-fg">     12</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
-<span class="ansi-green-fg">     13</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">15</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> PairPlot, Plot
-<span class="ansi-green-fg">     16</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries, TimeSeriesMatrix
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
-</pre></div></div>
 </div>
 <section id="ペアごとの相関">
 <h2>ペアごとの相関<a class="headerlink" href="#ペアごとの相関" title="Link to this heading"></a></h2>
@@ -250,18 +172,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      2</span> t = np.linspace(<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">1000</span>)
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># 線形関係</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> ts_a = <span class="ansi-yellow-bg">TimeSeries</span>(t, dt=<span class="ansi-green-fg">0.01</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">A</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      6</span> ts_b = TimeSeries(t * <span class="ansi-green-fg">2</span> + np.random.normal(<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">1</span>, <span class="ansi-green-fg">1000</span>), dt=<span class="ansi-green-fg">0.01</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">B_Linear</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      8</span> <span style="color: rgb(95,135,135)"># 非線形関係 (正弦波)</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeries&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_3_0.png" />
+</div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -273,19 +185,20 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_4_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_4_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 可視化</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> pair = <span class="ansi-yellow-bg">PairPlot</span>([ts_a, ts_b, ts_c, ts_d], corner=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">      3</span> pair.show()
-
-<span class="ansi-red-fg">NameError</span>: name &#39;PairPlot&#39; is not defined
+&lt;gwexpy.plot.pairplot.PairPlot at 0x75166a1d3800&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -302,28 +215,15 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-相関 A vs B (線形):
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">相関 A vs B (線形):</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">  Pearson: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span class="ansi-yellow-bg">ts_a</span>.pcc(ts_b)<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.3f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">  Kendall: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>ts_a.ktau(ts_b)<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.3f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts_a&#39; is not defined
+相関 A vs B (線形):
+  Pearson: 0.986
+  Kendall: 0.895
+  MIC:     (minepyがありません)
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -340,35 +240,22 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-相関 A vs C (非線形・正弦波):
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">相関 A vs C (非線形・正弦波):</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">  Pearson: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span class="ansi-yellow-bg">ts_a</span>.pcc(ts_c)<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.3f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> (線形相関では構造を捉えきれない)</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">  Kendall: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>ts_a.ktau(ts_c)<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.3f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts_a&#39; is not defined
+相関 A vs C (非線形・正弦波):
+  Pearson: -0.071 (線形相関では構造を捉えきれない)
+  Kendall: -0.053
+  MIC:     (minepyがありません)
 </pre></div></div>
 </div>
 </section>
 <section id="相関ベクトル-(ノイズハンティング)">
 <h2>相関ベクトル (ノイズハンティング)<a class="headerlink" href="#相関ベクトル-(ノイズハンティング)" title="Link to this heading"></a></h2>
 <p>ノイズ源を調査する際、ターゲットチャンネル（例：DARM）と数百の補助チャンネルとの間の相関を確認したいことがよくあります。 <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.correlation_vector</span></code> はこのランキングを効率的に計算します。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
@@ -391,25 +278,6 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 11</span>
-<span class="ansi-green-fg">      8</span> data[<span class="ansi-green-fg">5</span>, <span class="ansi-green-fg">0</span>, :] += target_signal * <span class="ansi-green-fg">5</span>  <span style="color: rgb(95,135,135)"># 強い結合</span>
-<span class="ansi-green-fg">      9</span> data[<span class="ansi-green-fg">12</span>, <span class="ansi-green-fg">0</span>, :] += target_signal**<span class="ansi-green-fg">2</span> * <span class="ansi-green-fg">5</span>  <span style="color: rgb(95,135,135)"># 非線形結合</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> matrix = <span class="ansi-yellow-bg">TimeSeriesMatrix</span>(data, dt=<span class="ansi-green-fg">0.01</span>, channel_names=names)
-<span class="ansi-green-fg">     13</span> <span style="color: rgb(95,135,135)"># ターゲットチャンネル</span>
-<span class="ansi-green-fg">     14</span> target = TimeSeries(
-<span class="ansi-green-fg">     15</span>     target_signal + np.random.normal(<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">0.1</span>, <span class="ansi-green-fg">1000</span>), dt=<span class="ansi-green-fg">0.01</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">TARGET</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">     16</span> )
-
-<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeriesMatrix&#39; is not defined
-</pre></div></div>
-</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -427,29 +295,13 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-MICベクトルを計算中 (Top 5)...
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 7</span>
-<span class="ansi-green-fg">      5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-<span class="ansi-green-fg">      6</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">MICベクトルを計算中 (Top 5)...</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">7</span>     df_mic = <span class="ansi-yellow-bg">matrix</span>.correlation_vector(target, method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">mic</span><span class="ansi-yellow-fg">&#34;</span>, nproc=<span class="ansi-green-fg">2</span>)
-<span class="ansi-green-fg">      8</span>     <span style="color: rgb(0,135,0)">print</span>(df_mic.head(<span class="ansi-green-fg">5</span>))
-<span class="ansi-green-fg">      9</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ImportError</span>:
-
-<span class="ansi-red-fg">NameError</span>: name &#39;matrix&#39; is not defined
+MICベクトルを計算中 (Top 5)...
+minepyがインストールされていないため、MICの例をスキップします。
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -462,27 +314,18 @@ MICベクトルを計算中 (Top 5)...
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Pearsonベクトルを計算中 (Top 5)...
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[8]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Pearsonベクトルを計算中 (Top 5)...</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> df_pcc = <span class="ansi-yellow-bg">matrix</span>.correlation_vector(target, method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">pearson</span><span class="ansi-yellow-fg">&#34;</span>, nproc=<span class="ansi-green-fg">1</span>)
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(df_pcc.head(<span class="ansi-green-fg">5</span>))
-
-<span class="ansi-red-fg">NameError</span>: name &#39;matrix&#39; is not defined
+Pearsonベクトルを計算中 (Top 5)...
+   row  col channel     score
+0    5    0  AUX-05  0.954140
+1    7    0  AUX-07  0.072831
+2    0    0  AUX-00 -0.065749
+3   10    0  AUX-10 -0.061373
+4    9    0  AUX-09 -0.051680
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -505,23 +348,14 @@ Pearsonベクトルを計算中 (Top 5)...
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># ランキングの可視化 (Top 10)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> df_plot = <span class="ansi-yellow-bg">df_pcc</span>.head(<span class="ansi-green-fg">10</span>).iloc[::-<span class="ansi-green-fg">1</span>]  <span style="color: rgb(95,135,135)"># 降順にするために逆転</span>
-<span class="ansi-green-fg">      4</span> plt.figure(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">6</span>))
-<span class="ansi-green-fg">      5</span> plt.barh(df_plot[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">channel</span><span class="ansi-yellow-fg">&#34;</span>], np.abs(df_plot[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">score</span><span class="ansi-yellow-fg">&#34;</span>]), color=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">skyblue</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;df_pcc&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_11_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_11_0.png" />
+</div>
 </div>
 </section>
 <section id="偏相関（共通要因の除去）">
 <h2>偏相関（共通要因の除去）<a class="headerlink" href="#偏相関（共通要因の除去）" title="Link to this heading"></a></h2>
 <p>共通の要因を取り除いて、直接的な結びつきを評価します。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
@@ -543,20 +377,11 @@ Pearsonベクトルを計算中 (Top 5)...
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-corr(x,y): 0.9809075921667307
-partial corr(x,y|z): 0.00441045286024793
-</pre></div></div>
-</div>
 </section>
 <section id="Association-Edges-/-グラフ化">
 <h2>Association Edges / グラフ化<a class="headerlink" href="#Association-Edges-/-グラフ化" title="Link to this heading"></a></h2>
 <p>ターゲット時系列に対して行列の各チャンネルを評価し、エッジを作成します。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
@@ -582,27 +407,10 @@ partial corr(x,y|z): 0.00441045286024793
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-関連エッジ:
-    row  col channel     score source target
-0    0    0       x  1.000000      x      x
-1    2    0       z  0.989968      x      z
-2    1    0       y  0.980908      x      y
-偏相関行列:
- [[1.         0.1216813  0.6444092 ]
- [0.1216813  1.         0.67131295]
- [0.6444092  0.67131295 1.        ]]
-グラフ構築完了
-</pre></div></div>
-</div>
 <section id="可視化:-エッジランキングと偏相関ヒートマップ">
 <h3>可視化: エッジランキングと偏相関ヒートマップ<a class="headerlink" href="#可視化:-エッジランキングと偏相関ヒートマップ" title="Link to this heading"></a></h3>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -625,20 +433,6 @@ partial corr(x,y|z): 0.00441045286024793
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_17_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_17_0.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_17_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_17_1.png" />
-</div>
-</div>
 </section>
 </section>
 <section id="FastMI（実験的）">
@@ -655,8 +449,8 @@ partial corr(x,y|z): 0.00441045286024793
 </ul>
 </li>
 </ul>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># fastMI (copula/probit + FFT-based MI estimator)</span>
@@ -666,21 +460,12 @@ partial corr(x,y|z): 0.00441045286024793
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-fastMI(x,y): 0.08925170168547956
-fastMI(x,z): 0.11320579203180092
-</pre></div></div>
-</div>
 </section>
 <section id="CAGMon-風の-Association-Graph（最小実装）">
 <h2>CAGMon 風の Association Graph（最小実装）<a class="headerlink" href="#CAGMon-風の-Association-Graph（最小実装）" title="Link to this heading"></a></h2>
 <p>エッジリストからグラフを作り、必要なら可視化します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If networkx is available, you can visualize the association graph</span>
@@ -697,14 +482,6 @@ fastMI(x,z): 0.11320579203180092
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Graph plot skipped: No module named &#39;networkx&#39;
-</pre></div></div>
-</div>
 </section>
 </section>
 <section id="高度な統計解析-(Advanced-Statistics)">
@@ -719,7 +496,7 @@ Graph plot skipped: No module named &#39;networkx&#39;
 <section id="非ガウス性ノイズの検出-(Skewness-/-Kurtosis)">
 <h2>非ガウス性ノイズの検出 (Skewness / Kurtosis)<a class="headerlink" href="#非ガウス性ノイズの検出-(Skewness-/-Kurtosis)" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ガウスノイズと非ガウスノイズ（指数分布）の生成</span>
@@ -768,7 +545,7 @@ Note: ガウス分布はSkewness~0, Kurtosis~0 (Fisher定義) になります。
 <h2>非線形依存性の検出 (Distance Correlation)<a class="headerlink" href="#非線形依存性の検出-(Distance-Correlation)" title="Link to this heading"></a></h2>
 <p>先ほどの正弦波データ(<code class="docutils literal notranslate"><span class="pre">ts_c</span></code>)と線形データ(<code class="docutils literal notranslate"><span class="pre">ts_a</span></code>)の関係をdCorで見てみましょう。Pearson相関では捉えられなかった関係が検出できます。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -787,15 +564,8 @@ Note: ガウス分布はSkewness~0, Kurtosis~0 (Fisher定義) になります。
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[16]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span>     dcor_val = <span class="ansi-yellow-bg">ts_a</span>.distance_correlation(ts_c)
-<span class="ansi-green-fg">      3</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Distance Correlation (A vs C): </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>dcor_val<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.3f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      4</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Pearson Correlation  (A vs C): </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>ts_a.pcc(ts_c)<span class="ansi-bold" style="color: rgb(175,95,135)">:</span><span class="ansi-yellow-fg">.3f</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts_a&#39; is not defined
+Distance Correlation (A vs C): 0.381
+Pearson Correlation  (A vs C): -0.071
 </pre></div></div>
 </div>
 </section>
@@ -803,7 +573,7 @@ Note: ガウス分布はSkewness~0, Kurtosis~0 (Fisher定義) になります。
 <h2>因果関係の推定 (Granger Causality)<a class="headerlink" href="#因果関係の推定-(Granger-Causality)" title="Link to this heading"></a></h2>
 <p>ある時系列の過去の値が、別の時系列の未来の値を予測するのに役立つかどうかを検定します。</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 因果関係のあるデータを生成 (X -&gt; Y)</span>
@@ -843,15 +613,16 @@ Note: ガウス分布はSkewness~0, Kurtosis~0 (Fisher定義) になります。
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-statsmodelsパッケージがインストールされていません。pip install statsmodels でインストールしてください。
+Granger Causality X -&gt; Y (p-value): 0.0000 (Significant)
+Granger Causality Y -&gt; X (p-value): 0.0907
 </pre></div></div>
 </div>
 </section>
 <section id="高速相互情報量推定-(fastmi)">
 <h2>高速相互情報量推定 (fastmi)<a class="headerlink" href="#高速相互情報量推定-(fastmi)" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">fastmi</span></code> は、コピュラ（Copula）定式化、プロビット（Probit）変換、およびFFTベースの密度推定に基づく高速な相互情報量（Mutual Information）推定器です。Pearson相関が見逃す可能性のある複雑な非線形依存関係を捉えることができます。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mi_xy</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">fastmi</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">grid_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
@@ -861,24 +632,6 @@ statsmodelsパッケージがインストールされていません。pip insta
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;相互情報量 (x, z): </span><span class="si">{</span><span class="n">mi_xz</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> nats&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-相互情報量 (x, y): 0.0195 nats
-相互情報量 (x, z): 0.0000 nats
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/runner/work/gwexpy/gwexpy/gwexpy/timeseries/_statistics.py:260: UserWarning: Sample rates do not match. Resampling &#39;other&#39; to match &#39;self&#39;.
-  warnings.warn(
-</pre></div></div>
 </div>
 </section>
 </section>

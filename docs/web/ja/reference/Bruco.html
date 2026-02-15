@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -103,7 +105,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="bruco-brute-force-coherence">
+  <section class="tex2jax_ignore mathjax_ignore" id="bruco-brute-force-coherence">
 <h1>Bruco (Brute force coherence)<a class="headerlink" href="#bruco-brute-force-coherence" title="Link to this heading"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">Bruco</span></code> は、ターゲットチャンネル（重力波チャンネルなど）と多数の補助チャンネルとの間の**「総当たりコヒーレンス（Brute force coherence）」**を計算し、ノイズ源を特定するためのツールです。
 指定された周波数帯域、時間帯において、ターゲットと高いコヒーレンスを持つ補助チャンネルをランキング形式で提示し、そのノイズ寄与（Noise Projection）を推定します。</p>
@@ -349,8 +351,8 @@
 <li><p><strong>デフォルト動作</strong>: <code class="docutils literal notranslate"><span class="pre">channels</span></code> も <code class="docutils literal notranslate"><span class="pre">ranks</span></code> も指定しない場合、寄与度の高い上位チャンネルを自動選択して描画します。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code>: 特定のチャンネル名を指定して描画します。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ranks</span></code>: 特定のランク（0=最大）を指定して描画します（旧動作）。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">asd=True</span></code>: 振幅コヒーレンス ($\sqrt{C_{xy}^2}$) を表示。</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">asd=False</span></code>: 二乗コヒーレンス ($C_{xy}^2$) を表示。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asd=True</span></code>: 振幅コヒーレンス (<span class="math notranslate nohighlight">\(\sqrt{C_{xy}^2}\)</span>) を表示。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asd=False</span></code>: 二乗コヒーレンス (<span class="math notranslate nohighlight">\(C_{xy}^2\)</span>) を表示。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">coherence_threshold</span></code>: 指定した値に閾値ラインを表示します（<code class="docutils literal notranslate"><span class="pre">asd</span></code> 設定に合わせて自動変換されます）。</p></li>
 </ul>
 <p><strong><code class="docutils literal notranslate"><span class="pre">plot_projection(self,</span> <span class="pre">asd=True,</span> <span class="pre">coherence_threshold=0.0,</span> <span class="pre">channels=None,</span> <span class="pre">ranks=None)</span></code></strong></p>

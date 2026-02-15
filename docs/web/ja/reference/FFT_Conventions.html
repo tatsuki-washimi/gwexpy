@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -103,7 +105,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="fft">
+  <section class="tex2jax_ignore mathjax_ignore" id="fft">
 <h1>FFTの仕様とコンベンション<a class="headerlink" href="#fft" title="Link to this heading"></a></h1>
 <p>このドキュメントでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> における高速フーリエ変換（FFT）の数学的定義、正規化（Normalization）、および符号の定義について詳述します。</p>
 <section id="fft-fft-time">
@@ -111,7 +113,7 @@
 <p>時間方向のFFTは時間軸（軸0）に対して適用されます。これは <code class="docutils literal notranslate"><span class="pre">gwpy</span></code> および標準的な重力波データ解析の手法との互換性を重視して設計されています。</p>
 <section id="normalization">
 <h3>正規化 (Normalization)<a class="headerlink" href="#normalization" title="Link to this heading"></a></h3>
-<p>順変換において <strong>$1/N$ 正規化</strong> が適用されます。これにより、正弦波 $A \sin(\omega t)$ の振幅は、得られた振幅スペクトル上で $A$ として現れます（片側スペクトルの補正係数考慮後）。
+<p>順変換において <strong><span class="math notranslate nohighlight">\(1/N\)</span> 正規化</strong> が適用されます。これにより、正弦波 <span class="math notranslate nohighlight">\(A \sin(\omega t)\)</span> の振幅は、得られた振幅スペクトル上で <span class="math notranslate nohighlight">\(A\)</span> として現れます（片側スペクトルの補正係数考慮後）。
 逆変換（<code class="docutils literal notranslate"><span class="pre">ifft_time</span></code>）はこの正規化を解除します。</p>
 </section>
 <section id="id1">
@@ -119,14 +121,14 @@
 <ul class="simple">
 <li><p><strong>タイプ</strong>: 片側スペクトル (<code class="docutils literal notranslate"><span class="pre">rfft</span></code>)。非負の周波数成分のみが返されます。</p></li>
 <li><p><strong>係数補正</strong>: 全パワーを維持するため、DC（直流）成分とナイキスト成分を除くすべてのビンが 2 倍されます。</p></li>
-<li><p><strong>周波数軸</strong>: $f = [0, 1/2dt]$。</p></li>
+<li><p><strong>周波数軸</strong>: <span class="math notranslate nohighlight">\(f = [0, 1/2dt]\)</span>。</p></li>
 </ul>
 </section>
 <section id="sign-convention">
 <h3>符号の定義 (Sign Convention)<a class="headerlink" href="#sign-convention" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>順変換 (Forward)</strong>: $X[k] = \frac{1}{N} \sum_{n=0}^{N-1} x[n] e^{-i 2\pi k n / N}$</p></li>
-<li><p><strong>逆変換 (Inverse)</strong>: $x[n] = \sum_{k=0}^{N/2} X[k] e^{i 2\pi k n / N}$ （ビンの重み付けを考慮）</p></li>
+<li><p><strong>順変換 (Forward)</strong>: <span class="math notranslate nohighlight">\(X[k] = \frac{1}{N} \sum_{n=0}^{N-1} x[n] e^{-i 2\pi k n / N}\)</span></p></li>
+<li><p><strong>逆変換 (Inverse)</strong>: <span class="math notranslate nohighlight">\(x[n] = \sum_{k=0}^{N/2} X[k] e^{i 2\pi k n / N}\)</span> （ビンの重み付けを考慮）</p></li>
 </ul>
 </section>
 </section>
@@ -137,21 +139,21 @@
 <section id="id2">
 <h3>正規化 (Normalization)<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p><strong>正規化なし</strong>。順変換では係数の適用を行わず、標準的な <code class="docutils literal notranslate"><span class="pre">numpy.fft.fftn</span></code> の挙動に従います。
-逆変換（<code class="docutils literal notranslate"><span class="pre">ifft_space</span></code>）において $1/N$ 正規化が適用されます。</p>
+逆変換（<code class="docutils literal notranslate"><span class="pre">ifft_space</span></code>）において <span class="math notranslate nohighlight">\(1/N\)</span> 正規化が適用されます。</p>
 </section>
 <section id="id3">
 <h3>スペクトルの定義<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>タイプ</strong>: 両側スペクトル。正負両方の波数成分が返されます。</p></li>
-<li><p><strong>波数軸</strong>: デフォルトでは <strong>角波数 (Angular wavenumber)</strong> $k = 2\pi / \lambda$ が生成されます。</p></li>
+<li><p><strong>波数軸</strong>: デフォルトでは <strong>角波数 (Angular wavenumber)</strong> <span class="math notranslate nohighlight">\(k = 2\pi / \lambda\)</span> が生成されます。</p></li>
 <li><p><strong>配列の順序</strong>: ゼロ周波数（DC）成分がインデックス 0 に配置されます（fftshiftは行われません）。可視化の際に中心化が必要な場合は、外部で <code class="docutils literal notranslate"><span class="pre">numpy.fft.fftshift</span></code> を使用してください。</p></li>
 </ul>
 </section>
 <section id="id4">
 <h3>符号の定義 (Sign Convention)<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>順変換 (Forward)</strong>: $X[\mathbf{k}] = \sum_{\mathbf{n}} x[\mathbf{n}] e^{-i 2\pi \sum k_j n_j / N_j}$</p></li>
-<li><p><strong>逆変換 (Inverse)</strong>: $x[n] = \frac{1}{\prod N_j} \sum_{\mathbf{k}} X[\mathbf{k}] e^{i 2\pi \sum k_j n_j / N_j}$</p></li>
+<li><p><strong>順変換 (Forward)</strong>: <span class="math notranslate nohighlight">\(X[\mathbf{k}] = \sum_{\mathbf{n}} x[\mathbf{n}] e^{-i 2\pi \sum k_j n_j / N_j}\)</span></p></li>
+<li><p><strong>逆変換 (Inverse)</strong>: <span class="math notranslate nohighlight">\(x[n] = \frac{1}{\prod N_j} \sum_{\mathbf{k}} X[\mathbf{k}] e^{i 2\pi \sum k_j n_j / N_j}\)</span></p></li>
 </ul>
 </section>
 </section>
@@ -162,14 +164,14 @@
 <section id="scaling">
 <h3>スケーリング (Scaling)<a class="headerlink" href="#scaling" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>Density</strong>: 単位周波数/波数分解能あたりのパワーを返します（$V^2 / \text{Hz}$ または $V^2 / [\text{unit}^{-1}]$）。</p></li>
-<li><p><strong>Spectrum</strong>: 各ビンにおけるトータルのパワーを返します（$V^2$）。</p></li>
+<li><p><strong>Density</strong>: 単位周波数/波数分解能あたりのパワーを返します（<span class="math notranslate nohighlight">\(V^2 / \text{Hz}\)</span> または <span class="math notranslate nohighlight">\(V^2 / [\text{unit}^{-1}]\)</span>）。</p></li>
+<li><p><strong>Spectrum</strong>: 各ビンにおけるトータルのパワーを返します（<span class="math notranslate nohighlight">\(V^2\)</span>）。</p></li>
 </ul>
 </section>
 <section id="id5">
 <h3>波数に関する注意<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">fft_space</span></code> が角波数 ($k = 2\pi/\lambda$) を使用するのに対し、<code class="docutils literal notranslate"><span class="pre">spectral_density(axis='x')</span></code> はデフォルトで <strong>角速度ではない波数</strong> ($f_k = 1/\lambda$) を生成します（<code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code> の仕様に準拠）。
-角波数に変換する場合は、得られた軸に $2\pi$ を乗じてください。</p>
+<p><code class="docutils literal notranslate"><span class="pre">fft_space</span></code> が角波数 (<span class="math notranslate nohighlight">\(k = 2\pi/\lambda\)</span>) を使用するのに対し、<code class="docutils literal notranslate"><span class="pre">spectral_density(axis='x')</span></code> はデフォルトで <strong>角速度ではない波数</strong> (<span class="math notranslate nohighlight">\(f_k = 1/\lambda\)</span>) を生成します（<code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code> の仕様に準拠）。
+角波数に変換する場合は、得られた軸に <span class="math notranslate nohighlight">\(2\pi\)</span> を乗じてください。</p>
 </section>
 </section>
 <hr class="docutils" />
@@ -180,32 +182,32 @@
 <tr class="row-odd"><th class="head text-left"><p>メソッド</p></th>
 <th class="head text-left"><p>正規化 (順変換)</p></th>
 <th class="head text-left"><p>ドメイン</p></th>
-<th class="head text-left"><p>符号 ($ikx$)</p></th>
+<th class="head text-left"><p>符号 (<span class="math notranslate nohighlight">\(ikx\)</span>)</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">fft_time</span></code></p></td>
-<td class="text-left"><p>$1/N$</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(1/N\)</span></p></td>
 <td class="text-left"><p>片側 (One-sided)</p></td>
 <td class="text-left"><p>負 (Negative)</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ifft_time</span></code></p></td>
-<td class="text-left"><p>$N$</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(N\)</span></p></td>
 <td class="text-left"><p>片側 (One-sided)</p></td>
 <td class="text-left"><p>正 (Positive)</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">fft_space</span></code></p></td>
-<td class="text-left"><p>$1$</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(1\)</span></p></td>
 <td class="text-left"><p>両側 (Two-sided)</p></td>
 <td class="text-left"><p>負 (Negative)</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ifft_space</span></code></p></td>
-<td class="text-left"><p>$1/N$</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(1/N\)</span></p></td>
 <td class="text-left"><p>両側 (Two-sided)</p></td>
 <td class="text-left"><p>正 (Positive)</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">spectral_density</span></code></p></td>
-<td class="text-left"><p>Welch / $1/N^2$</p></td>
+<td class="text-left"><p>Welch / <span class="math notranslate nohighlight">\(1/N^2\)</span></p></td>
 <td class="text-left"><p>片側 (One-sided)</p></td>
 <td class="text-left"><p>N/A (絶対値2乗)</p></td>
 </tr>

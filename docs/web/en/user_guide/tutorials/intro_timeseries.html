@@ -130,8 +130,11 @@
 <li><p>Function Fitting (fit)</p></li>
 <li><p>Interoperability (Pandas, Xarray, Torch, and more)</p></li>
 </ol>
-<p>## 1. Environment SetupFirst, we import the necessary libraries and generate sample data for demonstration.</p>
-<div class="nbinput docutils container">
+</section>
+<section id="1.-Environment-Setup">
+<h2>1. Environment Setup<a class="headerlink" href="#1.-Environment-Setup" title="Link to this heading"></a></h2>
+<p>First, we import the necessary libraries and generate sample data for demonstration.</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -167,88 +170,13 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
-<span class="ansi-green-fg">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">astropy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> units <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> u
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">noise</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">wave</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> chirp, exponential, gaussian, sine
-<span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Plot
-<span class="ansi-green-fg">      7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
-</pre></div></div>
-</div>
-<p>## 2. Signal Processing and Demodulation<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> integrates Hilbert transforms, envelope calculations, instantaneous frequency computation, and demodulation functions like lock-in amplifiers.</p>
-<section id="Hilbert-Transform-and-EnvelopeUse-hilbert-and-envelope.">
-<h3>Hilbert Transform and EnvelopeUse <code class="docutils literal notranslate"><span class="pre">hilbert</span></code> and <code class="docutils literal notranslate"><span class="pre">envelope</span></code>.<a class="headerlink" href="#Hilbert-Transform-and-EnvelopeUse-hilbert-and-envelope." title="Link to this heading"></a></h3>
+</section>
+<section id="2.-Signal-Processing-and-Demodulation">
+<h2>2. Signal Processing and Demodulation<a class="headerlink" href="#2.-Signal-Processing-and-Demodulation" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> integrates Hilbert transforms, envelope calculations, instantaneous frequency computation, and demodulation functions like lock-in amplifiers.</p>
+<section id="Hilbert-Transform-and-Envelope">
+<h3>Hilbert Transform and Envelope<a class="headerlink" href="#Hilbert-Transform-and-Envelope" title="Link to this heading"></a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">hilbert</span></code> and <code class="docutils literal notranslate"><span class="pre">envelope</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -275,21 +203,13 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Calculate the analytic signal</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> ts_analytic = <span class="ansi-yellow-bg">ts2</span>.hilbert()
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Calculate the envelope</span>
-<span class="ansi-green-fg">      4</span> ts_env = ts2.envelope()
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts2&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_5_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_5_0.png" />
+</div>
 </div>
 </section>
-<section id="Instantaneous-Phase-and-Instantaneous-FrequencyUse-instantaneous_phase-and-instantaneous_frequency.-You-can-specify-phase-unwrapping-(unwrap)-and-degree-units-(deg).">
-<h3>Instantaneous Phase and Instantaneous FrequencyUse <code class="docutils literal notranslate"><span class="pre">instantaneous_phase</span></code> and <code class="docutils literal notranslate"><span class="pre">instantaneous_frequency</span></code>. You can specify phase unwrapping (<code class="docutils literal notranslate"><span class="pre">unwrap</span></code>) and degree units (<code class="docutils literal notranslate"><span class="pre">deg</span></code>).<a class="headerlink" href="#Instantaneous-Phase-and-Instantaneous-FrequencyUse-instantaneous_phase-and-instantaneous_frequency.-You-can-specify-phase-unwrapping-(unwrap)-and-degree-units-(deg)." title="Link to this heading"></a></h3>
+<section id="Instantaneous-Phase-and-Instantaneous-Frequency">
+<h3>Instantaneous Phase and Instantaneous Frequency<a class="headerlink" href="#Instantaneous-Phase-and-Instantaneous-Frequency" title="Link to this heading"></a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">instantaneous_phase</span></code> and <code class="docutils literal notranslate"><span class="pre">instantaneous_frequency</span></code>. You can specify phase unwrapping (<code class="docutils literal notranslate"><span class="pre">unwrap</span></code>) and degree units (<code class="docutils literal notranslate"><span class="pre">deg</span></code>).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -315,21 +235,13 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Instantaneous phase (unwrap=True to remove phase jumps)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> phase_rad = <span class="ansi-yellow-bg">ts2</span>.instantaneous_phase(unwrap=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">      3</span> phase_deg = ts2.instantaneous_phase(deg=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, unwrap=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># Instantaneous frequency</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts2&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_7_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_7_0.png" />
+</div>
 </div>
 </section>
-<section id="Mixing-and-Demodulation-(Mix-down,-Baseband,-Lock-in)Functions-for-extracting-specific-frequency-components-or-bringing-them-down-to-baseband.">
-<h3>Mixing and Demodulation (Mix-down, Baseband, Lock-in)Functions for extracting specific frequency components or bringing them down to baseband.<a class="headerlink" href="#Mixing-and-Demodulation-(Mix-down,-Baseband,-Lock-in)Functions-for-extracting-specific-frequency-components-or-bringing-them-down-to-baseband." title="Link to this heading"></a></h3>
+<section id="Mixing-and-Demodulation-(Mix-down,-Baseband,-Lock-in)">
+<h3>Mixing and Demodulation (Mix-down, Baseband, Lock-in)<a class="headerlink" href="#Mixing-and-Demodulation-(Mix-down,-Baseband,-Lock-in)" title="Link to this heading"></a></h3>
+<p>Functions for extracting specific frequency components or bringing them down to baseband.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -362,24 +274,42 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 1. mix_down: Demodulate at a specific frequency f0 (becomes a complex signal)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> ts_mixed = <span class="ansi-yellow-bg">ts1</span>.mix_down(f0=<span class="ansi-green-fg">10</span>)
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># 2. baseband: Execute demodulation + lowpass + resampling in one step</span>
-<span class="ansi-green-fg">      5</span> ts_base = ts1.baseband(f0=<span class="ansi-green-fg">10</span>, lowpass=<span class="ansi-green-fg">5</span>, output_rate=<span class="ansi-green-fg">20</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
+TimeSeries([1.05146125, 0.93515115, 1.1571862 , 1.01916777,
+            1.15412904, 1.1008706 , 0.85834769, 0.88033374,
+            1.08783366, 0.87159218, 1.06715813, 1.04814836,
+            1.07399381, 0.93205288, 0.9752016 , 0.92328186,
+            1.05052892, 1.02439264, 0.92683807, 1.13292057,
+            0.93742299, 0.97250589, 0.99723393, 1.20223442,
+            1.0408506 , 1.03403373, 1.04734119, 0.92552995,
+            0.95790515, 1.03654322, 1.08643881, 0.7566955 ,
+            1.21079807, 0.94820694, 1.12099745, 0.9277053 ,
+            0.83477748, 0.96455117, 0.97393424, 0.95680605,
+            1.04185432, 1.2699639 , 0.93476874, 0.90266272,
+            1.00481632, 1.00267488, 1.08861342, 1.05680682,
+            0.81118018, 0.98243006]
+           unit: V,
+           t0: 0.0 s,
+           dt: 0.1 s,
+           name: Sensor 1,
+           channel: None)
 </pre></div></div>
 </div>
-<p>## 3. Spectral Analysis and CorrelationWhile inheriting GWpy’s functionality, <code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> FFT for transient signals and transfer function calculation via direct FFT ratio have been added.</p>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_9_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_9_1.png" />
+</div>
+</div>
 </section>
+</section>
+<section id="3.-Spectral-Analysis-and-CorrelationWhile-inheriting-GWpy's-functionality,-mode=%22transient%22-FFT-for-transient-signals-and-transfer-function-calculation-via-direct-FFT-ratio-have-been-added.">
+<h2>3. Spectral Analysis and CorrelationWhile inheriting GWpy’s functionality, <code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> FFT for transient signals and transfer function calculation via direct FFT ratio have been added.<a class="headerlink" href="#3.-Spectral-Analysis-and-CorrelationWhile-inheriting-GWpy's-functionality,-mode=%22transient%22-FFT-for-transient-signals-and-transfer-function-calculation-via-direct-FFT-ratio-have-been-added." title="Link to this heading"></a></h2>
 <section id="Extended-FFTUsing-mode=%22transient%22-enables-zero-padding,-adjustment-to-fast-lengths,-and-individual-left/right-padding-specifications.">
 <h3>Extended FFTUsing <code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> enables zero-padding, adjustment to fast lengths, and individual left/right padding specifications.<a class="headerlink" href="#Extended-FFTUsing-mode=%22transient%22-enables-zero-padding,-adjustment-to-fast-lengths,-and-individual-left/right-padding-specifications." title="Link to this heading"></a></h3>
 <div class="nbinput docutils container">
@@ -410,20 +340,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Standard FFT (GWpy compatible)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> fs_gwpy = <span class="ansi-yellow-bg">ts1</span>.fft()
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Transient mode:</span>
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># Specify padding amount with pad_left/right。nfft_mode=&#34;next_fast_len&#34; でAdjust to computationally efficient length。</span>
-<span class="ansi-green-fg">      6</span> fs_trans = ts1.fft(
-<span class="ansi-green-fg">      7</span>     mode=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">transient</span><span class="ansi-yellow-fg">&#34;</span>, pad_left=<span class="ansi-green-fg">0.5</span>, pad_right=<span class="ansi-green-fg">0.5</span>, nfft_mode=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">next_fast_len</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">      8</span> )
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_12_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_12_0.png" />
+</div>
 </div>
 </section>
 <section id="Transfer-Function-and-Cross-Correlation-(xcorr)With-transfer_function,-you-can-choose-not-only-the-Welch-method-(mode=%22steady%22)-but-also-direct-FFT-ratio-(mode=%22transient%22).">
@@ -461,19 +379,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Calculate transfer function (transfer function of Chirp Signal with respect to Sensor 1)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> tf_welch = <span class="ansi-yellow-bg">ts2</span>.transfer_function(ts1, fftlength=<span class="ansi-green-fg">1</span>)
-<span class="ansi-green-fg">      3</span> tf_fft = ts2.transfer_function(
-<span class="ansi-green-fg">      4</span>     ts1, mode=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">transient</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">      5</span> )  <span style="color: rgb(95,135,135)"># Full-span FFT ratio (useful for transient response analysis)</span>
-<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># Cross-correlation (xcorr)</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts2&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_14_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_14_0.png" />
+</div>
 </div>
 </section>
 <section id="STLT-(Short-Time-Laplace-Transform)STLT-(Short-Time-Laplace-Transform)-is-a-transform-for-extracting-local-structures-that-change-over-time-in-a-signal.In-gwexpy,-the-STLT-result-is-a-3D-transform-with-axes-(time-×-sigma-×-frequency),-represented-by-TimePlaneTransform-/-LaplaceGram.Below-is-an-example-of-calculating-STLT-using-the-stlt-method-and-extracting-a-slice-(Plane2D)-at-a-specific-time.This-example-also-demonstrates-specifying-frequencies-(Hz)-to-evaluate-STLT-at-arbitrary-frequency-points.">
@@ -516,17 +423,14 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 7</span>
-<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Plot
-<span class="ansi-green-fg">      6</span> t = np.linspace(<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">1000</span>)
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">7</span> data = <span class="ansi-yellow-bg">TimeSeries</span>(np.sin(<span class="ansi-green-fg">2</span> * np.pi * <span class="ansi-green-fg">1</span> * t), times=t * u.s, unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">V</span><span class="ansi-yellow-fg">&#34;</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Demo Data</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      9</span> <span style="color: rgb(95,135,135)"># STLT</span>
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># stride: time step, window: analysis window length</span>
-<span class="ansi-green-fg">     11</span> freqs = np.array([<span class="ansi-green-fg">0.5</span>, <span class="ansi-green-fg">1.0</span>, <span class="ansi-green-fg">1.5</span>])  <span style="color: rgb(95,135,135)"># Hz</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeries&#39; is not defined
+Kind: stlt
+Shape: (17, 1, 3) (Time x Sigma x Frequency)
+Time Axis: 17 steps
+Sigma Axis: 1 bins
+Frequency Axis: 3 bins
+Plane at 5.0s shape: (1, 3)
+Axis 1: sigma
+Axis 2: frequency
 </pre></div></div>
 </div>
 </section>
@@ -588,15 +492,24 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-HHT Error: name &#39;ts2&#39; is not defined
+Extracted IMFs: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#39;]
 </pre></div></div>
 </div>
-<p>## 5. Statistics and PreprocessingMissing value imputation, standardization, ARIMA models, Hurst exponent, and rolling statistics are available as TimeSeries methods.</p>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_18_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_18_1.png" />
+</div>
+</div>
+</section>
+<section id="5.-Statistics-and-PreprocessingMissing-value-imputation,-standardization,-ARIMA-models,-Hurst-exponent,-and-rolling-statistics-are-available-as-TimeSeries-methods.">
+<h2>5. Statistics and PreprocessingMissing value imputation, standardization, ARIMA models, Hurst exponent, and rolling statistics are available as TimeSeries methods.<a class="headerlink" href="#5.-Statistics-and-PreprocessingMissing-value-imputation,-standardization,-ARIMA-models,-Hurst-exponent,-and-rolling-statistics-are-available-as-TimeSeries-methods." title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
@@ -629,17 +542,8 @@ HHT Error: name &#39;ts2&#39; is not defined
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Test data with missing values</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> ts_nan = <span class="ansi-yellow-bg">ts1</span>.copy()
-<span class="ansi-green-fg">      3</span> ts_nan.value[<span class="ansi-green-fg">100</span>:<span class="ansi-green-fg">150</span>] = np.nan
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># 1. impute: Missing value imputation (interpolation, etc.)</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_20_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_20_0.png" />
+</div>
 </div>
 <section id="Peak-Detection-(Find-Peaks)Wraps-scipy.signal.find_peaks-to-detect-peaks-in-time-series-data.">
 <h3>Peak Detection (Find Peaks)Wraps <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> to detect peaks in time series data.<a class="headerlink" href="#Peak-Detection-(Find-Peaks)Wraps-scipy.signal.find_peaks-to-detect-peaks-in-time-series-data." title="Link to this heading"></a></h3>
@@ -676,25 +580,27 @@ HHT Error: name &#39;ts2&#39; is not defined
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 6</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Peak Detection (Find Peaks)</span>
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># height, threshold, distance, prominence, width such asCan specify parameters such as</span>
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Can also specify thresholds with units</span>
-<span class="ansi-green-fg">      4</span>
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># ts2 (Chirp + Sine) Find peaks in</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">6</span> peaks, props = <span class="ansi-yellow-bg">ts2</span>.find_peaks(height=<span class="ansi-green-fg">0.0</span>, distance=<span class="ansi-green-fg">50</span>)
-<span class="ansi-green-fg">      8</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Found </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">len</span>(peaks)<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> peaks</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      9</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">len</span>(peaks) &gt; <span class="ansi-green-fg">0</span>:
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts2&#39; is not defined
+Found 9 peaks
+First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
+            0.81881855]
+           unit: V,
+           t0: 0.5 s,
+           dt: 0.5 s,
+           name: Chirp Signal_peaks,
+           channel: None)
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_22_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_22_1.png" />
+</div>
 </div>
 </section>
 <section id="ARIMA-Model-and-Hurst-ExponentNote:-These-features-require-libraries-such-as-statsmodels-and-hurst.">
@@ -761,14 +667,19 @@ HHT Error: name &#39;ts2&#39; is not defined
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_24_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_24_0.png" />
+</div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-ARIMA skipping: name &#39;ts1&#39; is not defined
-Hurst skipping: name &#39;ts1&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_24_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_24_1.png" />
+</div>
 </div>
 </section>
 <section id="Rolling-StatisticsSimilar-to-Pandas,-rolling_mean,-std,-median,-min,-max-are-available.">
@@ -810,19 +721,13 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[12]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> rw = <span class="ansi-green-fg">0.5</span> * u.s  <span style="color: rgb(95,135,135)"># 0.5 second window</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> rmean = <span class="ansi-yellow-bg">ts1</span>.rolling_mean(rw)
-<span class="ansi-green-fg">      3</span> rstd = ts1.rolling_std(rw)
-<span class="ansi-green-fg">      4</span> rmed = ts1.rolling_median(rw)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_26_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_26_0.png" />
 </div>
-<p>## 6. Resampling and ReindexingThe <code class="docutils literal notranslate"><span class="pre">asfreq</span></code> method allows assignment to a fixed grid, and the <code class="docutils literal notranslate"><span class="pre">resample</span></code> method enables “time bin aggregation”.</p>
+</div>
+</section>
+</section>
+<section id="6.-Resampling-and-ReindexingThe-asfreq-method-allows-assignment-to-a-fixed-grid,-and-the-resample-method-enables-%22time-bin-aggregation%22.">
+<h2>6. Resampling and ReindexingThe <code class="docutils literal notranslate"><span class="pre">asfreq</span></code> method allows assignment to a fixed grid, and the <code class="docutils literal notranslate"><span class="pre">resample</span></code> method enables “time bin aggregation”.<a class="headerlink" href="#6.-Resampling-and-ReindexingThe-asfreq-method-allows-assignment-to-a-fixed-grid,-and-the-resample-method-enables-%22time-bin-aggregation%22." title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
@@ -834,21 +739,21 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.legend.Legend at 0x70ba20c93c50&gt;
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[13]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 1. asfreq: Reindex with Pandas-like naming conventions (&#39;50ms&#39; など)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> ts_reindexed = <span class="ansi-yellow-bg">ts1</span>.asfreq(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">50ms</span><span class="ansi-yellow-fg">&#34;</span>, method=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">pad</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      3</span> Plot(ts1, ts_reindexed)
-<span class="ansi-green-fg">      4</span> plt.legend([<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">.asfreq(</span><span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">50ms</span><span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">, method=</span><span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">pad</span><span class="ansi-yellow-fg">&#39;</span><span class="ansi-yellow-fg">)</span><span class="ansi-yellow-fg">&#34;</span>])
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_28_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_28_1.png" />
+</div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
@@ -884,20 +789,9 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[14]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 2. resample:</span>
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># If you specify a number (10Hz) , signal processing resampling (GWpy standard)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> ts_sig = <span class="ansi-yellow-bg">ts1</span>.resample(<span class="ansi-green-fg">10</span>)
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># If you specify a string (&#39;200ms&#39;) , statistics for each time bin (new feature)</span>
-<span class="ansi-green-fg">      5</span> ts_binned = ts1.resample(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">200ms</span><span class="ansi-yellow-fg">&#34;</span>)  <span style="color: rgb(95,135,135)"># Default is mean</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_29_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_29_0.png" />
 </div>
-</section>
+</div>
 </section>
 <section id="7.-Function-Fittinggwexpy-provides-powerful-fitting-functionality-based-on-iminuit.-To-avoid-polluting-GWpy's-original-classes,-the-.fit()-method-is-opt-in.">
 <h2>7. Function Fitting<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides powerful fitting functionality based on <code class="docutils literal notranslate"><span class="pre">iminuit</span></code>. To avoid polluting GWpy’s original classes, the <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> method is opt-in.<a class="headerlink" href="#7.-Function-Fittinggwexpy-provides-powerful-fitting-functionality-based-on-iminuit.-To-avoid-polluting-GWpy's-original-classes,-the-.fit()-method-is-opt-in." title="Link to this heading"></a></h2>
@@ -929,25 +823,51 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[15]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fitting</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">models</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> damped_oscillation
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Fit with damped oscillation model (pass function directly)</span>
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Initial values: A=0.5, tau=0.5, f=15, phi=0</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> result = <span class="ansi-yellow-bg">data</span>.fit(damped_oscillation, A=<span class="ansi-green-fg">0.5</span>, tau=<span class="ansi-green-fg">0.5</span>, f=<span class="ansi-green-fg">15</span>, phi=<span class="ansi-green-fg">0</span>)
-<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># Display result (iminuit format)</span>
-<span class="ansi-green-fg">      8</span> <span style="color: rgb(0,135,0)">print</span>(result)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;data&#39; is not defined
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                Migrad                                   │
+├──────────────────────────────────┬──────────────────────────────────────┤
+│ FCN = 0.0005703 (χ²/ndof = 0.0)  │              Nfcn = 324              │
+│ EDM = 0.000176 (Goal: 0.0002)    │                                      │
+├──────────────────────────────────┼──────────────────────────────────────┤
+│          Valid Minimum           │   Below EDM threshold (goal x 10)    │
+├──────────────────────────────────┼──────────────────────────────────────┤
+│      No parameters at limit      │           Below call limit           │
+├──────────────────────────────────┼──────────────────────────────────────┤
+│             Hesse ok             │         Covariance accurate          │
+└──────────────────────────────────┴──────────────────────────────────────┘
+┌───┬──────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐
+│   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
+├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
+│ 0 │ A    │   1.00    │   0.06    │            │            │         │         │       │
+│ 1 │ tau  │     0     │  0.06e6   │            │            │         │         │       │
+│ 2 │ f    │  1.0000   │  0.0025   │            │            │         │         │       │
+│ 3 │ phi  │   -0.00   │   0.09    │            │            │         │         │       │
+└───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
+┌─────┬─────────────────────────────────────────────────────┐
+│     │            A          tau            f          phi │
+├─────┼─────────────────────────────────────────────────────┤
+│   A │      0.00354 -2.4033831e3         3e-6      -0.0001 │
+│ tau │ -2.4033831e3     3.78e+09    -8.714e-3       38.287 │
+│   f │         3e-6    -8.714e-3     6.05e-06      -190e-6 │
+│ phi │      -0.0001       38.287      -190e-6      0.00796 │
+└─────┴─────────────────────────────────────────────────────┘
 </pre></div></div>
 </div>
-<p>## 8. InteroperabilityInterconversion with major data science and machine learning libraries is very smooth.</p>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_31_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_31_1.png" />
+</div>
+</div>
+</section>
+<section id="8.-InteroperabilityInterconversion-with-major-data-science-and-machine-learning-libraries-is-very-smooth.">
+<h2>8. InteroperabilityInterconversion with major data science and machine learning libraries is very smooth.<a class="headerlink" href="#8.-InteroperabilityInterconversion-with-major-data-science-and-machine-learning-libraries-is-very-smooth." title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
@@ -983,21 +903,51 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Pandas interop OK
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+time_utc
+1980-01-06 00:00:19+00:00          -0.134611
+1980-01-06 00:00:19.010000+00:00    0.435072
+1980-01-06 00:00:19.020000+00:00    1.142485
+1980-01-06 00:00:19.030000+00:00    1.075394
+1980-01-06 00:00:19.040000+00:00    0.528471
+                                      ...
+1980-01-06 00:00:23.950000+00:00    0.088927
+1980-01-06 00:00:23.960000+00:00   -0.427112
+1980-01-06 00:00:23.970000+00:00   -0.796389
+1980-01-06 00:00:23.980000+00:00   -1.323318
+1980-01-06 00:00:23.990000+00:00   -0.265790
+Name: Sensor 1, Length: 500, dtype: float64
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[16]</span><span class="ansi-green-fg">, line 9</span>
-<span class="ansi-green-fg">      7</span> warnings.filterwarnings(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>, module=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">google.protobuf</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      8</span> warnings.filterwarnings(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">9</span> df = <span class="ansi-yellow-bg">ts1</span>.to_pandas(index=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">datetime</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">     10</span> ts_p = TimeSeries.from_pandas(df)
-<span class="ansi-green-fg">     11</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Pandas interop OK</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
+Xarray interop OK
+&lt;xarray.DataArray &#39;Sensor 1&#39; (time: 500)&gt; Size: 4kB
+array([-0.13461093,  0.43507153,  1.14248477, ..., -0.7963891 ,
+       -1.32331817, -0.26579045], shape=(500,))
+Coordinates:
+  * time     (time) datetime64[us] 4kB 1980-01-06T00:00:19 ... 1980-01-06T00:...
+Attributes:
+    unit:        V
+    name:        Sensor 1
+    channel:     None
+    epoch:       0.0
+    time_coord:  datetime
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -1015,24 +965,23 @@ Hurst skipping: name &#39;ts1&#39; is not defined
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+SQLite interop OK: my_sensor
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[17]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">sqlite3</span>
-<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> sqlite3.connect(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">:memory:</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> conn:
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span>     <span class="ansi-yellow-bg">ts1</span>.to_sqlite(conn, series_id=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">my_sensor</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      6</span>     ts_sql = TimeSeries.from_sqlite(conn, series_id=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">my_sensor</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      7</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">SQLite interop OK: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>ts_sql.name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts1&#39; is not defined
+&lt;sqlite3.Connection at 0x70ba201ac9a0&gt;
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
@@ -1055,6 +1004,122 @@ Hurst skipping: name &#39;ts1&#39; is not defined
     <span class="k">pass</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Torch interop OK (Shape: torch.Size([500]))
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+tensor([-1.3461e-01,  4.3507e-01,  1.1425e+00,  1.0754e+00,  5.2847e-01,
+         1.0839e-01, -9.6810e-01, -9.1475e-01, -7.9056e-01, -6.6473e-01,
+        -1.0380e-01,  6.2396e-01,  9.7406e-01,  5.5575e-01,  7.1797e-01,
+        -3.8119e-01, -8.7392e-01, -8.5121e-01, -8.1280e-01, -4.9414e-01,
+         2.9008e-01,  8.8165e-01,  1.2149e+00,  9.9721e-01,  6.2017e-01,
+         5.8718e-02, -5.5486e-01, -1.0877e+00, -1.1747e+00, -5.0681e-01,
+        -8.7952e-02,  7.6746e-01,  9.1283e-01,  9.5399e-01,  6.6754e-01,
+        -1.0359e-01, -1.1816e-01, -1.2268e+00, -9.8635e-01, -5.1058e-01,
+         4.8056e-01,  7.0611e-01,  1.0263e+00,  1.2412e+00,  6.7316e-01,
+        -7.4077e-02, -4.7042e-01, -1.3110e+00, -8.7876e-01, -7.2743e-01,
+        -1.6685e-01,  6.7581e-01,  1.2374e+00,  1.0070e+00,  1.0000e+00,
+         2.9705e-01, -4.4856e-01, -8.1049e-01, -1.1870e+00, -3.0934e-01,
+         3.2783e-03,  6.0597e-01,  9.9437e-01,  4.9842e-01,  6.8228e-01,
+        -1.5527e-03, -2.3386e-01, -8.9306e-01, -1.1108e+00, -1.1882e-01,
+         3.2355e-01,  3.5635e-01,  8.4951e-01,  8.7841e-01,  5.5111e-01,
+        -2.9778e-01, -5.9227e-01, -9.4361e-01, -6.7095e-01, -5.0921e-01,
+         1.4531e-01,  5.3662e-01,  1.1715e+00,  1.1169e+00,  2.9212e-01,
+        -2.1263e-01, -6.6233e-01, -1.1855e+00, -8.7189e-01, -6.6017e-01,
+        -1.1759e-01,  6.3739e-01,  6.3327e-01,  7.2131e-01,  3.5728e-01,
+        -2.3985e-02, -4.9770e-01, -1.2212e+00, -7.1716e-01, -5.8682e-01,
+         7.5480e-02,  5.9947e-01,  9.1573e-01,  1.0921e+00,  5.8741e-01,
+        -1.1773e-02, -8.7908e-01, -7.8983e-01, -9.5309e-01, -9.4245e-01,
+         1.0232e-01,  9.6500e-01,  1.1880e+00,  8.4250e-01,  7.0065e-01,
+        -1.0013e-01, -7.0960e-01, -9.8413e-01, -5.0726e-01, -7.8123e-01,
+         2.4971e-01,  7.8095e-01,  1.0532e+00,  1.1543e+00,  7.2219e-01,
+        -3.2950e-01, -6.4582e-01, -8.6551e-01, -9.0534e-01, -4.6523e-01,
+        -1.0089e-01,  3.5849e-01,  1.2807e+00,  7.7877e-01,  4.4896e-01,
+         1.9181e-01, -7.1742e-01, -9.9073e-01, -6.1409e-01, -4.7271e-01,
+        -6.8255e-02,  3.2965e-01,  1.1044e+00,  9.2907e-01,  2.9281e-01,
+        -9.7609e-02, -5.5133e-01, -1.0789e+00, -9.3635e-01, -5.6708e-01,
+        -1.3684e-01,  4.1240e-01,  7.7685e-01,  7.4493e-01,  3.6968e-01,
+        -5.2842e-02, -5.4641e-01, -1.0547e+00, -1.1873e+00, -4.3562e-01,
+        -3.2374e-02,  6.5759e-01,  9.9233e-01,  1.0319e+00,  6.2344e-01,
+        -2.6064e-01, -2.3372e-01, -1.2182e+00, -7.9089e-01, -8.9159e-01,
+        -5.4491e-02,  8.2556e-01,  1.0018e+00,  8.6425e-01,  5.3049e-01,
+         5.9849e-02, -6.7832e-01, -1.0169e+00, -7.5422e-01, -7.9050e-01,
+        -6.6171e-02,  8.4706e-01,  5.4660e-01,  9.1382e-01,  6.6913e-01,
+         2.3018e-01, -6.9153e-01, -6.5372e-01, -1.0756e+00, -5.0425e-01,
+         1.2238e-01,  7.8444e-01,  1.1318e+00,  1.0242e+00,  5.8706e-01,
+         1.2210e-01, -6.4131e-01, -9.0873e-01, -1.0772e+00, -9.2142e-01,
+         7.9785e-02,  4.9427e-01,  9.2106e-01,  7.6542e-01,  6.9357e-01,
+         1.8984e-01, -4.7641e-01, -9.3168e-01, -9.8607e-01, -4.6828e-01,
+         3.2871e-01,  7.9711e-01,  7.9253e-01,  9.5574e-01,  4.1396e-01,
+        -9.4133e-02, -5.6095e-01, -1.1670e+00, -7.1010e-01, -5.0041e-01,
+        -1.6278e-01,  6.4799e-01,  1.0289e+00,  6.5667e-01,  8.3154e-01,
+         2.8477e-01, -7.4377e-01, -7.8509e-01, -1.2129e+00, -2.8933e-01,
+         8.4258e-02,  8.8209e-01,  8.2944e-01,  8.2359e-01,  4.8556e-01,
+         3.2505e-01, -7.7639e-01, -1.5594e+00, -1.3384e+00, -7.1380e-01,
+        -2.9051e-01,  8.3079e-01,  1.0323e+00,  1.3614e+00,  3.6749e-01,
+         1.3949e-01, -6.4967e-01, -6.6427e-01, -9.5512e-01, -5.0976e-01,
+         2.1282e-01,  9.2146e-01,  1.0464e+00,  9.3113e-01,  5.7294e-01,
+        -2.3058e-01, -4.5524e-01, -6.0798e-01, -1.2408e+00, -6.2516e-01,
+         1.1928e-01,  4.7776e-01,  1.3224e+00,  9.6896e-01,  7.2651e-01,
+        -7.4921e-02, -4.4001e-01, -6.7855e-01, -1.2292e+00, -4.6921e-01,
+         2.9355e-02,  7.8854e-01,  6.0428e-01,  8.2010e-01,  9.3555e-01,
+        -2.6358e-02, -4.2845e-01, -6.4661e-01, -9.4427e-01, -7.9252e-01,
+        -2.8871e-01,  7.8654e-01,  9.1212e-01,  5.4989e-01,  7.6335e-01,
+        -1.4007e-01, -6.8564e-01, -8.6834e-01, -8.5269e-01, -7.6164e-01,
+         9.1013e-02,  9.4996e-01,  6.9837e-01,  1.0391e+00,  7.7173e-01,
+         1.3224e-01, -5.8682e-01, -1.0784e+00, -7.5381e-01, -7.3301e-01,
+         3.2955e-01,  5.0108e-01,  1.3376e+00,  1.0299e+00,  3.8642e-01,
+        -2.8122e-01, -5.7343e-01, -1.0445e+00, -1.0069e+00, -5.1524e-01,
+        -1.8379e-01,  4.1112e-01,  3.4940e-01,  6.6586e-01,  6.5195e-01,
+         1.0432e-01, -3.9830e-01, -8.5873e-01, -6.2842e-01, -7.7549e-01,
+         8.1519e-02,  8.4595e-01,  1.3478e+00,  9.3168e-01,  1.0154e+00,
+        -2.9836e-01, -6.5798e-01, -9.3836e-01, -1.2188e+00, -5.8503e-01,
+        -4.2679e-02,  5.5899e-01,  8.2995e-01,  9.0614e-01,  4.5417e-01,
+         1.8458e-01, -3.9249e-01, -1.1247e+00, -8.6549e-01, -6.1812e-01,
+        -2.6376e-01,  6.7552e-01,  1.0733e+00,  9.6343e-01,  6.2988e-01,
+        -1.6143e-01, -8.1753e-01, -9.8332e-01, -1.0825e+00, -7.7470e-01,
+        -1.9481e-02,  5.5853e-01,  1.1624e+00,  8.4371e-01,  4.2721e-01,
+        -5.3158e-02, -3.8051e-01, -9.7530e-01, -6.6342e-01, -6.2442e-01,
+        -5.8188e-02,  5.4037e-01,  6.8837e-01,  6.8451e-01,  6.3819e-01,
+         3.7715e-02, -5.6936e-01, -7.6817e-01, -6.5703e-01, -8.0363e-01,
+        -2.3767e-01,  3.2717e-01,  9.0673e-01,  6.4708e-01,  1.0596e+00,
+        -2.4126e-01, -5.9059e-01, -1.0526e+00, -8.1322e-01, -6.5292e-01,
+        -1.9701e-02,  4.7972e-01,  7.0420e-01,  9.8515e-01,  5.5324e-01,
+        -1.2518e-02, -3.3510e-01, -1.5795e+00, -6.5132e-01, -5.7321e-01,
+         1.8708e-02,  3.8394e-01,  1.3114e+00,  9.0519e-01,  5.3488e-01,
+        -1.0576e-01, -3.1330e-01, -8.0449e-01, -1.1047e+00, -2.2931e-01,
+        -1.1330e-01,  3.1224e-01,  1.0230e+00,  6.9849e-01,  5.8097e-01,
+        -6.8053e-02, -7.6062e-01, -1.1509e+00, -9.9704e-01, -9.3699e-01,
+         1.7503e-01,  6.1515e-01,  1.2367e+00,  1.0634e+00,  6.9845e-01,
+        -1.4025e-01, -7.4874e-01, -1.2335e+00, -1.3007e+00, -9.1579e-01,
+        -4.3119e-01,  5.5727e-01,  5.7669e-01,  7.9664e-01,  5.1067e-01,
+         8.2773e-02, -6.3659e-01, -8.2536e-01, -1.1726e+00, -7.0155e-01,
+        -1.1125e-01,  4.2428e-01,  1.1238e+00,  7.8490e-01,  1.3807e-01,
+        -3.4789e-01, -5.1187e-01, -8.7801e-01, -8.7232e-01, -6.4225e-01,
+         2.1934e-02,  7.9997e-01,  8.5595e-01,  1.1404e+00,  6.5351e-01,
+         9.4145e-02, -8.5338e-01, -8.7259e-01, -8.5532e-01, -1.6925e-01,
+        -9.0379e-02,  6.8613e-01,  6.5520e-01,  1.2443e+00,  5.2532e-01,
+         4.2889e-01, -6.1534e-01, -1.0022e+00, -8.6457e-01, -5.6766e-01,
+        -1.9623e-02,  8.1855e-01,  1.1595e+00,  1.2354e+00,  5.1932e-01,
+        -5.6552e-02, -5.9395e-01, -1.1445e+00, -6.6660e-01, -4.8519e-01,
+        -2.8822e-01,  9.7244e-01,  8.1785e-01,  7.6536e-01,  6.1664e-01,
+         2.2257e-01, -5.9962e-01, -9.8713e-01, -1.2344e+00, -6.2959e-01,
+         1.7541e-01,  5.0094e-01,  6.1844e-01,  5.7612e-01,  8.0974e-01,
+         3.8523e-01, -3.6434e-01, -8.6959e-01, -1.0025e+00, -2.3275e-01,
+        -2.2427e-01,  5.3949e-01,  8.8026e-01,  1.3153e+00,  1.3825e-01,
+         8.8927e-02, -4.2711e-01, -7.9639e-01, -1.3233e+00, -2.6579e-01],
+       dtype=torch.float64)
+</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:

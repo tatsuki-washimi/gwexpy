@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -103,7 +105,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="bifrequencymap">
+  <section class="tex2jax_ignore mathjax_ignore" id="bifrequencymap">
 <h1>BifrequencyMap<a class="headerlink" href="#bifrequencymap" title="Link to this heading"></a></h1>
 <p><strong>継承元:</strong> <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code></p>
 <p>2つの周波数軸間の関係を表すマップ（周波数1 → 周波数2）。
@@ -146,13 +148,13 @@ f1 : array-like
 </pre></div>
 </div>
 <p>入力スペクトルをマップを通して伝播させ、出力スペクトルを計算します。
-行列積を実行: $S_{\text{out}} = M \cdot S_{\text{in}}$</p>
+行列積を実行: <span class="math notranslate nohighlight">\(S_{\text{out}} = M \cdot S_{\text{in}}\)</span></p>
 </section>
 </section>
 <section id="id5">
 <h2>パラメータ<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <p>input_spectrum : <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>
-入力スペクトル $S_{\text{in}}(f_1)$。
+入力スペクトル <span class="math notranslate nohighlight">\(S_{\text{in}}(f_1)\)</span>。
 interpolate : bool, optional
 True の場合、入力スペクトルをマップの <code class="docutils literal notranslate"><span class="pre">frequency1</span></code> 軸に補間します。
 fill_value : float, optional
@@ -161,14 +163,14 @@ fill_value : float, optional
 <section id="id6">
 <h2>戻り値<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>
-投影された出力スペクトル $S_{\text{out}}(f_2)$。</p>
+投影された出力スペクトル <span class="math notranslate nohighlight">\(S_{\text{out}}(f_2)\)</span>。</p>
 <section id="convolute">
 <h3><code class="docutils literal notranslate"><span class="pre">convolute</span></code><a class="headerlink" href="#convolute" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">convolute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_spectrum</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>マップと入力スペクトルを畳み込みます（f1に沿った積分）。
-計算: $S_{\text{out}}(f_2) = \int M(f_2, f_1) S_{\text{in}}(f_1) df_1$</p>
+計算: <span class="math notranslate nohighlight">\(S_{\text{out}}(f_2) = \int M(f_2, f_1) S_{\text{in}}(f_1) df_1\)</span></p>
 </section>
 </section>
 <section id="id7">
@@ -187,7 +189,7 @@ True の場合、入力スペクトルを補間します。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">diagonal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>対角軸（$f_2 - f_1$）に沿った統計量を計算します。</p>
+<p>対角軸（<span class="math notranslate nohighlight">\(f_2 - f_1\)</span>）に沿った統計量を計算します。</p>
 </section>
 </section>
 <section id="id9">
@@ -198,7 +200,7 @@ True の場合、入力スペクトルを補間します。</p>
 bins : int or array-like, optional
 ビン数。None の場合、解像度から自動的に決定されます。
 absolute : bool, optional
-True の場合、$|f_2 - f_1|$ に沿って統計を計算します。
+True の場合、<span class="math notranslate nohighlight">\(|f_2 - f_1|\)</span> に沿って統計を計算します。
 **kwargs
 追加引数（例: <code class="docutils literal notranslate"><span class="pre">percentile</span></code> 値）。</p>
 </section>

@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -104,7 +106,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="bifrequencymap">
+  <section class="tex2jax_ignore mathjax_ignore" id="bifrequencymap">
 <h1>BifrequencyMap<a class="headerlink" href="#bifrequencymap" title="Link to this heading"></a></h1>
 <p><strong>Inherits from:</strong> <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code></p>
 <p>Map representing the relationship between two frequency axes (Frequency 1 -&gt; Frequency 2).
@@ -147,13 +149,13 @@ Additional arguments passed to the constructor (name, unit, etc.).</p>
 </pre></div>
 </div>
 <p>Propagate an input spectrum through the map to calculate the output spectrum.
-Performs a matrix multiplication: $S_{\text{out}} = M \cdot S_{\text{in}}$.</p>
+Performs a matrix multiplication: <span class="math notranslate nohighlight">\(S_{\text{out}} = M \cdot S_{\text{in}}\)</span>.</p>
 </section>
 </section>
 <section id="id1">
 <h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>input_spectrum : <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>
-The input spectrum $S_{\text{in}}(f_1)$.
+The input spectrum <span class="math notranslate nohighlight">\(S_{\text{in}}(f_1)\)</span>.
 interpolate : bool, optional
 If True, interpolates the input spectrum to match the map’s <code class="docutils literal notranslate"><span class="pre">frequency1</span></code> axis.
 fill_value : float, optional
@@ -162,14 +164,14 @@ Value to use for interpolation outside the range.</p>
 <section id="id2">
 <h2>Returns<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>
-The projected output spectrum $S_{\text{out}}(f_2)$.</p>
+The projected output spectrum <span class="math notranslate nohighlight">\(S_{\text{out}}(f_2)\)</span>.</p>
 <section id="convolute">
 <h3><code class="docutils literal notranslate"><span class="pre">convolute</span></code><a class="headerlink" href="#convolute" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">convolute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_spectrum</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Convolutes the map with an input spectrum (integration along f1).
-Calculates: $S_{\text{out}}(f_2) = \int M(f_2, f_1) S_{\text{in}}(f_1) df_1$</p>
+Calculates: <span class="math notranslate nohighlight">\(S_{\text{out}}(f_2) = \int M(f_2, f_1) S_{\text{in}}(f_1) df_1\)</span></p>
 </section>
 </section>
 <section id="id3">
@@ -188,7 +190,7 @@ Output spectrum with units adjusted by frequency integration.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">diagonal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Calculates statistics along the diagonal axis ($f_2 - f_1$).</p>
+<p>Calculates statistics along the diagonal axis (<span class="math notranslate nohighlight">\(f_2 - f_1\)</span>).</p>
 </section>
 </section>
 <section id="id5">
@@ -199,7 +201,7 @@ Ignores NaNs by default.
 bins : int or array-like, optional
 Number of bins. If None, automatically determined from resolution.
 absolute : bool, optional
-If True, calculates statistics along $|f_2 - f_1|$.
+If True, calculates statistics along <span class="math notranslate nohighlight">\(|f_2 - f_1|\)</span>.
 **kwargs
 Additional arguments (e.g., <code class="docutils literal notranslate"><span class="pre">percentile</span></code> value).</p>
 </section>

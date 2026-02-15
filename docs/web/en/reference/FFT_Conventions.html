@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -104,7 +106,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="fft-specifications-and-conventions">
+  <section class="tex2jax_ignore mathjax_ignore" id="fft-specifications-and-conventions">
 <h1>FFT Specifications and Conventions<a class="headerlink" href="#fft-specifications-and-conventions" title="Link to this heading"></a></h1>
 <p>This document details the mathematical conventions, normalization, and sign definitions used for Fast Fourier Transforms (FFT) in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>.</p>
 <section id="temporal-fft-fft-time">
@@ -112,7 +114,7 @@
 <p>The temporal FFT is applied to the time axis (axis 0). It is designed for compatibility with <code class="docutils literal notranslate"><span class="pre">gwpy</span></code> and standard gravitational-wave data analysis practices.</p>
 <section id="normalization">
 <h3>Normalization<a class="headerlink" href="#normalization" title="Link to this heading"></a></h3>
-<p>$1/N$ normalization is applied to the forward transform. This means the amplitude of a sine wave $A \sin(\omega t)$ appears as $A$ in the resulting frequency spectrum (after accounting for the one-sided factor).
+<p><span class="math notranslate nohighlight">\(1/N\)</span> normalization is applied to the forward transform. This means the amplitude of a sine wave <span class="math notranslate nohighlight">\(A \sin(\omega t)\)</span> appears as <span class="math notranslate nohighlight">\(A\)</span> in the resulting frequency spectrum (after accounting for the one-sided factor).
 The inverse transform (<code class="docutils literal notranslate"><span class="pre">ifft_time</span></code>) undoes this normalization.</p>
 </section>
 <section id="spectral-definition">
@@ -120,14 +122,14 @@ The inverse transform (<code class="docutils literal notranslate"><span class="p
 <ul class="simple">
 <li><p><strong>Type</strong>: One-sided (<code class="docutils literal notranslate"><span class="pre">rfft</span></code>). Only non-negative frequencies are returned.</p></li>
 <li><p><strong>Correction</strong>: To preserve total power, all non-DC and non-Nyquist bins are multiplied by 2.</p></li>
-<li><p><strong>Frequency Axis</strong>: $f = [0, 1/2dt]$.</p></li>
+<li><p><strong>Frequency Axis</strong>: <span class="math notranslate nohighlight">\(f = [0, 1/2dt]\)</span>.</p></li>
 </ul>
 </section>
 <section id="sign-convention">
 <h3>Sign Convention<a class="headerlink" href="#sign-convention" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>Forward</strong>: $X[k] = \frac{1}{N} \sum_{n=0}^{N-1} x[n] e^{-i 2\pi k n / N}$</p></li>
-<li><p><strong>Inverse</strong>: $x[n] = \sum_{k=0}^{N/2} X[k] e^{i 2\pi k n / N}$ (with appropriate bin weighting)</p></li>
+<li><p><strong>Forward</strong>: <span class="math notranslate nohighlight">\(X[k] = \frac{1}{N} \sum_{n=0}^{N-1} x[n] e^{-i 2\pi k n / N}\)</span></p></li>
+<li><p><strong>Inverse</strong>: <span class="math notranslate nohighlight">\(x[n] = \sum_{k=0}^{N/2} X[k] e^{i 2\pi k n / N}\)</span> (with appropriate bin weighting)</p></li>
 </ul>
 </section>
 </section>
@@ -138,21 +140,21 @@ The inverse transform (<code class="docutils literal notranslate"><span class="p
 <section id="id1">
 <h3>Normalization<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <p><strong>Unnormalized</strong>. No factor is applied to the forward transform, following standard <code class="docutils literal notranslate"><span class="pre">numpy.fft.fftn</span></code> behavior.
-The inverse transform (<code class="docutils literal notranslate"><span class="pre">ifft_space</span></code>) applies $1/N$ normalization.</p>
+The inverse transform (<code class="docutils literal notranslate"><span class="pre">ifft_space</span></code>) applies <span class="math notranslate nohighlight">\(1/N\)</span> normalization.</p>
 </section>
 <section id="id2">
 <h3>Spectral Definition<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>Type</strong>: Two-sided. Returns both positive and negative wavenumbers.</p></li>
-<li><p><strong>Wavenumber Axis</strong>: By default, <code class="docutils literal notranslate"><span class="pre">fft_space</span></code> produces <strong>angular wavenumber</strong> $k = 2\pi / \lambda$.</p></li>
+<li><p><strong>Wavenumber Axis</strong>: By default, <code class="docutils literal notranslate"><span class="pre">fft_space</span></code> produces <strong>angular wavenumber</strong> <span class="math notranslate nohighlight">\(k = 2\pi / \lambda\)</span>.</p></li>
 <li><p><strong>Ordering</strong>: The zero-frequency (DC) component is at index 0 (not shifted). Use <code class="docutils literal notranslate"><span class="pre">numpy.fft.fftshift</span></code> externally if a centered spectrum is desired for visualization.</p></li>
 </ul>
 </section>
 <section id="id3">
 <h3>Sign Convention<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>Forward</strong>: $X[\mathbf{k}] = \sum_{\mathbf{n}} x[\mathbf{n}] e^{-i 2\pi \sum k_j n_j / N_j}$</p></li>
-<li><p><strong>Inverse</strong>: $x[\mathbf{n}] = \frac{1}{\prod N_j} \sum_{\mathbf{k}} X[\mathbf{k}] e^{i 2\pi \sum k_j n_j / N_j}$</p></li>
+<li><p><strong>Forward</strong>: <span class="math notranslate nohighlight">\(X[\mathbf{k}] = \sum_{\mathbf{n}} x[\mathbf{n}] e^{-i 2\pi \sum k_j n_j / N_j}\)</span></p></li>
+<li><p><strong>Inverse</strong>: <span class="math notranslate nohighlight">\(x[\mathbf{n}] = \frac{1}{\prod N_j} \sum_{\mathbf{k}} X[\mathbf{k}] e^{i 2\pi \sum k_j n_j / N_j}\)</span></p></li>
 </ul>
 </section>
 </section>
@@ -163,14 +165,14 @@ The inverse transform (<code class="docutils literal notranslate"><span class="p
 <section id="scaling">
 <h3>Scaling<a class="headerlink" href="#scaling" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><strong>Density</strong>: Returns power per unit frequency/wavenumber resolution ($V^2 / \text{Hz}$ or $V^2 / [\text{unit}^{-1}]$).</p></li>
-<li><p><strong>Spectrum</strong>: Returns total power in each bin ($V^2$).</p></li>
+<li><p><strong>Density</strong>: Returns power per unit frequency/wavenumber resolution (<span class="math notranslate nohighlight">\(V^2 / \text{Hz}\)</span> or <span class="math notranslate nohighlight">\(V^2 / [\text{unit}^{-1}]\)</span>).</p></li>
+<li><p><strong>Spectrum</strong>: Returns total power in each bin (<span class="math notranslate nohighlight">\(V^2\)</span>).</p></li>
 </ul>
 </section>
 <section id="wavenumber-convention-in-signal-utils">
 <h3>Wavenumber Convention in Signal Utils<a class="headerlink" href="#wavenumber-convention-in-signal-utils" title="Link to this heading"></a></h3>
-<p>Note that while <code class="docutils literal notranslate"><span class="pre">fft_space</span></code> uses angular wavenumber ($k = 2\pi/\lambda$), <code class="docutils literal notranslate"><span class="pre">spectral_density(axis='x')</span></code> produces <strong>non-angular wavenumber</strong> ($f_k = 1/\lambda$) by default, consistent with <code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code>.
-To convert to angular wavenumber, multiply the resulting axis by $2\pi$.</p>
+<p>Note that while <code class="docutils literal notranslate"><span class="pre">fft_space</span></code> uses angular wavenumber (<span class="math notranslate nohighlight">\(k = 2\pi/\lambda\)</span>), <code class="docutils literal notranslate"><span class="pre">spectral_density(axis='x')</span></code> produces <strong>non-angular wavenumber</strong> (<span class="math notranslate nohighlight">\(f_k = 1/\lambda\)</span>) by default, consistent with <code class="docutils literal notranslate"><span class="pre">scipy.signal.welch</span></code>.
+To convert to angular wavenumber, multiply the resulting axis by <span class="math notranslate nohighlight">\(2\pi\)</span>.</p>
 </section>
 </section>
 <hr class="docutils" />
@@ -181,32 +183,32 @@ To convert to angular wavenumber, multiply the resulting axis by $2\pi$.</p>
 <tr class="row-odd"><th class="head text-left"><p>Method</p></th>
 <th class="head text-left"><p>Normalization (Forward)</p></th>
 <th class="head text-left"><p>Domain</p></th>
-<th class="head text-left"><p>Sign ($ikx$)</p></th>
+<th class="head text-left"><p>Sign (<span class="math notranslate nohighlight">\(ikx\)</span>)</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">fft_time</span></code></p></td>
-<td class="text-left"><p>$1/N$</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(1/N\)</span></p></td>
 <td class="text-left"><p>One-sided</p></td>
 <td class="text-left"><p>Negative</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ifft_time</span></code></p></td>
-<td class="text-left"><p>$N$</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(N\)</span></p></td>
 <td class="text-left"><p>One-sided</p></td>
 <td class="text-left"><p>Positive</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">fft_space</span></code></p></td>
-<td class="text-left"><p>$1$</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(1\)</span></p></td>
 <td class="text-left"><p>Two-sided</p></td>
 <td class="text-left"><p>Negative</p></td>
 </tr>
 <tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ifft_space</span></code></p></td>
-<td class="text-left"><p>$1/N$</p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(1/N\)</span></p></td>
 <td class="text-left"><p>Two-sided</p></td>
 <td class="text-left"><p>Positive</p></td>
 </tr>
 <tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">spectral_density</span></code></p></td>
-<td class="text-left"><p>Welch / $1/N^2$</p></td>
+<td class="text-left"><p>Welch / <span class="math notranslate nohighlight">\(1/N^2\)</span></p></td>
 <td class="text-left"><p>One-sided</p></td>
 <td class="text-left"><p>N/A (Magnitude sq.)</p></td>
 </tr>

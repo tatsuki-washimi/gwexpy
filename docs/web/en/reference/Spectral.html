@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -104,7 +106,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="spectral-estimation">
+  <section class="tex2jax_ignore mathjax_ignore" id="spectral-estimation">
 <h1>Spectral Estimation<a class="headerlink" href="#spectral-estimation" title="Link to this heading"></a></h1>
 <p>gwexpy enforces strict unit conventions for spectral density and power spectrum estimation.</p>
 <section id="api-change-notice-v0-1-0b2">
@@ -123,13 +125,13 @@
 <li><p><strong>PSD / ASD (Density)</strong>:</p>
 <ul>
 <li><p>Default <code class="docutils literal notranslate"><span class="pre">method='welch'</span></code> (or others) returns a <strong>Power Spectral Density</strong>.</p></li>
-<li><p><strong>Unit</strong>: $Unit^2 / Hz$ (e.g., $V^2 / Hz$).</p></li>
+<li><p><strong>Unit</strong>: <span class="math notranslate nohighlight">\(Unit^2 / Hz\)</span> (e.g., <span class="math notranslate nohighlight">\(V^2 / Hz\)</span>).</p></li>
 </ul>
 </li>
 <li><p><strong>Power Spectrum</strong>:</p>
 <ul>
 <li><p>When <code class="docutils literal notranslate"><span class="pre">scaling='spectrum'</span></code> is specified.</p></li>
-<li><p><strong>Unit</strong>: $Unit^2$ (e.g., $V^2$).</p></li>
+<li><p><strong>Unit</strong>: <span class="math notranslate nohighlight">\(Unit^2\)</span> (e.g., <span class="math notranslate nohighlight">\(V^2\)</span>).</p></li>
 <li><p>This represents the power in each bin, not normalized by bin width.</p></li>
 </ul>
 </li>

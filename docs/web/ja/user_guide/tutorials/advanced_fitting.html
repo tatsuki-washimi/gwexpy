@@ -116,7 +116,7 @@
 <section id="gwexpy.fitting:-iminuit-ベースのフィッティング機能">
 <h1>gwexpy.fitting: iminuit ベースのフィッティング機能<a class="headerlink" href="#gwexpy.fitting:-iminuit-ベースのフィッティング機能" title="Link to this heading"></a></h1>
 <p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code> モジュールを使用して、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> や <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> データに対して簡単にフィッティングを行う方法を紹介します。 バックエンドには <code class="docutils literal notranslate"><span class="pre">iminuit</span></code> を使用しており、誤差を考慮した最小二乗法フィッティングが可能です。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -130,85 +130,6 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 4</span>
-<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
-<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">frequencyseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FrequencySeries
-<span class="ansi-green-fg">      5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">plot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Plot
-<span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
-</pre></div></div>
 </div>
 <section id="1.-データの準備">
 <h2>1. データの準備<a class="headerlink" href="#1.-データの準備" title="Link to this heading"></a></h2>
@@ -239,17 +160,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 14</span>
-<span class="ansi-green-fg">     11</span> y_noise = y_true + np.random.normal(<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">1.0</span>, size=<span style="color: rgb(0,135,0)">len</span>(x))
-<span class="ansi-green-fg">     13</span> <span style="color: rgb(95,135,135)"># TimeSeries オブジェクトの作成</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">14</span> ts = <span class="ansi-yellow-bg">TimeSeries</span>(y_noise, dt=<span class="ansi-green-fg">0.1</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Noisy Gaussian</span><span class="ansi-yellow-fg">&#34;</span>, unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">V</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">     15</span> ts.plot(title=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Noisy Data for Gaussian Fit</span><span class="ansi-yellow-fg">&#34;</span>);
-
-<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeries&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_3_0.png" />
+</div>
 </div>
 </section>
 <section id="2.-フィッティングの実行">
@@ -271,19 +183,102 @@
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># フィッティング</span>
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># p0 で初期値を指定します</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> result = <span class="ansi-yellow-bg">ts</span>.fit(gaussian, sigma=<span class="ansi-green-fg">0.8</span>, p0={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">a</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">5</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">mu</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">5</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">sigma</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">1</span>})
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># 結果の表示</span>
-<span class="ansi-green-fg">      6</span> display(result)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
-</pre></div></div>
+<div class="output_area rendered_html docutils container">
+<table>
+    <tr>
+        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 125.2 (χ²/ndof = 1.3) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 87 </td>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 4.03e-06 (Goal: 0.0002) </td>
+        <td style="text-align:center" title="Total run time of algorithms">  </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th title="Variable name"> Name </th>
+        <th title="Value of parameter"> Value </th>
+        <th title="Hesse error"> Hesse Error </th>
+        <th title="Minos lower error"> Minos Error- </th>
+        <th title="Minos upper error"> Minos Error+ </th>
+        <th title="Lower limit of the parameter"> Limit- </th>
+        <th title="Upper limit of the parameter"> Limit+ </th>
+        <th title="Is the parameter fixed in the fit"> Fixed </th>
+    </tr>
+    <tr>
+        <th> 0 </th>
+        <td> a </td>
+        <td> 10.05 </td>
+        <td> 0.21 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 1 </th>
+        <td> mu </td>
+        <td> 5.495 </td>
+        <td> 0.029 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 2 </th>
+        <td> sigma </td>
+        <td> 1.159 </td>
+        <td> 0.028 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th> a </th>
+        <th> mu </th>
+        <th> sigma </th>
+    </tr>
+    <tr>
+        <th> a </th>
+        <td> 0.0461 </td>
+        <td style="background-color:rgb(249,249,250);color:black"> -0 <strong>(-0.005)</strong> </td>
+        <td style="background-color:rgb(176,176,250);color:black"> -3.4e-3 <strong>(-0.569)</strong> </td>
+    </tr>
+    <tr>
+        <th> mu </th>
+        <td style="background-color:rgb(249,249,250);color:black"> -0 <strong>(-0.005)</strong> </td>
+        <td> 0.000828 </td>
+        <td style="background-color:rgb(250,249,249);color:black"> 0 <strong>(0.008)</strong> </td>
+    </tr>
+    <tr>
+        <th> sigma </th>
+        <td style="background-color:rgb(176,176,250);color:black"> -3.4e-3 <strong>(-0.569)</strong> </td>
+        <td style="background-color:rgb(250,249,249);color:black"> 0 <strong>(0.008)</strong> </td>
+        <td> 0.000794 </td>
+    </tr>
+</table></div>
 </div>
 </section>
 <section id="3.-結果の取得とプロット">
@@ -308,20 +303,23 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Best Fit Parameters:</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-bg">result</span>.params)
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Errors:</span><span class="ansi-yellow-fg">&#34;</span>, result.errors)
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Chi2:</span><span class="ansi-yellow-fg">&#34;</span>, result.chi2)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;result&#39; is not defined
+Best Fit Parameters: {&#39;a&#39;: 10.052918089640286, &#39;mu&#39;: 5.4945648175959265, &#39;sigma&#39;: 1.1593703774715336}
+Errors: {&#39;a&#39;: 0.21465022616772478, &#39;mu&#39;: 0.028783389431543863, &#39;sigma&#39;: 0.028181477272667253}
+Chi2: 125.15392927134539
+NDOF: 97
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_7_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_7_1.png" />
+</div>
 </div>
 </section>
 <section id="3.-文字列によるモデル指定">
@@ -344,24 +342,112 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<table>
+    <tr>
+        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 83.02 (χ²/ndof = 1.5) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 76 </td>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 1.49e-09 (Goal: 0.0002) </td>
+        <td style="text-align:center" title="Total run time of algorithms">  </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th title="Variable name"> Name </th>
+        <th title="Value of parameter"> Value </th>
+        <th title="Hesse error"> Hesse Error </th>
+        <th title="Minos lower error"> Minos Error- </th>
+        <th title="Minos upper error"> Minos Error+ </th>
+        <th title="Lower limit of the parameter"> Limit- </th>
+        <th title="Upper limit of the parameter"> Limit+ </th>
+        <th title="Is the parameter fixed in the fit"> Fixed </th>
+    </tr>
+    <tr>
+        <th> 0 </th>
+        <td> A </td>
+        <td> 10.05 </td>
+        <td> 0.22 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 1 </th>
+        <td> mu </td>
+        <td> 5.492 </td>
+        <td> 0.029 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 2 </th>
+        <td> sigma </td>
+        <td> 1.159 </td>
+        <td> 0.029 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th> A </th>
+        <th> mu </th>
+        <th> sigma </th>
+    </tr>
+    <tr>
+        <th> A </th>
+        <td> 0.047 </td>
+        <td style="background-color:rgb(248,248,250);color:black"> -0.1e-3 <strong>(-0.012)</strong> </td>
+        <td style="background-color:rgb(175,175,250);color:black"> -3.7e-3 <strong>(-0.580)</strong> </td>
+    </tr>
+    <tr>
+        <th> mu </th>
+        <td style="background-color:rgb(248,248,250);color:black"> -0.1e-3 <strong>(-0.012)</strong> </td>
+        <td> 0.000841 </td>
+        <td style="background-color:rgb(250,246,246);color:black"> 0 <strong>(0.027)</strong> </td>
+    </tr>
+    <tr>
+        <th> sigma </th>
+        <td style="background-color:rgb(175,175,250);color:black"> -3.7e-3 <strong>(-0.580)</strong> </td>
+        <td style="background-color:rgb(250,246,246);color:black"> 0 <strong>(0.027)</strong> </td>
+        <td> 0.000864 </td>
+    </tr>
+</table></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># 文字列 &#39;gaus&#39; を指定してフィッティング</span>
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># 注意: 定義済みモデルのパラメータ名はモデルごとに決まっています (Gaussianの場合は A, mu, sigma)</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> result_str = <span class="ansi-yellow-bg">ts</span>.fit(
-<span class="ansi-green-fg">      4</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">gaus</span><span class="ansi-yellow-fg">&#34;</span>, p0={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">A</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">10</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">mu</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">5</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">sigma</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">1.0</span>}, x_range=(<span class="ansi-green-fg">2</span>, <span class="ansi-green-fg">8</span>), sigma=<span class="ansi-green-fg">0.8</span>
-<span class="ansi-green-fg">      5</span> )
-<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># 結果の表示</span>
-<span class="ansi-green-fg">      8</span> display(result_str)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_9_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_9_1.png" />
+</div>
 </div>
 </section>
 <section id="4.-複素数フィッティング-(伝達関数)">
@@ -406,18 +492,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 23</span>
-<span class="ansi-green-fg">     20</span> data_noisy = data_clean + <span class="ansi-green-fg">0.2</span> * noise_re + <span class="ansi-green-fg">0.2</span>j * noise_im
-<span class="ansi-green-fg">     22</span> <span style="color: rgb(95,135,135)"># FrequencySeries 作成</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">23</span> fs = <span class="ansi-yellow-bg">FrequencySeries</span>(data_noisy, frequencies=f, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Transfer Function</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">     24</span> plot = Plot(fs.abs(), fs.real, fs.imag, xscale=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">log</span><span class="ansi-yellow-fg">&#34;</span>, yscale=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">symlog</span><span class="ansi-yellow-fg">&#34;</span>, alpha=<span class="ansi-green-fg">0.8</span>)
-<span class="ansi-green-fg">     25</span> plt.legend([<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">|H(f)|</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Re(H(f))</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Im(H(f))</span><span class="ansi-yellow-fg">&#34;</span>])
-
-<span class="ansi-red-fg">NameError</span>: name &#39;FrequencySeries&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_11_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_11_0.png" />
+</div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
@@ -448,22 +524,112 @@
 Fit Start...
 </pre></div></div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<table>
+    <tr>
+        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 1907 (χ²/ndof = 1.0) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 102 </td>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 1.21e-09 (Goal: 0.0002) </td>
+        <td style="text-align:center" title="Total run time of algorithms">  </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th title="Variable name"> Name </th>
+        <th title="Value of parameter"> Value </th>
+        <th title="Hesse error"> Hesse Error </th>
+        <th title="Minos lower error"> Minos Error- </th>
+        <th title="Minos upper error"> Minos Error+ </th>
+        <th title="Lower limit of the parameter"> Limit- </th>
+        <th title="Upper limit of the parameter"> Limit+ </th>
+        <th title="Is the parameter fixed in the fit"> Fixed </th>
+    </tr>
+    <tr>
+        <th> 0 </th>
+        <td> A </td>
+        <td> 10.09e6 </td>
+        <td> 0.07e6 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 1 </th>
+        <td> f0 </td>
+        <td> 300.24 </td>
+        <td> 0.11 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 2 </th>
+        <td> Q </td>
+        <td> 9.99 </td>
+        <td> 0.10 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th> A </th>
+        <th> f0 </th>
+        <th> Q </th>
+    </tr>
+    <tr>
+        <th> A </th>
+        <td> 5.4e+09 </td>
+        <td style="background-color:rgb(250,235,235);color:black"> 795.222 <strong>(0.099)</strong> </td>
+        <td style="background-color:rgb(158,158,250);color:black"> -5.296459e3 <strong>(-0.707)</strong> </td>
+    </tr>
+    <tr>
+        <th> f0 </th>
+        <td style="background-color:rgb(250,235,235);color:black"> 795.222 <strong>(0.099)</strong> </td>
+        <td> 0.0118 </td>
+        <td style="background-color:rgb(245,245,250);color:black"> -0.000 <strong>(-0.035)</strong> </td>
+    </tr>
+    <tr>
+        <th> Q </th>
+        <td style="background-color:rgb(158,158,250);color:black"> -5.296459e3 <strong>(-0.707)</strong> </td>
+        <td style="background-color:rgb(245,245,250);color:black"> -0.000 <strong>(-0.035)</strong> </td>
+        <td> 0.0104 </td>
+    </tr>
+</table></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 4</span>
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Fit Start...</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># 初期値はずらしておく</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> result_complex = <span class="ansi-yellow-bg">fs</span>.fit(pole_model, sigma=<span class="ansi-green-fg">1.0</span>, p0={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">A</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">0.8e7</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">f0</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">320</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Q</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">8</span>})
-<span class="ansi-green-fg">      6</span> <span style="color: rgb(95,135,135)"># 結果表示</span>
-<span class="ansi-green-fg">      7</span> display(result_complex)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;fs&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_12_2.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_12_2.png" />
+</div>
 </div>
 </section>
 <section id="5.-MCMC-解析-(emcee)">
@@ -492,13 +658,22 @@ Fit Start...
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+&lt;python-env&gt;/site-packages/astropy/units/quantity.py:1329: ComplexWarning: Casting complex values to real discards the imaginary part
+  return float(self.to_value(dimensionless_unscaled))
+100%|███████████████████████████████████████| 1000/1000 [00:02&lt;00:00, 455.34it/s]
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-MCMC Error: name &#39;result_complex&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_14_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_14_1.png" />
+</div>
 </div>
 </section>
 <section id="新しい共通モデルの使用例">
@@ -536,22 +711,237 @@ MCMC Error: name &#39;result_complex&#39; is not defined
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 6</span>
-<span class="ansi-green-fg">      4</span> x = np.logspace(<span class="ansi-green-fg">0</span>, <span class="ansi-green-fg">2</span>, <span class="ansi-green-fg">100</span>)
-<span class="ansi-green-fg">      5</span> y = power_law(x, A=<span class="ansi-green-fg">10</span>, alpha=-<span class="ansi-green-fg">1.5</span>) * (<span class="ansi-green-fg">1</span> + <span class="ansi-green-fg">0.1</span> * np.random.normal(size=<span style="color: rgb(0,135,0)">len</span>(x)))
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">6</span> fs = <span class="ansi-yellow-bg">FrequencySeries</span>(y, frequencies=x)
-<span class="ansi-green-fg">      7</span> res_pl = fs.fit(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">power_law</span><span class="ansi-yellow-fg">&#34;</span>, p0={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">A</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">5</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">alpha</span><span class="ansi-yellow-fg">&#34;</span>: -<span class="ansi-green-fg">1</span>}, sigma=y * <span class="ansi-green-fg">0.1</span>)
-<span class="ansi-green-fg">      8</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Power law alpha:</span><span class="ansi-yellow-fg">&#34;</span>, res_pl.params[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">alpha</span><span class="ansi-yellow-fg">&#34;</span>])
-
-<span class="ansi-red-fg">NameError</span>: name &#39;FrequencySeries&#39; is not defined
+Power law alpha: -1.5073254489014472
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<table>
+    <tr>
+        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 102.8 (χ²/ndof = 1.0) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 90 </td>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 6.45e-06 (Goal: 0.0002) </td>
+        <td style="text-align:center" title="Total run time of algorithms">  </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th title="Variable name"> Name </th>
+        <th title="Value of parameter"> Value </th>
+        <th title="Hesse error"> Hesse Error </th>
+        <th title="Minos lower error"> Minos Error- </th>
+        <th title="Minos upper error"> Minos Error+ </th>
+        <th title="Lower limit of the parameter"> Limit- </th>
+        <th title="Upper limit of the parameter"> Limit+ </th>
+        <th title="Is the parameter fixed in the fit"> Fixed </th>
+    </tr>
+    <tr>
+        <th> 0 </th>
+        <td> A </td>
+        <td> 9.84 </td>
+        <td> 0.20 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 1 </th>
+        <td> alpha </td>
+        <td> -1.507 </td>
+        <td> 0.008 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th> A </th>
+        <th> alpha </th>
+    </tr>
+    <tr>
+        <th> A </th>
+        <td> 0.04 </td>
+        <td style="background-color:rgb(137,137,250);color:black"> -1.33e-3 <strong>(-0.869)</strong> </td>
+    </tr>
+    <tr>
+        <th> alpha </th>
+        <td style="background-color:rgb(137,137,250);color:black"> -1.33e-3 <strong>(-0.869)</strong> </td>
+        <td> 5.88e-05 </td>
+    </tr>
+</table></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_16_2.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_16_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Damped oscillation frequency: 9.993425925552769
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<table>
+    <tr>
+        <th colspan="2" style="text-align:center" title="Minimizer"> Migrad </th>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Minimum value of function"> FCN = 917.9 (χ²/ndof = 0.9) </td>
+        <td style="text-align:center" title="Total number of function and (optional) gradient evaluations"> Nfcn = 192 </td>
+    </tr>
+    <tr>
+        <td style="text-align:left" title="Estimated distance to minimum and goal"> EDM = 6.02e-07 (Goal: 0.0002) </td>
+        <td style="text-align:center" title="Total run time of algorithms">  </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Valid Minimum </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below EDM threshold (goal x 10) </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> No parameters at limit </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Below call limit </td>
+    </tr>
+    <tr>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Hesse ok </td>
+        <td style="text-align:center;background-color:#92CCA6;color:black"> Covariance accurate </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th title="Variable name"> Name </th>
+        <th title="Value of parameter"> Value </th>
+        <th title="Hesse error"> Hesse Error </th>
+        <th title="Minos lower error"> Minos Error- </th>
+        <th title="Minos upper error"> Minos Error+ </th>
+        <th title="Lower limit of the parameter"> Limit- </th>
+        <th title="Upper limit of the parameter"> Limit+ </th>
+        <th title="Is the parameter fixed in the fit"> Fixed </th>
+    </tr>
+    <tr>
+        <th> 0 </th>
+        <td> A </td>
+        <td> 1.002 </td>
+        <td> 0.008 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 1 </th>
+        <td> tau </td>
+        <td> 0.301 </td>
+        <td> 0.004 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 2 </th>
+        <td> f </td>
+        <td> 9.993 </td>
+        <td> 0.006 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+    <tr>
+        <th> 3 </th>
+        <td> phi </td>
+        <td> 0.010 </td>
+        <td> 0.008 </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+        <td>  </td>
+    </tr>
+</table><table>
+    <tr>
+        <td></td>
+        <th> A </th>
+        <th> tau </th>
+        <th> f </th>
+        <th> phi </th>
+    </tr>
+    <tr>
+        <th> A </th>
+        <td> 6.91e-05 </td>
+        <td style="background-color:rgb(157,157,250);color:black"> -0.021e-3 <strong>(-0.717)</strong> </td>
+        <td style="background-color:rgb(250,239,239);color:black"> 0 <strong>(0.072)</strong> </td>
+        <td style="background-color:rgb(236,236,250);color:black"> -0.01e-3 <strong>(-0.104)</strong> </td>
+    </tr>
+    <tr>
+        <th> tau </th>
+        <td style="background-color:rgb(157,157,250);color:black"> -0.021e-3 <strong>(-0.717)</strong> </td>
+        <td> 1.28e-05 </td>
+        <td style="background-color:rgb(244,244,250);color:black"> -0.001e-3 <strong>(-0.048)</strong> </td>
+        <td style="background-color:rgb(250,239,239);color:black"> 0.002e-3 <strong>(0.072)</strong> </td>
+    </tr>
+    <tr>
+        <th> f </th>
+        <td style="background-color:rgb(250,239,239);color:black"> 0 <strong>(0.072)</strong> </td>
+        <td style="background-color:rgb(244,244,250);color:black"> -0.001e-3 <strong>(-0.048)</strong> </td>
+        <td> 3.95e-05 </td>
+        <td style="background-color:rgb(157,157,250);color:black"> -0.04e-3 <strong>(-0.713)</strong> </td>
+    </tr>
+    <tr>
+        <th> phi </th>
+        <td style="background-color:rgb(236,236,250);color:black"> -0.01e-3 <strong>(-0.104)</strong> </td>
+        <td style="background-color:rgb(250,239,239);color:black"> 0.002e-3 <strong>(0.072)</strong> </td>
+        <td style="background-color:rgb(157,157,250);color:black"> -0.04e-3 <strong>(-0.713)</strong> </td>
+        <td> 6.74e-05 </td>
+    </tr>
+</table></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_16_5.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_fitting_16_5.png" />
+</div>
 </div>
 </section>
 </section>

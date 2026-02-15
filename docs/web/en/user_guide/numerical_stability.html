@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -102,16 +104,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="numerical-stability-and-precision">
+  <section class="tex2jax_ignore mathjax_ignore" id="numerical-stability-and-precision">
 <h1>Numerical Stability and Precision<a class="headerlink" href="#numerical-stability-and-precision" title="Link to this heading"></a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> is designed to handle the extreme dynamic ranges often found in gravitational-wave data analysis.
-Gravitational-wave strain signals are typically on the order of $10^{-21}$, while intermediate processing steps might involve values closer to unity.</p>
+Gravitational-wave strain signals are typically on the order of <span class="math notranslate nohighlight">\(10^{-21}\)</span>, while intermediate processing steps might involve values closer to unity.</p>
 <p>To ensure scientific accuracy and prevent numerical artifacts (such as “Death Floats” or vanishing signals), <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> implements a robust numerical hardening strategy.</p>
 <section id="key-features">
 <h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
 <section id="adaptive-whitening">
 <h3>1. Adaptive Whitening<a class="headerlink" href="#adaptive-whitening" title="Link to this heading"></a></h3>
-<p>Standard whitening algorithms often use a fixed regularization parameter (<code class="docutils literal notranslate"><span class="pre">eps</span></code>) to prevent division by zero. If this parameter is too large (e.g., <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>), it can swamp physically significant but numerically small signals (like $10^{-21}$ strain).</p>
+<p>Standard whitening algorithms often use a fixed regularization parameter (<code class="docutils literal notranslate"><span class="pre">eps</span></code>) to prevent division by zero. If this parameter is too large (e.g., <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>), it can swamp physically significant but numerically small signals (like <span class="math notranslate nohighlight">\(10^{-21}\)</span> strain).</p>
 <section id="problem-naive-whitening-can-fail">
 <h4>Problem: Naive whitening can fail<a class="headerlink" href="#problem-naive-whitening-can-fail" title="Link to this heading"></a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>

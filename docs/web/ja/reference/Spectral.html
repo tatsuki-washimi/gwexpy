@@ -19,6 +19,8 @@
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -103,7 +105,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1>スペクトル推定<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
 <p>gwexpy はスペクトル密度とパワースペクトル推定に厳密な単位規則を適用します。</p>
 <section id="id2">
@@ -112,13 +114,13 @@
 <li><p><strong>PSD / ASD (密度)</strong>:</p>
 <ul>
 <li><p>デフォルトの <code class="docutils literal notranslate"><span class="pre">method='welch'</span></code> (やその他) は<strong>パワースペクトル密度</strong>を返します。</p></li>
-<li><p><strong>単位</strong>: $Unit^2 / Hz$ (例: $V^2 / Hz$)。</p></li>
+<li><p><strong>単位</strong>: <span class="math notranslate nohighlight">\(Unit^2 / Hz\)</span> (例: <span class="math notranslate nohighlight">\(V^2 / Hz\)</span>)。</p></li>
 </ul>
 </li>
 <li><p><strong>パワースペクトル</strong>:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">scaling='spectrum'</span></code> を指定した場合。</p></li>
-<li><p><strong>単位</strong>: $Unit^2$ (例: $V^2$)。</p></li>
+<li><p><strong>単位</strong>: <span class="math notranslate nohighlight">\(Unit^2\)</span> (例: <span class="math notranslate nohighlight">\(V^2\)</span>)。</p></li>
 <li><p>これはビン幅で正規化されていない、各ビンのパワーを表します。</p></li>
 </ul>
 </li>

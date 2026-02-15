@@ -124,7 +124,7 @@
 <li><p><strong>Noise Projection</strong>: Using the transfer function, convert (project) the noise from the auxiliary channels into the units of the main channel.</p></li>
 <li><p><strong>Noise Budget Visualization (Noise Budget Plot)</strong>: Overlay all noise sources to reveal the breakdown of the observed “U-shaped” spectrum.</p></li>
 </ol>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -137,85 +137,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_asd</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">numpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">np</span>
-<span class="ansi-green-fg">      3</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">scipy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> signal
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries, TimeSeriesDict
-<span class="ansi-green-fg">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">noise</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">asd</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> from_pygwinc
-<span class="ansi-green-fg">      7</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">noise</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">wave</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> from_asd
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
-</pre></div></div>
 </div>
 <section id="1.-Multi-Channel-Data-Simulation-(Creating-a-U-Shaped-Spectrum)">
 <h2>1. Multi-Channel Data Simulation (Creating a U-Shaped Spectrum)<a class="headerlink" href="#1.-Multi-Channel-Data-Simulation-(Creating-a-U-Shaped-Spectrum)" title="Link to this heading"></a></h2>
@@ -299,21 +220,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 11</span>
-<span class="ansi-green-fg">      9</span> <span style="color: rgb(95,135,135)"># Get aLIGO sensitivity curve (ASD) and use it as the reference noise for the main channel</span>
-<span class="ansi-green-fg">     10</span> fmax = fs / <span class="ansi-green-fg">2</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> asd_main = <span class="ansi-yellow-bg">from_pygwinc</span>(
-<span class="ansi-green-fg">     12</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">aLIGO</span><span class="ansi-yellow-fg">&#34;</span>, fmin=<span class="ansi-green-fg">5.0</span>, fmax=fmax, df=<span class="ansi-green-fg">1.0</span> / duration, quantity=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">strain</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">     13</span> )
-<span class="ansi-green-fg">     14</span> main_base = from_asd(asd_main, duration, fs, t0=<span class="ansi-green-fg">0</span>, rng=rng).highpass(<span class="ansi-green-fg">5</span>)
-<span class="ansi-green-fg">     16</span> <span style="color: rgb(95,135,135)"># --- Generate Auxiliary Channels (Noise Sources) ---</span>
-<span class="ansi-green-fg">     17</span> <span style="color: rgb(95,135,135)"># 1. Ground vibration (low-frequency dominance)</span>
-
-<span class="ansi-red-fg">NameError</span>: name &#39;from_pygwinc&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_noise_budget_3_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_noise_budget_3_0.png" />
+</div>
 </div>
 </section>
 <section id="2.-Coherence-Mapping">
@@ -343,30 +251,12 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      3</span> plt.figure(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">6</span>))
-<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> name <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> aux_names:
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span>     coh = <span class="ansi-yellow-bg">tsd</span>[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">MAIN</span><span class="ansi-yellow-fg">&#34;</span>].coherence(tsd[name], fftlength=<span class="ansi-green-fg">8</span>)
-<span class="ansi-green-fg">      6</span>     plt.semilogx(coh.frequencies, coh.value, label=<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">MAIN vs </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      8</span> plt.title(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Coherence Mapping</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsd&#39; is not defined
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;Figure size 1000x600 with 0 Axes&gt;
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_noise_budget_5_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_noise_budget_5_0.png" />
+</div>
 </div>
 </section>
 <section id="3.-Transfer-Function-Estimation">
@@ -400,16 +290,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> tf_seis = <span class="ansi-yellow-bg">tsd</span>[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">AUX_SEIS</span><span class="ansi-yellow-fg">&#34;</span>].transfer_function(tsd[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">MAIN</span><span class="ansi-yellow-fg">&#34;</span>], fftlength=<span class="ansi-green-fg">8</span>)
-<span class="ansi-green-fg">      2</span> tf_mag = tsd[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">AUX_MAG</span><span class="ansi-yellow-fg">&#34;</span>].transfer_function(tsd[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">MAIN</span><span class="ansi-yellow-fg">&#34;</span>], fftlength=<span class="ansi-green-fg">8</span>)
-<span class="ansi-green-fg">      3</span> tf_elec = tsd[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">AUX_ELEC</span><span class="ansi-yellow-fg">&#34;</span>].transfer_function(tsd[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">MAIN</span><span class="ansi-yellow-fg">&#34;</span>], fftlength=<span class="ansi-green-fg">8</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsd&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_noise_budget_7_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_noise_budget_7_0.png" />
+</div>
 </div>
 </section>
 <section id="4.-Noise-Projection">
@@ -438,16 +320,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> main_ch = <span class="ansi-yellow-bg">tsd</span>[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">MAIN</span><span class="ansi-yellow-fg">&#34;</span>]
-<span class="ansi-green-fg">      2</span> proj_seis = asd_dict[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">AUX_SEIS</span><span class="ansi-yellow-fg">&#34;</span>] * tf_seis.abs()
-<span class="ansi-green-fg">      3</span> proj_mag = asd_dict[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">AUX_MAG</span><span class="ansi-yellow-fg">&#34;</span>] * tf_mag.abs()
-
-<span class="ansi-red-fg">NameError</span>: name &#39;tsd&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_noise_budget_9_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_noise_budget_9_0.png" />
+</div>
 </div>
 </section>
 <section id="5.-Noise-Budget-Visualization-(Noise-Budget-Plot)">
@@ -489,36 +363,12 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      1</span> plt.figure(figsize=(<span class="ansi-green-fg">12</span>, <span class="ansi-green-fg">8</span>))
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Actually observed sensitivity curve</span>
-<span class="ansi-green-fg">      4</span> plt.loglog(
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span>     <span class="ansi-yellow-bg">asd_dict</span>[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">MAIN</span><span class="ansi-yellow-fg">&#34;</span>],
-<span class="ansi-green-fg">      6</span>     label=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Main Channel (Observed)</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      7</span>     color=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">black</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      8</span>     linewidth=<span class="ansi-green-fg">4</span>,
-<span class="ansi-green-fg">      9</span>     alpha=<span class="ansi-green-fg">0.6</span>,
-<span class="ansi-green-fg">     10</span> )
-<span class="ansi-green-fg">     12</span> <span style="color: rgb(95,135,135)"># Each projected component</span>
-<span class="ansi-green-fg">     13</span> plt.loglog(proj_seis, label=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Projected Seismic (Low Freq Limit)</span><span class="ansi-yellow-fg">&#34;</span>, ls=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">--</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;asd_dict&#39; is not defined
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;Figure size 1200x800 with 0 Axes&gt;
-</pre></div></div>
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_noise_budget_11_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_noise_budget_11_0.png" />
+</div>
 </div>
 </section>
 </section>

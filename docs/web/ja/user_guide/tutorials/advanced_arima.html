@@ -119,7 +119,7 @@
 <section id="準備">
 <h2>準備<a class="headerlink" href="#準備" title="Link to this heading"></a></h2>
 <p>必要なライブラリをインポートします。</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -137,83 +137,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 12</span>
-<span class="ansi-green-fg">      9</span> warnings.filterwarnings(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">FutureWarning</span>, module=<span class="ansi-yellow-fg">r</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">sklearn</span><span class="ansi-yellow-fg">\</span><span class="ansi-yellow-fg">..*</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">     10</span> warnings.filterwarnings(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">FutureWarning</span>, module=<span class="ansi-yellow-fg">r</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">pmdarima</span><span class="ansi-yellow-fg">\</span><span class="ansi-yellow-fg">..*</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">12</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/__init__.py:51</span>
-<span class="ansi-green-fg">     46</span> warnings.filterwarnings(
-<span class="ansi-green-fg">     47</span>     <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ignore</span><span class="ansi-yellow-fg">&#34;</span>, message=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Protobuf gencode version</span><span class="ansi-yellow-fg">&#34;</span>, category=<span class="ansi-bold" style="color: rgb(215,95,95)">UserWarning</span>
-<span class="ansi-green-fg">     48</span> )
-<span class="ansi-green-fg">     50</span> <span style="color: rgb(95,135,135)"># Subpackages are available via namespace</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">51</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     52</span>     astro,
-<span class="ansi-green-fg">     53</span>     detector,
-<span class="ansi-green-fg">     54</span>     frequencyseries,
-<span class="ansi-green-fg">     55</span>     interop,
-<span class="ansi-green-fg">     56</span>     io,
-<span class="ansi-green-fg">     57</span>     noise,
-<span class="ansi-green-fg">     58</span>     plot,
-<span class="ansi-green-fg">     59</span>     segments,
-<span class="ansi-green-fg">     60</span>     signal,
-<span class="ansi-green-fg">     61</span>     spectral,
-<span class="ansi-green-fg">     62</span>     spectrogram,
-<span class="ansi-green-fg">     63</span>     table,
-<span class="ansi-green-fg">     64</span>     time,
-<span class="ansi-green-fg">     65</span>     timeseries,
-<span class="ansi-green-fg">     66</span>     types,
-<span class="ansi-green-fg">     67</span> )
-<span class="ansi-green-fg">     68</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">_version</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> __version__
-<span class="ansi-green-fg">     69</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">fields</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> FieldDict, FieldList, ScalarField, TensorField, VectorField
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/__init__.py:36</span>
-<span class="ansi-green-fg">     32</span> <span style="color: rgb(95,135,135)"># Register I/O readers on import</span>
-<span class="ansi-green-fg">     33</span> <span style="color: rgb(95,135,135)"># Dynamic import from gwpy (PEP 562)</span>
-<span class="ansi-green-fg">     34</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">_gwpy_timeseries</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">36</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> io <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> _io  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     39</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(name):
-<span class="ansi-green-fg">     40</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/__init__.py:11</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">__future__</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> annotations
-<span class="ansi-green-fg">     10</span> <span style="color: rgb(95,135,135)"># Readers are registered on import</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">11</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     12</span>     ats,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     13</span>     dttxml,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     14</span>     gbd,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     15</span>     sdb,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     16</span>     seismic,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     17</span>     stubs,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     18</span>     tdms,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     19</span>     wav,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     20</span>     win,  <span style="color: rgb(95,135,135)"># noqa: F401</span>
-<span class="ansi-green-fg">     21</span> )
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/io/ats.py:221</span>
-<span class="ansi-green-fg">    218</span> <span style="color: rgb(95,135,135)"># -- Registration</span>
-<span class="ansi-green-fg">    220</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> fmt <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ats</span><span class="ansi-yellow-fg">&#34;</span>]:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">221</span>     <span class="ansi-yellow-bg">io_registry</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">register_reader</span>(
-<span class="ansi-green-fg">    222</span>         fmt, TimeSeriesDict, read_timeseriesdict_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
-<span class="ansi-green-fg">    223</span>     )
-<span class="ansi-green-fg">    224</span>     io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">    225</span>     io_registry.register_reader(
-<span class="ansi-green-fg">    226</span>         fmt,
-<span class="ansi-green-fg">    227</span>         TimeSeriesMatrix,
-<span class="ansi-green-fg">    228</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">lambda</span> *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-<span class="ansi-green-fg">    229</span>         force=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    230</span>     )
-
-<span class="ansi-red-fg">AttributeError</span>: module &#39;gwpy.io.registry&#39; has no attribute &#39;register_reader&#39;
-</pre></div></div>
 </div>
 </section>
 <section id="サンプルデータの作成">
@@ -255,18 +178,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 21</span>
-<span class="ansi-green-fg">     18</span> data = trend + seasonality + noise
-<span class="ansi-green-fg">     20</span> <span style="color: rgb(95,135,135)"># Create TimeSeries object</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">21</span> ts = <span class="ansi-yellow-bg">TimeSeries</span>(data, t0=t0, dt=dt, unit=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">V</span><span class="ansi-yellow-fg">&#34;</span>, name=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Sample Data</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">     23</span> ts.plot()
-<span class="ansi-green-fg">     24</span> plt.title(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original Data (Trend + Seasonality + Noise)</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;TimeSeries&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_3_0.png" />
+</div>
 </div>
 </section>
 <section id="1.-AR-(AutoRegressive)-モデル">
@@ -294,21 +207,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Fit with order p=3</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> model_ar = <span class="ansi-yellow-bg">ts</span>.ar(p=<span class="ansi-green-fg">3</span>)
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Display model summary</span>
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># print(model_ar.summary())</span>
-<span class="ansi-green-fg">      6</span>
-<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># Plot results</span>
-<span class="ansi-green-fg">      8</span> <span style="color: rgb(95,135,135)"># forecast_steps specifies how many steps to forecast into the future</span>
-<span class="ansi-green-fg">      9</span> model_ar.plot(forecast_steps=<span class="ansi-green-fg">50</span>, alpha=<span class="ansi-green-fg">0.5</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_5_0.png" />
+</div>
 </div>
 </section>
 <section id="2.-MA-(Moving-Average)-モデル">
@@ -332,17 +232,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Fit with order q=3</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> model_ma = <span class="ansi-yellow-bg">ts</span>.ma(q=<span class="ansi-green-fg">3</span>)
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># Plot results</span>
-<span class="ansi-green-fg">      5</span> model_ma.plot(forecast_steps=<span class="ansi-green-fg">50</span>, alpha=<span class="ansi-green-fg">0.5</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_7_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_7_0.png" />
+</div>
 </div>
 </section>
 <section id="3.-ARMA-(AutoRegressive-Moving-Average)-モデル">
@@ -365,17 +256,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Fit with p=2, q=2</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> model_arma = <span class="ansi-yellow-bg">ts</span>.arma(p=<span class="ansi-green-fg">2</span>, q=<span class="ansi-green-fg">2</span>)
-<span class="ansi-green-fg">      4</span> model_arma.plot(forecast_steps=<span class="ansi-green-fg">50</span>, alpha=<span class="ansi-green-fg">0.5</span>)
-<span class="ansi-green-fg">      5</span> plt.title(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">ARMA(2, 2) Model Forecast</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_9_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_9_0.png" />
+</div>
 </div>
 </section>
 <section id="4.-ARIMA-/-Auto-ARIMA">
@@ -386,20 +268,23 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for optimal ARIMA parameters... (this may take a few seconds)&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for optimal ARIMA parameters... (this may take a few seconds)&quot;</span><span class="p">)</span>
 
-<span class="c1"># Seasonality can also be considered</span>
-<span class="c1"># m is the number of steps in a seasonal period</span>
-<span class="n">model_auto</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">arima</span><span class="p">(</span><span class="n">auto</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;seasonal&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">})</span>
+    <span class="c1"># Seasonality can also be considered</span>
+    <span class="c1"># m is the number of steps in a seasonal period</span>
+    <span class="n">model_auto</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">arima</span><span class="p">(</span><span class="n">auto</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;seasonal&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">})</span>
 
-<span class="c1"># Show info of the optimal model found</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">model_auto</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+    <span class="c1"># Show info of the optimal model found</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model_auto</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
 
-<span class="c1"># Plot results (Forecasting for a longer period)</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">model_auto</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">forecast_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Auto-ARIMA Model Forecast (Seasonal)&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
+    <span class="c1"># Plot results (Forecasting for a longer period)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">model_auto</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">forecast_steps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Auto-ARIMA Model Forecast (Seasonal)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Auto-ARIMA skipping: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
@@ -408,25 +293,41 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Searching for optimal ARIMA parameters... (this may take a few seconds)
+                                      SARIMAX Results
+===========================================================================================
+Dep. Variable:                                   y   No. Observations:                  300
+Model:             SARIMAX(1, 1, 2)x(1, 0, [], 50)   Log Likelihood                -404.141
+Date:                             Sun, 25 Jan 2026   AIC                            820.282
+Time:                                     20:52:05   BIC                            842.485
+Sample:                                          0   HQIC                           829.169
+                                             - 300
+Covariance Type:                               opg
+==============================================================================
+                 coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+intercept      0.0044      0.006      0.695      0.487      -0.008       0.017
+ar.L1          0.8693      0.053     16.310      0.000       0.765       0.974
+ma.L1         -1.6277      0.052    -31.464      0.000      -1.729      -1.526
+ma.L2          0.7409      0.043     17.235      0.000       0.657       0.825
+ar.S.L50       0.1604      0.071      2.263      0.024       0.021       0.299
+sigma2         0.8667      0.070     12.431      0.000       0.730       1.003
+===================================================================================
+Ljung-Box (L1) (Q):                   0.13   Jarque-Bera (JB):                 0.69
+Prob(Q):                              0.71   Prob(JB):                         0.71
+Heteroskedasticity (H):               1.37   Skew:                            -0.10
+Prob(H) (two-sided):                  0.12   Kurtosis:                         3.14
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Searching for optimal ARIMA parameters... (this may take a few seconds)</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Seasonality can also be considered</span>
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># m is the number of steps in a seasonal period</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> model_auto = <span class="ansi-yellow-bg">ts</span>.arima(auto=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, auto_kwargs={<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">seasonal</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">m</span><span class="ansi-yellow-fg">&#34;</span>: <span class="ansi-green-fg">50</span>})
-<span class="ansi-green-fg">      7</span> <span style="color: rgb(95,135,135)"># Show info of the optimal model found</span>
-<span class="ansi-green-fg">      8</span> <span style="color: rgb(0,135,0)">print</span>(model_auto.summary())
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_11_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_11_1.png" />
+</div>
 </div>
 </section>
 <section id="5.-予測データの取得">
@@ -459,18 +360,45 @@ Searching for optimal ARIMA parameters... (this may take a few seconds)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 4</span>
-<span class="ansi-green-fg">      1</span> steps = <span class="ansi-green-fg">50</span>
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># Get forecast values and confidence intervals</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> forecast_ts, intervals = <span class="ansi-yellow-bg">model_auto</span>.forecast(
-<span class="ansi-green-fg">      5</span>     steps=steps, alpha=<span class="ansi-green-fg">0.5</span>
-<span class="ansi-green-fg">      6</span> )  <span style="color: rgb(95,135,135)"># 50% confidence interval</span>
-<span class="ansi-green-fg">      8</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Forecast Data:</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      9</span> <span style="color: rgb(0,135,0)">print</span>(forecast_ts)
+Forecast Data:
+TimeSeries([ 9.02063128,  9.6094657 , 10.04247631, 10.15366767,
+            10.05259752, 10.38953478, 10.79815151, 10.7102782 ,
+            11.00660841, 11.18205246, 11.08230575, 11.29883086,
+            10.98339909, 11.34917016, 11.51885752, 11.45196135,
+            11.87327454, 11.52379202, 11.68683767, 11.78939489,
+            11.98098488, 11.63016415, 11.97773587, 11.84043006,
+            11.72116502, 11.91254974, 11.88390331, 11.78617651,
+            11.87744683, 11.82552359, 11.8978438 , 11.97900621,
+            12.11133271, 11.76628531, 12.22002418, 11.72134893,
+            11.98240157, 12.11216243, 12.11237931, 12.04095457,
+            12.14350252, 12.16098484, 12.20712226, 12.45443674,
+            12.45772244, 12.3928846 , 12.67001456, 12.66918777,
+            12.811045  , 12.86573742]
+           unit: V,
+           t0: 30.0 s,
+           dt: 0.1 s,
+           name: Sample Data_auto_forecast,
+           channel: None)
 
-<span class="ansi-red-fg">NameError</span>: name &#39;model_auto&#39; is not defined
+Confidence Interval (Upper):
+TimeSeries([ 9.6485734 , 10.25546688, 10.71958794, 10.87456095,
+            10.82818668, 11.22844439, 11.70675184, 11.69299274,
+            12.06629509, 12.32036062, 12.29997447, 12.59592487,
+            12.35949021, 12.803475  , 13.05034122, 13.05941559,
+            13.55537603, 13.27914639, 13.51401227, 13.68694319,
+            13.94746457, 13.66415042, 14.07783095, 14.00527003,
+            13.94942439, 14.20294448, 14.23519256, 14.19716342,
+            14.34697864, 14.35249117, 14.48118085, 14.61768817,
+            14.80437543, 14.51274362, 15.01899042, 14.57195137,
+            14.88380284, 15.06355799, 15.11299592, 15.09004877,
+            15.24035926, 15.30491602, 15.39746543, 15.69055383,
+            15.73899855, 15.71872684, 16.03985096, 16.08246623,
+            16.26723232, 16.36431836]
+           unit: V,
+           t0: 30.0 s,
+           dt: 0.1 s,
+           name: upper_ci,
+           channel: None)
 </pre></div></div>
 </div>
 </section>
@@ -549,53 +477,41 @@ Searching for optimal ARIMA parameters... (this may take a few seconds)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Searching for optimal noise model parameters...
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ImportError</span>                               Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Searching for optimal noise model parameters...</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      2</span> <span style="color: rgb(95,135,135)"># We prioritize AR model for whitening, so we set max_p=5 and max_q=0.</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> model = <span class="ansi-yellow-bg">ts</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">arima</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">auto</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">True</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">max_p</span><span class="ansi-yellow-bg">=</span><span class="ansi-green-fg ansi-yellow-bg">5</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">max_q</span><span class="ansi-yellow-bg">=</span><span class="ansi-green-fg ansi-yellow-bg">0</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Best model order: </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>model.res.model.order<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">&#34;</span>)
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(0,135,0)">print</span>(model.summary())
+Searching for optimal noise model parameters...
+Best model order: (5, 1, 0)
+                               SARIMAX Results
+==============================================================================
+Dep. Variable:                      y   No. Observations:                10240
+Model:               SARIMAX(5, 1, 0)   Log Likelihood              -14694.968
+Date:                Sun, 25 Jan 2026   AIC                          29403.936
+Time:                        20:52:11   BIC                          29454.574
+Sample:                             0   HQIC                         29421.057
+                              - 10240
+Covariance Type:                  opg
+==============================================================================
+                 coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+intercept     -0.0003      0.010     -0.033      0.973      -0.020       0.019
+ar.L1         -0.0379      0.010     -3.794      0.000      -0.057      -0.018
+ar.L2         -0.0413      0.010     -4.150      0.000      -0.061      -0.022
+ar.L3         -0.0271      0.010     -2.692      0.007      -0.047      -0.007
+ar.L4         -0.0303      0.010     -3.078      0.002      -0.050      -0.011
+ar.L5         -0.0216      0.010     -2.195      0.028      -0.041      -0.002
+sigma2         1.0330      0.014     72.089      0.000       1.005       1.061
+===================================================================================
+Ljung-Box (L1) (Q):                   0.01   Jarque-Bera (JB):                 0.54
+Prob(Q):                              0.94   Prob(JB):                         0.76
+Heteroskedasticity (H):               1.03   Skew:                             0.01
+Prob(H) (two-sided):                  0.35   Kurtosis:                         3.03
+===================================================================================
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/timeseries.py:402</span>, in <span class="ansi-cyan-fg">TimeSeries.arima</span><span class="ansi-blue-fg">(self, order, seasonal_order, auto, **kwargs)</span>
-<span class="ansi-green-fg">    378</span> <span class="ansi-yellow-fg">&#34;&#34;&#34;</span>
-<span class="ansi-green-fg">    379</span> <span class="ansi-yellow-fg">Fit an ARIMA or SARIMAX model to this TimeSeries.</span>
-<span class="ansi-green-fg">    380</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    398</span> <span class="ansi-yellow-fg">    Object containing the fitted model, with methods .predict(), .forecast(), .plot().</span>
-<span class="ansi-green-fg">    399</span> <span class="ansi-yellow-fg">&#34;&#34;&#34;</span>
-<span class="ansi-green-fg">    400</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">arima</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> fit_arima
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">402</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">fit_arima</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-fg">    403</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">order</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">order</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">seasonal_order</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">seasonal_order</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">auto</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">auto</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span>
-<span class="ansi-green-fg">    404</span> <span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/miniconda3/envs/docs/lib/python3.11/site-packages/gwexpy/timeseries/arima.py:333</span>, in <span class="ansi-cyan-fg">fit_arima</span><span class="ansi-blue-fg">(timeseries, order, seasonal_order, trend, auto, auto_kwargs, method, method_kwargs, nan_policy, impute_kwargs, **kwargs)</span>
-<span class="ansi-green-fg">    309</span> <span class="ansi-yellow-fg">&#34;&#34;&#34;</span>
-<span class="ansi-green-fg">    310</span> <span class="ansi-yellow-fg">Fit an ARIMA or SARIMAX model to a TimeSeries.</span>
-<span class="ansi-green-fg">    311</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    330</span> <span class="ansi-yellow-fg">notebook output clean (e.g., convergence and verbose/disp deprecations).</span>
-<span class="ansi-green-fg">    331</span> <span class="ansi-yellow-fg">&#34;&#34;&#34;</span>
-<span class="ansi-green-fg">    332</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> STATSMODELS_AVAILABLE:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">333</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ImportError</span>(
-<span class="ansi-green-fg">    334</span>         <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">statsmodels is required for ARIMA. `pip install statsmodels`</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">    335</span>     )
-<span class="ansi-green-fg">    337</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> timeseries.dt <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">    338</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">TimeSeries must have a regular sample rate (dt) for ARIMA.</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">ImportError</span>: statsmodels is required for ARIMA. `pip install statsmodels`
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
 </pre></div></div>
 </div>
 </section>
@@ -629,16 +545,8 @@ Searching for optimal noise model parameters...
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> ts_whitened = <span class="ansi-yellow-bg">model</span>.residuals()
-<span class="ansi-green-fg">      2</span> ts_whitened.name = <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Whitened Data</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">      4</span> fig, ax = plt.subplots(<span class="ansi-green-fg">2</span>, <span class="ansi-green-fg">1</span>, figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">8</span>), sharex=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;model&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_20_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_20_0.png" />
+</div>
 </div>
 </section>
 <section id="Step-4:-周波数領域での評価">
@@ -677,22 +585,8 @@ Searching for optimal noise model parameters...
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[11]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> fft_original = ts.psd()
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> fft_whitened = <span class="ansi-yellow-bg">ts_whitened</span>.psd()
-<span class="ansi-green-fg">      4</span> plt.figure(figsize=(<span class="ansi-green-fg">10</span>, <span class="ansi-green-fg">5</span>))
-<span class="ansi-green-fg">      5</span> plt.loglog(
-<span class="ansi-green-fg">      6</span>     fft_original.frequencies.value,
-<span class="ansi-green-fg">      7</span>     fft_original.value,
-<span class="ansi-green-fg">      8</span>     label=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">Original Noisy PSD</span><span class="ansi-yellow-fg">&#34;</span>,
-<span class="ansi-green-fg">      9</span>     alpha=<span class="ansi-green-fg">0.7</span>,
-<span class="ansi-green-fg">     10</span> )
-
-<span class="ansi-red-fg">NameError</span>: name &#39;ts_whitened&#39; is not defined
-</pre></div></div>
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_22_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_22_0.png" />
+</div>
 </div>
 </section>
 <section id="まとめ">
