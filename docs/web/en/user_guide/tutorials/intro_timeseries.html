@@ -319,7 +319,7 @@ TimeSeries([1.05146125, 0.93515115, 1.1571862 , 1.01916777,
 <span class="n">fs_gwpy</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
 
 <span class="c1"># Transient mode:</span>
-<span class="c1"># Specify padding amount with pad_left/right。nfft_mode=&quot;next_fast_len&quot; でAdjust to computationally efficient length。</span>
+<span class="c1"># Specify padding amount with pad_left/right. Use nfft_mode=&quot;next_fast_len&quot; to adjust to computationally efficient length.</span>
 <span class="n">fs_trans</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span>
     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;transient&quot;</span><span class="p">,</span> <span class="n">pad_left</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pad_right</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nfft_mode</span><span class="o">=</span><span class="s2">&quot;next_fast_len&quot;</span>
 <span class="p">)</span>
@@ -442,7 +442,7 @@ Axis 2: frequency
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># HHT (Hilbert-Huang Transform)</span>
 <span class="c1"># Execute Empirical Mode Decomposition (EMD) and extract IMFs (Intrinsic Mode Functions)</span>
-<span class="c1"># Note意: Requires PyEMD (EMD-signal) : `pip install EMD-signal`</span>
+<span class="c1"># Note: Requires PyEMD (EMD-signal) : `pip install EMD-signal`</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>

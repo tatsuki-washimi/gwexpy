@@ -218,7 +218,7 @@
 &#39;3&#39;
 </pre></div></div>
 </div>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -240,36 +240,6 @@
 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/washimi/work/gwexpy/.venv-docs-exec/lib/python3.12/site-packages/gwpy/time/__init__.py:36: UserWarning: Wswiglal-redir-stdio:
-
-SWIGLAL standard output/error redirection is enabled in IPython.
-This may lead to performance penalties. To disable locally, use:
-
-with lal.no_swig_redirect_standard_output_error():
-    ...
-
-To disable globally, use:
-
-lal.swig_redirect_standard_output_error(False)
-
-Note however that this will likely lead to error messages from
-LAL functions being either misdirected or lost when called from
-Jupyter notebooks.
-
-To suppress this warning, use:
-
-import warnings
-warnings.filterwarnings(&#34;ignore&#34;, &#34;Wswiglal-redir-stdio&#34;)
-import lal
-
-  from lal import LIGOTimeGPS
-</pre></div></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
