@@ -46,6 +46,16 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="control")
 warnings.filterwarnings(
     "ignore", message="Protobuf gencode version", category=UserWarning
 )
+warnings.filterwarnings(
+    "ignore",
+    message=r"pkg_resources is deprecated as an API\..*",
+    category=UserWarning,
+)
+warnings.filterwarnings(
+    "ignore",
+    message=r".*joblib will operate in serial mode.*",
+    category=UserWarning,
+)
 
 # Subpackages are available via namespace
 from . import (
