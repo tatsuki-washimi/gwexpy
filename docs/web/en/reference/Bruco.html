@@ -1,0 +1,406 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bruco (Brute force coherence) &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="SeriesMatrix" href="SeriesMatrix.html" />
+    <link rel="prev" title="FFT Specifications and Conventions" href="FFT_Conventions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/migration_fftlength.html">Migration Guide: nperseg/noverlap → fftlength/overlap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="api/index.html">API Reference</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="classes.html">Class Index</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Reference</a></li>
+          <li class="breadcrumb-item"><a href="classes.html">Class Index</a></li>
+      <li class="breadcrumb-item active">Bruco (Brute force coherence)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/reference/Bruco.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="bruco-brute-force-coherence">
+<h1>Bruco (Brute force coherence)<a class="headerlink" href="#bruco-brute-force-coherence" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">Bruco</span></code> computes <strong>brute force coherence</strong> between a target channel (e.g., a gravitational-wave channel) and a large number of auxiliary channels to identify noise sources.
+For a given frequency band and time segment, it ranks auxiliary channels by coherence with the target and estimates their noise contribution (Noise Projection).</p>
+<p>The original Bruco implementation is available at:</p>
+<ul class="simple">
+<li><p>https://github.com/mikelovskij/bruco</p></li>
+</ul>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Batch Processing for Fast Scanning</strong>: Efficiently processes thousands of channels by fetching and computing data in batches of a specified size.</p></li>
+<li><p><strong>Top-N Rank Retention</strong>: Retains the top N channels with the highest coherence <strong>per frequency bin</strong>, not just by overall maximum coherence.</p></li>
+<li><p><strong>Parallel Processing</strong>: Accelerates coherence computation using multiprocessing (<code class="docutils literal notranslate"><span class="pre">concurrent.futures</span></code>).</p></li>
+<li><p><strong>Noise Projection</strong>: Estimates how much each auxiliary channel contributes to the target channel’s noise and displays it as a spectrum.</p></li>
+<li><p><strong>HTML Report</strong>: Generates an HTML report with images summarizing the analysis results.</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h2>
+<section id="initialization">
+<h3>1. Initialization<a class="headerlink" href="#initialization" title="Link to this heading"></a></h3>
+<p>Create a <code class="docutils literal notranslate"><span class="pre">Bruco</span></code> instance by specifying the target channel and a list of auxiliary channels to scan.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.analysis.bruco</span><span class="w"> </span><span class="kn">import</span> <span class="n">Bruco</span>
+
+<span class="c1"># Target channel name</span>
+<span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ&quot;</span>
+
+<span class="c1"># Auxiliary channel list (typically obtained from NDS, etc.)</span>
+<span class="n">aux_channels</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;K1:PEM-ACC_MC_TABLE_SENS_Z_OUT_DQ&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;K1:PEM-MIC_BS_BOOTH_SENS_Z_OUT_DQ&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;K1:IMC-MCL_SERVO_SUM_OUT_DQ&quot;</span><span class="p">,</span>
+    <span class="c1"># ... and many more</span>
+<span class="p">]</span>
+
+<span class="c1"># Optional: channels to exclude (e.g., calibration signals)</span>
+<span class="n">excluded</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ&quot;</span><span class="p">,</span> <span class="s2">&quot;K1:GRD-LSC_LOCK_STATE_N&quot;</span><span class="p">]</span>
+
+<span class="c1"># Create instance</span>
+<span class="n">bruco</span> <span class="o">=</span> <span class="n">Bruco</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">aux_channels</span><span class="p">,</span> <span class="n">excluded_channels</span><span class="o">=</span><span class="n">excluded</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="running-the-analysis-compute">
+<h3>2. Running the Analysis (Compute)<a class="headerlink" href="#running-the-analysis-compute" title="Link to this heading"></a></h3>
+<p>Depending on your data source, you can use one of the following four patterns (Cases).</p>
+<section id="case-1-automatic-data-retrieval-standard">
+<h4>Case 1: Automatic Data Retrieval (Standard)<a class="headerlink" href="#case-1-automatic-data-retrieval-standard" title="Link to this heading"></a></h4>
+<p>Simply specify channel names and time to automatically fetch data (via NDS2 or frame files) and run the analysis.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Analysis settings</span>
+<span class="n">start_gps</span> <span class="o">=</span> <span class="mi">1234567890</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mi">64</span>  <span class="c1"># seconds</span>
+
+<span class="c1"># Run computation</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">bruco</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="n">start_gps</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>     <span class="c1"># Number of channels to fetch at once</span>
+    <span class="n">nproc</span><span class="o">=</span><span class="mi">4</span>            <span class="c1"># Number of parallel processes</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="case-2-direct-data-input-manual">
+<h4>Case 2: Direct Data Input (Manual)<a class="headerlink" href="#case-2-direct-data-input-manual" title="Link to this heading"></a></h4>
+<p>Analyze using pre-prepared <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects. Useful for simulation data or data obtained through special methods.
+Since timing information (<code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">duration</span></code>) is taken from the data, the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">duration</span></code> arguments can be omitted.</p>
+<p><strong>A. Pass as a dictionary (all data pre-loaded)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">aux_dict</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="n">my_channels</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">bruco</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+    <span class="n">aux_data</span><span class="o">=</span><span class="n">aux_dict</span>  <span class="c1"># Pass dictionary (start, duration auto-inferred)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>B. Pass as a generator (memory-efficient)</strong>
+When handling a large number of channels, you can pass data using a generator.
+Note: When using a generator, specifying <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">duration</span></code> is recommended since auto-inference is difficult. However, if <code class="docutils literal notranslate"><span class="pre">target_data</span></code> is provided, they are inferred from it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">data_stream</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">bruco</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span>                   <span class="c1"># Recommended when using generator</span>
+    <span class="n">aux_data</span><span class="o">=</span><span class="n">data_stream</span><span class="p">(</span><span class="n">my_channels</span><span class="p">),</span> <span class="c1"># Pass generator</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span>                     <span class="c1"># Process 100 at a time, then release memory</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="case-3-automatic-retrieval-preprocessing-hybrid">
+<h4>Case 3: Automatic Retrieval + Preprocessing (Hybrid)<a class="headerlink" href="#case-3-automatic-retrieval-preprocessing-hybrid" title="Link to this heading"></a></h4>
+<p>When you want <code class="docutils literal notranslate"><span class="pre">Bruco</span></code> to handle data retrieval but need to apply filtering or inter-channel operations before analysis, use a callback function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_preprocessing</span><span class="p">(</span><span class="n">batch_data</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeriesDict</span><span class="p">:</span>
+    <span class="c1"># Receive batch data, process, and return</span>
+    <span class="k">for</span> <span class="n">ch</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">batch_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">batch_data</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">highpass</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># Example: 10 Hz highpass filter</span>
+    <span class="k">return</span> <span class="n">batch_data</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">bruco</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span>
+    <span class="n">preprocess_batch</span><span class="o">=</span><span class="n">my_preprocessing</span>  <span class="c1"># Specify callback</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This combines the convenience of automatic retrieval with the flexibility of custom processing, while still benefiting from parallel computation.</p>
+</section>
+<section id="case-4-mixed-mode-nds-manual">
+<h4>Case 4: Mixed Mode (NDS + Manual)<a class="headerlink" href="#case-4-mixed-mode-nds-manual" title="Link to this heading"></a></h4>
+<p>You can analyze channels specified at <code class="docutils literal notranslate"><span class="pre">Bruco</span></code> initialization (automatic retrieval) and data passed to <code class="docutils literal notranslate"><span class="pre">compute()</span></code> via <code class="docutils literal notranslate"><span class="pre">aux_data</span></code> (manual) <strong>simultaneously</strong>.
+Both data sources are processed sequentially, and results are merged.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Initialize with channels for automatic retrieval</span>
+<span class="n">bruco</span> <span class="o">=</span> <span class="n">Bruco</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;K1:NDS-CHANNEL-1&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+
+<span class="c1"># 2. Create manual data dictionary</span>
+<span class="n">manual_dict</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># 3. Run with both sources</span>
+<span class="c1"># Note: manual_dict timing must match start/duration.</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">bruco</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span>
+    <span class="n">aux_data</span><span class="o">=</span><span class="n">manual_dict</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Note</strong>: If the timing (<code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">duration</span></code>) of data in <code class="docutils literal notranslate"><span class="pre">aux_data</span></code> does not fully cover the analysis interval specified by <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">duration</span></code>, a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> is raised.</p>
+</section>
+</section>
+<section id="viewing-and-saving-results">
+<h3>3. Viewing and Saving Results<a class="headerlink" href="#viewing-and-saving-results" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">compute()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">BrucoResult</span></code> object. Use this object to visualize results and create reports.</p>
+<section id="step-3-1-plotting-coherence">
+<h4>Step 3.1: Plotting Coherence<a class="headerlink" href="#step-3-1-plotting-coherence" title="Link to this heading"></a></h4>
+<p>Displays the channels with the highest coherence at each frequency, color-coded.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig_coh</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">plot_coherence</span><span class="p">()</span>
+<span class="n">fig_coh</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>By default, coherence spectra are shown for the <strong>top contributing channels (Top-K)</strong>.
+To display by rank as in the previous behavior, specify <code class="docutils literal notranslate"><span class="pre">ranks=[0,</span> <span class="pre">1,</span> <span class="pre">...]</span></code>.</p>
+</section>
+<section id="step-3-2-plotting-noise-projection">
+<h4>Step 3.2: Plotting Noise Projection<a class="headerlink" href="#step-3-2-plotting-noise-projection" title="Link to this heading"></a></h4>
+<p>Overlays the target ASD with the noise contribution (Noise Projection) from each auxiliary channel.
+Use the <code class="docutils literal notranslate"><span class="pre">asd</span></code> argument (boolean) to switch between ASD (default) and PSD display.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Display as ASD (default, asd=True)</span>
+<span class="n">fig_proj</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">plot_projection</span><span class="p">()</span>
+<span class="n">fig_proj</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Display as PSD</span>
+<span class="n">fig_proj_psd</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">plot_projection</span><span class="p">(</span><span class="n">asd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">fig_proj_psd</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="step-3-3-generating-html-report">
+<h4>Step 3.3: Generating HTML Report<a class="headerlink" href="#step-3-3-generating-html-report" title="Link to this heading"></a></h4>
+<p>Creates a directory and outputs an HTML report summarizing the results.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Output to &#39;bruco_report&#39; directory</span>
+<span class="n">result</span><span class="o">.</span><span class="n">generate_report</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;bruco_report&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="architecture-and-notes">
+<h2>Architecture and Notes<a class="headerlink" href="#architecture-and-notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Data Retrieval</strong>: Uses <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.get()</span></code> to fetch data. If some channels in a batch fail to load, it automatically switches to individual retrieval mode and analyzes only valid channels.</p></li>
+<li><p><strong>Resampling</strong>: When the target and auxiliary channels have different sampling rates, the data is automatically downsampled to match the slower rate.</p></li>
+<li><p><strong>Internal PSD Basis</strong>: The internal representation is unified as PSD; ASD display is converted only at rendering time. <code class="docutils literal notranslate"><span class="pre">coherence_threshold</span></code> is applied on amplitude coherence basis when <code class="docutils literal notranslate"><span class="pre">asd=True</span></code>.</p></li>
+<li><p><strong>Memory Management</strong>: When handling a very large number of channels, adjust <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> and <code class="docutils literal notranslate"><span class="pre">block_size</span></code> to control memory usage.</p></li>
+</ul>
+<section id="top-n-update-block-size">
+<h3>Top-N Update Block Size<a class="headerlink" href="#top-n-update-block-size" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">BrucoResult</span></code> Top-N updates process channels in blocks.
+The block size is determined in the following order:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">block_size</span></code> argument (<code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GWEXPY_BRUCO_BLOCK_SIZE</span></code> environment variable (<code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>)</p></li>
+<li><p>Default <code class="docutils literal notranslate"><span class="pre">256</span></code></p></li>
+</ol>
+<p>When set to <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, it uses <code class="docutils literal notranslate"><span class="pre">GWEXPY_BRUCO_BLOCK_BYTES</span></code> to estimate:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">max_cols</span> <span class="o">=</span> <span class="p">(</span><span class="n">block_bytes</span> <span class="o">//</span> <span class="p">(</span><span class="n">n_bins</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span> <span class="o">-</span> <span class="n">top_n</span>
+<span class="n">block_size</span> <span class="o">=</span> <span class="n">clamp</span><span class="p">(</span><span class="n">max_cols</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To determine a target <code class="docutils literal notranslate"><span class="pre">block_size</span></code>, use this as a guideline:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">block_bytes</span> <span class="o">~=</span> <span class="p">(</span><span class="n">top_n</span> <span class="o">+</span> <span class="n">block_size</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_bins</span> <span class="o">*</span> <span class="mi">8</span>
+</pre></div>
+</div>
+<p>Example: <code class="docutils literal notranslate"><span class="pre">n_bins=20000</span></code>, <code class="docutils literal notranslate"><span class="pre">top_n=5</span></code>, <code class="docutils literal notranslate"><span class="pre">block_size=256</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">GWEXPY_BRUCO_BLOCK_SIZE</span><span class="o">=</span>auto
+<span class="nb">export</span><span class="w"> </span><span class="nv">GWEXPY_BRUCO_BLOCK_BYTES</span><span class="o">=</span><span class="m">41760000</span>
+</pre></div>
+</div>
+</section>
+<section id="benchmark">
+<h3>Benchmark<a class="headerlink" href="#benchmark" title="Link to this heading"></a></h3>
+<p>Run a simple benchmark of <code class="docutils literal notranslate"><span class="pre">update_batch</span></code> with <code class="docutils literal notranslate"><span class="pre">scripts/bruco_bench.py</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/bruco_bench.py<span class="w"> </span>--n-bins<span class="w"> </span><span class="m">20000</span><span class="w"> </span>--n-channels<span class="w"> </span><span class="m">300</span><span class="w"> </span>--top-n<span class="w"> </span><span class="m">5</span><span class="w"> </span>--block-size<span class="w"> </span>auto
+</pre></div>
+</div>
+<p>Reference values (environment-dependent):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">elapsed_s</span><span class="o">=</span><span class="mf">0.153</span>
+<span class="n">ru_maxrss_kb</span><span class="o">=</span><span class="mi">627808</span>
+<span class="n">block_size_resolved</span><span class="o">=</span><span class="mi">414</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h2>
+<section id="bruco">
+<h3><code class="docutils literal notranslate"><span class="pre">Bruco</span></code><a class="headerlink" href="#bruco" title="Link to this heading"></a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">__init__(self,</span> <span class="pre">target_channel:</span> <span class="pre">str,</span> <span class="pre">aux_channels:</span> <span class="pre">List[str],</span> <span class="pre">excluded_channels:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">None)</span></code></strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">target_channel</span></code>: The main channel to analyze.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aux_channels</span></code>: List of auxiliary channel names for comparison.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">excluded_channels</span></code>: List of channel names to exclude from analysis.</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">compute(self,</span> <span class="pre">start=None,</span> <span class="pre">duration=None,</span> <span class="pre">fftlength=2.0,</span> <span class="pre">overlap=1.0,</span> <span class="pre">nproc=4,</span> <span class="pre">batch_size=100,</span> <span class="pre">top_n=5,</span> <span class="pre">block_size=None,</span> <span class="pre">...)</span> <span class="pre">-&gt;</span> <span class="pre">BrucoResult</span></code></strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">start</span></code>: GPS start time. Can be omitted if inferable from data (<code class="docutils literal notranslate"><span class="pre">target_data</span></code> or <code class="docutils literal notranslate"><span class="pre">aux_data</span></code> dict).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">duration</span></code>: Length of analysis data (seconds). Can be omitted if inferable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fftlength</span></code>: FFT length for spectral computation (seconds).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overlap</span></code>: Overlap length (seconds).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nproc</span></code>: Number of processes for parallel computation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">batch_size</span></code>: Number of channels to fetch at once.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">top_n</span></code>: Number of top channels to retain per frequency bin.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">block_size</span></code>: Block size for Top-N updates (<code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">target_data</span></code>: (<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>) Pre-fetched target data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aux_data</span></code>: (<code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> or <code class="docutils literal notranslate"><span class="pre">Iterable</span></code>) Pre-fetched auxiliary channel data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">preprocess_batch</span></code>: (<code class="docutils literal notranslate"><span class="pre">Callable</span></code>) Callback function for batch preprocessing.</p></li>
+</ul>
+</section>
+<section id="brucoresult">
+<h3><code class="docutils literal notranslate"><span class="pre">BrucoResult</span></code><a class="headerlink" href="#brucoresult" title="Link to this heading"></a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">plot_coherence(self,</span> <span class="pre">asd=True,</span> <span class="pre">coherence_threshold=0.0,</span> <span class="pre">channels=None,</span> <span class="pre">ranks=None)</span></code></strong></p>
+<ul class="simple">
+<li><p>Plots the coherence spectrum.</p></li>
+<li><p><strong>Default behavior</strong>: When neither <code class="docutils literal notranslate"><span class="pre">channels</span></code> nor <code class="docutils literal notranslate"><span class="pre">ranks</span></code> is specified, automatically selects and plots the top contributing channels.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code>: Specify particular channel names to plot.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ranks</span></code>: Specify particular ranks (0=highest) to plot (legacy behavior).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asd=True</span></code>: Display amplitude coherence (<span class="math notranslate nohighlight">\(\sqrt{C_{xy}^2}\)</span>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asd=False</span></code>: Display squared coherence (<span class="math notranslate nohighlight">\(C_{xy}^2\)</span>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coherence_threshold</span></code>: Displays a threshold line at the specified value (automatically converted to match the <code class="docutils literal notranslate"><span class="pre">asd</span></code> setting).</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">plot_projection(self,</span> <span class="pre">asd=True,</span> <span class="pre">coherence_threshold=0.0,</span> <span class="pre">channels=None,</span> <span class="pre">ranks=None)</span></code></strong></p>
+<ul class="simple">
+<li><p>Plots the target ASD and noise projections.</p></li>
+<li><p><strong>Default behavior</strong>: When neither <code class="docutils literal notranslate"><span class="pre">channels</span></code> nor <code class="docutils literal notranslate"><span class="pre">ranks</span></code> is specified, automatically selects and plots the top contributing channels.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code>: Specify particular channel names to plot.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ranks</span></code>: Specify particular ranks to plot (legacy behavior).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asd=True</span></code>: Display as ASD (Amplitude Spectral Density). <code class="docutils literal notranslate"><span class="pre">False</span></code> for PSD.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">coherence_threshold</span></code>: Masks contributions at frequencies with coherence below this value as <code class="docutils literal notranslate"><span class="pre">NaN</span></code> (appears as gaps in the plot).</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">generate_report(self,</span> <span class="pre">output_dir=&quot;bruco_report&quot;,</span> <span class="pre">asd=True)</span></code></strong></p>
+<ul class="simple">
+<li><p>Generates a report (HTML, PNG, CSV) in the specified directory.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="FFT_Conventions.html" class="btn btn-neutral float-left" title="FFT Specifications and Conventions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="SeriesMatrix.html" class="btn btn-neutral float-right" title="SeriesMatrix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
