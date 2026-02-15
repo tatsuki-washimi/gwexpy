@@ -24,10 +24,10 @@ extensions = [
 ]
 
 # nbsphinx configuration
-# Default to skipping execution so docs builds don't require a registered Jupyter kernel.
+# Default to auto execution to ensure plots are generated in built docs.
 # For local development: NBS_EXECUTE=never (fast, no execution)
 # For CI/production builds: NBS_EXECUTE=always (ensure notebooks execute correctly)
-nbsphinx_execute = os.environ.get("NBS_EXECUTE", "never")
+nbsphinx_execute = os.environ.get("NBS_EXECUTE", "auto")
 
 # Allow errors in notebooks during local development
 # For CI/production: set NBS_ALLOW_ERRORS=false to catch notebook errors

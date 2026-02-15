@@ -4,13 +4,17 @@ GWexpy requires Python 3.9+ and depends on GWpy, NumPy, SciPy, and Astropy.
 
 ## Basic install
 
+```bash
+pip install gwexpy
+```
+
 :::{note}
-GWexpy is currently in **Pre-release**. We plan to publish it on PyPI soon, but for now, we recommend installing directly from GitHub to get the latest features and bug fixes.
+**Development version from GitHub (latest features):**
 
 ```bash
-# From GitHub (recommended)
 pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 ```
+
 :::
 
 :::{important}
@@ -26,6 +30,7 @@ conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecp
 # 2. Install GWexpy with extras
 pip install "gwexpy[gw] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 ```
+
 :::
 
 ## Development install
@@ -72,6 +77,7 @@ To use these features, you must install dependencies via **Conda** first:
 conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
 pip install ".[gw]"
 ```
+
 :::
 
 ## Next Steps
