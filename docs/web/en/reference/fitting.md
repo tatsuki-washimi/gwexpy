@@ -15,19 +15,19 @@ The `gwexpy.fitting` module provides advanced fitting functionality using iminui
 
 ### Main Functions
 
-| Name | Description |
-|------|-------------|
-| `fit_series()` | Fit a Series object |
+| Name                       | Description                           |
+| -------------------------- | ------------------------------------- |
+| `fit_series()`             | Fit a Series object                   |
 | `fit_bootstrap_spectrum()` | Integrated spectrum analysis pipeline |
 
 ### Classes
 
-| Name | Description |
-|------|-------------|
-| `FitResult` | Class to store fit results |
-| `GeneralizedLeastSquares` | GLS cost function class |
-| `RealLeastSquares` | Cost function for real data |
-| `ComplexLeastSquares` | Cost function for complex data |
+| Name                      | Description                    |
+| ------------------------- | ------------------------------ |
+| `FitResult`               | Class to store fit results     |
+| `GeneralizedLeastSquares` | GLS cost function class        |
+| `RealLeastSquares`        | Cost function for real data    |
+| `ComplexLeastSquares`     | Cost function for complex data |
 
 ---
 
@@ -50,17 +50,17 @@ fit_series(
 
 ### Parameters
 
-| Name | Type | Description |
-|------|------|-------------|
-| `series` | Series | Data to fit |
-| `model` | callable / str | Model function or name ("gaussian", "power_law", etc.) |
-| `x_range` | tuple | Fit range (xmin, xmax) |
-| `sigma` | array / scalar | Errors (ignored if `cov` is specified) |
-| `cov` | BifrequencyMap / ndarray | Covariance matrix (for GLS) |
-| `cost_function` | callable | Custom cost function (highest priority) |
-| `p0` | dict / list | Initial parameter values |
-| `limits` | dict | Parameter limits {"A": (0, 100)} |
-| `fixed` | list | Parameter names to fix |
+| Name            | Type                     | Description                                            |
+| --------------- | ------------------------ | ------------------------------------------------------ |
+| `series`        | Series                   | Data to fit                                            |
+| `model`         | callable / str           | Model function or name ("gaussian", "power_law", etc.) |
+| `x_range`       | tuple                    | Fit range (xmin, xmax)                                 |
+| `sigma`         | array / scalar           | Errors (ignored if `cov` is specified)                 |
+| `cov`           | BifrequencyMap / ndarray | Covariance matrix (for GLS)                            |
+| `cost_function` | callable                 | Custom cost function (highest priority)                |
+| `p0`            | dict / list              | Initial parameter values                               |
+| `limits`        | dict                     | Parameter limits {"A": (0, 100)}                       |
+| `fixed`         | list                     | Parameter names to fix                                 |
 
 ### Returns
 
@@ -118,26 +118,24 @@ fit_bootstrap_spectrum(
 
 ### Parameters
 
-| Name | Type | Description |
-|------|------|-------------|
-| `data_or_spectrogram` | TimeSeries / Spectrogram | Input data |
-| `model_fn` | callable | Model function `model(f, *params)` |
-| `freq_range` | tuple | Frequency range for fitting |
-| `method` | str | Bootstrap averaging method ("median" / "mean") |
-| `rebin_width` | float | Frequency rebinning width (Hz) |
-| `block_size` | float / Quantity / 'auto' | Block duration in seconds for block bootstrap |
-| `ci` | float | Confidence interval (default: 0.68) |
-| `window` | str | Window function for FFT (default: "hann") |
-| `fftlength` | float or Quantity | FFT segment length in seconds (default: None, auto-calculated) |
-| `overlap` | float or Quantity | Overlap length in seconds (default: None, window-dependent) |
-| `nfft` | int | FFT segment length in samples (alternative to `fftlength`) |
-| `noverlap` | int | Overlap length in samples (must be used with `nfft`) |
-| `n_boot` | int | Number of bootstrap iterations |
-| `initial_params` | dict | Initial parameters |
-| `bounds` | dict | Parameter limits |
-| `run_mcmc` | bool | Whether to run MCMC |
-| `mcmc_steps` | int | Number of MCMC steps |
-| `plot` | bool | Whether to plot results |
+| Name                  | Type                      | Description                                                    |
+| --------------------- | ------------------------- | -------------------------------------------------------------- |
+| `data_or_spectrogram` | TimeSeries / Spectrogram  | Input data                                                     |
+| `model_fn`            | callable                  | Model function `model(f, *params)`                             |
+| `freq_range`          | tuple                     | Frequency range for fitting                                    |
+| `method`              | str                       | Bootstrap averaging method ("median" / "mean")                 |
+| `rebin_width`         | float                     | Frequency rebinning width (Hz)                                 |
+| `block_size`          | float / Quantity / 'auto' | Block duration in seconds for block bootstrap                  |
+| `ci`                  | float                     | Confidence interval (default: 0.68)                            |
+| `window`              | str                       | Window function for FFT (default: "hann")                      |
+| `fftlength`           | float or Quantity         | FFT segment length in seconds (default: None, auto-calculated) |
+| `overlap`             | float or Quantity         | Overlap length in seconds (default: None, window-dependent)    |
+| `n_boot`              | int                       | Number of bootstrap iterations                                 |
+| `initial_params`      | dict                      | Initial parameters                                             |
+| `bounds`              | dict                      | Parameter limits                                               |
+| `run_mcmc`            | bool                      | Whether to run MCMC                                            |
+| `mcmc_steps`          | int                       | Number of MCMC steps                                           |
+| `plot`                | bool                      | Whether to plot results                                        |
 
 ### Returns
 
@@ -171,15 +169,6 @@ print(result.params)
 print(result.parameter_intervals)  # MCMC confidence intervals
 result.plot_corner()
 
-# Alternative: Use sample-based specification for precise FFT control
-result2 = fit_bootstrap_spectrum(
-    spectrogram,
-    model_fn=power_law,
-    freq_range=(5, 50),
-    nfft=1024,      # Exact FFT length (samples)
-    noverlap=512,   # Exact overlap (samples)
-    initial_params={"A": 10, "alpha": -1.5},
-)
 ```
 
 ---
@@ -190,26 +179,26 @@ Class to store fit results.
 
 ### Properties
 
-| Name | Type | Description |
-|------|------|-------------|
-| `params` | dict | Best-fit parameters |
-| `errors` | dict | Parameter errors |
-| `chi2` | float | χ² value |
-| `ndof` | int | Degrees of freedom |
-| `reduced_chi2` | float | Reduced χ² |
-| `cov_inv` | ndarray | GLS covariance inverse |
-| `parameter_intervals` | dict | MCMC percentiles (16, 50, 84) |
-| `mcmc_chain` | ndarray | Full MCMC chain |
-| `samples` | ndarray | MCMC samples (after burn-in) |
+| Name                  | Type    | Description                   |
+| --------------------- | ------- | ----------------------------- |
+| `params`              | dict    | Best-fit parameters           |
+| `errors`              | dict    | Parameter errors              |
+| `chi2`                | float   | χ² value                      |
+| `ndof`                | int     | Degrees of freedom            |
+| `reduced_chi2`        | float   | Reduced χ²                    |
+| `cov_inv`             | ndarray | GLS covariance inverse        |
+| `parameter_intervals` | dict    | MCMC percentiles (16, 50, 84) |
+| `mcmc_chain`          | ndarray | Full MCMC chain               |
+| `samples`             | ndarray | MCMC samples (after burn-in)  |
 
 ### Methods
 
-| Name | Description |
-|------|-------------|
-| `plot()` | Plot data and fit curve |
-| `bode_plot()` | Bode plot (for complex data) |
-| `run_mcmc()` | Run MCMC |
-| `plot_corner()` | Corner plot |
+| Name              | Description                   |
+| ----------------- | ----------------------------- |
+| `plot()`          | Plot data and fit curve       |
+| `bode_plot()`     | Bode plot (for complex data)  |
+| `run_mcmc()`      | Run MCMC                      |
+| `plot_corner()`   | Corner plot                   |
 | `plot_fit_band()` | Fit plot with confidence band |
 
 ### Example
@@ -240,14 +229,14 @@ GLS cost function using covariance inverse.
 ```python
 class GeneralizedLeastSquares:
     errordef = 1.0  # Minuit.LEAST_SQUARES
-    
+
     def __init__(self, x, y, cov_inv, model):
         ...
-    
+
     def __call__(self, *args) -> float:
         # χ² = r.T @ cov_inv @ r
         ...
-    
+
     @property
     def ndata(self) -> int:
         ...
@@ -277,14 +266,14 @@ result = fit_series(ts, linear, cost_function=gls, p0={"a": 1, "b": 0})
 
 Models available in `gwexpy.fitting.models`:
 
-| Name | Formula | Parameters |
-|------|---------|------------|
-| `gaussian` / `gaus` | A * exp(-(x-μ)²/(2σ²)) | A, mu, sigma |
-| `power_law` | A * x^α | A, alpha |
-| `damped_oscillation` | A * exp(-t/τ) * cos(2πft + φ) | A, tau, f, phi |
-| `pol0` ~ `pol9` | c₀ + c₁x + c₂x² + ... | p0, p1, ... |
-| `lorentzian` | A / ((x-x₀)² + γ²) | A, x0, gamma |
-| `exponential` | A * exp(-x/τ) | A, tau |
+| Name                 | Formula                       | Parameters     |
+| -------------------- | ----------------------------- | -------------- |
+| `gaussian` / `gaus`  | A \* exp(-(x-μ)²/(2σ²))       | A, mu, sigma   |
+| `power_law`          | A \* x^α                      | A, alpha       |
+| `damped_oscillation` | A _ exp(-t/τ) _ cos(2πft + φ) | A, tau, f, phi |
+| `pol0` ~ `pol9`      | c₀ + c₁x + c₂x² + ...         | p0, p1, ...    |
+| `lorentzian`         | A / ((x-x₀)² + γ²)            | A, x0, gamma   |
+| `exponential`        | A \* exp(-x/τ)                | A, tau         |
 
 ---
 
@@ -300,7 +289,7 @@ Models available in `gwexpy.fitting.models`:
 
 `gwexpy.fitting` ensures unit consistency between data and models:
 
-* **Unit Propagation**: When a model is evaluated via `result.model(x)`, it automatically respects the units of the input data.
-    * If input `x` is in $Hz$, the model evaluates using frequency units.
-    * The output `y` retains the unit of the fitted data (e.g., $m$, $V^2/Hz$).
-* **Parameter Access**: `result.params['name']` returns an object with `.value` and `.error` attributes, decoupling the numerical value from statistical uncertainty.
+- **Unit Propagation**: When a model is evaluated via `result.model(x)`, it automatically respects the units of the input data.
+  - If input `x` is in $Hz$, the model evaluates using frequency units.
+  - The output `y` retains the unit of the fitted data (e.g., $m$, $V^2/Hz$).
+- **Parameter Access**: `result.params['name']` returns an object with `.value` and `.error` attributes, decoupling the numerical value from statistical uncertainty.

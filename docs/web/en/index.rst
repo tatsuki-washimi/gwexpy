@@ -141,7 +141,6 @@ Main Documentation
    :maxdepth: 1
    :caption: Advanced Guides
 
-   user_guide/migration_fftlength
    user_guide/numerical_stability
    user_guide/scalarfield_slicing
    user_guide/validated_algorithms
