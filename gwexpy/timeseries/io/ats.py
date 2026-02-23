@@ -124,9 +124,7 @@ def read_timeseries_ats(source, **kwargs):
 
         # Calculate t0
         # StartTime is Unix timestamp
-        dt_obj = datetime.datetime.fromtimestamp(
-            start_time_unix, tz=datetime.UTC
-        )
+        dt_obj = datetime.datetime.fromtimestamp(start_time_unix, tz=datetime.UTC)
         t0 = to_gps(dt_obj)
 
         # Read Data

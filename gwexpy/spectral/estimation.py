@@ -426,8 +426,10 @@ def bootstrap_spectrogram(
 
     # Validate and convert nfft/noverlap to fftlength/overlap if needed
     # Get sample_rate from spectrogram for conversion
-    if hasattr(spectrogram, 'dt'):
-        dt = spectrogram.dt.value if hasattr(spectrogram.dt, 'value') else spectrogram.dt
+    if hasattr(spectrogram, "dt"):
+        dt = (
+            spectrogram.dt.value if hasattr(spectrogram.dt, "value") else spectrogram.dt
+        )
         sample_rate_for_conversion = 1.0 / dt
     else:
         sample_rate_for_conversion = None
@@ -515,7 +517,9 @@ def bootstrap_spectrogram(
     elif block_size is not None:
         # Convert block_size from seconds to samples
         # Calculate sample_rate from spectrogram dt (1/dt)
-        dt = spectrogram.dt.value if hasattr(spectrogram.dt, 'value') else spectrogram.dt
+        dt = (
+            spectrogram.dt.value if hasattr(spectrogram.dt, "value") else spectrogram.dt
+        )
         sample_rate = 1.0 / dt
 
         _, block_size_samples = parse_fftlength_or_overlap(
@@ -646,7 +650,9 @@ def bootstrap_spectrogram(
             # User provided fftlength/overlap in seconds — compute VIF
             # using a dummy nperseg with the correct overlap ratio.
             # VIF depends on window shape and overlap ratio, not absolute sample count.
-            fftlength_sec, _ = parse_fftlength_or_overlap(fftlength, arg_name="fftlength")
+            fftlength_sec, _ = parse_fftlength_or_overlap(
+                fftlength, arg_name="fftlength"
+            )
             overlap_sec, _ = parse_fftlength_or_overlap(overlap, arg_name="overlap")
 
             # fftlength_sec must be provided for VIF calculation
@@ -659,7 +665,9 @@ def bootstrap_spectrogram(
                 stride_sec = fftlength_sec - overlap_sec
                 if stride_sec > 0 and fftlength_sec > 0:
                     dummy_nperseg = 1000
-                    dummy_step = max(1, int(round(stride_sec / fftlength_sec * dummy_nperseg)))
+                    dummy_step = max(
+                        1, int(round(stride_sec / fftlength_sec * dummy_nperseg))
+                    )
                     dummy_noverlap = dummy_nperseg - dummy_step
                     factor = calculate_correlation_factor(
                         window, dummy_nperseg, dummy_noverlap, n_time

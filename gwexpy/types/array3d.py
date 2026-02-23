@@ -190,8 +190,8 @@ class Array3D(Array):
                 unit=unit,
                 axis1_name=kept_axes[0][0],
                 axis2_name=kept_axes[1][0],
-                xindex=kept_axes[0][1], # Axis 0
-                yindex=kept_axes[1][1], # Axis 1
+                xindex=kept_axes[0][1],  # Axis 0
+                yindex=kept_axes[1][1],  # Axis 1
                 copy=False,
                 **meta,
             )

@@ -295,9 +295,7 @@ class MLPreprocessor:
         # 2. yの処理
         if y is not None:
             if self.y_scaler_ is None:
-                raise RuntimeError(
-                    "yが指定されましたが、fit()でyを使用していません。"
-                )
+                raise RuntimeError("yが指定されましたが、fit()でyを使用していません。")
 
             # yフィルタリング
             y_filt = self._apply_bandpass(y)

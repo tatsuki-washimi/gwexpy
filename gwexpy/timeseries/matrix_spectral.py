@@ -79,7 +79,9 @@ class TimeSeriesMatrixSpectralMixin:
         overlap_val = kwargs.pop("overlap", None)
         window = kwargs.get("window", "hann")
 
-        fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength_val, fs, "fftlength")
+        fftlength_sec, nperseg = parse_fftlength_or_overlap(
+            fftlength_val, fs, "fftlength"
+        )
         overlap_sec, noverlap = parse_fftlength_or_overlap(overlap_val, fs, "overlap")
 
         if noverlap is None and fftlength_sec is not None:
@@ -140,7 +142,9 @@ class TimeSeriesMatrixSpectralMixin:
         overlap_val = kwargs.pop("overlap", None)
         window = kwargs.get("window", "hann")
 
-        fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength_val, fs, "fftlength")
+        fftlength_sec, nperseg = parse_fftlength_or_overlap(
+            fftlength_val, fs, "fftlength"
+        )
         overlap_sec, noverlap = parse_fftlength_or_overlap(overlap_val, fs, "overlap")
 
         if noverlap is None and fftlength_sec is not None:
@@ -194,7 +198,9 @@ class TimeSeriesMatrixSpectralMixin:
         overlap_val = kwargs.pop("overlap", None)
         window = kwargs.get("window", "hann")
 
-        fftlength_sec, nperseg = parse_fftlength_or_overlap(fftlength_val, fs, "fftlength")
+        fftlength_sec, nperseg = parse_fftlength_or_overlap(
+            fftlength_val, fs, "fftlength"
+        )
         overlap_sec, noverlap = parse_fftlength_or_overlap(overlap_val, fs, "overlap")
 
         if noverlap is None and fftlength_sec is not None:
