@@ -84,7 +84,7 @@
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -910,7 +910,7 @@
         <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
         <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">nproc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="n">parallel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
         <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">top_n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
         <span class="n">block_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -926,7 +926,7 @@
 <span class="sd">            duration (int, optional): Duration of data in seconds. Required if not inferable.</span>
 <span class="sd">            fftlength (float): FFT length in seconds.</span>
 <span class="sd">            overlap (float): Overlap in seconds.</span>
-<span class="sd">            nproc (int): Number of parallel processes.</span>
+<span class="sd">            parallel (int): Number of parallel jobs for reading data and computing coherence.</span>
 <span class="sd">            batch_size (int): Channels per batch.</span>
 <span class="sd">            top_n (int): Number of top channels to keep per frequency bin.</span>
 <span class="sd">            block_size (int or &#39;auto&#39;, optional): Channels per block in Top-N updates.</span>
@@ -988,7 +988,7 @@
                 <span class="n">target_ts</span> <span class="o">=</span> <span class="n">target_data</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetching target data: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">target_ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+                <span class="n">target_ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="n">parallel</span><span class="p">)</span>
 
             <span class="c1"># Calculate Target PSD reference (Internal storage is PSD)</span>
             <span class="n">target_spectrum</span> <span class="o">=</span> <span class="n">target_ts</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">)</span>
@@ -1021,7 +1021,7 @@
             <span class="s2">&quot;overlap&quot;</span><span class="p">:</span> <span class="n">overlap</span><span class="p">,</span>
             <span class="s2">&quot;top_n&quot;</span><span class="p">:</span> <span class="n">top_n</span><span class="p">,</span>
             <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="n">batch_size</span><span class="p">,</span>
-            <span class="s2">&quot;nproc&quot;</span><span class="p">:</span> <span class="n">nproc</span><span class="p">,</span>
+            <span class="s2">&quot;parallel&quot;</span><span class="p">:</span> <span class="n">parallel</span><span class="p">,</span>
             <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span>
             <span class="s2">&quot;target_sample_rate&quot;</span><span class="p">:</span> <span class="n">target_ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
         <span class="p">}</span>
@@ -1087,7 +1087,7 @@
                         <span class="n">batch_dict</span><span class="p">,</span>
                         <span class="n">fftlength</span><span class="p">,</span>
                         <span class="n">overlap</span><span class="p">,</span>
-                        <span class="n">nproc</span><span class="p">,</span>
+                        <span class="n">parallel</span><span class="p">,</span>
                         <span class="n">target_frequencies</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -1133,7 +1133,7 @@
                             <span class="n">batch_dict</span><span class="p">,</span>
                             <span class="n">fftlength</span><span class="p">,</span>
                             <span class="n">overlap</span><span class="p">,</span>
-                            <span class="n">nproc</span><span class="p">,</span>
+                            <span class="n">parallel</span><span class="p">,</span>
                             <span class="n">target_frequencies</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="n">batch_dict</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>  <span class="c1"># Clear memory</span>
@@ -1150,7 +1150,7 @@
                         <span class="n">batch_dict</span><span class="p">,</span>
                         <span class="n">fftlength</span><span class="p">,</span>
                         <span class="n">overlap</span><span class="p">,</span>
-                        <span class="n">nproc</span><span class="p">,</span>
+                        <span class="n">parallel</span><span class="p">,</span>
                         <span class="n">target_frequencies</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -1171,7 +1171,7 @@
                 <span class="c1"># Fetch batch data</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">batch_dict</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                        <span class="n">batch_channels</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">allow_tape</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="n">nproc</span>
+                        <span class="n">batch_channels</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">allow_tape</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="n">parallel</span>
                     <span class="p">)</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -1205,7 +1205,7 @@
                     <span class="n">batch_dict</span><span class="p">,</span>
                     <span class="n">fftlength</span><span class="p">,</span>
                     <span class="n">overlap</span><span class="p">,</span>
-                    <span class="n">nproc</span><span class="p">,</span>
+                    <span class="n">parallel</span><span class="p">,</span>
                     <span class="n">target_frequencies</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -1220,7 +1220,7 @@
         <span class="n">aux_dict</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">nproc</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">parallel</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">target_frequencies</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Calculate Coherence for batch</span>
@@ -1230,7 +1230,7 @@
             <span class="n">aux_dict</span><span class="p">,</span>
             <span class="n">fftlength</span><span class="p">,</span>
             <span class="n">overlap</span><span class="p">,</span>
-            <span class="n">nproc</span><span class="p">,</span>
+            <span class="n">parallel</span><span class="p">,</span>
             <span class="n">target_frequencies</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -1255,7 +1255,7 @@
         <span class="n">aux_dict</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">nproc</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">parallel</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">target_frequencies</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1265,7 +1265,7 @@
         <span class="n">aux_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">aux_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">aux_list</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="n">nproc</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">parallel</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_batch_coherence_fast</span><span class="p">(</span>
                 <span class="n">target_ts</span><span class="p">,</span>
                 <span class="n">aux_list</span><span class="p">,</span>
@@ -1274,9 +1274,9 @@
                 <span class="n">target_frequencies</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">aux_list</span><span class="p">)</span> <span class="o">/</span> <span class="n">nproc</span><span class="p">)))</span>
+        <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">aux_list</span><span class="p">)</span> <span class="o">/</span> <span class="n">parallel</span><span class="p">)))</span>
         <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">nproc</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">parallel</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
             <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_batch_coherence_fast</span><span class="p">,</span>

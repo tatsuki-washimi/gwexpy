@@ -660,7 +660,7 @@
         <span class="c1"># Safest is to calculate df from self.frequency1 since that&#39;s what the matrix is defined on.</span>
         <span class="c1"># Assuming uniform grid for integration approximation.</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">value</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Fallback if single point (df not well defined, maybe 1.0 or 0?)</span>
             <span class="c1"># If standard integration of a point source ??</span>
@@ -668,10 +668,12 @@
 
         <span class="c1"># If self.frequency1 has unit, df should have that unit.</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">):</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span>
+            <span class="n">res_df</span> <span class="o">=</span> <span class="n">res</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency1</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res_df</span> <span class="o">=</span> <span class="n">res</span> <span class="o">*</span> <span class="n">df</span>
 
         <span class="c1"># Multiply result by df</span>
-        <span class="k">return</span> <span class="n">res</span> <span class="o">*</span> <span class="n">df</span></div>
+        <span class="k">return</span> <span class="n">res_df</span></div>
 
 
 <div class="viewcode-block" id="BifrequencyMap.plot_lines">
