@@ -32,7 +32,7 @@ def parse_timezone(tz: Any) -> _dt.tzinfo:
         # parse \"+09:00\" or \"-0800\"
         cleaned = tz.strip()
         if cleaned.lower() in {"utc", "gmt"}:
-            return _dt.timezone.utc
+            return _dt.UTC
         sign = 1
         if cleaned.startswith("-"):
             sign = -1
@@ -60,7 +60,7 @@ def datetime_to_gps(dt: _dt.datetime) -> float:
     Convert an aware datetime (or date) into a LIGO GPS float.
     """
     if isinstance(dt, _dt.date) and not isinstance(dt, _dt.datetime):
-        dt = _dt.datetime.combine(dt, _dt.time(0, 0), tzinfo=_dt.timezone.utc)
+        dt = _dt.datetime.combine(dt, _dt.time(0, 0), tzinfo=_dt.UTC)
     if dt.tzinfo is None:
         raise ValueError("datetime must be timezone-aware to convert to GPS")
     return float(to_gps(dt))
@@ -79,7 +79,7 @@ def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetim
             raise ValueError("Naive datetime requires timezone")
         return value
     if isinstance(value, (int, float)):
-        return _dt.datetime.fromtimestamp(float(value), tz=_dt.timezone.utc)
+        return _dt.datetime.fromtimestamp(float(value), tz=_dt.UTC)
     if isinstance(value, str):
         text = value.strip()
         formats = [

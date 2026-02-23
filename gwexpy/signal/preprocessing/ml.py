@@ -11,13 +11,15 @@ scikit-learn風のTransformer APIとして提供します。
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import astropy.units as u
 import numpy as np
 
 if TYPE_CHECKING:
     from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
+
+    from .standardize import StandardizationModel
 
 
 class MLPreprocessor:
@@ -112,9 +114,9 @@ class MLPreprocessor:
         self.standardization_method = standardization_method
 
         # 内部状態（fit後に設定）
-        self.X_scaler_ = None
-        self.y_scaler_ = None
-        self.filter_coeffs_ = None
+        self.X_scaler_: Optional[StandardizationModel] = None
+        self.y_scaler_: Optional[StandardizationModel] = None
+        self.filter_coeffs_: Optional[list[np.ndarray]] = None
         self.is_fitted_ = False
 
     def split(
@@ -270,6 +272,7 @@ class MLPreprocessor:
         # meanとscaleをブロードキャスト可能な形状にreshape
         # X_valの形状: (n_rows, n_cols, n_samples) or (n_channels, n_samples)
         # X_scaler_.meanの形状: (n_channels,) -> (n_channels, 1, ...)にreshapeが必要
+        assert self.X_scaler_ is not None
         mean = self.X_scaler_.mean
         scale = self.X_scaler_.scale
 

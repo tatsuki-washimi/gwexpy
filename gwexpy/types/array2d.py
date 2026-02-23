@@ -34,10 +34,10 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
         # Resolve data shape
         shape = np.shape(data)
         if len(shape) == 2:
-            if "yindex" not in kwargs:
-                kwargs["yindex"] = np.arange(shape[0]) * dimensionless_unscaled
             if "xindex" not in kwargs:
-                kwargs["xindex"] = np.arange(shape[1]) * dimensionless_unscaled
+                kwargs["xindex"] = np.arange(shape[0]) * dimensionless_unscaled
+            if "yindex" not in kwargs:
+                kwargs["yindex"] = np.arange(shape[1]) * dimensionless_unscaled
 
         obj = super().__new__(cls, data, **kwargs)
         if axis_names is None:
@@ -73,8 +73,8 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
     @property
     def axes(self):
         return (
-            AxisDescriptor(self._axis0_name, self.yindex),
-            AxisDescriptor(self._axis1_name, self.xindex),
+            AxisDescriptor(self._axis0_name, self.xindex),
+            AxisDescriptor(self._axis1_name, self.yindex),
         )
 
     def _set_axis_name(self, index, name):

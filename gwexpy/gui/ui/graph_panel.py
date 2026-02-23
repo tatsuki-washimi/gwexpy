@@ -1320,7 +1320,7 @@ class GraphPanel(QtWidgets.QFrame):
                     import datetime
 
                     ts_str = datetime.datetime.fromtimestamp(
-                        t0, datetime.timezone.utc
+                        t0, datetime.UTC
                     ).strftime("%Y-%m-%d %H:%M:%S UTC")
                     header_lines.append(f"<b>Start:</b> {ts_str}")
                 else:

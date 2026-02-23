@@ -114,10 +114,37 @@ class TimeSeries(
                     should_coerce = False
 
         if should_coerce:
+            # Determine target unit for t0/epoch normalization
+            target_unit = u.s
+            dt = kwargs.get("dt")
+            if isinstance(dt, u.Quantity):
+                target_unit = dt.unit
+            else:
+                xunit = kwargs.get("xunit")
+                if xunit is not None:
+                    try:
+                        target_unit = u.Unit(xunit)
+                    except (ValueError, TypeError):
+                        pass
+
             if "t0" in kwargs and kwargs["t0"] is not None:
-                kwargs["t0"] = _coerce_t0_gps(kwargs["t0"])
+                t0_q = _coerce_t0_gps(kwargs["t0"])
+                if t0_q is not None:
+                    try:
+                        # For GWpy 4.0 compatibility: convert to float value in target_unit.
+                        # Using a Quantity with a different unit than the axis (dt)
+                        # can trigger incorrect internal conversions in some GWpy versions.
+                        kwargs["t0"] = float(t0_q.to(target_unit).value)
+                    except (u.UnitConversionError, AttributeError, TypeError):
+                        kwargs["t0"] = t0_q
+
             if "epoch" in kwargs and kwargs["epoch"] is not None:
-                kwargs["epoch"] = _coerce_t0_gps(kwargs["epoch"])
+                epoch_q = _coerce_t0_gps(kwargs["epoch"])
+                if epoch_q is not None:
+                    try:
+                        kwargs["epoch"] = float(epoch_q.to(target_unit).value)
+                    except (u.UnitConversionError, AttributeError, TypeError):
+                        kwargs["epoch"] = epoch_q
         return super().__new__(cls, data, *args, **kwargs)
 
     def __array_finalize__(self, obj: Any) -> None:

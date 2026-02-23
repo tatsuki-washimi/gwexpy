@@ -694,7 +694,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return self.correlation(other, method="kendall", **kwargs)
 
     def correlation_vector(
-        self: Any, target_timeseries: Any, method: str = "mic", nproc: int | None = None
+        self: Any, target_timeseries: Any, method: str = "mic", parallel: int | None = None
     ) -> Any:
         """
         Calculate correlation between a target TimeSeries and all channels in this Matrix.
@@ -704,8 +704,8 @@ class TimeSeriesMatrixAnalysisMixin:
 
         import pandas as pd
 
-        if nproc is None:
-            nproc = os.cpu_count() or 1
+        if parallel is None:
+            parallel = os.cpu_count() or 1
 
         N, M, _ = self.shape
         num_channels = N * M
@@ -752,10 +752,10 @@ class TimeSeriesMatrixAnalysisMixin:
                     exc_info=True,
                 )
 
-        if nproc > 1:
-            nproc = min(nproc, num_channels)
+        if parallel > 1:
+            parallel = min(parallel, num_channels)
             if num_channels < 32:
-                nproc = 1
+                parallel = 1
         results = []
 
         def _run_serial():
@@ -767,11 +767,11 @@ class TimeSeriesMatrixAnalysisMixin:
                         {"row": i, "col": j, "channel": ts.name, "score": score}
                     )
 
-        if nproc <= 1:
+        if parallel <= 1:
             _run_serial()
         else:
             try:
-                with ProcessPoolExecutor(max_workers=nproc) as executor:
+                with ProcessPoolExecutor(max_workers=parallel) as executor:
                     futures = {}
                     for i in range(N):
                         for j in range(M):

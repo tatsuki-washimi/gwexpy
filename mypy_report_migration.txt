@@ -1,0 +1,63 @@
+ERROR conda.cli.main_run:execute(127): `conda run mypy gwexpy/ --ignore-missing-imports --no-incremental` failed. (See above for error)
+gwexpy/gui/ui/graph_panel.py:144: error: "type[Qt]" has no attribute "SolidLine"  [attr-defined]
+gwexpy/gui/ui/graph_panel.py:145: error: "type[Qt]" has no attribute "DashLine"  [attr-defined]
+gwexpy/gui/ui/graph_panel.py:146: error: "type[Qt]" has no attribute "DotLine"  [attr-defined]
+gwexpy/gui/ui/graph_panel.py:150: error: "type[Qt]" has no attribute "SolidPattern"  [attr-defined]
+gwexpy/gui/ui/graph_panel.py:151: error: "type[Qt]" has no attribute "Dense3Pattern"  [attr-defined]
+gwexpy/gui/ui/graph_panel.py:288: error: "setItemData" of "QComboBox" does not return a value (it only ever returns None)  [func-returns-value]
+gwexpy/gui/ui/graph_panel.py:288: error: "type[Qt]" has no attribute "BackgroundRole"  [attr-defined]
+gwexpy/gui/ui/graph_panel.py:350: error: Argument 1 to "connect" of "pyqtBoundSignal" has incompatible type "Callable[[Any, Any, Any], tuple[Any | None, Any]]"; expected "Callable[..., None] | pyqtBoundSignal"  [arg-type]
+gwexpy/gui/ui/graph_panel.py:356: error: Argument 1 to "connect" of "pyqtBoundSignal" has incompatible type "Callable[[Any, Any, Any], tuple[Any | None, Any]]"; expected "Callable[..., None] | pyqtBoundSignal"  [arg-type]
+gwexpy/gui/ui/graph_panel.py:695: error: "type[Qt]" has no attribute "DashLine"  [attr-defined]
+gwexpy/gui/ui/graph_panel.py:767: error: "type[Qt]" has no attribute "AlignRight"  [attr-defined]
+gwexpy/gui/ui/graph_panel.py:879: error: "type[Qt]" has no attribute "AlignRight"  [attr-defined]
+gwexpy/gui/ui/graph_panel.py:909: error: "type[Qt]" has no attribute "AlignRight"  [attr-defined]
+gwexpy/gui/ui/graph_panel.py:927: error: "type[Qt]" has no attribute "AlignRight"  [attr-defined]
+gwexpy/gui/ui/tabs.py:43: error: Incompatible types in assignment (expression has type "QVBoxLayout", variable has type "QGridLayout")  [assignment]
+gwexpy/gui/ui/tabs.py:45: error: Incompatible types in assignment (expression has type "QHBoxLayout", variable has type "QGridLayout")  [assignment]
+gwexpy/gui/ui/tabs.py:223: error: No overload variant of "QRadioButton" matches argument types "str", "bool"  [call-overload]
+gwexpy/gui/ui/tabs.py:223: note: Possible overload variants:
+gwexpy/gui/ui/tabs.py:223: note:     def __init__(self, parent: QWidget | None = ...) -> QRadioButton
+gwexpy/gui/ui/tabs.py:223: note:     def __init__(self, text: str | None, parent: QWidget | None = ...) -> QRadioButton
+gwexpy/gui/ui/tabs.py:491: error: No overload variant of "QCheckBox" matches argument types "str", "bool"  [call-overload]
+gwexpy/gui/ui/tabs.py:491: note: Possible overload variants:
+gwexpy/gui/ui/tabs.py:491: note:     def __init__(self, parent: QWidget | None = ...) -> QCheckBox
+gwexpy/gui/ui/tabs.py:491: note:     def __init__(self, text: str | None, parent: QWidget | None = ...) -> QCheckBox
+gwexpy/gui/ui/tabs.py:509: error: No overload variant of "QRadioButton" matches argument types "str", "bool"  [call-overload]
+gwexpy/gui/ui/tabs.py:509: note: Possible overload variants:
+gwexpy/gui/ui/tabs.py:509: note:     def __init__(self, parent: QWidget | None = ...) -> QRadioButton
+gwexpy/gui/ui/tabs.py:509: note:     def __init__(self, text: str | None, parent: QWidget | None = ...) -> QRadioButton
+gwexpy/gui/ui/tabs.py:531: error: No overload variant of "QRadioButton" matches argument types "str", "bool"  [call-overload]
+gwexpy/gui/ui/tabs.py:531: note: Possible overload variants:
+gwexpy/gui/ui/tabs.py:531: note:     def __init__(self, parent: QWidget | None = ...) -> QRadioButton
+gwexpy/gui/ui/tabs.py:531: note:     def __init__(self, text: str | None, parent: QWidget | None = ...) -> QRadioButton
+gwexpy/gui/ui/tabs.py:664: error: No overload variant of "QRadioButton" matches argument types "str", "bool"  [call-overload]
+gwexpy/gui/ui/tabs.py:664: note: Possible overload variants:
+gwexpy/gui/ui/tabs.py:664: note:     def __init__(self, parent: QWidget | None = ...) -> QRadioButton
+gwexpy/gui/ui/tabs.py:664: note:     def __init__(self, text: str | None, parent: QWidget | None = ...) -> QRadioButton
+gwexpy/gui/ui/tabs.py:695: error: No overload variant of "QRadioButton" matches argument types "str", "bool"  [call-overload]
+gwexpy/gui/ui/tabs.py:695: note: Possible overload variants:
+gwexpy/gui/ui/tabs.py:695: note:     def __init__(self, parent: QWidget | None = ...) -> QRadioButton
+gwexpy/gui/ui/tabs.py:695: note:     def __init__(self, text: str | None, parent: QWidget | None = ...) -> QRadioButton
+gwexpy/gui/ui/tabs.py:796: error: "type[Qt]" has no attribute "Horizontal"  [attr-defined]
+gwexpy/gui/ui/tabs.py:846: error: Item "None" of "QLayoutItem | None" has no attribute "widget"  [union-attr]
+gwexpy/gui/ui/tabs.py:846: error: Item "None" of "QWidget | Any | None" has no attribute "setFrameShape"  [union-attr]
+gwexpy/gui/ui/tabs.py:938: error: "type[QBoxLayout]" has no attribute "TopToBottom"  [attr-defined]
+gwexpy/gui/ui/tabs.py:944: error: "type[QBoxLayout]" has no attribute "LeftToRight"  [attr-defined]
+gwexpy/gui/ui/tabs.py:956: error: Argument 1 to "connect" of "pyqtBoundSignal" has incompatible type "Callable[[], tuple[Any, Any]]"; expected "Callable[..., None] | pyqtBoundSignal"  [arg-type]
+gwexpy/gui/data_sources.py:91: error: Argument 1 to "connect" of "pyqtBoundSignal" has incompatible type "Callable[[], dict[str, PayloadPacket]]"; expected "Callable[..., None] | pyqtBoundSignal"  [arg-type]
+gwexpy/gui/nds/cache.py:57: error: Incompatible types in assignment (expression has type "NDSThread | None", base class "QObject" defined the type as "Callable[[], QThread | None]")  [assignment]
+gwexpy/gui/ui/channel_browser.py:58: error: "type[Qt]" has no attribute "AlignCenter"  [attr-defined]
+gwexpy/frequencyseries/bifrequencymap.py:571: error: Incompatible types in assignment (expression has type "float", variable has type "floating[Any]")  [assignment]
+gwexpy/timeseries/io/sdb.py:113: error: Incompatible types in assignment (expression has type "float", variable has type "floating[Any]")  [assignment]
+gwexpy/timeseries/io/sdb.py:116: error: Incompatible types in assignment (expression has type "float", variable has type "floating[Any]")  [assignment]
+gwexpy/gui/ui/main_window.py:53: error: Item "None" of "QMenuBar | None" has no attribute "addMenu"  [union-attr]
+gwexpy/gui/ui/main_window.py:57: error: Item "None" of "QMenu | Any | None" has no attribute "addAction"  [union-attr]
+gwexpy/gui/ui/main_window.py:58: error: Item "None" of "QMenu | Any | None" has no attribute "addAction"  [union-attr]
+gwexpy/gui/ui/main_window.py:58: error: Item "None" of "QAction | Any | None" has no attribute "triggered"  [union-attr]
+gwexpy/gui/ui/main_window.py:58: error: Argument 1 to "connect" of "pyqtBoundSignal" has incompatible type "Callable[[], bool]"; expected "Callable[..., None] | pyqtBoundSignal"  [arg-type]
+gwexpy/gui/ui/main_window.py:177: error: Item "QLayout" of "QLayout | None" has no attribute "addLayout"  [union-attr]
+gwexpy/gui/ui/main_window.py:177: error: Item "None" of "QLayout | None" has no attribute "addLayout"  [union-attr]
+gwexpy/gui/ui/main_window.py:1395: error: Item "None" of "QHeaderView | None" has no attribute "setStretchLastSection"  [union-attr]
+Found 42 errors in 8 files (checked 320 source files)
+

@@ -18,7 +18,7 @@ def association_edges(
     matrix: Any,
     *,
     method: str = "pearson",
-    nproc: int | None = None,
+    parallel: int | None = None,
     threshold: float | None = None,
     threshold_mode: str = "abs",
     topk: int | None = None,
@@ -33,7 +33,7 @@ def association_edges(
     if not hasattr(matrix, "correlation_vector"):
         raise TypeError("matrix must provide correlation_vector().")
 
-    edges = matrix.correlation_vector(target, method=method, nproc=nproc)
+    edges = matrix.correlation_vector(target, method=method, parallel=parallel)
     target_name = getattr(target, "name", None) or "target"
 
     edges = edges.copy()

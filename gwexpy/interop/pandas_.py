@@ -85,7 +85,7 @@ def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
             t0_dt = index[0]
             # Handle naive as UTC
             if t0_dt.tzinfo is None:
-                t0_dt = t0_dt.replace(tzinfo=datetime.timezone.utc)
+                t0_dt = t0_dt.replace(tzinfo=datetime.UTC)
 
             inferred_t0 = datetime_utc_to_gps(t0_dt)
 
@@ -107,7 +107,7 @@ def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
                         t_gps = []
                         for t in subset:
                             if t.tzinfo is None:
-                                t = t.replace(tzinfo=datetime.timezone.utc)
+                                t = t.replace(tzinfo=datetime.UTC)
                             t_gps.append(float(datetime_utc_to_gps(t)))
                         diffs = np.diff(t_gps)
                     else:

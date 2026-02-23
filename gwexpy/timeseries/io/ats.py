@@ -9,7 +9,7 @@ import datetime
 from typing import Any
 
 import numpy as np
-from gwpy.io import registry as io_registry
+from gwpy.io.registry import default_registry as io_registry
 from gwpy.time import to_gps
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
@@ -125,7 +125,7 @@ def read_timeseries_ats(source, **kwargs):
         # Calculate t0
         # StartTime is Unix timestamp
         dt_obj = datetime.datetime.fromtimestamp(
-            start_time_unix, tz=datetime.timezone.utc
+            start_time_unix, tz=datetime.UTC
         )
         t0 = to_gps(dt_obj)
 

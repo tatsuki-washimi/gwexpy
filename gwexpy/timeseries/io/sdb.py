@@ -9,7 +9,7 @@ import sqlite3
 import numpy as np
 import pandas as pd
 from astropy.time import Time
-from gwpy.io import registry as io_registry
+from astropy.io import registry as io_registry
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
@@ -108,7 +108,7 @@ def read_timeseriesdict_sdb(source, table="archive", columns=None, **kwargs):
     if len(df) > 1:
         # Check median delta
         dt_vals = np.diff(df["dateTime"].values)
-        dt_median = np.median(dt_vals)
+        dt_median = float(np.median(dt_vals))
         if dt_median == 0:
             dt_median = 1.0  # fallback
         sample_rate = 1.0 / dt_median

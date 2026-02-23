@@ -4,7 +4,7 @@
 [![CI Status](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml/badge.svg)](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml)
 [![Documentation](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs.yml/badge.svg)](https://tatsuki-washimi.github.io/gwexpy/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 **gwexpy** (GWexpy) is an (unofficial) extension library for [**GWpy**](https://gwpy.github.io/), designed to facilitate advanced time-series analysis, matrix operations, and signal processing for experimental physics and gravitational wave data analysis.
 
@@ -134,10 +134,10 @@ pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.gi
 ```
 
 > [!IMPORTANT]
-> **gwpy Compatibility**: gwexpy v0.1.0b1 requires `gwpy>=3.0.0,<4.0.0`. gwpy 4.0.0 introduced breaking API changes that are not yet supported. If you encounter import errors, please ensure you have gwpy 3.x installed:
+> **gwpy Compatibility**: gwexpy requires `gwpy>=4.0.0`. GWpy 4.0.0 introduced breaking API changes (e.g., Python 3.11+ requirement, new I/O registry). If you encounter import errors, please ensure your environment is updated:
 >
 > ```bash
-> pip install "gwpy>=3.0.0,<4.0.0"
+> pip install "gwpy>=4.0.0,<5.0.0"
 > ```
 
 > [!NOTE]

@@ -25,7 +25,7 @@ import struct
 import warnings
 
 import numpy as np
-from gwpy.io import registry as io_registry
+from gwpy.io.registry import default_registry as io_registry
 
 try:
     from obspy import Stream, Trace, UTCDateTime
@@ -205,7 +205,7 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
         # Start time
         dt = tr.stats.starttime.datetime
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=datetime.timezone.utc)
+            dt = dt.replace(tzinfo=datetime.UTC)
         t0 = datetime_to_gps(dt)
 
         ts = TimeSeries(
