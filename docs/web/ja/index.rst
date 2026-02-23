@@ -146,6 +146,7 @@ GWexpy は GWpy を拡張し、時系列および周波数系列データ解析�
    user_guide/numerical_stability
    user_guide/scalarfield_slicing
    user_guide/validated_algorithms
+   user_guide/architecture
 
 .. toctree::
    :maxdepth: 2

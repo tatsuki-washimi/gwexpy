@@ -110,7 +110,7 @@ Learning Path by User Level
      - :doc:`Case Studies <examples/index>`
      - :doc:`Advanced Signal Processing <user_guide/tutorials/index>`, :doc:`API Reference <reference/index>`
    * - GWpy Users
-     - :doc:`Migration Guide <user_guide/getting_started>`
+     - :doc:`Migration Guide <user_guide/gwexpy_for_gwpy_users_en>`
      - :doc:`New Feature Tutorials <user_guide/tutorials/index>`
 
 
@@ -141,9 +141,11 @@ Main Documentation
    :maxdepth: 1
    :caption: Advanced Guides
 
+   user_guide/gwexpy_for_gwpy_users_en
    user_guide/numerical_stability
    user_guide/scalarfield_slicing
    user_guide/validated_algorithms
+   user_guide/architecture
 
 .. toctree::
    :maxdepth: 2

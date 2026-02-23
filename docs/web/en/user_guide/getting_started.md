@@ -67,7 +67,7 @@ Learn the basics with [quickstart](quickstart.md).
 
 **For GWpy Users**
 
-- Check the GWpy compatibility guide for migration information
+- [Migration from GWpy](gwexpy_for_gwpy_users_en.md) - Detailed guide for GWpy users
 
 ### 4. Advanced Topics
 

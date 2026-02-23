@@ -390,6 +390,10 @@ class FitResult:
     def bode_plot(self, ax=None, num_points=1000, **kwargs):
         """
         Create a Bode plot (Magnitude and Phase) for the fit result.
+
+        See Also
+        --------
+        :doc:`Tutorial: Transfer Function <../../../user_guide/tutorials/case_transfer_function>`
         """
         show_errorbar = kwargs.pop("show_errorbar", None)
         if show_errorbar is None:

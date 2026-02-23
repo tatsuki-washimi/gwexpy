@@ -410,6 +410,10 @@ def bootstrap_spectrogram(
            stationary observations", Ann. Statist. 17(3), 1989
     .. [3] Politis, D.N. & Romano, J.P., "The stationary bootstrap",
            J. Amer. Statist. Assoc. 89(428), 1994
+
+    See Also
+    --------
+    :doc:`Tutorial: Bootstrap Spectrogram Analysis <../../../user_guide/tutorials/case_bootstrap_gls_fitting>`
     """
     from ..utils.fft_args import (
         check_deprecated_kwargs,
