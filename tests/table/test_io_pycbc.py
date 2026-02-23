@@ -13,11 +13,10 @@ from gwpy.table.tests.test_io_pycbc import (
     pycbclivepsd,
     pycbclivetable,
     pytest,
-    randn,
     test_empty_hdf5_file,
     test_empty_hdf5_file_datasets,
     test_empty_hdf5_file_group,
-    test_idenfity_pycbc_live,
+    test_identify_pycbc_live,
     test_read_pycbc_live,
     test_read_pycbc_live_extended_metadata,
     test_read_pycbc_live_extended_metadata_false,
@@ -26,7 +25,6 @@ from gwpy.table.tests.test_io_pycbc import (
     test_read_pycbc_live_multiple_ifos,
     test_read_pycbc_live_processed_columns,
     test_read_pycbc_live_regression_1081,
-    test_read_pycbc_live_selection_columns,
 )
 
 __all__ = [
@@ -44,11 +42,10 @@ __all__ = [
     "pycbclivepsd",
     "pycbclivetable",
     "pytest",
-    "randn",
     "test_empty_hdf5_file",
     "test_empty_hdf5_file_datasets",
     "test_empty_hdf5_file_group",
-    "test_idenfity_pycbc_live",
+    "test_identify_pycbc_live",
     "test_read_pycbc_live",
     "test_read_pycbc_live_extended_metadata",
     "test_read_pycbc_live_extended_metadata_false",
@@ -57,5 +54,4 @@ __all__ = [
     "test_read_pycbc_live_multiple_ifos",
     "test_read_pycbc_live_processed_columns",
     "test_read_pycbc_live_regression_1081",
-    "test_read_pycbc_live_selection_columns",
 ]

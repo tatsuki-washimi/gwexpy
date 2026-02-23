@@ -296,7 +296,7 @@ class TestCoherenceMap:
 
     def test_mutual_exclusivity_fftlength_nfft(self, sine_field):
         """Test that fftlength and nfft are mutually exclusive."""
-        with pytest.raises(ValueError, match="mutually exclusive"):
+        with pytest.raises(ValueError, match="Cannot specify both fftlength and nfft"):
             sine_field.coherence_map(
                 (0 * u.m, 0 * u.m, 0 * u.m),
                 fftlength=0.64,

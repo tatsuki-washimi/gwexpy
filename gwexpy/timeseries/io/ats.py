@@ -102,54 +102,59 @@ def read_timeseries_ats(source, **kwargs):
     """
     Read a Metronix ATS file into a TimeSeries.
     """
-    filename = str(source)
-    with open(filename, mode="rb") as f:
-        hdr = _read_ats_header(f)
+    if hasattr(source, "read"):
+        return _read_timeseries_ats_file(source, **kwargs)
+    
+    with open(str(source), mode="rb") as f:
+        return _read_timeseries_ats_file(f, **kwargs)
 
-        sample_freq = float(hdr["sample_freq"])
-        start_time_unix = int(hdr["start_time_unix"])
-        lsb_mV = float(hdr["lsb_mV"])
-        header_length = int(hdr["header_length"])
-        total_samples = int(hdr["total_samples"])
-        data_dtype = hdr["data_dtype"]
 
-        system_type = str(hdr["system_type"])
-        adu_serial = int(hdr["adu_serial"])
-        channel_type = str(hdr["chan_type"])
-        sensor_type = str(hdr["sensor_type"])
-        sensor_serial = int(hdr["sensor_serial"])
+def _read_timeseries_ats_file(f, **kwargs):
+    hdr = _read_ats_header(f)
 
-        # Construct Channel Name (stable, filename-independent)
-        chname = f"Metronix_{system_type}_{adu_serial:03}_{channel_type}_{sensor_type}_{sensor_serial:04}"
+    sample_freq = float(hdr["sample_freq"])
+    start_time_unix = int(hdr["start_time_unix"])
+    lsb_mV = float(hdr["lsb_mV"])
+    header_length = int(hdr["header_length"])
+    total_samples = int(hdr["total_samples"])
+    data_dtype = hdr["data_dtype"]
 
-        # Calculate t0
-        # StartTime is Unix timestamp
-        dt_obj = datetime.datetime.fromtimestamp(start_time_unix, tz=datetime.UTC)
-        t0 = to_gps(dt_obj)
+    system_type = str(hdr["system_type"])
+    adu_serial = int(hdr["adu_serial"])
+    channel_type = str(hdr["chan_type"])
+    sensor_type = str(hdr["sensor_type"])
+    sensor_serial = int(hdr["sensor_serial"])
 
-        # Read Data
-        f.seek(header_length)
-        data_raw = np.fromfile(f, dtype=data_dtype, count=total_samples)
-        if data_raw.size != total_samples:
-            raise ValueError(
-                f"ATS data block shorter than expected: got {data_raw.size}, expected {total_samples}"
-            )
+    # Construct Channel Name (stable, filename-independent)
+    chname = f"Metronix_{system_type}_{adu_serial:03}_{channel_type}_{sensor_type}_{sensor_serial:04}"
 
-        # Scale Data
-        # Per Metronix programmer notes: dblLSBMV * counts -> mV (gains already included).
-        # Convert to V.
-        data_scaled = data_raw.astype(np.float64) * lsb_mV / 1000.0
+    # Calculate t0
+    # StartTime is Unix timestamp
+    dt_obj = datetime.datetime.fromtimestamp(start_time_unix, tz=datetime.UTC)
+    t0 = to_gps(dt_obj)
 
-        ts = TimeSeries(
-            data_scaled,
-            sample_rate=sample_freq,
-            t0=t0,
-            name=chname,
-            channel=chname,
-            unit="V",  # 'Volt'
+    # Read Data
+    f.seek(header_length)
+    data_raw = np.fromfile(f, dtype=data_dtype, count=total_samples)
+    if data_raw.size != total_samples:
+        raise ValueError(
+            f"ATS data block shorter than expected: got {data_raw.size}, expected {total_samples}"
         )
 
-        return ts
+    # Scale Data
+    # Per Metronix programmer notes: dblLSBMV * counts -> mV (gains already included).
+    # Convert to V.
+    data_scaled = data_raw.astype(np.float64) * lsb_mV / 1000.0
+
+    ts = TimeSeries(
+        data_scaled,
+        sample_rate=sample_freq,
+        t0=t0,
+        name=chname,
+        channel=chname,
+        unit="V",  # 'Volt'
+    )
+    return ts
 
 
 def read_timeseries_ats_mth5(source, **kwargs):

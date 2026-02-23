@@ -77,7 +77,7 @@ class TestBruco:
             duration=duration,
             fftlength=1.0,
             overlap=0.5,
-            nproc=1,
+            parallel=1,
             top_n=2,
         )
 

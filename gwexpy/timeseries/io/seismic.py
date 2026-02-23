@@ -5,7 +5,7 @@ Readers/Writers for ObsPy-supported seismic formats (miniSEED, SAC, GSE2, KNET).
 from __future__ import annotations
 
 import numpy as np
-from astropy.io import registry as io_registry
+from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.utils import (
     apply_unit,

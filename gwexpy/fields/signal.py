@@ -20,9 +20,9 @@ from typing import TYPE_CHECKING, Any, Literal
 import numpy as np
 from astropy import units as u
 
-if TYPE_CHECKING:
-    from astropy.units import Quantity
+from astropy.units import Quantity
 
+if TYPE_CHECKING:
     from gwexpy.fields import ScalarField
     from gwexpy.fields.collections import FieldDict
     from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
