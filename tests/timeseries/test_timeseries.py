@@ -35,3 +35,19 @@ class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
     )
     def test_spectrogram_median_mean(self, *args, **kwargs):
         return super().test_spectrogram_median_mean(*args, **kwargs)
+
+    @pytest.mark.skip(reason="Fails due to LDAStools / framecpp dependency issues")
+    def test_write_gwf_type(self, *args, **kwargs):
+        pass
+
+    @pytest.mark.skip(reason="Fails due to network or local datafind cache issues")
+    def test_find(self, *args, **kwargs):
+        pass
+
+    @pytest.mark.skip(reason="Fails due to network or local datafind cache issues")
+    def test_find_best_frametype_in_find(self, *args, **kwargs):
+        pass
+
+    @pytest.mark.skip(reason="Fails due to network or local datafind cache issues")
+    def test_get_datafind(self, *args, **kwargs):
+        pass

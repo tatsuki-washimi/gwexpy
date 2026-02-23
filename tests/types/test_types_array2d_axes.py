@@ -7,9 +7,8 @@ from gwexpy.types.array2d import Array2D
 
 
 def test_array2d_axes():
-    data = np.zeros((10, 5))
-    # gwpy Array2D: axis0=y (10), axis1=x (5)
-    # xindex size 5, yindex size 10
+    data = np.zeros((5, 10))
+    # gwpy 4.0 Array2D: axis0=x (5), axis1=y (10)
 
     arr = Array2D(data, xindex=np.arange(5) * u.m, yindex=np.arange(10) * u.s)
 
@@ -18,53 +17,53 @@ def test_array2d_axes():
     assert arr.axes[1].name == "axis1"
 
     # Check sizes/units
-    assert arr.axes[0].size == 10
-    assert arr.axes[0].unit == u.s
-    assert arr.axes[1].size == 5
-    assert arr.axes[1].unit == u.m
+    assert arr.axes[0].size == 5
+    assert arr.axes[0].unit == u.m
+    assert arr.axes[1].size == 10
+    assert arr.axes[1].unit == u.s
 
 
 def test_array2d_rename_axes():
-    data = np.zeros((10, 5))
+    data = np.zeros((5, 10))
     arr = Array2D(data, xindex=np.arange(5), yindex=np.arange(10))
 
     # Rename
-    arr2 = arr.rename_axes({"axis0": "time", "axis1": "space"})
+    arr2 = arr.rename_axes({"axis0": "space", "axis1": "time"})
 
-    assert arr2.axes[0].name == "time"
-    assert arr2.axes[1].name == "space"
+    assert arr2.axes[0].name == "space"
+    assert arr2.axes[1].name == "time"
 
     # Original unchanged
     assert arr.axes[0].name == "axis0"
 
     # axis descriptor access
-    assert arr2.axis("time").size == 10
+    assert arr2.axis("space").size == 5
 
 
 def test_array2d_swapaxes():
-    data = np.random.randn(10, 5)
+    data = np.random.randn(5, 10)
     arr = Array2D(
         data,
         xindex=np.arange(5) * u.m,
         yindex=np.arange(10) * u.s,
-        axis_names=("time", "space"),
+        axis_names=("space", "time"),
     )
 
     # swapaxes(0, 1) or T
-    # axis0 was time (10), axis1 was space (5)
-    # New: axis0 should be space, axis1 should be time
+    # axis0 was space (5), axis1 was time (10)
+    # New: axis0 should be time, axis1 should be space
 
     arr_t = arr.swapaxes(0, 1)
 
-    assert arr_t.shape == (5, 10)
-    assert arr_t.axes[0].name == "space"
-    assert arr_t.axes[1].name == "time"
+    assert arr_t.shape == (10, 5)
+    assert arr_t.axes[0].name == "time"
+    assert arr_t.axes[1].name == "space"
 
-    assert arr_t.axes[0].size == 5
-    assert arr_t.axes[1].size == 10
+    assert arr_t.axes[0].size == 10
+    assert arr_t.axes[1].size == 5
 
     # Check data consistency
     assert arr_t.value[0, 0] == data[0, 0]
-    # arr[0, 1] is time=0, space=1. value data[0,1]
-    # arr_t[1, 0] should be same value.
-    assert arr_t.value[1, 0] == data[0, 1]
+    # arr[1, 0] is space=1, time=0. value data[1,0]
+    # arr_t[0, 1] should be same value.
+    assert arr_t.value[0, 1] == data[1, 0]

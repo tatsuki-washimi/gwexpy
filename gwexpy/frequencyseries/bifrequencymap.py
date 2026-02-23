@@ -18,12 +18,12 @@ class BifrequencyMap(Array2D):
     @property
     def frequency1(self):
         """周波数軸 1 (X軸/Columns)"""
-        return self.xindex
+        return self.yindex
 
     @property
     def frequency2(self):
         """周波数軸 2 (Y軸/Rows)"""
-        return self.yindex
+        return self.xindex
 
     @classmethod
     def from_points(cls, data, f2, f1, **kwargs):
@@ -45,8 +45,8 @@ class BifrequencyMap(Array2D):
         if not isinstance(f2, u.Quantity):
             f2 = u.Quantity(f2, unit="Hz")
 
-        # Array2Dは (y, x) の順で初期化されるため、それに合わせる
-        return cls(data, yindex=f2, xindex=f1, **kwargs)
+        # GWpy 4.0: xindex -> Axis 0 (rows), yindex -> Axis 1 (cols)
+        return cls(data, xindex=f2, yindex=f1, **kwargs)
 
     def propagate(self, input_spectrum, interpolate=True, fill_value=0):
         """

@@ -4,7 +4,7 @@ from gwpy.table.tests.test_gravityspy import (
     GravitySpyTable,
     TestGravitySpyTable,
     pytest,
-    pytest_skip_network_error,
+    pytest_skip_flaky_network,
     requests,
     table_gravityspy,
 )
@@ -15,7 +15,7 @@ __all__ = [
     "GravitySpyTable",
     "TestGravitySpyTable",
     "pytest",
-    "pytest_skip_network_error",
+    "pytest_skip_flaky_network",
     "requests",
     "table_gravityspy",
 ]

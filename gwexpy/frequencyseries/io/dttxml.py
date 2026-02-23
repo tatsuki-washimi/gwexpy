@@ -7,7 +7,7 @@ from __future__ import annotations
 from datetime import UTC
 
 import numpy as np
-from astropy.io import registry as io_registry
+from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.dttxml_common import (
     SUPPORTED_FREQ,

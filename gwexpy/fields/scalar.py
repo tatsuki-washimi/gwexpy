@@ -1947,23 +1947,43 @@ class ScalarField(FieldBase):
         from gwpy.signal import filter_design
         from scipy import signal as scipy_signal
 
-        form, filt = filter_design.parse_filter(
-            args,
-            analog=kwargs.pop("analog", False),
-            sample_rate=fs,
-        )
+        analog = kwargs.pop("analog", False)
+        unit = kwargs.pop("unit", "rad/s")
+        normalize_gain = kwargs.pop("normalize_gain", False)
         filtfilt = kwargs.pop("filtfilt", True)  # Default to True for phase consistency
+
+        filt = args[0] if len(args) == 1 else args
+
+        try:
+            # GWpy >= 4.0
+            zpk = filter_design.prepare_digital_filter(
+                filt,
+                analog=analog,
+                sample_rate=fs,
+                unit=unit,
+                normalize_gain=normalize_gain,
+                output="zpk",
+            )
+            form = "zpk"
+            filt_obj = zpk
+        except AttributeError:
+            # Fallback for GWpy < 4.0
+            form, filt_obj = filter_design.parse_filter(
+                filt,
+                analog=analog,
+                sample_rate=fs,
+            )
 
         # Apply filter along axis 0
         if form == "zpk":
-            sos = scipy_signal.zpk2sos(*filt)
+            sos = scipy_signal.zpk2sos(*filt_obj)
             new_data_2d = (
                 scipy_signal.sosfiltfilt(sos, data_2d, axis=0)
                 if filtfilt
                 else scipy_signal.sosfilt(sos, data_2d, axis=0)
             )
         else:
-            b, a = filt
+            b, a = filt_obj
             new_data_2d = (
                 scipy_signal.filtfilt(b, a, data_2d, axis=0)
                 if filtfilt
