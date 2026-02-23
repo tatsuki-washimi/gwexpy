@@ -94,12 +94,12 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">frequency1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;周波数軸 1 (X軸/Columns)&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xindex</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">yindex</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">frequency2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;周波数軸 2 (Y軸/Rows)&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">yindex</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xindex</span>
 
 <div class="viewcode-block" id="BifrequencyMap.from_points">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.BifrequencyMap.from_points">[docs]</a>
@@ -123,8 +123,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">):</span>
             <span class="n">f2</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Array2Dは (y, x) の順で初期化されるため、それに合わせる</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">yindex</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">xindex</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="c1"># GWpy 4.0: xindex -&gt; Axis 0 (rows), yindex -&gt; Axis 1 (cols)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">xindex</span><span class="o">=</span><span class="n">f2</span><span class="p">,</span> <span class="n">yindex</span><span class="o">=</span><span class="n">f1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BifrequencyMap.propagate">

@@ -2085,23 +2085,43 @@
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">filter_design</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span> <span class="k">as</span> <span class="n">scipy_signal</span>
 
-        <span class="n">form</span><span class="p">,</span> <span class="n">filt</span> <span class="o">=</span> <span class="n">filter_design</span><span class="o">.</span><span class="n">parse_filter</span><span class="p">(</span>
-            <span class="n">args</span><span class="p">,</span>
-            <span class="n">analog</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;analog&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
-            <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">analog</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;analog&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="s2">&quot;rad/s&quot;</span><span class="p">)</span>
+        <span class="n">normalize_gain</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;normalize_gain&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="n">filtfilt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;filtfilt&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># Default to True for phase consistency</span>
+
+        <span class="n">filt</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">args</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># GWpy &gt;= 4.0</span>
+            <span class="n">zpk</span> <span class="o">=</span> <span class="n">filter_design</span><span class="o">.</span><span class="n">prepare_digital_filter</span><span class="p">(</span>
+                <span class="n">filt</span><span class="p">,</span>
+                <span class="n">analog</span><span class="o">=</span><span class="n">analog</span><span class="p">,</span>
+                <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+                <span class="n">normalize_gain</span><span class="o">=</span><span class="n">normalize_gain</span><span class="p">,</span>
+                <span class="n">output</span><span class="o">=</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span>
+            <span class="n">filt_obj</span> <span class="o">=</span> <span class="n">zpk</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># Fallback for GWpy &lt; 4.0</span>
+            <span class="n">form</span><span class="p">,</span> <span class="n">filt_obj</span> <span class="o">=</span> <span class="n">filter_design</span><span class="o">.</span><span class="n">parse_filter</span><span class="p">(</span>
+                <span class="n">filt</span><span class="p">,</span>
+                <span class="n">analog</span><span class="o">=</span><span class="n">analog</span><span class="p">,</span>
+                <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="c1"># Apply filter along axis 0</span>
         <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span><span class="p">:</span>
-            <span class="n">sos</span> <span class="o">=</span> <span class="n">scipy_signal</span><span class="o">.</span><span class="n">zpk2sos</span><span class="p">(</span><span class="o">*</span><span class="n">filt</span><span class="p">)</span>
+            <span class="n">sos</span> <span class="o">=</span> <span class="n">scipy_signal</span><span class="o">.</span><span class="n">zpk2sos</span><span class="p">(</span><span class="o">*</span><span class="n">filt_obj</span><span class="p">)</span>
             <span class="n">new_data_2d</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">scipy_signal</span><span class="o">.</span><span class="n">sosfiltfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">data_2d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">filtfilt</span>
                 <span class="k">else</span> <span class="n">scipy_signal</span><span class="o">.</span><span class="n">sosfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">data_2d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">filt</span>
+            <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">filt_obj</span>
             <span class="n">new_data_2d</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">scipy_signal</span><span class="o">.</span><span class="n">filtfilt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">data_2d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">filtfilt</span>
