@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Protocol
 
-if TYPE_CHECKING:
-    from astropy import units as u
+from astropy import units as u
 
+if TYPE_CHECKING:
     from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 
 

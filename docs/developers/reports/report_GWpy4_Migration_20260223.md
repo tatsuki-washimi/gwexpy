@@ -55,6 +55,19 @@ conda run -n gwexpy-migration pytest tests/timeseries/ tests/numerics/ tests/ana
 - **Skip**: 76 (FrameCPP/Datafind 等のバックエンド未導入による)
 - **Status**: ✅ 成功
 
+### 5. チュートリアルノートブックの検証
+
+すべての公式チュートリアルおよびドキュメント内のノートブックに対し、`pytest --nbmake` を用いた検証を実施しました。
+
+- **Phase 1 (Core Tutorials)**: 成功
+- **Phase 2 (Advanced Analysis)**: 成功
+- **Phase 3 (Comprehensive Check)**: 成功
+  - **GWpy 4.0 互換性の追加修正**:
+    - `fdfilter` が予約済みの `_fdcommon._fdfilter` に移行された問題に伴い、フィルタのインターフェースおよびタプル展開の仕様を変更しました。
+    - `gwpy.utils` から削除された `gprint`, `null_context`, `env`, `unique` 等の参照を `gwexpy.utils` から一掃し、標準ライブラリ（`sys.stdout.write`, `contextlib.nullcontext` 等）へ置き換えました。
+  - プロット依存パッケージ不足によるエラー対応（`control`, `scikit-learn`, `PyWavelets`, `jinja2`, `torch` の追加インストールおよびコード補正）。
+  - `case_ml_preprocessing.ipynb` において `nbfomart` JSONのソース行崩れによるシンタックスエラーをPythonスクリプトで修復しました。
+
 ---
 
 _本レポートは Antigravity によって自動生成されました。_

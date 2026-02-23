@@ -1,6 +1,7 @@
+import types
+
 import numpy as np
 import pytest
-import types
 from astropy import units as u
 from gwpy.spectrogram import Spectrogram
 
