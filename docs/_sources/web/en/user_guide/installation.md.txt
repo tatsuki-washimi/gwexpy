@@ -78,6 +78,14 @@ conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecp
 pip install ".[gw]"
 ```
 
+### Maximal Information Coefficient (MIC)
+
+Calculation of MIC requires `minepy`. On Python 3.11+, standard installation via `pip` or `conda` may fail. We provide an automated build script in the repository:
+
+```bash
+python scripts/install_minepy.py
+```
+
 :::
 
 ## Next Steps
