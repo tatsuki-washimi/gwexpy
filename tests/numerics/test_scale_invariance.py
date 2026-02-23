@@ -76,6 +76,7 @@ def test_whitening_invariant(check_scale_invariance):
 
 def test_ica_source_recovery():
     """ica_fit should recover sources mixed at 10^-21 amplitude."""
+    pytest.importorskip("sklearn", reason="scikit-learn is required for ICA")
     # Generate 2 distinct sources
     t = np.linspace(0, 1, 1000)
     s1 = np.sin(2 * np.pi * 7 * t)  # 7Hz sine
@@ -126,6 +127,7 @@ def test_ica_source_recovery():
 
 def test_hht_vmin():
     """hht_spectrogram should not contain nan or empty plots for small data."""
+    pytest.importorskip("PyEMD", reason="PyEMD is required for HHT")
     t = np.linspace(0, 0.1, 1000)
     # Signal at 10^-21 amplitude
     data = 1e-21 * np.sin(2 * np.pi * 100 * t)

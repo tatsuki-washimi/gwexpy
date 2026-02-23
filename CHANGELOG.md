@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+## [0.1.0b2] - 2026-02-23
+
 ### Changed
 
 - **API Unification**: Standardized all spectral analysis function signatures to use time-based parameters (`fftlength`/`overlap` in seconds) instead of sample-count-based parameters (`nperseg`/`noverlap`). This aligns gwexpy with GWpy conventions and improves user experience.
@@ -10,7 +14,7 @@
     - `gwexpy.fitting.fit_bootstrap_spectrum()` - now accepts `fftlength` and `overlap` (seconds)
     - `gwexpy.spectrogram.Spectrogram.bootstrap()` and `.bootstrap_asd()` - now accept `fftlength` and `overlap` (seconds)
     - `gwexpy.fields.signal.*` spectral functions (spectral_density, compute_psd, freq_space_map, coherence_map) - now accept `fftlength` and `overlap` (seconds)
-    - `gwexpy.timeseries.TimeSeriesMatrix` spectral methods (_vectorized_psd, _vectorized_csd, _vectorized_coherence) - now accept `fftlength` and `overlap` (seconds)
+    - `gwexpy.timeseries.TimeSeriesMatrix` spectral methods (\_vectorized_psd, \_vectorized_csd, \_vectorized_coherence) - now accept `fftlength` and `overlap` (seconds)
   - **Migration Note**: Using deprecated `nperseg` or `noverlap` parameters will raise `TypeError` with guidance to use `fftlength` and `overlap` instead. No deprecation period - breaking change applies immediately.
   - **New Module**: `gwexpy.utils.fft_args` provides helper functions for parameter validation and conversion:
     - `parse_fftlength_or_overlap()` - converts time values (float, int, Quantity) to seconds and samples
@@ -88,3 +92,7 @@
 - **Type Errors**: Fixed various MyPy errors including uninitialized attributes and missing return type annotations.
 - Fixed unit propagation in complex matrix operations.
 - Corrected IFFT amplitude scaling for one-sided spectra.
+
+[Unreleased]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b2...HEAD
+[0.1.0b2]: https://github.com/tatsuki-washimi/gwexpy/compare/v0.1.0b1...v0.1.0b2
+[0.1.0b1]: https://github.com/tatsuki-washimi/gwexpy/releases/tag/v0.1.0b1
