@@ -64,8 +64,8 @@ def test_correlation_vector():
     mat = TimeSeriesMatrix(data, dt=1, channel_names=["ch0", "ch1", "ch2"])
     target = TimeSeries(target_data, dt=1)
 
-    # Run with nproc=1 to avoid overhead/issues in test env
-    df = mat.correlation_vector(target, method="pearson", nproc=1)
+    # Run with parallel=1 to avoid overhead/issues in test env
+    df = mat.correlation_vector(target, method="pearson", parallel=1)
 
     assert len(df) == 3
     assert df.iloc[0]["channel"] == "ch0"

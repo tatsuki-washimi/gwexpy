@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Install script for `minepy` on Python 3.11+
-minepy currently lacks pre-built wheels for Python 3.11+ and its setup.py 
+minepy currently lacks pre-built wheels for Python 3.11+ and its setup.py
 contains an outdated dependency on `pkg_resources` that breaks in modern pip.
 This script downloads the source, patches it, recompiles the Cython extension,
 and installs it into the current Python environment.
@@ -24,9 +24,9 @@ def main():
 
     # 1. Check requirements
     try:
-        import cython
-        import numpy
-        import scipy
+        import cython  # noqa: F401
+        import numpy  # noqa: F401
+        import scipy  # noqa: F401
     except ImportError as e:
         print(f"Error: Missing build requirement: {e.name}")
         print("Please install them first: pip install cython numpy scipy")
