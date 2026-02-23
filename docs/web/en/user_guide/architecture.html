@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Architecture &amp; Physics &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Reference" href="../reference/index.html" />
+    <link rel="prev" title="Validated Algorithms" href="validated_algorithms.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Architecture &amp; Physics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#physical-fields-fourier-space">Physical Fields &amp; Fourier Space</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectral-analysis-and-statistics">Spectral Analysis and Statistics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transient-response-and-system-analysis">Transient Response and System Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bayesian-fitting-modeling">Bayesian Fitting &amp; Modeling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#noise-models">Noise Models</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
+      <li class="breadcrumb-item active">Architecture &amp; Physics</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/architecture.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="architecture-physics">
+<h1>Architecture &amp; Physics<a class="headerlink" href="#architecture-physics" title="Link to this heading"></a></h1>
+<p>This section details the custom algorithms, physical models, and mathematical logic implemented in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>. It serves as a reference for advanced users and developers who wish to understand the underlying mechanics of the package’s analytical tools.</p>
+<section id="physical-fields-fourier-space">
+<h2>Physical Fields &amp; Fourier Space<a class="headerlink" href="#physical-fields-fourier-space" title="Link to this heading"></a></h2>
+<section id="d-field-operations">
+<h3>4D Field Operations<a class="headerlink" href="#d-field-operations" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides robust handling of multi-dimensional data, specifically 4D fields representing time and 3D spatial dimensions (e.g., <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>). A core capability is the seamless transformation between the spatial domain and the wavenumber (<span class="math notranslate nohighlight">\(k\)</span>) domain (reciprocal space).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">fft_space</span></code> and <code class="docutils literal notranslate"><span class="pre">ifft_space</span></code> methods handle these transformations using multi-dimensional Fast Fourier Transforms (FFT). Crucially, the package correctly manages the coordinate transformations, ensuring that physical units and grid spacing are accurately translated into the <span class="math notranslate nohighlight">\(k\)</span>-space.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The angular wavenumber k is computed based on the spatial resolution dx:</span>
+<span class="n">k_values</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">npts</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">dx_value</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This guarantees that applications relying on physical wavelengths or spatial frequencies receive correctly scaled dimensional outputs.</p>
+</section>
+</section>
+<section id="spectral-analysis-and-statistics">
+<h2>Spectral Analysis and Statistics<a class="headerlink" href="#spectral-analysis-and-statistics" title="Link to this heading"></a></h2>
+<section id="robust-asd-estimation-bootstrap-spectrogram">
+<h3>Robust ASD Estimation (Bootstrap Spectrogram)<a class="headerlink" href="#robust-asd-estimation-bootstrap-spectrogram" title="Link to this heading"></a></h3>
+<p>Standard Amplitude Spectral Density (ASD) estimation can be sensitive to non-stationary noise. <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> implements a robust estimation method via the <code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram</span></code> function.</p>
+<p>This method uses bootstrap resampling (including Moving Block Bootstrap for time-correlated data) across the time axis of a spectrogram to estimate the median or mean ASD along with confidence intervals.</p>
+<p><strong>Variance Inflation Factor (VIF)</strong>
+When calculating statistics from overlapping data segments (like in Welch’s method), the segments are correlated, artificially reducing the apparent variance. <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> correctly applies a Variance Inflation Factor (VIF) based on the overlapping window’s autocorrelation function.</p>
+<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\text{factor} = \sqrt{1 + 2 \sum_{k=1}^{M-1} (1 - k/M) |\rho_{\text{window}}(k \Delta)|^2}
+</pre></div>
+</div>
+<p>This ensures that the confidence intervals returned by the bootstrap method accurately reflect the true statistical uncertainty of the data.</p>
+</section>
+<section id="transient-signal-fft">
+<h3>Transient Signal FFT<a class="headerlink" href="#transient-signal-fft" title="Link to this heading"></a></h3>
+<p>For analyzing transient signals (like injections or physical impulses), standard windowing techniques often distort the signal’s true amplitude. <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides <code class="docutils literal notranslate"><span class="pre">_fft_transient</span></code>, an FFT method optimized for transients. It uses predictable padding strategies to maintain the temporal structure and accurately preserves the amplitude in the one-sided spectrum.</p>
+</section>
+<section id="fast-coherence-engine-bruco">
+<h3>Fast Coherence Engine (BruCo)<a class="headerlink" href="#fast-coherence-engine-bruco" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine</span></code> calculates Welch coherence between a single target channel and potentially thousands of auxiliary channels efficiently. By pre-calculating and caching the target signal’s FFT and PSD, it avoids redundant computations, significantly speeding up large-scale noise audits (like the “Brute-force Coherence” tool).</p>
+</section>
+</section>
+<section id="transient-response-and-system-analysis">
+<h2>Transient Response and System Analysis<a class="headerlink" href="#transient-response-and-system-analysis" title="Link to this heading"></a></h2>
+<section id="response-function-analysis">
+<h3>Response Function Analysis<a class="headerlink" href="#response-function-analysis" title="Link to this heading"></a></h3>
+<p>The framework includes tools for analyzing a system’s response to injected signals (e.g., stepped sine excitations). The <code class="docutils literal notranslate"><span class="pre">detect_step_segments</span></code> function automatically tracks the injection frequency in a spectrogram to identify stable segments of excitation.</p>
+<p>The coupling function (transfer function magnitude) is then estimated by comparing the signal power during the injection to the background power, ensuring that background noise does not artificially inflate the transfer function estimate.</p>
+<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\text{CF}(f) = \sqrt{\frac{P_{\text{tgt,inj}}(f) - P_{\text{tgt,bkg}}(f)}{P_{\text{wit,inj}}(f) - P_{\text{wit,bkg}}(f)}}
+</pre></div>
+</div>
+</section>
+</section>
+<section id="bayesian-fitting-modeling">
+<h2>Bayesian Fitting &amp; Modeling<a class="headerlink" href="#bayesian-fitting-modeling" title="Link to this heading"></a></h2>
+<section id="generalized-least-squares-gls-and-mcmc">
+<h3>Generalized Least Squares (GLS) and MCMC<a class="headerlink" href="#generalized-least-squares-gls-and-mcmc" title="Link to this heading"></a></h3>
+<p>When fitting models to data with correlated errors (where the noise covariance matrix is known), <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> supports Generalized Least Squares (GLS) solving. The fitting core integrates natively with the <code class="docutils literal notranslate"><span class="pre">emcee</span></code> package to perform Markov Chain Monte Carlo (MCMC) parameter estimation.</p>
+<p>For GLS, the log-likelihood leverages the full inverse covariance matrix (<span class="math notranslate nohighlight">\(\Sigma^{-1}\)</span>), accommodating heteroscedastic and correlated errors.</p>
+<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\log p(y|\theta) \propto - \frac{1}{2} r^T \Sigma^{-1} r
+</pre></div>
+</div>
+<p>For complex-valued data (common in transfer functions), the framework utilizes the Hermitian form <span class="math notranslate nohighlight">\(r^\dagger \Sigma^{-1} r\)</span> to correctly process both magnitude and phase residuals.</p>
+</section>
+<section id="dimensionality-reduction-pca-ica">
+<h3>Dimensionality Reduction (PCA/ICA)<a class="headerlink" href="#dimensionality-reduction-pca-ica" title="Link to this heading"></a></h3>
+<p>Principal Component Analysis (PCA) and Independent Component Analysis (ICA) can be applied directly to multi-channel data representations like <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>. <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> manages the underlying dimensionality changes (flattening the 3D structure (Channels <span class="math notranslate nohighlight">\(\times\)</span> Columns <span class="math notranslate nohighlight">\(\times\)</span> Time) into a 2D feature matrix for scikit-learn, and reconstructing it back) while preserving essential metadata like GPS timestamps and physical units.</p>
+</section>
+</section>
+<section id="noise-models">
+<h2>Noise Models<a class="headerlink" href="#noise-models" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> includes built-in generators for specific physical noise models, useful for simulation and testing.</p>
+<ul class="simple">
+<li><p><strong>Schumann Resonance</strong>: Simulates the background geomagnetic noise using a sum of independent Lorentzian profiles corresponding to the Earth-ionosphere cavity modes.</p></li>
+<li><p><strong>Voigt Profile</strong>: Generates spectral peaks combining Gaussian (Doppler broadening) and Lorentzian (collision broadening) characteristics using the Faddeeva function, common in atomic physics and high-Q mechanical resonances.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="validated_algorithms.html" class="btn btn-neutral float-left" title="Validated Algorithms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../reference/index.html" class="btn btn-neutral float-right" title="Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

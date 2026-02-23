@@ -65,11 +65,12 @@
 <li class="toctree-l4"><a class="reference internal" href="case_active_damping.html">Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated Configuration)</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../migration_fftlength.html">Migration Guide: nperseg/noverlap → fftlength/overlap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">Numerical Stability and Precision</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">Validated Algorithms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">Architecture &amp; Physics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
 </ul>
 </li>
@@ -113,6 +114,7 @@
 </div>
 <section id="Tutorial:-Transfer-Function-Measurement">
 <h1>Tutorial: Transfer Function Measurement<a class="headerlink" href="#Tutorial:-Transfer-Function-Measurement" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_transfer_function.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>This tutorial demonstrates how to use <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> to estimate the transfer function of a system from measured data, fit a physical model to the transfer function, and identify system parameters.</p>
 <p><strong>Scenario:</strong> We inject white noise into a mechanical vibration system (or electrical circuit) and measure its response. From this input-output data, we will determine the system’s resonance frequency <span class="math notranslate nohighlight">\(f_0\)</span> and quality factor <span class="math notranslate nohighlight">\(Q\)</span>.</p>
 <p><strong>Workflow:</strong></p>

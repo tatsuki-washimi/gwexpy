@@ -73,6 +73,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">アーキテクチャと物理</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
 </ul>
 </li>
@@ -115,6 +116,7 @@
 </div>
 <section id="Bootstrap-PSD-推定と-GLS-フィッティング">
 <h1>Bootstrap PSD 推定と GLS フィッティング<a class="headerlink" href="#Bootstrap-PSD-推定と-GLS-フィッティング" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_bootstrap_gls_fitting.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>このチュートリアルでは、以下の統合的なワークフローを実演します。</p>
 <ol class="arabic simple">
 <li><p><strong>Bootstrap PSD 推定</strong>: VIF（分散膨張因子）およびブロック補正を用いた推定</p></li>
@@ -362,16 +364,14 @@ Expected frequency bin correlation: ~0.50
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span> <span class="k">as</span> <span class="n">scipy_signal</span>
 
 <span class="c1"># Calculate segment parameters for scipy</span>
-<span class="n">nperseg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fftlength</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>  <span class="c1"># 16384 samples</span>
-<span class="n">noverlap_between</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">overlap_between_bins</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>  <span class="c1"># 4096 samples (25% of nperseg)</span>
 
 <span class="c1"># Generate spectrogram with scipy (allows noverlap independent of Welch averaging)</span>
 <span class="n">freqs_scipy</span><span class="p">,</span> <span class="n">times_scipy</span><span class="p">,</span> <span class="n">Sxx_scipy</span> <span class="o">=</span> <span class="n">scipy_signal</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span>
     <span class="n">data</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
     <span class="n">fs</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span>
     <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
-    <span class="n">nperseg</span><span class="o">=</span><span class="n">nperseg</span><span class="p">,</span>
-    <span class="n">noverlap</span><span class="o">=</span><span class="n">noverlap_between</span><span class="p">,</span>
+    <span class="n">nperseg</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">fftlength</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span>
+    <span class="n">noverlap</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">overlap_between_bins</span> <span class="o">*</span> <span class="n">fs</span><span class="p">),</span>
     <span class="n">scaling</span><span class="o">=</span><span class="s1">&#39;density&#39;</span><span class="p">,</span>
     <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;psd&#39;</span><span class="p">,</span>
     <span class="n">detrend</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span>
@@ -392,8 +392,8 @@ Expected frequency bin correlation: ~0.50
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spectrogram shape: </span><span class="si">{</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time bins: </span><span class="si">{</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency bins: </span><span class="si">{</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Actual overlap: </span><span class="si">{</span><span class="p">(</span><span class="n">nperseg</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">noverlap_between</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">nperseg</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% stride&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected correlation from overlap: ~</span><span class="si">{</span><span class="n">noverlap_between</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">nperseg</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Actual overlap: </span><span class="si">{</span><span class="p">(</span><span class="n">fftlength</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">overlap_between_bins</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fftlength</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% stride&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected correlation from overlap: ~</span><span class="si">{</span><span class="n">overlap_between_bins</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fftlength</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

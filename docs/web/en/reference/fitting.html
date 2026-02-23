@@ -59,11 +59,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/getting_started.html">Getting Started</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../user_guide/migration_fftlength.html">Migration Guide: nperseg/noverlap → fftlength/overlap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../user_guide/architecture.html">Architecture &amp; Physics</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="api/index.html">API Reference</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="classes.html">Class Index</a></li>
@@ -332,14 +333,6 @@
 <td><p>float or Quantity</p></td>
 <td><p>Overlap length in seconds (default: None, window-dependent)</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nfft</span></code></p></td>
-<td><p>int</p></td>
-<td><p>FFT segment length in samples (alternative to <code class="docutils literal notranslate"><span class="pre">fftlength</span></code>)</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">noverlap</span></code></p></td>
-<td><p>int</p></td>
-<td><p>Overlap length in samples (must be used with <code class="docutils literal notranslate"><span class="pre">nfft</span></code>)</p></td>
-</tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">n_boot</span></code></p></td>
 <td><p>int</p></td>
 <td><p>Number of bootstrap iterations</p></td>
@@ -399,15 +392,6 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">parameter_intervals</span><span class="p">)</span>  <span class="c1"># MCMC confidence intervals</span>
 <span class="n">result</span><span class="o">.</span><span class="n">plot_corner</span><span class="p">()</span>
 
-<span class="c1"># Alternative: Use sample-based specification for precise FFT control</span>
-<span class="n">result2</span> <span class="o">=</span> <span class="n">fit_bootstrap_spectrum</span><span class="p">(</span>
-    <span class="n">spectrogram</span><span class="p">,</span>
-    <span class="n">model_fn</span><span class="o">=</span><span class="n">power_law</span><span class="p">,</span>
-    <span class="n">freq_range</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
-    <span class="n">nfft</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>      <span class="c1"># Exact FFT length (samples)</span>
-    <span class="n">noverlap</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>   <span class="c1"># Exact overlap (samples)</span>
-    <span class="n">initial_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">},</span>
-<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -518,14 +502,14 @@
 <p>GLS cost function using covariance inverse.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GeneralizedLeastSquares</span><span class="p">:</span>
     <span class="n">errordef</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Minuit.LEAST_SQUARES</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cov_inv</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
         <span class="o">...</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="c1"># χ² = r.T @ cov_inv @ r</span>
         <span class="o">...</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">ndata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="o">...</span>
@@ -571,7 +555,7 @@
 <td><p>A, alpha</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">damped_oscillation</span></code></p></td>
-<td><p>A * exp(-t/τ) * cos(2πft + φ)</p></td>
+<td><p>A _ exp(-t/τ) _ cos(2πft + φ)</p></td>
 <td><p>A, tau, f, phi</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pol0</span></code> ~ <code class="docutils literal notranslate"><span class="pre">pol9</span></code></p></td>

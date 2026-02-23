@@ -1,0 +1,480 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GWexpy Features (For GWpy Users) &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Numerical Stability and Precision" href="numerical_stability.html" />
+    <link rel="prev" title="Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated Configuration)" href="tutorials/case_active_damping.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GWexpy Features (For GWpy Users)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#enhancements-to-existing-gwpy-classes-minor">1. Enhancements to Existing GWpy Classes (Minor)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#introduction-of-new-classes">2. Introduction of New Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#advanced-analysis-methods-single-channel">3. Advanced Analysis Methods (Single Channel)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#advanced-analysis-methods-multi-channel">4. Advanced Analysis Methods (Multi-Channel)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#interoperability-with-external-tools">5. Interoperability with External Tools</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notes-on-pickle-shelve">Notes on Pickle / shelve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gui-applications">6. GUI Applications</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy Documentation</a></li>
+      <li class="breadcrumb-item active">GWexpy Features (For GWpy Users)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="gwexpy-features-for-gwpy-users">
+<h1>GWexpy Features (For GWpy Users)<a class="headerlink" href="#gwexpy-features-for-gwpy-users" title="Link to this heading"></a></h1>
+<p>This document exhaustively lists the features extended and added to GWexpy on top of GWpy.
+The features included here become available simply by importing <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>.</p>
+<section id="enhancements-to-existing-gwpy-classes-minor">
+<h2>1. Enhancements to Existing GWpy Classes (Minor)<a class="headerlink" href="#enhancements-to-existing-gwpy-classes-minor" title="Link to this heading"></a></h2>
+<p>These are method additions and functional enhancements to base classes like <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>, and <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> for improved usability.</p>
+<section id="base-method-enhancements-timeseries-frequencyseries-spectrogram">
+<h3>Base Method Enhancements (TimeSeries / FrequencySeries / Spectrogram)<a class="headerlink" href="#base-method-enhancements-timeseries-frequencyseries-spectrogram" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Phase &amp; Angle</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">.phase(unwrap=False)</span></code>: Calculate phase</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.angle(unwrap=False)</span></code>: Alias for <code class="docutils literal notranslate"><span class="pre">.phase()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.radian(unwrap=False)</span></code>: Phase in radians</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.degree(unwrap=False)</span></code>: Phase in degrees</p></li>
+<li><p>Support for <code class="docutils literal notranslate"><span class="pre">np.unwrap</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>Resampling, Interpolation, &amp; Editing</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">.interpolate(new_times,</span> <span class="pre">method='linear')</span></code>: Data interpolation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.resample(rate)</span></code>: Enhanced resampling using <code class="docutils literal notranslate"><span class="pre">scipy</span></code> or <code class="docutils literal notranslate"><span class="pre">obspy</span></code> (Lanczos) backend</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.decimate(factor)</span></code>: Decimation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.tail(n)</span></code>: Extract the last <code class="docutils literal notranslate"><span class="pre">n</span></code> samples</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.crop(start,</span> <span class="pre">end)</span></code>: (Supports flexible time specification via <code class="docutils literal notranslate"><span class="pre">gwexpy.time.to_gps</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.append(other)</span></code>: Enhanced concatenation</p></li>
+</ul>
+</li>
+<li><p><strong>Preprocessing</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">.impute(method=...)</span></code>: Missing value imputation (linear interpolation, ffill, bfill). Can specify constraints like <code class="docutils literal notranslate"><span class="pre">max_gap</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.standardize()</span></code>: Standardization (Z-score normalization)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.whiten(method='pca'|'zca')</span></code>: Whitening. Model can be retrieved with <code class="docutils literal notranslate"><span class="pre">return_model=True</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong>Peak Detection</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">.find_peaks(...)</span></code>: Detect peaks in the signal (wrapper for <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code>)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="gps-time-utilities">
+<h3>GPS Time Utilities<a class="headerlink" href="#gps-time-utilities" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Utility functions supporting vector operations and formatting of GPS times (available in <code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.gps</span></code>, etc.).</p></li>
+</ul>
+</section>
+<section id="plotting">
+<h3>Plotting<a class="headerlink" href="#plotting" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Datetime Axis</strong>: Automatically formats the horizontal axis to datetime format during plotting.</p></li>
+<li><p><strong>Batch Plotting</strong>: Simultaneous plotting of a spectrogram and its time-averaged ASD via <code class="docutils literal notranslate"><span class="pre">Spectrogram.plot_summary()</span></code>, etc.</p></li>
+<li><p><strong>Maps &amp; Sky Maps</strong>: Data plotting on maps using <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.GeoMap</span></code> and <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.SkyMap</span></code>.</p></li>
+<li><p><strong>PairPlot</strong>: Pair plotting (scatter matrix / correlation map) of multivariate data via <code class="docutils literal notranslate"><span class="pre">gwexpy.plot.PairPlot</span></code>.</p></li>
+</ul>
+</section>
+<section id="enhancements-to-collection-classes-timeserieslist-timeseriesdict">
+<h3>Enhancements to Collection Classes (TimeSeriesList / TimeSeriesDict)<a class="headerlink" href="#enhancements-to-collection-classes-timeserieslist-timeseriesdict" title="Link to this heading"></a></h3>
+<p>Batch processing capabilities have been extended to GWpy’s <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code>.</p>
+<ul class="simple">
+<li><p>Batch signal processing: <code class="docutils literal notranslate"><span class="pre">.fft_time_all()</span></code>, <code class="docutils literal notranslate"><span class="pre">.resample_all(rate)</span></code>, <code class="docutils literal notranslate"><span class="pre">.filter_all(*args)</span></code></p></li>
+<li><p>Batch slicing: <code class="docutils literal notranslate"><span class="pre">.sel_all(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">.isel_all(...)</span></code></p></li>
+<li><p>Broadcasting of arithmetic operations</p></li>
+</ul>
+</section>
+</section>
+<section id="introduction-of-new-classes">
+<h2>2. Introduction of New Classes<a class="headerlink" href="#introduction-of-new-classes" title="Link to this heading"></a></h2>
+<p>New data structures for handling multi-channel data, matrix data, physical fields, etc.</p>
+<section id="new-collections">
+<h3>New Collections<a class="headerlink" href="#new-collections" title="Link to this heading"></a></h3>
+<p>Collection classes for frequency and time-frequency data, which are not standard in GWpy. They serve the same role as <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> and <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> do for <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code>, <code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code>, <code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code></p></li>
+</ul>
+</section>
+<section id="matrices-seriesmatrix">
+<h3>Matrices (SeriesMatrix)<a class="headerlink" href="#matrices-seriesmatrix" title="Link to this heading"></a></h3>
+<p>Multidimensional data structures that hold data as elements of a “matrix” (Row, Col, Axis…).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>: (Rows, Cols, Time)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code>: (Rows, Cols, Frequency)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code>: (Rows, Cols, Time, Frequency)</p></li>
+</ul>
+<p><strong>Features &amp; Capabilities</strong>:</p>
+<ul class="simple">
+<li><p><strong>Matrix Operations</strong>: Element-wise matrix multiplication (<code class="docutils literal notranslate"><span class="pre">&#64;</span></code>), inverse (<code class="docutils literal notranslate"><span class="pre">.inv()</span></code>), determinant (<code class="docutils literal notranslate"><span class="pre">.det()</span></code>), trace (<code class="docutils literal notranslate"><span class="pre">.trace()</span></code>), Schur complement (<code class="docutils literal notranslate"><span class="pre">.schur()</span></code>). Powerful for transfer function analysis of MIMO systems.</p></li>
+<li><p><strong>Statistical Processing</strong>: Batch computation of statistics across the entire sensor array via row/column-wise mean/variance operations (e.g., <code class="docutils literal notranslate"><span class="pre">.mean(axis)</span></code>, <code class="docutils literal notranslate"><span class="pre">.std(axis)</span></code>).</p></li>
+<li><p><strong>Batch Processing</strong>: Batch application of signal processing (filtering, resampling, whitening, etc.) to each element.</p></li>
+</ul>
+</section>
+<section id="physical-fields-fields">
+<h3>Physical Fields (Fields)<a class="headerlink" href="#physical-fields-fields" title="Link to this heading"></a></h3>
+<p>Classes to handle 4-dimensional physical fields (Time/Frequency + 3D Space/Wavenumber).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> / <code class="docutils literal notranslate"><span class="pre">VectorField</span></code> / <code class="docutils literal notranslate"><span class="pre">TensorField</span></code></p></li>
+</ul>
+<p><strong>Features &amp; Capabilities</strong>:</p>
+<ul class="simple">
+<li><p><strong>Domain Management</strong>: Manages the state of the Time/Frequency axis (<code class="docutils literal notranslate"><span class="pre">axis0</span></code>) and Space/Wavenumber axis (<code class="docutils literal notranslate"><span class="pre">space_domain</span></code>), supporting mutual transformations (<code class="docutils literal notranslate"><span class="pre">.fft_time</span></code>, <code class="docutils literal notranslate"><span class="pre">.fft_space</span></code>).</p></li>
+<li><p><strong>Spatial Extraction</strong>: Extract and interpolate time series data at arbitrary spatial coordinates via <code class="docutils literal notranslate"><span class="pre">.extract_points()</span></code>.</p></li>
+<li><p><strong>Vector &amp; Tensor Analysis</strong>: Physical operations like dot product, cross product, divergence, curl, and coordinate transformations (e.g., Cartesian coordinate system).</p></li>
+<li><p><strong>Simulation</strong>: Generation of noise fields (isotropic noise, plane waves, etc.) in coordination with <code class="docutils literal notranslate"><span class="pre">gwexpy.noise.field</span></code>.</p></li>
+</ul>
+</section>
+<section id="other">
+<h3>Other<a class="headerlink" href="#other" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">BifrequencyMap</span></code>: Map data with two frequency axes (e.g., STLTGram).</p></li>
+</ul>
+</section>
+</section>
+<section id="advanced-analysis-methods-single-channel">
+<h2>3. Advanced Analysis Methods (Single Channel)<a class="headerlink" href="#advanced-analysis-methods-single-channel" title="Link to this heading"></a></h2>
+<section id="noise-simulation-gwexpy-noise">
+<h3>Noise Simulation (<code class="docutils literal notranslate"><span class="pre">gwexpy.noise</span></code>)<a class="headerlink" href="#noise-simulation-gwexpy-noise" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">from_asd(asd,</span> <span class="pre">...)</span></code>: Time series generation from ASD (Amplitude Spectral Density)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">colored_noise(psd,</span> <span class="pre">...)</span></code>: Generation of colored noise</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">field.simulate(...)</span></code>: Generation of noise fields</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pygwinc</span></code> integration: Utilize interferometer noise budget models via <code class="docutils literal notranslate"><span class="pre">gwexpy.noise.gwinc_</span></code>.</p></li>
+</ul>
+</section>
+<section id="time-series-analysis-timeseries">
+<h3>Time Series Analysis (TimeSeries)<a class="headerlink" href="#time-series-analysis-timeseries" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.hilbert()</span></code>: Hilbert transform (Analytic signal)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.envelope()</span></code>: Envelope (<code class="docutils literal notranslate"><span class="pre">abs(hilbert)</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.demodulate(f)</span></code>: Lock-in amplification &amp; demodulation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.arima(order,</span> <span class="pre">...)</span></code>: AR/MA/ARMA/ARIMA model analysis (wrapper for <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code>, <code class="docutils literal notranslate"><span class="pre">pmdarima</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.ar(p)</span></code>, <code class="docutils literal notranslate"><span class="pre">.ma(q)</span></code>, <code class="docutils literal notranslate"><span class="pre">.arma(p,</span> <span class="pre">q)</span></code>: Shortcuts for AR/MA/ARMA</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.hurst()</span></code>: Calculation of the Hurst exponent</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.skewness()</span></code>: Skewness</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.kurtosis()</span></code>: Kurtosis</p></li>
+</ul>
+</section>
+<section id="frequency-spectrum-analysis-frequencyseries">
+<h3>Frequency Spectrum Analysis (FrequencySeries)<a class="headerlink" href="#frequency-spectrum-analysis-frequencyseries" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.differentiate()</span></code>, <code class="docutils literal notranslate"><span class="pre">.integrate()</span></code>: Differentiation/Integration in the frequency domain</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.differentiate_time()</span></code>, <code class="docutils literal notranslate"><span class="pre">.integrate_time()</span></code>: Time differentiation/integration in the frequency domain (e.g., Displacement ↔ Velocity ↔ Acceleration conversions)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.group_delay()</span></code>: Calculation of group delay</p></li>
+</ul>
+</section>
+<section id="time-frequency-analysis-spectrogram-special-transforms">
+<h3>Time-Frequency Analysis (Spectrogram / Special Transforms)<a class="headerlink" href="#time-frequency-analysis-spectrogram-special-transforms" title="Link to this heading"></a></h3>
+<p>In addition to GWpy’s spectrogram and Q-transform, various time-frequency analysis methods are provided.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hht()</span></code>: Hilbert-Huang Transform (HHT). IMF decomposition via EMD (Empirical Mode Decomposition) and instantaneous frequency analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stlt()</span></code>: Short-Time Laplace Transform (STLT). Analysis taking the damping constant <span class="math notranslate nohighlight">\(\sigma\)</span> into account.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cepstrum()</span></code>: Cepstrum analysis (quefrency).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cwt()</span></code>: Continuous Wavelet Transform (wrapper for <code class="docutils literal notranslate"><span class="pre">pywt</span></code>).</p></li>
+</ul>
+</section>
+<section id="statistical-estimation-fitting">
+<h3>Statistical Estimation &amp; Fitting<a class="headerlink" href="#statistical-estimation-fitting" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Fitting (<code class="docutils literal notranslate"><span class="pre">gwexpy.fitting</span></code>)</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">FitResult</span></code>, <code class="docutils literal notranslate"><span class="pre">Model</span></code>: Chi-square fitting (real, complex) and MCMC analysis via iminuit.</p></li>
+<li><p>Methods like <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> are also mixed into <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong>Bootstrap</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram</span></code>: Bootstrap estimation of spectrograms.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="advanced-analysis-methods-multi-channel">
+<h2>4. Advanced Analysis Methods (Multi-Channel)<a class="headerlink" href="#advanced-analysis-methods-multi-channel" title="Link to this heading"></a></h2>
+<section id="component-analysis-gwexpy-timeseries-decomposition">
+<h3>Component Analysis (<code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.decomposition</span></code>)<a class="headerlink" href="#component-analysis-gwexpy-timeseries-decomposition" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PCA</span></code>: Principal Component Analysis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ICA</span></code>: Independent Component Analysis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZCA</span></code>: Whitening (used as <code class="docutils literal notranslate"><span class="pre">.whiten(method='zca')</span></code>)</p></li>
+</ul>
+</section>
+<section id="correlation-statistical-analysis">
+<h3>Correlation &amp; Statistical Analysis<a class="headerlink" href="#correlation-statistical-analysis" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Correlation Metrics</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">dCor</span></code>: Distance Correlation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MIC</span></code>: Maximal Information Coefficient</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pearson</span></code>, <code class="docutils literal notranslate"><span class="pre">Kendall</span></code>: Standard correlation coefficients</p></li>
+</ul>
+</li>
+<li><p><strong>Bruco</strong>:</p>
+<ul>
+<li><p>Noise source identification tool via multi-channel coherence search (<code class="docutils literal notranslate"><span class="pre">gwexpy.analysis.bruco</span></code>).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="system-analysis-control">
+<h3>System Analysis &amp; Control<a class="headerlink" href="#system-analysis-control" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>MIMO / State Space Models</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">python-control</span></code> integration: Mutual conversion with control system design libraries via <code class="docutils literal notranslate"><span class="pre">TimeSeries.from_control(response)</span></code>, <code class="docutils literal notranslate"><span class="pre">to_control_frd</span></code>, etc.</p></li>
+<li><p>MIMO transfer function &amp; time series analysis using matrix classes (<code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code>).</p></li>
+</ul>
+</li>
+<li><p><strong>Noise Injection Test Analysis</strong>:</p>
+<ul>
+<li><p>Experimental data analysis tools for estimating transfer functions and calculating coupling coefficients (<code class="docutils literal notranslate"><span class="pre">gwexpy.analysis.response</span></code>).</p></li>
+</ul>
+</li>
+<li><p><strong>Matrix Operations</strong>:</p>
+<ul>
+<li><p>Basic operations like inverse (<code class="docutils literal notranslate"><span class="pre">.inv()</span></code>), determinant (<code class="docutils literal notranslate"><span class="pre">.det()</span></code>), trace (<code class="docutils literal notranslate"><span class="pre">.trace()</span></code>), and Schur complement (<code class="docutils literal notranslate"><span class="pre">.schur()</span></code>).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="interoperability-with-external-tools">
+<h2>5. Interoperability with External Tools<a class="headerlink" href="#interoperability-with-external-tools" title="Link to this heading"></a></h2>
+<p>Mutual conversion functionalities with external library objects (<code class="docutils literal notranslate"><span class="pre">.to_*()</span></code> / <code class="docutils literal notranslate"><span class="pre">.from_*()</span></code>).</p>
+<ul class="simple">
+<li><p><strong>Deep Learning / Array Libraries</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">PyTorch</span></code> (<code class="docutils literal notranslate"><span class="pre">Tensor</span></code>, <code class="docutils literal notranslate"><span class="pre">Dataset</span></code>/<code class="docutils literal notranslate"><span class="pre">DataLoader</span></code>): <code class="docutils literal notranslate"><span class="pre">to_torch</span></code>, <code class="docutils literal notranslate"><span class="pre">to_torch_dataset</span></code>, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TensorFlow</span></code> (<code class="docutils literal notranslate"><span class="pre">Tensor</span></code>): <code class="docutils literal notranslate"><span class="pre">to_tf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JAX</span></code> (<code class="docutils literal notranslate"><span class="pre">Array</span></code>): <code class="docutils literal notranslate"><span class="pre">to_jax</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CuPy</span></code> (<code class="docutils literal notranslate"><span class="pre">ndarray</span></code>): <code class="docutils literal notranslate"><span class="pre">to_cupy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Dask</span></code> (<code class="docutils literal notranslate"><span class="pre">dask.array</span></code>): <code class="docutils literal notranslate"><span class="pre">to_dask</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Zarr</span></code>: <code class="docutils literal notranslate"><span class="pre">to_zarr</span></code> / <code class="docutils literal notranslate"><span class="pre">from_zarr</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>Data Structures</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> (<code class="docutils literal notranslate"><span class="pre">Series</span></code>/<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>): <code class="docutils literal notranslate"><span class="pre">to_pandas</span></code>, <code class="docutils literal notranslate"><span class="pre">to_pandas_dataframe</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code> (<code class="docutils literal notranslate"><span class="pre">DataArray</span></code>): <code class="docutils literal notranslate"><span class="pre">to_xarray</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">polars</span></code> (<code class="docutils literal notranslate"><span class="pre">Series</span></code>/<code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>): <code class="docutils literal notranslate"><span class="pre">to_polars_series</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SQLite</span></code>, <code class="docutils literal notranslate"><span class="pre">JSON</span></code>: Lightweight save/load</p></li>
+</ul>
+</li>
+<li><p><strong>Domain Specific</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Obspy</span></code> (Seismology): <code class="docutils literal notranslate"><span class="pre">Trace</span></code>, <code class="docutils literal notranslate"><span class="pre">Stream</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MNE</span></code> (EEG/MEG): <code class="docutils literal notranslate"><span class="pre">Raw</span></code>, <code class="docutils literal notranslate"><span class="pre">RawArray</span></code> (<code class="docutils literal notranslate"><span class="pre">to_mne</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Neo</span></code> (Electrophysiology): <code class="docutils literal notranslate"><span class="pre">AnalogSignal</span></code> (<code class="docutils literal notranslate"><span class="pre">to_neo</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Librosa</span></code> / <code class="docutils literal notranslate"><span class="pre">Pydub</span></code> (Audio): Audio data conversion</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SimPEG</span></code> (Geophysics): <code class="docutils literal notranslate"><span class="pre">Data</span></code> object</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python-control</span></code>: <code class="docutils literal notranslate"><span class="pre">FrequencyResponseData</span></code> (FRD), etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROOT</span></code> (CERN): <code class="docutils literal notranslate"><span class="pre">TGraph</span></code>, <code class="docutils literal notranslate"><span class="pre">TH1D</span></code>, <code class="docutils literal notranslate"><span class="pre">TH2D</span></code>, <code class="docutils literal notranslate"><span class="pre">TMultiGraph</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Specutils</span></code>: <code class="docutils literal notranslate"><span class="pre">Spectrum1D</span></code> (<code class="docutils literal notranslate"><span class="pre">to_specutils</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pyspeckit</span></code>: <code class="docutils literal notranslate"><span class="pre">Spectrum</span></code> (<code class="docutils literal notranslate"><span class="pre">to_pyspeckit</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Astropy</span></code>: <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> (<code class="docutils literal notranslate"><span class="pre">to_astropy_timeseries</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Quantities</span></code>: <code class="docutils literal notranslate"><span class="pre">Quantity</span></code> (<code class="docutils literal notranslate"><span class="pre">to_quantity</span></code>)</p></li>
+</ul>
+</li>
+</ul>
+<section id="data-format-i-o-extensions">
+<h3>Data Format I/O Extensions<a class="headerlink" href="#data-format-i-o-extensions" title="Link to this heading"></a></h3>
+<p>In addition to the formats natively supported by GWpy, the following are supported (or extended):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ATS</span></code> (Metronix MT data)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GBD</span></code> (GRAPHTEC datalogger)</p>
+<ul>
+<li><p>Analog channels are converted from <code class="docutils literal notranslate"><span class="pre">count</span> <span class="pre">-&gt;</span> <span class="pre">V</span></code> using the amp range (e.g., <code class="docutils literal notranslate"><span class="pre">20mV</span></code>) in the header.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Alarm</span></code> / <code class="docutils literal notranslate"><span class="pre">AlarmOut</span></code> / <code class="docutils literal notranslate"><span class="pre">Pulse*</span></code> / <code class="docutils literal notranslate"><span class="pre">Logic*</span></code> are handled as digital/status, values normalized to 0/1, and unit set to dimensionless.</p></li>
+<li><p>You can overwrite the channel names to be treated as digital by specifying <code class="docutils literal notranslate"><span class="pre">digital_channels=[...]</span></code> in <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(...,</span> <span class="pre">format=&quot;gbd&quot;)</span></code>.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TDMS</span></code> (LabVIEW / NI)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MiniSEED</span></code>, <code class="docutils literal notranslate"><span class="pre">SAC</span></code>, <code class="docutils literal notranslate"><span class="pre">GSE2</span></code> (Seismic data, Obspy integration)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WIN</span></code> (Seismic data)</p>
+<ul>
+<li><p>Implemented decoding for 0.5-byte (4-bit difference) / 3-byte differences, taking into account known issues and caveats in ObsPy.</p></li>
+<li><p>Implementation in gwexpy: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/win.py</span></code> (handling lower nibble for 4-bit differences, skipping trailing nibble for odd differences, decoding signed 24-bit differences, etc.).</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DTTXML</span></code> (LIGO Diagnostic Test Tools)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SDB</span></code> (Davis weather station data)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Midas</span></code> (PSI/DAQ format)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Parquet</span></code>, <code class="docutils literal notranslate"><span class="pre">Feather</span></code>, <code class="docutils literal notranslate"><span class="pre">Pickle</span></code> (pandas integration)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WAV</span></code> (Audio, extended support)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROOT</span></code> file (.root)</p></li>
+</ul>
+</section>
+</section>
+<section id="notes-on-pickle-shelve">
+<h2>Notes on Pickle / shelve<a class="headerlink" href="#notes-on-pickle-shelve" title="Link to this heading"></a></h2>
+<blockquote>
+<div><p>[!WARNING]
+Do not load untrusted data using <code class="docutils literal notranslate"><span class="pre">pickle</span></code> / <code class="docutils literal notranslate"><span class="pre">shelve</span></code>. Arbitrary code execution can occur during loading.</p>
+</div></blockquote>
+<p>To prioritize portability, gwexpy’s pickle implementation is designed to <strong>return GWpy types when unpickled</strong>
+(meaning data can be restored if gwpy is present, even without gwexpy on the reading side).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+<span class="c1"># obj is gwpy.timeseries.TimeSeries</span>
+</pre></div>
+</div>
+<p>Compatibility notes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> / <code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> / <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> -&gt; Restores as GWpy objects when unpickled</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> -&gt; Restores as GWpy collections when unpickled</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict/List</span></code> / <code class="docutils literal notranslate"><span class="pre">SpectrogramDict/List</span></code> -&gt; Restores as Python built-in <code class="docutils literal notranslate"><span class="pre">dict</span></code> / <code class="docutils literal notranslate"><span class="pre">list</span></code> (containing GWpy objects) when unpickled</p></li>
+<li><p>Unique gwexpy types like the <code class="docutils literal notranslate"><span class="pre">Matrix</span></code> and <code class="docutils literal notranslate"><span class="pre">Field</span></code> families are exempt from this portability contract</p></li>
+</ul>
+<p>What is preserved (best effort):</p>
+<ul class="simple">
+<li><p>Numerical data (<code class="docutils literal notranslate"><span class="pre">.value</span></code>)</p></li>
+<li><p>Axis information (<code class="docutils literal notranslate"><span class="pre">times</span></code> / <code class="docutils literal notranslate"><span class="pre">frequencies</span></code>)</p></li>
+<li><p>Metadata generally handled by GWpy (<code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">channel</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>)</p></li>
+</ul>
+<p>What is NOT preserved:</p>
+<ul class="simple">
+<li><p>Internal attributes specific to gwexpy (e.g., <code class="docutils literal notranslate"><span class="pre">_gwex_*</span></code>) and behaviors added by gwexpy</p></li>
+</ul>
+</section>
+<section id="gui-applications">
+<h2>6. GUI Applications<a class="headerlink" href="#gui-applications" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>pyaggui (<code class="docutils literal notranslate"><span class="pre">gwexpy.gui.pyaggui</span></code>)</strong>:</p>
+<ul>
+<li><p>A PyQt5-based GUI application modeled after DTT diaggui (C++, ROOT).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorials/case_active_damping.html" class="btn btn-neutral float-left" title="Active Damping for 6-DOF Active Vibration Isolation System (Non-Collocated Configuration)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="numerical_stability.html" class="btn btn-neutral float-right" title="Numerical Stability and Precision" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

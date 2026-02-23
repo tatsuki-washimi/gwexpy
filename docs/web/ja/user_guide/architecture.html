@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>アーキテクチャと物理 &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="リファレンス" href="../reference/index.html" />
+    <link rel="prev" title="検証済みアルゴリズム" href="validated_algorithms.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">視覚的な例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">実例ギャラリー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">ユーザー別学習パス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">主要ドキュメント</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">インストール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">アーキテクチャと物理</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">物理フィールドとフーリエ空間</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">スペクトル解析と統計</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">過渡応答・システム解析</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">ベイズ・フィッティングとモデリング</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">ノイズモデル</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id6">次のステップ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
+      <li class="breadcrumb-item active">アーキテクチャと物理</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/architecture.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>アーキテクチャと物理<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>このセクションでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> で実装されている独自のアルゴリズム、物理モデル、および数学ロジックについて詳説します。パッケージの解析ツールの背後にあるメカニズムを理解したい高度なユーザーおよび開発者向けのリファレンスとして機能します。</p>
+<section id="id2">
+<h2>物理フィールドとフーリエ空間<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>4次元フィールド操作<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、時間と3つの空間次元を表す4次元フィールド（例：<code class="docutils literal notranslate"><span class="pre">ScalarField</span></code>）のような多次元データの堅牢な操作を提供します。中核となる機能は、空間領域と波数（<span class="math notranslate nohighlight">\(k\)</span>）領域（逆空間）の間のシームレスな変換です。</p>
+<p><code class="docutils literal notranslate"><span class="pre">fft_space</span></code> および <code class="docutils literal notranslate"><span class="pre">ifft_space</span></code> メソッドは、多次元高速フーリエ変換（FFT）を使用してこれらの変換を処理します。重要なのは、パッケージが座標変換を正しく管理し、物理単位とグリッド間隔が <span class="math notranslate nohighlight">\(k\)</span> 空間に正確に変換されることを保証することです。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 空間分解能 dx に基づいて角波数 k が計算されます</span>
+<span class="n">k_values</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftfreq</span><span class="p">(</span><span class="n">npts</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">dx_value</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>これにより、物理的な波長や空間周波数に依存するアプリケーションが、寸法的に正しくスケーリングされた出力を受け取ることが保証されます。</p>
+</section>
+</section>
+<section id="id4">
+<h2>スペクトル解析と統計<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="asd">
+<h3>堅牢な ASD 推定 (ブートストラップ・スペクトログラム)<a class="headerlink" href="#asd" title="Link to this heading"></a></h3>
+<p>標準的な振幅スペクトル密度（ASD）の推定は、非定常ノイズの影響を受けやすい場合があります。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は <code class="docutils literal notranslate"><span class="pre">bootstrap_spectrogram</span></code> 関数を通じて、堅牢な推定アプローチを実装しています。</p>
+<p>このメソッドは、スペクトログラムの時間軸に沿ってブートストラップ再サンプリング（時間相関データには Moving Block Bootstrap を含む）を使用し、中央値 または 平均値 ASD とその信頼区間を推定します。</p>
+<p><strong>分散膨張係数 (Variance Inflation Factor; VIF)</strong>
+Welch法のようにオーバーラップしたデータセグメントから統計量を計算する場合、セグメント間に相関があるため、見かけの分散が人工的に小さくなります。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、オーバーラップに使用した窓関数の自己相関に基づいて、分散膨張係数 (VIF) を数学的に正しく適用します。</p>
+<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\text{factor} = \sqrt{1 + 2 \sum_{k=1}^{M-1} (1 - k/M) |\rho_{\text{window}}(k \Delta)|^2}
+</pre></div>
+</div>
+<p>これにより、ブートストラップ法が返す信頼区間が、データの真の統計的不確実性を正確に反映するようになります。</p>
+</section>
+<section id="fft">
+<h3>トランジェント信号の FFT<a class="headerlink" href="#fft" title="Link to this heading"></a></h3>
+<p>トランジェント信号（インジェクションや物理的なインパルスなど）を解析する場合、標準的な窓関数法を用いると信号の真の振幅がしばしば歪んでしまいます。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、過渡信号に最適化されたFFTメソッド <code class="docutils literal notranslate"><span class="pre">_fft_transient</span></code> を提供しています。時間構造を維持するための予測可能なパディング戦略を使用し、片側スペクトルの振幅を正確に保存します。</p>
+</section>
+<section id="bruco">
+<h3>高速コヒーレンスエンジン (BruCo)<a class="headerlink" href="#bruco" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">FastCoherenceEngine</span></code> は、単一のターゲット・チャネルと、数千にも及ぶ多数の補助チャネル間の Welch コヒーレンスを効率的に計算します。ターゲット信号の FFT と PSD を事前計算・キャッシュすることで無駄な再計算を省き、大規模なノイズ監査における「ブルートフォース・コヒーレンス（BruCo）」の速度を劇的に向上させます。</p>
+</section>
+</section>
+<section id="id5">
+<h2>過渡応答・システム解析<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<section id="id6">
+<h3>応答関数解析<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>このフレームワークには、注入された信号（例: スウェプトサインやステップサイン励起）に対するシステムの応答を解析するためのツールが含まれています。<code class="docutils literal notranslate"><span class="pre">detect_step_segments</span></code> 関数は、スペクトログラム内のインジェクション周波数を自動的に追跡し、励起が安定しているセグメントを特定します。</p>
+<p>結合関数（伝達関数の振幅）は、インジェクション中の信号パワーをバックグラウンドパワーと比較することで推定され、バックグラウンドノイズが意図せず伝達関数の推定値をインフレさせないようにします。</p>
+<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\text{CF}(f) = \sqrt{\frac{P_{\text{tgt,inj}}(f) - P_{\text{tgt,bkg}}(f)}{P_{\text{wit,inj}}(f) - P_{\text{wit,bkg}}(f)}}
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id7">
+<h2>ベイズ・フィッティングとモデリング<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="gls-mcmc">
+<h3>一般化最小二乗法 (GLS) と MCMC<a class="headerlink" href="#gls-mcmc" title="Link to this heading"></a></h3>
+<p>相関エラー（ノイズの共分散行列が既知の場合）を持つデータにモデルを適合させる場合、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は一般化最小二乗法 (GLS) ソルバーをサポートします。フィッティング・コアは <code class="docutils literal notranslate"><span class="pre">emcee</span></code> パッケージとネイティブに統合されており、マルコフ連鎖モンテカルロ (MCMC) パラメータ推定を実行できます。</p>
+<p>GLS の場合、対数尤度関数は完全な逆共分散行列 (<span class="math notranslate nohighlight">\(\Sigma^{-1}\)</span>) を利用し、不均一分散および相関エラーに対応します。</p>
+<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\log p(y|\theta) \propto - \frac{1}{2} r^T \Sigma^{-1} r
+</pre></div>
+</div>
+<p>伝達関数のような複素数値データの場合、フレームワークはエルミート形式 <span class="math notranslate nohighlight">\(r^\dagger \Sigma^{-1} r\)</span> を利用し、振幅と位相の残差を両方とも正しく処理します。</p>
+</section>
+<section id="pca-ica">
+<h3>次元削減 (PCA/ICA)<a class="headerlink" href="#pca-ica" title="Link to this heading"></a></h3>
+<p>主成分分析 (PCA) と独立成分分析 (ICA) は、<code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> のようなマルチチャネルのデータ表現に対して直接適用できます。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、内部的な次元数の変更（scikit-learn 用に 3D 構造 (チャネル <span class="math notranslate nohighlight">\(\times\)</span> 列 <span class="math notranslate nohighlight">\(\times\)</span> 時間) を 2D 特徴量行列に平坦化し、またそれらを再構築する処理）を管理しつつ、GPS タイムスタンプや物理単位などの重要なメタデータをすべて保存します。</p>
+</section>
+</section>
+<section id="id8">
+<h2>ノイズモデル<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> には、シミュレーションやテストに役立つ、特定の物理ノイズモデルのための組み込みジェネレーターが含まれています。</p>
+<ul class="simple">
+<li><p><strong>シューマン共鳴 (Schumann Resonance)</strong>: 地球-電離層空洞のモードに対応する独立したローレンツプロファイルの和を用いて、地磁気バックグラウンドノイズをシミュレートします。</p></li>
+<li><p><strong>フォークト関数 (Voigt Profile)</strong>: 原子物理学や高Q値の力学系共振で一般的な、Faddeeva 関数を用いたガウシアン（ドップラー広がり）とローレンツィアン（衝突広がり）の特性を組み合わせたスペクトルピークを生成します。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="validated_algorithms.html" class="btn btn-neutral float-left" title="検証済みアルゴリズム" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../reference/index.html" class="btn btn-neutral float-right" title="リファレンス" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
