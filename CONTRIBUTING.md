@@ -22,6 +22,13 @@ For coverage:
 pytest --cov=gwexpy --cov-report=term-missing
 ```
 
+**Optional stats dependencies note:**
+If you want to run MIC-related test functionality locally, installing via `conda`/`mamba` is recommended:
+
+```bash
+mamba install -c conda-forge minepy mictools
+```
+
 ## Style and linting
 
 - Keep code readable and prefer small, focused functions.

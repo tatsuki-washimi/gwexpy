@@ -1,5 +1,6 @@
 # gwexpy: GWpy Expansions for Experiments
 
+[![PyPI version](https://badge.fury.io/py/gwexpy.svg)](https://badge.fury.io/py/gwexpy)
 [![CI Status](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml/badge.svg)](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml)
 [![Documentation](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs.yml/badge.svg)](https://tatsuki-washimi.github.io/gwexpy/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -101,24 +102,7 @@ Beyond standard GWpy formats (`.gwf`, `.hdf5`), gwexpy natively supports:
 > [!WARNING]
 > Never unpickle data from untrusted sources. `pickle`/`shelve` can execute arbitrary code on load.
 
-Pickle portability note: gwexpy objects are pickled so that unpickling returns **GWpy types**
-in a GWpy-only environment (gwexpy not required).
-
-Compatibility details:
-
-- `TimeSeries`, `FrequencySeries`, `Spectrogram` → unpickle as the corresponding GWpy objects.
-- `TimeSeriesDict`, `TimeSeriesList` → unpickle as the GWpy collection classes.
-- `FrequencySeriesDict/List`, `SpectrogramDict/List` → unpickle as built-in `dict`/`list` whose elements are GWpy objects.
-- gwexpy-only types such as the matrix/field classes are not covered by this portability contract.
-
-What is preserved (best effort):
-
-- Core numeric data (`.value` arrays) and axis coordinates (`times`, `frequencies`).
-- Common GWpy metadata (`unit`, `name`, `channel`, `epoch`).
-
-What is not preserved:
-
-- gwexpy-only attributes (`_gwex_*`) and behavior that only exists in gwexpy subclasses.
+**Pickle portability note:** `gwexpy` objects are pickled so that unpickling returns valid **`GWpy` types** in a GWpy-only environment (where `gwexpy` is not installed). This preserves core numeric data and standard metadata, but gwexpy-specific attributes or subclasses are omitted. For full details, see the documentation.
 
 ### 🔬 Physics Models & Simulation
 
@@ -160,7 +144,7 @@ pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.gi
 > NDS/frames support (`[gw]` extra) depends on `nds2-client`, which is not published on PyPI.
 > Install it via Conda first (e.g., `conda install -c conda-forge nds2-client`) before adding `[gw]`.
 
-For other domain-specific extras (e.g., `[geophysics]`, `[fitting]`, `[analysis]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/guide/installation.html).
+For other domain-specific extras (e.g., `[geophysics]`, `[fitting]`, `[analysis]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/installation.html).
 
 ---
 
@@ -190,7 +174,7 @@ mat = TimeSeriesMatrix.from_list([series1, series2, series3])
 scores = mat.standardize().pca(n_components=2)
 ```
 
-For more complex examples, browse our **[Tutorials](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/guide/tutorials/)** (available in [English](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/guide/tutorials/) and [日本語](https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/guide/tutorials/)).
+For more complex examples, browse our **[Tutorials](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/)** (available in [English](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/) and [日本語](https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/tutorials/)).
 
 ---
 
@@ -203,16 +187,6 @@ python -m pytest
 Note: GUI/IO sample fixtures are stored under `tests/sample-data/` and are not
 versioned in git. If you need to run the data-dependent tests locally, place the
 sample files under `tests/sample-data/gui/` (see the test paths for exact names).
-
-Optional stats dependencies note:
-- In CI we intentionally avoid optional packages that often require building from source.
-- If you want MIC-related functionality locally, conda/mamba is recommended:
-
-```bash
-mamba install -c conda-forge minepy mictools
-```
-
-(Package names can vary by platform/channel; adjust as needed.)
 
 ## Contributing
 
