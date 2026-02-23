@@ -83,6 +83,9 @@ jobs:
         shell: bash -l {0}
         run: |
           micromamba run -n gwexpy-full python -m pip install --upgrade pip
+          # Pre-install build requirements and build minepy from source before mictools
+          micromamba run -n gwexpy-full pip install cython numpy scipy
+          micromamba run -n gwexpy-full python scripts/install_minepy.py
           micromamba run -n gwexpy-full pip install -e ".[dev,analysis]" mictools
 
       - name: Run tests
