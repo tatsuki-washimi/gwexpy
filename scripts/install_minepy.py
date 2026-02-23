@@ -10,18 +10,18 @@ Requires: cython, numpy, scipy
 """
 
 import os
-import sys
 import shutil
-import urllib.request
-import tarfile
 import subprocess
+import sys
+import tarfile
 import tempfile
+import urllib.request
 from pathlib import Path
 
 
 def main():
     print("=== minepy installer for Python 3.11+ ===")
-    
+
     # 1. Check requirements
     try:
         import cython
@@ -33,15 +33,15 @@ def main():
         sys.exit(1)
 
     url = "https://files.pythonhosted.org/packages/source/m/minepy/minepy-1.2.6.tar.gz"
-    
+
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir_path = Path(tmpdir)
         tar_path = tmpdir_path / "minepy.tar.gz"
-        
+
         # 2. Download
         print(f"Downloading minepy source from {url} ...")
         urllib.request.urlretrieve(url, tar_path)
-        
+
         # 3. Extract
         print("Extracting...")
         with tarfile.open(tar_path, "r:gz") as tar:
@@ -50,27 +50,27 @@ def main():
                 abs_target = os.path.abspath(target)
                 prefix = os.path.commonprefix([abs_directory, abs_target])
                 return prefix == abs_directory
-            
+
             def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
                 for member in tar.getmembers():
                     member_path = os.path.join(path, member.name)
                     if not is_within_directory(path, member_path):
                         raise Exception("Attempted Path Traversal in Tar File")
-                tar.extractall(path, members, numeric_owner=numeric_owner) 
-            
+                tar.extractall(path, members, numeric_owner=numeric_owner)
+
             safe_extract(tar, tmpdir_path)
 
         minepy_src_dir = tmpdir_path / "minepy-1.2.6"
-        
+
         # 4. Patch setup.py
         print("Patching setup.py for modern setuptools compatibility...")
         setup_py = minepy_src_dir / "setup.py"
-        with open(setup_py, "r", encoding="utf-8") as f:
+        with open(setup_py, encoding="utf-8") as f:
             setup_content = f.read()
-            
+
         # Remove pkg_resources import which is not available in isolated builds
         setup_content = setup_content.replace(
-            "from pkg_resources import get_platform", 
+            "from pkg_resources import get_platform",
             "def get_platform(): return 'linux' if sys.platform.startswith('linux') else sys.platform"
         )
         # We also need import sys for the patched function
@@ -93,13 +93,13 @@ def main():
         env = os.environ.copy()
         # Bypass PIP_REQUIRE_VIRTUALENV if set so installation doesn't fail globally
         env["PIP_REQUIRE_VIRTUALENV"] = "false"
-        
+
         res = subprocess.run(
-            [sys.executable, "-m", "pip", "install", ".", "--no-build-isolation"], 
-            cwd=minepy_src_dir, 
+            [sys.executable, "-m", "pip", "install", ".", "--no-build-isolation"],
+            cwd=minepy_src_dir,
             env=env
         )
-        
+
         if res.returncode == 0:
             print("\nSuccessfully installed minepy!")
             print("You can now compute Maximal Information Coefficient (MIC) in gwexpy.")

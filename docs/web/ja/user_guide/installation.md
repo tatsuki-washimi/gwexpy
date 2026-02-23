@@ -73,6 +73,17 @@ pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.gi
 `[gw]` エクストラを使用する場合は、上記の「基本インストール」セクションの important を参照してください。
 :::
 
+:::{note}
+**Maximal Information Coefficient (MIC) の計算**
+
+MIC の計算には `minepy` が必要です。Python 3.11+ では標準の `pip` や `conda` でのインストールに失敗することがあります。その場合は、リポジトリに含まれる以下の自動ビルドスクリプトを使用してください：
+
+```bash
+python scripts/install_minepy.py
+```
+
+:::
+
 ## 次のステップ
 
 GWexpyのインストールが完了したら、基本的な使い方を学びましょう:
