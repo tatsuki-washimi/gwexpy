@@ -178,12 +178,8 @@ def fit_bootstrap_spectrum(
     if hasattr(data_or_spectrogram, "sample_rate"):
         # TimeSeries -> Spectrogram
         # Parse fftlength / overlap (seconds); GWpy expects seconds.
-        fftlength_sec, _ = parse_fftlength_or_overlap(
-            fftlength, arg_name="fftlength"
-        )
-        overlap_sec, _ = parse_fftlength_or_overlap(
-            overlap, arg_name="overlap"
-        )
+        fftlength_sec, _ = parse_fftlength_or_overlap(fftlength, arg_name="fftlength")
+        overlap_sec, _ = parse_fftlength_or_overlap(overlap, arg_name="overlap")
 
         # Apply GWpy-compatible defaults
         if overlap_sec is None and fftlength_sec is not None:

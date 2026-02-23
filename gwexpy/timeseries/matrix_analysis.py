@@ -694,7 +694,10 @@ class TimeSeriesMatrixAnalysisMixin:
         return self.correlation(other, method="kendall", **kwargs)
 
     def correlation_vector(
-        self: Any, target_timeseries: Any, method: str = "mic", parallel: int | None = None
+        self: Any,
+        target_timeseries: Any,
+        method: str = "mic",
+        parallel: int | None = None,
     ) -> Any:
         """
         Calculate correlation between a target TimeSeries and all channels in this Matrix.
@@ -713,7 +716,10 @@ class TimeSeriesMatrixAnalysisMixin:
         if method == "pearson":
             try:
                 target = target_timeseries
-                if hasattr(target, "sample_rate") and self.sample_rate != target.sample_rate:
+                if (
+                    hasattr(target, "sample_rate")
+                    and self.sample_rate != target.sample_rate
+                ):
                     warnings.warn(
                         "Sample rates do not match. Resampling 'target' to match matrix."
                     )

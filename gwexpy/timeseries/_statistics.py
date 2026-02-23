@@ -347,7 +347,12 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
         if grid_size is None:
             # Heuristic: keep 2D FFT moderate while scaling with data size.
-            target = int(max(64, min(512, 2 ** int(np.ceil(np.log2(max(64, int(np.sqrt(n) * 8))))))))
+            target = int(
+                max(
+                    64,
+                    min(512, 2 ** int(np.ceil(np.log2(max(64, int(np.sqrt(n) * 8)))))),
+                )
+            )
             grid_size = target
         if grid_size < 16:
             raise ValueError("grid_size must be >= 16")
@@ -518,9 +523,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
         # Evaluate at points with simple linear (1D) / bilinear (2D) interpolation.
         if d == 1:
-            return cls._fastmi_interp1d(
-                f_grid, s[:, 0], dx=float(dx[0]), eps=eps
-            )
+            return cls._fastmi_interp1d(f_grid, s[:, 0], dx=float(dx[0]), eps=eps)
         return cls._fastmi_interp2d(
             f_grid,
             s[:, 0],
@@ -531,7 +534,9 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         )
 
     @staticmethod
-    def _fastmi_interp1d(f: np.ndarray, x: np.ndarray, *, dx: float, eps: float) -> np.ndarray:
+    def _fastmi_interp1d(
+        f: np.ndarray, x: np.ndarray, *, dx: float, eps: float
+    ) -> np.ndarray:
         m = f.shape[0]
         x = np.clip(x, 0.0, (m - 1) * dx)
         u = x / dx
@@ -605,7 +610,11 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         y = y[:min_len]
         controls_arrays = [c[:min_len] for c in controls_arrays]
 
-        controls_mat = np.column_stack(controls_arrays) if controls_arrays else np.empty((min_len, 0))
+        controls_mat = (
+            np.column_stack(controls_arrays)
+            if controls_arrays
+            else np.empty((min_len, 0))
+        )
         return x, y, controls_mat
 
     @staticmethod

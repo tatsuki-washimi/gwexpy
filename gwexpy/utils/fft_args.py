@@ -243,8 +243,7 @@ def validate_and_convert_fft_params(
 
     if nfft is not None and overlap is not None:
         raise ValueError(
-            "Cannot use overlap (seconds) with nfft (samples). "
-            "Use noverlap instead."
+            "Cannot use overlap (seconds) with nfft (samples). Use noverlap instead."
         )
 
     # Convert sample-based to time-based if needed
@@ -259,7 +258,9 @@ def validate_and_convert_fft_params(
         if nfft is not None and not isinstance(nfft, (int, np.integer)):
             raise TypeError(f"nfft must be an integer (sample count), got {type(nfft)}")
         if noverlap is not None and not isinstance(noverlap, (int, np.integer)):
-            raise TypeError(f"noverlap must be an integer (sample count), got {type(noverlap)}")
+            raise TypeError(
+                f"noverlap must be an integer (sample count), got {type(noverlap)}"
+            )
 
         # Convert to seconds
         if nfft is not None:
@@ -281,7 +282,9 @@ def validate_and_convert_fft_params(
     return (fftlength_sec, overlap_sec)
 
 
-def get_default_overlap(fftlength: Optional[float], window: str = "hann") -> Optional[float]:
+def get_default_overlap(
+    fftlength: Optional[float], window: str = "hann"
+) -> Optional[float]:
     """
     Get the recommended overlap for a given window function (GWpy-compatible).
 

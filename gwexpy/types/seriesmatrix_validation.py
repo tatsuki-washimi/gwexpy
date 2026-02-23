@@ -784,9 +784,11 @@ def _check_attribute_consistency(data_attrs: dict, meta: MetaDataMatrix) -> None
             if meta_arr is not None:
                 if attr == "unit":
                     mask = np.vectorize(
-                        lambda x, y: x.is_equivalent(y)
-                        if x is not None and y is not None
-                        else True
+                        lambda x, y: (
+                            x.is_equivalent(y)
+                            if x is not None and y is not None
+                            else True
+                        )
                     )(data_arr, meta_arr)
                 elif attr == "channel":
 

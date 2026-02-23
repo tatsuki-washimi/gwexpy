@@ -490,9 +490,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
                 # Check for uniform grid to enable zoom FFT
                 if freqs_val.size >= 2:
                     diffs = np.diff(freqs_val)
-                    diffs_close = np.allclose(
-                        diffs, diffs[0], rtol=0.0, atol=tol * 10
-                    )
+                    diffs_close = np.allclose(diffs, diffs[0], rtol=0.0, atol=tol * 10)
                     if diffs_close and not np.isclose(diffs[0], 0.0, atol=tol):
                         step = diffs[0]
                         reverse_zoom = step < 0
@@ -586,9 +584,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
                     # (B, S, N) x (F, N) -> (B, S, F)
                     spec = np.tensordot(weighted_batch, cached_phase, axes=([-1], [1]))
                 else:
-                    freq_chunk_size = max(
-                        16, min(256, int(2_000_000 // nperseg) or 16)
-                    )
+                    freq_chunk_size = max(16, min(256, int(2_000_000 // nperseg) or 16))
                     spec = np.zeros(
                         (weighted_batch.shape[0], weighted_batch.shape[1], n_freqs),
                         dtype=np.result_type(weighted_batch.dtype, np.complex64),
@@ -597,8 +593,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
                         f_end = min(i_freq + freq_chunk_size, n_freqs)
                         f_chunk = freqs_val[i_freq:f_end]
                         phase = np.exp(
-                            (-2j * np.pi)
-                            * (f_chunk[:, None] * t_rel[None, :])
+                            (-2j * np.pi) * (f_chunk[:, None] * t_rel[None, :])
                         )
                         # (B, S, N) x (F, N) -> (B, S, F)
                         spec[:, :, i_freq:f_end] = np.tensordot(
@@ -941,9 +936,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             if max_iter < 1:
                 raise ValueError("sift_max_iter must be >= 1.")
             if not hasattr(emd_obj, "MAX_ITERATION"):
-                raise AttributeError(
-                    "PyEMD EMD object does not expose MAX_ITERATION."
-                )
+                raise AttributeError("PyEMD EMD object does not expose MAX_ITERATION.")
             emd_obj.MAX_ITERATION = max_iter
 
             if stopping_criterion is None or stopping_criterion == "default":
@@ -954,9 +947,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
                 )
             if isinstance(stopping_criterion, (int, float, np.number)):
                 if not hasattr(emd_obj, "std_thr"):
-                    raise AttributeError(
-                        "PyEMD EMD object does not expose std_thr."
-                    )
+                    raise AttributeError("PyEMD EMD object does not expose std_thr.")
                 emd_obj.std_thr = float(stopping_criterion)
                 return
             raise ValueError(

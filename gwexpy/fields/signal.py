@@ -1390,7 +1390,12 @@ def coherence_map(
     )
     test_data = field.value[tuple(test_slices)]
     freqs, _ = coherence(
-        ref_data, test_data, fs=fs, window=window, nperseg=nperseg, noverlap=noverlap_calc
+        ref_data,
+        test_data,
+        fs=fs,
+        window=window,
+        nperseg=nperseg,
+        noverlap=noverlap_calc,
     )
 
     n_freq = len(freqs)
@@ -1404,7 +1409,12 @@ def coherence_map(
             data = field.value[tuple(slices)]
 
             _, cxy = coherence(
-                ref_data, data, fs=fs, window=window, nperseg=nperseg, noverlap=noverlap_calc
+                ref_data,
+                data,
+                fs=fs,
+                window=window,
+                nperseg=nperseg,
+                noverlap=noverlap_calc,
             )
             coh_3d[:, i1, i2] = cxy
 

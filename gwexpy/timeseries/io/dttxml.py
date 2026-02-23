@@ -33,7 +33,6 @@ def _build_epoch(value, timezone):
         return float(value)
     tzinfo = parse_timezone(timezone) if timezone else None
     if tzinfo is None:
-
         tzinfo = UTC
     return datetime_to_gps(ensure_datetime(value, tzinfo=tzinfo))
 
