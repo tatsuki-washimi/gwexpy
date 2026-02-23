@@ -26,7 +26,8 @@ pytest --cov=gwexpy --cov-report=term-missing
 If you want to run MIC-related test functionality locally, installing via `conda`/`mamba` is recommended:
 
 ```bash
-mamba install -c conda-forge minepy mictools
+mamba install -c conda-forge mictools
+python scripts/install_minepy.py
 ```
 
 ## Style and linting
