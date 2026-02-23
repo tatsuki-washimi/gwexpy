@@ -8,9 +8,10 @@ This module supports a minimal XML parser and will use an external
 from __future__ import annotations
 
 from collections.abc import Iterable
+from datetime import UTC
 
 import numpy as np
-from gwpy.io import registry as io_registry
+from astropy.io import registry as io_registry
 
 from gwexpy.io.dttxml_common import SUPPORTED_TS, load_dttxml_products
 from gwexpy.io.utils import (
@@ -32,9 +33,8 @@ def _build_epoch(value, timezone):
         return float(value)
     tzinfo = parse_timezone(timezone) if timezone else None
     if tzinfo is None:
-        from datetime import timezone as _timezone
 
-        tzinfo = _timezone.utc
+        tzinfo = UTC
     return datetime_to_gps(ensure_datetime(value, tzinfo=tzinfo))
 
 

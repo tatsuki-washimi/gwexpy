@@ -16,7 +16,7 @@ from typing import (
 try:
     from typing import TypeAlias
 except ImportError:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
 import numpy as np
 import numpy.typing as npt

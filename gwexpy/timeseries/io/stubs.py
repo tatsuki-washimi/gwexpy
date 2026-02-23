@@ -4,7 +4,7 @@ Placeholder readers for unsupported formats (WIN/WIN32, SDB, vendor loggers).
 
 from __future__ import annotations
 
-from gwpy.io import registry as io_registry
+from astropy.io import registry as io_registry
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 

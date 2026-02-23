@@ -6,7 +6,7 @@ Wrapper around scipy.io.wavfile to support TimeSeriesDict and metadata.
 from __future__ import annotations
 
 import numpy as np
-from gwpy.io import registry as io_registry
+from gwpy.io.registry import default_registry as io_registry
 from scipy.io import wavfile
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix

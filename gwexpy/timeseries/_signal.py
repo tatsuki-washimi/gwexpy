@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any, Literal, Optional, Union, cast
 try:
     from typing import TypeAlias
 except ImportError:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
 import numpy as np
 from astropy import units as u

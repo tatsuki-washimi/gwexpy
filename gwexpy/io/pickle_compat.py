@@ -14,7 +14,8 @@ Never unpickle data from untrusted sources. ``pickle`` / ``shelve`` can execute
 arbitrary code during loading.
 """
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 

@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, Literal, Union, cast
 try:
     from typing import TypeAlias
 except ImportError:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
 import numpy as np
 import numpy.typing as npt

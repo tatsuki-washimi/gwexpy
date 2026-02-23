@@ -10,7 +10,7 @@ from typing import Any, TypedDict, Union, cast
 try:
     from typing import TypeAlias
 except ImportError:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -799,7 +799,7 @@ class Bruco:
         duration: int | None = None,
         fftlength: float = 2.0,
         overlap: float = 1.0,
-        nproc: int = 4,
+        parallel: int = 4,
         batch_size: int = 100,
         top_n: int = 5,
         block_size: int | str | None = None,
@@ -815,7 +815,7 @@ class Bruco:
             duration (int, optional): Duration of data in seconds. Required if not inferable.
             fftlength (float): FFT length in seconds.
             overlap (float): Overlap in seconds.
-            nproc (int): Number of parallel processes.
+            parallel (int): Number of parallel jobs for reading data and computing coherence.
             batch_size (int): Channels per batch.
             top_n (int): Number of top channels to keep per frequency bin.
             block_size (int or 'auto', optional): Channels per block in Top-N updates.
@@ -877,7 +877,7 @@ class Bruco:
                 target_ts = target_data
             else:
                 logger.info(f"Fetching target data: {self.target}")
-                target_ts = TimeSeries.get(self.target, start, end)
+                target_ts = TimeSeries.get(self.target, start, end, nproc=parallel)
 
             # Calculate Target PSD reference (Internal storage is PSD)
             target_spectrum = target_ts.psd(fftlength=fftlength, overlap=overlap)
@@ -910,7 +910,7 @@ class Bruco:
             "overlap": overlap,
             "top_n": top_n,
             "batch_size": batch_size,
-            "nproc": nproc,
+            "parallel": parallel,
             "target": self.target,
             "target_sample_rate": target_ts.sample_rate.value,
         }
@@ -976,7 +976,7 @@ class Bruco:
                         batch_dict,
                         fftlength,
                         overlap,
-                        nproc,
+                        parallel,
                         target_frequencies,
                     )
 
@@ -1022,7 +1022,7 @@ class Bruco:
                             batch_dict,
                             fftlength,
                             overlap,
-                            nproc,
+                            parallel,
                             target_frequencies,
                         )
                         batch_dict = TimeSeriesDict()  # Clear memory
@@ -1039,7 +1039,7 @@ class Bruco:
                         batch_dict,
                         fftlength,
                         overlap,
-                        nproc,
+                        parallel,
                         target_frequencies,
                     )
 
@@ -1060,7 +1060,7 @@ class Bruco:
                 # Fetch batch data
                 try:
                     batch_dict = TimeSeriesDict.get(
-                        batch_channels, start, end, allow_tape=True, nproc=nproc
+                        batch_channels, start, end, allow_tape=True, nproc=parallel
                     )
                 except (OSError, RuntimeError, ValueError) as e:
                     logger.warning(
@@ -1094,7 +1094,7 @@ class Bruco:
                     batch_dict,
                     fftlength,
                     overlap,
-                    nproc,
+                    parallel,
                     target_frequencies,
                 )
 
@@ -1108,7 +1108,7 @@ class Bruco:
         aux_dict: TimeSeriesDict,
         fftlength: float,
         overlap: float,
-        nproc: int,
+        parallel: int,
         target_frequencies: np.ndarray,
     ) -> None:
         # Calculate Coherence for batch
@@ -1118,7 +1118,7 @@ class Bruco:
             aux_dict,
             fftlength,
             overlap,
-            nproc,
+            parallel,
             target_frequencies,
         )
 
@@ -1143,7 +1143,7 @@ class Bruco:
         aux_dict: TimeSeriesDict,
         fftlength: float,
         overlap: float,
-        nproc: int,
+        parallel: int,
         target_frequencies: np.ndarray,
     ) -> list[tuple[str, np.ndarray] | None]:
         """
@@ -1153,7 +1153,7 @@ class Bruco:
         aux_list = list(aux_dict.values())
         if not aux_list:
             return []
-        if nproc <= 1:
+        if parallel <= 1:
             return self._calculate_batch_coherence_fast(
                 target_ts,
                 aux_list,
@@ -1162,9 +1162,9 @@ class Bruco:
                 target_frequencies,
             )
 
-        chunk_size = max(1, int(np.ceil(len(aux_list) / nproc)))
+        chunk_size = max(1, int(np.ceil(len(aux_list) / parallel)))
         results: list[tuple[str, np.ndarray] | None] = []
-        with ProcessPoolExecutor(max_workers=nproc) as executor:
+        with ProcessPoolExecutor(max_workers=parallel) as executor:
             futures = [
                 executor.submit(
                     self._calculate_batch_coherence_fast,

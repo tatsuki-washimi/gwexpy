@@ -16,7 +16,7 @@ from pathlib import Path
 
 import numpy as np
 from astropy import units as u
-from gwpy.io import registry as io_registry
+from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.utils import (
     datetime_to_gps,

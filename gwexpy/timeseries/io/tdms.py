@@ -7,7 +7,7 @@ from __future__ import annotations
 import datetime
 
 import numpy as np
-from gwpy.io import registry as io_registry
+from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.utils import apply_unit, set_provenance
 
@@ -80,12 +80,12 @@ def read_timeseriesdict_tdms(
                         unix_epoch = np.datetime64("1970-01-01T00:00:00Z")
                         seconds = (t0 - unix_epoch) / np.timedelta64(1, "s")
                         dt_obj = datetime.datetime.fromtimestamp(
-                            float(seconds), tz=datetime.timezone.utc
+                            float(seconds), tz=datetime.UTC
                         )
                         t0 = datetime_to_gps(dt_obj)
                 else:  # datetime.datetime
                     if t0.tzinfo is None:
-                        t0 = t0.replace(tzinfo=datetime.timezone.utc)
+                        t0 = t0.replace(tzinfo=datetime.UTC)
                     t0 = datetime_to_gps(t0)
 
             ts = TimeSeries(

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from astropy.time import Time
 from gwpy.time import LIGOTimeGPS
@@ -41,7 +41,7 @@ def gps_to_datetime_utc(gps, *, leap="raise") -> datetime:
     # We trap this via checking if conversion fails or if astropy indicates it's leap.
 
     try:
-        dt = t_gps.to_datetime(timezone=timezone.utc)
+        dt = t_gps.to_datetime(timezone=UTC)
     except ValueError as e:
         if "leap second" in str(e).lower() or "second must be in" in str(e).lower():
             if leap == "raise":
@@ -59,7 +59,7 @@ def gps_to_datetime_utc(gps, *, leap="raise") -> datetime:
                     vals.minute,
                     59,
                     999999,
-                    tzinfo=timezone.utc,
+                    tzinfo=UTC,
                 )
             elif leap == "ceil":
                 # Round to start of next minute
@@ -75,7 +75,7 @@ def gps_to_datetime_utc(gps, *, leap="raise") -> datetime:
                     vals.minute,
                     0,
                     0,
-                    tzinfo=timezone.utc,
+                    tzinfo=UTC,
                 ) + timedelta(minutes=1)
             else:
                 raise NotImplementedError(f"Leap policy {leap} not implemented")
@@ -93,7 +93,7 @@ def datetime_utc_to_gps(dt: datetime) -> LIGOTimeGPS:
     """
     if dt.tzinfo is None:
         # per spec: treat naive as UTC
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
 
     t_gps = Time(dt, format="datetime", scale="utc").gps
     return LIGOTimeGPS(t_gps)

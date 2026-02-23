@@ -1,43 +1,10 @@
 from __future__ import annotations
 
-from gwpy.timeseries.statevector import (
-    Array2D,
-    Bits,
-    Channel,
-    Nds2ChannelType,
-    StateTimeSeries,
-    StateTimeSeriesDict,
-    StateVector,
-    StateVectorDict,
-    StateVectorList,
-    Time,
-    TimeSeriesBase,
-    TimeSeriesBaseDict,
-    TimeSeriesBaseList,
-    as_series_dict_class,
-    ceil,
-    log,
-    units,
-    wraps,
-)
+import gwpy.timeseries.statevector as _sv
 
-__all__ = [
-    "Array2D",
-    "Bits",
-    "Channel",
-    "Nds2ChannelType",
-    "StateTimeSeries",
-    "StateTimeSeriesDict",
-    "StateVector",
-    "StateVectorDict",
-    "StateVectorList",
-    "Time",
-    "TimeSeriesBase",
-    "TimeSeriesBaseDict",
-    "TimeSeriesBaseList",
-    "as_series_dict_class",
-    "ceil",
-    "log",
-    "units",
-    "wraps",
-]
+# Dynamically re-export everything from gwpy.timeseries.statevector
+globals().update({
+    name: getattr(_sv, name) for name in getattr(_sv, "__all__", [])
+})
+
+__all__ = list(getattr(_sv, "__all__", []))

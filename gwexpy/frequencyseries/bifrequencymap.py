@@ -564,7 +564,7 @@ class BifrequencyMap(Array2D):
         # Safest is to calculate df from self.frequency1 since that's what the matrix is defined on.
         # Assuming uniform grid for integration approximation.
         if len(self.frequency1) > 1:
-            df = np.mean(np.diff(self.frequency1.value))
+            df = float(np.mean(np.diff(self.frequency1.value)))
         else:
             # Fallback if single point (df not well defined, maybe 1.0 or 0?)
             # If standard integration of a point source ??
@@ -572,10 +572,12 @@ class BifrequencyMap(Array2D):
 
         # If self.frequency1 has unit, df should have that unit.
         if hasattr(self.frequency1, "unit"):
-            df = df * self.frequency1.unit
+            res_df = res * (df * self.frequency1.unit)
+        else:
+            res_df = res * df
 
         # Multiply result by df
-        return res * df
+        return res_df
 
     def plot_lines(
         self, xaxis="f1", color="f2", num_lines=None, ax=None, cmap=None, **kwargs
