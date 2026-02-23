@@ -155,6 +155,11 @@ def check_deprecated_kwargs(**kwargs):
             "nperseg is removed from the public API. "
             "Use fftlength (seconds) or nfft (samples) instead."
         )
+    if "noverlap" in kwargs and "nfft" not in kwargs:
+        raise TypeError(
+            "noverlap is removed from the public API. "
+            "Use overlap (seconds) or nfft/noverlap (samples) instead."
+        )
 
 
 def validate_and_convert_fft_params(
