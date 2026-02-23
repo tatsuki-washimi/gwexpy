@@ -508,8 +508,10 @@
 
     <span class="c1"># Validate and convert nfft/noverlap to fftlength/overlap if needed</span>
     <span class="c1"># Get sample_rate from spectrogram for conversion</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">):</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">):</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span>
+        <span class="p">)</span>
         <span class="n">sample_rate_for_conversion</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">sample_rate_for_conversion</span> <span class="o">=</span> <span class="kc">None</span>
@@ -597,7 +599,9 @@
     <span class="k">elif</span> <span class="n">block_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Convert block_size from seconds to samples</span>
         <span class="c1"># Calculate sample_rate from spectrogram dt (1/dt)</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">dt</span>
+        <span class="p">)</span>
         <span class="n">sample_rate</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">dt</span>
 
         <span class="n">_</span><span class="p">,</span> <span class="n">block_size_samples</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span>
@@ -728,7 +732,9 @@
             <span class="c1"># User provided fftlength/overlap in seconds — compute VIF</span>
             <span class="c1"># using a dummy nperseg with the correct overlap ratio.</span>
             <span class="c1"># VIF depends on window shape and overlap ratio, not absolute sample count.</span>
-            <span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;fftlength&quot;</span><span class="p">)</span>
+            <span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span>
+                <span class="n">fftlength</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;fftlength&quot;</span>
+            <span class="p">)</span>
             <span class="n">overlap_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">overlap</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;overlap&quot;</span><span class="p">)</span>
 
             <span class="c1"># fftlength_sec must be provided for VIF calculation</span>
@@ -741,7 +747,9 @@
                 <span class="n">stride_sec</span> <span class="o">=</span> <span class="n">fftlength_sec</span> <span class="o">-</span> <span class="n">overlap_sec</span>
                 <span class="k">if</span> <span class="n">stride_sec</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">fftlength_sec</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">dummy_nperseg</span> <span class="o">=</span> <span class="mi">1000</span>
-                    <span class="n">dummy_step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">stride_sec</span> <span class="o">/</span> <span class="n">fftlength_sec</span> <span class="o">*</span> <span class="n">dummy_nperseg</span><span class="p">)))</span>
+                    <span class="n">dummy_step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                        <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">stride_sec</span> <span class="o">/</span> <span class="n">fftlength_sec</span> <span class="o">*</span> <span class="n">dummy_nperseg</span><span class="p">))</span>
+                    <span class="p">)</span>
                     <span class="n">dummy_noverlap</span> <span class="o">=</span> <span class="n">dummy_nperseg</span> <span class="o">-</span> <span class="n">dummy_step</span>
                     <span class="n">factor</span> <span class="o">=</span> <span class="n">calculate_correlation_factor</span><span class="p">(</span>
                         <span class="n">window</span><span class="p">,</span> <span class="n">dummy_nperseg</span><span class="p">,</span> <span class="n">dummy_noverlap</span><span class="p">,</span> <span class="n">n_time</span>

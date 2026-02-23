@@ -255,12 +255,8 @@
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data_or_spectrogram</span><span class="p">,</span> <span class="s2">&quot;sample_rate&quot;</span><span class="p">):</span>
         <span class="c1"># TimeSeries -&gt; Spectrogram</span>
         <span class="c1"># Parse fftlength / overlap (seconds); GWpy expects seconds.</span>
-        <span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span>
-            <span class="n">fftlength</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;fftlength&quot;</span>
-        <span class="p">)</span>
-        <span class="n">overlap_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span>
-            <span class="n">overlap</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;overlap&quot;</span>
-        <span class="p">)</span>
+        <span class="n">fftlength_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;fftlength&quot;</span><span class="p">)</span>
+        <span class="n">overlap_sec</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">parse_fftlength_or_overlap</span><span class="p">(</span><span class="n">overlap</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;overlap&quot;</span><span class="p">)</span>
 
         <span class="c1"># Apply GWpy-compatible defaults</span>
         <span class="k">if</span> <span class="n">overlap_sec</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fftlength_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
