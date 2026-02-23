@@ -1344,6 +1344,10 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         ...     weight='ia',
         ...     hilbert_kwargs={'pad': 100, 'if_smooth': 10}
         ... )
+
+        See Also
+        --------
+        :doc:`Tutorial: Hilbert-Huang Transform <../../../user_guide/tutorials/advanced_hht>`
         """
         if emd_kwargs is None:
             emd_kwargs = {}
