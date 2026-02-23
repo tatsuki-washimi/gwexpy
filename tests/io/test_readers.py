@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from datetime import timezone as dt_timezone
 from pathlib import Path
 
@@ -124,7 +124,7 @@ def test_gbd_reader_parses_minimal_file(tmp_path):
     expected_t0 = float(
         to_gps(
             datetime.strptime(start_str, "%Y/%m/%d %H:%M:%S").replace(
-                tzinfo=dt_timezone.utc
+                tzinfo=UTC
             )
         )
     )

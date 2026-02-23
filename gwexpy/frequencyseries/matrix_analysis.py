@@ -90,9 +90,9 @@ class FrequencySeriesMatrixAnalysisMixin:
         FrequencySeriesMatrix
             Filtered matrix.
         """
-        from gwpy.frequencyseries._fdcommon import fdfilter
+        from gwpy.frequencyseries._fdcommon import _fdfilter
 
-        return fdfilter(self, *filt, **kwargs)
+        return _fdfilter(self, filt, **kwargs)
 
     def apply_response(
         self: _FrequencySeriesMatrixLike, response: Any, inplace: bool = False

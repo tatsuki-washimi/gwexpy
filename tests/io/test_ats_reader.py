@@ -65,7 +65,7 @@ def test_ats_sample_metadata_and_scaling():
     assert len(ts) == ui_samples
     assert ts.sample_rate.value == pytest.approx(sample_freq)
     expected_t0 = float(
-        to_gps(datetime.datetime.fromtimestamp(start_unix, tz=datetime.timezone.utc))
+        to_gps(datetime.datetime.fromtimestamp(start_unix, tz=datetime.UTC))
     )
     assert ts.t0.value == pytest.approx(expected_t0)
 
