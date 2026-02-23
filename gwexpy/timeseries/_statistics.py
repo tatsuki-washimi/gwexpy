@@ -99,6 +99,9 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     def mic(self, other, alpha=0.6, c=15, est="mic_approx"):
         """
         Calculate Maximal Information Coefficient (MIC) using minepy.
+
+        Note: On Python 3.11+, minepy must be built from source.
+        Use `python scripts/install_minepy.py` provided in the gwexpy repository.
         """
         return self.correlation(other, method="mic", alpha=alpha, c=c, est=est)
 
@@ -292,8 +295,10 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
                 from minepy import MINE
             except ImportError:
                 raise ImportError(
-                    "The 'mictools' (or 'minepy') package is required for MIC calculation. "
-                    "Please install it via `pip install mictools` or `pip install gwexpy[stat]`."
+                    "The 'minepy' package is required for MIC calculation. "
+                    "On Python 3.11+, please install it using 'python scripts/install_minepy.py' "
+                    "from the gwexpy source directory. "
+                    "Alternatively, try `pip install mictools` or `pip install gwexpy[stat]`."
                 )
 
         # MINE calculation
