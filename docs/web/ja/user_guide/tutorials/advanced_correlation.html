@@ -125,7 +125,7 @@
 <li><p><strong>MIC</strong>: Maximal Information Coefficient（非線形関係に対してロバスト、<code class="docutils literal notranslate"><span class="pre">minepy</span></code>が必要、<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">scripts/install_minepy.py</span></code>で構築）。</p></li>
 </ul>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -133,11 +133,11 @@
 
 <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;gwexpy&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
-        <span class="k">break</span>
-    <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span>
+ <span class="k">if</span> <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;gwexpy&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+ <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+ <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+ <span class="k">break</span>
+ <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -149,193 +149,121 @@
 </div>
 <section id="ペアごとの相関">
 <h2>ペアごとの相関<a class="headerlink" href="#ペアごとの相関" title="Link to this heading"></a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ダミーデータの作成</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data Create</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
-<span class="c1"># 線形関係</span>
-<span class="n">ts_a</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
+<span class="c1">#ts_a = TimeSeries(t, dt=0.01, name=&quot;A&quot;)</span>
 <span class="n">ts_b</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;B_Linear&quot;</span><span class="p">)</span>
 
-<span class="c1"># 非線形関係 (正弦波)</span>
+<span class="c1"># (Sine wave)</span>
 <span class="n">ts_c</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C_Sine&quot;</span><span class="p">)</span>
 
-<span class="c1"># ランダムノイズ</span>
+<span class="c1"># Noise</span>
 <span class="n">ts_d</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;D_Noise&quot;</span><span class="p">)</span>
 
 <span class="n">Plot</span><span class="p">(</span><span class="n">ts_a</span><span class="p">,</span> <span class="n">ts_b</span><span class="p">,</span> <span class="n">ts_c</span><span class="p">,</span> <span class="n">ts_d</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_3_0.png" />
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 可視化</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualization</span>
 <span class="n">pair</span> <span class="o">=</span> <span class="n">PairPlot</span><span class="p">([</span><span class="n">ts_a</span><span class="p">,</span> <span class="n">ts_b</span><span class="p">,</span> <span class="n">ts_c</span><span class="p">,</span> <span class="n">ts_d</span><span class="p">],</span> <span class="n">corner</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">pair</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_4_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_4_0.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;gwexpy.plot.pairplot.PairPlot at 0x75166a1d3800&gt;
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;相関 A vs B (線形):&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Pearson: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Kendall: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">ktau</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Correlation A vs B ( ):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Pearson: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Kendall: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">ktau</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  MIC:     </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">mic</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; MIC: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">mic</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  MIC:     (minepyがありません)&quot;</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; MIC: (minepy )&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-相関 A vs B (線形):
-  Pearson: 0.986
-  Kendall: 0.895
-  MIC:     (minepyがありません)
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;相関 A vs C (非線形・正弦波):&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Pearson: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> (線形相関では構造を捉えきれない)&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Kendall: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">ktau</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Correlation A vs C ( Sine wave):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Pearson: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> ( Correlation )&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Kendall: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">ktau</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  MIC:     </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">mic</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> (非線形依存性を捉える)&quot;</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; MIC: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">mic</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> ( )&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  MIC:     (minepyがありません)&quot;</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; MIC: (minepy )&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-相関 A vs C (非線形・正弦波):
-  Pearson: -0.071 (線形相関では構造を捉えきれない)
-  Kendall: -0.053
-  MIC:     (minepyがありません)
-</pre></div></div>
 </div>
 </section>
 <section id="相関ベクトル-(ノイズハンティング)">
 <h2>相関ベクトル (ノイズハンティング)<a class="headerlink" href="#相関ベクトル-(ノイズハンティング)" title="Link to this heading"></a></h2>
 <p>ノイズ源を調査する際、ターゲットチャンネル（例：DARM）と数百の補助チャンネルとの間の相関を確認したいことがよくあります。 <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.correlation_vector</span></code> はこのランキングを効率的に計算します。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 多数の補助チャンネルを持つMatrixを作成</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># havingMatrix Create</span>
 <span class="n">n_channels</span> <span class="o">=</span> <span class="mi">20</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;AUX-</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)]</span>
 
-<span class="c1"># AUX-05とAUX-12に信号を注入</span>
+<span class="c1"># AUX-05 AUX-12 Signal</span>
 <span class="n">target_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
-<span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">target_signal</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># 強い結合</span>
-<span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">target_signal</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">5</span>  <span class="c1"># 非線形結合</span>
-
+<span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">target_signal</span> <span class="o">*</span> <span class="mi">5</span> <span class="c1">#data[12, 0, :] += target_signal**2 * 5 #</span>
 <span class="n">matrix</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">channel_names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
 
-<span class="c1"># ターゲットチャンネル</span>
-<span class="n">target</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
-    <span class="n">target_signal</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TARGET&quot;</span>
+<span class="c1">#target = TimeSeries(</span>
+ <span class="n">target_signal</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TARGET&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 相関ベクトルを計算</span>
-<span class="c1"># 線形・非線形の両方を捉えるには &#39;mic&#39; を使用（遅いが強力）</span>
-<span class="c1"># 速度優先なら &#39;pearson&#39; を使用</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># CorrelationVector Calculate</span>
+<span class="c1"># &#39;mic&#39; （ ）</span>
+<span class="c1"># Velocity &#39;pearson&#39;</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MICベクトルを計算中 (Top 5)...&quot;</span><span class="p">)</span>
-    <span class="n">df_mic</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">correlation_vector</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mic&quot;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">df_mic</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MICVector Calculate (Top 5)...&quot;</span><span class="p">)</span>
+ <span class="n">df_mic</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">correlation_vector</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mic&quot;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="n">df_mic</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minepyがインストールされていないため、MICの例をスキップします。&quot;</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minepy MIC 。&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-MICベクトルを計算中 (Top 5)...
-minepyがインストールされていないため、MICの例をスキップします。
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pearsonベクトルを計算中 (Top 5)...&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PearsonVector Calculate (Top 5)...&quot;</span><span class="p">)</span>
 <span class="n">df_pcc</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">correlation_vector</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">df_pcc</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Pearsonベクトルを計算中 (Top 5)...
-   row  col channel     score
-0    5    0  AUX-05  0.954140
-1    7    0  AUX-07  0.072831
-2    0    0  AUX-00 -0.065749
-3   10    0  AUX-10 -0.061373
-4    9    0  AUX-09 -0.051680
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ランキングの可視化 (Top 10)</span>
-<span class="n">df_plot</span> <span class="o">=</span> <span class="n">df_pcc</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># 降順にするために逆転</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Visualization (Top 10)</span>
+<span class="n">df_plot</span> <span class="o">=</span> <span class="n">df_pcc</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># do</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">df_plot</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">df_plot</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;skyblue&quot;</span><span class="p">)</span>
@@ -346,19 +274,12 @@ Pearsonベクトルを計算中 (Top 5)...
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_11_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_11_0.png" />
-</div>
-</div>
 </section>
 <section id="偏相関（共通要因の除去）">
 <h2>偏相関（共通要因の除去）<a class="headerlink" href="#偏相関（共通要因の除去）" title="Link to this heading"></a></h2>
 <p>共通の要因を取り除いて、直接的な結びつきを評価します。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -385,28 +306,28 @@ Pearsonベクトルを計算中 (Top 5)...
 <h2>Association Edges / グラフ化<a class="headerlink" href="#Association-Edges-/-グラフ化" title="Link to this heading"></a></h2>
 <p>ターゲット時系列に対して行列の各チャンネルを評価し、エッジを作成します。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">association_edges</span><span class="p">,</span> <span class="n">build_graph</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
 
 <span class="n">matrix</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:],</span>
-    <span class="n">dt</span><span class="o">=</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-    <span class="n">channel_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+ <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:],</span>
+ <span class="n">dt</span><span class="o">=</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+ <span class="n">channel_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 
 <span class="n">edges</span> <span class="o">=</span> <span class="n">association_edges</span><span class="p">(</span><span class="n">ts_x</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="n">topk</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;関連エッジ:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; :</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
 
 <span class="n">pcorr</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">partial_correlation_matrix</span><span class="p">(</span><span class="n">shrinkage</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;偏相関行列:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pcorr</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; CorrelationMatrix:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pcorr</span><span class="p">)</span>
 
 
-<span class="c1"># networkx があればグラフ化できます:</span>
+<span class="c1"># networkx Plot :</span>
 <span class="n">graph</span> <span class="o">=</span> <span class="n">build_graph</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;グラフ構築完了&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plot &quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -473,15 +394,15 @@ Pearsonベクトルを計算中 (Top 5)...
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If networkx is available, you can visualize the association graph</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
-    <span class="n">G</span> <span class="o">=</span> <span class="n">build_graph</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;networkx&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-    <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Association Graph&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+ <span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+ <span class="n">G</span> <span class="o">=</span> <span class="n">build_graph</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;networkx&#39;</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+ <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+ <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Association Graph&#39;</span><span class="p">)</span>
+ <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Graph plot skipped:&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Graph plot skipped:&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -498,127 +419,91 @@ Pearsonベクトルを計算中 (Top 5)...
 </ul>
 <section id="非ガウス性ノイズの検出-(Skewness-/-Kurtosis)">
 <h2>非ガウス性ノイズの検出 (Skewness / Kurtosis)<a class="headerlink" href="#非ガウス性ノイズの検出-(Skewness-/-Kurtosis)" title="Link to this heading"></a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ガウスノイズと非ガウスノイズ（指数分布）の生成</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># GaussianNoise GaussianNoise（ minutes ） Generate</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">gauss_noise</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Gaussian&quot;</span><span class="p">)</span>
 <span class="n">exp_noise</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Non-Gaussian&quot;</span>
-<span class="p">)</span>  <span class="c1"># 中心化</span>
-
-<span class="c1"># プロット</span>
+ <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Non-Gaussian&quot;</span>
+<span class="p">)</span> <span class="c1">#</span>
+<span class="c1"># Plot</span>
 <span class="n">plot</span> <span class="o">=</span> <span class="n">exp_noise</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Non-Gaussian&quot;</span><span class="p">)</span>
 <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gauss_noise</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Gaussian&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
 <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="c1"># 統計量の計算</span>
+<span class="c1"># Calculate</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Gaussian:     Skewness=</span><span class="si">{</span><span class="n">gauss_noise</span><span class="o">.</span><span class="n">skewness</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Kurtosis=</span><span class="si">{</span><span class="n">gauss_noise</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+ <span class="sa">f</span><span class="s2">&quot;Gaussian: Skewness=</span><span class="si">{</span><span class="n">gauss_noise</span><span class="o">.</span><span class="n">skewness</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Kurtosis=</span><span class="si">{</span><span class="n">gauss_noise</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Non-Gaussian: Skewness=</span><span class="si">{</span><span class="n">exp_noise</span><span class="o">.</span><span class="n">skewness</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Kurtosis=</span><span class="si">{</span><span class="n">exp_noise</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+ <span class="sa">f</span><span class="s2">&quot;Non-Gaussian: Skewness=</span><span class="si">{</span><span class="n">exp_noise</span><span class="o">.</span><span class="n">skewness</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Kurtosis=</span><span class="si">{</span><span class="n">exp_noise</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Note: ガウス分布はSkewness~0, Kurtosis~0 (Fisher定義) になります。&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Note: Gaussianminutes Skewness~0, Kurtosis~0 (FisherDefine) 。&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_24_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_correlation_24_0.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Gaussian:     Skewness=0.117, Kurtosis=0.066
-Non-Gaussian: Skewness=1.981, Kurtosis=5.379
-Note: ガウス分布はSkewness~0, Kurtosis~0 (Fisher定義) になります。
-</pre></div></div>
 </div>
 </section>
 <section id="非線形依存性の検出-(Distance-Correlation)">
 <h2>非線形依存性の検出 (Distance Correlation)<a class="headerlink" href="#非線形依存性の検出-(Distance-Correlation)" title="Link to this heading"></a></h2>
 <p>先ほどの正弦波データ(<code class="docutils literal notranslate"><span class="pre">ts_c</span></code>)と線形データ(<code class="docutils literal notranslate"><span class="pre">ts_a</span></code>)の関係をdCorで見てみましょう。Pearson相関では捉えられなかった関係が検出できます。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
-    <span class="n">dcor_val</span> <span class="o">=</span> <span class="n">ts_a</span><span class="o">.</span><span class="n">distance_correlation</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Distance Correlation (A vs C): </span><span class="si">{</span><span class="n">dcor_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pearson Correlation  (A vs C): </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+ <span class="n">dcor_val</span> <span class="o">=</span> <span class="n">ts_a</span><span class="o">.</span><span class="n">distance_correlation</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Distance Correlation (A vs C): </span><span class="si">{</span><span class="n">dcor_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pearson Correlation (A vs C): </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="s2">&quot;dcorパッケージがインストールされていません。pip install dcor でインストールしてください。&quot;</span>
-    <span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span>
+ <span class="s2">&quot;dcorPackage pip install dcor 。&quot;</span>
+ <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Distance Correlation (A vs C): 0.381
-Pearson Correlation  (A vs C): -0.071
-</pre></div></div>
 </div>
 </section>
 <section id="因果関係の推定-(Granger-Causality)">
 <h2>因果関係の推定 (Granger Causality)<a class="headerlink" href="#因果関係の推定-(Granger-Causality)" title="Link to this heading"></a></h2>
 <p>ある時系列の過去の値が、別の時系列の未来の値を予測するのに役立つかどうかを検定します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 因果関係のあるデータを生成 (X -&gt; Y)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data Generate (X -&gt; Y)</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">200</span>
 <span class="n">x_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 <span class="n">y_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-<span class="c1"># YはXの1ステップ前の値に依存</span>
+<span class="c1"># Y X 1</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-    <span class="n">y_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">y_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">x_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+ <span class="n">y_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">y_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">x_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
 
 <span class="n">ts_x</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">x_val</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cause (X)&quot;</span><span class="p">)</span>
 <span class="n">ts_y</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Effect (Y)&quot;</span><span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="c1"># XがYの原因か？ (Yの予測にXが役立つか？) -&gt; p値が小さいはず</span>
-    <span class="n">p_xy</span> <span class="o">=</span> <span class="n">ts_y</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_x</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+ <span class="c1"># X Y ？ (Y X ？) -&gt; p</span>
+ <span class="n">p_xy</span> <span class="o">=</span> <span class="n">ts_y</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_x</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
-    <span class="c1"># YがXの原因か？ -&gt; p値が大きいはず</span>
-    <span class="n">p_yx</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+ <span class="c1"># Y X ？ -&gt; p</span>
+ <span class="n">p_yx</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Granger Causality X -&gt; Y (p-value): </span><span class="si">{</span><span class="n">p_xy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_xy</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Granger Causality Y -&gt; X (p-value): </span><span class="si">{</span><span class="n">p_yx</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_yx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span>
+ <span class="sa">f</span><span class="s2">&quot;Granger Causality X -&gt; Y (p-value): </span><span class="si">{</span><span class="n">p_xy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_xy</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+ <span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span>
+ <span class="sa">f</span><span class="s2">&quot;Granger Causality Y -&gt; X (p-value): </span><span class="si">{</span><span class="n">p_yx</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_yx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+ <span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span>
-        <span class="s2">&quot;statsmodelsパッケージがインストールされていません。pip install statsmodels でインストールしてください。&quot;</span>
-    <span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span>
+ <span class="s2">&quot;statsmodelsPackage pip install statsmodels 。&quot;</span>
+ <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Granger Causality X -&gt; Y (p-value): 0.0000 (Significant)
-Granger Causality Y -&gt; X (p-value): 0.0907
-</pre></div></div>
 </div>
 </section>
 <section id="高速相互情報量推定-(fastmi)">
@@ -631,8 +516,8 @@ Granger Causality Y -&gt; X (p-value): 0.0907
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mi_xy</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">fastmi</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">grid_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 <span class="n">mi_xz</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">fastmi</span><span class="p">(</span><span class="n">ts_z</span><span class="p">,</span> <span class="n">grid_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;相互情報量 (x, y): </span><span class="si">{</span><span class="n">mi_xy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> nats&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;相互情報量 (x, z): </span><span class="si">{</span><span class="n">mi_xz</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> nats&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cross (x, y): </span><span class="si">{</span><span class="n">mi_xy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> nats&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cross (x, z): </span><span class="si">{</span><span class="n">mi_xz</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> nats&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

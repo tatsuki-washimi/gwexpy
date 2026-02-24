@@ -127,7 +127,7 @@
 </ul>
 <p>このノートブックでは追加のユーティリティ関数は定義せず、クラスメソッドを直接呼び出して動作を確認します。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -143,13 +143,13 @@
 <ul class="simple">
 <li><p>2×2 の <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> を作り、<code class="docutils literal notranslate"><span class="pre">dt/t0/times</span></code> やメタデータ（unit/name/channel）を確認します。</p></li>
 </ul>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-<span class="c1"># サンプル設定</span>
+<span class="c1"># SampleSet</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">1024</span>
 <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">256</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 <span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
@@ -170,15 +170,15 @@
 <span class="n">channels</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;X:A&quot;</span><span class="p">,</span> <span class="s2">&quot;X:B&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Y:A&quot;</span><span class="p">,</span> <span class="s2">&quot;Y:B&quot;</span><span class="p">]]</span>
 
 <span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span>
-    <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
-    <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
-    <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
-    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-    <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
-    <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
-    <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span>
+ <span class="n">data</span><span class="p">,</span>
+ <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+ <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+ <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+ <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+ <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+ <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
+ <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
+ <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">display</span><span class="p">(</span><span class="n">tsm</span><span class="p">)</span>
@@ -186,149 +186,33 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<h3>SeriesMatrix: shape=(2, 2, 1024), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 s, <b>dx:</b> 0.00390625 s, <b>N_samples:</b> 1024</li><li><b>xunit:</b> s</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>channel</th>
-      <th>unit</th>
-    </tr>
-    <tr>
-      <th>key</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>r0</th>
-      <td>row0</td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>r1</th>
-      <td>row1</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table><h4>Column Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>channel</th>
-      <th>unit</th>
-    </tr>
-    <tr>
-      <th>key</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>c0</th>
-      <td>col0</td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>c1</th>
-      <td>col1</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table><h4>Element Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>unit</th>
-      <th>name</th>
-      <th>channel</th>
-      <th>row</th>
-      <th>col</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>V</td>
-      <td>ch00</td>
-      <td>X:A</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>V</td>
-      <td>ch01</td>
-      <td>X:B</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>V</td>
-      <td>ch10</td>
-      <td>Y:A</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>V</td>
-      <td>ch11</td>
-      <td>Y:B</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_3_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_3_1.png" />
-</div>
-</div>
 </section>
 <section id="多様な入力パターン（コンストラクタ例）">
 <h2>多様な入力パターン（コンストラクタ例）<a class="headerlink" href="#多様な入力パターン（コンストラクタ例）" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">dt/t0</span></code> のほか、<code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> や <code class="docutils literal notranslate"><span class="pre">times</span></code>、<code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> の 2D リスト、<code class="docutils literal notranslate"><span class="pre">Quantity</span></code> 入力などを確認します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== TimeSeriesMatrix コンストラクタ例 ===&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== TimeSeriesMatrix ===&quot;</span><span class="p">)</span>
 <span class="n">times</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">times</span>
 
-<span class="c1"># ケース 1: sample_rate 指定（dt の代わり）</span>
+<span class="c1"># 1: sample_rate （dt ）</span>
 <span class="n">tsm_sr</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span>
-    <span class="n">sample_rate</span><span class="o">=</span><span class="mi">256</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span>
-    <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
-    <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
-    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-    <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+ <span class="n">data</span><span class="p">,</span>
+ <span class="n">sample_rate</span><span class="o">=</span><span class="mi">256</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span>
+ <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+ <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+ <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+ <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case1 sample_rate&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="n">tsm_sr</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;sample_rate&quot;</span><span class="p">,</span> <span class="n">tsm_sr</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">)</span>
 
-<span class="c1"># ケース 2: times 指定（不規則サンプルにも対応）</span>
+<span class="c1"># 2: times （ Sample ）</span>
 <span class="n">tsm_times</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case2 times&quot;</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="n">tsm_times</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;t0&quot;</span><span class="p">,</span> <span class="n">tsm_times</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="n">tsm_times</span><span class="o">.</span><span class="n">N_samples</span><span class="p">)</span>
 
-<span class="c1"># ケース 3: TimeSeries の 2D リストから構築</span>
+<span class="c1"># 3: TimeSeries 2D Listfrom</span>
 <span class="n">ts00</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ch00&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;X:A&quot;</span><span class="p">)</span>
 <span class="n">ts01</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ch01&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;X:B&quot;</span><span class="p">)</span>
 <span class="n">ts10</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ch10&quot;</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="s2">&quot;Y:A&quot;</span><span class="p">)</span>
@@ -336,35 +220,21 @@
 <span class="n">tsm_from_ts</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">([[</span><span class="n">ts00</span><span class="p">,</span> <span class="n">ts01</span><span class="p">],</span> <span class="p">[</span><span class="n">ts10</span><span class="p">,</span> <span class="n">ts11</span><span class="p">]])</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case3 from TimeSeries&quot;</span><span class="p">,</span> <span class="n">tsm_from_ts</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">,</span> <span class="n">tsm_from_ts</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
 
-<span class="c1"># ケース 4: Quantity 入力（units を自動設定）</span>
+<span class="c1"># 4: Quantity （units Set）</span>
 <span class="n">tsm_q</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">((</span><span class="n">data</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">mV</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;case4 Quantity meta unit&quot;</span><span class="p">,</span> <span class="n">tsm_q</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 
-<span class="c1"># 例外: dt と sample_rate / t0 と epoch は同時指定できない</span>
+<span class="c1"># : dt sample_rate / t0 epoch</span>
 <span class="k">for</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="p">[</span>
-    <span class="nb">dict</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">256</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">),</span>
-    <span class="nb">dict</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="n">t0</span><span class="p">),</span>
+ <span class="nb">dict</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">256</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">),</span>
+ <span class="nb">dict</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="n">t0</span><span class="p">),</span>
 <span class="p">]:</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">_</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+ <span class="k">try</span><span class="p">:</span>
+ <span class="n">_</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+ <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-=== TimeSeriesMatrix コンストラクタ例 ===
-case1 sample_rate dt 0.00390625 s sample_rate 256.0 Hz
-case2 times dt 0.00390625 s t0 0.0 s N 1024
-case3 from TimeSeries (2, 2, 1024) dt 0.00390625 s
-case4 Quantity meta unit mV
-error {&#39;dt&#39;: &lt;Quantity 0.00390625 s&gt;, &#39;sample_rate&#39;: &lt;Quantity 256. Hz&gt;, &#39;t0&#39;: &lt;Quantity 0. s&gt;} -&gt; ValueError give only one of sample_rate or dt
-error {&#39;dt&#39;: &lt;Quantity 0.00390625 s&gt;, &#39;t0&#39;: &lt;Quantity 0. s&gt;, &#39;epoch&#39;: &lt;Quantity 0. s&gt;} -&gt; ValueError give only one of epoch or t0
-</pre></div></div>
 </div>
 </section>
 <section id="参照・切り出し">
@@ -374,8 +244,8 @@ error {&#39;dt&#39;: &lt;Quantity 0.00390625 s&gt;, &#39;t0&#39;: &lt;Quantity 0
 <li><p>スライスは <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> を返す</p></li>
 <li><p>row/col ラベルでもアクセスできる</p></li>
 </ul>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s00</span> <span class="o">=</span> <span class="n">tsm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
@@ -392,31 +262,6 @@ error {&#39;dt&#39;: &lt;Quantity 0.00390625 s&gt;, &#39;t0&#39;: &lt;Quantity 0
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[0,0] type &lt;class &#39;gwexpy.timeseries.timeseries.TimeSeries&#39;&gt; dt 0.00390625 s t0 0.0 s unit V
-[0,0] name ch00 channel X:A
-[r0,c1] name ch01 channel X:B
-tsm[:,0] -&gt; &lt;class &#39;gwexpy.timeseries.matrix.TimeSeriesMatrix&#39;&gt; (2, 1, 1024)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_7_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_7_1.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_7_2.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_7_2.png" />
-</div>
-</div>
 </section>
 <section id="サンプル軸編集">
 <h2>サンプル軸編集<a class="headerlink" href="#サンプル軸編集" title="Link to this heading"></a></h2>
@@ -424,8 +269,8 @@ tsm[:,0] -&gt; &lt;class &#39;gwexpy.timeseries.matrix.TimeSeriesMatrix&#39;&gt;
 <li><p><code class="docutils literal notranslate"><span class="pre">diff</span></code> / <code class="docutils literal notranslate"><span class="pre">pad</span></code> は <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> を返す</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">crop</span></code> は現在 <code class="docutils literal notranslate"><span class="pre">SeriesMatrix</span></code> を返すので、<code class="docutils literal notranslate"><span class="pre">view(TimeSeriesMatrix)</span></code> で戻します（中身は同じ）</p></li>
 </ul>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cropped</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">TimeSeriesMatrix</span><span class="p">)</span>
@@ -442,43 +287,12 @@ tsm[:,0] -&gt; &lt;class &#39;gwexpy.timeseries.matrix.TimeSeriesMatrix&#39;&gt;
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-cropped &lt;class &#39;gwexpy.timeseries.matrix.TimeSeriesMatrix&#39;&gt; (2, 2, 256) span (&lt;Quantity 1. s&gt;, &lt;Quantity 2. s&gt;)
-diffed (2, 2, 1023) dt 0.00390625 s
-padded (2, 2, 1124) t0 -0.1953125 s
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_9_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_9_1.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_9_2.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_9_2.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_9_3.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_9_3.png" />
-</div>
-</div>
 </section>
 <section id="時間領域処理（TimeSeries-メソッドの要素ごと適用）">
 <h2>時間領域処理（TimeSeries メソッドの要素ごと適用）<a class="headerlink" href="#時間領域処理（TimeSeries-メソッドの要素ごと適用）" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> のメソッド（<code class="docutils literal notranslate"><span class="pre">detrend</span></code>, <code class="docutils literal notranslate"><span class="pre">bandpass</span></code>, <code class="docutils literal notranslate"><span class="pre">resample</span></code> など）を行列要素ごとに適用します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">detr</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">detrend</span><span class="p">(</span><span class="s2">&quot;constant&quot;</span><span class="p">)</span>
@@ -494,73 +308,40 @@ padded (2, 2, 1124) t0 -0.1953125 s
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-original (2, 2, 1024) sample_rate 256.0 Hz
-bandpass (2, 2, 1024) sample_rate 256.0 Hz
-resample (2, 2, 512) sample_rate 128.0 Hz
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_11_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_11_1.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_11_2.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_11_2.png" />
-</div>
-</div>
 </section>
 <section id="欠損値処理-(Imputation)">
 <h2>欠損値処理 (Imputation)<a class="headerlink" href="#欠損値処理-(Imputation)" title="Link to this heading"></a></h2>
 <p>Matrix内の欠損値 (NaN) を補完します。各チャンネルごとに適用されます。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 欠損値を含むデータの作成 (デモ用)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data Create ( )</span>
 <span class="n">tsm_miss</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="c1"># 最初のチャンネルの一部をNaNにする (アクセスの仕方に注意: tsm[0,0] は time series)</span>
+<span class="c1"># NaN do ( : tsm[0,0] time series)</span>
 <span class="n">tsm_miss</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">50</span><span class="p">:</span><span class="mi">60</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Before impute (Has NaN):&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tsm_miss</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">())</span>
 
-<span class="c1"># 補完 (線形補間)</span>
+<span class="c1"># ( )</span>
 <span class="n">tsm_imp</span> <span class="o">=</span> <span class="n">tsm_miss</span><span class="o">.</span><span class="n">impute</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;After impute (Has NaN):&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tsm_imp</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Before impute (Has NaN): False
-After impute (Has NaN): False
-</pre></div></div>
-</div>
 </section>
 <section id="前処理:-標準化と白色化">
 <h2>前処理: 標準化と白色化<a class="headerlink" href="#前処理:-標準化と白色化" title="Link to this heading"></a></h2>
 <p>多変量解析の前処理として有用です。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 標準化 (Standardize): 平均0, 分散1にスケーリング</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># (Standardize): Mean0, minutes 1</span>
 <span class="n">tsm_std</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;zscore&quot;</span><span class="p">)</span>
 
-<span class="c1"># 白色化 (Whiten): チャンネル間の相関(共分散)を除去</span>
-<span class="c1"># PCAを用いて無相関化します</span>
+<span class="c1"># Color (Whiten): Correlation( minutes ) Subtraction</span>
+<span class="c1"># PCA Correlation</span>
 <span class="n">tsm_white</span><span class="p">,</span> <span class="n">w_model</span> <span class="o">=</span> <span class="n">tsm_std</span><span class="o">.</span><span class="n">whiten_channels</span><span class="p">(</span><span class="n">return_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Standardized shape:&quot;</span><span class="p">,</span> <span class="n">tsm_std</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
@@ -568,25 +349,16 @@ After impute (Has NaN): False
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Standardized shape: (2, 2, 1024)
-Whitened shape: (4, 1, 1024)
-</pre></div></div>
-</div>
 </section>
 <section id="成分分解-(PCA-/-ICA)">
 <h2>成分分解 (PCA / ICA)<a class="headerlink" href="#成分分解-(PCA-/-ICA)" title="Link to this heading"></a></h2>
 <p>効率的な次元圧縮や、信号源分離を行います。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 主成分分析 (PCA)</span>
-<span class="c1"># 次元を圧縮 (例: 3チャンネル -&gt; 2主成分)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># minutesminutes (PCA)</span>
+<span class="c1"># Dimension ( : 3 -&gt; 2 minutes)</span>
 <span class="n">n_comp</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">tsm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">pca_scores</span><span class="p">,</span> <span class="n">pca_res</span> <span class="o">=</span> <span class="n">tsm_std</span><span class="o">.</span><span class="n">pca</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n_comp</span><span class="p">,</span> <span class="n">return_model</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -596,8 +368,8 @@ Whitened shape: (4, 1, 1024)
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<span class="c1"># 独立成分分析 (ICA)</span>
-<span class="c1"># 信号源分離 (Blind Source Separation)</span>
+<span class="c1"># minutesminutes (ICA)</span>
+<span class="c1"># Signal minutes (Blind Source Separation)</span>
 <span class="n">ica_sources</span> <span class="o">=</span> <span class="n">tsm_std</span><span class="o">.</span><span class="n">ica</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n_comp</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ICA Sources shape:&quot;</span><span class="p">,</span> <span class="n">ica_sources</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="n">ica_sources</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -606,71 +378,32 @@ Whitened shape: (4, 1, 1024)
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-PCA Scores shape: (2, 1, 1024)
-Explained variance ratio: [0.57128681 0.41742564]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_17_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_17_1.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-ICA Sources shape: (2, 1, 1024)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_17_3.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_17_3.png" />
-</div>
-</div>
 </section>
 <section id="相互運用性-(Interop)-入門">
 <h2>相互運用性 (Interop) 入門<a class="headerlink" href="#相互運用性-(Interop)-入門" title="Link to this heading"></a></h2>
 <p>PyTorchなどの外部ライブラリへデータを渡すことができます。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
-    <span class="c1"># PyTorch Tensorへ変換</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+ <span class="c1"># PyTorch Tensor Transform</span>
+ <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-    <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
-    <span class="n">tensor</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Converted to PyTorch:&quot;</span><span class="p">,</span> <span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+ <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
+ <span class="n">tensor</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Converted to PyTorch:&quot;</span><span class="p">,</span> <span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch not installed&quot;</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch not installed&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Converted to PyTorch: torch.Size([2, 2, 1024])
-</pre></div></div>
 </div>
 </section>
 <section id="スペクトル解析（FFT-/-PSD-/-ASD）">
 <h2>スペクトル解析（FFT / PSD / ASD）<a class="headerlink" href="#スペクトル解析（FFT-/-PSD-/-ASD）" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">fft/psd/asd</span></code> は <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> を返します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fft</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
@@ -687,23 +420,6 @@ Converted to PyTorch: torch.Size([2, 2, 1024])
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-fft &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 513) df 0.25 Hz f0 0.0 Hz
-psd (2, 2, 129) unit V2 / Hz
-asd (2, 2, 129) unit V / Hz(1/2)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_21_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_21_1.png" />
-</div>
-</div>
 </section>
 <section id="bivariate-スペクトル解析（coherence-例）">
 <h2>bivariate スペクトル解析（coherence 例）<a class="headerlink" href="#bivariate-スペクトル解析（coherence-例）" title="Link to this heading"></a></h2>
@@ -712,8 +428,8 @@ asd (2, 2, 129) unit V / Hz(1/2)
 <li><p><code class="docutils literal notranslate"><span class="pre">other</span></code> に <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> を渡すと「全要素 vs 同一参照」の比較になります</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">other</span></code> に <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> を渡す場合は shape (Nrow, Ncol) が一致している必要があります</p></li>
 </ul>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ref</span> <span class="o">=</span> <span class="n">tsm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
@@ -722,26 +438,10 @@ asd (2, 2, 129) unit V / Hz(1/2)
 <span class="n">coh</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="n">_</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="n">tsm</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+ <span class="n">_</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="n">tsm</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shape mismatch -&gt;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;shape mismatch -&gt;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 </pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-coherence &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 129) unit coherence
-shape mismatch -&gt; IndexError index 1 is out of bounds for axis 1 with size 1
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_23_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_23_1.png" />
 </div>
 </div>
 </section>
@@ -752,8 +452,8 @@ shape mismatch -&gt; IndexError index 1 is out of bounds for axis 1 with size 1
 <li><p><code class="docutils literal notranslate"><span class="pre">_repr_html_</span></code>: ノートブックでは <code class="docutils literal notranslate"><span class="pre">display(tsm)</span></code> で表形式</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">plot</span></code> / <code class="docutils literal notranslate"><span class="pre">step</span></code>: クラスメソッドで直接描画</p></li>
 </ul>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;repr:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">tsm</span><span class="p">)</span>
@@ -762,162 +462,6 @@ shape mismatch -&gt; IndexError index 1 is out of bounds for axis 1 with size 1
 <span class="n">tsm</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
 <span class="n">tsm</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">where</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="p">,</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;seconds&quot;</span><span class="p">);</span>
 </pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-repr:
- SeriesMatrix(shape=(2, 2, 1024),  name=&#39;demo&#39;)
-  epoch   : 0.0 s
-  x0      : 0.0 s
-  dx      : 0.00390625 s
-  xunit   : s
-  samples : 1024
-
-[ Row metadata ]
-     name channel unit
-key
-r0   row0
-r1   row1
-
-[ Column metadata ]
-     name channel unit
-key
-c0   col0
-c1   col1
-
-[ Elements metadata ]
-  unit  name channel  row  col
-0    V  ch00     X:A    0    0
-1    V  ch01     X:B    0    1
-2    V  ch10     Y:A    1    0
-3    V  ch11     Y:B    1    1
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<h3>SeriesMatrix: shape=(2, 2, 1024), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 s, <b>dx:</b> 0.00390625 s, <b>N_samples:</b> 1024</li><li><b>xunit:</b> s</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>channel</th>
-      <th>unit</th>
-    </tr>
-    <tr>
-      <th>key</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>r0</th>
-      <td>row0</td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>r1</th>
-      <td>row1</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table><h4>Column Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>channel</th>
-      <th>unit</th>
-    </tr>
-    <tr>
-      <th>key</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>c0</th>
-      <td>col0</td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>c1</th>
-      <td>col1</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table><h4>Element Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>unit</th>
-      <th>name</th>
-      <th>channel</th>
-      <th>row</th>
-      <th>col</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>V</td>
-      <td>ch00</td>
-      <td>X:A</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>V</td>
-      <td>ch01</td>
-      <td>X:B</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>V</td>
-      <td>ch10</td>
-      <td>Y:A</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>V</td>
-      <td>ch11</td>
-      <td>Y:B</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_25_2.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_25_2.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_25_3.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_timeseries_25_3.png" />
 </div>
 </div>
 </section>

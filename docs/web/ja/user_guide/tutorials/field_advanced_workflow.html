@@ -131,7 +131,7 @@
 <h2>ユースケース：地震アレイ解析<a class="headerlink" href="#ユースケース：地震アレイ解析" title="Link to this heading"></a></h2>
 <p>各空間点が時間変動する地動を記録する3次元地震アレイを解析します。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Suppress warnings</span>
@@ -152,62 +152,62 @@
 <section id="ステップ-1：合成地震フィールドの作成">
 <h2>ステップ 1：合成地震フィールドの作成<a class="headerlink" href="#ステップ-1：合成地震フィールドの作成" title="Link to this heading"></a></h2>
 <p>3次元グリッドを伝搬する地震波による地動をシミュレートします。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Parameters</span>
-<span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span>  <span class="c1"># 256 time samples, 8×8×4 spatial grid</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># Hz</span>
+<span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span> <span class="c1"># 256 time samples, 8×8×4 spatial grid</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1"># Hz</span>
 <span class="n">duration</span> <span class="o">=</span> <span class="n">nt</span> <span class="o">/</span> <span class="n">fs</span>
 
 <span class="c1"># Create axis coordinates</span>
 <span class="n">t_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nt</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
-<span class="n">x_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span> <span class="o">*</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>  <span class="c1"># 10m spacing</span>
+<span class="n">x_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span> <span class="o">*</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span> <span class="c1"># 10m spacing</span>
 <span class="n">y_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span> <span class="o">*</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
-<span class="n">z_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span> <span class="o">*</span> <span class="mf">5.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>   <span class="c1"># 5m depth spacing</span>
+<span class="n">z_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span> <span class="o">*</span> <span class="mf">5.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span> <span class="c1"># 5m depth spacing</span>
 
 <span class="c1"># Simulate seismic wave (P-wave + surface wave)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">))</span>
 
 <span class="c1"># P-wave (bulk wave, faster)</span>
-<span class="n">v_p</span> <span class="o">=</span> <span class="mi">3000</span>  <span class="c1"># m/s</span>
-<span class="n">f_p</span> <span class="o">=</span> <span class="mi">10</span>    <span class="c1"># Hz</span>
+<span class="n">v_p</span> <span class="o">=</span> <span class="mi">3000</span> <span class="c1"># m/s</span>
+<span class="n">f_p</span> <span class="o">=</span> <span class="mi">10</span> <span class="c1"># Hz</span>
 <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span><span class="p">):</span>
-            <span class="c1"># Distance from source (corner)</span>
-            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_axis</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y_axis</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">z_axis</span><span class="p">[</span><span class="n">iz</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-            <span class="n">delay</span> <span class="o">=</span> <span class="n">dist</span> <span class="o">/</span> <span class="n">v_p</span>
-            <span class="n">t_vals</span> <span class="o">=</span> <span class="n">t_axis</span><span class="o">.</span><span class="n">value</span>
+ <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
+ <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span><span class="p">):</span>
+ <span class="c1"># Distance from source (corner)</span>
+ <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_axis</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y_axis</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">z_axis</span><span class="p">[</span><span class="n">iz</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+ <span class="n">delay</span> <span class="o">=</span> <span class="n">dist</span> <span class="o">/</span> <span class="n">v_p</span>
+ <span class="n">t_vals</span> <span class="o">=</span> <span class="n">t_axis</span><span class="o">.</span><span class="n">value</span>
 
-            <span class="c1"># P-wave with geometric spreading</span>
-            <span class="n">amplitude_p</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">dist</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">data</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">iz</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amplitude_p</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_p</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_vals</span> <span class="o">-</span> <span class="n">delay</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_vals</span> <span class="o">&gt;</span> <span class="n">delay</span><span class="p">)</span>
+ <span class="c1"># P-wave with geometric spreading</span>
+ <span class="n">amplitude_p</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">dist</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+ <span class="n">data</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="n">iz</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amplitude_p</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_p</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_vals</span> <span class="o">-</span> <span class="n">delay</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_vals</span> <span class="o">&gt;</span> <span class="n">delay</span><span class="p">)</span>
 
 <span class="c1"># Surface wave (slower, stronger)</span>
-<span class="n">v_s</span> <span class="o">=</span> <span class="mi">1500</span>  <span class="c1"># m/s</span>
-<span class="n">f_s</span> <span class="o">=</span> <span class="mi">5</span>     <span class="c1"># Hz</span>
+<span class="n">v_s</span> <span class="o">=</span> <span class="mi">1500</span> <span class="c1"># m/s</span>
+<span class="n">f_s</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># Hz</span>
 <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
-        <span class="n">dist_surf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_axis</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y_axis</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">delay_s</span> <span class="o">=</span> <span class="n">dist_surf</span> <span class="o">/</span> <span class="n">v_s</span>
-        <span class="n">amplitude_s</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">dist_surf</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">data</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amplitude_s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_s</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_vals</span> <span class="o">-</span> <span class="n">delay_s</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_vals</span> <span class="o">&gt;</span> <span class="n">delay_s</span><span class="p">)</span>
+ <span class="k">for</span> <span class="n">iy</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny</span><span class="p">):</span>
+ <span class="n">dist_surf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x_axis</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y_axis</span><span class="p">[</span><span class="n">iy</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+ <span class="n">delay_s</span> <span class="o">=</span> <span class="n">dist_surf</span> <span class="o">/</span> <span class="n">v_s</span>
+ <span class="n">amplitude_s</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">dist_surf</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+ <span class="n">data</span><span class="p">[:,</span> <span class="n">ix</span><span class="p">,</span> <span class="n">iy</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amplitude_s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_s</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_vals</span> <span class="o">-</span> <span class="n">delay_s</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_vals</span> <span class="o">&gt;</span> <span class="n">delay_s</span><span class="p">)</span>
 
 <span class="c1"># Add noise</span>
 <span class="n">data</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span>
 
 <span class="c1"># Create ScalarField</span>
 <span class="n">field_seismic</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span>
-    <span class="n">axis0</span><span class="o">=</span><span class="n">t_axis</span><span class="p">,</span>
-    <span class="n">axis1</span><span class="o">=</span><span class="n">x_axis</span><span class="p">,</span>
-    <span class="n">axis2</span><span class="o">=</span><span class="n">y_axis</span><span class="p">,</span>
-    <span class="n">axis3</span><span class="o">=</span><span class="n">z_axis</span><span class="p">,</span>
-    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
-    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>  <span class="c1"># Ground displacement</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Seismic Field&#39;</span><span class="p">,</span>
+ <span class="n">data</span><span class="p">,</span>
+ <span class="n">axis0</span><span class="o">=</span><span class="n">t_axis</span><span class="p">,</span>
+ <span class="n">axis1</span><span class="o">=</span><span class="n">x_axis</span><span class="p">,</span>
+ <span class="n">axis2</span><span class="o">=</span><span class="n">y_axis</span><span class="p">,</span>
+ <span class="n">axis3</span><span class="o">=</span><span class="n">z_axis</span><span class="p">,</span>
+ <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">],</span>
+ <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="c1"># Ground displacement</span>
+ <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Seismic Field&#39;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created seismic field: </span><span class="si">{</span><span class="n">field_seismic</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -216,27 +216,17 @@
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Created seismic field: (256, 8, 8, 4)
-Time span: 2.56 s
-Spatial extent: 80m × 80m × 20m
-</pre></div></div>
-</div>
 </section>
 <section id="ステップ-2：解析用の-TimeSeries-抽出">
 <h2>ステップ 2：解析用の TimeSeries 抽出<a class="headerlink" href="#ステップ-2：解析用の-TimeSeries-抽出" title="Link to this heading"></a></h2>
 <p>特定の空間位置から時系列データを抽出し、詳細な解析を行います。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract time-series at corner (near source) and far point</span>
-<span class="n">slice_near</span> <span class="o">=</span> <span class="n">field_seismic</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Near source (keeps 4D structure)</span>
-<span class="n">slice_far</span> <span class="o">=</span> <span class="n">field_seismic</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>   <span class="c1"># Far from source</span>
+<span class="n">slice_near</span> <span class="o">=</span> <span class="n">field_seismic</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="c1"># Near source (keeps 4D structure)</span>
+<span class="n">slice_far</span> <span class="o">=</span> <span class="n">field_seismic</span><span class="p">[:,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="c1"># Far from source</span>
 
 <span class="c1"># Convert point-slices to 1D TimeSeries</span>
 <span class="n">times</span> <span class="o">=</span> <span class="n">slice_near</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
@@ -264,27 +254,12 @@ Spatial extent: 80m × 80m × 20m
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_field_advanced_workflow_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_field_advanced_workflow_5_0.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Extracted TimeSeries for analysis
-</pre></div></div>
-</div>
 </section>
 <section id="ステップ-3：STLT-による減衰検出">
 <h2>ステップ 3：STLT による減衰検出<a class="headerlink" href="#ステップ-3：STLT-による減衰検出" title="Link to this heading"></a></h2>
 <p>Short-Time Laplace Transform を用いて、地震信号の減衰率を特定します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Apply STLT to detect damping (geometric spreading + attenuation)</span>
@@ -296,27 +271,17 @@ Extracted TimeSeries for analysis
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-STLT result shape: (4, 1, 51)
-Use STLT to identify decay rates (σ) at different frequencies (ω)
-Note: Actual visualization would show σ-ω plane with decay rate information
-</pre></div></div>
-</div>
 </section>
 <section id="ステップ-4：FieldList-によるバッチ処理">
 <h2>ステップ 4：FieldList によるバッチ処理<a class="headerlink" href="#ステップ-4：FieldList-によるバッチ処理" title="Link to this heading"></a></h2>
 <p>FieldList を使用して、複数の空間スライスを並列的に処理します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extract horizontal slices at different depths</span>
 <span class="n">slices_at_depths</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">field_seismic</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">iz</span><span class="p">]</span> <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+ <span class="n">field_seismic</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="n">iz</span><span class="p">]</span> <span class="k">for</span> <span class="n">iz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
 <span class="p">]</span>
 
 <span class="c1"># Create FieldList</span>
@@ -328,34 +293,19 @@ Note: Actual visualization would show σ-ω plane with decay rate information
 <span class="c1"># Batch operation: compute PSD at each depth</span>
 <span class="c1"># (This would be a real batch operation in practice)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Batch processing workflow:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  1. Extract slices → FieldList&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  2. Apply transform → [field.fft_time() for field in field_list]&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  3. Aggregate results → stack or average&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  4. Reconstruct Field → combine processed slices&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; 1. Extract slices → FieldList&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; 2. Apply transform → [field.fft_time() for field in field_list]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; 3. Aggregate results → stack or average&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; 4. Reconstruct Field → combine processed slices&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Created FieldList with 4 depth slices
-Each slice shape: (256, 8, 8, 1)
-
-Batch processing workflow:
-  1. Extract slices → FieldList
-  2. Apply transform → [field.fft_time() for field in field_list]
-  3. Aggregate results → stack or average
-  4. Reconstruct Field → combine processed slices
-</pre></div></div>
 </div>
 </section>
 <section id="ステップ-5：処理済みデータからの-Field-再構成">
 <h2>ステップ 5：処理済みデータからの Field 再構成<a class="headerlink" href="#ステップ-5：処理済みデータからの-Field-再構成" title="Link to this heading"></a></h2>
 <p>解析後、4次元構造を維持するために Field 構造を再構成します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: FFT in time, then reconstruct</span>
@@ -374,19 +324,6 @@ Batch processing workflow:
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4D structure preserved through FFT → IFFT cycle ✓&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Frequency-domain field: (129, 8, 8, 4)
-Axis0 domain: frequency
-Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
-
-Reconstruction error: 1.33e-15 m
-4D structure preserved through FFT → IFFT cycle ✓
-</pre></div></div>
 </div>
 </section>
 <section id="まとめ：Field-×-高度解析のベストプラクティス">

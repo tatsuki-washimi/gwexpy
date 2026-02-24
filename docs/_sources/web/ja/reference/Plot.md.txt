@@ -2,8 +2,8 @@
 
 **継承元:** Plot
 
-:class:`gwpy.plot.Plot` の拡張で、:class:`gwexpy.types.SeriesMatrix` 引数を
-個々の :class:`gwpy.types.Series` オブジェクトに自動展開し、
+`:class:gwpy.plot.Plot` の拡張で、`:class:gwexpy.types.SeriesMatrix` 引数を
+個々の `:class:gwpy.types.Series` オブジェクトに自動展開し、
 可能な限りマトリクスのレイアウトとメタデータを保持します。
 
 ## メソッド
@@ -16,22 +16,23 @@ __init__(self, *args, **kwargs)
 
 パラメータ
 ----------
-figsize : 2-tuple of floats, default: :rc:`figure.figsize`
+
+figsize : 2-tuple of floats, default: `:rc:figure.figsize`
     図の寸法 ``(width, height)`` (インチ単位)。
 
-dpi : float, default: :rc:`figure.dpi`
+dpi : float, default: `:rc:figure.dpi`
     1インチあたりのドット数。
 
-facecolor : default: :rc:`figure.facecolor`
+facecolor : default: `:rc:figure.facecolor`
     図パッチの表面色。
 
-edgecolor : default: :rc:`figure.edgecolor`
+edgecolor : default: `:rc:figure.edgecolor`
     図パッチの境界色。
 
 linewidth : float
     フレームの線幅（図パッチの境界線幅）。
 
-frameon : bool, default: :rc:`figure.frameon`
+frameon : bool, default: `:rc:figure.frameon`
     ``False`` の場合、図の背景パッチの描画を抑制します。
 
 layout : {'constrained', 'compressed', 'tight', `.LayoutEngine`, None}
@@ -49,6 +50,7 @@ add_segments_bar(self, segments, ax=None, height=0.14, pad=0.1, sharex=True, loc
 
 パラメータ
 ----------
+
 segments : `~gwpy.segments.DataQualityFlag`
     データ品質フラグ、またはこの Plot に関する状態セグメントを示す `SegmentList`
 
@@ -82,6 +84,7 @@ colorbar(self, mappable=None, cax=None, ax=None, fraction=0.0, use_axesgrid=True
 
 パラメータ
 ----------
+
 mappable : matplotlib data collection
     色付けをマッピングするコレクション
 
@@ -102,6 +105,7 @@ emit : `bool`, optional
 
 戻り値
 -------
+
 cbar : `~matplotlib.colorbar.Colorbar`
     新しく追加された `Colorbar`
 
@@ -115,11 +119,13 @@ get_axes(self, projection=None)
 
 パラメータ
 ----------
+
 projection : `str`
     返す軸タイプの名前
 
 戻り値
 -------
+
 axlist : `list` of `~matplotlib.axes.Axes`
 
 ### `plot_mmm`
@@ -128,7 +134,7 @@ axlist : `list` of `~matplotlib.axes.Axes`
 plot_mmm(self, median, min_s, max_s, ax=None, **kwargs)
 ```
 
-_ドキュメントなし。_
+*ドキュメントなし。*
 
 ### `refresh`
 
@@ -146,7 +152,7 @@ save(self, *args, **kwargs)
 
 図をディスクに保存します。
 
-このメソッドは :meth:`~matplotlib.figure.Figure.savefig` のエイリアスです。
+このメソッドは `:meth:~matplotlib.figure.Figure.savefig` のエイリアスです。
 
 ### `show`
 

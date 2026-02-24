@@ -120,7 +120,7 @@
 <p>このノートブックでは <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> クラスの基本的な使い方を紹介します。</p>
 <p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は、複数の <code class="docutils literal notranslate"><span class="pre">gwpy.spectrogram.Spectrogram</span></code> オブジェクトを 3次元 (Batch, Time, Frequency) の行列として効率的に扱うためのクラスです。<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> を継承しており、高速な数値計算や PyTorch/CuPy との連携が可能です。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
@@ -129,20 +129,19 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
 
-<span class="c1"># 乱数シードの固定</span>
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="c1">#np.random.seed(42)</span>
 </pre></div>
 </div>
 </div>
 <section id="1.-データの準備">
 <h2>1. データの準備<a class="headerlink" href="#1.-データの準備" title="Link to this heading"></a></h2>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-<span class="c1"># サンプル設定</span>
+<span class="c1"># SampleSet</span>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">512</span>
 <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">128</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 <span class="n">t0</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
@@ -163,15 +162,15 @@
 <span class="n">channels</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;X:A&quot;</span><span class="p">,</span> <span class="s2">&quot;X:B&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Y:A&quot;</span><span class="p">,</span> <span class="s2">&quot;Y:B&quot;</span><span class="p">]]</span>
 
 <span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span>
-    <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
-    <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
-    <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
-    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-    <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
-    <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
-    <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span>
+ <span class="n">data</span><span class="p">,</span>
+ <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+ <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+ <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+ <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+ <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+ <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
+ <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
+ <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">display</span><span class="p">(</span><span class="n">tsm</span><span class="p">)</span>
@@ -180,159 +179,27 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<h3>SeriesMatrix: shape=(2, 2, 512), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 s, <b>dx:</b> 0.0078125 s, <b>N_samples:</b> 512</li><li><b>xunit:</b> s</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>channel</th>
-      <th>unit</th>
-    </tr>
-    <tr>
-      <th>key</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>r0</th>
-      <td>row0</td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>r1</th>
-      <td>row1</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table><h4>Column Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>name</th>
-      <th>channel</th>
-      <th>unit</th>
-    </tr>
-    <tr>
-      <th>key</th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>c0</th>
-      <td>col0</td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <th>c1</th>
-      <td>col1</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table><h4>Element Metadata</h4><table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>unit</th>
-      <th>name</th>
-      <th>channel</th>
-      <th>row</th>
-      <th>col</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>V</td>
-      <td>ch00</td>
-      <td>X:A</td>
-      <td>0</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>V</td>
-      <td>ch01</td>
-      <td>X:B</td>
-      <td>0</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>V</td>
-      <td>ch10</td>
-      <td>Y:A</td>
-      <td>1</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>V</td>
-      <td>ch11</td>
-      <td>Y:B</td>
-      <td>1</td>
-      <td>1</td>
-    </tr>
-  </tbody>
-</table></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_3_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_3_1.png" />
-</div>
-</div>
 </section>
 <section id="2.-SpectrogramMatrix-の作成">
 <h2>2. SpectrogramMatrix の作成<a class="headerlink" href="#2.-SpectrogramMatrix-の作成" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> の <code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> メソッドを使用すると、全てのスペクトログラムが一つの <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> にスタックされます。 これにより、形状が <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">Time,</span> <span class="pre">Frequency)</span></code> の3次元配列が得られます。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spec_matrix</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Type:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">spec_matrix</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (Batch, Time, Freq)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="c1"># (Batch, Time, Freq)</span>
 <span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
 </pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Type: &lt;class &#39;gwexpy.spectrogram.matrix.SpectrogramMatrix&#39;&gt;
-Shape: (2, 2, 2, 33)
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_5_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_5_1.png" />
 </div>
 </div>
 <section id="属性へのアクセス">
 <h3>属性へのアクセス<a class="headerlink" href="#属性へのアクセス" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は元のスペクトログラムの時間軸や周波数軸の情報を保持しています。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time axis (first 5):&quot;</span><span class="p">,</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">times</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
@@ -341,48 +208,30 @@ Shape: (2, 2, 2, 33)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Time axis (first 5): [0. 2.] s
-Freq axis (first 5): [0. 2. 4. 6. 8.] Hz
-Unit: V2 / Hz
-</pre></div></div>
-</div>
 </section>
 </section>
 <section id="3.-数値計算と統計">
 <h2>3. 数値計算と統計<a class="headerlink" href="#3.-数値計算と統計" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> は <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> のサブクラスであるため、Numpy の関数をそのまま適用できます。 また、<code class="docutils literal notranslate"><span class="pre">mean()</span></code> などのメソッドも利用可能です。</p>
 <p>例えば、全チャネル（バッチ方向）の平均スペクトログラムを計算してみましょう。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># axis=0 (Batch軸) で平均を取る</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># axis=0 (BatchAxis) Mean</span>
 <span class="n">mean_spectrogram_data</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mean Data Shape:&quot;</span><span class="p">,</span> <span class="n">mean_spectrogram_data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="c1"># 結果は (Time, Freq) の2次元配列になります</span>
+<span class="c1"># Result (Time, Freq) 2DimensionArray</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Mean Data Shape: (2, 2, 33)
-</pre></div></div>
 </div>
 </section>
 <section id="4.-プロット">
 <h2>4. プロット<a class="headerlink" href="#4.-プロット" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">plot()</span></code> メソッドを使用すると、データを可視化できます。 3次元データ（Batch, Time, Freq）に対して <code class="docutils literal notranslate"><span class="pre">plot()</span></code> を呼び出すと、デフォルトでは<strong>バッチ方向の平均</strong>がプロットされます。 これは複数のイベントの平均的な特徴を確認するのに便利です。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Mean Spectrogram (All Channels)&quot;</span><span class="p">)</span>
@@ -390,81 +239,51 @@ Mean Data Shape: (2, 2, 33)
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_11_0.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_11_0.png" />
-</div>
-</div>
 <p>特定のチャネルだけをプロットしたい場合は、<code class="docutils literal notranslate"><span class="pre">monitor</span></code> 引数にインデックスを指定します。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 最初のチャネル (Channel_0) をプロット</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># (Channel_0) Plot</span>
 <span class="n">plot0</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Channel 0 Spectrogram&quot;</span><span class="p">)</span>
 <span class="n">plot0</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="c1"># 5番目のチャネル (Channel_5) をプロット</span>
+<span class="c1"># 5 (Channel_5) Plot</span>
 <span class="n">plot5</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Channel 5 Spectrogram&quot;</span><span class="p">)</span>
 <span class="n">plot5</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_13_0.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_13_0.png" />
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_13_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_spectrogram_13_1.png" />
 </div>
 </div>
 </section>
 <section id="5.-外部ライブラリとの連携">
 <h2>5. 外部ライブラリとの連携<a class="headerlink" href="#5.-外部ライブラリとの連携" title="Link to this heading"></a></h2>
 <p>機械学習やGPU計算のために、PyTorch や CuPy のテンソルへ簡単に変換できます。</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># PyTorch Tensor への変換</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># PyTorch Tensor Transform</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+ <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-    <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
-    <span class="n">torch_tensor</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch Tensor:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">torch_tensor</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">torch_tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+ <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
+ <span class="n">torch_tensor</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch Tensor:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">torch_tensor</span><span class="p">))</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">torch_tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
 
-<span class="c1"># CuPy Array への変換（CUDA環境がある場合）</span>
+<span class="c1"># CuPy Array Transform（CUDA ）</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_cupy_available</span>
 
 <span class="k">if</span> <span class="n">is_cupy_available</span><span class="p">():</span>
-    <span class="n">cupy_array</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy Array:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">cupy_array</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">cupy_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+ <span class="n">cupy_array</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">()</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy Array:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">cupy_array</span><span class="p">))</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">cupy_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="k">pass</span>
+ <span class="k">pass</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-PyTorch Tensor: &lt;class &#39;torch.Tensor&#39;&gt;
-Shape: torch.Size([2, 2, 2, 33])
-</pre></div></div>
 </div>
 </section>
 <section id="まとめ">
