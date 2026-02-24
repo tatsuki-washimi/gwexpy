@@ -345,15 +345,17 @@ class GraphPanel(QtWidgets.QFrame):
             active_chk.toggled.connect(lambda _, x=i: update_style(x))
             ca.currentIndexChanged.connect(lambda _, x=i: update_style(x))
             cb.currentIndexChanged.connect(lambda _, x=i: update_style(x))
+
             def _handle_lchk(checked, x=i, b=bchk):
                 if checked:
                     b.setChecked(False)
                 update_style(x)
 
             lchk.toggled.connect(_handle_lchk)
-            def _handle_bchk(checked, x=i, l=lchk):
+
+            def _handle_bchk(checked, x=i, line_chk=lchk):
                 if checked:
-                    l.setChecked(False)
+                    line_chk.setChecked(False)
                 update_style(x)
 
             bchk.toggled.connect(_handle_bchk)

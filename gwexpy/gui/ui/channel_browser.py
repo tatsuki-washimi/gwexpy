@@ -4,7 +4,6 @@ import fnmatch
 from typing import Any
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt
 
 from ..nds.cache import ChannelListCache
 from ..nds.nds_thread import ChannelListWorker

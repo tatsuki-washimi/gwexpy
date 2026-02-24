@@ -59,6 +59,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         menu.addAction(op)
                         exit_action = menu.addAction("Exit")
                         if exit_action is not None:
+
                             def _on_exit() -> None:
                                 self.close()
 

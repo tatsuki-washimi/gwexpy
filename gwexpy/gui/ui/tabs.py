@@ -5,7 +5,6 @@ from typing import Any, Optional
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import Qt
 
 from .graph_panel import GraphPanel
 
