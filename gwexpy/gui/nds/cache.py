@@ -54,7 +54,7 @@ class NDSDataCache(QObject):
         self.server: str = os.getenv("NDSSERVER", "localhost:31200")
         self.lookback: float = 30.0
         self.buffers: DataBufferDict = DataBufferDict(self.lookback)
-        self.thread: Optional[NDSThread] = None
+        self.nds_thread_obj: Optional[NDSThread] = None
         self.sim_thread: Optional[SimulationThread] = None
         self.audio_threads: dict[str, AudioThread] = {}
 
@@ -74,19 +74,19 @@ class NDSDataCache(QObject):
         nds_chans = [c for c in self.channels if not c.startswith("PC:")]
         audio_chans = [c for c in self.channels if c.startswith("PC:")]
         if nds_chans:
-            if self.thread and self.thread.isRunning():
+            if self.nds_thread_obj and self.nds_thread_obj.isRunning():
                 logger.info("NDSDataCache: NDS Thread already running.")
             else:
                 # Ensure old thread is fully dead and disconnected before starting new
                 self.online_stop()
-
+ 
                 host, port = parse_server_string(self.server)
                 logger.info(f"Starting NDSThread for {nds_chans} on {host}:{port}")
-                self.thread = NDSThread(nds_chans, host, port)
-                self.thread.dataReceived.connect(self._on_data_received)
-                if hasattr(self.thread, "signal_error"):
-                    self.thread.signal_error.connect(self.signal_error.emit)
-                self.thread.start()
+                self.nds_thread_obj = NDSThread(nds_chans, host, port)
+                self.nds_thread_obj.dataReceived.connect(self._on_data_received)
+                if hasattr(self.nds_thread_obj, "signal_error"):
+                    self.nds_thread_obj.signal_error.connect(self.signal_error.emit)
+                self.nds_thread_obj.start()
         if audio_chans:
             # ... audio logic ...
             pass
@@ -107,18 +107,18 @@ class NDSDataCache(QObject):
 
     def online_stop(self) -> None:
         # Disconnect signals first to avoid callbacks during shutdown
-        if self.thread:
+        if self.nds_thread_obj:
             try:
-                self.thread.dataReceived.disconnect(self._on_data_received)
+                self.nds_thread_obj.dataReceived.disconnect(self._on_data_received)
             except (TypeError, RuntimeError) as exc:
                 logger.debug("NDSThread signal already disconnected: %s", exc)
             except Exception as exc:
                 logger.warning("Unexpected error disconnecting NDSThread: %s", exc)
-            self.thread.stop()
-            if not self.thread.wait(3000):
+            self.nds_thread_obj.stop()
+            if not self.nds_thread_obj.wait(3000):
                 logger.warning("NDSThread did not stop in time, terminating.")
-                self.thread.terminate()
-            self.thread = None
+                self.nds_thread_obj.terminate()
+            self.nds_thread_obj = None
 
         if self.sim_thread:
             try:

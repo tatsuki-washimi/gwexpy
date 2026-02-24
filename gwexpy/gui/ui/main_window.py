@@ -49,13 +49,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(1100, 850)
 
         mb = self.menuBar()
-        for m in ["File", "Edit", "Measurement", "Plot", "Window", "Help"]:
-            menu = mb.addMenu(m)
-            if m == "File":
-                op = QtWidgets.QAction("Open...", self)
-                op.triggered.connect(self.open_file_dialog)
-                menu.addAction(op)
-                menu.addAction("Exit").triggered.connect(self.close)
+        if mb is not None:
+            for m in ["File", "Edit", "Measurement", "Plot", "Window", "Help"]:
+                menu = mb.addMenu(m)
+                if menu is not None:
+                    if m == "File":
+                        op = QtWidgets.QAction("Open...", self)
+                        op.triggered.connect(self.open_file_dialog)
+                        menu.addAction(op)
+                        exit_action = menu.addAction("Exit")
+                        if exit_action is not None:
+                            exit_action.triggered.connect(self.close)
 
         self.tabs = QtWidgets.QTabWidget()
         input_tab, self.input_controls = create_input_tab()
@@ -174,7 +178,9 @@ class MainWindow(QtWidgets.QMainWindow):
         cv.addWidget(self.tabs)
 
         bot = QtWidgets.QHBoxLayout()
-        central.layout().addLayout(bot)
+        layout = central.layout()
+        if layout is not None and hasattr(layout, "addLayout"):
+            layout.addLayout(bot)
         self.status_label = QtWidgets.QLabel("")
         self.status_label.setStyleSheet("color: #A00000;")
         bot.addWidget(self.status_label)
@@ -1392,7 +1398,9 @@ class MainWindow(QtWidgets.QMainWindow):
         ch_table = QtWidgets.QTableWidget()
         ch_table.setColumnCount(4)
         ch_table.setHorizontalHeaderLabels(["Channel", "Gain", "Units", "Filter"])
-        ch_table.horizontalHeader().setStretchLastSection(True)
+        hdr = ch_table.horizontalHeader()
+        if hdr is not None:
+            hdr.setStretchLastSection(True)
 
         # Populate with active channels
         active_channels = []

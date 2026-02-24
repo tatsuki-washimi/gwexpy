@@ -88,7 +88,10 @@ class SyntheticDataSource(BaseDataSource):
         if self.auto_emit:
             if self._timer is None:
                 self._timer = QTimer()
-                self._timer.timeout.connect(self.emit_next)
+                def _on_timeout() -> None:
+                    self.emit_next()
+
+                self._timer.timeout.connect(_on_timeout)
             if not self._timer.isActive():
                 self._timer.start(self.emit_interval_ms)
 
