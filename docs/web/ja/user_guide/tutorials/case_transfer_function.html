@@ -155,7 +155,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Set ---</span>
-<span class="n">fs</span> <span class="o">=</span> <span class="mf">2048.0</span> <span class="c1"># Frequency [Hz]</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mf">2048.0</span> <span class="c1"># Sample Rate [Hz]</span>
 <span class="n">duration</span> <span class="o">=</span> <span class="mf">60.0</span> <span class="c1"># time / duration [s]</span>
 <span class="n">f0_true</span> <span class="o">=</span> <span class="mf">300.0</span> <span class="c1"># ResonanceFrequency [Hz]</span>
 <span class="n">Q_true</span> <span class="o">=</span> <span class="mf">50.0</span> <span class="c1"># Q</span>
@@ -253,13 +253,13 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Function Define ---</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">resonator_model</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">amp</span><span class="p">,</span> <span class="n">f0</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
- <span class="c1"># f: FrequencyArray</span>
- <span class="c1"># : amp(Gain), f0(ResonanceFrequency), Q(Q )</span>
+    <span class="c1"># f: FrequencyArray</span>
+    <span class="c1"># : amp(Gain), f0(ResonanceFrequency), Q(Q )</span>
 
- <span class="c1"># Calculate (Complex number)</span>
- <span class="n">numerator</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">*</span> <span class="p">(</span><span class="n">f0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
- <span class="n">denominator</span> <span class="o">=</span> <span class="p">(</span><span class="n">f0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">f</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span> <span class="n">f0</span> <span class="o">/</span> <span class="n">Q</span><span class="p">)</span>
- <span class="k">return</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
+    <span class="c1"># Calculate (Complex number)</span>
+    <span class="n">numerator</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">*</span> <span class="p">(</span><span class="n">f0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="p">(</span><span class="n">f0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">f</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">f</span> <span class="o">*</span> <span class="n">f0</span> <span class="o">/</span> <span class="n">Q</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
 
 
 <span class="c1"># --- Run ---</span>
@@ -294,7 +294,7 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gain (Amp): </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="c1"># --- Plot ---</span>
-<span class="c1"># result.plot() Complex number Amplitude Phase 2 Axes</span>
+<span class="c1"># result.plot() Complex number 、Amplitude Phase 2 Axes</span>
 <span class="n">axes</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>

@@ -129,7 +129,8 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
 
-<span class="c1">#np.random.seed(42)</span>
+<span class="c1">#</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -162,15 +163,15 @@
 <span class="n">channels</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;X:A&quot;</span><span class="p">,</span> <span class="s2">&quot;X:B&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;Y:A&quot;</span><span class="p">,</span> <span class="s2">&quot;Y:B&quot;</span><span class="p">]]</span>
 
 <span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
- <span class="n">data</span><span class="p">,</span>
- <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
- <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
- <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
- <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
- <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
- <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
- <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
- <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+    <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;r0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row0&quot;</span><span class="p">},</span> <span class="s2">&quot;r1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;row1&quot;</span><span class="p">}},</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;c0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col0&quot;</span><span class="p">},</span> <span class="s2">&quot;c1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;col1&quot;</span><span class="p">}},</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">display</span><span class="p">(</span><span class="n">tsm</span><span class="p">)</span>
@@ -264,24 +265,24 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># PyTorch Tensor Transform</span>
 <span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
- <span class="n">torch_tensor</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch Tensor:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">torch_tensor</span><span class="p">))</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">torch_tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
+    <span class="n">torch_tensor</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch Tensor:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">torch_tensor</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">torch_tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
 
 <span class="c1"># CuPy Array Transform（CUDA ）</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_cupy_available</span>
 
 <span class="k">if</span> <span class="n">is_cupy_available</span><span class="p">():</span>
- <span class="n">cupy_array</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy Array:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">cupy_array</span><span class="p">))</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">cupy_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">cupy_array</span> <span class="o">=</span> <span class="n">spec_matrix</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy Array:&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">cupy_array</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Shape:&quot;</span><span class="p">,</span> <span class="n">cupy_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
- <span class="k">pass</span>
+    <span class="k">pass</span>
 </pre></div>
 </div>
 </div>

@@ -145,9 +145,9 @@
 <span class="n">exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span> <span class="o">/</span> <span class="mf">1.5</span><span class="p">)</span>
 <span class="n">exp</span><span class="p">[:</span> <span class="nb">int</span><span class="p">(</span><span class="n">exp</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">(</span>
- <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">10.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
- <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">exp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">100.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
- <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">10.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">exp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">100.1</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
 <span class="p">)</span>
 <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;um&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Test Signal&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
@@ -174,7 +174,7 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Amplitude dB Transform (ref=1.0, 20*log10)</span>
 <span class="n">spec_db</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_db</span><span class="p">()</span>
 
-<span class="c1"># Phase ( unwrap=True Continuous )</span>
+<span class="c1"># Phase ( 、unwrap=True Continuous )</span>
 <span class="n">spec_phase</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">spec_db</span><span class="p">,</span> <span class="n">spec_phase</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
@@ -199,17 +199,17 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># (m) -&gt; Velocity (m/s) minutes (order=1)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># (m) -&gt; Velocity (m/s) Differentiate (order=1)</span>
 <span class="n">vel_spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">differentiate</span><span class="p">()</span>
 
-<span class="c1"># (m) -&gt; Velocity (m/s^2) 2 minutes (order=2)</span>
+<span class="c1"># (m) -&gt; Acceleration (m/s^2) 2 Differentiate (order=2)</span>
 <span class="n">accel_spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
-<span class="c1"># minutes : Velocity -&gt; Velocity</span>
+<span class="c1"># Integrate : Acceleration -&gt; Velocity</span>
 <span class="n">vel_from_accel</span> <span class="o">=</span> <span class="n">accel_spec</span><span class="o">.</span><span class="n">integrate</span><span class="p">()</span>
 
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span>
- <span class="n">spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">vel_spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">accel_spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">vel_spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">accel_spec</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span>
 <span class="p">)</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Displacement [m]&quot;</span><span class="p">)</span>
@@ -263,7 +263,7 @@
 <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">abs</span><span class="p">())</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
- <span class="n">peaks</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detected Peaks&quot;</span>
+    <span class="n">peaks</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Detected Peaks&quot;</span>
 <span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
@@ -306,7 +306,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FFT TimeSeries</span>
-<span class="c1"># mode=&quot;auto&quot; FrequencySeries having transient</span>
+<span class="c1"># mode=&quot;auto&quot; 、 FrequencySeries transient</span>
 <span class="n">inv_ts</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
 <span class="n">red_ts</span> <span class="o">=</span> <span class="n">inv_ts</span> <span class="o">-</span> <span class="n">ts</span>
 
@@ -347,14 +347,14 @@
 
 <span class="c1"># control.FRD Transform (Control )</span>
 <span class="k">try</span><span class="p">:</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">control</span><span class="w"> </span><span class="kn">import</span> <span class="n">FRD</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">control</span><span class="w"> </span><span class="kn">import</span> <span class="n">FRD</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">FRD</span>
- <span class="n">frd_obj</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_control_frd</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully converted to control.FRD&quot;</span><span class="p">)</span>
- <span class="n">display</span><span class="p">(</span><span class="n">frd_obj</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">FRD</span>
+    <span class="n">frd_obj</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_control_frd</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Successfully converted to control.FRD&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">frd_obj</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;python-control library not installed&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;python-control library not installed&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -367,26 +367,26 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">control</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">control</span>
 
- <span class="c1"># FrequencySeries -&gt; control.FRD Transform</span>
- <span class="c1"># frequency_unit=&quot;Hz&quot; do rad/s Transform</span>
- <span class="n">frd_sys</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_control_frd</span><span class="p">(</span><span class="n">frequency_unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+    <span class="c1"># FrequencySeries -&gt; control.FRD Transform</span>
+    <span class="c1"># frequency_unit=&quot;Hz&quot; do 、 rad/s Transform</span>
+    <span class="n">frd_sys</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_control_frd</span><span class="p">(</span><span class="n">frequency_unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
 
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Control FRD ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">)[:</span><span class="mi">1000</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">... (truncated) ...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Control FRD ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">)[:</span><span class="mi">1000</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">... (truncated) ...&quot;</span><span class="p">)</span>
 
- <span class="c1"># Plot (control )</span>
- <span class="n">control</span><span class="o">.</span><span class="n">bode</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">)</span> <span class="c1"># (Plot Run )</span>
+    <span class="c1"># Plot (control )</span>
+    <span class="n">control</span><span class="o">.</span><span class="n">bode</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">)</span> <span class="c1"># (Plot Run )</span>
 
- <span class="c1"># control.FRD -&gt; FrequencySeries</span>
- <span class="n">fs_restored</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_control_frd</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">,</span> <span class="n">frequency_unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+    <span class="c1"># control.FRD -&gt; FrequencySeries</span>
+    <span class="n">fs_restored</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_control_frd</span><span class="p">(</span><span class="n">frd_sys</span><span class="p">,</span> <span class="n">frequency_unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
 
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored FrequencySeries ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">fs_restored</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored FrequencySeries ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fs_restored</span><span class="p">)</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Python Control Systems Library is not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Python Control Systems Library is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

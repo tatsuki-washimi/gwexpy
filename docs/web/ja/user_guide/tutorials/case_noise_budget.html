@@ -163,7 +163,7 @@
 <span class="c1"># aLIGO Sensitivity (ASD) Noise</span>
 <span class="n">fmax</span> <span class="o">=</span> <span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span>
 <span class="n">asd_main</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span>
- <span class="s2">&quot;aLIGO&quot;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">duration</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span>
+    <span class="s2">&quot;aLIGO&quot;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">duration</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span>
 <span class="p">)</span>
 <span class="n">main_base</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd_main</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rng</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span><span class="o">.</span><span class="n">highpass</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 
@@ -184,14 +184,15 @@
 
 <span class="c1"># --- Generate ---</span>
 <span class="n">main</span> <span class="o">=</span> <span class="p">(</span>
- <span class="n">main_base</span>
- <span class="o">+</span> <span class="n">seis</span> <span class="o">*</span> <span class="p">(</span><span class="mf">2e-21</span> <span class="o">*</span> <span class="n">main_base</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">seis</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
- <span class="o">+</span> <span class="n">mag</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1e-22</span> <span class="o">*</span> <span class="n">main_base</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">mag</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
- <span class="o">+</span> <span class="n">elec</span> <span class="o">*</span> <span class="p">(</span><span class="mf">2e-22</span> <span class="o">*</span> <span class="n">main_base</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">elec</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    <span class="n">main_base</span>
+    <span class="o">+</span> <span class="n">seis</span> <span class="o">*</span> <span class="p">(</span><span class="mf">2e-21</span> <span class="o">*</span> <span class="n">main_base</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">seis</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    <span class="o">+</span> <span class="n">mag</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1e-22</span> <span class="o">*</span> <span class="n">main_base</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">mag</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    <span class="o">+</span> <span class="n">elec</span> <span class="o">*</span> <span class="p">(</span><span class="mf">2e-22</span> <span class="o">*</span> <span class="n">main_base</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">elec</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 <span class="p">)</span>
 
 
-<span class="c1">#tsd = TimeSeriesDict()</span>
+<span class="c1"># Sum of Noises</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
 <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">main</span>
 <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;AUX_SEIS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">seis</span>
 <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;AUX_MAG&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mag</span>
@@ -202,7 +203,7 @@
 <span class="n">plot</span> <span class="o">=</span> <span class="n">asd_dict</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">axes</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">get_axes</span><span class="p">()</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
- <span class="n">main_base</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span>
+    <span class="n">main_base</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span>
 <span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">1e-24</span><span class="p">,</span> <span class="mf">1e-21</span><span class="p">)</span>
@@ -228,8 +229,8 @@
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">aux_names</span><span class="p">:</span>
- <span class="n">coh</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="n">tsd</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">coh</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">coh</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;MAIN vs </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">coh</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">coherence</span><span class="p">(</span><span class="n">tsd</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">coh</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">coh</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;MAIN vs </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Coherence Mapping&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
@@ -240,7 +241,7 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="c1"># (10Hz ) SEIS (100Hz ) ELEC Correlation minutes 。</span>
+<span class="c1"># (10Hz ) SEIS、 (100Hz ) ELEC Correlation minutes 。</span>
 </pre></div>
 </div>
 </div>
@@ -307,11 +308,11 @@
 
 <span class="c1"># ObservationdoneSensitivity</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span>
- <span class="n">asd_dict</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">],</span>
- <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Main Channel (Observed)&quot;</span><span class="p">,</span>
- <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
- <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
- <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+    <span class="n">asd_dict</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">],</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Main Channel (Observed)&quot;</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Projection minutes</span>
@@ -331,7 +332,7 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="c1"># 、 Noise Observation 「U 」 Sensitivity minutes 。</span>
+<span class="c1"># 、 Noise 、Observation 「U 」 Sensitivity minutes 。</span>
 </pre></div>
 </div>
 </div>

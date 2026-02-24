@@ -238,8 +238,8 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create sample data</span>
-<span class="c1"># 10seconds 100Hz Sine waveData Generate</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># SampleData Create</span>
+<span class="c1"># 10seconds 、100Hz Sine waveData Generate</span>
 <span class="n">rate</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
 <span class="n">dt</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">rate</span>
 <span class="n">t0</span> <span class="o">=</span> <span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="mi">1234567890</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -276,23 +276,23 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="c1"># Pandas Series conversion ( datetime index)</span>
- <span class="n">s_pd</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Pandas Series ---&quot;</span><span class="p">)</span>
- <span class="n">display</span><span class="p">(</span><span class="n">s_pd</span><span class="p">)</span>
- <span class="n">s_pd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Pandas Series&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c1"># Pandas Series Transform ( datetime index)</span>
+    <span class="n">s_pd</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Pandas Series ---&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">s_pd</span><span class="p">)</span>
+    <span class="n">s_pd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Pandas Series&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
- <span class="c1"># Pandas Series from TimeSeries Restoration</span>
- <span class="n">ts_restored</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">s_pd</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored TimeSeries from Pandas ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">ts_restored</span><span class="p">)</span>
+    <span class="c1"># Pandas Series from TimeSeries</span>
+    <span class="n">ts_restored</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">s_pd</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored TimeSeries from Pandas ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ts_restored</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">s_pd</span><span class="p">,</span> <span class="n">ts_restored</span>
+    <span class="k">del</span> <span class="n">s_pd</span><span class="p">,</span> <span class="n">ts_restored</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pandas is not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pandas is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -308,31 +308,31 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">polars</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">polars</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">pl</span>
- <span class="c1"># TimeSeries -&gt; Polars DataFrame</span>
- <span class="n">df_pl</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_polars</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Polars DataFrame ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">df_pl</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">pl</span>
+    <span class="c1"># TimeSeries -&gt; Polars DataFrame</span>
+    <span class="n">df_pl</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_polars</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Polars DataFrame ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">df_pl</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 
- <span class="c1"># Plot using Polars/Matplotlib</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
- <span class="n">data_col</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df_pl</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s2">&quot;time&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_pl</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="n">df_pl</span><span class="p">[</span><span class="n">data_col</span><span class="p">])</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Polars Data Plot&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># Plot using Polars/Matplotlib</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">data_col</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df_pl</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s2">&quot;time&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_pl</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="n">df_pl</span><span class="p">[</span><span class="n">data_col</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Polars Data Plot&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
- <span class="c1"># Recover to TimeSeries</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="c1"># Recover to TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
- <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_polars</span><span class="p">(</span><span class="n">df_pl</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Polars:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_polars</span><span class="p">(</span><span class="n">df_pl</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Polars:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">df_pl</span><span class="p">,</span> <span class="n">ts_recovered</span>
+    <span class="k">del</span> <span class="n">df_pl</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Polars not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Polars not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -348,27 +348,27 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="c1"># Xarray DataArray conversion</span>
- <span class="n">da</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Xarray DataArray ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
- <span class="c1"># Data (attrs) Verify</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attributes:&quot;</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span>
+    <span class="c1"># Xarray DataArray Transform</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Xarray DataArray ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+    <span class="c1"># Data (attrs) Verify</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attributes:&quot;</span><span class="p">,</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span>
 
- <span class="n">da</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Xarray DataArray&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">da</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Xarray DataArray&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
- <span class="c1"># Restoration</span>
- <span class="n">ts_x</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_xarray</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored TimeSeries from Xarray ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">ts_x</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="n">ts_x</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_xarray</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored TimeSeries from Xarray ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ts_x</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">da</span><span class="p">,</span> <span class="n">ts_x</span>
+    <span class="k">del</span> <span class="n">da</span><span class="p">,</span> <span class="n">ts_x</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Xarray is not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Xarray is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -383,22 +383,22 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">dask.array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">da</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">dask.array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">da</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">da</span>
- <span class="c1"># Dask Array conversion</span>
- <span class="n">dask_arr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_dask</span><span class="p">(</span><span class="n">chunks</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Dask Array ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">dask_arr</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">da</span>
+    <span class="c1"># Dask Array Transform</span>
+    <span class="n">dask_arr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_dask</span><span class="p">(</span><span class="n">chunks</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Dask Array ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dask_arr</span><span class="p">)</span>
 
- <span class="c1"># (compute=True )</span>
- <span class="n">ts_from_dask</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_dask</span><span class="p">(</span><span class="n">dask_arr</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Dask:&quot;</span><span class="p">,</span> <span class="n">ts_from_dask</span><span class="p">)</span>
+    <span class="c1"># (compute=True )</span>
+    <span class="n">ts_from_dask</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_dask</span><span class="p">(</span><span class="n">dask_arr</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Dask:&quot;</span><span class="p">,</span> <span class="n">ts_from_dask</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">dask_arr</span><span class="p">,</span> <span class="n">ts_from_dask</span>
+    <span class="k">del</span> <span class="n">dask_arr</span><span class="p">,</span> <span class="n">ts_from_dask</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dask not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dask not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -452,36 +452,36 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 
- <span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 
- <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.h5&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
- <span class="c1"># TimeSeries -&gt; HDF5</span>
- <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
- <span class="n">ts</span><span class="o">.</span><span class="n">to_hdf5_dataset</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;dataset_01&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.h5&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+        <span class="c1"># TimeSeries -&gt; HDF5</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">to_hdf5_dataset</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;dataset_01&quot;</span><span class="p">)</span>
 
- <span class="c1"># Read back and display</span>
- <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
- <span class="n">ds</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;dataset_01&quot;</span><span class="p">]</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- HDF5 Dataset Info ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, Dtype: </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attributes:&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">))</span>
+        <span class="c1"># Read back and display</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;dataset_01&quot;</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- HDF5 Dataset Info ---&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, Dtype: </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Attributes:&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">))</span>
 
- <span class="c1"># Recover</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+            <span class="c1"># Recover</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
- <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_hdf5_dataset</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;dataset_01&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from HDF5:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
+            <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_hdf5_dataset</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s2">&quot;dataset_01&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from HDF5:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
- <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from HDF5&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from HDF5&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
- <span class="k">del</span> <span class="n">ds</span><span class="p">,</span> <span class="n">ts_recovered</span>
+            <span class="k">del</span> <span class="n">ds</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;h5py not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;h5py not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -535,36 +535,36 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 
- <span class="kn">import</span><span class="w"> </span><span class="nn">zarr</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">zarr</span>
 
- <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
- <span class="n">store_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="s2">&quot;test.zarr&quot;</span><span class="p">)</span>
- <span class="c1"># TimeSeries -&gt; Zarr</span>
- <span class="n">ts</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;timeseries&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">store_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">,</span> <span class="s2">&quot;test.zarr&quot;</span><span class="p">)</span>
+        <span class="c1"># TimeSeries -&gt; Zarr</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;timeseries&quot;</span><span class="p">)</span>
 
- <span class="c1"># Read back</span>
- <span class="n">z</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
- <span class="n">ds</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="s2">&quot;timeseries&quot;</span><span class="p">]</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Zarr Array Info ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+        <span class="c1"># Read back</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="s2">&quot;timeseries&quot;</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Zarr Array Info ---&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
 
- <span class="c1"># Recover</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+        <span class="c1"># Recover</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
- <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Zarr:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
+        <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_zarr</span><span class="p">(</span><span class="n">store_path</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Zarr:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
- <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from Zarr&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from Zarr&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
- <span class="k">del</span> <span class="n">z</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">ts_recovered</span>
+        <span class="k">del</span> <span class="n">z</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;zarr not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;zarr not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -580,38 +580,38 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
- <span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">netCDF4</span>
 
- <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
- <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;gwexpy_timeseries.nc&quot;</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmpdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;gwexpy_timeseries.nc&quot;</span>
 
- <span class="c1"># TimeSeries -&gt; netCDF4</span>
- <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;NETCDF3_CLASSIC&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
- <span class="n">ts</span><span class="o">.</span><span class="n">to_netcdf4</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;my_signal&quot;</span><span class="p">)</span>
+        <span class="c1"># TimeSeries -&gt; netCDF4</span>
+        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;NETCDF3_CLASSIC&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">to_netcdf4</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;my_signal&quot;</span><span class="p">)</span>
 
- <span class="c1"># Read back</span>
- <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
- <span class="n">v</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;my_signal&quot;</span><span class="p">]</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- netCDF4 Variable Info ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="c1"># Read back</span>
+        <span class="k">with</span> <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s2">&quot;my_signal&quot;</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- netCDF4 Variable Info ---&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
- <span class="c1"># Recover</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+            <span class="c1"># Recover</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
- <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_netcdf4</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;my_signal&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from netCDF4:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
+            <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_netcdf4</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="s2">&quot;my_signal&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from netCDF4:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
- <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from netCDF4&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from netCDF4&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
- <span class="k">del</span> <span class="n">v</span><span class="p">,</span> <span class="n">ts_recovered</span>
+            <span class="k">del</span> <span class="n">v</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;netCDF4 not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;netCDF4 not installed.&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -634,22 +634,22 @@
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
- <span class="c1"># PyTorch Tensor conversion</span>
- <span class="n">tensor</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to PyTorch Tensor ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor shape: </span><span class="si">{</span><span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, dtype: </span><span class="si">{</span><span class="n">tensor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># PyTorch Tensor Transform</span>
+    <span class="n">tensor</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to PyTorch Tensor ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor shape: </span><span class="si">{</span><span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, dtype: </span><span class="si">{</span><span class="n">tensor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
- <span class="c1"># Tensor from Restoration (t0, dt )</span>
- <span class="n">ts_torch</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored from Torch ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">ts_torch</span><span class="p">)</span>
+    <span class="c1"># Tensor from (t0, dt )</span>
+    <span class="n">ts_torch</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored from Torch ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ts_torch</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">tensor</span><span class="p">,</span> <span class="n">ts_torch</span>
+    <span class="k">del</span> <span class="n">tensor</span><span class="p">,</span> <span class="n">ts_torch</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -667,32 +667,32 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_cupy_available</span>
 
 <span class="k">if</span> <span class="n">is_cupy_available</span><span class="p">():</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">cupy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cp</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">cupy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cp</span>
 
- <span class="c1"># TimeSeries -&gt; CuPy</span>
- <span class="n">y_gpu</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- CuPy Array (on GPU) ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">y_gpu</span><span class="p">)</span>
+    <span class="c1"># TimeSeries -&gt; CuPy</span>
+    <span class="n">y_gpu</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- CuPy Array (on GPU) ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">y_gpu</span><span class="p">)</span>
 
- <span class="c1"># Simple processing on GPU</span>
- <span class="n">y_gpu_filt</span> <span class="o">=</span> <span class="n">y_gpu</span> <span class="o">*</span> <span class="mf">2.0</span>
+    <span class="c1"># Simple processing on GPU</span>
+    <span class="n">y_gpu_filt</span> <span class="o">=</span> <span class="n">y_gpu</span> <span class="o">*</span> <span class="mf">2.0</span>
 
- <span class="c1"># Plot (must move to CPU for plotting)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">y_gpu_filt</span><span class="p">))</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;CuPy Data (Moved to CPU for plot)&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># Plot (must move to CPU for plotting)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">y_gpu_filt</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;CuPy Data (Moved to CPU for plot)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
- <span class="c1"># Recover</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="c1"># Recover</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
- <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_cupy</span><span class="p">(</span><span class="n">y_gpu_filt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from CuPy:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_cupy</span><span class="p">(</span><span class="n">y_gpu_filt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from CuPy:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">y_gpu</span><span class="p">,</span> <span class="n">y_gpu_filt</span><span class="p">,</span> <span class="n">ts_recovered</span>
+    <span class="k">del</span> <span class="n">y_gpu</span><span class="p">,</span> <span class="n">y_gpu_filt</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
 <span class="k">else</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy or CUDA driver not available.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CuPy or CUDA driver not available.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -707,34 +707,35 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
- <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">)</span>
- <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
- <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;google\.protobuf\..*&quot;</span>
- <span class="p">)</span>
- <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
- <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Protobuf gencode version.*&quot;</span>
- <span class="p">)</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+        <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;google\.protobuf\..*&quot;</span>
+    <span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+        <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Protobuf gencode version.*&quot;</span>
+    <span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span>
- <span class="c1"># TensorFlow Tensor conversion</span>
- <span class="n">tf_tensor</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_tensorflow</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to TensorFlow Tensor ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor shape: </span><span class="si">{</span><span class="n">tf_tensor</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor dtype: </span><span class="si">{</span><span class="n">tf_tensor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span>
+    <span class="c1"># TensorFlow Tensor Transform</span>
+    <span class="n">tf_tensor</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_tensorflow</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to TensorFlow Tensor ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor shape: </span><span class="si">{</span><span class="n">tf_tensor</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor dtype: </span><span class="si">{</span><span class="n">tf_tensor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
- <span class="c1"># ts_from_tensorflow = TimeSeries.from_tensorflow(</span>
- <span class="n">tf_tensor</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span>
- <span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from TF:&quot;</span><span class="p">,</span> <span class="n">ts_from_tensorflow</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="n">ts_from_tensorflow</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_tensorflow</span><span class="p">(</span>
+        <span class="n">tf_tensor</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from TF:&quot;</span><span class="p">,</span> <span class="n">ts_from_tensorflow</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">tf_tensor</span><span class="p">,</span> <span class="n">ts_from_tensorflow</span>
+    <span class="k">del</span> <span class="n">tf_tensor</span><span class="p">,</span> <span class="n">ts_from_tensorflow</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="k">pass</span>
+    <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
@@ -749,26 +750,27 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
- <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;XLA_PYTHON_CLIENT_PREALLOCATE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;XLA_PYTHON_CLIENT_PREALLOCATE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">jax</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">jax</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">jnp</span>
- <span class="c1"># JAX Array conversion</span>
- <span class="n">jax_arr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_jax</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to JAX Array ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Array shape: </span><span class="si">{</span><span class="n">jax_arr</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">jnp</span>
+    <span class="c1"># JAX Array Transform</span>
+    <span class="n">jax_arr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_jax</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to JAX Array ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Array shape: </span><span class="si">{</span><span class="n">jax_arr</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
- <span class="c1"># ts_from_jax = TimeSeries.from_jax(jax_arr, t0=ts.t0, dt=ts.dt, unit=ts.unit)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from JAX:&quot;</span><span class="p">,</span> <span class="n">ts_from_jax</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="n">ts_from_jax</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_jax</span><span class="p">(</span><span class="n">jax_arr</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from JAX:&quot;</span><span class="p">,</span> <span class="n">ts_from_jax</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">jax_arr</span><span class="p">,</span> <span class="n">ts_from_jax</span>
+    <span class="k">del</span> <span class="n">jax_arr</span><span class="p">,</span> <span class="n">ts_from_jax</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;JAX not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;JAX not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -797,25 +799,25 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="c1"># Astropy TimeSeries conversion</span>
- <span class="n">ap_ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_astropy_timeseries</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Astropy TimeSeries ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">ap_ts</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
- <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
- <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ap_ts</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">jd</span><span class="p">,</span> <span class="n">ap_ts</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Astropy TimeSeries&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c1"># Astropy TimeSeries Transform</span>
+    <span class="n">ap_ts</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_astropy_timeseries</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Converted to Astropy TimeSeries ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ap_ts</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ap_ts</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">jd</span><span class="p">,</span> <span class="n">ap_ts</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Astropy TimeSeries&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
- <span class="c1"># Restoration</span>
- <span class="n">ts_astro</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_astropy_timeseries</span><span class="p">(</span><span class="n">ap_ts</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored from Astropy ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">ts_astro</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="n">ts_astro</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_astropy_timeseries</span><span class="p">(</span><span class="n">ap_ts</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- Restored from Astropy ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ts_astro</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">ap_ts</span><span class="p">,</span> <span class="n">ts_astro</span>
+    <span class="k">del</span> <span class="n">ap_ts</span><span class="p">,</span> <span class="n">ts_astro</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Astropy is not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Astropy is not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -831,28 +833,28 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">specutils</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">specutils</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">specutils</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">specutils</span>
 
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
- <span class="c1"># FrequencySeries -&gt; specutils.Spectrum1D</span>
- <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
- <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Jy&quot;</span>
- <span class="p">)</span>
- <span class="n">spec</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_specutils</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;specutils Spectrum1D:&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Spectral axis unit:&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">spectral_axis</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    <span class="c1"># FrequencySeries -&gt; specutils.Spectrum1D</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Jy&quot;</span>
+    <span class="p">)</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_specutils</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;specutils Spectrum1D:&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Spectral axis unit:&quot;</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">spectral_axis</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 
- <span class="c1"># specutils.Spectrum1D -&gt; FrequencySeries</span>
- <span class="n">fs_rec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_specutils</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restored FrequencySeries unit:&quot;</span><span class="p">,</span> <span class="n">fs_rec</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    <span class="c1"># specutils.Spectrum1D -&gt; FrequencySeries</span>
+    <span class="n">fs_rec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_specutils</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restored FrequencySeries unit:&quot;</span><span class="p">,</span> <span class="n">fs_rec</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">fs</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">fs_rec</span>
+    <span class="k">del</span> <span class="n">fs</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">fs_rec</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;specutils library not found. Skipping example.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;specutils library not found. Skipping example.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -868,24 +870,24 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">pyspeckit</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pyspeckit</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">pyspeckit</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">pyspeckit</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
- <span class="c1"># FrequencySeries -&gt; pyspeckit.Spectrum</span>
- <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
- <span class="n">spec</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_pyspeckit</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pyspeckit Spectrum length:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+    <span class="c1"># FrequencySeries -&gt; pyspeckit.Spectrum</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_pyspeckit</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pyspeckit Spectrum length:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
 
- <span class="c1"># pyspeckit.Spectrum -&gt; FrequencySeries</span>
- <span class="n">fs_rec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_pyspeckit</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restored FrequencySeries length:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fs_rec</span><span class="p">))</span>
+    <span class="c1"># pyspeckit.Spectrum -&gt; FrequencySeries</span>
+    <span class="n">fs_rec</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_pyspeckit</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restored FrequencySeries length:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fs_rec</span><span class="p">))</span>
 
- <span class="k">del</span> <span class="n">fs</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">fs_rec</span>
+    <span class="k">del</span> <span class="n">fs</span><span class="p">,</span> <span class="n">spec</span><span class="p">,</span> <span class="n">fs_rec</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pyspeckit library not found. Skipping example.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pyspeckit library not found. Skipping example.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -905,47 +907,47 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">ROOT</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ROOT</span>
 
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
- <span class="c1"># Data preparation</span>
- <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
- <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
- <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;signal&quot;</span><span class="p">)</span>
+    <span class="c1"># Data</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;signal&quot;</span><span class="p">)</span>
 
- <span class="c1"># --- 1. TGraph conversion ---</span>
- <span class="c1"># Vector done conversion</span>
- <span class="n">graph</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_tgraph</span><span class="p">()</span>
+    <span class="c1"># --- 1. TGraph Transform ---</span>
+    <span class="c1"># Vector done Transform</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_tgraph</span><span class="p">()</span>
 
- <span class="c1"># ROOT Plot</span>
- <span class="n">c1</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TCanvas</span><span class="p">(</span><span class="s2">&quot;c1&quot;</span><span class="p">,</span> <span class="s2">&quot;TGraph Example&quot;</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
- <span class="n">graph</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="s2">&quot;ROOT TGraph;GPS Time [s];Amplitude&quot;</span><span class="p">)</span>
- <span class="n">graph</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="s2">&quot;AL&quot;</span><span class="p">)</span>
- <span class="n">c1</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
- <span class="c1"># c1.SaveAs(&quot;signal_graph.png&quot;) # Savedo</span>
+    <span class="c1"># ROOT Plot</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TCanvas</span><span class="p">(</span><span class="s2">&quot;c1&quot;</span><span class="p">,</span> <span class="s2">&quot;TGraph Example&quot;</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="s2">&quot;ROOT TGraph;GPS Time [s];Amplitude&quot;</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">Draw</span><span class="p">(</span><span class="s2">&quot;AL&quot;</span><span class="p">)</span>
+    <span class="n">c1</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+    <span class="c1"># c1.SaveAs(&quot;signal_graph.png&quot;) # Savedo</span>
 
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created TGraph: </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">GetN</span><span class="p">()</span><span class="si">}</span><span class="s2"> points&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created TGraph: </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">graph</span><span class="o">.</span><span class="n">GetN</span><span class="p">()</span><span class="si">}</span><span class="s2"> points&quot;</span><span class="p">)</span>
 
- <span class="c1"># --- 2. TH1D ( ) conversion ---</span>
- <span class="c1"># conversion ( )</span>
- <span class="n">hist</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_th1d</span><span class="p">()</span>
+    <span class="c1"># --- 2. TH1D ( ) Transform ---</span>
+    <span class="c1"># Transform ( )</span>
+    <span class="n">hist</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_th1d</span><span class="p">()</span>
 
- <span class="n">c2</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TCanvas</span><span class="p">(</span><span class="s2">&quot;c2&quot;</span><span class="p">,</span> <span class="s2">&quot;TH1D Example&quot;</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
- <span class="n">hist</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="s2">&quot;ROOT TH1D;GPS Time [s];Amplitude&quot;</span><span class="p">)</span>
- <span class="n">hist</span><span class="o">.</span><span class="n">SetLineColor</span><span class="p">(</span><span class="n">ROOT</span><span class="o">.</span><span class="n">kRed</span><span class="p">)</span>
- <span class="n">hist</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
- <span class="n">c2</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">ROOT</span><span class="o">.</span><span class="n">TCanvas</span><span class="p">(</span><span class="s2">&quot;c2&quot;</span><span class="p">,</span> <span class="s2">&quot;TH1D Example&quot;</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">SetTitle</span><span class="p">(</span><span class="s2">&quot;ROOT TH1D;GPS Time [s];Amplitude&quot;</span><span class="p">)</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">SetLineColor</span><span class="p">(</span><span class="n">ROOT</span><span class="o">.</span><span class="n">kRed</span><span class="p">)</span>
+    <span class="n">hist</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
+    <span class="n">c2</span><span class="o">.</span><span class="n">Draw</span><span class="p">()</span>
 
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created TH1D: </span><span class="si">{</span><span class="n">hist</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">hist</span><span class="o">.</span><span class="n">GetNbinsX</span><span class="p">()</span><span class="si">}</span><span class="s2"> bins&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created TH1D: </span><span class="si">{</span><span class="n">hist</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">hist</span><span class="o">.</span><span class="n">GetNbinsX</span><span class="p">()</span><span class="si">}</span><span class="s2"> bins&quot;</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">t</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">hist</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span>
+    <span class="k">del</span> <span class="n">t</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">hist</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="k">pass</span>
+    <span class="k">pass</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -961,24 +963,24 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="k">if</span> <span class="s2">&quot;hist&quot;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span> <span class="ow">and</span> <span class="n">hist</span><span class="p">:</span>
- <span class="c1"># ROOT TH1D -&gt; TimeSeries</span>
- <span class="c1"># Load histogram bin contents as TimeSeries data</span>
- <span class="n">ts_restored</span> <span class="o">=</span> <span class="n">from_root</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">hist</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;hist&quot;</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span> <span class="ow">and</span> <span class="n">hist</span><span class="p">:</span>
+        <span class="c1"># ROOT TH1D -&gt; TimeSeries</span>
+        <span class="c1"># Data</span>
+        <span class="n">ts_restored</span> <span class="o">=</span> <span class="n">from_root</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">hist</span><span class="p">)</span>
 
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Restored TimeSeries: </span><span class="si">{</span><span class="n">ts_restored</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">ts_restored</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Restored TimeSeries: </span><span class="si">{</span><span class="n">ts_restored</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ts_restored</span><span class="p">)</span>
 
- <span class="c1"># TGraph from Restoration</span>
- <span class="n">ts_from_graph</span> <span class="o">=</span> <span class="n">from_root</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Restored from TGraph: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_from_graph</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples&quot;</span><span class="p">)</span>
+        <span class="c1"># TGraph from</span>
+        <span class="n">ts_from_graph</span> <span class="o">=</span> <span class="n">from_root</span><span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Restored from TGraph: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_from_graph</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples&quot;</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">ts_restored</span><span class="p">,</span> <span class="n">ts_from_graph</span>
+        <span class="k">del</span> <span class="n">ts_restored</span><span class="p">,</span> <span class="n">ts_from_graph</span>
 
 <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
- <span class="k">pass</span> <span class="c1"># hist graph Create</span>
+    <span class="k">pass</span> <span class="c1"># hist graph Create</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="k">pass</span>
+    <span class="k">pass</span>
 </pre></div>
 </div>
 </div>
@@ -997,27 +999,27 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">obspy</span>
- <span class="c1"># TimeSeries -&gt; ObsPy Trace</span>
- <span class="n">tr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_obspy</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- ObsPy Trace ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">obspy</span>
+    <span class="c1"># TimeSeries -&gt; ObsPy Trace</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_obspy</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- ObsPy Trace ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
 
- <span class="c1"># Plot using ObsPy</span>
- <span class="n">tr</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    <span class="c1"># Plot using ObsPy</span>
+    <span class="n">tr</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
- <span class="c1"># Recover to TimeSeries</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="c1"># Recover to TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
- <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_obspy</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from ObsPy:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_obspy</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from ObsPy:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">tr</span><span class="p">,</span> <span class="n">ts_recovered</span>
+    <span class="k">del</span> <span class="n">tr</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ObsPy not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ObsPy not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1026,16 +1028,16 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">obspy</span>
- <span class="n">tr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_obspy</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ObsPy Trace:&quot;</span><span class="p">,</span> <span class="n">tr</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">obspy</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_obspy</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ObsPy Trace:&quot;</span><span class="p">,</span> <span class="n">tr</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">tr</span>
+    <span class="k">del</span> <span class="n">tr</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ObsPy not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ObsPy not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1051,33 +1053,33 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">simpeg</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">simpeg</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">simpeg</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">simpeg</span><span class="w"> </span><span class="kn">import</span> <span class="n">maps</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">simpeg</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">simpeg</span><span class="w"> </span><span class="kn">import</span> <span class="n">maps</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">maps</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">maps</span>
 
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
- <span class="c1"># --- TimeSeries -&gt; SimPEG (TDEM ) ---</span>
- <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;A/m^2&quot;</span><span class="p">)</span>
- <span class="n">simpeg_data_td</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_simpeg</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SimPEG TDEM data shape:&quot;</span><span class="p">,</span> <span class="n">simpeg_data_td</span><span class="o">.</span><span class="n">dobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="c1"># --- TimeSeries -&gt; SimPEG (TDEM ) ---</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;A/m^2&quot;</span><span class="p">)</span>
+    <span class="n">simpeg_data_td</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_simpeg</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SimPEG TDEM data shape:&quot;</span><span class="p">,</span> <span class="n">simpeg_data_td</span><span class="o">.</span><span class="n">dobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
- <span class="c1"># --- FrequencySeries -&gt; SimPEG (FDEM ) ---</span>
- <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
- <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
- <span class="p">)</span>
- <span class="n">simpeg_data_fd</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_simpeg</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SimPEG FDEM data shape:&quot;</span><span class="p">,</span> <span class="n">simpeg_data_fd</span><span class="o">.</span><span class="n">dobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="c1"># --- FrequencySeries -&gt; SimPEG (FDEM ) ---</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">simpeg_data_fd</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_simpeg</span><span class="p">(</span><span class="n">location</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SimPEG FDEM data shape:&quot;</span><span class="p">,</span> <span class="n">simpeg_data_fd</span><span class="o">.</span><span class="n">dobs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">simpeg_data_td</span><span class="p">,</span> <span class="n">simpeg_data_fd</span><span class="p">,</span> <span class="n">fs</span>
+    <span class="k">del</span> <span class="n">simpeg_data_td</span><span class="p">,</span> <span class="n">simpeg_data_fd</span><span class="p">,</span> <span class="n">fs</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SimPEG library not found. Skipping example.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SimPEG library not found. Skipping example.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1093,36 +1095,36 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 
- <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
- <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mt_metadata&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mth5&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;mt_metadata&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 
- <span class="kn">import</span><span class="w"> </span><span class="nn">mth5</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mth5</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">mth5</span>
- <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.h5&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.mt_</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_mth5</span><span class="p">,</span> <span class="n">to_mth5</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">mth5</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.h5&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop.mt_</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_mth5</span><span class="p">,</span> <span class="n">to_mth5</span>
 
- <span class="c1"># TimeSeries -&gt; MTH5</span>
- <span class="c1"># We need to provide station and run names for MTH5 structure</span>
- <span class="n">to_mth5</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">station</span><span class="o">=</span><span class="s2">&quot;SITE01&quot;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s2">&quot;RUN01&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved to MTH5 file: </span><span class="si">{</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># TimeSeries -&gt; MTH5</span>
+        <span class="c1"># We need to provide station and run names for MTH5 structure</span>
+        <span class="n">to_mth5</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">station</span><span class="o">=</span><span class="s2">&quot;SITE01&quot;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s2">&quot;RUN01&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved to MTH5 file: </span><span class="si">{</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
- <span class="c1"># Display structure info if needed, or just recover</span>
- <span class="c1"># Recover</span>
- <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">from_mth5</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;SITE01&quot;</span><span class="p">,</span> <span class="s2">&quot;RUN01&quot;</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;Ex&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from MTH5:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
+        <span class="c1"># Display structure info if needed, or just recover</span>
+        <span class="c1"># Recover</span>
+        <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">from_mth5</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;SITE01&quot;</span><span class="p">,</span> <span class="s2">&quot;RUN01&quot;</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;Ex&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from MTH5:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
- <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from MTH5&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">ts_recovered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Recovered from MTH5&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
- <span class="k">del</span> <span class="n">ts_recovered</span>
+        <span class="k">del</span> <span class="n">ts_recovered</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mth5 not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mth5 not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1144,30 +1146,30 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">librosa</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">librosa</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">librosa</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">librosa</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
- <span class="c1"># TimeSeries -&gt; Librosa (y, sr)</span>
- <span class="n">y</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_librosa</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--- Librosa Data ---</span><span class="se">\n</span><span class="s2">Signal shape: </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, Sample rate: </span><span class="si">{</span><span class="n">sr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># TimeSeries -&gt; Librosa (y, sr)</span>
+    <span class="n">y</span><span class="p">,</span> <span class="n">sr</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_librosa</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--- Librosa Data ---</span><span class="se">\n</span><span class="s2">Signal shape: </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, Sample rate: </span><span class="si">{</span><span class="n">sr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
- <span class="c1"># Plot using librosa style (matplotlib)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span> <span class="c1"># Plot first 1000 samples</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Librosa Audio Signal (Zoom)&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># Plot using librosa style (matplotlib)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">[:</span><span class="mi">1000</span><span class="p">])</span> <span class="c1"># Plot first 1000 samples</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Librosa Audio Signal (Zoom)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
- <span class="c1"># Recover to TimeSeries</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="c1"># Recover to TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
- <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sr</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Librosa:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Librosa:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">y</span><span class="p">,</span> <span class="n">sr</span>
+    <span class="k">del</span> <span class="n">y</span><span class="p">,</span> <span class="n">sr</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Librosa not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Librosa not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1186,27 +1188,27 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">mne</span>
- <span class="c1"># TimeSeries -&gt; MNE Raw</span>
- <span class="n">raw</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_mne</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- MNE Raw ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">mne</span>
+    <span class="c1"># TimeSeries -&gt; MNE Raw</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_mne</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- MNE Raw ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
- <span class="c1"># Display info</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+    <span class="c1"># Display info</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
 
- <span class="c1"># Recover to TimeSeries</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="c1"># Recover to TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
 
- <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_mne</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;ch0&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from MNE:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_mne</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;ch0&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from MNE:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ts_recovered</span>
+    <span class="k">del</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MNE not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MNE not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1215,15 +1217,15 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">mne</span>
- <span class="n">raw</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_mne</span><span class="p">()</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MNE Raw:&quot;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">mne</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">to_mne</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MNE Raw:&quot;</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">raw</span>
+    <span class="k">del</span> <span class="n">raw</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MNE not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MNE not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1237,29 +1239,29 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">quantities</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pq</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">quantities</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pq</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">pq</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">pq</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
 
- <span class="c1"># FrequencySeries Create</span>
- <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span>
- <span class="n">data_fs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">101</span><span class="p">)</span>
- <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data_fs</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+    <span class="c1"># FrequencySeries Create</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span>
+    <span class="n">data_fs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">101</span><span class="p">)</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data_fs</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
 
- <span class="c1"># to_quantities</span>
- <span class="n">q_obj</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_quantities</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s2">&quot;mV&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Quantities object:&quot;</span><span class="p">,</span> <span class="n">q_obj</span><span class="p">)</span>
+    <span class="c1"># to_quantities</span>
+    <span class="n">q_obj</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_quantities</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s2">&quot;mV&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Quantities object:&quot;</span><span class="p">,</span> <span class="n">q_obj</span><span class="p">)</span>
 
- <span class="c1"># from_quantities</span>
- <span class="n">fs_new</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_quantities</span><span class="p">(</span><span class="n">q_obj</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restored FrequencySeries unit:&quot;</span><span class="p">,</span> <span class="n">fs_new</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+    <span class="c1"># from_quantities</span>
+    <span class="n">fs_new</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="o">.</span><span class="n">from_quantities</span><span class="p">(</span><span class="n">q_obj</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restored FrequencySeries unit:&quot;</span><span class="p">,</span> <span class="n">fs_new</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">data_fs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">q_obj</span><span class="p">,</span> <span class="n">fs_new</span>
+    <span class="k">del</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">data_fs</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">q_obj</span><span class="p">,</span> <span class="n">fs_new</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;quantities library not found. Skipping example.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;quantities library not found. Skipping example.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1275,44 +1277,44 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">neo</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">neo</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">neo</span>
- <span class="c1"># TimeSeries -&gt; Neo AnalogSignal</span>
- <span class="c1"># to_neo is available in gwexpy.interop</span>
- <span class="c1"># Note: TimeseriesMatrix is preferred for multi-channel Neo conversion,</span>
- <span class="c1"># but we can convert single TimeSeries by wrapping it.</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_neo</span><span class="p">,</span> <span class="n">to_neo</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">neo</span>
+    <span class="c1"># TimeSeries -&gt; Neo AnalogSignal</span>
+    <span class="c1"># to_neo is available in gwexpy.interop</span>
+    <span class="c1"># Note: TimeseriesMatrix is preferred for multi-channel Neo conversion,</span>
+    <span class="c1"># but we can convert single TimeSeries by wrapping it.</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_neo</span><span class="p">,</span> <span class="n">to_neo</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">from_neo</span>
- <span class="n">_</span> <span class="o">=</span> <span class="n">to_neo</span>
- <span class="c1"># For single TimeSeries, we might need a Matrix wrapper or direct helper.</span>
- <span class="c1"># Assuming helper exists or using Matrix:</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">from_neo</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">to_neo</span>
+    <span class="c1"># For single TimeSeries, we might need a Matrix wrapper or direct helper.</span>
+    <span class="c1"># Assuming helper exists or using Matrix:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
 
- <span class="n">tm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
- <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">channel_names</span><span class="o">=</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
- <span class="p">)</span>
- <span class="n">sig</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">to_neo</span><span class="p">()</span>
+    <span class="n">tm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">channel_names</span><span class="o">=</span><span class="p">[</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">tm</span><span class="o">.</span><span class="n">to_neo</span><span class="p">()</span>
 
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Neo AnalogSignal ---&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- Neo AnalogSignal ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
 
- <span class="c1"># Display/Plot</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Neo AnalogSignal Plot&quot;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># Display/Plot</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Neo AnalogSignal Plot&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
- <span class="c1"># Recover</span>
- <span class="n">tm_recovered</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="o">.</span><span class="n">from_neo</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
- <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">tm_recovered</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Neo:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
+    <span class="c1"># Recover</span>
+    <span class="n">tm_recovered</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="o">.</span><span class="n">from_neo</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+    <span class="n">ts_recovered</span> <span class="o">=</span> <span class="n">tm_recovered</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Recovered from Neo:&quot;</span><span class="p">,</span> <span class="n">ts_recovered</span><span class="p">)</span>
 
- <span class="k">del</span> <span class="n">tm</span><span class="p">,</span> <span class="n">tm_recovered</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">ts_recovered</span>
+    <span class="k">del</span> <span class="n">tm</span><span class="p">,</span> <span class="n">tm_recovered</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">ts_recovered</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;neo not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;neo not installed.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1320,7 +1322,7 @@
 </section>
 <section id="9.-まとめ">
 <h2>9. まとめ<a class="headerlink" href="#9.-まとめ" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は多種多様な 機械学習 向けライブラリとの相互運用を提供し、既存のエコシステムとのシームレスな統合を可能にします。</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は多種多様な bilimti 向けライブラリとの相互運用を提供し、既存のエコシステムとのシームレスな統合を可能にします。</p>
 </section>
 </section>
 

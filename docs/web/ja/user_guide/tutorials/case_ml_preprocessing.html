@@ -146,11 +146,11 @@
 <span class="c1"># Ensure the root directory is in sys.path</span>
 <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
 <span class="k">while</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span> <span class="o">!=</span> <span class="n">root</span><span class="p">:</span>
- <span class="k">if</span> <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;gwexpy&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
- <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
- <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
- <span class="k">break</span>
- <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;gwexpy&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+        <span class="k">break</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -176,22 +176,22 @@
 
 <span class="c1"># Witness channels (auxiliary sensors)</span>
 <span class="n">witnesses</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
- <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">50</span><span class="p">,</span> <span class="c1"># Different mean/std</span>
- <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
- <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">,</span>
- <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m/s^2&quot;</span><span class="p">,</span>
- <span class="n">channel_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SEIS-X&quot;</span><span class="p">,</span> <span class="s2">&quot;SEIS-Y&quot;</span><span class="p">,</span> <span class="s2">&quot;SEIS-Z&quot;</span><span class="p">],</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">50</span><span class="p">,</span> <span class="c1"># Different mean/std</span>
+    <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m/s^2&quot;</span><span class="p">,</span>
+    <span class="n">channel_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SEIS-X&quot;</span><span class="p">,</span> <span class="s2">&quot;SEIS-Y&quot;</span><span class="p">,</span> <span class="s2">&quot;SEIS-Z&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 
 <span class="c1"># Target strain channel with 60Hz noise</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">/</span> <span class="n">sample_rate</span>
 <span class="n">signal_60hz</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
 <span class="n">strain</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
- <span class="n">signal_60hz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
- <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
- <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">,</span>
- <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">,</span>
- <span class="n">name</span><span class="o">=</span><span class="s2">&quot;H1:GDS-CALIB_STRAIN&quot;</span><span class="p">,</span>
+    <span class="n">signal_60hz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;H1:GDS-CALIB_STRAIN&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Witnesses shape: </span><span class="si">{</span><span class="n">witnesses</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -214,11 +214,11 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create preprocessor with 55-65 Hz bandpass filter</span>
 <span class="n">preprocessor</span> <span class="o">=</span> <span class="n">MLPreprocessor</span><span class="p">(</span>
- <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
- <span class="n">freq_low</span><span class="o">=</span><span class="p">[</span><span class="mf">55.0</span><span class="p">],</span>
- <span class="n">freq_high</span><span class="o">=</span><span class="p">[</span><span class="mf">65.0</span><span class="p">],</span>
- <span class="n">valid_frac</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="c1"># 20% validation</span>
- <span class="n">standardization_method</span><span class="o">=</span><span class="s2">&quot;zscore&quot;</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
+    <span class="n">freq_low</span><span class="o">=</span><span class="p">[</span><span class="mf">55.0</span><span class="p">],</span>
+    <span class="n">freq_high</span><span class="o">=</span><span class="p">[</span><span class="mf">65.0</span><span class="p">],</span>
+    <span class="n">valid_frac</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="c1"># 20% validation</span>
+    <span class="n">standardization_method</span><span class="o">=</span><span class="s2">&quot;zscore&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Split data</span>
@@ -260,10 +260,10 @@
 <span class="c1"># Plot original strain</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">strain</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">strain</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span>
- <span class="n">y_train</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_train</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
- <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span>
- <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
- <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Train/Valid split&quot;</span><span class="p">,</span>
+    <span class="n">y_train</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span> <span class="o">*</span> <span class="n">y_train</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Train/Valid split&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Strain&quot;</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
@@ -271,10 +271,10 @@
 
 <span class="c1"># Plot split data</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
- <span class="n">y_train</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">y_train</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Training data&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span>
+    <span class="n">y_train</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">y_train</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Training data&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span>
 <span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
- <span class="n">y_valid</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">y_valid</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Validation data&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span>
+    <span class="n">y_valid</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">y_valid</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Validation data&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span>
 <span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time (s)&quot;</span><span class="p">)</span>
 <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Strain&quot;</span><span class="p">)</span>
@@ -365,35 +365,35 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span> <span class="c1"># noqa: F401</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>  <span class="c1"># noqa: F401</span>
 
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesWindowDataset</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesWindowDataset</span>
 
- <span class="c1"># Create dataset with 8-second windows, 0.0625-second stride</span>
- <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">TimeSeriesWindowDataset</span><span class="p">(</span>
- <span class="n">X_train_proc</span><span class="p">,</span>
- <span class="n">labels</span><span class="o">=</span><span class="n">y_train_proc</span><span class="p">,</span>
- <span class="n">window</span><span class="o">=</span><span class="mi">8</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">,</span>
- <span class="n">stride</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.0625</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">),</span>
- <span class="p">)</span>
+    <span class="c1"># Create dataset with 8-second windows, 0.0625-second stride</span>
+    <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">TimeSeriesWindowDataset</span><span class="p">(</span>
+        <span class="n">X_train_proc</span><span class="p">,</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">y_train_proc</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="mi">8</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">,</span>
+        <span class="n">stride</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.0625</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">),</span>
+    <span class="p">)</span>
 
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2"> windows&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2"> windows&quot;</span><span class="p">)</span>
 
- <span class="c1"># Get a batch</span>
- <span class="n">x_batch</span><span class="p">,</span> <span class="n">y_batch</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch shapes: X=</span><span class="si">{</span><span class="n">x_batch</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="n">y_batch</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;X dtype: </span><span class="si">{</span><span class="n">x_batch</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y dtype: </span><span class="si">{</span><span class="n">y_batch</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Get a batch</span>
+    <span class="n">x_batch</span><span class="p">,</span> <span class="n">y_batch</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch shapes: X=</span><span class="si">{</span><span class="n">x_batch</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="n">y_batch</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;X dtype: </span><span class="si">{</span><span class="n">x_batch</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;y dtype: </span><span class="si">{</span><span class="n">y_batch</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
- <span class="c1"># Create DataLoader</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+    <span class="c1"># Create DataLoader</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
 
- <span class="n">train_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">DataLoader created with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span><span class="si">}</span><span class="s2"> batches&quot;</span><span class="p">)</span>
+    <span class="n">train_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">DataLoader created with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span><span class="si">}</span><span class="s2"> batches&quot;</span><span class="p">)</span>
 
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span><span class="p">,</span> <span class="n">display</span>
- <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span><span class="p">,</span> <span class="n">display</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">** **: PyTorch 。</span>
 
 <span class="s2"> ：</span>
@@ -419,22 +419,22 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add 120 Hz noise to original data</span>
 <span class="n">signal_120hz</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">120</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
 <span class="n">strain_multi</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
- <span class="n">signal_60hz</span> <span class="o">+</span> <span class="n">signal_120hz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
- <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
- <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">,</span>
- <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">,</span>
+    <span class="n">signal_60hz</span> <span class="o">+</span> <span class="n">signal_120hz</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;strain&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># Preprocessor with two bands</span>
 <span class="n">preprocessor_multi</span> <span class="o">=</span> <span class="n">MLPreprocessor</span><span class="p">(</span>
- <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
- <span class="n">freq_low</span><span class="o">=</span><span class="p">[</span><span class="mf">55.0</span><span class="p">,</span> <span class="mf">110.0</span><span class="p">],</span> <span class="c1"># Two bands</span>
- <span class="n">freq_high</span><span class="o">=</span><span class="p">[</span><span class="mf">65.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
- <span class="n">valid_frac</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
+    <span class="n">freq_low</span><span class="o">=</span><span class="p">[</span><span class="mf">55.0</span><span class="p">,</span> <span class="mf">110.0</span><span class="p">],</span> <span class="c1"># Two bands</span>
+    <span class="n">freq_high</span><span class="o">=</span><span class="p">[</span><span class="mf">65.0</span><span class="p">,</span> <span class="mf">125.0</span><span class="p">],</span>
+    <span class="n">valid_frac</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">X_train_m</span><span class="p">,</span> <span class="n">y_train_m</span><span class="p">,</span> <span class="n">X_valid_m</span><span class="p">,</span> <span class="n">y_valid_m</span> <span class="o">=</span> <span class="n">preprocessor_multi</span><span class="o">.</span><span class="n">split</span><span class="p">(</span>
- <span class="n">witnesses</span><span class="p">,</span> <span class="n">strain_multi</span>
+    <span class="n">witnesses</span><span class="p">,</span> <span class="n">strain_multi</span>
 <span class="p">)</span>
 <span class="n">preprocessor_multi</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_m</span><span class="p">,</span> <span class="n">y_train_m</span><span class="p">)</span>
 <span class="n">_</span><span class="p">,</span> <span class="n">y_train_multi_proc</span> <span class="o">=</span> <span class="n">preprocessor_multi</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">X_train_m</span><span class="p">,</span> <span class="n">y_train_m</span><span class="p">)</span>
@@ -473,7 +473,7 @@
 <span class="n">data_with_outliers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
 <span class="n">data_with_outliers</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">:</span><span class="mi">1010</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="c1"># Inject outliers</span>
 <span class="n">witnesses_outliers</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
- <span class="n">data_with_outliers</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m/s^2&quot;</span>
+    <span class="n">data_with_outliers</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m/s^2&quot;</span>
 <span class="p">)</span>
 
 <span class="c1"># Compare z-score vs robust</span>

@@ -133,11 +133,11 @@
 
 <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
- <span class="k">if</span> <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;gwexpy&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
- <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
- <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
- <span class="k">break</span>
- <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;gwexpy&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
+        <span class="k">break</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">parent</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -156,7 +156,8 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data Create</span>
 <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
-<span class="c1">#ts_a = TimeSeries(t, dt=0.01, name=&quot;A&quot;)</span>
+<span class="c1">#</span>
+<span class="n">ts_a</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">)</span>
 <span class="n">ts_b</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;B_Linear&quot;</span><span class="p">)</span>
 
 <span class="c1"># (Sine wave)</span>
@@ -187,9 +188,9 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Pearson: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Kendall: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">ktau</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; MIC: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">mic</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; MIC: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">mic</span><span class="p">(</span><span class="n">ts_b</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; MIC: (minepy )&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; MIC: (minepy )&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -201,9 +202,9 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Pearson: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> ( Correlation )&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Kendall: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">ktau</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; MIC: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">mic</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> ( )&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; MIC: </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">mic</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> ( )&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; MIC: (minepy )&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; MIC: (minepy )&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -222,11 +223,14 @@
 
 <span class="c1"># AUX-05 AUX-12 Signal</span>
 <span class="n">target_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
-<span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">target_signal</span> <span class="o">*</span> <span class="mi">5</span> <span class="c1">#data[12, 0, :] += target_signal**2 * 5 #</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">target_signal</span> <span class="o">*</span> <span class="mi">5</span> <span class="c1">#</span>
+<span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">target_signal</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">5</span> <span class="c1">#</span>
+
 <span class="n">matrix</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">channel_names</span><span class="o">=</span><span class="n">names</span><span class="p">)</span>
 
-<span class="c1">#target = TimeSeries(</span>
- <span class="n">target_signal</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TARGET&quot;</span>
+<span class="c1">#</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
+    <span class="n">target_signal</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;TARGET&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -240,11 +244,11 @@
 <span class="c1"># Velocity &#39;pearson&#39;</span>
 
 <span class="k">try</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MICVector Calculate (Top 5)...&quot;</span><span class="p">)</span>
- <span class="n">df_mic</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">correlation_vector</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mic&quot;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">df_mic</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MICVector Calculate (Top 5)...&quot;</span><span class="p">)</span>
+    <span class="n">df_mic</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">correlation_vector</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mic&quot;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">df_mic</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minepy MIC 。&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;minepy 、MIC 。&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -313,9 +317,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
 
 <span class="n">matrix</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
- <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:],</span>
- <span class="n">dt</span><span class="o">=</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
- <span class="n">channel_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:],</span>
+    <span class="n">dt</span><span class="o">=</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">channel_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 
 <span class="n">edges</span> <span class="o">=</span> <span class="n">association_edges</span><span class="p">(</span><span class="n">ts_x</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">,</span> <span class="n">topk</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -394,15 +398,15 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If networkx is available, you can visualize the association graph</span>
 <span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
- <span class="n">G</span> <span class="o">=</span> <span class="n">build_graph</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;networkx&#39;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
- <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
- <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Association Graph&#39;</span><span class="p">)</span>
- <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">build_graph</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;networkx&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Association Graph&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Graph plot skipped:&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Graph plot skipped:&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -427,8 +431,9 @@
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 <span class="n">gauss_noise</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Gaussian&quot;</span><span class="p">)</span>
 <span class="n">exp_noise</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
- <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Non-Gaussian&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Non-Gaussian&quot;</span>
 <span class="p">)</span> <span class="c1">#</span>
+
 <span class="c1"># Plot</span>
 <span class="n">plot</span> <span class="o">=</span> <span class="n">exp_noise</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Non-Gaussian&quot;</span><span class="p">)</span>
 <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gauss_noise</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Gaussian&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
@@ -437,10 +442,10 @@
 
 <span class="c1"># Calculate</span>
 <span class="nb">print</span><span class="p">(</span>
- <span class="sa">f</span><span class="s2">&quot;Gaussian: Skewness=</span><span class="si">{</span><span class="n">gauss_noise</span><span class="o">.</span><span class="n">skewness</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Kurtosis=</span><span class="si">{</span><span class="n">gauss_noise</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;Gaussian: Skewness=</span><span class="si">{</span><span class="n">gauss_noise</span><span class="o">.</span><span class="n">skewness</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Kurtosis=</span><span class="si">{</span><span class="n">gauss_noise</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
- <span class="sa">f</span><span class="s2">&quot;Non-Gaussian: Skewness=</span><span class="si">{</span><span class="n">exp_noise</span><span class="o">.</span><span class="n">skewness</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Kurtosis=</span><span class="si">{</span><span class="n">exp_noise</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;Non-Gaussian: Skewness=</span><span class="si">{</span><span class="n">exp_noise</span><span class="o">.</span><span class="n">skewness</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, Kurtosis=</span><span class="si">{</span><span class="n">exp_noise</span><span class="o">.</span><span class="n">kurtosis</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Note: Gaussianminutes Skewness~0, Kurtosis~0 (FisherDefine) 。&quot;</span><span class="p">)</span>
 </pre></div>
@@ -455,13 +460,13 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="n">dcor_val</span> <span class="o">=</span> <span class="n">ts_a</span><span class="o">.</span><span class="n">distance_correlation</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Distance Correlation (A vs C): </span><span class="si">{</span><span class="n">dcor_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pearson Correlation (A vs C): </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">dcor_val</span> <span class="o">=</span> <span class="n">ts_a</span><span class="o">.</span><span class="n">distance_correlation</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Distance Correlation (A vs C): </span><span class="si">{</span><span class="n">dcor_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pearson Correlation (A vs C): </span><span class="si">{</span><span class="n">ts_a</span><span class="o">.</span><span class="n">pcc</span><span class="p">(</span><span class="n">ts_c</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span>
- <span class="s2">&quot;dcorPackage pip install dcor 。&quot;</span>
- <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;dcorPackage 。pip install dcor 。&quot;</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -480,28 +485,28 @@
 <span class="n">y_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 <span class="c1"># Y X 1</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
- <span class="n">y_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">y_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">x_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+    <span class="n">y_val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">y_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">x_val</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
 
 <span class="n">ts_x</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">x_val</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Cause (X)&quot;</span><span class="p">)</span>
 <span class="n">ts_y</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Effect (Y)&quot;</span><span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
- <span class="c1"># X Y ？ (Y X ？) -&gt; p</span>
- <span class="n">p_xy</span> <span class="o">=</span> <span class="n">ts_y</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_x</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="c1"># X Y ？ (Y X ？) -&gt; p</span>
+    <span class="n">p_xy</span> <span class="o">=</span> <span class="n">ts_y</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_x</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
- <span class="c1"># Y X ？ -&gt; p</span>
- <span class="n">p_yx</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="c1"># Y X ？ -&gt; p</span>
+    <span class="n">p_yx</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">granger_causality</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
- <span class="nb">print</span><span class="p">(</span>
- <span class="sa">f</span><span class="s2">&quot;Granger Causality X -&gt; Y (p-value): </span><span class="si">{</span><span class="n">p_xy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_xy</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
- <span class="p">)</span>
- <span class="nb">print</span><span class="p">(</span>
- <span class="sa">f</span><span class="s2">&quot;Granger Causality Y -&gt; X (p-value): </span><span class="si">{</span><span class="n">p_yx</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_yx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
- <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Granger Causality X -&gt; Y (p-value): </span><span class="si">{</span><span class="n">p_xy</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_xy</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Granger Causality Y -&gt; X (p-value): </span><span class="si">{</span><span class="n">p_yx</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;(Significant)&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">p_yx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span>
- <span class="s2">&quot;statsmodelsPackage pip install statsmodels 。&quot;</span>
- <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s2">&quot;statsmodelsPackage 。pip install statsmodels 。&quot;</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>

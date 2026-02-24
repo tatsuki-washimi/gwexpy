@@ -135,16 +135,16 @@
 
 <span class="c1"># Add synthetic HEALPix data if ligo.skymap is available</span>
 <span class="k">try</span><span class="p">:</span>
- <span class="kn">import</span><span class="w"> </span><span class="nn">ligo.skymap</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">ligo.skymap</span>
 
- <span class="n">_</span> <span class="o">=</span> <span class="n">ligo</span><span class="o">.</span><span class="n">skymap</span>
- <span class="n">nside</span> <span class="o">=</span> <span class="mi">16</span>
- <span class="n">npix</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">nside</span><span class="o">**</span><span class="mi">2</span>
- <span class="c1"># Generate a dummy central peak</span>
- <span class="n">map_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npix</span><span class="p">)</span> <span class="o">-</span> <span class="n">npix</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">npix</span> <span class="o">//</span> <span class="mi">10</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
- <span class="n">fig</span><span class="o">.</span><span class="n">add_healpix</span><span class="p">(</span><span class="n">map_data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">)</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">ligo</span><span class="o">.</span><span class="n">skymap</span>
+    <span class="n">nside</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">npix</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">nside</span><span class="o">**</span><span class="mi">2</span>
+    <span class="c1"># Generate a dummy central peak</span>
+    <span class="n">map_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">npix</span><span class="p">)</span> <span class="o">-</span> <span class="n">npix</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">npix</span> <span class="o">//</span> <span class="mi">10</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">add_healpix</span><span class="p">(</span><span class="n">map_data</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ligo.skymap not installed.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ligo.skymap not installed.&quot;</span><span class="p">)</span>
 
 <span class="c1"># Mark some astronomical targets</span>
 <span class="c1"># Crab Nebula (RA: 83.63 deg, Dec: 22.01 deg)</span>
@@ -169,25 +169,25 @@
 
 <span class="c1"># GeoMap Create with Robinson projection centered on 135E (Japan)</span>
 <span class="k">try</span><span class="p">:</span>
- <span class="n">gmap</span> <span class="o">=</span> <span class="n">GeoMap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Robinson&quot;</span><span class="p">,</span> <span class="n">center_lon</span><span class="o">=</span><span class="mi">135</span><span class="p">)</span>
+    <span class="n">gmap</span> <span class="o">=</span> <span class="n">GeoMap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Robinson&quot;</span><span class="p">,</span> <span class="n">center_lon</span><span class="o">=</span><span class="mi">135</span><span class="p">)</span>
 
- <span class="c1"># Add map features</span>
- <span class="n">gmap</span><span class="o">.</span><span class="n">add_coastlines</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
- <span class="n">gmap</span><span class="o">.</span><span class="n">fill_continents</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;wheat&quot;</span><span class="p">)</span>
- <span class="n">gmap</span><span class="o">.</span><span class="n">fill_oceans</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">)</span>
+    <span class="c1"># Add map features</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">add_coastlines</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">fill_continents</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;wheat&quot;</span><span class="p">)</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">fill_oceans</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">)</span>
 
- <span class="c1"># Plot standard detectors (KAGRA, LIGO, Virgo, GEO)</span>
- <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;K1&quot;</span><span class="p">,</span> <span class="s2">&quot;H1&quot;</span><span class="p">,</span> <span class="s2">&quot;L1&quot;</span><span class="p">,</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span> <span class="s2">&quot;G1&quot;</span><span class="p">]:</span>
- <span class="n">gmap</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Plot standard detectors (KAGRA, LIGO, Virgo, GEO)</span>
+    <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;K1&quot;</span><span class="p">,</span> <span class="s2">&quot;H1&quot;</span><span class="p">,</span> <span class="s2">&quot;L1&quot;</span><span class="p">,</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span> <span class="s2">&quot;G1&quot;</span><span class="p">]:</span>
+        <span class="n">gmap</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
- <span class="c1"># Plot an arbitrary point</span>
- <span class="n">gmap</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">170.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mf">23.6</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="c1"># Plot an arbitrary point</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mf">170.5</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mf">23.6</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
 
- <span class="n">gmap</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">gmap</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -200,26 +200,27 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
- <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoMap</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeoMap</span>
 
- <span class="c1"># Display (region=&#39;JP&#39; )</span>
- <span class="c1"># Display Mercator Projection 、 Display (frame=&#39;afg&#39;)</span>
- <span class="n">geo_jp</span> <span class="o">=</span> <span class="n">GeoMap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Mercator&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;JP&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;afg&quot;</span><span class="p">)</span>
+    <span class="c1"># Display (region=&#39;JP&#39; )</span>
+    <span class="c1"># Display Mercator Projection 、 Display (frame=&#39;afg&#39;)</span>
+    <span class="n">geo_jp</span> <span class="o">=</span> <span class="n">GeoMap</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;Mercator&quot;</span><span class="p">,</span> <span class="n">region</span><span class="o">=</span><span class="s2">&quot;JP&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;afg&quot;</span><span class="p">)</span>
 
- <span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_oceans</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span><span class="p">)</span>
- <span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_continents</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">)</span>
- <span class="n">geo_jp</span><span class="o">.</span><span class="n">add_coastlines</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span> <span class="c1">#</span>
- <span class="c1"># KAGRA Plot</span>
- <span class="n">geo_jp</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="s2">&quot;K1&quot;</span><span class="p">)</span>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_oceans</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;azure&quot;</span><span class="p">)</span>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">fill_continents</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightgray&quot;</span><span class="p">)</span>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">add_coastlines</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span> <span class="c1">#</span>
 
- <span class="c1"># (500km Width 0.5cm )</span>
- <span class="n">geo_jp</span><span class="o">.</span><span class="n">add_scale_bar</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="s2">&quot;500k&quot;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;jBL&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="s2">&quot;0.5c/0.5c&quot;</span><span class="p">)</span>
+    <span class="c1"># KAGRA Plot</span>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">plot_detector</span><span class="p">(</span><span class="s2">&quot;K1&quot;</span><span class="p">)</span>
 
- <span class="n">geo_jp</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># (500km Width、 0.5cm )</span>
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">add_scale_bar</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="s2">&quot;500k&quot;</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s2">&quot;jBL&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="s2">&quot;0.5c/0.5c&quot;</span><span class="p">)</span>
+
+    <span class="n">geo_jp</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
- <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>

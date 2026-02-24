@@ -56,21 +56,21 @@
    },
    "outputs": [],
    "source": [
-    "# Create sample data\n",
+    "# SampleData Create\n",
     "duration = 20 # seconds\n",
     "sample_rate = 128 # Hz\n",
     "\n",
-    "# 10Hz, 30Hz, 50Hz (+Noise) create\n",
+    "# 10Hz, 30Hz, 50Hz (+Noise) Create\n",
     "noise_amp = 0.1\n",
     "\n",
     "\n",
     "def make_signal(freq, name):\n",
-    " s = sine(duration=duration, sample_rate=sample_rate, frequency=freq, amplitude=1.0)\n",
-    " n = gaussian(duration=duration, sample_rate=sample_rate, std=noise_amp)\n",
-    " ts = s + n\n",
-    " ts.name = name\n",
-    " ts.override_unit(\"strain\")\n",
-    " return ts\n",
+    "    s = sine(duration=duration, sample_rate=sample_rate, frequency=freq, amplitude=1.0)\n",
+    "    n = gaussian(duration=duration, sample_rate=sample_rate, std=noise_amp)\n",
+    "    ts = s + n\n",
+    "    ts.name = name\n",
+    "    ts.override_unit(\"strain\")\n",
+    "    return ts\n",
     "\n",
     "\n",
     "ts1 = make_signal(10, \"Signal 10Hz\")\n",
@@ -78,7 +78,7 @@
     "ts3 = make_signal(50, \"Signal 50Hz\")\n",
     "\n",
     "# Calculate (stride=2s, fftlength=1s)\n",
-    "# nproc=1 specified Run \n",
+    "# nproc=1 Runby\n",
     "spec1 = ts1.spectrogram(2, fftlength=1, overlap=0.5, nproc=1)\n",
     "spec2 = ts2.spectrogram(2, fftlength=1, overlap=0.5, nproc=1)\n",
     "spec3 = ts3.spectrogram(2, fftlength=1, overlap=0.5, nproc=1)\n",
@@ -114,7 +114,7 @@
     "# List Create\n",
     "spec_list = SpectrogramList([spec1, spec2])\n",
     "\n",
-    "#",
+    "#\n",
     "spec_list.append(spec3)\n",
     "\n",
     "print(f\"List length: {len(spec_list)}\")\n",
@@ -144,7 +144,7 @@
    },
    "outputs": [],
    "source": [
-    "# 5seconds〜15seconds Range \n",
+    "# 5seconds〜15seconds Range\n",
     "cropped_list = spec_list.crop(5, 15)\n",
     "\n",
     "print(\"Original range:\", spec_list[0].xspan)\n",
@@ -173,12 +173,12 @@
    },
    "outputs": [],
    "source": [
-    "# 0Hz 〜 40Hz Range \n",
+    "# 0Hz 〜 40Hz Range\n",
     "freq_cropped = spec_list.crop_frequencies(0, 40)\n",
     "\n",
     "print(\"Original yspan:\", spec_list[0].yspan)\n",
     "print(\"Cropped yspan:\", freq_cropped[0].yspan)\n",
-    "# 50Hz Signal 3 Range minutes "
+    "# 50Hz Signal 3 Range minutes"
    ]
   },
   {
@@ -232,7 +232,7 @@
    "outputs": [],
    "source": [
     "# BatchPlot\n",
-    "# sharex=True, sharey=True do Axis Ratiocomparison \n",
+    "# sharex=True, sharey=True do Axis Ratiocomparison\n",
     "plot = spec_dict.plot(figsize=(12, 8), sharex=True, sharey=True)\n",
     "plt.show()"
    ]
@@ -267,7 +267,7 @@
     "print(\"Matrix Shape:\", matrix.shape)\n",
     "print(\" (N_channels, N_time_steps, N_freq_bins)\")\n",
     "\n",
-    "#",
+    "#\n",
     "print(\"Time axis shape:\", matrix.times.shape)\n",
     "print(\"Freq axis shape:\", matrix.frequencies.shape)"
    ]

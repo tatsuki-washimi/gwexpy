@@ -137,21 +137,21 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create sample data</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># SampleData Create</span>
 <span class="n">duration</span> <span class="o">=</span> <span class="mi">20</span> <span class="c1"># seconds</span>
 <span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">128</span> <span class="c1"># Hz</span>
 
-<span class="c1"># 10Hz, 30Hz, 50Hz (+Noise) create</span>
+<span class="c1"># 10Hz, 30Hz, 50Hz (+Noise) Create</span>
 <span class="n">noise_amp</span> <span class="o">=</span> <span class="mf">0.1</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">make_signal</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
- <span class="n">s</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="n">freq</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
- <span class="n">n</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">noise_amp</span><span class="p">)</span>
- <span class="n">ts</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">n</span>
- <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
- <span class="n">ts</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
- <span class="k">return</span> <span class="n">ts</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="n">freq</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">noise_amp</span><span class="p">)</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">n</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="n">ts</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;strain&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ts</span>
 
 
 <span class="n">ts1</span> <span class="o">=</span> <span class="n">make_signal</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;Signal 10Hz&quot;</span><span class="p">)</span>
@@ -159,7 +159,7 @@
 <span class="n">ts3</span> <span class="o">=</span> <span class="n">make_signal</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;Signal 50Hz&quot;</span><span class="p">)</span>
 
 <span class="c1"># Calculate (stride=2s, fftlength=1s)</span>
-<span class="c1"># nproc=1 specified Run</span>
+<span class="c1"># nproc=1 Runby</span>
 <span class="n">spec1</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">spec2</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">spec3</span> <span class="o">=</span> <span class="n">ts3</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nproc</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -181,7 +181,8 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># List Create</span>
 <span class="n">spec_list</span> <span class="o">=</span> <span class="n">SpectrogramList</span><span class="p">([</span><span class="n">spec1</span><span class="p">,</span> <span class="n">spec2</span><span class="p">])</span>
 
-<span class="c1">#spec_list.append(spec3)</span>
+<span class="c1">#</span>
+<span class="n">spec_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spec3</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;List length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">spec_list</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Items: </span><span class="si">{</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">spec_list</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -265,7 +266,8 @@
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matrix Shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; (N_channels, N_time_steps, N_freq_bins)&quot;</span><span class="p">)</span>
 
-<span class="c1">#print(&quot;Time axis shape:&quot;, matrix.times.shape)</span>
+<span class="c1">#</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Time axis shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Freq axis shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>

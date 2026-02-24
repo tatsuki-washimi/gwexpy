@@ -32,7 +32,7 @@
     "\n",
     "from gwexpy.timeseries import TimeSeriesMatrix\n",
     "\n",
-    "#",
+    "#\n",
     "np.random.seed(42)"
    ]
   },
@@ -80,15 +80,15 @@
     "channels = [[\"X:A\", \"X:B\"], [\"Y:A\", \"Y:B\"]]\n",
     "\n",
     "tsm = TimeSeriesMatrix(\n",
-    " data,\n",
-    " dt=dt,\n",
-    " t0=t0,\n",
-    " units=units,\n",
-    " names=names,\n",
-    " channels=channels,\n",
-    " rows={\"r0\": {\"name\": \"row0\"}, \"r1\": {\"name\": \"row1\"}},\n",
-    " cols={\"c0\": {\"name\": \"col0\"}, \"c1\": {\"name\": \"col1\"}},\n",
-    " name=\"demo\",\n",
+    "    data,\n",
+    "    dt=dt,\n",
+    "    t0=t0,\n",
+    "    units=units,\n",
+    "    names=names,\n",
+    "    channels=channels,\n",
+    "    rows={\"r0\": {\"name\": \"row0\"}, \"r1\": {\"name\": \"row1\"}},\n",
+    "    cols={\"c0\": {\"name\": \"col0\"}, \"c1\": {\"name\": \"col1\"}},\n",
+    "    name=\"demo\",\n",
     ")\n",
     "\n",
     "display(tsm)\n",
@@ -177,11 +177,11 @@
    },
    "outputs": [],
    "source": [
-    "# axis=0 (BatchAxis) Mean \n",
+    "# axis=0 (BatchAxis) Mean\n",
     "mean_spectrogram_data = spec_matrix.mean(axis=0)\n",
     "\n",
     "print(\"Mean Data Shape:\", mean_spectrogram_data.shape)\n",
-    "# Result (Time, Freq) 2DimensionArray "
+    "# Result (Time, Freq) 2DimensionArray"
    ]
   },
   {
@@ -265,24 +265,24 @@
    "source": [
     "# PyTorch Tensor Transform\n",
     "try:\n",
-    " import torch\n",
+    "    import torch\n",
     "\n",
-    " _ = torch\n",
-    " torch_tensor = spec_matrix.to_torch()\n",
-    " print(\"PyTorch Tensor:\", type(torch_tensor))\n",
-    " print(\"Shape:\", torch_tensor.shape)\n",
+    "    _ = torch\n",
+    "    torch_tensor = spec_matrix.to_torch()\n",
+    "    print(\"PyTorch Tensor:\", type(torch_tensor))\n",
+    "    print(\"Shape:\", torch_tensor.shape)\n",
     "except ImportError:\n",
-    " print(\"PyTorch is not installed.\")\n",
+    "    print(\"PyTorch is not installed.\")\n",
     "\n",
     "# CuPy Array Transform（CUDA ）\n",
     "from gwexpy.interop import is_cupy_available\n",
     "\n",
     "if is_cupy_available():\n",
-    " cupy_array = spec_matrix.to_cupy()\n",
-    " print(\"CuPy Array:\", type(cupy_array))\n",
-    " print(\"Shape:\", cupy_array.shape)\n",
+    "    cupy_array = spec_matrix.to_cupy()\n",
+    "    print(\"CuPy Array:\", type(cupy_array))\n",
+    "    print(\"Shape:\", cupy_array.shape)\n",
     "else:\n",
-    " pass"
+    "    pass"
    ]
   },
   {

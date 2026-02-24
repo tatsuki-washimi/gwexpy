@@ -127,14 +127,15 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
- <span class="n">FrequencySeries</span><span class="p">,</span>
- <span class="n">FrequencySeriesList</span><span class="p">,</span>
- <span class="n">FrequencySeriesMatrix</span><span class="p">,</span>
+    <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">FrequencySeriesList</span><span class="p">,</span>
+    <span class="n">FrequencySeriesMatrix</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span><span class="p">,</span> <span class="n">SpectrogramList</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
 
-<span class="c1">#np.random.seed(42)</span>
+<span class="c1">#</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -157,12 +158,12 @@
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 <span class="c1"># : Sensor A, B / : Axis X, Y</span>
 <span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
- <span class="n">data</span><span class="p">,</span>
- <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
- <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
- <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Velocity&quot;</span><span class="p">,</span>
- <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sensor A&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor B&quot;</span><span class="p">],</span>
- <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;X-axis&quot;</span><span class="p">,</span> <span class="s2">&quot;Y-axis&quot;</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Velocity&quot;</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sensor A&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor B&quot;</span><span class="p">],</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;X-axis&quot;</span><span class="p">,</span> <span class="s2">&quot;Y-axis&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 
 <span class="c1"># Plot</span>
@@ -189,17 +190,17 @@
 <span class="c1"># 1/f Noise Data Generate</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
- <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
- <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">/</span> <span class="n">f</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">/</span> <span class="n">f</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">j</span><span class="p">)</span>
 
 <span class="c1"># unit=&#39;m&#39; (Amplitude Spectral Density do m/sqrt(Hz) 、 )</span>
 <span class="n">fsm</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
- <span class="n">data</span><span class="p">,</span>
- <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
- <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
- <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Displacement&quot;</span><span class="p">,</span>
- <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sensor A&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor B&quot;</span><span class="p">],</span>
- <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;X-axis&quot;</span><span class="p">,</span> <span class="s2">&quot;Y-axis&quot;</span><span class="p">],</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Displacement&quot;</span><span class="p">,</span>
+    <span class="n">rows</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sensor A&quot;</span><span class="p">,</span> <span class="s2">&quot;Sensor B&quot;</span><span class="p">],</span>
+    <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;X-axis&quot;</span><span class="p">,</span> <span class="s2">&quot;Y-axis&quot;</span><span class="p">],</span>
 <span class="p">)</span>
 
 <span class="c1"># Plot</span>
@@ -254,18 +255,18 @@
 <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
 
 <span class="n">spec_list</span> <span class="o">=</span> <span class="n">SpectrogramList</span><span class="p">(</span>
- <span class="p">[</span>
- <span class="n">Spectrogram</span><span class="p">(</span>
- <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">times</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Spec 1&quot;</span>
- <span class="p">),</span>
- <span class="n">Spectrogram</span><span class="p">(</span>
- <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
- <span class="n">times</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
- <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
- <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
- <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Spec 2&quot;</span><span class="p">,</span>
- <span class="p">),</span>
- <span class="p">]</span>
+    <span class="p">[</span>
+        <span class="n">Spectrogram</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">times</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Spec 1&quot;</span>
+        <span class="p">),</span>
+        <span class="n">Spectrogram</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">times</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Spec 2&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
 <span class="p">)</span>
 <span class="n">spec_list</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
 </pre></div>
@@ -307,7 +308,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Threshold 10,000 Plotpoints 2,000 do</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Threshold 10,000 、Plotpoints 2,000 do</span>
 <span class="n">ts_med</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20000</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">16384</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Medium TS&quot;</span><span class="p">)</span>
 
 <span class="n">plot_custom</span> <span class="o">=</span> <span class="n">ts_med</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">decimate_threshold</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">decimate_points</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
@@ -337,8 +338,8 @@
 
 <span class="c1"># Data Generate</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">make_sg</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
- <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2048</span> <span class="o">*</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
- <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2048</span> <span class="o">*</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
 
 <span class="n">sg_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">({</span><span class="s2">&quot;Channel A&quot;</span><span class="p">:</span> <span class="n">make_sg</span><span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">),</span> <span class="s2">&quot;Channel B&quot;</span><span class="p">:</span> <span class="n">make_sg</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">)})</span>
@@ -375,7 +376,8 @@
 <span class="c1"># PairPlot Create（corner=True ）</span>
 <span class="n">pair</span> <span class="o">=</span> <span class="n">PairPlot</span><span class="p">([</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts2</span><span class="p">],</span> <span class="n">corner</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="c1">#pair.show()</span>
+<span class="c1">#</span>
+<span class="n">pair</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
