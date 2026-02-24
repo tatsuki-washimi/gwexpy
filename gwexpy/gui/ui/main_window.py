@@ -59,7 +59,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         menu.addAction(op)
                         exit_action = menu.addAction("Exit")
                         if exit_action is not None:
-                            exit_action.triggered.connect(self.close)
+                            def _on_exit() -> None:
+                                self.close()
+
+                            exit_action.triggered.connect(_on_exit)
 
         self.tabs = QtWidgets.QTabWidget()
         input_tab, self.input_controls = create_input_tab()
