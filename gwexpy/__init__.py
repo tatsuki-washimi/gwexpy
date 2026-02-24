@@ -38,8 +38,24 @@ try:  # pragma: no cover - defensive
 except (ImportError, AttributeError):
     pass
 
-warnings.filterwarnings("ignore", category=UserWarning, module="gwpy")
-warnings.filterwarnings("ignore", category=UserWarning, module="scipy")
+warnings.filterwarnings(
+    "ignore",
+    message=r"xindex was given to .*\(\), x0 will be ignored",
+    category=UserWarning,
+    module="gwpy",
+)
+warnings.filterwarnings(
+    "ignore",
+    message=r"xindex was given to .*\(\), dx will be ignored",
+    category=UserWarning,
+    module="gwpy",
+)
+warnings.filterwarnings(
+    "ignore",
+    message=r"yindex was given to .*\(\), dy will be ignored",
+    category=UserWarning,
+    module="gwpy",
+)
 warnings.filterwarnings("ignore", category=AstropyWarning)
 warnings.filterwarnings("ignore", category=FutureWarning, module="sklearn")
 warnings.filterwarnings("ignore", category=FutureWarning, module="control")
