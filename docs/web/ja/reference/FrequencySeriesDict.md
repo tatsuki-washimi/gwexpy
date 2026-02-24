@@ -102,10 +102,11 @@ plot(self, label: 'str' = 'key', method: 'str' = 'plot', figsize: 'Optional[Any]
 
 パラメータ
 ----------
+
 label : str, optional
     ラベル付け方法: ``'key'``（辞書キーを使用）または ``'name'``（各アイテムの name 属性を使用）
 method : str, optional
-    :class:`~gwpy.plot.Plot` の呼び出しメソッド。デフォルト: ``'plot'``
+    `:class:~gwpy.plot.Plot` の呼び出しメソッド。デフォルト: ``'plot'``
 
 ### `write`
 
@@ -123,6 +124,7 @@ fsd.write("out.h5", format="hdf5", layout="group")  # 旧形式（group-per-entr
 ```
 
 HDF5 のデータセット名（GWpy の `path=` 用）:
+
 - キーは HDF5 で安全な名前にサニタイズされます（例: `H1:ASD` -> `H1_ASD`）。
 - サニタイズ後の名前が衝突する場合、`__1` のようなサフィックスが付与されます。
 - 元のキーはファイル属性に保存され、gwexpy の `read()` は元キーを復元します。
