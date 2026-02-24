@@ -19,7 +19,6 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from astropy import units as u
-
 from astropy.units import Quantity
 
 if TYPE_CHECKING:

@@ -8,8 +8,8 @@ import sqlite3
 
 import numpy as np
 import pandas as pd
-from gwpy.io.registry import default_registry as io_registry
 from astropy.time import Time
+from gwpy.io.registry import default_registry as io_registry
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
