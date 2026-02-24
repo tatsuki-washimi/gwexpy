@@ -101,10 +101,9 @@ class SeriesMatrix(  # type: ignore[misc]
             try:
                 xindex = u.Quantity(xindex, xunit)
             except (TypeError, ValueError, AttributeError) as e:
-                # If conversion fails or type is incompatible, we propagate the error
-                # or assume caller knows what they are doing. But xunit implies intention.
-                print(f"DEBUG: SeriesMatrix xindex conversion failed: {e}")
-                pass  # Or raise u.UnitConversionError(f"xindex conversion failed: {e}")
+                # xunit implies the caller intended a unit conversion; warn and continue
+                # so that downstream code still has the raw xindex to work with.
+                logger.warning("SeriesMatrix xindex conversion failed: %s", e)
 
         value_array, data_attrs, detected_xindex = _normalize_input(
             data=data,

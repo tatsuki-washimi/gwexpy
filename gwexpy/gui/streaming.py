@@ -405,7 +405,6 @@ class SpectralAccumulator:
         Compatible with Engine.compute output format.
         """
         results: list[Optional[tuple[Any, Any] | dict[str, Any]]] = []
-        # print("DEBUG: get_results state keys:", list(self.state.keys()))
         for i, trace in enumerate(self.active_traces):
             if not trace.get("active", True):
                 results.append(None)
@@ -481,7 +480,6 @@ class SpectralAccumulator:
                 psd_a = psd_a * (gain**2)
 
             if psd_a is None:
-                # print(f"DEBUG: Res {i}: psd_a is None for '{key_a}'")
                 results.append(None)
                 continue
 
@@ -497,7 +495,6 @@ class SpectralAccumulator:
                     csd_ab = csd_ab * (gain**2)
 
             try:
-                # print(f"DEBUG: Trace {i} GraphType: '{graph_type}' KeyA: '{key_a}'")
                 res = None
                 if (
                     "Amplitude Spectral Density" in graph_type
@@ -535,7 +532,6 @@ class SpectralAccumulator:
                     res = res.crop(start_f, stop_f)
                     results.append((res.frequencies.value, res.value))
                 else:
-                    # print(f"DEBUG: Res {i} is None after calculation. GraphType: '{graph_type}'")
                     results.append(None)
 
             except (RuntimeError, TypeError, ValueError) as e:
