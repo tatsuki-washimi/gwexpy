@@ -10,5 +10,5 @@ def test_kinit_notty():
         pytest.skip("requires non-interactive stdout")
     try:
         _gwpy_test_kerberos.test_kinit_notty()
-    except OSError:
-        pytest.skip("stdin capture prevents interactive kerberos prompts")
+    except (OSError, ImportError):
+        pytest.skip("Kerberos or GSSAPI not available or configuration missing")
