@@ -104,7 +104,7 @@ def read_timeseries_ats(source, **kwargs):
     """
     if hasattr(source, "read"):
         return _read_timeseries_ats_file(source, **kwargs)
-    
+
     with open(str(source), mode="rb") as f:
         return _read_timeseries_ats_file(f, **kwargs)
 
