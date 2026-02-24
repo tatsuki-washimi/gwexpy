@@ -87,11 +87,21 @@ jobs:
           micromamba run -n gwexpy-full pip install cython numpy scipy
           micromamba run -n gwexpy-full python scripts/install_minepy.py
           micromamba run -n gwexpy-full pip install -e ".[dev,analysis]" mictools
+          # Install pytest-forked to isolate segfaults per test process
+          micromamba run -n gwexpy-full pip install pytest-forked
 
-      - name: Run tests
+      - name: Run unit tests (forked for crash isolation)
         env:
           PYTHONFAULTHANDLER: "1"
-          PYTEST_SCREENSHOT_DIR: artifacts/screenshots
         shell: bash -l {0}
         run: |
-          micromamba run -n gwexpy-full xvfb-run -a -s "-screen 0 1920x1080x24" pytest -q --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy tests/ gwexpy/
+          micromamba run -n gwexpy-full xvfb-run -a -s "-screen 0 1920x1080x24" \
+            pytest -q --forked --cov=gwexpy tests/
+
+      - name: Run notebook tests
+        env:
+          PYTHONFAULTHANDLER: "1"
+        shell: bash -l {0}
+        run: |
+          micromamba run -n gwexpy-full xvfb-run -a -s "-screen 0 1920x1080x24" \
+            pytest -q --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 gwexpy/
