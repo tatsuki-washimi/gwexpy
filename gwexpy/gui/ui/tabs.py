@@ -5,6 +5,7 @@ from typing import Any, Optional
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import Qt
 
 from .graph_panel import GraphPanel
 
@@ -793,7 +794,7 @@ def create_excitation_tab():
 
 def create_result_tab(on_import=None):
     tab = QtWidgets.QWidget()
-    hsplit = QtWidgets.QSplitter(QtCore.Qt.Horizontal)
+    hsplit = QtWidgets.QSplitter(Qt.Horizontal)
     left_panel = QtWidgets.QWidget()
     left_vbox = QtWidgets.QVBoxLayout(left_panel)
     scroll = QtWidgets.QScrollArea()
@@ -843,7 +844,11 @@ def create_result_tab(on_import=None):
     lv.addWidget(info1_panel)
     info1 = info1_panel.to_graph_info()
     lv.addWidget(QtWidgets.QFrame())
-    lv.itemAt(lv.count() - 1).widget().setFrameShape(QtWidgets.QFrame.HLine)
+    last_item = lv.itemAt(lv.count() - 1)
+    if last_item is not None:
+        last_widget = last_item.widget()
+        if last_widget is not None and hasattr(last_widget, "setFrameShape"):
+            last_widget.setFrameShape(QtWidgets.QFrame.HLine)
     info2_panel = GraphPanel(2, plot2, traces2)
     lv.addWidget(info2_panel)
     info2 = info2_panel.to_graph_info()
@@ -935,13 +940,13 @@ def create_result_tab(on_import=None):
                 tab._zoomed_pad = tab._active_pad
             elif rb_2x1.isChecked():
                 # Vertical stack (default)
-                rv.setDirection(QtWidgets.QBoxLayout.TopToBottom)
+                rv.setDirection(QtWidgets.QVBoxLayout.TopToBottom)
                 for plot in tab._plots:
                     plot.setVisible(True)
                 tab._zoomed_pad = -1
             elif rb_1x2.isChecked():
                 # Horizontal stack
-                rv.setDirection(QtWidgets.QBoxLayout.LeftToRight)
+                rv.setDirection(QtWidgets.QHBoxLayout.LeftToRight)
                 for plot in tab._plots:
                     plot.setVisible(True)
                 tab._zoomed_pad = -1
@@ -953,7 +958,11 @@ def create_result_tab(on_import=None):
     bot_toolbar = QtWidgets.QHBoxLayout()
 
     btn_reset = QtWidgets.QPushButton("Reset")
-    btn_reset.clicked.connect(lambda: (plot1.autoRange(), plot2.autoRange()))
+    def _reset_plots():
+        plot1.autoRange()
+        plot2.autoRange()
+
+    btn_reset.clicked.connect(_reset_plots)
     bot_toolbar.addWidget(btn_reset)
 
     btn_zoom = QtWidgets.QPushButton("Zoom")

@@ -5,6 +5,7 @@ from typing import Any
 import numpy as np
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt
 
 
 def _small_spin_int(min_val=-1000000000, max_val=1000000000, width=None):
@@ -141,14 +142,14 @@ class GraphPanel(QtWidgets.QFrame):
             ("Orange", "#FFA500"),
         ]
         line_styles = [
-            ("Solid", QtCore.Qt.SolidLine),
-            ("Dash", QtCore.Qt.DashLine),
-            ("Dot", QtCore.Qt.DotLine),
+            ("Solid", Qt.SolidLine),
+            ("Dash", Qt.DashLine),
+            ("Dot", Qt.DotLine),
         ]
         symbols = [("Circle", "o"), ("Square", "s"), ("Triangle", "t")]
         fill_patterns = [
-            ("Solid", QtCore.Qt.SolidPattern),
-            ("Dense", QtCore.Qt.Dense3Pattern),
+            ("Solid", Qt.SolidPattern),
+            ("Dense", Qt.Dense3Pattern),
         ]
 
         def update_style(t_idx):
@@ -285,7 +286,7 @@ class GraphPanel(QtWidgets.QFrame):
                 lc.setFixedWidth(40)
                 [
                     lc.addItem("")
-                    or lc.setItemData(j, QtGui.QColor(c[1]), QtCore.Qt.BackgroundRole)
+                    or lc.setItemData(j, QtGui.QColor(c[1]), Qt.BackgroundRole)
                     for j, c in enumerate(colors)
                 ]
                 return lc
@@ -692,7 +693,7 @@ class GraphPanel(QtWidgets.QFrame):
             c_hex = colors[c_idx][1]
             pen1 = pg.mkPen(color=c_hex, width=1.5)
             # Second cursor same color (per request)
-            pen2 = pg.mkPen(color=c_hex, width=1.5, style=QtCore.Qt.DashLine)
+            pen2 = pg.mkPen(color=c_hex, width=1.5, style=Qt.DashLine)
 
             cursors["c1_v"].setPen(pen1)
             cursors["c1_h"].setPen(pen1)
@@ -764,7 +765,7 @@ class GraphPanel(QtWidgets.QFrame):
         title_clr = _clr_box()
         title_clr.setFixedWidth(60)
         title_clr.setCurrentIndex(3)  # Default to Black
-        tgl.addWidget(title_clr, 2, 4, QtCore.Qt.AlignRight)
+        tgl.addWidget(title_clr, 2, 4, Qt.AlignRight)
 
         sl.addWidget(tg)
 

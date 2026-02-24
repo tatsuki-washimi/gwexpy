@@ -4,6 +4,7 @@ import fnmatch
 from typing import Any
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt
 
 from ..nds.cache import ChannelListCache
 from ..nds.nds_thread import ChannelListWorker
@@ -55,7 +56,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.lbl_info = QtWidgets.QLabel(
             f"server: <b>{self.server_key}</b> [Checking cache...]"
         )
-        self.lbl_info.setAlignment(QtCore.Qt.AlignCenter)
+        self.lbl_info.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.lbl_info)
 
         # Tabs
