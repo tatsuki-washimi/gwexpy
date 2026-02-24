@@ -56,7 +56,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.lbl_info = QtWidgets.QLabel(
             f"server: <b>{self.server_key}</b> [Checking cache...]"
         )
-        self.lbl_info.setAlignment(Qt.AlignCenter)
+        self.lbl_info.setAlignment(QtCore.Qt.AlignCenter)  # type: ignore
         layout.addWidget(self.lbl_info)
 
         # Tabs

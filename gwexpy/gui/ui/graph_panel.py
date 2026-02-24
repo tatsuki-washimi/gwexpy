@@ -142,14 +142,14 @@ class GraphPanel(QtWidgets.QFrame):
             ("Orange", "#FFA500"),
         ]
         line_styles = [
-            ("Solid", Qt.SolidLine),
-            ("Dash", Qt.DashLine),
-            ("Dot", Qt.DotLine),
+            ("Solid", Qt.SolidLine),  # type: ignore
+            ("Dash", Qt.DashLine),  # type: ignore
+            ("Dot", Qt.DotLine),  # type: ignore
         ]
         symbols = [("Circle", "o"), ("Square", "s"), ("Triangle", "t")]
         fill_patterns = [
-            ("Solid", Qt.SolidPattern),
-            ("Dense", Qt.Dense3Pattern),
+            ("Solid", Qt.SolidPattern),  # type: ignore
+            ("Dense", Qt.Dense3Pattern),  # type: ignore
         ]
 
         def update_style(t_idx):
@@ -284,11 +284,9 @@ class GraphPanel(QtWidgets.QFrame):
             def _clr_box():
                 lc = QtWidgets.QComboBox()
                 lc.setFixedWidth(40)
-                [
+                for j, c in enumerate(colors):
                     lc.addItem("")
-                    or lc.setItemData(j, QtGui.QColor(c[1]), Qt.BackgroundRole)
-                    for j, c in enumerate(colors)
-                ]
+                    lc.setItemData(j, QtGui.QColor(c[1]), QtCore.Qt.BackgroundRole)  # type: ignore
                 return lc
 
             lc = _clr_box()
@@ -347,18 +345,18 @@ class GraphPanel(QtWidgets.QFrame):
             active_chk.toggled.connect(lambda _, x=i: update_style(x))
             ca.currentIndexChanged.connect(lambda _, x=i: update_style(x))
             cb.currentIndexChanged.connect(lambda _, x=i: update_style(x))
-            lchk.toggled.connect(
-                lambda checked, x=i, b=bchk: (
-                    b.setChecked(False) if checked else None,
-                    update_style(x),
-                )
-            )
-            bchk.toggled.connect(
-                lambda checked, x=i, line_ck=lchk: (
-                    line_ck.setChecked(False) if checked else None,
-                    update_style(x),
-                )
-            )
+            def _handle_lchk(checked, x=i, b=bchk):
+                if checked:
+                    b.setChecked(False)
+                update_style(x)
+
+            lchk.toggled.connect(_handle_lchk)
+            def _handle_bchk(checked, x=i, l=lchk):
+                if checked:
+                    l.setChecked(False)
+                update_style(x)
+
+            bchk.toggled.connect(_handle_bchk)
             for w in [lc, ls, lw, schk, sc, ss, sw, bc, bs, bw, sb_gain]:
                 if isinstance(w, QtWidgets.QComboBox):
                     w.currentIndexChanged.connect(lambda _, x=i: update_style(x))
@@ -693,7 +691,7 @@ class GraphPanel(QtWidgets.QFrame):
             c_hex = colors[c_idx][1]
             pen1 = pg.mkPen(color=c_hex, width=1.5)
             # Second cursor same color (per request)
-            pen2 = pg.mkPen(color=c_hex, width=1.5, style=Qt.DashLine)
+            pen2 = pg.mkPen(color=c_hex, width=1.5, style=Qt.DashLine)  # type: ignore
 
             cursors["c1_v"].setPen(pen1)
             cursors["c1_h"].setPen(pen1)
@@ -765,7 +763,7 @@ class GraphPanel(QtWidgets.QFrame):
         title_clr = _clr_box()
         title_clr.setFixedWidth(60)
         title_clr.setCurrentIndex(3)  # Default to Black
-        tgl.addWidget(title_clr, 2, 4, Qt.AlignRight)
+        tgl.addWidget(title_clr, 2, 4, Qt.AlignRight)  # type: ignore
 
         sl.addWidget(tg)
 
@@ -877,7 +875,7 @@ class GraphPanel(QtWidgets.QFrame):
             tgl.addWidget(t_off, 1, 3)
             t_clr = _clr_box()
             t_clr.setCurrentIndex(3)
-            tgl.addWidget(t_clr, 1, 5, QtCore.Qt.AlignRight)
+            tgl.addWidget(t_clr, 1, 5, QtCore.Qt.AlignRight)  # type: ignore
             layout.addWidget(tg)
 
             # Ticks/Axis Group
@@ -907,7 +905,7 @@ class GraphPanel(QtWidgets.QFrame):
             tagl.addWidget(div3, 1, 3)
             tk_clr = _clr_box()
             tk_clr.setCurrentIndex(3)
-            tagl.addWidget(tk_clr, 1, 5, QtCore.Qt.AlignRight)
+            tagl.addWidget(tk_clr, 1, 5, QtCore.Qt.AlignRight)  # type: ignore
             layout.addWidget(tag)
 
             # Labels Group
@@ -925,7 +923,7 @@ class GraphPanel(QtWidgets.QFrame):
             lgl.addWidget(l_off, 0, 3)
             l_clr = _clr_box()
             l_clr.setCurrentIndex(3)
-            lgl.addWidget(l_clr, 0, 5, QtCore.Qt.AlignRight)
+            lgl.addWidget(l_clr, 0, 5, QtCore.Qt.AlignRight)  # type: ignore
             layout.addWidget(lg)
 
             # Font Group

@@ -38,6 +38,7 @@ def _small_spin_dbl(decimals=1, width=None, min_val=-1e12, max_val=1e12, step=0.
 
 def _create_group(title, layout_type="grid"):
     gb = QtWidgets.QGroupBox(title)
+    layout: Any
     if layout_type == "grid":
         layout = QtWidgets.QGridLayout(gb)
     elif layout_type == "v":
@@ -221,7 +222,9 @@ def create_measurement_tab():
     # Group: Measurement
     gb_meas, vb = _create_group("Measurement", "v")
     hbox_m = QtWidgets.QHBoxLayout()
-    hbox_m.addWidget(QtWidgets.QRadioButton("Fourier Tools", checked=True))
+    rb_ft = QtWidgets.QRadioButton("Fourier Tools")
+    rb_ft.setChecked(True)
+    hbox_m.addWidget(rb_ft)
     hbox_m.addWidget(QtWidgets.QRadioButton("Swept Sine Response"))
     hbox_m.addWidget(QtWidgets.QRadioButton("Sine Response"))
     hbox_m.addWidget(QtWidgets.QRadioButton("Triggered Time Response"))
@@ -489,7 +492,8 @@ def create_measurement_tab():
     g_fft.addWidget(sb_ov, 1, 4)
     g_fft.addWidget(QtWidgets.QLabel("%"), 1, 5)
 
-    chk_rm = QtWidgets.QCheckBox("Remove mean", checked=True)
+    chk_rm = QtWidgets.QCheckBox("Remove mean")
+    chk_rm.setChecked(True)
     controls["remove_mean"] = chk_rm
     g_fft.addWidget(chk_rm, 1, 6, 1, 2)
 
@@ -507,7 +511,8 @@ def create_measurement_tab():
 
     l_avg = QtWidgets.QHBoxLayout()
     l_avg.addWidget(QtWidgets.QLabel("Average Type:"))
-    rb_fixed = QtWidgets.QRadioButton("Fixed", checked=True)
+    rb_fixed = QtWidgets.QRadioButton("Fixed")
+    rb_fixed.setChecked(True)
     rb_exp = QtWidgets.QRadioButton("Exponential")
     rb_accum = QtWidgets.QRadioButton("Accumulative")
     controls.update(
@@ -529,7 +534,8 @@ def create_measurement_tab():
 
     # Group: Start Time (Visual Only for now)
     gb_time, g_time = _create_group("Start Time", "grid")
-    rb_now = QtWidgets.QRadioButton("Now", checked=True)
+    rb_now = QtWidgets.QRadioButton("Now")
+    rb_now.setChecked(True)
     g_time.addWidget(rb_now, 0, 0)
     rb_gps = QtWidgets.QRadioButton("GPS:")
     g_time.addWidget(rb_gps, 1, 0)
@@ -662,7 +668,8 @@ def create_excitation_tab():
 
     # CS Group
     gb_cs, l_cs = _create_group("Channel Selection", "h")
-    rb_0_3 = QtWidgets.QRadioButton("Channels 0 to 3", checked=True)
+    rb_0_3 = QtWidgets.QRadioButton("Channels 0 to 3")
+    rb_0_3.setChecked(True)
     l_cs.addWidget(rb_0_3)
     l_cs.addWidget(QtWidgets.QRadioButton("Channels 4 to 7"))
     l_cs.addWidget(QtWidgets.QRadioButton("Channels 8 to 11"))
@@ -693,7 +700,9 @@ def create_excitation_tab():
         gl.addWidget(QtWidgets.QLabel("Readback Channel:"), 1, 0)
 
         h_rb = QtWidgets.QHBoxLayout()
-        h_rb.addWidget(QtWidgets.QRadioButton("Default", checked=True))
+        rb_def = QtWidgets.QRadioButton("Default")
+        rb_def.setChecked(True)
+        h_rb.addWidget(rb_def)
         h_rb.addWidget(QtWidgets.QRadioButton("None"))
         h_rb.addWidget(QtWidgets.QRadioButton("User:"))
         gl.addLayout(h_rb, 1, 1)
@@ -794,7 +803,7 @@ def create_excitation_tab():
 
 def create_result_tab(on_import=None):
     tab = QtWidgets.QWidget()
-    hsplit = QtWidgets.QSplitter(Qt.Horizontal)
+    hsplit = QtWidgets.QSplitter(QtCore.Qt.Horizontal)  # type: ignore
     left_panel = QtWidgets.QWidget()
     left_vbox = QtWidgets.QVBoxLayout(left_panel)
     scroll = QtWidgets.QScrollArea()
@@ -940,13 +949,13 @@ def create_result_tab(on_import=None):
                 tab._zoomed_pad = tab._active_pad
             elif rb_2x1.isChecked():
                 # Vertical stack (default)
-                rv.setDirection(QtWidgets.QVBoxLayout.TopToBottom)
+                rv.setDirection(QtWidgets.QBoxLayout.TopToBottom)  # type: ignore
                 for plot in tab._plots:
                     plot.setVisible(True)
                 tab._zoomed_pad = -1
             elif rb_1x2.isChecked():
                 # Horizontal stack
-                rv.setDirection(QtWidgets.QHBoxLayout.LeftToRight)
+                rv.setDirection(QtWidgets.QBoxLayout.LeftToRight)  # type: ignore
                 for plot in tab._plots:
                     plot.setVisible(True)
                 tab._zoomed_pad = -1
@@ -958,6 +967,7 @@ def create_result_tab(on_import=None):
     bot_toolbar = QtWidgets.QHBoxLayout()
 
     btn_reset = QtWidgets.QPushButton("Reset")
+
     def _reset_plots():
         plot1.autoRange()
         plot2.autoRange()
