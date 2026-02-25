@@ -44,7 +44,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
 
           # Core documentation tools
-          pip install sphinx==6.* sphinx_rtd_theme myst-parser nbsphinx nbconvert ipykernel
+          pip install 'sphinx>=6,<8' 'docutils>=0.18,<0.22' sphinx_rtd_theme myst-parser nbsphinx nbconvert ipykernel
           pip install sphinx-intl sphinx-design
 
           # Scientific stack
@@ -54,6 +54,7 @@ jobs:
           # Optional dependencies for notebook examples
           pip install control
           pip install statsmodels
+          pip install pmdarima
           pip install PyWavelets
           pip install EMD-signal
           pip install ligo.skymap astropy-healpix
