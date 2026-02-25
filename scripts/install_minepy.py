@@ -79,6 +79,25 @@ def main():
         with open(setup_py, "w", encoding="utf-8") as f:
             f.write(setup_content)
 
+        # 4b. Patch mine.pyx for Cython 3.x noexcept compatibility
+        # Cython 3.x requires `noexcept` on void C functions to avoid implicit
+        # GIL acquisition after every call.  Without it the build emits warnings
+        # that newer setups treat as errors, causing a build timeout.
+        mine_pyx = minepy_src_dir / "minepy" / "mine.pyx"
+        if mine_pyx.exists():
+            import re
+            with open(mine_pyx, encoding="utf-8") as f:
+                pyx_content = f.read()
+            # Add noexcept after every void extern declaration that lacks it
+            pyx_content = re.sub(
+                r"(void\s+\w+\s*\([^)]*\))(?!\s*noexcept)",
+                r"\1 noexcept",
+                pyx_content,
+            )
+            with open(mine_pyx, "w", encoding="utf-8") as f:
+                f.write(pyx_content)
+            print("Patched mine.pyx with noexcept for Cython 3.x compatibility.")
+
         # 5. Cythonize
         print("Re-cythonizing C extensions for Python 3.11+ compatibility...")
         cython_executable = shutil.which("cython")

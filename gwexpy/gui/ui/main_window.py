@@ -495,7 +495,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.accumulator.add_chunk(payload)
 
     def on_nds_data(self, buffers):
-        print(f"DEBUG: MainWindow received NDS data with {len(buffers)} channels")
+        logger.debug("MainWindow received NDS data with %d channels", len(buffers))
         self.nds_latest_raw = buffers
 
     def on_data_error(self, message):
@@ -1107,7 +1107,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 for t_idx, ctrl in enumerate(info["traces"]):
                     try:
                         tr = traces[t_idx]
-                        print(f"DEBUG: Processing Trace {t_idx}")
                         curve, _bar, img = tr["curve"], tr["bar"], tr["img"]
 
                         if not ctrl["active"].isChecked():
