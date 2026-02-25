@@ -341,9 +341,12 @@
 <span class="n">display</span><span class="p">(</span><span class="n">pd_series</span><span class="p">)</span>
 
 <span class="c1"># xarray DataArray Transform</span>
-<span class="n">da</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;xarray coord name:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">coords</span><span class="p">))</span>
-<span class="n">display</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;xarray coord name:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">coords</span><span class="p">))</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">da</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;xarray not installed, skipping DataArray conversion.&quot;</span><span class="p">)</span>
 
 <span class="c1"># control.FRD Transform (Control )</span>
 <span class="k">try</span><span class="p">:</span>

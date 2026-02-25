@@ -335,73 +335,30 @@ Warnings:
 <section id="5.-Obtaining-Forecast-Data">
 <h2>5. Obtaining Forecast Data<a class="headerlink" href="#5.-Obtaining-Forecast-Data" title="Link to this heading"></a></h2>
 <p>Beyond plotting, you can directly obtain forecast values as a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object using the <code class="docutils literal notranslate"><span class="pre">.forecast()</span></code> method. This also includes confidence intervals.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">steps</span> <span class="o">=</span> <span class="mi">50</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;model_auto&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Auto-ARIMA model not available (pmdarima may be missing); skipping forecast.&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="mi">50</span>
 
-<span class="c1"># Get forecast values and confidence intervals</span>
-<span class="n">forecast_ts</span><span class="p">,</span> <span class="n">intervals</span> <span class="o">=</span> <span class="n">model_auto</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span>
-    <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span>
-<span class="p">)</span>  <span class="c1"># 50% confidence interval</span>
+    <span class="c1"># Get forecast values and confidence intervals</span>
+    <span class="n">forecast_ts</span><span class="p">,</span> <span class="n">intervals</span> <span class="o">=</span> <span class="n">model_auto</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span>
+        <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span>
+    <span class="p">)</span>  <span class="c1"># 50% confidence interval</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Forecast Data:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">forecast_ts</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Forecast Data:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">forecast_ts</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Confidence Interval (Upper):&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">intervals</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Confidence Interval (Upper):&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">intervals</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">])</span>
 
-<span class="c1"># Forecasting data can be saved or used for other analysis</span>
-<span class="c1"># forecast_ts.write(&quot;forecast.h5&quot;)</span>
+    <span class="c1"># Forecasting data can be saved or used for other analysis</span>
+    <span class="c1"># forecast_ts.write(&quot;forecast.h5&quot;)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-Forecast Data:
-TimeSeries([ 9.02063128,  9.6094657 , 10.04247631, 10.15366767,
-            10.05259752, 10.38953478, 10.79815151, 10.7102782 ,
-            11.00660841, 11.18205246, 11.08230575, 11.29883086,
-            10.98339909, 11.34917016, 11.51885752, 11.45196135,
-            11.87327454, 11.52379202, 11.68683767, 11.78939489,
-            11.98098488, 11.63016415, 11.97773587, 11.84043006,
-            11.72116502, 11.91254974, 11.88390331, 11.78617651,
-            11.87744683, 11.82552359, 11.8978438 , 11.97900621,
-            12.11133271, 11.76628531, 12.22002418, 11.72134893,
-            11.98240157, 12.11216243, 12.11237931, 12.04095457,
-            12.14350252, 12.16098484, 12.20712226, 12.45443674,
-            12.45772244, 12.3928846 , 12.67001456, 12.66918777,
-            12.811045  , 12.86573742]
-           unit: V,
-           t0: 30.0 s,
-           dt: 0.1 s,
-           name: Sample Data_auto_forecast,
-           channel: None)
-
-Confidence Interval (Upper):
-TimeSeries([ 9.6485734 , 10.25546688, 10.71958794, 10.87456095,
-            10.82818668, 11.22844439, 11.70675184, 11.69299274,
-            12.06629509, 12.32036062, 12.29997447, 12.59592487,
-            12.35949021, 12.803475  , 13.05034122, 13.05941559,
-            13.55537603, 13.27914639, 13.51401227, 13.68694319,
-            13.94746457, 13.66415042, 14.07783095, 14.00527003,
-            13.94942439, 14.20294448, 14.23519256, 14.19716342,
-            14.34697864, 14.35249117, 14.48118085, 14.61768817,
-            14.80437543, 14.51274362, 15.01899042, 14.57195137,
-            14.88380284, 15.06355799, 15.11299592, 15.09004877,
-            15.24035926, 15.30491602, 15.39746543, 15.69055383,
-            15.73899855, 15.71872684, 16.03985096, 16.08246623,
-            16.26723232, 16.36431836]
-           unit: V,
-           t0: 30.0 s,
-           dt: 0.1 s,
-           name: upper_ci,
-           channel: None)
-</pre></div></div>
 </div>
 </section>
 <section id="6.-Application-in-Gravitational-Wave-Data-Analysis:-Noise-Removal-(Whitening)-with-ARIMA">

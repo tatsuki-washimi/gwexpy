@@ -281,21 +281,24 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">steps</span> <span class="o">=</span> <span class="mi">50</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;model_auto&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Auto-ARIMAモデルが利用できません（pmdarimaが見つかりません）。予測をスキップします。&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="mi">50</span>
 
-<span class="c1"># Get forecast values and confidence intervals</span>
-<span class="n">forecast_ts</span><span class="p">,</span> <span class="n">intervals</span> <span class="o">=</span> <span class="n">model_auto</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span>
-    <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span>
-<span class="p">)</span> <span class="c1"># 50% confidence interval</span>
+    <span class="c1"># 予測値と信頼区間を取得</span>
+    <span class="n">forecast_ts</span><span class="p">,</span> <span class="n">intervals</span> <span class="o">=</span> <span class="n">model_auto</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span>
+        <span class="n">steps</span><span class="o">=</span><span class="n">steps</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span>
+    <span class="p">)</span> <span class="c1"># 50%信頼区間</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Forecast Data:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">forecast_ts</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Forecast Data:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">forecast_ts</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Confidence Interval (Upper):&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">intervals</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Confidence Interval (Upper):&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">intervals</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">])</span>
 
-<span class="c1"># Forecasting data can be saved or used for other analysis</span>
-<span class="c1"># forecast_ts.write(&quot;forecast.h5&quot;)</span>
+    <span class="c1"># 予測データを保存・分析に活用することも可能</span>
+    <span class="c1"># forecast_ts.write(&quot;forecast.h5&quot;)</span>
 </pre></div>
 </div>
 </div>
