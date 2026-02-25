@@ -27,6 +27,7 @@
       ~Spectrogram.bootstrap
       ~Spectrogram.bootstrap_asd
       ~Spectrogram.byteswap
+      ~Spectrogram.check_compatible
       ~Spectrogram.choose
       ~Spectrogram.clip
       ~Spectrogram.compress
@@ -79,7 +80,6 @@
       ~Spectrogram.radian
       ~Spectrogram.ratio
       ~Spectrogram.ravel
-      ~Spectrogram.read
       ~Spectrogram.rebin
       ~Spectrogram.repeat
       ~Spectrogram.reshape
@@ -123,7 +123,6 @@
       ~Spectrogram.var
       ~Spectrogram.variance
       ~Spectrogram.view
-      ~Spectrogram.write
       ~Spectrogram.zip
       ~Spectrogram.zpk
    
@@ -157,14 +156,12 @@
       ~Spectrogram.imag
       ~Spectrogram.info
       ~Spectrogram.isscalar
-      ~Spectrogram.itemset
       ~Spectrogram.itemsize
       ~Spectrogram.mT
       ~Spectrogram.name
       ~Spectrogram.nbytes
       ~Spectrogram.ndim
-      ~Spectrogram.newbyteorder
-      ~Spectrogram.ptp
+      ~Spectrogram.read
       ~Spectrogram.real
       ~Spectrogram.shape
       ~Spectrogram.si
@@ -175,6 +172,7 @@
       ~Spectrogram.times
       ~Spectrogram.unit
       ~Spectrogram.value
+      ~Spectrogram.write
       ~Spectrogram.x0
       ~Spectrogram.xindex
       ~Spectrogram.xspan

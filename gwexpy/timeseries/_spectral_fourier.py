@@ -370,7 +370,10 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         Compute an alternative spectrogram (spectrogram2).
         Returns Spectrogram.
         """
-        return self.spectrogram(*args, **kwargs)
+        from gwexpy.spectrogram import Spectrogram
+
+        res = self._super_ts().spectrogram2(*args, **kwargs)
+        return res.view(Spectrogram)
 
     def dct(
         self,
