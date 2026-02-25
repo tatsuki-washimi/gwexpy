@@ -27,6 +27,7 @@ jobs:
           # Keep CI stable with pip wheels; avoid optional deps that require building from source.
           pip install ".[dev,analysis]"
           pip install "scikit-learn"
+          pip install pytest-forked
           sudo apt-get update
           sudo apt-get install -y xvfb
 
@@ -39,7 +40,7 @@ jobs:
           PYTHONFAULTHANDLER: "1"
           PYTEST_SCREENSHOT_DIR: artifacts/screenshots
         run: |
-          xvfb-run -a -s "-screen 0 1920x1080x24" pytest -q --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy tests/ gwexpy/
+          xvfb-run -a -s "-screen 0 1920x1080x24" pytest -q --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy tests/ gwexpy/
 
       - name: Upload GUI failure screenshots
         if: failure()
@@ -86,11 +87,14 @@ jobs:
           # Pre-install build requirements and build minepy from source before mictools
           micromamba run -n gwexpy-full pip install cython numpy scipy
           micromamba run -n gwexpy-full python scripts/install_minepy.py
-          micromamba run -n gwexpy-full pip install -e ".[dev,analysis]" mictools
+          # Install dev deps first, then analysis deps separately to avoid resolver hangs
+          micromamba run -n gwexpy-full pip install -e ".[dev]" mictools
+          micromamba run -n gwexpy-full pip install --default-timeout=300 ".[analysis]"
           # Install pytest-forked to isolate segfaults per test process
           micromamba run -n gwexpy-full pip install pytest-forked
 
       - name: Run unit tests (forked for crash isolation)
+        timeout-minutes: 30
         env:
           PYTHONFAULTHANDLER: "1"
         shell: bash -l {0}
@@ -99,6 +103,7 @@ jobs:
             pytest -q --forked --cov=gwexpy tests/
 
       - name: Run notebook tests
+        timeout-minutes: 30
         env:
           PYTHONFAULTHANDLER: "1"
         shell: bash -l {0}
