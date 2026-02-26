@@ -120,7 +120,7 @@
 <p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> で新しく導入された <code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> および <code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code> クラスの使い方を紹介します。</p>
 <p>これらのクラスは、複数のスペクトログラムデータ（<code class="docutils literal notranslate"><span class="pre">gwpy.spectrogram.Spectrogram</span></code>）をまとめて管理し、一括して処理（クロップ、再ビン化、プロットなど）を行うためのコンテナです。 時系列データを扱う <code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> / <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> と似たインターフェースを持っていますが、2次元データ（時間 × 周波数）を扱う点が特徴です。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -133,8 +133,8 @@
 <section id="1.-データの準備">
 <h2>1. データの準備<a class="headerlink" href="#1.-データの準備" title="Link to this heading"></a></h2>
 <p>まずはデモ用のスペクトログラムデータを作成します。 ここでは、異なる周波数のサイン波を含む時系列データを生成し、それを <code class="docutils literal notranslate"><span class="pre">spectrogram()</span></code> メソッドで変換して使用します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># SampleData Create</span>
@@ -170,12 +170,22 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Spectrogram shape: (10, 65)
+Time range: [0.0 ... 20.0)
+Freq range: [0.0 ... 65.0)
+</pre></div></div>
+</div>
 </section>
 <section id="2.-SpectrogramList-の基本操作">
 <h2>2. SpectrogramList の基本操作<a class="headerlink" href="#2.-SpectrogramList-の基本操作" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> はリストのように振る舞いますが、格納できるのは <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> オブジェクトのみです。 初期化時にリストを渡すか、<code class="docutils literal notranslate"><span class="pre">append()</span></code> メソッドで追加します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># List Create</span>
@@ -189,11 +199,20 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+List length: 3
+Items: [&#39;Signal 10Hz&#39;, &#39;Signal 30Hz&#39;, &#39;Signal 50Hz&#39;]
+</pre></div></div>
+</div>
 <section id="バッチ処理:-時間軸の切り出し-(crop)">
 <h3>バッチ処理: 時間軸の切り出し (<code class="docutils literal notranslate"><span class="pre">crop</span></code>)<a class="headerlink" href="#バッチ処理:-時間軸の切り出し-(crop)" title="Link to this heading"></a></h3>
 <p>リスト内のすべてのスペクトログラムに対して、一括で時間軸の切り出しを行います。 <strong>注意:</strong> スペクトログラムはデータ量が大きいため、クロップなどの操作は元のデータを変更せず、新しいオブジェクト（コピー）を返すことがあります。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 5seconds〜15seconds Range</span>
@@ -204,12 +223,21 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original range: [0.0 ... 20.0)
+Cropped range: [4.0 ... 14.0)
+</pre></div></div>
+</div>
 </section>
 <section id="バッチ処理:-周波数軸の切り出し-(crop_frequencies)">
 <h3>バッチ処理: 周波数軸の切り出し (<code class="docutils literal notranslate"><span class="pre">crop_frequencies</span></code>)<a class="headerlink" href="#バッチ処理:-周波数軸の切り出し-(crop_frequencies)" title="Link to this heading"></a></h3>
 <p>gwpyの <code class="docutils literal notranslate"><span class="pre">Spectrogram</span></code> に互換性のあるメソッドがあればそれを使用し、なければ周波数軸を指定してフィルタリングを行います。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 0Hz 〜 40Hz Range</span>
@@ -221,13 +249,22 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original yspan: [0.0 ... 65.0)
+Cropped yspan: [0.0 ... 40.0)
+</pre></div></div>
+</div>
 </section>
 </section>
 <section id="3.-SpectrogramDict-の利用">
 <h2>3. SpectrogramDict の利用<a class="headerlink" href="#3.-SpectrogramDict-の利用" title="Link to this heading"></a></h2>
 <p>名前（キー）付きで管理したい場合は <code class="docutils literal notranslate"><span class="pre">SpectrogramDict</span></code> が便利です。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">spec_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">({</span><span class="s2">&quot;low_freq&quot;</span><span class="p">:</span> <span class="n">spec1</span><span class="p">,</span> <span class="s2">&quot;mid_freq&quot;</span><span class="p">:</span> <span class="n">spec2</span><span class="p">,</span> <span class="s2">&quot;high_freq&quot;</span><span class="p">:</span> <span class="n">spec3</span><span class="p">})</span>
@@ -236,12 +273,20 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Keys: [&#39;low_freq&#39;, &#39;mid_freq&#39;, &#39;high_freq&#39;]
+</pre></div></div>
+</div>
 </section>
 <section id="4.-可視化-(plot)">
 <h2>4. 可視化 (<code class="docutils literal notranslate"><span class="pre">plot</span></code>)<a class="headerlink" href="#4.-可視化-(plot)" title="Link to this heading"></a></h2>
 <p>リストや辞書の <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> メソッドを呼ぶと、含まれるすべてのスペクトログラムをまとめてプロットできます。 内部では <code class="docutils literal notranslate"><span class="pre">gwpy.plot.Plot</span></code> を使用しています。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># BatchPlot</span>
@@ -251,13 +296,20 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_spectrogram_13_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_spectrogram_13_0.png" />
+</div>
+</div>
 </section>
 <section id="5.-マトリックス形式への変換とDeep-Learning連携">
 <h2>5. マトリックス形式への変換とDeep Learning連携<a class="headerlink" href="#5.-マトリックス形式への変換とDeep-Learning連携" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">to_matrix()</span></code> を使用すると、各スペクトログラムを積み重ねた 3次元配列 <code class="docutils literal notranslate"><span class="pre">(Channels,</span> <span class="pre">Time,</span> <span class="pre">Frequency)</span></code> を持つ <code class="docutils literal notranslate"><span class="pre">SpectrogramMatrix</span></code> オブジェクトを作成できます。</p>
 <p>これは機械学習モデル（PyTorch, TensorFlowなど）への入力を作成する際に非常に便利です。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">matrix</span> <span class="o">=</span> <span class="n">spec_list</span><span class="o">.</span><span class="n">to_matrix</span><span class="p">()</span>
@@ -271,6 +323,18 @@
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Freq axis shape:&quot;</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Matrix Type: &lt;class &#39;gwexpy.spectrogram.matrix.SpectrogramMatrix&#39;&gt;
+Matrix Shape: (3, 10, 65)
+ (N_channels, N_time_steps, N_freq_bins)
+Time axis shape: (10,)
+Freq axis shape: (65,)
+</pre></div></div>
 </div>
 <p>PyTorchやCuPyがインストールされていれば、そのままTensor等に変換可能です。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># PyTorch Tensorへの変換</span>

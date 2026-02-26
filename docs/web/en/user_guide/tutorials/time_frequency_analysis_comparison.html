@@ -596,7 +596,7 @@ Takeaway: Use Wavelet for chirps and multi-scale transients.
 <section id="id2">
 <h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p>STFT/Q show time-frequency “bands” with width. HHT extracts instantaneous frequency as a <strong>single-valued function of time</strong>.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
@@ -604,67 +604,17 @@ Takeaway: Use Wavelet for chirps and multi-scale transients.
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_13_0.png" src="../../../../_images/web_en_user_guide_tutorials_time_frequency_analysis_comparison_13_0.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<section id="id3">
-<h4>Quantitative Evaluation<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Metric</p></th>
-<th class="head"><p>Value</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>Instantaneous Frequency MSE</strong></p></td>
-<td><p>404.64 Hz²</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>RMSE</strong></p></td>
-<td><p>20.12 Hz</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Modulation Range</strong></p></td>
-<td><p>60 → 100 Hz</p></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Interpretation</strong>: HHT tracks instantaneous frequency with RMSE of 20.12 Hz. STFT cannot provide single-valued instantaneous frequency - it shows a 40 Hz wide band instead.</p>
-</section>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-HHT Result:
-  ✓ Instantaneous frequency extracted as precise curve
-  ✓ Tracks true FM modulation accurately
-  ✓ No time-frequency uncertainty tradeoff
-  ✓ Data-adaptive (no window choice needed)
-  ✓ Instantaneous frequency RMSE: 20.12 Hz
-
-Takeaway: Use HHT when instantaneous frequency matters (non-stationary FM signals).
-</pre></div></div>
-</div>
 </section>
 </section>
 <hr class="docutils" />
 <section id="5.3-STLT:-Damped-Oscillations-with-Decay-Rate-Information">
 <h2>5.3 STLT: Damped Oscillations with Decay Rate Information<a class="headerlink" href="#5.3-STLT:-Damped-Oscillations-with-Decay-Rate-Information" title="Link to this heading"></a></h2>
-<section id="id4">
-<h3>Signal Design<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<section id="id3">
+<h3>Signal Design<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <p>Multiple exponentially damped sinusoids with different decay rates. Simulates ringdown modes with varying quality factors.</p>
 </section>
-<section id="id5">
-<h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<section id="id4">
+<h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <p>STFT and Q-transform only show <strong>frequency</strong> content. The <strong>decay rate σ</strong> (damping coefficient) is invisible. STLT decomposes signals into both frequency ω and decay rate σ.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
@@ -818,8 +768,8 @@ Takeaway: Use HHT when instantaneous frequency matters (non-stationary FM signal
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<section id="id6">
-<h4>Quantitative Evaluation<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<section id="id5">
+<h4>Quantitative Evaluation<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Mode</p></th>
@@ -876,12 +826,12 @@ Takeaway: Use STLT for ringdown analysis when decay rates (quality factors) matt
 <hr class="docutils" />
 <section id="5.4-Cepstrum:-Echo-Detection-and-Spectral-Periodicity">
 <h2>5.4 Cepstrum: Echo Detection and Spectral Periodicity<a class="headerlink" href="#5.4-Cepstrum:-Echo-Detection-and-Spectral-Periodicity" title="Link to this heading"></a></h2>
-<section id="id7">
-<h3>Signal Design<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id6">
+<h3>Signal Design<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p>Signal with a delayed copy (echo). Common in seismic noise when waves reflect off structures.</p>
 </section>
-<section id="id8">
-<h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<section id="id7">
+<h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <p>Echoes create <strong>periodic structure in the spectrum</strong> (comb filtering). STFT shows this as fine ripples but delay time is hard to read. Cepstrum converts spectral periodicity → time-domain peak at delay (“quefrency”).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
@@ -1003,12 +953,12 @@ Takeaway: Use Cepstrum for echo detection, pitch analysis, and periodic spectrum
 <hr class="docutils" />
 <section id="5.5-DCT:-Compression-and-Smooth-Feature-Extraction">
 <h2>5.5 DCT: Compression and Smooth Feature Extraction<a class="headerlink" href="#5.5-DCT:-Compression-and-Smooth-Feature-Extraction" title="Link to this heading"></a></h2>
-<section id="id9">
-<h3>Signal Design<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<section id="id8">
+<h3>Signal Design<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <p>Smooth signal with small perturbations. Simulates slowly-varying background trend with fine structure.</p>
 </section>
-<section id="id10">
-<h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<section id="id9">
+<h3>What STFT/Q Cannot Show Clearly<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <p>STFT/Q provide full time-frequency information but no compression. DCT (Discrete Cosine Transform) reveals that <strong>most signal energy concentrates in a few low-frequency coefficients</strong>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
@@ -1118,9 +1068,9 @@ Takeaway: Use Cepstrum for echo detection, pitch analysis, and periodic spectrum
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-With 10 coefficients: 0.46% energy captured
+With 10 coefficients: 0.44% energy captured
 With 50 coefficients: 69.39% energy captured
-With 200 coefficients: 98.45% energy captured
+With 200 coefficients: 98.44% energy captured
 
 DCT Result:
   ✓ Only 50 coefficients (3% of data) capture &gt;99% energy
@@ -1277,93 +1227,93 @@ Takeaway: Use DCT for signal compression, smooth background modeling, and featur
 </div>
 <div class="output_area rendered_html docutils container">
 <style type="text/css">
-#T_d2b48 th {
+#T_7cce2 th {
   background-color: #f0f0f0;
   font-weight: bold;
 }
-#T_d2b48 td {
+#T_7cce2 td {
   padding: 5px;
 }
-#T_d2b48_row0_col0, #T_d2b48_row0_col1, #T_d2b48_row0_col2, #T_d2b48_row0_col3, #T_d2b48_row0_col4, #T_d2b48_row0_col5, #T_d2b48_row1_col0, #T_d2b48_row1_col1, #T_d2b48_row1_col2, #T_d2b48_row1_col3, #T_d2b48_row1_col4, #T_d2b48_row1_col5, #T_d2b48_row2_col0, #T_d2b48_row2_col1, #T_d2b48_row2_col2, #T_d2b48_row2_col3, #T_d2b48_row2_col4, #T_d2b48_row2_col5, #T_d2b48_row3_col0, #T_d2b48_row3_col1, #T_d2b48_row3_col2, #T_d2b48_row3_col3, #T_d2b48_row3_col4, #T_d2b48_row3_col5, #T_d2b48_row4_col0, #T_d2b48_row4_col1, #T_d2b48_row4_col2, #T_d2b48_row4_col3, #T_d2b48_row4_col4, #T_d2b48_row4_col5, #T_d2b48_row5_col0, #T_d2b48_row5_col1, #T_d2b48_row5_col2, #T_d2b48_row5_col3, #T_d2b48_row5_col4, #T_d2b48_row5_col5, #T_d2b48_row6_col0, #T_d2b48_row6_col1, #T_d2b48_row6_col2, #T_d2b48_row6_col3, #T_d2b48_row6_col4, #T_d2b48_row6_col5 {
+#T_7cce2_row0_col0, #T_7cce2_row0_col1, #T_7cce2_row0_col2, #T_7cce2_row0_col3, #T_7cce2_row0_col4, #T_7cce2_row0_col5, #T_7cce2_row1_col0, #T_7cce2_row1_col1, #T_7cce2_row1_col2, #T_7cce2_row1_col3, #T_7cce2_row1_col4, #T_7cce2_row1_col5, #T_7cce2_row2_col0, #T_7cce2_row2_col1, #T_7cce2_row2_col2, #T_7cce2_row2_col3, #T_7cce2_row2_col4, #T_7cce2_row2_col5, #T_7cce2_row3_col0, #T_7cce2_row3_col1, #T_7cce2_row3_col2, #T_7cce2_row3_col3, #T_7cce2_row3_col4, #T_7cce2_row3_col5, #T_7cce2_row4_col0, #T_7cce2_row4_col1, #T_7cce2_row4_col2, #T_7cce2_row4_col3, #T_7cce2_row4_col4, #T_7cce2_row4_col5, #T_7cce2_row5_col0, #T_7cce2_row5_col1, #T_7cce2_row5_col2, #T_7cce2_row5_col3, #T_7cce2_row5_col4, #T_7cce2_row5_col5, #T_7cce2_row6_col0, #T_7cce2_row6_col1, #T_7cce2_row6_col2, #T_7cce2_row6_col3, #T_7cce2_row6_col4, #T_7cce2_row6_col5 {
   text-align: left;
   border: 1px solid black;
 }
 </style>
-<table id="T_d2b48">
+<table id="T_7cce2">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
-      <th id="T_d2b48_level0_col0" class="col_heading level0 col0" >Method</th>
-      <th id="T_d2b48_level0_col1" class="col_heading level0 col1" >Time Resolution</th>
-      <th id="T_d2b48_level0_col2" class="col_heading level0 col2" >Frequency Resolution</th>
-      <th id="T_d2b48_level0_col3" class="col_heading level0 col3" >Computational Cost</th>
-      <th id="T_d2b48_level0_col4" class="col_heading level0 col4" >Best For</th>
-      <th id="T_d2b48_level0_col5" class="col_heading level0 col5" >Key Advantage</th>
+      <th id="T_7cce2_level0_col0" class="col_heading level0 col0" >Method</th>
+      <th id="T_7cce2_level0_col1" class="col_heading level0 col1" >Time Resolution</th>
+      <th id="T_7cce2_level0_col2" class="col_heading level0 col2" >Frequency Resolution</th>
+      <th id="T_7cce2_level0_col3" class="col_heading level0 col3" >Computational Cost</th>
+      <th id="T_7cce2_level0_col4" class="col_heading level0 col4" >Best For</th>
+      <th id="T_7cce2_level0_col5" class="col_heading level0 col5" >Key Advantage</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th id="T_d2b48_level0_row0" class="row_heading level0 row0" >0</th>
-      <td id="T_d2b48_row0_col0" class="data row0 col0" >STFT</td>
-      <td id="T_d2b48_row0_col1" class="data row0 col1" >Medium</td>
-      <td id="T_d2b48_row0_col2" class="data row0 col2" >Medium</td>
-      <td id="T_d2b48_row0_col3" class="data row0 col3" >Low</td>
-      <td id="T_d2b48_row0_col4" class="data row0 col4" >General purpose</td>
-      <td id="T_d2b48_row0_col5" class="data row0 col5" >Fast & well-understood</td>
+      <th id="T_7cce2_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_7cce2_row0_col0" class="data row0 col0" >STFT</td>
+      <td id="T_7cce2_row0_col1" class="data row0 col1" >Medium</td>
+      <td id="T_7cce2_row0_col2" class="data row0 col2" >Medium</td>
+      <td id="T_7cce2_row0_col3" class="data row0 col3" >Low</td>
+      <td id="T_7cce2_row0_col4" class="data row0 col4" >General purpose</td>
+      <td id="T_7cce2_row0_col5" class="data row0 col5" >Fast & well-understood</td>
     </tr>
     <tr>
-      <th id="T_d2b48_level0_row1" class="row_heading level0 row1" >1</th>
-      <td id="T_d2b48_row1_col0" class="data row1 col0" >Q-transform</td>
-      <td id="T_d2b48_row1_col1" class="data row1 col1" >High (f>100Hz)</td>
-      <td id="T_d2b48_row1_col2" class="data row1 col2" >High (f<50Hz)</td>
-      <td id="T_d2b48_row1_col3" class="data row1 col3" >Medium</td>
-      <td id="T_d2b48_row1_col4" class="data row1 col4" >Transients/bursts</td>
-      <td id="T_d2b48_row1_col5" class="data row1 col5" >Adaptive resolution</td>
+      <th id="T_7cce2_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_7cce2_row1_col0" class="data row1 col0" >Q-transform</td>
+      <td id="T_7cce2_row1_col1" class="data row1 col1" >High (f>100Hz)</td>
+      <td id="T_7cce2_row1_col2" class="data row1 col2" >High (f<50Hz)</td>
+      <td id="T_7cce2_row1_col3" class="data row1 col3" >Medium</td>
+      <td id="T_7cce2_row1_col4" class="data row1 col4" >Transients/bursts</td>
+      <td id="T_7cce2_row1_col5" class="data row1 col5" >Adaptive resolution</td>
     </tr>
     <tr>
-      <th id="T_d2b48_level0_row2" class="row_heading level0 row2" >2</th>
-      <td id="T_d2b48_row2_col0" class="data row2 col0" >Wavelet (CWT)</td>
-      <td id="T_d2b48_row2_col1" class="data row2 col1" >Scale-adaptive</td>
-      <td id="T_d2b48_row2_col2" class="data row2 col2" >Scale-adaptive</td>
-      <td id="T_d2b48_row2_col3" class="data row2 col3" >Medium-High</td>
-      <td id="T_d2b48_row2_col4" class="data row2 col4" >Chirps & multi-scale</td>
-      <td id="T_d2b48_row2_col5" class="data row2 col5" >Natural scale matching</td>
+      <th id="T_7cce2_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_7cce2_row2_col0" class="data row2 col0" >Wavelet (CWT)</td>
+      <td id="T_7cce2_row2_col1" class="data row2 col1" >Scale-adaptive</td>
+      <td id="T_7cce2_row2_col2" class="data row2 col2" >Scale-adaptive</td>
+      <td id="T_7cce2_row2_col3" class="data row2 col3" >Medium-High</td>
+      <td id="T_7cce2_row2_col4" class="data row2 col4" >Chirps & multi-scale</td>
+      <td id="T_7cce2_row2_col5" class="data row2 col5" >Natural scale matching</td>
     </tr>
     <tr>
-      <th id="T_d2b48_level0_row3" class="row_heading level0 row3" >3</th>
-      <td id="T_d2b48_row3_col0" class="data row3 col0" >HHT</td>
-      <td id="T_d2b48_row3_col1" class="data row3 col1" >Excellent</td>
-      <td id="T_d2b48_row3_col2" class="data row3 col2" >Excellent</td>
-      <td id="T_d2b48_row3_col3" class="data row3 col3" >Very High</td>
-      <td id="T_d2b48_row3_col4" class="data row3 col4" >Instantaneous frequency</td>
-      <td id="T_d2b48_row3_col5" class="data row3 col5" >No time-freq tradeoff</td>
+      <th id="T_7cce2_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_7cce2_row3_col0" class="data row3 col0" >HHT</td>
+      <td id="T_7cce2_row3_col1" class="data row3 col1" >Excellent</td>
+      <td id="T_7cce2_row3_col2" class="data row3 col2" >Excellent</td>
+      <td id="T_7cce2_row3_col3" class="data row3 col3" >Very High</td>
+      <td id="T_7cce2_row3_col4" class="data row3 col4" >Instantaneous frequency</td>
+      <td id="T_7cce2_row3_col5" class="data row3 col5" >No time-freq tradeoff</td>
     </tr>
     <tr>
-      <th id="T_d2b48_level0_row4" class="row_heading level0 row4" >4</th>
-      <td id="T_d2b48_row4_col0" class="data row4 col0" >STLT</td>
-      <td id="T_d2b48_row4_col1" class="data row4 col1" >Medium</td>
-      <td id="T_d2b48_row4_col2" class="data row4 col2" >Medium</td>
-      <td id="T_d2b48_row4_col3" class="data row4 col3" >High</td>
-      <td id="T_d2b48_row4_col4" class="data row4 col4" >Damped oscillations</td>
-      <td id="T_d2b48_row4_col5" class="data row4 col5" >Reveals decay rates σ</td>
+      <th id="T_7cce2_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_7cce2_row4_col0" class="data row4 col0" >STLT</td>
+      <td id="T_7cce2_row4_col1" class="data row4 col1" >Medium</td>
+      <td id="T_7cce2_row4_col2" class="data row4 col2" >Medium</td>
+      <td id="T_7cce2_row4_col3" class="data row4 col3" >High</td>
+      <td id="T_7cce2_row4_col4" class="data row4 col4" >Damped oscillations</td>
+      <td id="T_7cce2_row4_col5" class="data row4 col5" >Reveals decay rates σ</td>
     </tr>
     <tr>
-      <th id="T_d2b48_level0_row5" class="row_heading level0 row5" >5</th>
-      <td id="T_d2b48_row5_col0" class="data row5 col0" >Cepstrum</td>
-      <td id="T_d2b48_row5_col1" class="data row5 col1" >N/A</td>
-      <td id="T_d2b48_row5_col2" class="data row5 col2" >Excellent</td>
-      <td id="T_d2b48_row5_col3" class="data row5 col3" >Medium</td>
-      <td id="T_d2b48_row5_col4" class="data row5 col4" >Echo detection</td>
-      <td id="T_d2b48_row5_col5" class="data row5 col5" >Quefrency peaks</td>
+      <th id="T_7cce2_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_7cce2_row5_col0" class="data row5 col0" >Cepstrum</td>
+      <td id="T_7cce2_row5_col1" class="data row5 col1" >N/A</td>
+      <td id="T_7cce2_row5_col2" class="data row5 col2" >Excellent</td>
+      <td id="T_7cce2_row5_col3" class="data row5 col3" >Medium</td>
+      <td id="T_7cce2_row5_col4" class="data row5 col4" >Echo detection</td>
+      <td id="T_7cce2_row5_col5" class="data row5 col5" >Quefrency peaks</td>
     </tr>
     <tr>
-      <th id="T_d2b48_level0_row6" class="row_heading level0 row6" >6</th>
-      <td id="T_d2b48_row6_col0" class="data row6 col0" >DCT</td>
-      <td id="T_d2b48_row6_col1" class="data row6 col1" >N/A</td>
-      <td id="T_d2b48_row6_col2" class="data row6 col2" >N/A</td>
-      <td id="T_d2b48_row6_col3" class="data row6 col3" >Low</td>
-      <td id="T_d2b48_row6_col4" class="data row6 col4" >Compression</td>
-      <td id="T_d2b48_row6_col5" class="data row6 col5" >Sparse representation</td>
+      <th id="T_7cce2_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_7cce2_row6_col0" class="data row6 col0" >DCT</td>
+      <td id="T_7cce2_row6_col1" class="data row6 col1" >N/A</td>
+      <td id="T_7cce2_row6_col2" class="data row6 col2" >N/A</td>
+      <td id="T_7cce2_row6_col3" class="data row6 col3" >Low</td>
+      <td id="T_7cce2_row6_col4" class="data row6 col4" >Compression</td>
+      <td id="T_7cce2_row6_col5" class="data row6 col5" >Sparse representation</td>
     </tr>
   </tbody>
 </table></div>
@@ -1382,63 +1332,56 @@ Takeaway: Use DCT for signal compression, smooth background modeling, and featur
 </div>
 <div class="output_area rendered_html docutils container">
 <style type="text/css">
-#T_9bcb1 th {
+#T_0d538 th {
   background-color: #e8f4f8;
   font-weight: bold;
 }
-#T_9bcb1 td {
+#T_0d538 td {
   padding: 5px;
 }
-#T_9bcb1_row0_col0, #T_9bcb1_row0_col1, #T_9bcb1_row0_col2, #T_9bcb1_row0_col3, #T_9bcb1_row0_col4, #T_9bcb1_row1_col0, #T_9bcb1_row1_col1, #T_9bcb1_row1_col2, #T_9bcb1_row1_col3, #T_9bcb1_row1_col4, #T_9bcb1_row2_col0, #T_9bcb1_row2_col1, #T_9bcb1_row2_col2, #T_9bcb1_row2_col3, #T_9bcb1_row2_col4, #T_9bcb1_row3_col0, #T_9bcb1_row3_col1, #T_9bcb1_row3_col2, #T_9bcb1_row3_col3, #T_9bcb1_row3_col4, #T_9bcb1_row4_col0, #T_9bcb1_row4_col1, #T_9bcb1_row4_col2, #T_9bcb1_row4_col3, #T_9bcb1_row4_col4 {
+#T_0d538_row0_col0, #T_0d538_row0_col1, #T_0d538_row0_col2, #T_0d538_row0_col3, #T_0d538_row0_col4, #T_0d538_row1_col0, #T_0d538_row1_col1, #T_0d538_row1_col2, #T_0d538_row1_col3, #T_0d538_row1_col4, #T_0d538_row2_col0, #T_0d538_row2_col1, #T_0d538_row2_col2, #T_0d538_row2_col3, #T_0d538_row2_col4, #T_0d538_row3_col0, #T_0d538_row3_col1, #T_0d538_row3_col2, #T_0d538_row3_col3, #T_0d538_row3_col4 {
   text-align: left;
   border: 1px solid black;
 }
 </style>
-<table id="T_9bcb1">
+<table id="T_0d538">
   <thead>
     <tr>
-      <th id="T_9bcb1_level0_col0" class="col_heading level0 col0" >Method</th>
-      <th id="T_9bcb1_level0_col1" class="col_heading level0 col1" >Test Signal</th>
-      <th id="T_9bcb1_level0_col2" class="col_heading level0 col2" >Metric</th>
-      <th id="T_9bcb1_level0_col3" class="col_heading level0 col3" >Value</th>
-      <th id="T_9bcb1_level0_col4" class="col_heading level0 col4" >Comparison</th>
+      <th id="T_0d538_level0_col0" class="col_heading level0 col0" >Method</th>
+      <th id="T_0d538_level0_col1" class="col_heading level0 col1" >Test Signal</th>
+      <th id="T_0d538_level0_col2" class="col_heading level0 col2" >Metric</th>
+      <th id="T_0d538_level0_col3" class="col_heading level0 col3" >Value</th>
+      <th id="T_0d538_level0_col4" class="col_heading level0 col4" >Comparison</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td id="T_9bcb1_row0_col0" class="data row0 col0" >Wavelet (CWT)</td>
-      <td id="T_9bcb1_row0_col1" class="data row0 col1" >Chirp (20→150 Hz)</td>
-      <td id="T_9bcb1_row0_col2" class="data row0 col2" >Frequency Tracking RMSE</td>
-      <td id="T_9bcb1_row0_col3" class="data row0 col3" >35.91 Hz</td>
-      <td id="T_9bcb1_row0_col4" class="data row0 col4" >vs STFT smearing ~15 Hz</td>
+      <td id="T_0d538_row0_col0" class="data row0 col0" >Wavelet (CWT)</td>
+      <td id="T_0d538_row0_col1" class="data row0 col1" >Chirp (20→150 Hz)</td>
+      <td id="T_0d538_row0_col2" class="data row0 col2" >Frequency Tracking RMSE</td>
+      <td id="T_0d538_row0_col3" class="data row0 col3" >35.91 Hz</td>
+      <td id="T_0d538_row0_col4" class="data row0 col4" >vs STFT smearing ~15 Hz</td>
     </tr>
     <tr>
-      <td id="T_9bcb1_row1_col0" class="data row1 col0" >HHT</td>
-      <td id="T_9bcb1_row1_col1" class="data row1 col1" >AM-FM (80±20 Hz)</td>
-      <td id="T_9bcb1_row1_col2" class="data row1 col2" >Instantaneous Freq. RMSE</td>
-      <td id="T_9bcb1_row1_col3" class="data row1 col3" >20.12 Hz</td>
-      <td id="T_9bcb1_row1_col4" class="data row1 col4" >vs STFT 40 Hz wide band</td>
+      <td id="T_0d538_row1_col0" class="data row1 col0" >STLT</td>
+      <td id="T_0d538_row1_col1" class="data row1 col1" >3-mode ringdown</td>
+      <td id="T_0d538_row1_col2" class="data row1 col2" >Decay Rate MAE</td>
+      <td id="T_0d538_row1_col3" class="data row1 col3" >7.25 s⁻¹</td>
+      <td id="T_0d538_row1_col4" class="data row1 col4" >STFT cannot estimate σ</td>
     </tr>
     <tr>
-      <td id="T_9bcb1_row2_col0" class="data row2 col0" >STLT</td>
-      <td id="T_9bcb1_row2_col1" class="data row2 col1" >3-mode ringdown</td>
-      <td id="T_9bcb1_row2_col2" class="data row2 col2" >Decay Rate MAE</td>
-      <td id="T_9bcb1_row2_col3" class="data row2 col3" >7.25 s⁻¹</td>
-      <td id="T_9bcb1_row2_col4" class="data row2 col4" >STFT cannot estimate σ</td>
+      <td id="T_0d538_row2_col0" class="data row2 col0" >Cepstrum</td>
+      <td id="T_0d538_row2_col1" class="data row2 col1" >Echo (80ms delay)</td>
+      <td id="T_0d538_row2_col2" class="data row2 col2" >Delay Detection Error</td>
+      <td id="T_0d538_row2_col3" class="data row2 col3" >0.41 ms</td>
+      <td id="T_0d538_row2_col4" class="data row2 col4" >Delay invisible in STFT</td>
     </tr>
     <tr>
-      <td id="T_9bcb1_row3_col0" class="data row3 col0" >Cepstrum</td>
-      <td id="T_9bcb1_row3_col1" class="data row3 col1" >Echo (80ms delay)</td>
-      <td id="T_9bcb1_row3_col2" class="data row3 col2" >Delay Detection Error</td>
-      <td id="T_9bcb1_row3_col3" class="data row3 col3" >0.41 ms</td>
-      <td id="T_9bcb1_row3_col4" class="data row3 col4" >Delay invisible in STFT</td>
-    </tr>
-    <tr>
-      <td id="T_9bcb1_row4_col0" class="data row4 col0" >DCT</td>
-      <td id="T_9bcb1_row4_col1" class="data row4 col1" >Smooth + bumps</td>
-      <td id="T_9bcb1_row4_col2" class="data row4 col2" >Compression (50 coeffs)</td>
-      <td id="T_9bcb1_row4_col3" class="data row4 col3" >>99% energy</td>
-      <td id="T_9bcb1_row4_col4" class="data row4 col4" >~30× compression ratio</td>
+      <td id="T_0d538_row3_col0" class="data row3 col0" >DCT</td>
+      <td id="T_0d538_row3_col1" class="data row3 col1" >Smooth + bumps</td>
+      <td id="T_0d538_row3_col2" class="data row3 col2" >Compression (50 coeffs)</td>
+      <td id="T_0d538_row3_col3" class="data row3 col3" >>99% energy</td>
+      <td id="T_0d538_row3_col4" class="data row3 col4" >~30× compression ratio</td>
     </tr>
   </tbody>
 </table></div>

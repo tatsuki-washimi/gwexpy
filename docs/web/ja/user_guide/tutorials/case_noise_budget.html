@@ -126,7 +126,7 @@
 <li><p><strong>ノイズ予算の可視化 (Noise Budget Plot)</strong>: すべてのノイズ源を重ね合わせ、観測された「U字型」スペクトルの内訳を明らかにします。</p></li>
 </ol>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -148,8 +148,8 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">AUX_MAG</span></code>: 磁場モニター（60Hzの電源ラインを含む）。</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">AUX_ELEC</span></code>: 高周波側のノイズ源（例：制御システムや読み出し回路のノイズ）。</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span> <span class="o">=</span> <span class="mf">2048.0</span>
@@ -217,12 +217,19 @@
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_noise_budget_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_noise_budget_3_0.png" />
+</div>
+</div>
 </section>
 <section id="2.-相関解析-(Coherence-Mapping)">
 <h2>2. 相関解析 (Coherence Mapping)<a class="headerlink" href="#2.-相関解析-(Coherence-Mapping)" title="Link to this heading"></a></h2>
 <p>メインチャンネルの「U字」の左側、底、右側で、それぞれどのセンサーと高いコヒーレンスを持っているかを確認します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">aux_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;AUX_SEIS&quot;</span><span class="p">,</span> <span class="s2">&quot;AUX_MAG&quot;</span><span class="p">,</span> <span class="s2">&quot;AUX_ELEC&quot;</span><span class="p">]</span>
@@ -245,12 +252,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_noise_budget_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_noise_budget_5_0.png" />
+</div>
+</div>
 </section>
 <section id="3.-結合関数の推定">
 <h2>3. 結合関数の推定<a class="headerlink" href="#3.-結合関数の推定" title="Link to this heading"></a></h2>
 <p>各帯域における漏れ込み係数（伝達関数）を推定します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tf_seis</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;AUX_SEIS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">],</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
@@ -273,11 +287,18 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_noise_budget_7_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_noise_budget_7_0.png" />
+</div>
+</div>
 </section>
 <section id="4.-ノイズ投影-(Noise-Projection)">
 <h2>4. ノイズ投影 (Noise Projection)<a class="headerlink" href="#4.-ノイズ投影-(Noise-Projection)" title="Link to this heading"></a></h2>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">main_ch</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s2">&quot;MAIN&quot;</span><span class="p">]</span>
@@ -296,12 +317,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_noise_budget_9_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_noise_budget_9_0.png" />
+</div>
+</div>
 </section>
 <section id="5.-ノイズ予算の可視化-(Noise-Budget-Plot)">
 <h2>5. ノイズ予算の可視化 (Noise Budget Plot)<a class="headerlink" href="#5.-ノイズ予算の可視化-(Noise-Budget-Plot)" title="Link to this heading"></a></h2>
 <p>「下に凸」のメインチャンネルのノイズが、どのように解説・分解されるかを表示します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
@@ -334,6 +362,13 @@
 
 <span class="c1"># 、 Noise 、Observation 「U 」 Sensitivity minutes 。</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_noise_budget_11_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_noise_budget_11_0.png" />
 </div>
 </div>
 </section>

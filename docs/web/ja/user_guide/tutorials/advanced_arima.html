@@ -122,7 +122,7 @@
 <h2>準備<a class="headerlink" href="#準備" title="Link to this heading"></a></h2>
 <p>必要なライブラリをインポートします。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -156,8 +156,8 @@
 <section id="サンプルデータの作成">
 <h2>サンプルデータの作成<a class="headerlink" href="#サンプルデータの作成" title="Link to this heading"></a></h2>
 <p>ARIMAモデルの効果を確認するために、トレンド、季節性（周期性）、ノイズを含んだ模擬データを作成します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Trend + Seasonality + Noise</span>
@@ -188,12 +188,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_3_0.png" />
+</div>
+</div>
 </section>
 <section id="1.-AR-(AutoRegressive)-モデル">
 <h2>1. AR (AutoRegressive) モデル<a class="headerlink" href="#1.-AR-(AutoRegressive)-モデル" title="Link to this heading"></a></h2>
 <p>ARモデルは、現在の値が過去の値に依存すると仮定するモデルです。 <code class="docutils literal notranslate"><span class="pre">ts.ar(p)</span></code> メソッドを使用します。<code class="docutils literal notranslate"><span class="pre">p</span></code> は次数です。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit with order p=3</span>
@@ -210,12 +217,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_5_0.png" />
+</div>
+</div>
 </section>
 <section id="2.-MA-(Moving-Average)-モデル">
 <h2>2. MA (Moving Average) モデル<a class="headerlink" href="#2.-MA-(Moving-Average)-モデル" title="Link to this heading"></a></h2>
 <p>MAモデルは、現在の値が過去の予測誤差（ホワイトノイズ）に依存すると仮定するモデルです。 <code class="docutils literal notranslate"><span class="pre">ts.ma(q)</span></code> メソッドを使用します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit with order q=3</span>
@@ -228,12 +242,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_7_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_7_0.png" />
+</div>
+</div>
 </section>
 <section id="3.-ARMA-(AutoRegressive-Moving-Average)-モデル">
 <h2>3. ARMA (AutoRegressive Moving Average) モデル<a class="headerlink" href="#3.-ARMA-(AutoRegressive-Moving-Average)-モデル" title="Link to this heading"></a></h2>
 <p>ARとMAを組み合わせたモデルです。 <code class="docutils literal notranslate"><span class="pre">ts.arma(p,</span> <span class="pre">q)</span></code> メソッドを使用します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit with p=2, q=2</span>
@@ -245,13 +266,20 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_9_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_9_0.png" />
+</div>
+</div>
 </section>
 <section id="4.-ARIMA-/-Auto-ARIMA">
 <h2>4. ARIMA / Auto-ARIMA<a class="headerlink" href="#4.-ARIMA-/-Auto-ARIMA" title="Link to this heading"></a></h2>
 <p>ARIMAモデルは、差分を取ることで非定常性（トレンドなど）を除去し、ARMAモデルを適用します。</p>
 <p><code class="docutils literal notranslate"><span class="pre">ts.arima()</span></code> メソッドを使用します。 <code class="docutils literal notranslate"><span class="pre">auto=True</span></code> オプションを指定すると、<code class="docutils literal notranslate"><span class="pre">pmdarima</span></code> ライブラリを使用して最適なパラメータ (p, d, q) を自動的に探索します。これが最も推奨される方法です。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -273,12 +301,54 @@
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Searching for optimal ARIMA parameters... (this may take a few seconds)
+                                      SARIMAX Results
+===========================================================================================
+Dep. Variable:                                   y   No. Observations:                  300
+Model:             SARIMAX(1, 1, 2)x(1, 0, [], 50)   Log Likelihood                -404.141
+Date:                             Thu, 26 Feb 2026   AIC                            820.282
+Time:                                     21:34:58   BIC                            842.485
+Sample:                                          0   HQIC                           829.169
+                                             - 300
+Covariance Type:                               opg
+==============================================================================
+                 coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+intercept      0.0044      0.006      0.695      0.487      -0.008       0.017
+ar.L1          0.8693      0.053     16.310      0.000       0.765       0.974
+ma.L1         -1.6277      0.052    -31.464      0.000      -1.729      -1.526
+ma.L2          0.7409      0.043     17.235      0.000       0.657       0.825
+ar.S.L50       0.1604      0.071      2.263      0.024       0.021       0.299
+sigma2         0.8667      0.070     12.431      0.000       0.730       1.003
+===================================================================================
+Ljung-Box (L1) (Q):                   0.13   Jarque-Bera (JB):                 0.69
+Prob(Q):                              0.71   Prob(JB):                         0.71
+Heteroskedasticity (H):               1.37   Skew:                            -0.10
+Prob(H) (two-sided):                  0.12   Kurtosis:                         3.14
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_11_1.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_11_1.png" />
+</div>
+</div>
 </section>
 <section id="5.-予測データの取得">
 <h2>5. 予測データの取得<a class="headerlink" href="#5.-予測データの取得" title="Link to this heading"></a></h2>
 <p>プロットだけでなく、<code class="docutils literal notranslate"><span class="pre">.forecast()</span></code> メソッドを使用して予測値の <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> オブジェクトを直接取得できます。 これには信頼区間（Confidence Interval）も含まれます。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;model_auto&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
@@ -302,6 +372,52 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Forecast Data:
+TimeSeries([ 9.02063095,  9.60946546, 10.04247608, 10.15366724,
+            10.05259678, 10.38953409, 10.79815095, 10.71027742,
+            11.00660771, 11.18205177, 11.08230487, 11.29883005,
+            10.98339795, 11.34916921, 11.51885662, 11.45196033,
+            11.87327376, 11.52379092, 11.68683663, 11.78939387,
+            11.98098394, 11.6301629 , 11.97773482, 11.84042886,
+            11.72116368, 11.91254849, 11.88390198, 11.78617506,
+            11.8774454 , 11.82552207, 11.89784228, 11.97900471,
+            12.11133126, 11.76628355, 12.22002271, 11.72134704,
+            11.98239983, 12.11216074, 12.11237757, 12.04095272,
+            12.1435007 , 12.16098299, 12.2071204 , 12.45443501,
+            12.45772066, 12.39288272, 12.67001284, 12.66918601,
+            12.8110433 , 12.8657357 ],
+           unit: V,
+           t0: 30.0 s,
+           dt: 0.1 s,
+           name: Sample Data_auto_forecast,
+           channel: None)
+
+Confidence Interval (Upper):
+TimeSeries([ 9.64857296, 10.25546653, 10.7195876 , 10.87456042,
+            10.82818582, 11.22844355, 11.7067511 , 11.69299174,
+            12.06629413, 12.32035964, 12.29997326, 12.59592369,
+            12.35948866, 12.80347361, 13.05033984, 13.05941406,
+            13.55537472, 13.27914473, 13.51401064, 13.68694154,
+            13.94746299, 13.66414849, 14.07782921, 14.0052681 ,
+            13.9494223 , 14.20294246, 14.23519045, 14.19716117,
+            14.34697639, 14.35248881, 14.48117848, 14.61768579,
+            14.80437308, 14.51274095, 15.01898802, 14.57194853,
+            14.88380013, 15.06355532, 15.11299318, 15.09004592,
+            15.24035641, 15.30491312, 15.39746251, 15.69055103,
+            15.73899569, 15.71872387, 16.03984813, 16.08246334,
+            16.26722947, 16.36431549],
+           unit: V,
+           t0: 30.0 s,
+           dt: 0.1 s,
+           name: upper_ci,
+           channel: None)
+</pre></div></div>
+</div>
 </section>
 <section id="6.-重力波データ解析における応用:-ARIMAによるノイズ除去-(Whitening)">
 <h2>6. 重力波データ解析における応用: ARIMAによるノイズ除去 (Whitening)<a class="headerlink" href="#6.-重力波データ解析における応用:-ARIMAによるノイズ除去-(Whitening)" title="Link to this heading"></a></h2>
@@ -309,8 +425,8 @@
 <section id="Step-1:-有色ノイズの生成と信号の注入">
 <h3>Step 1: 有色ノイズの生成と信号の注入<a class="headerlink" href="#Step-1:-有色ノイズの生成と信号の注入" title="Link to this heading"></a></h3>
 <p>まず、低周波成分が強い有色ノイズ（AR(1)プロセス）を作成し、そこにそのままでは判別しにくい微弱な信号（サインガウシアン）を埋め込みます。 ※単位には Astropy で認識可能な “strain” を使用します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -355,12 +471,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_16_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_16_0.png" />
+</div>
+</div>
 </section>
 <section id="Step-2:-ARIMAによるノイズモデリング">
 <h3>Step 2: ARIMAによるノイズモデリング<a class="headerlink" href="#Step-2:-ARIMAによるノイズモデリング" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">auto=True</span></code> を使って、背景ノイズの自己相関構造を表現する最適なモデルを探索します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Searching for optimal noise model parameters...&quot;</span><span class="p">)</span>
@@ -371,12 +494,49 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Searching for optimal noise model parameters...
+Best model order: (5, 1, 0)
+                               SARIMAX Results
+==============================================================================
+Dep. Variable:                      y   No. Observations:                10240
+Model:               SARIMAX(5, 1, 0)   Log Likelihood              -14694.968
+Date:                Thu, 26 Feb 2026   AIC                          29403.936
+Time:                        21:35:06   BIC                          29454.574
+Sample:                             0   HQIC                         29421.057
+                              - 10240
+Covariance Type:                  opg
+==============================================================================
+                 coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+intercept     -0.0003      0.010     -0.033      0.973      -0.020       0.019
+ar.L1         -0.0379      0.010     -3.794      0.000      -0.057      -0.018
+ar.L2         -0.0413      0.010     -4.150      0.000      -0.061      -0.022
+ar.L3         -0.0271      0.010     -2.692      0.007      -0.047      -0.007
+ar.L4         -0.0303      0.010     -3.078      0.002      -0.050      -0.011
+ar.L5         -0.0216      0.010     -2.195      0.028      -0.041      -0.002
+sigma2         1.0330      0.014     72.089      0.000       1.005       1.061
+===================================================================================
+Ljung-Box (L1) (Q):                   0.01   Jarque-Bera (JB):                 0.54
+Prob(Q):                              0.94   Prob(JB):                         0.76
+Heteroskedasticity (H):               1.03   Skew:                             0.01
+Prob(H) (two-sided):                  0.35   Kurtosis:                         3.03
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+</pre></div></div>
+</div>
 </section>
 <section id="Step-3:-残差（Residuals）の抽出と可視化">
 <h3>Step 3: 残差（Residuals）の抽出と可視化<a class="headerlink" href="#Step-3:-残差（Residuals）の抽出と可視化" title="Link to this heading"></a></h3>
 <p>モデルが予測した「定常ノイズ」を引くことで、残差 <span class="math notranslate nohighlight">\(x_r = x - \hat{x}\)</span> を求めます。これが白色化されたデータとなります。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts_whitened</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">residuals</span><span class="p">()</span>
@@ -398,12 +558,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_20_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_20_0.png" />
+</div>
+</div>
 </section>
 <section id="Step-4:-周波数領域での評価">
 <h3>Step 4: 周波数領域での評価<a class="headerlink" href="#Step-4:-周波数領域での評価" title="Link to this heading"></a></h3>
 <p>パワースペクトル密度 (PSD) を計算して比較します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fft_original</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">psd</span><span class="p">()</span>
@@ -429,6 +596,13 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_22_0.png" src="../../../../_images/web_ja_user_guide_tutorials_advanced_arima_22_0.png" />
 </div>
 </div>
 </section>

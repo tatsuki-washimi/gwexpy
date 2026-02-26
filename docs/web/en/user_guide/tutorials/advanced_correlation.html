@@ -201,7 +201,7 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;gwexpy.plot.pairplot.PairPlot at 0x7c7728f4e690&gt;
+&lt;gwexpy.plot.pairplot.PairPlot at 0x776f0d9dfa40&gt;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -222,16 +222,24 @@
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Correlation A vs B (linear):
   Pearson: 0.985
-  Kendall: 0.892
-  MIC:     (minepy not available)
+  Kendall: 0.893
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>**Note**:   MIC:     (minepy not available)
+</pre></div>
+</div>
+</div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -251,7 +259,7 @@ Correlation A vs B (linear):
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -259,8 +267,16 @@ Correlation A vs B (linear):
 Correlation A vs C (nonlinear sine wave):
   Pearson: -0.071 (linear correlation cannot capture structure)
   Kendall: -0.053
-  MIC:     (minepy not available)
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>**Note**:   MIC:     (minepy not available)
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="Correlation-Vector-(Noise-Hunting)">
@@ -310,19 +326,22 @@ Correlation A vs C (nonlinear sine wave):
 <br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Computing MIC vector (Top 5)...
-   row  col channel  score
-0    0    0  AUX-00    NaN
-1    1    0  AUX-01    NaN
-2    2    0  AUX-02    NaN
-3    3    0  AUX-03    NaN
-4    4    0  AUX-04    NaN
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>**Note**: Skipping MIC example because minepy is not installed.
+</pre></div>
+</div>
+</div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
@@ -341,11 +360,11 @@ Computing MIC vector (Top 5)...
 <div class="highlight"><pre>
 Computing Pearson vector (Top 5)...
    row  col channel     score
-0    5    0  AUX-05  0.953862
-1   10    0  AUX-10 -0.067360
-2    0    0  AUX-00 -0.058662
-3    2    0  AUX-02 -0.056880
-4   13    0  AUX-13 -0.054595
+0    5    0  AUX-05  0.953106
+1    9    0  AUX-09  0.066285
+2    4    0  AUX-04 -0.060133
+3    7    0  AUX-07 -0.038820
+4   18    0  AUX-18  0.028035
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -375,7 +394,7 @@ Computing Pearson vector (Top 5)...
 <section id="Partial-Correlation-(Confound-Control)">
 <h2>Partial Correlation (Confound Control)<a class="headerlink" href="#Partial-Correlation-(Confound-Control)" title="Link to this heading"></a></h2>
 <p>Partial correlation estimates direct coupling by removing shared confounds.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
@@ -398,11 +417,20 @@ Computing Pearson vector (Top 5)...
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+corr(x,y): 0.9809075921667307
+partial corr(x,y|z): 0.004410452860247931
+</pre></div></div>
+</div>
 </section>
 <section id="Association-Edges-and-Graphs">
 <h2>Association Edges and Graphs<a class="headerlink" href="#Association-Edges-and-Graphs" title="Link to this heading"></a></h2>
 <p>Use a target TimeSeries against a TimeSeriesMatrix to build edges.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
@@ -427,10 +455,27 @@ Computing Pearson vector (Top 5)...
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Association edges:
+    row  col channel     score source target
+0    0    0       x  1.000000      x      x
+1    2    0       z  0.989968      x      z
+2    1    0       y  0.980908      x      y
+Partial correlation matrix:
+ [[1.         0.1216813  0.6444092 ]
+ [0.1216813  1.         0.67131295]
+ [0.6444092  0.67131295 1.        ]]
+Graph built successfully.
+</pre></div></div>
+</div>
 <section id="Visualization:-Edge-Ranking-and-Partial-Corr-Heatmap">
 <h3>Visualization: Edge Ranking and Partial-Corr Heatmap<a class="headerlink" href="#Visualization:-Edge-Ranking-and-Partial-Corr-Heatmap" title="Link to this heading"></a></h3>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -453,6 +498,20 @@ Computing Pearson vector (Top 5)...
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_correlation_17_0.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_correlation_17_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_correlation_17_1.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_correlation_17_1.png" />
+</div>
+</div>
 </section>
 </section>
 <section id="FastMI-(Experimental)">
@@ -469,8 +528,8 @@ Computing Pearson vector (Top 5)...
 </ul>
 </li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># fastMI (copula/probit + FFT-based MI estimator)</span>
@@ -480,12 +539,21 @@ Computing Pearson vector (Top 5)...
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+fastMI(x,y): 0.08925170168547956
+fastMI(x,z): 0.11320579203180094
+</pre></div></div>
+</div>
 </section>
 <section id="CAGMon-style-Association-Graph-(Minimal)">
 <h2>CAGMon-style Association Graph (Minimal)<a class="headerlink" href="#CAGMon-style-Association-Graph-(Minimal)" title="Link to this heading"></a></h2>
 <p>Use the edge list and optionally build a graph for visualization.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># If networkx is available, you can visualize the association graph</span>
@@ -502,6 +570,13 @@ Computing Pearson vector (Top 5)...
 <br/></pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_correlation_21_0.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_correlation_21_0.png" />
+</div>
+</div>
 </section>
 </section>
 <section id="Advanced-Statistics">
@@ -516,7 +591,7 @@ Computing Pearson vector (Top 5)...
 <section id="Detecting-Non-Gaussian-Noise-(Skewness-/-Kurtosis)">
 <h2>Detecting Non-Gaussian Noise (Skewness / Kurtosis)<a class="headerlink" href="#Detecting-Non-Gaussian-Noise-(Skewness-/-Kurtosis)" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate Gaussian noise and non-Gaussian noise (exponential distribution)</span>
@@ -565,7 +640,7 @@ Note: Gaussian distributions have Skewness~0, Kurtosis~0 (Fisher definition).
 <h2>Detecting Nonlinear Dependency (Distance Correlation)<a class="headerlink" href="#Detecting-Nonlinear-Dependency-(Distance-Correlation)" title="Link to this heading"></a></h2>
 <p>Let’s examine the relationship between the sine wave data (<code class="docutils literal notranslate"><span class="pre">ts_c</span></code>) and linear data (<code class="docutils literal notranslate"><span class="pre">ts_a</span></code>) using dCor. We can detect relationships that Pearson correlation cannot capture.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
@@ -595,7 +670,7 @@ Pearson Correlation  (A vs C): -0.071
 <h2>Estimating Causality (Granger Causality)<a class="headerlink" href="#Estimating-Causality-(Granger-Causality)" title="Link to this heading"></a></h2>
 <p>Tests whether past values of one time series help predict future values of another time series.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate data with causal relationship (X -&gt; Y)</span>
@@ -634,7 +709,7 @@ Pearson Correlation  (A vs C): -0.071
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -643,21 +718,12 @@ Granger Causality X -&gt; Y (p-value): 0.0000 (Significant)
 Granger Causality Y -&gt; X (p-value): 0.0907
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-&lt;python-env&gt;/site-packages/statsmodels/tsa/stattools.py:1556: FutureWarning: verbose is deprecated since functions should not print results
-  warnings.warn(
-</pre></div></div>
-</div>
 </section>
 <section id="Fast-Mutual-Information-(fastmi)">
 <h2>Fast Mutual Information (fastmi)<a class="headerlink" href="#Fast-Mutual-Information-(fastmi)" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">fastmi</span></code> is a fast mutual-information (MI) estimator based on a copula formulation, a probit transform, and an FFT-based density estimate. It captures complex nonlinear dependencies that Pearson correlation might miss.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mi_xy</span> <span class="o">=</span> <span class="n">ts_x</span><span class="o">.</span><span class="n">fastmi</span><span class="p">(</span><span class="n">ts_y</span><span class="p">,</span> <span class="n">grid_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
@@ -667,6 +733,24 @@ Granger Causality Y -&gt; X (p-value): 0.0907
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mutual Information (x, z): </span><span class="si">{</span><span class="n">mi_xz</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> nats&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Mutual Information (x, y): 0.0195 nats
+Mutual Information (x, z): 0.0000 nats
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/washimi/work/gwexpy/gwexpy/timeseries/_statistics.py:263: UserWarning: Sample rates do not match. Resampling &#39;other&#39; to match &#39;self&#39;.
+  warnings.warn(
+</pre></div></div>
 </div>
 </section>
 </section>

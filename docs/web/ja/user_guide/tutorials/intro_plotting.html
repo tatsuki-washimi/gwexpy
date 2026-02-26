@@ -119,7 +119,7 @@
 <p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_plotting.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の強化されたプロット機能を紹介します。 <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> や <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> などの行列データ構造、および <code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> などのコレクションに対する、「いい感じ」のデフォルト設定（figsize自動調整、対数軸、レイアウト、軸ラベル）についてデモを行います。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -147,8 +147,8 @@
 <li><p><strong>Auto-GPS</strong>: 時間軸の場合、デフォルトで <code class="docutils literal notranslate"><span class="pre">auto-gps</span></code> スケールが適用され、GPS時刻（大きなオフセット）が適切に処理されます。</p></li>
 <li><p><strong>レイアウト</strong>: 行・列の構造に合わせて <code class="docutils literal notranslate"><span class="pre">figsize</span></code> が自動調整されます。</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 2x2 TimeSeriesMatrix Create</span>
@@ -172,6 +172,13 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_3_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_3_0.png" />
+</div>
+</div>
 </section>
 <section id="2.-FrequencySeriesMatrix-Plotting">
 <h2>2. FrequencySeriesMatrix Plotting<a class="headerlink" href="#2.-FrequencySeriesMatrix-Plotting" title="Link to this heading"></a></h2>
@@ -180,8 +187,8 @@
 <li><p><strong>対数軸</strong>: データサイズ等の条件に応じて、X軸（周波数）やY軸（振幅）が自動的に対数スケールになります。</p></li>
 <li><p><strong>軸ラベル</strong>: “Frequency [Hz]” や “[unit]” が自動設定されます。</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FrequencySeriesMatrix Create</span>
@@ -210,12 +217,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_5_0.png" />
+</div>
+</div>
 </section>
 <section id="3.-FrequencySeriesList-Plotting-(参考)">
 <h2>3. FrequencySeriesList Plotting (参考)<a class="headerlink" href="#3.-FrequencySeriesList-Plotting-(参考)" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code> (または Dict) は、グリッド構造を持たない単純なリストです。 これも同様にプロット可能です。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FrequencySeriesList Create</span>
@@ -228,8 +242,15 @@
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_7_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_7_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">del</span> <span class="n">times</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">tsm</span><span class="p">,</span> <span class="n">fsm</span><span class="p">,</span> <span class="n">fs1</span><span class="p">,</span> <span class="n">fs2</span><span class="p">,</span> <span class="n">fs_list</span>
@@ -240,12 +261,21 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+18018
+</pre></div></div>
+</div>
 </section>
 <section id="4.-SpectrogramList-Plotting">
 <h2>4. SpectrogramList Plotting<a class="headerlink" href="#4.-SpectrogramList-Plotting" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">SpectrogramList</span></code> のプロットは、デフォルトで <code class="docutils literal notranslate"><span class="pre">geometry=(N,</span> <span class="pre">1)</span></code> の縦並びレイアウト、対数カラーバーなどが適用されます。 スペクトログラムも時間軸を持つため、GPS時刻を与えると <code class="docutils literal notranslate"><span class="pre">auto-gps</span></code> が機能します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Spectrogram Create</span>
@@ -272,6 +302,13 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_10_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_10_0.png" />
+</div>
+</div>
 </section>
 <section id="4.-Adaptive-Plotting-Optimization-(Decimation)">
 <h2>4. Adaptive Plotting Optimization (Decimation)<a class="headerlink" href="#4.-Adaptive-Plotting-Optimization-(Decimation)" title="Link to this heading"></a></h2>
@@ -281,8 +318,8 @@
 <li><p><strong>ピーク維持</strong>: Min-Max アルゴリズムにより、波形のエンベロープ（最大・最小）を保持したままデータ点を削減（デフォルト 約10,000点）します。</p></li>
 <li><p><strong>カスタマイズ</strong>: <code class="docutils literal notranslate"><span class="pre">decimate_threshold</span></code> や <code class="docutils literal notranslate"><span class="pre">decimate_points</span></code> 引数で制御可能です。</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 100,000,000 Sample Data Generate</span>
@@ -301,11 +338,27 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original samples: 100000000
+Plotted points: 10000
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_12_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_12_1.png" />
+</div>
+</div>
 <section id="コレクション・行列への適用とパラメータ指定">
 <h3>コレクション・行列への適用とパラメータ指定<a class="headerlink" href="#コレクション・行列への適用とパラメータ指定" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">TimeSeriesList</span></code> や <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> でも透過的に機能します。また、閾値を下げて強制的に適用させることも可能です。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Threshold 10,000 、Plotpoints 2,000 do</span>
@@ -319,6 +372,21 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original: 20000, Plotted: 2000
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_14_1.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_14_1.png" />
+</div>
+</div>
 </section>
 </section>
 <section id="5.-Spectrogram-Summary-Plotting">
@@ -328,8 +396,8 @@
 <li><p><strong>自動同期</strong>: スペクトログラムのカラー軸と FrequencySeries の縦軸が自動的に同期します。</p></li>
 <li><p><strong>MMMプロット</strong>: <code class="docutils literal notranslate"><span class="pre">plot_mmm</span></code> を用いて、Min/Median/Max（または任意のパーセンタイル）を塗りつぶし付きで表示します。</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrogramDict</span>
@@ -350,6 +418,13 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_16_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_16_0.png" />
+</div>
+</div>
 </section>
 <section id="6.-PairPlot-Example">
 <h2>6. PairPlot Example<a class="headerlink" href="#6.-PairPlot-Example" title="Link to this heading"></a></h2>
@@ -360,8 +435,8 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">corner=True</span></code>（デフォルト）により左下三角だけが描画されます</p></li>
 </ul>
 <p>実行すると、対角にヒストグラム、非対角に 2D ヒストグラムが表示されます。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -380,6 +455,22 @@
 <span class="n">pair</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_18_0.png" src="../../../../_images/web_ja_user_guide_tutorials_intro_plotting_18_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;gwexpy.plot.pairplot.PairPlot at 0x7ed1287c7080&gt;
+</pre></div></div>
 </div>
 </section>
 </section>

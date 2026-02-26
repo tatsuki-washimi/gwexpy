@@ -128,7 +128,7 @@
 </div>
 <p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_hht.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">u</span>
@@ -188,7 +188,7 @@ PyEMD is installed and ready.
 <div class="math notranslate nohighlight">
 \[h(t) = A \exp\left( - \left( \frac{2\pi (t - t_0)}{t_{\text{width}}} \right)^2 \right) \sin(2\pi f_0 t)\]</div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -248,8 +248,8 @@ PyEMD is installed and ready.
 <h2>3. Comparative Analysis: STFT vs HHT<a class="headerlink" href="#3.-Comparative-Analysis:-STFT-vs-HHT" title="Link to this heading"></a></h2>
 <p>We apply STFT (spectrogram) and HHT (Hilbert spectrum) to the same signal and compare their resolution differences.</p>
 <p><strong>Note</strong>: In the following results, STFT may appear more robust to noise and the signal may look cleaner. This is because standard EMD is susceptible to noise and causes “mode mixing.” This problem is dramatically improved by using <strong>EEMD</strong>, which we will introduce in the next section, but let’s first check the basic behavior of HHT.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- 1. STFT (Spectrogram) using gwexpy API ---</span>
@@ -347,6 +347,21 @@ PyEMD is installed and ready.
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Extracted 8 IMFs from normalized data.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_advanced_hht_6_1.png" src="../../../../_images/web_en_user_guide_tutorials_advanced_hht_6_1.png" />
+</div>
+</div>
 </section>
 <section id="4.-Application:-Mode-Extraction-and-Parameter-Estimation-with-EEMD">
 <h2>4. Application: Mode Extraction and Parameter Estimation with EEMD<a class="headerlink" href="#4.-Application:-Mode-Extraction-and-Parameter-Estimation-with-EEMD" title="Link to this heading"></a></h2>
@@ -358,7 +373,7 @@ PyEMD is installed and ready.
 </div></blockquote>
 <p>The following code is an example of running EEMD using gwexpy’s <code class="docutils literal notranslate"><span class="pre">TimeSeries.hht()</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run EEMD (gwexpy API)</span>
@@ -409,7 +424,7 @@ PyEMD is installed and ready.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Running EEMD on normalized data...
+Running EEMD on normalized data via TimeSeries.hht()...
 EEMD completed. Extracted 9 IMFs.
 </pre></div></div>
 </div>

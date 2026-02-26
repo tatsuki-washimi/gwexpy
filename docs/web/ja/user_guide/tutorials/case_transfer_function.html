@@ -124,7 +124,7 @@
 <li><p><strong>モデルフィッティング</strong>: 推定した伝達関数に理論モデル（ローレンツ関数など）を当てはめ、パラメータを推定します。</p></li>
 </ol>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -150,8 +150,8 @@
 <li><p><strong>測定</strong>: サンプリング周波数 2048 Hz, 継続時間 60秒</p></li>
 </ul>
 <p>出力信号には、測定に伴うノイズも付加します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Set ---</span>
@@ -190,13 +190,29 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Input data shape: (122880,)
+Output data shape: (122880,)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_transfer_function_3_1.png" src="../../../../_images/web_ja_user_guide_tutorials_case_transfer_function_3_1.png" />
+</div>
+</div>
 </section>
 <section id="2.-伝達関数の推定">
 <h2>2. 伝達関数の推定<a class="headerlink" href="#2.-伝達関数の推定" title="Link to this heading"></a></h2>
 <p>入出力の時系列データ <code class="docutils literal notranslate"><span class="pre">ts_input</span></code> と <code class="docutils literal notranslate"><span class="pre">ts_output</span></code> から、周波数応答関数（伝達関数）を推定します。 <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">transfer_function</span></code> メソッドを使用します。</p>
 <p>また、測定の信頼性を確認するために<strong>コヒーレンス（Coherence）</strong>も計算します。 コヒーレンスが 1 に近い周波数帯域は、入出力の関係が線形であり、ノイズの影響が少ないことを示します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FFTSet: Mean Data Length</span>
@@ -240,6 +256,13 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_transfer_function_5_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_transfer_function_5_0.png" />
+</div>
+</div>
 </section>
 <section id="3.-モデルフィッティング">
 <h2>3. モデルフィッティング<a class="headerlink" href="#3.-モデルフィッティング" title="Link to this heading"></a></h2>
@@ -247,8 +270,8 @@
 <p>モデル式（ゲイン <span class="math notranslate nohighlight">\(A\)</span> を含む）:</p>
 <div class="math notranslate nohighlight">
 \[H(f) = A \cdot \frac{f_0^2}{f_0^2 - f^2 + i (f f_0 / Q)}\]</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Function Define ---</span>
@@ -279,12 +302,45 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                Migrad                                   │
+├──────────────────────────────────┬──────────────────────────────────────┤
+│ FCN = 6.175 (χ²/ndof = 0.0)      │              Nfcn = 118              │
+│ EDM = 4.72e-06 (Goal: 0.0002)    │                                      │
+├──────────────────────────────────┼──────────────────────────────────────┤
+│          Valid Minimum           │   Below EDM threshold (goal x 10)    │
+├──────────────────────────────────┼──────────────────────────────────────┤
+│      No parameters at limit      │           Below call limit           │
+├──────────────────────────────────┼──────────────────────────────────────┤
+│             Hesse ok             │         Covariance accurate          │
+└──────────────────────────────────┴──────────────────────────────────────┘
+┌───┬──────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐
+│   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
+├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
+│ 0 │ amp  │   0.934   │   0.007   │            │            │         │         │       │
+│ 1 │ f0   │  299.994  │   0.021   │            │            │         │         │       │
+│ 2 │ Q    │   49.6    │    0.5    │            │            │         │         │       │
+└───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
+┌─────┬────────────────────────────┐
+│     │      amp       f0        Q │
+├─────┼────────────────────────────┤
+│ amp │ 4.33e-05        0 -2.30e-3 │
+│  f0 │        0 0.000447  -0.1e-3 │
+│   Q │ -2.30e-3  -0.1e-3    0.243 │
+└─────┴────────────────────────────┘
+</pre></div></div>
+</div>
 </section>
 <section id="4.-結果の確認">
 <h2>4. 結果の確認<a class="headerlink" href="#4.-結果の確認" title="Link to this heading"></a></h2>
 <p>フィッティング結果を数値で確認し、測定データに重ねてプロットします。 <code class="docutils literal notranslate"><span class="pre">FitResult.plot()</span></code> メソッドは、複素数データの場合、自動的にボード線図（振幅・位相）を描画します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Result Display ---</span>
@@ -298,6 +354,24 @@
 <span class="n">axes</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+--- Estimated Parameters ---
+Resonance Frequency (f0): 299.9943 Hz (True: 300.0)
+Quality Factor (Q): 49.6456 (True: 50.0)
+Gain (Amp): 0.9340
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_transfer_function_9_1.png" src="../../../../_images/web_ja_user_guide_tutorials_case_transfer_function_9_1.png" />
 </div>
 </div>
 </section>

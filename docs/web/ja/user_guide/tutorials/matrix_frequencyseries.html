@@ -127,7 +127,7 @@
 </ul>
 <p>このノートブックでは追加のユーティリティ関数は定義せず、クラスメソッドを直接呼び出して動作を確認します。</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -144,8 +144,8 @@
 <section id="代表データを用意">
 <h2>代表データを用意<a class="headerlink" href="#代表データを用意" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> から <code class="docutils literal notranslate"><span class="pre">fft/asd</span></code> を計算して、<code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> を得ます。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -195,12 +195,139 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+tsm (2, 2, 1024) sample_rate 256.0 Hz
+fft (2, 2, 513) df 0.25 Hz f0 0.0 Hz
+asd (2, 2, 129) unit V / Hz(1/2)
+frequencies[:5] [0. 1. 2. 3. 4.] Hz
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<h3>SeriesMatrix: shape=(2, 2, 129), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 0.0 Hz, <b>dx:</b> 1.0 Hz, <b>N_samples:</b> 129</li><li><b>xunit:</b> Hz</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>r0</th>
+      <td>row0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>r1</th>
+      <td>row1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Column Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>c0</th>
+      <td>col0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>c1</th>
+      <td>col1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Element Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>unit</th>
+      <th>name</th>
+      <th>channel</th>
+      <th>row</th>
+      <th>col</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch00</td>
+      <td>X:A</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch01</td>
+      <td>X:B</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch10</td>
+      <td>Y:A</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch11</td>
+      <td>Y:B</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_3_2.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_3_2.png" />
+</div>
+</div>
 </section>
 <section id="多様な入力パターン（コンストラクタ例）">
 <h2>多様な入力パターン（コンストラクタ例）<a class="headerlink" href="#多様な入力パターン（コンストラクタ例）" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">df/f0</span></code>、<code class="docutils literal notranslate"><span class="pre">frequencies</span></code>、<code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> の 2D リスト、<code class="docutils literal notranslate"><span class="pre">Quantity</span></code> 入力などを確認します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== FrequencySeriesMatrix ===&quot;</span><span class="p">)</span>
@@ -274,6 +401,19 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+=== FrequencySeriesMatrix ===
+case1 frequencies (2, 2, 65) df 1.0 Hz f0 0.0 Hz
+case2 df/f0 (2, 2, 65) df 1.0 Hz
+case3 from FrequencySeries (2, 2, 65) cell type &lt;class &#39;gwexpy.frequencyseries.frequencyseries.FrequencySeries&#39;&gt;
+case4 Quantity meta unit mV / Hz(1/2)
+case5 irregular frequencies [0. 1. 2. 4. 8.] Hz
+</pre></div></div>
+</div>
 </section>
 <section id="参照・切り出し">
 <h2>参照・切り出し<a class="headerlink" href="#参照・切り出し" title="Link to this heading"></a></h2>
@@ -282,8 +422,8 @@
 <li><p>スライスは <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> を返す</p></li>
 <li><p>row/col ラベルでもアクセスできる</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">s00</span> <span class="o">=</span> <span class="n">asd</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
@@ -302,14 +442,39 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0,0] type &lt;class &#39;gwexpy.frequencyseries.frequencyseries.FrequencySeries&#39;&gt; df 1.0 Hz f0 0.0 Hz unit V / Hz(1/2)
+[0,0] name ch00 channel X:A
+[r0,c1] name ch01 channel X:B
+asd[:,0] -&gt; &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 1, 129)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_7_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_7_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_7_2.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_7_2.png" />
+</div>
+</div>
 </section>
 <section id="サンプル軸編集（frequency-axis）">
 <h2>サンプル軸編集（frequency axis）<a class="headerlink" href="#サンプル軸編集（frequency-axis）" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">diff</span></code> / <code class="docutils literal notranslate"><span class="pre">pad</span></code> は <code class="docutils literal notranslate"><span class="pre">FrequencySeriesMatrix</span></code> を返す</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">band</span> <span class="o">=</span> <span class="n">asd</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">40</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">)</span>
@@ -326,6 +491,23 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+band &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 35) span (&lt;Quantity 5. Hz&gt;, &lt;Quantity 40. Hz&gt;)
+diffed &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 34) df 1.0 Hz
+padded &lt;class &#39;gwexpy.frequencyseries.matrix.FrequencySeriesMatrix&#39;&gt; (2, 2, 45) f0 0.0 Hz
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_9_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_9_1.png" />
+</div>
+</div>
 </section>
 <section id="演算（ufunc-/-apply_response）">
 <h2>演算（ufunc / apply_response）<a class="headerlink" href="#演算（ufunc-/-apply_response）" title="Link to this heading"></a></h2>
@@ -333,8 +515,8 @@
 <li><p>係数倍などの ufunc では unit が保たれる</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">apply_response</span></code> は複素/実の周波数応答（dimensionless）を掛け合わせる拡張メソッド</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scaled</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">band</span>
@@ -358,13 +540,29 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+scaled unit V / Hz(1/2)
+apply_response (2, 2, 35) dtype float64 unit V / Hz(1/2)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_11_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_11_1.png" />
+</div>
+</div>
 </section>
 <section id="filter（magnitude-only）">
 <h2>filter（magnitude-only）<a class="headerlink" href="#filter（magnitude-only）" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">filter</span></code> は GWpy の <code class="docutils literal notranslate"><span class="pre">fdfilter</span></code> に委譲し、フィルタの「振幅応答（magnitude）」を適用します（位相は適用しません）。</p>
 <p>ここでは例として、<code class="docutils literal notranslate"><span class="pre">scipy.signal.butter</span></code> で作った IIR フィルタを <code class="docutils literal notranslate"><span class="pre">fft</span></code> に適用してから <code class="docutils literal notranslate"><span class="pre">ifft()</span></code> で時間領域に戻します。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
@@ -382,12 +580,28 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+fft_filt (2, 2, 513) df 0.25 Hz
+tsm_filt (2, 2, 1024) dt 0.00390625 s
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_13_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_13_1.png" />
+</div>
+</div>
 </section>
 <section id="ifft（FFT-から時間領域へ）">
 <h2>ifft（FFT から時間領域へ）<a class="headerlink" href="#ifft（FFT-から時間領域へ）" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.fft()</span></code> の出力に対して <code class="docutils literal notranslate"><span class="pre">ifft()</span></code> を適用すると、元の <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> が再現されます（数値誤差の範囲）。</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tsm_back</span> <span class="o">=</span> <span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">()</span>
@@ -400,6 +614,29 @@
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ifft back (2, 2, 1024) dt 0.00390625 s t0 0.0 s
+rms error (cell 0,0) 8.131556499372449e-17
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_15_1.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_15_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_15_2.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_15_2.png" />
+</div>
+</div>
 </section>
 <section id="表示系:-repr-/-plot-/-step">
 <h2>表示系: repr / plot / step<a class="headerlink" href="#表示系:-repr-/-plot-/-step" title="Link to this heading"></a></h2>
@@ -408,8 +645,8 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">_repr_html_</span></code>: ノートブックでは <code class="docutils literal notranslate"><span class="pre">display(fsm)</span></code> で表形式</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">plot</span></code> / <code class="docutils literal notranslate"><span class="pre">step</span></code>: クラスメソッドで直接描画（保存はしない）</p></li>
 </ul>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;repr:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">band</span><span class="p">)</span>
@@ -423,6 +660,162 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+repr:
+ SeriesMatrix(shape=(2, 2, 35),  name=&#39;demo&#39;)
+  epoch   : 0.0 s
+  x0      : 5.0 Hz
+  dx      : 1.0 Hz
+  xunit   : Hz
+  samples : 35
+
+[ Row metadata ]
+     name channel unit
+key
+r0   row0
+r1   row1
+
+[ Column metadata ]
+     name channel unit
+key
+c0   col0
+c1   col1
+
+[ Elements metadata ]
+          unit  name channel  row  col
+0  V / Hz(1/2)  ch00     X:A    0    0
+1  V / Hz(1/2)  ch01     X:B    0    1
+2  V / Hz(1/2)  ch10     Y:A    1    0
+3  V / Hz(1/2)  ch11     Y:B    1    1
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<h3>SeriesMatrix: shape=(2, 2, 35), name='demo'</h3><ul><li><b>epoch:</b> 0.0 s</li><li><b>x0:</b> 5.0 Hz, <b>dx:</b> 1.0 Hz, <b>N_samples:</b> 35</li><li><b>xunit:</b> Hz</li></ul><h4>Row Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>r0</th>
+      <td>row0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>r1</th>
+      <td>row1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Column Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>channel</th>
+      <th>unit</th>
+    </tr>
+    <tr>
+      <th>key</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>c0</th>
+      <td>col0</td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>c1</th>
+      <td>col1</td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table><h4>Element Metadata</h4><table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>unit</th>
+      <th>name</th>
+      <th>channel</th>
+      <th>row</th>
+      <th>col</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch00</td>
+      <td>X:A</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch01</td>
+      <td>X:B</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch10</td>
+      <td>Y:A</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>V / Hz(1/2)</td>
+      <td>ch11</td>
+      <td>Y:B</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_17_2.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_17_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_17_3.png" src="../../../../_images/web_ja_user_guide_tutorials_matrix_frequencyseries_17_3.png" />
 </div>
 </div>
 </section>

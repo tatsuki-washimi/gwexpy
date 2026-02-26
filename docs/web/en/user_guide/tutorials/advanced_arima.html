@@ -299,8 +299,8 @@ Searching for optimal ARIMA parameters... (this may take a few seconds)
 ===========================================================================================
 Dep. Variable:                                   y   No. Observations:                  300
 Model:             SARIMAX(1, 1, 2)x(1, 0, [], 50)   Log Likelihood                -404.141
-Date:                             Sun, 25 Jan 2026   AIC                            820.282
-Time:                                     20:52:05   BIC                            842.485
+Date:                             Thu, 26 Feb 2026   AIC                            820.282
+Time:                                     20:48:31   BIC                            842.485
 Sample:                                          0   HQIC                           829.169
                                              - 300
 Covariance Type:                               opg
@@ -335,8 +335,8 @@ Warnings:
 <section id="5.-Obtaining-Forecast-Data">
 <h2>5. Obtaining Forecast Data<a class="headerlink" href="#5.-Obtaining-Forecast-Data" title="Link to this heading"></a></h2>
 <p>Beyond plotting, you can directly obtain forecast values as a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object using the <code class="docutils literal notranslate"><span class="pre">.forecast()</span></code> method. This also includes confidence intervals.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;model_auto&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">():</span>
@@ -359,6 +359,52 @@ Warnings:
     <span class="c1"># forecast_ts.write(&quot;forecast.h5&quot;)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Forecast Data:
+TimeSeries([ 9.02063095,  9.60946546, 10.04247608, 10.15366724,
+            10.05259678, 10.38953409, 10.79815095, 10.71027742,
+            11.00660771, 11.18205177, 11.08230487, 11.29883005,
+            10.98339795, 11.34916921, 11.51885662, 11.45196033,
+            11.87327376, 11.52379092, 11.68683663, 11.78939387,
+            11.98098394, 11.6301629 , 11.97773482, 11.84042886,
+            11.72116368, 11.91254849, 11.88390198, 11.78617506,
+            11.8774454 , 11.82552207, 11.89784228, 11.97900471,
+            12.11133126, 11.76628355, 12.22002271, 11.72134704,
+            11.98239983, 12.11216074, 12.11237757, 12.04095272,
+            12.1435007 , 12.16098299, 12.2071204 , 12.45443501,
+            12.45772066, 12.39288272, 12.67001284, 12.66918601,
+            12.8110433 , 12.8657357 ],
+           unit: V,
+           t0: 30.0 s,
+           dt: 0.1 s,
+           name: Sample Data_auto_forecast,
+           channel: None)
+
+Confidence Interval (Upper):
+TimeSeries([ 9.64857296, 10.25546653, 10.7195876 , 10.87456042,
+            10.82818582, 11.22844355, 11.7067511 , 11.69299174,
+            12.06629413, 12.32035964, 12.29997326, 12.59592369,
+            12.35948866, 12.80347361, 13.05033984, 13.05941406,
+            13.55537472, 13.27914473, 13.51401064, 13.68694154,
+            13.94746299, 13.66414849, 14.07782921, 14.0052681 ,
+            13.9494223 , 14.20294246, 14.23519045, 14.19716117,
+            14.34697639, 14.35248881, 14.48117848, 14.61768579,
+            14.80437308, 14.51274095, 15.01898802, 14.57194853,
+            14.88380013, 15.06355532, 15.11299318, 15.09004592,
+            15.24035641, 15.30491312, 15.39746251, 15.69055103,
+            15.73899569, 15.71872387, 16.03984813, 16.08246334,
+            16.26722947, 16.36431549],
+           unit: V,
+           t0: 30.0 s,
+           dt: 0.1 s,
+           name: upper_ci,
+           channel: None)
+</pre></div></div>
 </div>
 </section>
 <section id="6.-Application-in-Gravitational-Wave-Data-Analysis:-Noise-Removal-(Whitening)-with-ARIMA">
@@ -447,8 +493,8 @@ Best model order: (5, 1, 0)
 ==============================================================================
 Dep. Variable:                      y   No. Observations:                10240
 Model:               SARIMAX(5, 1, 0)   Log Likelihood              -14694.968
-Date:                Sun, 25 Jan 2026   AIC                          29403.936
-Time:                        20:52:11   BIC                          29454.574
+Date:                Thu, 26 Feb 2026   AIC                          29403.936
+Time:                        20:48:38   BIC                          29454.574
 Sample:                             0   HQIC                         29421.057
                               - 10240
 Covariance Type:                  opg
