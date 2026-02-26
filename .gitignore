@@ -25,6 +25,8 @@ tests/.numba-cache/
 tests/.gmt/
 tests/.home/
 tests/gui/logs/*.txt
+*_tests_*.txt
+*_tests.txt
 
 # IDE
 .vscode/
@@ -51,6 +53,7 @@ coverage_*.xml
 
 
 # Type checking
+mypy_*
 .mypy_cache/
 typings/
 
@@ -99,6 +102,7 @@ tests/unit/
 .conda-envs/
 .conda-pkgs/
 docs/developers/references/*
+*.log
 
 # cover-agent artifacts
 cover_agent_unit_test_runs.db
