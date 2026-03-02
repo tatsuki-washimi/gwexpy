@@ -25,15 +25,14 @@ gwexpy がサポートする全ファイルフォーマットの一覧と、各�
 | ATS | `.ats` | ○ | × | `TimeSeriesDict.read("file.ats")` | — | Metronix バイナリパーサ |
 | ROOT | `.root` | ○ | ○ | `EventTable.read(format="root")` | — (gwpy 経由) | CERN ROOT テーブル |
 | SQLite / SDB | `.sdb`, `.sqlite`, `.db` | ○ | × | `TimeSeriesDict.read("file.sdb")` | — | WeeWX / Davis 気象データ |
-| NetCDF4 | `.nc` | ○ | ○ | — | — | 設計上サポート（gwpy/xarray 経由） |
-| Zarr | `.zarr` | ○ | ○ | — | — | 設計上サポート（クラウド最適化） |
-| Audio (MP3, FLAC 等) | `.mp3`, `.flac` | ○ | ○ | — | pydub | 設計上サポート |
+| NetCDF4 | `.nc` | ○ | ○ | `TimeSeriesDict.read(format="netcdf4")` | xarray, netcdf4 | 時間次元を持つ変数を自動検出 |
+| Zarr | `.zarr` | ○ | ○ | `TimeSeriesDict.read(format="zarr")` | zarr | クラウド最適化チャンク配列 |
+| Audio (MP3, FLAC 等) | `.mp3`, `.flac`, `.ogg`, `.m4a` | ○ | ○ | `TimeSeriesDict.read("file.mp3")` | pydub (+ffmpeg) | `t0` は常に 0（WAV と同様） |
 | NDS2 | (ネットワーク) | ○ | × | `TimeSeries.fetch(...)` | nds2-client | ネットワークデータサーバ |
 | TDMS | `.tdms` | ○ | × | `TimeSeriesDict.read("file.tdms")` | npTDMS | National Instruments |
 | ORF | `.orf` | × | × | — | — | 未実装（stub） |
 
 > **注記**: 「gwpy 標準」と記載したフォーマット（GWF, HDF5, CSV/TXT, Pickle）は gwpy のビルトイン IO 経路で処理されます。gwexpy は gwpy を継承しているため、そのまま利用可能です。
-> NetCDF4, Zarr, Audio (MP3/FLAC) は設計表 (`io_support.csv`) に記載されていますが、gwexpy 内に専用の reader 実装はまだありません。
 
 ---
 
@@ -516,16 +515,110 @@ ts = TimeSeries.fetch("channel_name", start, end)
 
 ---
 
+### Audio — MP3 / FLAC / OGG / M4A（pydub 経由）
+
+**拡張子**: `.mp3`, `.flac`, `.ogg`, `.m4a`
+**Read/Write**: Read ○ / Write ○
+**推奨 API**:
+```python
+from gwexpy.timeseries.collections import TimeSeriesDict
+
+# 読み込み（拡張子で自動判別）
+tsd = TimeSeriesDict.read("path/to/audio.mp3")
+
+# format を明示指定
+tsd = TimeSeriesDict.read("path/to/audio.dat", format="flac")
+
+# 書き出し
+tsd.write("output.flac", format="flac")
+```
+
+**必須引数**: なし
+
+**主な任意引数**:
+- `channels` (iterable[str], optional) — 読み込むチャンネル名のリスト（`"channel_0"` 等）。
+- `unit` (str, optional) — 物理単位の上書き。
+
+**外部依存**: `pydub` — 未インストール時は `ImportError` が発生し、`pip install pydub` を案内するメッセージが表示されます。MP3 / M4A の読み書きには別途 `ffmpeg` が必要です（`apt install ffmpeg` 等）。FLAC は ffmpeg なしで読み書き可能な場合があります。
+
+**注意**:
+- `t0` は常に `0.0`（GPS 秒）に設定されます。音声ファイルは絶対時刻を保持しません（WAV と同じ挙動）。
+- 読み込み時、サンプル値は `[-1.0, 1.0]` の範囲に正規化されます。
+- マルチチャンネルファイルの場合、チャンネル名は `channel_0`, `channel_1`, ... の形式になります。
+- 書き出し時はピーク値で正規化した 16-bit PCM に変換されます。
+
+**参照実装**: `gwexpy/timeseries/io/audio.py`
+
+---
+
+### NetCDF4 — 科学データ `.nc`（xarray 経由）
+
+**拡張子**: `.nc`
+**Read/Write**: Read ○ / Write ○
+**推奨 API**:
+```python
+from gwexpy.timeseries.collections import TimeSeriesDict
+
+tsd = TimeSeriesDict.read("path/to/data.nc", format="netcdf4")
+tsd.write("output.nc", format="netcdf4")
+```
+
+**必須引数**: なし
+
+**主な任意引数**:
+- `channels` (list[str], optional) — 読み込む変数名のリスト。省略時は時間次元を持つ全変数。
+- `unit` (str, optional) — 物理単位の上書き。省略時はファイルの `units` 属性を使用。
+- `time_coord` (str, optional) — 時間座標の名前。省略時は `"time"` を自動検出。
+
+**外部依存**: `xarray` + `netcdf4` — 未インストール時は `ImportError` が発生し、`pip install xarray netcdf4` を案内するメッセージが表示されます。
+
+**注意**:
+- 時間次元（`time`）を持つ変数のみが `TimeSeries` に変換されます。時間次元のない変数はスキップされます。
+- 時間座標は `datetime64` → GPS 秒 に自動変換されます。
+- 多次元変数（時間 + 空間等）は時間軸以外の次元がフラット化され、`変数名_0`, `変数名_1`, ... として格納されます。
+- 書き出し時は `t0` と `dt` から `datetime64` の時間座標を再構成します。
+
+**参照実装**: `gwexpy/timeseries/io/netcdf4_.py`
+
+---
+
+### Zarr — クラウド最適化チャンク配列 `.zarr`
+
+**拡張子**: `.zarr`（ディレクトリストア）
+**Read/Write**: Read ○ / Write ○
+**推奨 API**:
+```python
+from gwexpy.timeseries.collections import TimeSeriesDict
+
+tsd = TimeSeriesDict.read("path/to/data.zarr", format="zarr")
+tsd.write("output.zarr", format="zarr")
+```
+
+**必須引数**: なし
+
+**主な任意引数**:
+- `channels` (list[str], optional) — 読み込む配列名のリスト。省略時はルートグループの全配列。
+- `unit` (str, optional) — 物理単位の上書き。
+
+**外部依存**: `zarr` — 未インストール時は `ImportError` が発生し、`pip install zarr` を案内するメッセージが表示されます。
+
+**注意**:
+- gwexpy の Zarr 規約: ルートグループ内の各配列が 1 チャンネルに対応。配列の `attrs` に `sample_rate`（Hz）と `t0`（GPS 秒）を格納。
+- `sample_rate` が未設定の場合は `dt` の逆数を、それもなければ 1 Hz をデフォルトとします。`t0` 未設定時は `0.0`。
+- ディレクトリストア、zip ストア等、zarr ライブラリがサポートする全ストアタイプに対応しています。
+- 書き出し時は各チャンネルの `sample_rate`, `t0`, `dt`, `unit` を配列属性として保存します。
+
+**参照実装**: `gwexpy/timeseries/io/zarr_.py`
+
+---
+
 ## 設計上サポート（gwexpy 内に専用実装なし）
 
-以下のフォーマットは設計表（`io_support.csv`）に記載されていますが、gwexpy リポジトリ内に専用の reader/writer 実装は現時点でありません。gwpy 標準経路または外部ライブラリとの連携で将来対応予定です。
+以下のフォーマットは設計表（`io_support.csv`）に記載されていますが、gwexpy リポジトリ内に専用の reader/writer 実装は現時点でありません。
 
 | フォーマット | 拡張子 | 設計上の Read/Write | 備考 |
 |---|---|:---:|---|
 | MTH5 | `.h5` | Read ○ / Write ○ | `mth5` ライブラリ経由。`ats.mth5` で部分対応あり |
-| NetCDF4 | `.nc` | Read ○ / Write ○ | xarray 経由で対応予定 |
-| Zarr | `.zarr` | Read ○ / Write ○ | クラウド最適化形式。将来対応 |
-| Audio (MP3, FLAC 等) | `.mp3`, `.flac` | Read ○ / Write ○ | `pydub` ライブラリ経由で対応予定 |
 
 ---
 
@@ -622,6 +715,9 @@ fsd = FrequencySeriesDict.read("path/to/dtt.xml", format="dttxml", products="PSD
 | `gwexpy/timeseries/io/seismic.py` | MiniSEED / SAC / GSE2 / KNET reader/writer。ObsPy に依存 |
 | `gwexpy/timeseries/io/win.py` | WIN/WIN32 reader。ObsPy 必須。改良版 4bit/24bit デルタデコード |
 | `gwexpy/timeseries/io/dttxml.py` | DTTXML 時系列 reader。`products` は必須 |
+| `gwexpy/timeseries/io/audio.py` | Audio reader/writer（MP3/FLAC/OGG/M4A）。pydub に依存。`t0=0` 固定 |
+| `gwexpy/timeseries/io/netcdf4_.py` | NetCDF4 reader/writer。xarray に依存。時間次元を自動検出 |
+| `gwexpy/timeseries/io/zarr_.py` | Zarr reader/writer。zarr に依存。gwexpy 独自のストア規約 |
 | `gwexpy/timeseries/io/stubs.py` | 時系列 stub（`orf`, `mem`, `wvf`, `wdf`, `taffmat`, `lsf`, `li`） |
 | `gwexpy/timeseries/io/hdf5.py` | HDF5 IO（gwpy 再エクスポート） |
 | `gwexpy/timeseries/io/ascii.py` | ASCII IO（gwpy 再エクスポート） |
