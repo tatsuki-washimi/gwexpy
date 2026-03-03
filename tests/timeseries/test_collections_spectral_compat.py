@@ -45,3 +45,14 @@ def test_collections_csd_positional_keyword_mix_raises_typeerror():
     tsl = TimeSeriesList(ts1, ts2)
     with pytest.raises(TypeError, match="at most two positional"):
         tsl.csd(other, 1.0, 0.5, 0.25)
+
+
+def test_collections_numeric_other_is_not_misparsed_as_fftlength():
+    ts1, ts2, _ = _make_series()
+    tsd = TimeSeriesDict({"a": ts1, "b": ts2})
+    with pytest.raises(TypeError, match="other must be"):
+        tsd.csd(1.0, 0.5)
+
+    tsl = TimeSeriesList(ts1, ts2)
+    with pytest.raises(TypeError, match="other must be"):
+        tsl.coherence(1.0, 0.5)

@@ -161,6 +161,17 @@ pytest tests/timeseries -q
   - collections の位置引数互換と混在時 `TypeError`
   - `asd` の `nfft/noverlap` 受理と `nperseg` エラー
 
+### 追加実施 (2026-03-03)
+
+- CI ワークフローを追加:
+  - `.github/workflows/test-compat-gwpy.yml`
+  - gwpy 互換テスト3本 + `tests/timeseries` を実行
+  - `numpy<2.0`, `astropy<7.0` を固定して依存衝突を抑制
+- 境界ケーステストを拡張:
+  - `transfer_function` の positional `mode` と keyword `mode` 競合時エラー
+  - `transfer_function` の positional `fftlength` + keyword `window`
+  - collections で数値 `other` が誤って `fftlength` 解釈されないこと
+
 ---
 
 _本計画書は、2026年3月3日時点の実装照合結果に基づいて作成。_

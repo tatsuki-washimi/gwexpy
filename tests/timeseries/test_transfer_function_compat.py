@@ -43,3 +43,16 @@ def test_transfer_function_legacy_positional_mode_is_deprecated():
         got = a.transfer_function(b, "transient")
     ref = a.transfer_function(b, mode="transient")
     np.testing.assert_allclose(got.value, ref.value, rtol=1e-12, atol=0.0)
+
+
+def test_transfer_function_positional_mode_and_keyword_mode_conflict():
+    a, b = _make_pair()
+    with pytest.raises(TypeError, match="both positionally and via keyword"):
+        a.transfer_function(b, "steady", mode="transient")
+
+
+def test_transfer_function_positional_fftlength_with_keyword_window():
+    a, b = _make_pair()
+    got = a.transfer_function(b, 1.0, window="hann")
+    ref = a.transfer_function(b, fftlength=1.0, window="hann")
+    np.testing.assert_allclose(got.value, ref.value, rtol=1e-12, atol=0.0)
