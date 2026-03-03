@@ -38,6 +38,29 @@ from gwexpy.types.mixin import PhaseMethodsMixin
 from .spectral import coherence_matrix_from_collection, csd_matrix_from_collection
 
 
+def _parse_fft_positional_args(
+    args: tuple[Any, ...],
+    *,
+    fftlength: Any,
+    overlap: Any,
+    method_name: str,
+) -> tuple[Any, Any]:
+    """Parse optional positional ``(fftlength, overlap)`` compatibility args."""
+    if not args:
+        return fftlength, overlap
+    if len(args) > 2:
+        raise TypeError(
+            f"{method_name}() accepts at most two positional spectral arguments: "
+            "fftlength, overlap."
+        )
+    if fftlength is not None or overlap is not None:
+        raise TypeError(
+            f"{method_name}() cannot mix positional fftlength/overlap with "
+            "keyword fftlength/overlap."
+        )
+    return args[0], (args[1] if len(args) == 2 else None)
+
+
 class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     """Dictionary of TimeSeries objects."""
 
@@ -295,7 +318,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     def csd_matrix(
         self,
         other=None,
-        *,
+        *args,
         fftlength=None,
         overlap=None,
         window="hann",
@@ -333,6 +356,12 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         is taken from the first computed element without alignment/truncation;
         dt and fftlength consistency is enforced before computation.
         """
+        fftlength, overlap = _parse_fft_positional_args(
+            args,
+            fftlength=fftlength,
+            overlap=overlap,
+            method_name=f"{type(self).__name__}.csd_matrix",
+        )
         return csd_matrix_from_collection(
             self,
             other,
@@ -347,7 +376,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     def coherence_matrix(
         self,
         other=None,
-        *,
+        *args,
         fftlength=None,
         overlap=None,
         window="hann",
@@ -389,6 +418,12 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         first computed element without alignment/truncation; dt and fftlength
         consistency is enforced before computation.
         """
+        fftlength, overlap = _parse_fft_positional_args(
+            args,
+            fftlength=fftlength,
+            overlap=overlap,
+            method_name=f"{type(self).__name__}.coherence_matrix",
+        )
         return coherence_matrix_from_collection(
             self,
             other,
@@ -404,7 +439,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     def csd(
         self,
         other=None,
-        *,
+        *args,
         fftlength=None,
         overlap=None,
         window="hann",
@@ -415,6 +450,12 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         """
         Compute CSD for each element or as a matrix depending on `other`.
         """
+        fftlength, overlap = _parse_fft_positional_args(
+            args,
+            fftlength=fftlength,
+            overlap=overlap,
+            method_name=f"{type(self).__name__}.csd",
+        )
         if other is self:
             other = None
         if other is None or (isinstance(other, str) and other.lower() == "self"):
@@ -454,7 +495,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
     def coherence(
         self,
         other=None,
-        *,
+        *args,
         fftlength=None,
         overlap=None,
         window="hann",
@@ -466,6 +507,12 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         """
         Compute coherence for each element or as a matrix depending on `other`.
         """
+        fftlength, overlap = _parse_fft_positional_args(
+            args,
+            fftlength=fftlength,
+            overlap=overlap,
+            method_name=f"{type(self).__name__}.coherence",
+        )
         if other is self:
             other = None
         if other is None or (isinstance(other, str) and other.lower() == "self"):
@@ -1124,7 +1171,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
     def csd_matrix(
         self,
         other=None,
-        *,
+        *args,
         fftlength=None,
         overlap=None,
         window="hann",
@@ -1158,6 +1205,12 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         is taken from the first computed element without alignment/truncation;
         dt and fftlength consistency is enforced before computation.
         """
+        fftlength, overlap = _parse_fft_positional_args(
+            args,
+            fftlength=fftlength,
+            overlap=overlap,
+            method_name=f"{type(self).__name__}.csd_matrix",
+        )
         return csd_matrix_from_collection(
             self,
             other,
@@ -1172,7 +1225,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
     def coherence_matrix(
         self,
         other=None,
-        *,
+        *args,
         fftlength=None,
         overlap=None,
         window="hann",
@@ -1210,6 +1263,12 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         first computed element without alignment/truncation; dt and fftlength
         consistency is enforced before computation.
         """
+        fftlength, overlap = _parse_fft_positional_args(
+            args,
+            fftlength=fftlength,
+            overlap=overlap,
+            method_name=f"{type(self).__name__}.coherence_matrix",
+        )
         return coherence_matrix_from_collection(
             self,
             other,
@@ -1225,7 +1284,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
     def csd(
         self,
         other=None,
-        *,
+        *args,
         fftlength=None,
         overlap=None,
         window="hann",
@@ -1236,6 +1295,12 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         """
         Compute CSD for each element or as a matrix depending on `other`.
         """
+        fftlength, overlap = _parse_fft_positional_args(
+            args,
+            fftlength=fftlength,
+            overlap=overlap,
+            method_name=f"{type(self).__name__}.csd",
+        )
         if other is self:
             other = None
         if other is None or (isinstance(other, str) and other.lower() == "self"):
@@ -1282,7 +1347,7 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
     def coherence(
         self,
         other=None,
-        *,
+        *args,
         fftlength=None,
         overlap=None,
         window="hann",
@@ -1294,6 +1359,12 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         """
         Compute coherence for each element or as a matrix depending on `other`.
         """
+        fftlength, overlap = _parse_fft_positional_args(
+            args,
+            fftlength=fftlength,
+            overlap=overlap,
+            method_name=f"{type(self).__name__}.coherence",
+        )
         if other is self:
             other = None
         if other is None or (isinstance(other, str) and other.lower() == "self"):

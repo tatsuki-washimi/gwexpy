@@ -157,7 +157,7 @@ This method implicitly sorts and potentially shortens this list.
 ### `coherence`
 
 ```python
-coherence(self, other=None, *, fftlength=None, overlap=None, window='hann', symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs)
+coherence(self, other=None, *args, fftlength=None, overlap=None, window='hann', symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs)
 ```
 
 
@@ -167,7 +167,7 @@ Compute coherence for each element or as a matrix depending on `other`.
 ### `coherence_matrix`
 
 ```python
-coherence_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs)
+coherence_matrix(self, other=None, *args, fftlength=None, overlap=None, window='hann', symmetric=True, include_diagonal=True, diagonal_value=1.0, **kwargs)
 ```
 
 
@@ -215,7 +215,7 @@ Returns a new TimeSeriesList.
 ### `csd`
 
 ```python
-csd(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs)
+csd(self, other=None, *args, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs)
 ```
 
 
@@ -225,7 +225,7 @@ Compute CSD for each element or as a matrix depending on `other`.
 ### `csd_matrix`
 
 ```python
-csd_matrix(self, other=None, *, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs)
+csd_matrix(self, other=None, *args, fftlength=None, overlap=None, window='hann', hermitian=True, include_diagonal=True, **kwargs)
 ```
 
 

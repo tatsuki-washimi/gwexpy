@@ -1216,12 +1216,12 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
     def transfer_function(
         self,
         other: TimeSeries,
-        mode: Literal["steady", "transient"] = "steady",
         fftlength: Optional[NumberLike] = None,
         overlap: Optional[NumberLike] = None,
         window: Optional[Union[str, ArrayLike]] = "hann",
         average: str = "mean",
         *,
+        mode: Literal["steady", "transient"] = "steady",
         method: Optional[
             Literal["gwpy", "csd_psd", "fft", "auto"]
         ] = None,  # Deprecated
@@ -1241,13 +1241,6 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         ----------
         other : `TimeSeries`
             The test TimeSeries (numerator).
-        mode : `str`, optional
-            "steady" (default): GWpy-compatible averaged estimator using
-                H(f) = CSD_{A,B}(f) / PSD_A(f)
-                Use for steady-state system identification with noise averaging.
-            "transient": Instantaneous FFT ratio
-                H(f) = FFT_B(f) / FFT_A(f)
-                Use for single-shot transient response analysis.
         fftlength : `float`, optional
             Length of the FFT, in seconds. Only used for mode="steady".
         overlap : `float`, optional
@@ -1256,6 +1249,13 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             Window function to apply (mode="steady" only).
         average : `str`, optional
             Method to average segments (mode="steady" only).
+        mode : `str`, optional
+            "steady" (default): GWpy-compatible averaged estimator using
+                H(f) = CSD_{A,B}(f) / PSD_A(f)
+                Use for steady-state system identification with noise averaging.
+            "transient": Instantaneous FFT ratio
+                H(f) = FFT_B(f) / FFT_A(f)
+                Use for single-shot transient response analysis.
         method : `str`, optional
             **Deprecated**: use `mode` instead.
             For backward compatibility: "gwpy"/"csd_psd" -> mode="steady",
@@ -1318,6 +1318,20 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             >>> tf = input_signal.transfer_function(output_signal, mode="transient")
         """
         import warnings
+
+        # Backward compatibility for historical gwexpy positional `mode`.
+        if isinstance(fftlength, str) and fftlength in ("steady", "transient"):
+            warnings.warn(
+                "Passing transfer_function mode as a positional argument is deprecated. "
+                "Use mode='steady' or mode='transient' keyword instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            if mode != "steady":
+                raise TypeError("mode was provided both positionally and via keyword.")
+            mode = cast(Literal["steady", "transient"], fftlength)
+            fftlength = cast(Optional[NumberLike], overlap)
+            overlap = None
 
         # Handle deprecated 'method' parameter
         if method is not None:
