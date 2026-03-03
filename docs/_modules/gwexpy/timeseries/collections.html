@@ -112,6 +112,29 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">coherence_matrix_from_collection</span><span class="p">,</span> <span class="n">csd_matrix_from_collection</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_fft_positional_args</span><span class="p">(</span>
+    <span class="n">args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">method_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse optional positional ``(fftlength, overlap)`` compatibility args.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">() accepts at most two positional spectral arguments: &quot;</span>
+            <span class="s2">&quot;fftlength, overlap.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">fftlength</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">overlap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">() cannot mix positional fftlength/overlap with &quot;</span>
+            <span class="s2">&quot;keyword fftlength/overlap.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="TimeSeriesDict">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimeSeriesDict</span><span class="p">(</span><span class="n">PhaseMethodsMixin</span><span class="p">,</span> <span class="n">BaseTimeSeriesDict</span><span class="p">):</span>
@@ -424,7 +447,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">csd_matrix</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
@@ -462,6 +485,12 @@
 <span class="sd">        is taken from the first computed element without alignment/truncation;</span>
 <span class="sd">        dt and fftlength consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">_parse_fft_positional_args</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">method_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.csd_matrix&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">csd_matrix_from_collection</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">other</span><span class="p">,</span>
@@ -479,7 +508,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">coherence_matrix</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
@@ -521,6 +550,12 @@
 <span class="sd">        first computed element without alignment/truncation; dt and fftlength</span>
 <span class="sd">        consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">_parse_fft_positional_args</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">method_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.coherence_matrix&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">coherence_matrix_from_collection</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">other</span><span class="p">,</span>
@@ -539,7 +574,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">csd</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
@@ -550,6 +585,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute CSD for each element or as a matrix depending on `other`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">_parse_fft_positional_args</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">method_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.csd&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
             <span class="n">other</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;self&quot;</span><span class="p">):</span>
@@ -592,7 +633,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">coherence</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
@@ -604,6 +645,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute coherence for each element or as a matrix depending on `other`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">_parse_fft_positional_args</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">method_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.coherence&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
             <span class="n">other</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;self&quot;</span><span class="p">):</span>
@@ -1424,7 +1471,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">csd_matrix</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
@@ -1458,6 +1505,12 @@
 <span class="sd">        is taken from the first computed element without alignment/truncation;</span>
 <span class="sd">        dt and fftlength consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">_parse_fft_positional_args</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">method_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.csd_matrix&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">csd_matrix_from_collection</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">other</span><span class="p">,</span>
@@ -1475,7 +1528,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">coherence_matrix</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
@@ -1513,6 +1566,12 @@
 <span class="sd">        first computed element without alignment/truncation; dt and fftlength</span>
 <span class="sd">        consistency is enforced before computation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">_parse_fft_positional_args</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">method_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.coherence_matrix&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">coherence_matrix_from_collection</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">other</span><span class="p">,</span>
@@ -1531,7 +1590,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">csd</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
@@ -1542,6 +1601,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute CSD for each element or as a matrix depending on `other`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">_parse_fft_positional_args</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">method_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.csd&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
             <span class="n">other</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;self&quot;</span><span class="p">):</span>
@@ -1591,7 +1656,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">coherence</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="n">fftlength</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
@@ -1603,6 +1668,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute coherence for each element or as a matrix depending on `other`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span> <span class="o">=</span> <span class="n">_parse_fft_positional_args</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">method_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.coherence&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
             <span class="n">other</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;self&quot;</span><span class="p">):</span>
