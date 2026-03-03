@@ -2,6 +2,29 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **GWpy API UX Compatibility**: Aligned key spectral API call conventions with GWpy 4.x usage patterns.
+  - `TimeSeries.transfer_function` now accepts GWpy-style positional calls:
+    - `transfer_function(other, fftlength, overlap, window, average, ...)`
+  - `TimeSeriesDict` / `TimeSeriesList` now accept positional spectral args for:
+    - `csd`, `coherence`, `csd_matrix`, `coherence_matrix`
+    - positional `(fftlength, overlap)` is supported in addition to keyword usage
+  - Mixed positional+keyword specification of `fftlength`/`overlap` now raises clear `TypeError`.
+
+### Added
+
+- **Compatibility policy doc**:
+  - `docs/developers/compatibility/gwpy/API_UX_POLICY_20260303.md`
+- **GWpy compatibility tests**:
+  - `tests/timeseries/test_transfer_function_compat.py`
+  - `tests/timeseries/test_collections_spectral_compat.py`
+  - `tests/timeseries/test_fft_param_compat.py`
+  - Includes edge-case checks for positional/keyword conflicts and invalid numeric `other` in collection APIs.
+- **CI workflow for compatibility gate**:
+  - `.github/workflows/test-compat-gwpy.yml`
+  - Runs focused GWpy-compat tests plus `tests/timeseries`, with pinned `numpy<2.0` and `astropy<7.0`.
+
 ## [0.1.0b2] - 2026-02-23
 
 ### Changed
