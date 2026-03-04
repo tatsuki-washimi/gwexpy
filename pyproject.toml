@@ -33,23 +33,52 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
+  # Core & Computation
+  "numpy>=1.21.0,<2.0.0",
+  "scipy>=1.7.0",
   "astropy>=5.0",
   "gwpy>=4.0.0,<5.0.0",
-  "numpy>=1.21.0,<2.0.0",
   "pandas>=1.3.0",
-  "scipy>=1.7.0",
   "matplotlib>=3.5.0",
+  "typing_extensions",
+  "bottleneck",
+  # File I/O
+  "h5py",
+  # Gravitational Wave Data I/O & Meta
   "lalsuite",
   "gwdatafind",
   "gwosc",
-  "gpstime",
   "igwn-segments",
-  "ligo.skymap",
   "ligotimegps",
+  "gpstime",
   "dqsegdb2",
   "dateparser",
-  "h5py",
-  "typing_extensions"
+  "python-framel",
+  "dttxml",
+  # Experimental Physics I/O
+  "obspy",
+  "mth5",
+  "mtpy",
+  "mt_metadata",
+  "nptdms",
+  # Visualization & Noise Modeling
+  "ligo.skymap",
+  "pygmt",
+  "gwinc",
+  # Advanced Signal Processing & Stats
+  "scikit-learn",
+  "statsmodels",
+  "pmdarima",
+  "dcor",
+  "hurst",
+  "hurst-exponent",
+  "exp-hurst",
+  "iminuit",
+  "emcee",
+  "corner",
+  "EMD-signal",
+  "PyWavelets",
+  "control"
 ]
 
 [project.urls]
@@ -58,81 +87,28 @@ Repository = "https://github.com/tatsuki-washimi/gwexpy"
 Documentation = "https://tatsuki-washimi.github.io/gwexpy/"
 Changelog = "https://github.com/tatsuki-washimi/gwexpy/blob/main/CHANGELOG.md"
 
+# Note: For heavy ML and external system I/O, packages are left out.
+# Optional lists can be provided for users who want to use them if needed.
+
 [project.optional-dependencies]
-dev = [
-  "pytest",
-  "pytest-cov",
-  "pytest-qt",
-  "nbmake",
-  "freezegun",
-  "requests-mock",
-  "ruff",
-  "mypy",
-  "types-requests",
+gui = [
   "PyQt5",
   "pyqtgraph",
   "qtpy",
+  "sounddevice"
 ]
-gw = [
-  "pycbc",
-  "python-framel",
-  "ldas-tools-framecpp",
-  "nds2-client",
-  "gwinc",
-  "dttxml",
-  "nptdms"
-]
-stats = [
-  "polars",
-  "scikit-learn",
-  "statsmodels",
-  "pmdarima",
-  "dcor",
-  "hurst",
-  "hurst-exponent",
-  "exp-hurst",
-  "bottleneck"
-]
-fitting = ["iminuit", "emcee", "corner"]
-astro = ["specutils", "pyspeckit"]
-geophysics = [
-  "obspy",
-  "mth5",
-  "mtpy",
-  "mt_metadata",
-  "netCDF4",
-]
-audio = ["librosa", "pydub"]
-bio = ["mne", "elephant", "neo"]
-interop = [
-  "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy",
-  "xarray", "quantities", "simpeg"
-]
-control = ["control"]
-gui = ["PyQt5", "pyqtgraph", "qtpy", "sounddevice", "nds2-client"]
-plot = ["pygmt"]
-analysis = [
-    # NOTE: The pip name "pyemd" is a different project (Earth Mover's Distance).
-    # EMD decomposition (module: PyEMD) is provided by the "EMD-signal" distribution.
-    "EMD-signal",
-    "PyWavelets",
-    "librosa",
-    "obspy"
-]
-all = [
-    "pycbc", "python-framel", "ldas-tools-framecpp", "gwinc", "dttxml", "nptdms",
-    "nds2-client",
-    "polars", "scikit-learn", "statsmodels", "pmdarima", "dcor", "hurst", "hurst-exponent", "exp-hurst", "bottleneck",
-    "iminuit", "emcee", "corner",
-    "specutils", "pyspeckit",
-    "obspy", "mth5", "mtpy", "mt_metadata", "netCDF4",
-    "librosa", "pydub",
-    "mne", "elephant", "neo",
-    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy", "simpeg",
-    "xarray", "quantities",
-    "control", "PyQt5", "pyqtgraph", "qtpy", "sounddevice",
-    "pygmt",
-    "EMD-signal", "PyWavelets"
+dev = [
+  "ruff",
+  "mypy",
+  "pytest",
+  "pytest-qt",
+  "pytest-xvfb",
+  "debugpy",
+  "pytest-cov",
+  "nbmake",
+  "freezegun",
+  "requests-mock",
+  "types-requests"
 ]
 
 [tool.setuptools.package-data]
