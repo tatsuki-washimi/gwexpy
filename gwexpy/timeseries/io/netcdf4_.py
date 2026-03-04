@@ -71,7 +71,14 @@ def read_timeseriesdict_netcdf4(
     """
     xr = _import_xarray()
 
-    ds = xr.open_dataset(str(source), **kwargs)
+    # gwpy's registry may pass a file-like object; extract the path.
+    if hasattr(source, "name"):
+        source = source.name
+
+    # Strip gwpy-injected kwargs that xarray.open_dataset does not accept.
+    _gwpy_keys = {"start", "end", "pad", "gap", "nproc", "scaled"}
+    xr_kwargs = {k: v for k, v in kwargs.items() if k not in _gwpy_keys}
+    ds = xr.open_dataset(str(source), **xr_kwargs)
     try:
         tc = time_coord or _time_coord_name(ds)
         if tc is None:
@@ -80,25 +87,38 @@ def read_timeseriesdict_netcdf4(
                 "Specify one explicitly via time_coord='...'."
             )
 
-        time_vals = ds[tc].values  # numpy datetime64 array
+        time_vals = ds[tc].values
 
-        # Compute t0 (GPS) and dt (seconds)
-        t0_dt64 = time_vals[0]
-        t0_unix_ns = (t0_dt64 - np.datetime64("1970-01-01T00:00:00", "ns")).astype(
-            np.int64
-        )
-        import datetime as _dt
+        # Compute t0 (GPS) and dt (seconds).
+        # Handle both datetime64 and numeric time coordinates.
+        if np.issubdtype(np.asarray(time_vals).dtype, np.datetime64):
+            import datetime as _dt
 
-        t0_datetime = _dt.datetime.fromtimestamp(
-            t0_unix_ns / 1e9, tz=_dt.timezone.utc
-        )
-        t0 = datetime_to_gps(t0_datetime)
+            t0_dt64 = time_vals[0]
+            t0_unix_ns = (
+                t0_dt64 - np.datetime64("1970-01-01T00:00:00", "ns")
+            ).astype(np.int64)
+            t0_datetime = _dt.datetime.fromtimestamp(
+                t0_unix_ns / 1e9, tz=_dt.UTC
+            )
+            t0 = datetime_to_gps(t0_datetime)
 
-        if len(time_vals) > 1:
-            diffs_ns = np.diff(time_vals.astype("datetime64[ns]").astype(np.int64))
-            dt = float(np.median(diffs_ns)) / 1e9
+            if len(time_vals) > 1:
+                diffs_ns = np.diff(
+                    time_vals.astype("datetime64[ns]").astype(np.int64)
+                )
+                dt = float(np.median(diffs_ns)) / 1e9
+            else:
+                dt = 1.0
         else:
-            dt = 1.0
+            # Numeric time coordinate (e.g. seconds, GPS times, or cftime
+            # objects that were decoded to floats).
+            numeric = np.asarray(time_vals, dtype=np.float64)
+            t0 = float(numeric[0])
+            if len(numeric) > 1:
+                dt = float(np.median(np.diff(numeric)))
+            else:
+                dt = 1.0
 
         tsd = TimeSeriesDict()
 
@@ -146,8 +166,14 @@ def read_timeseriesdict_netcdf4(
                 ts = apply_unit(ts, var_unit) if var_unit else ts
                 tsd[var] = ts
 
+        # filter_by_channels matches against the *final* dict keys.
+        # Multi-dimensional variables are flattened to "var_0", "var_1", …
+        # so we must accept both the original name and the suffixed names.
         if channels:
-            tsd = TimeSeriesDict(filter_by_channels(tsd, channels))
+            expanded = set(channels)
+            for ch in channels:
+                expanded.update(k for k in tsd if k == ch or k.startswith(f"{ch}_"))
+            tsd = TimeSeriesDict(filter_by_channels(tsd, expanded))
 
         set_provenance(
             tsd,
@@ -201,7 +227,7 @@ def write_timeseriesdict_netcdf4(tsd, target, **kwargs):
 
     t0_dt = from_gps(t0_gps).to_pydatetime()
     if t0_dt.tzinfo is None:
-        t0_dt = t0_dt.replace(tzinfo=_dt.timezone.utc)
+        t0_dt = t0_dt.replace(tzinfo=_dt.UTC)
     t0_ns = np.datetime64(t0_dt, "ns")
     dt_ns = np.timedelta64(int(round(dt_sec * 1e9)), "ns")
     time_axis = t0_ns + np.arange(n_samples) * dt_ns

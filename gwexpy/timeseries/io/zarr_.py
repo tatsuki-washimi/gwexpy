@@ -14,6 +14,8 @@ Directory stores, zip stores, and any other backend supported by the
 
 from __future__ import annotations
 
+import os
+
 import numpy as np
 from gwpy.io.registry import default_registry as io_registry
 
@@ -57,7 +59,11 @@ def read_timeseriesdict_zarr(
     """
     zarr = _import_zarr()
 
-    store = zarr.open_group(str(source), mode="r", **kwargs)
+    # Only coerce to str for path-like objects; pass store objects through
+    # directly so that in-memory / remote stores work unchanged.
+    if isinstance(source, (str, os.PathLike)):
+        source = str(source)
+    store = zarr.open_group(source, mode="r", **kwargs)
 
     tsd = TimeSeriesDict()
 
@@ -133,7 +139,9 @@ def write_timeseriesdict_zarr(tsd, target, **kwargs):
     if not tsd:
         raise ValueError("Cannot write empty TimeSeriesDict to Zarr")
 
-    store = zarr.open_group(str(target), mode="w", **kwargs)
+    if isinstance(target, (str, os.PathLike)):
+        target = str(target)
+    store = zarr.open_group(target, mode="w", **kwargs)
 
     for key, ts in tsd.items():
         data = np.asarray(ts.value, dtype=np.float64)
