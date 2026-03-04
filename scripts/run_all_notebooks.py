@@ -1,12 +1,13 @@
-import os
 import glob
+import os
 import subprocess
+
 
 def run_notebooks(directory):
     notebooks = glob.glob(os.path.join(directory, "**", "*.ipynb"), recursive=True)
     # Ignore checkpoints and build dirs
     notebooks = [nb for nb in notebooks if ".ipynb_checkpoints" not in nb and "_build" not in nb]
-    
+
     print(f"Found {len(notebooks)} notebooks to execute.")
     for nb in notebooks:
         print(f"Executing {nb}...")
