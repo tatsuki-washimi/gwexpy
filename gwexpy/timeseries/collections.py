@@ -48,6 +48,10 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             p = Path(source)
         except TypeError:
             p = None
+        if p is not None and (fmt == "zarr" or (fmt is None and str(p).lower().endswith(".zarr"))):
+            from gwexpy.timeseries.io.zarr_ import read_timeseriesdict_zarr
+
+            return cls(read_timeseriesdict_zarr(p, **{k: v for k, v in kwargs.items() if k != "format"}))
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
