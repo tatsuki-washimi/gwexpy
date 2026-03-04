@@ -95,18 +95,14 @@ def read_timeseriesdict_netcdf4(
             import datetime as _dt
 
             t0_dt64 = time_vals[0]
-            t0_unix_ns = (
-                t0_dt64 - np.datetime64("1970-01-01T00:00:00", "ns")
-            ).astype(np.int64)
-            t0_datetime = _dt.datetime.fromtimestamp(
-                t0_unix_ns / 1e9, tz=_dt.UTC
+            t0_unix_ns = (t0_dt64 - np.datetime64("1970-01-01T00:00:00", "ns")).astype(
+                np.int64
             )
+            t0_datetime = _dt.datetime.fromtimestamp(t0_unix_ns / 1e9, tz=_dt.UTC)
             t0 = datetime_to_gps(t0_datetime)
 
             if len(time_vals) > 1:
-                diffs_ns = np.diff(
-                    time_vals.astype("datetime64[ns]").astype(np.int64)
-                )
+                diffs_ns = np.diff(time_vals.astype("datetime64[ns]").astype(np.int64))
                 dt = float(np.median(diffs_ns)) / 1e9
             else:
                 dt = 1.0
@@ -259,18 +255,14 @@ for _fmt in ("netcdf4", "nc"):
     io_registry.register_reader(
         _fmt, TimeSeriesDict, read_timeseriesdict_netcdf4, force=True
     )
-    io_registry.register_reader(
-        _fmt, TimeSeries, read_timeseries_netcdf4, force=True
-    )
+    io_registry.register_reader(_fmt, TimeSeries, read_timeseries_netcdf4, force=True)
     io_registry.register_reader(
         _fmt, TimeSeriesMatrix, read_timeseriesmatrix_netcdf4, force=True
     )
     io_registry.register_writer(
         _fmt, TimeSeriesDict, write_timeseriesdict_netcdf4, force=True
     )
-    io_registry.register_writer(
-        _fmt, TimeSeries, write_timeseries_netcdf4, force=True
-    )
+    io_registry.register_writer(_fmt, TimeSeries, write_timeseries_netcdf4, force=True)
 
 io_registry.register_identifier(
     "netcdf4",

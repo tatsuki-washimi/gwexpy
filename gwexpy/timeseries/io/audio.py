@@ -170,7 +170,9 @@ def write_timeseriesdict_audio(tsd, target, *, format_hint=None, **kwargs):
 
 
 def write_timeseries_audio(ts, target, **kwargs):
-    write_timeseriesdict_audio(TimeSeriesDict({ts.name or "channel_0": ts}), target, **kwargs)
+    write_timeseriesdict_audio(
+        TimeSeriesDict({ts.name or "channel_0": ts}), target, **kwargs
+    )
 
 
 # -- Registration --------------------------------------------------------------
@@ -199,7 +201,9 @@ for _fmt, _ext in _AUDIO_FORMATS.items():
     io_registry.register_reader(
         _fmt,
         TimeSeriesMatrix,
-        lambda src, _f=_fmt, **kw: read_timeseriesmatrix_audio(src, format_hint=_f, **kw),
+        lambda src, _f=_fmt, **kw: read_timeseriesmatrix_audio(
+            src, format_hint=_f, **kw
+        ),
         force=True,
     )
 
@@ -207,13 +211,17 @@ for _fmt, _ext in _AUDIO_FORMATS.items():
     io_registry.register_writer(
         _fmt,
         TimeSeriesDict,
-        lambda tsd, tgt, _f=_fmt, **kw: write_timeseriesdict_audio(tsd, tgt, format_hint=_f, **kw),
+        lambda tsd, tgt, _f=_fmt, **kw: write_timeseriesdict_audio(
+            tsd, tgt, format_hint=_f, **kw
+        ),
         force=True,
     )
     io_registry.register_writer(
         _fmt,
         TimeSeries,
-        lambda ts, tgt, _f=_fmt, **kw: write_timeseries_audio(ts, tgt, format_hint=_f, **kw),
+        lambda ts, tgt, _f=_fmt, **kw: write_timeseries_audio(
+            ts, tgt, format_hint=_f, **kw
+        ),
         force=True,
     )
 
