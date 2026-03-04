@@ -16,7 +16,7 @@
 > - **English:** [https://tatsuki-washimi.github.io/gwexpy/docs/web/en/](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/)
 > - **日本語:** [https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/](https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/)
 >
-> **19 comprehensive tutorials** covering everything from basic usage to advanced signal processing techniques are available in both languages.
+> **Over 25 comprehensive tutorials** covering everything from basic usage to advanced signal processing techniques are available in both languages.
 
 ---
 
@@ -128,6 +128,9 @@ pip install .
 
 # With a specific extra (example)
 pip install "gwexpy[analysis]"
+
+# With all optional dependencies (all-in-one)
+pip install "gwexpy[all]"
 
 # With a specific extra from GitHub
 pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
