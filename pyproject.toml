@@ -221,7 +221,7 @@ filterwarnings = [
     "ignore:.*dubious year.*:erfa.core.ErfaWarning",
     "ignore:The Spectrum1D class is deprecated.*:astropy.utils.exceptions.AstropyDeprecationWarning",
     "ignore:This process .* use of fork\\(\\) may lead to deadlocks.*:DeprecationWarning",
-    "ignore:.*contains multiple slashes, which is discouraged by the FITS standard:astropy.units.core.UnitsWarning",
+    "ignore:.*contains multiple slashes, which is discouraged by the FITS standard:UserWarning",
     "ignore:invalid value encountered in cast:RuntimeWarning:astropy.units.quantity",
     "ignore:Animation was deleted without rendering anything.*:UserWarning:matplotlib.animation",
     "ignore:divisions involving a unit and a 'str' instance are deprecated since v7.1.*:astropy.utils.exceptions.AstropyDeprecationWarning",

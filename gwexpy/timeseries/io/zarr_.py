@@ -164,11 +164,17 @@ def write_timeseries_zarr(ts, target, **kwargs):
 
 # -- Registration --------------------------------------------------------------
 
-io_registry.register_reader("zarr", TimeSeriesDict, read_timeseriesdict_zarr, force=True)
+io_registry.register_reader(
+    "zarr", TimeSeriesDict, read_timeseriesdict_zarr, force=True
+)
 io_registry.register_reader("zarr", TimeSeries, read_timeseries_zarr, force=True)
-io_registry.register_reader("zarr", TimeSeriesMatrix, read_timeseriesmatrix_zarr, force=True)
+io_registry.register_reader(
+    "zarr", TimeSeriesMatrix, read_timeseriesmatrix_zarr, force=True
+)
 
-io_registry.register_writer("zarr", TimeSeriesDict, write_timeseriesdict_zarr, force=True)
+io_registry.register_writer(
+    "zarr", TimeSeriesDict, write_timeseriesdict_zarr, force=True
+)
 io_registry.register_writer("zarr", TimeSeries, write_timeseries_zarr, force=True)
 
 io_registry.register_identifier(
