@@ -124,6 +124,7 @@ Main Documentation
    user_guide/installation
    user_guide/quickstart
    user_guide/getting_started
+   user_guide/io_formats
 
 .. toctree::
    :maxdepth: 2

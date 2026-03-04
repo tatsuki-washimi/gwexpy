@@ -1,0 +1,1138 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ファイル I/O 対応フォーマットガイド &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="チュートリアル" href="tutorials/index.html" />
+    <link rel="prev" title="GWexpy 機能一覧 (GWpyユーザー向け)" href="gwexpy_for_gwpy_users_ja.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id2">視覚的な例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id3">実例ギャラリー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id4">ユーザー別学習パス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#id5">主要ドキュメント</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="installation.html">インストール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ファイル I/O 対応フォーマットガイド</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">対応フォーマット一覧</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">フォーマット別詳細</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwexpy">設計上サポート（gwexpy 内に専用実装なし）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stub">未実装（stub）一覧</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#read-write"><code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> の基本的な使い方</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">参照元ファイル一覧</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html">アーキテクチャと物理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/index.html">リファレンス</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#id6">次のステップ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">GWexpy ドキュメントへようこそ</a></li>
+      <li class="breadcrumb-item active">ファイル I/O 対応フォーマットガイド</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/io_formats.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="i-o">
+<h1>ファイル I/O 対応フォーマットガイド<a class="headerlink" href="#i-o" title="Link to this heading"></a></h1>
+<p>gwexpy がサポートする全ファイルフォーマットの一覧と、各フォーマットの読み書き方法をまとめたエンドユーザー向けガイドです。
+本ページでは内部実装メソッドは記載せず、ユーザーが直接利用するクラスメソッド <code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> のみを示します。</p>
+<hr class="docutils" />
+<section id="id1">
+<h2>対応フォーマット一覧<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>フォーマット</p></th>
+<th class="head"><p>拡張子</p></th>
+<th class="head text-center"><p>Read</p></th>
+<th class="head text-center"><p>Write</p></th>
+<th class="head"><p>推奨クラス・メソッド</p></th>
+<th class="head"><p>外部依存</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GWF</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.gwf</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code></p></td>
+<td><p>— (gwpy 標準)</p></td>
+<td><p>gwpy 標準フォーマット</p></td>
+</tr>
+<tr class="row-odd"><td><p>HDF5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;hdf5&quot;)</span></code></p></td>
+<td><p>— (gwpy 標準)</p></td>
+<td><p>gwpy 標準</p></td>
+</tr>
+<tr class="row-even"><td><p>LIGO_LW XML (DTTXML)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.xml</span></code>, <code class="docutils literal notranslate"><span class="pre">.xml.gz</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;dttxml&quot;)</span></code> / <code class="docutils literal notranslate"><span class="pre">FrequencySeriesDict.read(format=&quot;dttxml&quot;)</span></code></p></td>
+<td><p>—</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">products</span></code> 引数が必須</p></td>
+</tr>
+<tr class="row-odd"><td><p>CSV / TXT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">.txt</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;csv&quot;)</span></code></p></td>
+<td><p>— (gwpy 標準)</p></td>
+<td><p>ASCII 形式。ディレクトリ読み込みにも対応</p></td>
+</tr>
+<tr class="row-even"><td><p>Pickle</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.pkl</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(format=&quot;pickle&quot;)</span></code></p></td>
+<td><p>—</p></td>
+<td><p>Python シリアライズ</p></td>
+</tr>
+<tr class="row-odd"><td><p>WAV</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.wav</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.wav&quot;)</span></code></p></td>
+<td><p>scipy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">t0</span></code> は常に 0（絶対時刻なし）</p></td>
+</tr>
+<tr class="row-even"><td><p>MiniSEED</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.mseed</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;miniseed&quot;)</span></code></p></td>
+<td><p>ObsPy</p></td>
+<td><p>地震波形フォーマット</p></td>
+</tr>
+<tr class="row-odd"><td><p>SAC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.sac</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;sac&quot;)</span></code></p></td>
+<td><p>ObsPy</p></td>
+<td><p>地震波形フォーマット</p></td>
+</tr>
+<tr class="row-even"><td><p>GSE2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.gse2</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;gse2&quot;)</span></code></p></td>
+<td><p>ObsPy</p></td>
+<td><p>地震波形フォーマット</p></td>
+</tr>
+<tr class="row-odd"><td><p>KNET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.knet</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;knet&quot;)</span></code></p></td>
+<td><p>ObsPy</p></td>
+<td><p>K-NET 強震記録</p></td>
+</tr>
+<tr class="row-even"><td><p>GBD</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.gbd</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.gbd&quot;,</span> <span class="pre">timezone=...)</span></code></p></td>
+<td><p>—</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> が必須</p></td>
+</tr>
+<tr class="row-odd"><td><p>WIN / WIN32</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.win</span></code>, <code class="docutils literal notranslate"><span class="pre">.cnt</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;win&quot;)</span></code></p></td>
+<td><p>ObsPy</p></td>
+<td><p>NIED WIN 形式（改良版パーサ）</p></td>
+</tr>
+<tr class="row-even"><td><p>MTH5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.h5</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(format=&quot;ats.mth5&quot;)</span></code></p></td>
+<td><p>mth5</p></td>
+<td><p>磁力計データ（設計上サポート）</p></td>
+</tr>
+<tr class="row-odd"><td><p>ATS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.ats</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.ats&quot;)</span></code></p></td>
+<td><p>—</p></td>
+<td><p>Metronix バイナリパーサ</p></td>
+</tr>
+<tr class="row-even"><td><p>ROOT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.root</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EventTable.read(format=&quot;root&quot;)</span></code></p></td>
+<td><p>— (gwpy 経由)</p></td>
+<td><p>CERN ROOT テーブル</p></td>
+</tr>
+<tr class="row-odd"><td><p>SQLite / SDB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>, <code class="docutils literal notranslate"><span class="pre">.db</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.sdb&quot;)</span></code></p></td>
+<td><p>—</p></td>
+<td><p>WeeWX / Davis 気象データ</p></td>
+</tr>
+<tr class="row-even"><td><p>NetCDF4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.nc</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;netcdf4&quot;)</span></code></p></td>
+<td><p>xarray, netcdf4</p></td>
+<td><p>時間次元を持つ変数を自動検出</p></td>
+</tr>
+<tr class="row-odd"><td><p>Zarr</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.zarr</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(format=&quot;zarr&quot;)</span></code></p></td>
+<td><p>zarr</p></td>
+<td><p>クラウド最適化チャンク配列</p></td>
+</tr>
+<tr class="row-even"><td><p>Audio (MP3, FLAC 等)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.mp3</span></code>, <code class="docutils literal notranslate"><span class="pre">.flac</span></code>, <code class="docutils literal notranslate"><span class="pre">.ogg</span></code>, <code class="docutils literal notranslate"><span class="pre">.m4a</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.mp3&quot;)</span></code></p></td>
+<td><p>pydub (+ffmpeg)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">t0</span></code> は常に 0（WAV と同様）</p></td>
+</tr>
+<tr class="row-odd"><td><p>NDS2</p></td>
+<td><p>(ネットワーク)</p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.fetch(...)</span></code></p></td>
+<td><p>nds2-client</p></td>
+<td><p>ネットワークデータサーバ</p></td>
+</tr>
+<tr class="row-even"><td><p>TDMS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.tdms</span></code></p></td>
+<td class="text-center"><p>○</p></td>
+<td class="text-center"><p>×</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(&quot;file.tdms&quot;)</span></code></p></td>
+<td><p>npTDMS</p></td>
+<td><p>National Instruments</p></td>
+</tr>
+<tr class="row-odd"><td><p>ORF</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.orf</span></code></p></td>
+<td class="text-center"><p>×</p></td>
+<td class="text-center"><p>×</p></td>
+<td><p>—</p></td>
+<td><p>—</p></td>
+<td><p>未実装（stub）</p></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<div><p><strong>注記</strong>: 「gwpy 標準」と記載したフォーマット（GWF, HDF5, CSV/TXT, Pickle）は gwpy のビルトイン IO 経路で処理されます。gwexpy は gwpy を継承しているため、そのまま利用可能です。</p>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h2>フォーマット別詳細<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<hr class="docutils" />
+<section id="gbd-graphtec-gbd">
+<h3>GBD — GRAPHTEC データロガー <code class="docutils literal notranslate"><span class="pre">.gbd</span></code><a class="headerlink" href="#gbd-graphtec-gbd" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.gbd</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ×
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/logger.gbd&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> (str or tzinfo) — ロガーのローカルタイムゾーン（IANA 名、例: <code class="docutils literal notranslate"><span class="pre">&quot;Asia/Tokyo&quot;</span></code> または UTC オフセット）。<strong>必須</strong>。省略すると <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が発生します。</p></li>
+</ul>
+<p><strong>主な任意引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (iterable[str], optional) — 読み込むチャンネルのリスト。省略時は全チャンネル。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">digital_channels</span></code> (iterable[str], optional) — デジタルチャンネルとして扱うチャンネル名のリスト。省略時は <code class="docutils literal notranslate"><span class="pre">ALARM</span></code>, <code class="docutils literal notranslate"><span class="pre">ALARMOUT</span></code>, <code class="docutils literal notranslate"><span class="pre">PULSE*</span></code>, <code class="docutils literal notranslate"><span class="pre">LOGIC*</span></code> を自動検出。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str or Unit, optional) — 物理単位の上書き。デフォルト <code class="docutils literal notranslate"><span class="pre">'V'</span></code>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epoch</span></code> (float or datetime, optional) — エポック（GPS 秒）の上書き。datetime の場合は GPS に変換される。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pad</span></code> (float, optional) — パディング値。デフォルト <code class="docutils literal notranslate"><span class="pre">NaN</span></code>。</p></li>
+</ul>
+<p><strong>外部依存</strong>: なし（ネイティブ実装）</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>デジタルチャンネル（<code class="docutils literal notranslate"><span class="pre">ALARM</span></code>, <code class="docutils literal notranslate"><span class="pre">PULSE*</span></code> 等）は 0/1 にバイナライズされます。</p></li>
+<li><p>ヘッダの <code class="docutils literal notranslate"><span class="pre">HeaderSiz</span></code> フィールドが見つからない場合、<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が発生します。</p></li>
+<li><p>スケールは AMP セクションから自動抽出されます。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/gbd.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="ats-metronix-ats">
+<h3>ATS — Metronix <code class="docutils literal notranslate"><span class="pre">.ats</span></code><a class="headerlink" href="#ats-metronix-ats" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.ats</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ×
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.ats&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>mth5 ライブラリ経由で読む場合（<code class="docutils literal notranslate"><span class="pre">.atss</span></code> ファイル向け）:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.atss&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;ats.mth5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>: なし（バイナリヘッダから自動的にメタデータを取得）</p>
+<p><strong>外部依存</strong>:</p>
+<ul class="simple">
+<li><p>標準読み込み: なし（ネイティブバイナリパーサ）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> フォーマット: <code class="docutils literal notranslate"><span class="pre">mth5</span></code> ライブラリが必要。未インストール時は <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> が発生します。</p></li>
+</ul>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>ATS ヘッダバージョン 80/81 に対応。CEA/sliced ヘッダ（バージョン 1080）は未対応（<code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>）。</p></li>
+<li><p>LSB 値（mV/count）からボルト（V）への変換が自動で行われます。</p></li>
+<li><p>チャンネル名はヘッダ情報から <code class="docutils literal notranslate"><span class="pre">Metronix_{system}_{serial}_{type}_{sensor}_{serial}</span></code> の形式で自動生成されます。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> フォーマットは mth5 のファイル名規約に従う必要があります。規約に合わない場合はデフォルトのバイナリパーサを使用してください。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/ats.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="sdb-weewx-davis-sdb">
+<h3>SDB — WeeWX / Davis 気象ステーション <code class="docutils literal notranslate"><span class="pre">.sdb</span></code><a class="headerlink" href="#sdb-weewx-davis-sdb" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite</span></code>, <code class="docutils literal notranslate"><span class="pre">.sqlite3</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ×
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/weewx.sdb&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">table</span></code> (str, optional) — 読み込むテーブル名。デフォルト <code class="docutils literal notranslate"><span class="pre">'archive'</span></code>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">columns</span></code> (list[str], optional) — 読み込む列名のリスト。省略時は既知の気象カラム（<code class="docutils literal notranslate"><span class="pre">barometer</span></code>, <code class="docutils literal notranslate"><span class="pre">outTemp</span></code>, <code class="docutils literal notranslate"><span class="pre">windSpeed</span></code> 等）を自動選択。</p></li>
+</ul>
+<p><strong>外部依存</strong>: なし（標準ライブラリの <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> + <code class="docutils literal notranslate"><span class="pre">pandas</span></code> を使用）</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>Imperial 単位から SI 単位への自動変換が行われます（例: °F → °C、inHg → hPa、mph → m/s、inch → mm）。</p></li>
+<li><p>テーブルには <code class="docutils literal notranslate"><span class="pre">dateTime</span></code> カラムが必須です（UNIX タイムスタンプ）。</p></li>
+<li><p>サンプリングレートは <code class="docutils literal notranslate"><span class="pre">dateTime</span></code> の中央値差分から自動推定されます。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/sdb.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="tdms-national-instruments-tdms">
+<h3>TDMS — National Instruments <code class="docutils literal notranslate"><span class="pre">.tdms</span></code><a class="headerlink" href="#tdms-national-instruments-tdms" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.tdms</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ×
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.tdms&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (list[str], optional) — 読み込むチャンネルのリスト。チャンネル名は <code class="docutils literal notranslate"><span class="pre">&quot;グループ名/チャンネル名&quot;</span></code> の形式。省略時は全チャンネル。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — 物理単位の上書き。</p></li>
+</ul>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">npTDMS</span></code> — 未インストール時は <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> が発生し、<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">nptdms</span></code> を案内するメッセージが表示されます。</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>チャンネル名は <code class="docutils literal notranslate"><span class="pre">&quot;グループ名/チャンネル名&quot;</span></code> の形式で格納されます。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wf_increment</span></code>（サンプル間隔）と <code class="docutils literal notranslate"><span class="pre">wf_start_time</span></code>（開始時刻）は TDMS プロパティから取得されます。</p></li>
+<li><p>開始時刻が <code class="docutils literal notranslate"><span class="pre">numpy.datetime64</span></code> や <code class="docutils literal notranslate"><span class="pre">datetime</span></code> の場合、GPS 時刻に自動変換されます。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/tdms.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="wav-wav">
+<h3>WAV — 音声ファイル <code class="docutils literal notranslate"><span class="pre">.wav</span></code><a class="headerlink" href="#wav-wav" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.wav</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/audio.wav&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>: なし</p>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">scipy</span></code>（<code class="docutils literal notranslate"><span class="pre">scipy.io.wavfile</span></code>）— gwexpy の推奨依存関係に含まれます。</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">t0</span></code> は常に <code class="docutils literal notranslate"><span class="pre">0.0</span></code>（GPS 秒）に設定されます。WAV ファイルは絶対時刻を保持しません。</p></li>
+<li><p>マルチチャンネルファイルの場合、チャンネル名は <code class="docutils literal notranslate"><span class="pre">channel_0</span></code>, <code class="docutils literal notranslate"><span class="pre">channel_1</span></code>, … の形式になります。</p></li>
+<li><p>モノラルファイルは自動的に 1 チャンネルとして読み込まれます。</p></li>
+<li><p>Write は gwpy 標準の WAV writer 経路で対応します。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/wav.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="miniseed-mseed">
+<h3>MiniSEED — 地震波形 <code class="docutils literal notranslate"><span class="pre">.mseed</span></code><a class="headerlink" href="#miniseed-mseed" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.mseed</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="c1"># 読み込み</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">)</span>
+
+<span class="c1"># 書き出し</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (list[str], optional) — 読み込むチャンネル。トレース ID（<code class="docutils literal notranslate"><span class="pre">NET.STA.LOC.CHA</span></code>）またはチャンネルコードで指定。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — 物理単位の上書き。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epoch</span></code> (float or datetime, optional) — エポックの上書き。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> (str, optional) — タイムゾーン指定。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pad</span></code> (float, optional) — ギャップ埋め値。デフォルト <code class="docutils literal notranslate"><span class="pre">NaN</span></code>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gap</span></code> (str, optional) — ギャップ処理方法。<code class="docutils literal notranslate"><span class="pre">&quot;pad&quot;</span></code>（デフォルト）または <code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code>。</p></li>
+</ul>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">ObsPy</span></code> — 未インストール時は <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> が発生し、<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">obspy</span></code> を案内するメッセージが表示されます。</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>ObsPy の <code class="docutils literal notranslate"><span class="pre">read()</span></code> 関数を経由してデータを読み込みます。</p></li>
+<li><p>ギャップがある場合はデフォルトで <code class="docutils literal notranslate"><span class="pre">NaN</span></code> パディングされます。<code class="docutils literal notranslate"><span class="pre">gap=&quot;raise&quot;</span></code> でエラーにすることも可能です。</p></li>
+<li><p>トレースの自動マージ（<code class="docutils literal notranslate"><span class="pre">merge(method=1)</span></code>）が適用されます。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/seismic.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="sac-sac">
+<h3>SAC — 地震波形 <code class="docutils literal notranslate"><span class="pre">.sac</span></code><a class="headerlink" href="#sac-sac" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.sac</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.sac&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;sac&quot;</span><span class="p">)</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.sac&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;sac&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>: MiniSEED と同一（<code class="docutils literal notranslate"><span class="pre">channels</span></code>, <code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, <code class="docutils literal notranslate"><span class="pre">timezone</span></code>, <code class="docutils literal notranslate"><span class="pre">pad</span></code>, <code class="docutils literal notranslate"><span class="pre">gap</span></code>）。</p>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">ObsPy</span></code></p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>SAC は通常 1 トレース/ファイルです。複数トレースの書き出しは ObsPy の挙動に依存します。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/seismic.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="gse2-gse2">
+<h3>GSE2 — 地震波形 <code class="docutils literal notranslate"><span class="pre">.gse2</span></code><a class="headerlink" href="#gse2-gse2" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.gse2</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.gse2&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gse2&quot;</span><span class="p">)</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.gse2&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gse2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>: MiniSEED と同一（<code class="docutils literal notranslate"><span class="pre">channels</span></code>, <code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, <code class="docutils literal notranslate"><span class="pre">timezone</span></code>, <code class="docutils literal notranslate"><span class="pre">pad</span></code>, <code class="docutils literal notranslate"><span class="pre">gap</span></code>）。</p>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">ObsPy</span></code></p>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/seismic.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="knet-k-net-knet">
+<h3>KNET — K-NET 強震記録 <code class="docutils literal notranslate"><span class="pre">.knet</span></code><a class="headerlink" href="#knet-k-net-knet" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.knet</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ×
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.knet&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;knet&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>: MiniSEED と同一（<code class="docutils literal notranslate"><span class="pre">channels</span></code>, <code class="docutils literal notranslate"><span class="pre">unit</span></code>, <code class="docutils literal notranslate"><span class="pre">epoch</span></code>, <code class="docutils literal notranslate"><span class="pre">timezone</span></code>, <code class="docutils literal notranslate"><span class="pre">pad</span></code>, <code class="docutils literal notranslate"><span class="pre">gap</span></code>）。</p>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">ObsPy</span></code></p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>読み込みのみ対応。書き出し（Writer）は登録されていません。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/seismic.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="win-win32-nied-win-win-cnt">
+<h3>WIN / WIN32 — NIED WIN 形式 <code class="docutils literal notranslate"><span class="pre">.win</span></code> / <code class="docutils literal notranslate"><span class="pre">.cnt</span></code><a class="headerlink" href="#win-win32-nied-win-win-cnt" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.win</span></code>, <code class="docutils literal notranslate"><span class="pre">.cnt</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ×
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.win&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;win&quot;</span><span class="p">)</span>
+<span class="c1"># または</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.cnt&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;win32&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">century</span></code> (str, optional) — 年の世紀部分。デフォルト <code class="docutils literal notranslate"><span class="pre">&quot;20&quot;</span></code>。</p></li>
+</ul>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">ObsPy</span></code> — ObsPy がインストールされていない場合、reader が登録されず <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> が発生します。</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>gwexpy 独自の改良版パーサを使用しています。ObsPy 標準の WIN reader と比較して以下の修正が適用されています:</p>
+<ul>
+<li><p>0.5 バイト（4 ビット）デルタデコード: 下位ニブルの符号処理を修正。奇数デルタ数の未使用ニブルをスキップ。</p></li>
+<li><p>3 バイト（24 ビット）デルタデコード: 演算子優先度と符号保持アンパック/シフトを修正。</p></li>
+</ul>
+</li>
+<li><p>ギャップは <code class="docutils literal notranslate"><span class="pre">NaN</span></code> でマージされます。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/win.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="dttxml-diag-dtt-xml">
+<h3>DTTXML — Diag DTT XML (時系列)<a class="headerlink" href="#dttxml-diag-dtt-xml" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.xml</span></code>, <code class="docutils literal notranslate"><span class="pre">.xml.gz</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ×
+<strong>推奨 API（時系列）</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/dtt_output.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dttxml&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;TS&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>推奨 API（周波数系列）</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
+
+<span class="n">fsd</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/dtt_output.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dttxml&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;PSD&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries.matrix</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesMatrix</span>
+
+<span class="n">fsm</span> <span class="o">=</span> <span class="n">FrequencySeriesMatrix</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/dtt_output.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dttxml&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;TF&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">products</span></code> (str) — 取り出す製品の種類。<strong>必須</strong>。省略すると <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> が発生します。</p>
+<ul>
+<li><p>時系列: <code class="docutils literal notranslate"><span class="pre">&quot;TS&quot;</span></code></p></li>
+<li><p>周波数系列: <code class="docutils literal notranslate"><span class="pre">&quot;PSD&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ASD&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;FFT&quot;</span></code></p></li>
+<li><p>マトリクス: <code class="docutils literal notranslate"><span class="pre">&quot;TF&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;STF&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;CSD&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;COH&quot;</span></code></p></li>
+</ul>
+</li>
+</ul>
+<p><strong>主な任意引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (iterable[str], optional) — 読み込むチャンネルのリスト。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — 物理単位の上書き。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epoch</span></code> (float or datetime, optional) — エポックの上書き。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timezone</span></code> (str, optional) — タイムゾーン指定。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">native</span></code> (bool, optional) — <code class="docutils literal notranslate"><span class="pre">True</span></code> にすると gwexpy ネイティブ XML パーサを使用。複素 TF データ（subtype 6 の位相損失修正）に推奨。デフォルト <code class="docutils literal notranslate"><span class="pre">False</span></code>。（FrequencySeriesDict / FrequencySeriesMatrix のみ）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rows</span></code>, <code class="docutils literal notranslate"><span class="pre">cols</span></code>, <code class="docutils literal notranslate"><span class="pre">pairs</span></code> — マトリクス読み込み時のフィルタリング（FrequencySeriesMatrix のみ）。</p></li>
+</ul>
+<p><strong>外部依存</strong>: なし（ネイティブ実装）</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>時系列と周波数領域の両方に対応。<code class="docutils literal notranslate"><span class="pre">products</span></code> の値で出力型が決まります。</p></li>
+<li><p>拡張子 <code class="docutils literal notranslate"><span class="pre">.xml</span></code> は自動識別されます（<code class="docutils literal notranslate"><span class="pre">format=&quot;dttxml&quot;</span></code> の明示指定は省略可能）。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/dttxml.py</span></code>, <code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/dttxml.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="gwf-gwf">
+<h3>GWF — 重力波フレーム <code class="docutils literal notranslate"><span class="pre">.gwf</span></code><a class="headerlink" href="#gwf-gwf" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.gwf</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.gwf&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gwf&quot;</span><span class="p">)</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.gwf&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gwf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし（gwpy 標準の引数に準拠）</p>
+<p><strong>外部依存</strong>: — （gwpy 標準。内部で <code class="docutils literal notranslate"><span class="pre">python-ldas-tools-framecpp</span></code> 等を使用）</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>gwpy の標準 IO 経路で処理されます。gwexpy 側に独自の reader/writer 実装はありません。</p></li>
+</ul>
+<p><strong>参照実装</strong>: gwpy 標準（<code class="docutils literal notranslate"><span class="pre">gwpy/timeseries/io/gwf.py</span></code>）</p>
+</section>
+<hr class="docutils" />
+<section id="hdf5-h5-hdf5">
+<h3>HDF5 — 汎用科学データ <code class="docutils literal notranslate"><span class="pre">.h5</span></code> / <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code><a class="headerlink" href="#hdf5-h5-hdf5" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.h5</span></code>, <code class="docutils literal notranslate"><span class="pre">.hdf5</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">h5py</span></code>（gwexpy の必須依存関係に含まれます）</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>gwexpy の <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> は HDF5 ファイルに対して拡張された読み込みロジックを持ちます。</p></li>
+<li><p>レイアウト自動検出（<code class="docutils literal notranslate"><span class="pre">LAYOUT_DATASET</span></code> / <code class="docutils literal notranslate"><span class="pre">LAYOUT_GROUP</span></code>）に対応。</p></li>
+<li><p>キーマップと並び順の復元に対応。</p></li>
+</ul>
+<p><strong>参照実装</strong>: gwpy 標準（<code class="docutils literal notranslate"><span class="pre">gwpy/timeseries/io/hdf5.py</span></code>）+ gwexpy 拡張（<code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/collections.py</span></code>）</p>
+</section>
+<hr class="docutils" />
+<section id="csv-txt-ascii-csv-txt">
+<h3>CSV / TXT — ASCII テキスト <code class="docutils literal notranslate"><span class="pre">.csv</span></code> / <code class="docutils literal notranslate"><span class="pre">.txt</span></code><a class="headerlink" href="#csv-txt-ascii-csv-txt" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">.txt</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="c1"># 単一ファイル</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.csv&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">)</span>
+
+<span class="c1"># ディレクトリ内の複数ファイルをまとめて読み込み</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data_dir/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>外部依存</strong>: なし（gwpy 標準）</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>gwexpy はディレクトリパスを指定すると、ディレクトリ内の CSV/TXT ファイルをまとめて <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict</span></code> として読み込む拡張機能を持ちます。</p></li>
+</ul>
+<p><strong>参照実装</strong>: gwpy 標準（<code class="docutils literal notranslate"><span class="pre">gwpy/timeseries/io/ascii.py</span></code>）+ gwexpy 拡張（<code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/collections.py</span></code>）</p>
+</section>
+<hr class="docutils" />
+<section id="pickle-python-pkl">
+<h3>Pickle — Python シリアライズ <code class="docutils literal notranslate"><span class="pre">.pkl</span></code><a class="headerlink" href="#pickle-python-pkl" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.pkl</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.pkl&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pickle&quot;</span><span class="p">)</span>
+<span class="n">ts</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.pkl&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pickle&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>外部依存</strong>: なし</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>gwpy 標準のシリアライズ経路。信頼できるソースのファイルにのみ使用してください（pickle の安全性に関する一般的な注意事項が適用されます）。</p></li>
+</ul>
+<p><strong>参照実装</strong>: gwpy 標準</p>
+</section>
+<hr class="docutils" />
+<section id="root-cern-root-root">
+<h3>ROOT — CERN ROOT <code class="docutils literal notranslate"><span class="pre">.root</span></code><a class="headerlink" href="#root-cern-root-root" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.root</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.table</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventTable</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">EventTable</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.root&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>外部依存</strong>: — （gwpy の table/root 経路経由）</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>gwexpy の <code class="docutils literal notranslate"><span class="pre">table/io/root.py</span></code> は gwpy の同名モジュールの再エクスポートです。</p></li>
+<li><p>主にイベントテーブル形式のデータに使用されます。</p></li>
+</ul>
+<p><strong>参照実装</strong>: gwpy 標準（<code class="docutils literal notranslate"><span class="pre">gwpy/table/io/root.py</span></code>）— gwexpy 経由: <code class="docutils literal notranslate"><span class="pre">gwexpy/table/io/root.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="nds2">
+<h3>NDS2 — ネットワークデータサーバ<a class="headerlink" href="#nds2" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: なし（ネットワークプロトコル）
+<strong>Read/Write</strong>: Read ○ / Write ×
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;channel_name&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">nds2-client</span></code>（Python バインディング）</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>ファイルではなくネットワーク経由のデータ取得です。</p></li>
+<li><p>gwpy 標準の <code class="docutils literal notranslate"><span class="pre">fetch()</span></code> メソッドを使用します。</p></li>
+</ul>
+<p><strong>参照実装</strong>: gwpy 標準（<code class="docutils literal notranslate"><span class="pre">gwpy/timeseries/io/nds2.py</span></code>）</p>
+</section>
+<hr class="docutils" />
+<section id="audio-mp3-flac-ogg-m4a-pydub">
+<h3>Audio — MP3 / FLAC / OGG / M4A（pydub 経由）<a class="headerlink" href="#audio-mp3-flac-ogg-m4a-pydub" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.mp3</span></code>, <code class="docutils literal notranslate"><span class="pre">.flac</span></code>, <code class="docutils literal notranslate"><span class="pre">.ogg</span></code>, <code class="docutils literal notranslate"><span class="pre">.m4a</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="c1"># 読み込み（拡張子で自動判別）</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/audio.mp3&quot;</span><span class="p">)</span>
+
+<span class="c1"># format を明示指定</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/audio.dat&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;flac&quot;</span><span class="p">)</span>
+
+<span class="c1"># 書き出し</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.flac&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;flac&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (iterable[str], optional) — 読み込むチャンネル名のリスト（<code class="docutils literal notranslate"><span class="pre">&quot;channel_0&quot;</span></code> 等）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — 物理単位の上書き。</p></li>
+</ul>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">pydub</span></code> — 未インストール時は <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> が発生し、<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pydub</span></code> を案内するメッセージが表示されます。MP3 / M4A の読み書きには別途 <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code> が必要です（<code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">install</span> <span class="pre">ffmpeg</span></code> 等）。FLAC は ffmpeg なしで読み書き可能な場合があります。</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">t0</span></code> は常に <code class="docutils literal notranslate"><span class="pre">0.0</span></code>（GPS 秒）に設定されます。音声ファイルは絶対時刻を保持しません（WAV と同じ挙動）。</p></li>
+<li><p>読み込み時、サンプル値は <code class="docutils literal notranslate"><span class="pre">[-1.0,</span> <span class="pre">1.0]</span></code> の範囲に正規化されます。</p></li>
+<li><p>マルチチャンネルファイルの場合、チャンネル名は <code class="docutils literal notranslate"><span class="pre">channel_0</span></code>, <code class="docutils literal notranslate"><span class="pre">channel_1</span></code>, … の形式になります。</p></li>
+<li><p>書き出し時はピーク値で正規化した 16-bit PCM に変換されます。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/audio.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="netcdf4-nc-xarray">
+<h3>NetCDF4 — 科学データ <code class="docutils literal notranslate"><span class="pre">.nc</span></code>（xarray 経由）<a class="headerlink" href="#netcdf4-nc-xarray" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.nc</span></code>
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.nc&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;netcdf4&quot;</span><span class="p">)</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.nc&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;netcdf4&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (list[str], optional) — 読み込む変数名のリスト。省略時は時間次元を持つ全変数。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — 物理単位の上書き。省略時はファイルの <code class="docutils literal notranslate"><span class="pre">units</span></code> 属性を使用。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time_coord</span></code> (str, optional) — 時間座標の名前。省略時は <code class="docutils literal notranslate"><span class="pre">&quot;time&quot;</span></code> を自動検出。</p></li>
+</ul>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">xarray</span></code> + <code class="docutils literal notranslate"><span class="pre">netcdf4</span></code> — 未インストール時は <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> が発生し、<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">xarray</span> <span class="pre">netcdf4</span></code> を案内するメッセージが表示されます。</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>時間次元（<code class="docutils literal notranslate"><span class="pre">time</span></code>）を持つ変数のみが <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> に変換されます。時間次元のない変数はスキップされます。</p></li>
+<li><p>時間座標は <code class="docutils literal notranslate"><span class="pre">datetime64</span></code> → GPS 秒 に自動変換されます。</p></li>
+<li><p>多次元変数（時間 + 空間等）は時間軸以外の次元がフラット化され、<code class="docutils literal notranslate"><span class="pre">変数名_0</span></code>, <code class="docutils literal notranslate"><span class="pre">変数名_1</span></code>, … として格納されます。</p></li>
+<li><p>書き出し時は <code class="docutils literal notranslate"><span class="pre">t0</span></code> と <code class="docutils literal notranslate"><span class="pre">dt</span></code> から <code class="docutils literal notranslate"><span class="pre">datetime64</span></code> の時間座標を再構成します。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/netcdf4_.py</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="zarr-zarr">
+<h3>Zarr — クラウド最適化チャンク配列 <code class="docutils literal notranslate"><span class="pre">.zarr</span></code><a class="headerlink" href="#zarr-zarr" title="Link to this heading"></a></h3>
+<p><strong>拡張子</strong>: <code class="docutils literal notranslate"><span class="pre">.zarr</span></code>（ディレクトリストア）
+<strong>Read/Write</strong>: Read ○ / Write ○
+<strong>推奨 API</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/data.zarr&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;zarr&quot;</span><span class="p">)</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.zarr&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;zarr&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>必須引数</strong>: なし</p>
+<p><strong>主な任意引数</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code> (list[str], optional) — 読み込む配列名のリスト。省略時はルートグループの全配列。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unit</span></code> (str, optional) — 物理単位の上書き。</p></li>
+</ul>
+<p><strong>外部依存</strong>: <code class="docutils literal notranslate"><span class="pre">zarr</span></code> — 未インストール時は <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> が発生し、<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">zarr</span></code> を案内するメッセージが表示されます。</p>
+<p><strong>注意</strong>:</p>
+<ul class="simple">
+<li><p>gwexpy の Zarr 規約: ルートグループ内の各配列が 1 チャンネルに対応。配列の <code class="docutils literal notranslate"><span class="pre">attrs</span></code> に <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code>（Hz）と <code class="docutils literal notranslate"><span class="pre">t0</span></code>（GPS 秒）を格納。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> が未設定の場合は <code class="docutils literal notranslate"><span class="pre">dt</span></code> の逆数を、それもなければ 1 Hz をデフォルトとします。<code class="docutils literal notranslate"><span class="pre">t0</span></code> 未設定時は <code class="docutils literal notranslate"><span class="pre">0.0</span></code>。</p></li>
+<li><p>ディレクトリストア、zip ストア等、zarr ライブラリがサポートする全ストアタイプに対応しています。</p></li>
+<li><p>書き出し時は各チャンネルの <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">t0</span></code>, <code class="docutils literal notranslate"><span class="pre">dt</span></code>, <code class="docutils literal notranslate"><span class="pre">unit</span></code> を配列属性として保存します。</p></li>
+</ul>
+<p><strong>参照実装</strong>: <code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/zarr_.py</span></code></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="gwexpy">
+<h2>設計上サポート（gwexpy 内に専用実装なし）<a class="headerlink" href="#gwexpy" title="Link to this heading"></a></h2>
+<p>以下のフォーマットは設計表（<code class="docutils literal notranslate"><span class="pre">io_support.csv</span></code>）に記載されていますが、gwexpy リポジトリ内に専用の reader/writer 実装は現時点でありません。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>フォーマット</p></th>
+<th class="head"><p>拡張子</p></th>
+<th class="head text-center"><p>設計上の Read/Write</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>MTH5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.h5</span></code></p></td>
+<td class="text-center"><p>Read ○ / Write ○</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mth5</span></code> ライブラリ経由。<code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> で部分対応あり</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="stub">
+<h2>未実装（stub）一覧<a class="headerlink" href="#stub" title="Link to this heading"></a></h2>
+<p>以下のフォーマットはプレースホルダ（stub）として IO レジストリに登録されています。<code class="docutils literal notranslate"><span class="pre">.read()</span></code> を呼び出すと未実装例外（<code class="docutils literal notranslate"><span class="pre">UnimplementedIOError</span></code> または <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code>）が発生します。仕様書やサンプルファイルの提供により、将来の実装が予定されています。</p>
+<section id="stub-gwexpy-timeseries-io-stubs-py">
+<h3>時系列 stub（<code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/stubs.py</span></code>）<a class="headerlink" href="#stub-gwexpy-timeseries-io-stubs-py" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>フォーマット名</p></th>
+<th class="head"><p>登録クラス</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">orf</span></code></p></td>
+<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
+<td><p>ORF 形式</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mem</span></code></p></td>
+<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
+<td><p>MEM 形式</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wvf</span></code></p></td>
+<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
+<td><p>WVF 形式</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">wdf</span></code></p></td>
+<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
+<td><p>WDF 形式</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">taffmat</span></code></p></td>
+<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
+<td><p>TAFFMAT 形式</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lsf</span></code></p></td>
+<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
+<td><p>LSF 形式</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">li</span></code></p></td>
+<td><p>TimeSeries, TimeSeriesDict, TimeSeriesMatrix</p></td>
+<td><p>LI 形式</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="stub-gwexpy-frequencyseries-io-stubs-py">
+<h3>周波数系列 stub（<code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/stubs.py</span></code>）<a class="headerlink" href="#stub-gwexpy-frequencyseries-io-stubs-py" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>フォーマット名</p></th>
+<th class="head"><p>登録クラス</p></th>
+<th class="head"><p>備考</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">win</span></code></p></td>
+<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
+<td><p>時系列では実装済みだが周波数領域は未実装</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">win32</span></code></p></td>
+<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
+<td><p>同上</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sdb</span></code></p></td>
+<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
+<td><p>時系列では実装済みだが周波数領域は未実装</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">orf</span></code></p></td>
+<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
+<td><p>未実装</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mem</span></code></p></td>
+<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
+<td><p>未実装</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">wvf</span></code></p></td>
+<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
+<td><p>未実装</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">wdf</span></code></p></td>
+<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
+<td><p>未実装</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">taffmat</span></code></p></td>
+<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
+<td><p>未実装</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lsf</span></code></p></td>
+<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
+<td><p>未実装</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">li</span></code></p></td>
+<td><p>FrequencySeries, FrequencySeriesDict, FrequencySeriesMatrix</p></td>
+<td><p>未実装</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="read-write">
+<h2><code class="docutils literal notranslate"><span class="pre">.read()</span></code> / <code class="docutils literal notranslate"><span class="pre">.write()</span></code> の基本的な使い方<a class="headerlink" href="#read-write" title="Link to this heading"></a></h2>
+<p>gwexpy のすべてのデータクラスは gwpy の IO レジストリを利用しています。基本的な使い方は以下の通りです。</p>
+<section id="id3">
+<h3>読み込み<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="c1"># 拡張子から自動判別</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/file.gbd&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)</span>
+
+<span class="c1"># format を明示的に指定</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/file.dat&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">)</span>
+
+<span class="c1"># 単一チャンネルを読み込む</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/file.gbd&quot;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3>書き出し<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 対応フォーマットへ書き出し</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;miniseed&quot;</span><span class="p">)</span>
+<span class="n">tsd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;output.h5&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;hdf5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>周波数系列<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeriesDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+
+<span class="n">fsd</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;path/to/dtt.xml&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;dttxml&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">=</span><span class="s2">&quot;PSD&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="format">
+<h3><code class="docutils literal notranslate"><span class="pre">format</span></code> 引数の動作<a class="headerlink" href="#format" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>省略時: ファイルの拡張子から <code class="docutils literal notranslate"><span class="pre">io_registry.register_identifier(...)</span></code> で登録された識別関数を使って自動判別されます。</p></li>
+<li><p>明示指定時: 指定されたフォーマット名に対応する reader/writer が直接呼び出されます。</p></li>
+<li><p>自動判別が失敗する場合（例: <code class="docutils literal notranslate"><span class="pre">.xml</span></code> は DTTXML 以外の XML でも使われるため）は <code class="docutils literal notranslate"><span class="pre">format</span></code> を明示してください。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>参照元ファイル一覧<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>本ドキュメントの作成にあたり参照した実装ファイルの一覧です。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>モジュールパス</p></th>
+<th class="head"><p>概要</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/__init__.py</span></code></p></td>
+<td><p>時系列 IO モジュールの登録エントリポイント</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/gbd.py</span></code></p></td>
+<td><p>GBD reader。<code class="docutils literal notranslate"><span class="pre">timezone</span></code> は必須</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/ats.py</span></code></p></td>
+<td><p>ATS reader（バイナリパーサ）。<code class="docutils literal notranslate"><span class="pre">ats.mth5</span></code> variant あり</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/sdb.py</span></code></p></td>
+<td><p>SDB reader（WeeWX SQLite）。<code class="docutils literal notranslate"><span class="pre">sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">sqlite</span></code>, <code class="docutils literal notranslate"><span class="pre">sqlite3</span></code> の 3 フォーマット名で登録</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/tdms.py</span></code></p></td>
+<td><p>TDMS reader。<code class="docutils literal notranslate"><span class="pre">npTDMS</span></code> に依存</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/wav.py</span></code></p></td>
+<td><p>WAV reader。<code class="docutils literal notranslate"><span class="pre">scipy.io.wavfile</span></code> ラッパー。<code class="docutils literal notranslate"><span class="pre">t0=0</span></code> 固定</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/seismic.py</span></code></p></td>
+<td><p>MiniSEED / SAC / GSE2 / KNET reader/writer。ObsPy に依存</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/win.py</span></code></p></td>
+<td><p>WIN/WIN32 reader。ObsPy 必須。改良版 4bit/24bit デルタデコード</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/dttxml.py</span></code></p></td>
+<td><p>DTTXML 時系列 reader。<code class="docutils literal notranslate"><span class="pre">products</span></code> は必須</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/audio.py</span></code></p></td>
+<td><p>Audio reader/writer（MP3/FLAC/OGG/M4A）。pydub に依存。<code class="docutils literal notranslate"><span class="pre">t0=0</span></code> 固定</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/netcdf4_.py</span></code></p></td>
+<td><p>NetCDF4 reader/writer。xarray に依存。時間次元を自動検出</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/zarr_.py</span></code></p></td>
+<td><p>Zarr reader/writer。zarr に依存。gwexpy 独自のストア規約</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/stubs.py</span></code></p></td>
+<td><p>時系列 stub（<code class="docutils literal notranslate"><span class="pre">orf</span></code>, <code class="docutils literal notranslate"><span class="pre">mem</span></code>, <code class="docutils literal notranslate"><span class="pre">wvf</span></code>, <code class="docutils literal notranslate"><span class="pre">wdf</span></code>, <code class="docutils literal notranslate"><span class="pre">taffmat</span></code>, <code class="docutils literal notranslate"><span class="pre">lsf</span></code>, <code class="docutils literal notranslate"><span class="pre">li</span></code>）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/hdf5.py</span></code></p></td>
+<td><p>HDF5 IO（gwpy 再エクスポート）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/ascii.py</span></code></p></td>
+<td><p>ASCII IO（gwpy 再エクスポート）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/nds2.py</span></code></p></td>
+<td><p>NDS2 IO（gwpy 再エクスポート）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/cache.py</span></code></p></td>
+<td><p>キャッシュ IO（gwpy 再エクスポート）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/losc.py</span></code></p></td>
+<td><p>GWOSC IO（gwpy 再エクスポート）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/io/core.py</span></code></p></td>
+<td><p>コア IO（gwpy 再エクスポート）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/__init__.py</span></code></p></td>
+<td><p>周波数系列 IO モジュールの登録エントリポイント</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/dttxml.py</span></code></p></td>
+<td><p>DTTXML 周波数系列 reader。<code class="docutils literal notranslate"><span class="pre">products</span></code> は必須。<code class="docutils literal notranslate"><span class="pre">native</span></code> オプションあり</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/stubs.py</span></code></p></td>
+<td><p>周波数系列 stub（<code class="docutils literal notranslate"><span class="pre">win</span></code>, <code class="docutils literal notranslate"><span class="pre">win32</span></code>, <code class="docutils literal notranslate"><span class="pre">sdb</span></code>, <code class="docutils literal notranslate"><span class="pre">orf</span></code>, <code class="docutils literal notranslate"><span class="pre">mem</span></code>, <code class="docutils literal notranslate"><span class="pre">wvf</span></code>, <code class="docutils literal notranslate"><span class="pre">wdf</span></code>, <code class="docutils literal notranslate"><span class="pre">taffmat</span></code>, <code class="docutils literal notranslate"><span class="pre">lsf</span></code>, <code class="docutils literal notranslate"><span class="pre">li</span></code>）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/hdf5.py</span></code></p></td>
+<td><p>HDF5 IO（gwpy 再エクスポート）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/ascii.py</span></code></p></td>
+<td><p>ASCII IO（gwpy 再エクスポート）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/frequencyseries/io/ligolw.py</span></code></p></td>
+<td><p>LIGO_LW IO（gwpy 再エクスポート）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/table/io/root.py</span></code></p></td>
+<td><p>ROOT IO（gwpy 再エクスポート）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gwexpy/timeseries/collections.py</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> 拡張（HDF5 レイアウト検出、ディレクトリ読み込み）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">docs/developers/design/design_data/io_support.csv</span></code></p></td>
+<td><p>設計データ: 対応フォーマット一覧</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwexpy_for_gwpy_users_ja.html" class="btn btn-neutral float-left" title="GWexpy 機能一覧 (GWpyユーザー向け)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorials/index.html" class="btn btn-neutral float-right" title="チュートリアル" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -57,6 +57,7 @@
 <li class="toctree-l3"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">File I/O Supported Formats Guide</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../examples/index.html">Case Studies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
@@ -131,9 +132,10 @@
 <p>This method uses bootstrap resampling (including Moving Block Bootstrap for time-correlated data) across the time axis of a spectrogram to estimate the median or mean ASD along with confidence intervals.</p>
 <p><strong>Variance Inflation Factor (VIF)</strong>
 When calculating statistics from overlapping data segments (like in Welch’s method), the segments are correlated, artificially reducing the apparent variance. <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> correctly applies a Variance Inflation Factor (VIF) based on the overlapping window’s autocorrelation function.</p>
-<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\text{factor} = \sqrt{1 + 2 \sum_{k=1}^{M-1} (1 - k/M) |\rho_{\text{window}}(k \Delta)|^2}
-</pre></div>
-</div>
+<div class="math notranslate nohighlight">
+\[
+\text{factor} = \sqrt{1 + 2 \sum_{k=1}^{M-1} (1 - k/M) |\rho_{\text{window}}(k \Delta)|^2}
+\]</div>
 <p>This ensures that the confidence intervals returned by the bootstrap method accurately reflect the true statistical uncertainty of the data.</p>
 </section>
 <section id="transient-signal-fft">
@@ -151,9 +153,10 @@ When calculating statistics from overlapping data segments (like in Welch’s me
 <h3>Response Function Analysis<a class="headerlink" href="#response-function-analysis" title="Link to this heading"></a></h3>
 <p>The framework includes tools for analyzing a system’s response to injected signals (e.g., stepped sine excitations). The <code class="docutils literal notranslate"><span class="pre">detect_step_segments</span></code> function automatically tracks the injection frequency in a spectrogram to identify stable segments of excitation.</p>
 <p>The coupling function (transfer function magnitude) is then estimated by comparing the signal power during the injection to the background power, ensuring that background noise does not artificially inflate the transfer function estimate.</p>
-<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\text{CF}(f) = \sqrt{\frac{P_{\text{tgt,inj}}(f) - P_{\text{tgt,bkg}}(f)}{P_{\text{wit,inj}}(f) - P_{\text{wit,bkg}}(f)}}
-</pre></div>
-</div>
+<div class="math notranslate nohighlight">
+\[
+\text{CF}(f) = \sqrt{\frac{P_{\text{tgt,inj}}(f) - P_{\text{tgt,bkg}}(f)}{P_{\text{wit,inj}}(f) - P_{\text{wit,bkg}}(f)}}
+\]</div>
 </section>
 </section>
 <section id="bayesian-fitting-modeling">
@@ -162,9 +165,10 @@ When calculating statistics from overlapping data segments (like in Welch’s me
 <h3>Generalized Least Squares (GLS) and MCMC<a class="headerlink" href="#generalized-least-squares-gls-and-mcmc" title="Link to this heading"></a></h3>
 <p>When fitting models to data with correlated errors (where the noise covariance matrix is known), <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> supports Generalized Least Squares (GLS) solving. The fitting core integrates natively with the <code class="docutils literal notranslate"><span class="pre">emcee</span></code> package to perform Markov Chain Monte Carlo (MCMC) parameter estimation.</p>
 <p>For GLS, the log-likelihood leverages the full inverse covariance matrix (<span class="math notranslate nohighlight">\(\Sigma^{-1}\)</span>), accommodating heteroscedastic and correlated errors.</p>
-<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\log p(y|\theta) \propto - \frac{1}{2} r^T \Sigma^{-1} r
-</pre></div>
-</div>
+<div class="math notranslate nohighlight">
+\[
+\log p(y|\theta) \propto - \frac{1}{2} r^T \Sigma^{-1} r
+\]</div>
 <p>For complex-valued data (common in transfer functions), the framework utilizes the Hermitian form <span class="math notranslate nohighlight">\(r^\dagger \Sigma^{-1} r\)</span> to correctly process both magnitude and phase residuals.</p>
 </section>
 <section id="dimensionality-reduction-pca-ica">

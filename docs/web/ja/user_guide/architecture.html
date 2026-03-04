@@ -59,6 +59,7 @@
 <li class="toctree-l3"><a class="reference internal" href="quickstart.html">クイックスタート</a></li>
 <li class="toctree-l3"><a class="reference internal" href="getting_started.html">はじめに (Getting Started)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/index.html">チュートリアル</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../examples/index.html">ケーススタディ</a></li>
 <li class="toctree-l3"><a class="reference internal" href="numerical_stability.html">数値的安定性と精度</a></li>
@@ -131,9 +132,10 @@
 <p>このメソッドは、スペクトログラムの時間軸に沿ってブートストラップ再サンプリング（時間相関データには Moving Block Bootstrap を含む）を使用し、中央値 または 平均値 ASD とその信頼区間を推定します。</p>
 <p><strong>分散膨張係数 (Variance Inflation Factor; VIF)</strong>
 Welch法のようにオーバーラップしたデータセグメントから統計量を計算する場合、セグメント間に相関があるため、見かけの分散が人工的に小さくなります。<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は、オーバーラップに使用した窓関数の自己相関に基づいて、分散膨張係数 (VIF) を数学的に正しく適用します。</p>
-<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\text{factor} = \sqrt{1 + 2 \sum_{k=1}^{M-1} (1 - k/M) |\rho_{\text{window}}(k \Delta)|^2}
-</pre></div>
-</div>
+<div class="math notranslate nohighlight">
+\[
+\text{factor} = \sqrt{1 + 2 \sum_{k=1}^{M-1} (1 - k/M) |\rho_{\text{window}}(k \Delta)|^2}
+\]</div>
 <p>これにより、ブートストラップ法が返す信頼区間が、データの真の統計的不確実性を正確に反映するようになります。</p>
 </section>
 <section id="fft">
@@ -151,9 +153,10 @@ Welch法のようにオーバーラップしたデータセグメントから統
 <h3>応答関数解析<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p>このフレームワークには、注入された信号（例: スウェプトサインやステップサイン励起）に対するシステムの応答を解析するためのツールが含まれています。<code class="docutils literal notranslate"><span class="pre">detect_step_segments</span></code> 関数は、スペクトログラム内のインジェクション周波数を自動的に追跡し、励起が安定しているセグメントを特定します。</p>
 <p>結合関数（伝達関数の振幅）は、インジェクション中の信号パワーをバックグラウンドパワーと比較することで推定され、バックグラウンドノイズが意図せず伝達関数の推定値をインフレさせないようにします。</p>
-<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\text{CF}(f) = \sqrt{\frac{P_{\text{tgt,inj}}(f) - P_{\text{tgt,bkg}}(f)}{P_{\text{wit,inj}}(f) - P_{\text{wit,bkg}}(f)}}
-</pre></div>
-</div>
+<div class="math notranslate nohighlight">
+\[
+\text{CF}(f) = \sqrt{\frac{P_{\text{tgt,inj}}(f) - P_{\text{tgt,bkg}}(f)}{P_{\text{wit,inj}}(f) - P_{\text{wit,bkg}}(f)}}
+\]</div>
 </section>
 </section>
 <section id="id7">
@@ -162,9 +165,10 @@ Welch法のようにオーバーラップしたデータセグメントから統
 <h3>一般化最小二乗法 (GLS) と MCMC<a class="headerlink" href="#gls-mcmc" title="Link to this heading"></a></h3>
 <p>相関エラー（ノイズの共分散行列が既知の場合）を持つデータにモデルを適合させる場合、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> は一般化最小二乗法 (GLS) ソルバーをサポートします。フィッティング・コアは <code class="docutils literal notranslate"><span class="pre">emcee</span></code> パッケージとネイティブに統合されており、マルコフ連鎖モンテカルロ (MCMC) パラメータ推定を実行できます。</p>
 <p>GLS の場合、対数尤度関数は完全な逆共分散行列 (<span class="math notranslate nohighlight">\(\Sigma^{-1}\)</span>) を利用し、不均一分散および相関エラーに対応します。</p>
-<div class="highlight-math notranslate"><div class="highlight"><pre><span></span>\log p(y|\theta) \propto - \frac{1}{2} r^T \Sigma^{-1} r
-</pre></div>
-</div>
+<div class="math notranslate nohighlight">
+\[
+\log p(y|\theta) \propto - \frac{1}{2} r^T \Sigma^{-1} r
+\]</div>
 <p>伝達関数のような複素数値データの場合、フレームワークはエルミート形式 <span class="math notranslate nohighlight">\(r^\dagger \Sigma^{-1} r\)</span> を利用し、振幅と位相の残差を両方とも正しく処理します。</p>
 </section>
 <section id="pca-ica">

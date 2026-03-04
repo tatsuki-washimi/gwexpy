@@ -28,9 +28,9 @@ This method uses bootstrap resampling (including Moving Block Bootstrap for time
 **Variance Inflation Factor (VIF)**
 When calculating statistics from overlapping data segments (like in Welch's method), the segments are correlated, artificially reducing the apparent variance. `gwexpy` correctly applies a Variance Inflation Factor (VIF) based on the overlapping window's autocorrelation function.
 
-```math
+$$
 \text{factor} = \sqrt{1 + 2 \sum_{k=1}^{M-1} (1 - k/M) |\rho_{\text{window}}(k \Delta)|^2}
-```
+$$
 
 This ensures that the confidence intervals returned by the bootstrap method accurately reflect the true statistical uncertainty of the data.
 
@@ -50,9 +50,9 @@ The framework includes tools for analyzing a system's response to injected signa
 
 The coupling function (transfer function magnitude) is then estimated by comparing the signal power during the injection to the background power, ensuring that background noise does not artificially inflate the transfer function estimate.
 
-```math
+$$
 \text{CF}(f) = \sqrt{\frac{P_{\text{tgt,inj}}(f) - P_{\text{tgt,bkg}}(f)}{P_{\text{wit,inj}}(f) - P_{\text{wit,bkg}}(f)}}
-```
+$$
 
 ## Bayesian Fitting & Modeling
 
@@ -62,9 +62,9 @@ When fitting models to data with correlated errors (where the noise covariance m
 
 For GLS, the log-likelihood leverages the full inverse covariance matrix ($\Sigma^{-1}$), accommodating heteroscedastic and correlated errors.
 
-```math
+$$
 \log p(y|\theta) \propto - \frac{1}{2} r^T \Sigma^{-1} r
-```
+$$
 
 For complex-valued data (common in transfer functions), the framework utilizes the Hermitian form $r^\dagger \Sigma^{-1} r$ to correctly process both magnitude and phase residuals.
 
