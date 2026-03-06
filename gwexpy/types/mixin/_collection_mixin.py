@@ -1,0 +1,51 @@
+"""Mixins and factories for eliminating dict/list delegation boilerplate."""
+
+from __future__ import annotations
+
+from typing import Any
+
+
+class DictMapMixin:
+    """Mixin providing ``_map_new`` for dict-like collections."""
+
+    def _map_new(self, method_name: str, *args: Any, **kwargs: Any):
+        """Apply *method_name* to each value, returning a new collection."""
+        new = self.__class__()
+        for key, val in self.items():
+            new[key] = getattr(val, method_name)(*args, **kwargs)
+        return new
+
+
+class ListMapMixin:
+    """Mixin providing ``_map_new_list`` for list-like collections."""
+
+    def _map_new_list(self, method_name: str, *args: Any, **kwargs: Any):
+        """Apply *method_name* to each element, returning a new collection."""
+        new = self.__class__()
+        for item in self:
+            list.append(new, getattr(item, method_name)(*args, **kwargs))
+        return new
+
+
+def _make_dict_map_method(method_name: str, *, doc: str = "") -> Any:
+    """Create a delegation method for dict-like collections."""
+
+    def method(self, *args, **kwargs):
+        return self._map_new(method_name, *args, **kwargs)
+
+    method.__name__ = method_name
+    method.__qualname__ = method_name
+    method.__doc__ = doc or f"Apply ``{method_name}`` to each element."
+    return method
+
+
+def _make_list_map_method(method_name: str, *, doc: str = "") -> Any:
+    """Create a delegation method for list-like collections."""
+
+    def method(self, *args, **kwargs):
+        return self._map_new_list(method_name, *args, **kwargs)
+
+    method.__name__ = method_name
+    method.__qualname__ = method_name
+    method.__doc__ = doc or f"Apply ``{method_name}`` to each element."
+    return method
