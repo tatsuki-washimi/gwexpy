@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import warnings
 from collections import UserDict, UserList
 from typing import SupportsIndex
 
@@ -156,22 +157,42 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, t0, t1, inplace=False):
-        """Crop each spectrogram."""
-        if inplace:
-            target = self
-        else:
-            target = self.__class__()
+    def crop(self, start=None, end=None, copy=False, **kwargs):
+        """Crop each spectrogram in time.
 
-        for i, s in enumerate(self):
-            res = s.crop(t0, t1)
-            if inplace:
-                self[i] = res
-            else:
-                target.append(res)
-        if inplace:
+        Parameters
+        ----------
+        start : float, optional
+            Start time.
+        end : float, optional
+            End time.
+        copy : bool, optional
+            If True, return a new list (default). If False, modify in place.
+        **kwargs
+            Deprecated: ``t0``/``t1``/``inplace`` are accepted for
+            backwards compatibility but will be removed in a future release.
+        """
+        if "t0" in kwargs:
+            warnings.warn("t0 is deprecated, use start", DeprecationWarning, stacklevel=2)
+            start = kwargs.pop("t0")
+        if "t1" in kwargs:
+            warnings.warn("t1 is deprecated, use end", DeprecationWarning, stacklevel=2)
+            end = kwargs.pop("t1")
+        if "inplace" in kwargs:
+            warnings.warn("inplace is deprecated, use copy", DeprecationWarning, stacklevel=2)
+            copy = not kwargs.pop("inplace")
+        if kwargs:
+            raise TypeError(f"Unexpected keyword arguments: {set(kwargs)}")
+
+        if copy:
+            target = self.__class__()
+            for s in self:
+                target.append(s.crop(start, end))
+            return target
+        else:
+            for i, s in enumerate(self):
+                self[i] = s.crop(start, end)
             return self
-        return target
 
     def crop_frequencies(self, f0, f1, inplace=False):
         """Crop frequencies."""
@@ -501,33 +522,46 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, t0, t1, inplace=False):
+    def crop(self, start=None, end=None, copy=False, **kwargs):
         """Crop each spectrogram in time.
 
         Parameters
         ----------
-        t0, t1 : float
-            Start and end times.
-        inplace : bool, optional
-            If True, modify in place.
+        start : float, optional
+            Start time.
+        end : float, optional
+            End time.
+        copy : bool, optional
+            If True, return a new dict (default). If False, modify in place.
+        **kwargs
+            Deprecated: ``t0``/``t1``/``inplace`` are accepted for
+            backwards compatibility but will be removed in a future release.
 
         Returns
         -------
         SpectrogramDict
         """
-        if inplace:
-            target = self
-        else:
+        if "t0" in kwargs:
+            warnings.warn("t0 is deprecated, use start", DeprecationWarning, stacklevel=2)
+            start = kwargs.pop("t0")
+        if "t1" in kwargs:
+            warnings.warn("t1 is deprecated, use end", DeprecationWarning, stacklevel=2)
+            end = kwargs.pop("t1")
+        if "inplace" in kwargs:
+            warnings.warn("inplace is deprecated, use copy", DeprecationWarning, stacklevel=2)
+            copy = not kwargs.pop("inplace")
+        if kwargs:
+            raise TypeError(f"Unexpected keyword arguments: {set(kwargs)}")
+
+        if copy:
             target = self.__class__()
-        for k, v in self.items():
-            res = v.crop(t0, t1)
-            if inplace:
-                self[k] = res
-            else:
-                target[k] = res
-        if inplace:
+            for k, v in self.items():
+                target[k] = v.crop(start, end)
+            return target
+        else:
+            for k, v in self.items():
+                self[k] = v.crop(start, end)
             return self
-        return target
 
     def crop_frequencies(self, f0, f1, inplace=False):
         """Crop each spectrogram in frequency.

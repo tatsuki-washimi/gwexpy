@@ -4,6 +4,9 @@ from __future__ import annotations
 import gwpy.table
 
 
+__all__ = [name for name in dir(gwpy.table) if not name.startswith("_")]
+
+
 def __getattr__(name):
     return getattr(gwpy.table, name)
 

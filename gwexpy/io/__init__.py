@@ -10,6 +10,9 @@ import gwpy.io as _gwpy_io
 from . import utils  # noqa: F401
 
 
+__all__ = ["utils"] + [name for name in dir(_gwpy_io) if not name.startswith("_")]
+
+
 def __getattr__(name):
     if name.startswith("_"):
         raise AttributeError(name)

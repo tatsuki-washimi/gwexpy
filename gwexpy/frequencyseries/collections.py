@@ -25,6 +25,13 @@ from gwexpy.io.hdf5_collection import (
     write_hdf5_manifest,
 )
 
+from gwexpy.types.mixin._collection_mixin import (
+    DictMapMixin,
+    ListMapMixin,
+    _make_dict_map_method,
+    _make_list_map_method,
+)
+
 from .frequencyseries import FrequencySeries, as_series_dict_class
 
 _FS = TypeVar("_FS", bound=FrequencySeries)
@@ -252,7 +259,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
 
 
 @as_series_dict_class(FrequencySeries)
-class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
+class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]):
     """Ordered mapping of `FrequencySeries` objects keyed by label."""
 
     EntryClass = FrequencySeries
@@ -269,25 +276,8 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
         super().crop(*args, **kwargs)
         return self
 
-    def pad(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Pad each FrequencySeries in the dict.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.pad(*args, **kwargs)
-        return new_dict
-
-    def interpolate(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Interpolate each FrequencySeries in the dict.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.interpolate(*args, **kwargs)
-        return new_dict
+    pad = _make_dict_map_method("pad", doc="Pad each FrequencySeries in the dict.")
+    interpolate = _make_dict_map_method("interpolate", doc="Interpolate each FrequencySeries in the dict.")
 
     # --- In-place Element Operations ---
 
@@ -313,123 +303,27 @@ class FrequencySeriesDict(FrequencySeriesBaseDict[FrequencySeries]):
     # 2. Filter & Response
     # ===============================
 
-    def zpk(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Apply ZPK filter to each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.zpk(*args, **kwargs)
-        return new_dict
-
-    def filter(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Apply filter to each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.filter(*args, **kwargs)
-        return new_dict
-
-    def apply_response(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Apply response to each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.apply_response(*args, **kwargs)
-        return new_dict
+    zpk = _make_dict_map_method("zpk", doc="Apply ZPK filter to each FrequencySeries.")
+    filter = _make_dict_map_method("filter", doc="Apply filter to each FrequencySeries.")
+    apply_response = _make_dict_map_method("apply_response", doc="Apply response to each FrequencySeries.")
 
     # ===============================
     # 3. Analysis & Conversion
     # ===============================
 
-    def phase(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Compute phase of each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.phase(*args, **kwargs)
-        return new_dict
+    phase = _make_dict_map_method("phase", doc="Compute phase of each FrequencySeries.")
 
     def angle(self, *args, **kwargs) -> FrequencySeriesDict:
         """Alias for phase(). Returns a new FrequencySeriesDict."""
         return self.phase(*args, **kwargs)
 
-    def degree(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Compute phase (in degrees) of each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.degree(*args, **kwargs)
-        return new_dict
-
-    def to_db(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Convert each FrequencySeries to dB.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.to_db(*args, **kwargs)
-        return new_dict
-
-    def differentiate_time(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Apply time differentiation to each item.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.differentiate_time(*args, **kwargs)
-        return new_dict
-
-    def integrate_time(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Apply time integration to each item.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.integrate_time(*args, **kwargs)
-        return new_dict
-
-    def group_delay(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Compute group delay of each item.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.group_delay(*args, **kwargs)
-        return new_dict
-
-    def smooth(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Smooth each FrequencySeries.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.smooth(*args, **kwargs)
-        return new_dict
-
-    def rebin(self, width: float | u.Quantity) -> FrequencySeriesDict:
-        """
-        Rebin each FrequencySeries in the dict.
-        Returns a new FrequencySeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, fs in self.items():
-            new_dict[key] = fs.rebin(width)
-        return new_dict
+    degree = _make_dict_map_method("degree", doc="Compute phase (in degrees) of each FrequencySeries.")
+    to_db = _make_dict_map_method("to_db", doc="Convert each FrequencySeries to dB.")
+    differentiate_time = _make_dict_map_method("differentiate_time", doc="Apply time differentiation to each item.")
+    integrate_time = _make_dict_map_method("integrate_time", doc="Apply time integration to each item.")
+    group_delay = _make_dict_map_method("group_delay", doc="Compute group delay of each item.")
+    smooth = _make_dict_map_method("smooth", doc="Smooth each FrequencySeries.")
+    rebin = _make_dict_map_method("rebin", doc="Rebin each FrequencySeries in the dict.")
 
     # ===============================
     # 4. Time Domain Conversion
@@ -764,7 +658,7 @@ class FrequencySeriesBaseList(list[_FS]):
         return registry.write(self, target, *args, **kwargs)
 
 
-class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
+class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]):
     """List of `FrequencySeries` objects."""
 
     EntryClass = FrequencySeries
@@ -773,157 +667,35 @@ class FrequencySeriesList(FrequencySeriesBaseList[FrequencySeries]):
     # 1. Axis & Edit Operations
     # ===============================
 
-    def crop(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Crop each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.crop(*args, **kwargs))
-        return new_list
-
-    def pad(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Pad each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.pad(*args, **kwargs))
-        return new_list
-
-    def interpolate(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Interpolate each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.interpolate(*args, **kwargs))
-        return new_list
+    crop = _make_list_map_method("crop", doc="Crop each FrequencySeries in the list.")
+    pad = _make_list_map_method("pad", doc="Pad each FrequencySeries in the list.")
+    interpolate = _make_list_map_method("interpolate", doc="Interpolate each FrequencySeries in the list.")
 
     # ===============================
     # 2. Filter & Response
     # ===============================
 
-    def zpk(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Apply ZPK filter to each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.zpk(*args, **kwargs))
-        return new_list
-
-    def filter(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Apply filter to each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.filter(*args, **kwargs))
-        return new_list
-
-    def apply_response(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Apply response to each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.apply_response(*args, **kwargs))
-        return new_list
+    zpk = _make_list_map_method("zpk", doc="Apply ZPK filter to each FrequencySeries in the list.")
+    filter = _make_list_map_method("filter", doc="Apply filter to each FrequencySeries in the list.")
+    apply_response = _make_list_map_method("apply_response", doc="Apply response to each FrequencySeries in the list.")
 
     # ===============================
     # 3. Analysis & Conversion
     # ===============================
 
-    def phase(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Compute phase of each FrequencySeries.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.phase(*args, **kwargs))
-        return new_list
+    phase = _make_list_map_method("phase", doc="Compute phase of each FrequencySeries.")
 
     def angle(self, *args, **kwargs) -> FrequencySeriesList:
         """Alias for phase(). Returns a new FrequencySeriesList."""
         return self.phase(*args, **kwargs)
 
-    def degree(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Compute phase (in degrees) of each FrequencySeries.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.degree(*args, **kwargs))
-        return new_list
-
-    def to_db(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Convert each FrequencySeries to dB.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.to_db(*args, **kwargs))
-        return new_list
-
-    def differentiate_time(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Apply time differentiation to each item.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.differentiate_time(*args, **kwargs))
-        return new_list
-
-    def integrate_time(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Apply time integration to each item.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.integrate_time(*args, **kwargs))
-        return new_list
-
-    def group_delay(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Compute group delay of each item.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.group_delay(*args, **kwargs))
-        return new_list
-
-    def smooth(self, *args, **kwargs) -> FrequencySeriesList:
-        """
-        Smooth each FrequencySeries.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.smooth(*args, **kwargs))
-        return new_list
-
-    def rebin(self, width: float | u.Quantity) -> FrequencySeriesList:
-        """
-        Rebin each FrequencySeries in the list.
-        Returns a new FrequencySeriesList.
-        """
-        new_list = self.__class__()
-        for fs in self:
-            list.append(new_list, fs.rebin(width))
-        return new_list
+    degree = _make_list_map_method("degree", doc="Compute phase (in degrees) of each FrequencySeries.")
+    to_db = _make_list_map_method("to_db", doc="Convert each FrequencySeries to dB.")
+    differentiate_time = _make_list_map_method("differentiate_time", doc="Apply time differentiation to each item.")
+    integrate_time = _make_list_map_method("integrate_time", doc="Apply time integration to each item.")
+    group_delay = _make_list_map_method("group_delay", doc="Compute group delay of each item.")
+    smooth = _make_list_map_method("smooth", doc="Smooth each FrequencySeries.")
+    rebin = _make_list_map_method("rebin", doc="Rebin each FrequencySeries in the list.")
 
     # ===============================
     # 4. Time Domain Conversion

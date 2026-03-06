@@ -13,6 +13,8 @@ from gwpy.cli import *  # noqa: F403
 
 from .._version import __version__
 
+__all__ = ["main", "__version__"]
+
 
 def main(args=None):
     """Entry point for the gwexpy command."""

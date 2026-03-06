@@ -8,6 +8,12 @@ from .core import tconvert as tconvert
 from .core import to_gps as to_gps
 
 
+__all__ = (
+    ["from_gps", "tconvert", "to_gps"]
+    + [name for name in dir(gwpy.time) if not name.startswith("_")]
+)
+
+
 def __getattr__(name):
     return getattr(gwpy.time, name)
 
