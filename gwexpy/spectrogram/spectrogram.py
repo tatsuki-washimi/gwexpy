@@ -7,6 +7,7 @@ from astropy import units as u
 from gwpy.spectrogram import Spectrogram as BaseSpectrogram
 
 from gwexpy.types.mixin import InteropMixin, PhaseMethodsMixin
+from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 if TYPE_CHECKING:
     from astropy.units import Quantity
@@ -15,16 +16,10 @@ if TYPE_CHECKING:
     from gwexpy.timeseries import TimeSeriesList
 
 
-class Spectrogram(PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
+class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     """
     Extends gwpy.spectrogram.Spectrogram with additional interop methods.
     """
-
-    def plot(self, **kwargs: Any) -> Any:
-        """Plot this Spectrogram. Delegates to gwexpy.plot.Plot."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
 
     def __getitem__(self, item: Any) -> Any:
         """
