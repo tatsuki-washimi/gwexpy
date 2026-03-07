@@ -30,7 +30,17 @@ def test_spectrogram_list():
     except TypeError:
         pass
 
-    # Crop
+    # to_matrix (must be tested before crop, which mutates in-place)
+    mat = sl.to_matrix()
+    assert isinstance(mat, SpectrogramMatrix)
+    assert mat.shape == (2, 10, 10)
+    assert mat.times is not None
+    assert len(mat.times) == 10
+    assert mat.frequencies is not None
+    assert len(mat.frequencies) == 10
+    assert mat.unit == u.Unit("strain")
+
+    # Crop (note: gwpy crop mutates spectrograms in-place)
     sl_cropped = sl.crop(t0=2, t1=8)
     # t0=0, dt=1. Indices 2 to 8.
     # Result time axis should start >= 2
@@ -43,17 +53,6 @@ def test_spectrogram_list():
     # Check freq axis
     assert sl_freq[0].frequencies[0].value >= 20
     assert sl_freq[0].frequencies[-1].value <= 80
-
-    # to_matrix
-    mat = sl.to_matrix()
-    # Expect (2, 10, 10)
-    assert isinstance(mat, SpectrogramMatrix)
-    assert mat.shape == (2, 10, 10)
-    assert mat.times is not None
-    assert len(mat.times) == 10
-    assert mat.frequencies is not None
-    assert len(mat.frequencies) == 10
-    assert mat.unit == u.Unit("strain")
 
     # Plot check (dry run) - skip if matplotlib not available
     matplotlib = pytest.importorskip("matplotlib")
@@ -91,6 +90,10 @@ def test_spectrogram_dict():
     sd_cropped = sd.crop(2, 8)
     assert sd_cropped["a"].times[0].value >= 2
 
-    # Matrix
-    mat = sd.to_matrix()
+    # Matrix (use fresh spectrograms to avoid crop mutation effects)
+    sd_fresh = SpectrogramDict({
+        "a": create_mock_spectrogram("a"),
+        "b": create_mock_spectrogram("b"),
+    })
+    mat = sd_fresh.to_matrix()
     assert mat.shape == (2, 10, 10)

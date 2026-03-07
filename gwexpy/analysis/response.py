@@ -485,33 +485,3 @@ class ResponseFunctionAnalysis:
         )
 
 
-def estimate_response_function(
-    witness: TimeSeries,
-    target: TimeSeries,
-    segments: list[tuple[float, float, float]] | None = None,
-    fftlength: float = 4.0,
-    overlap: float = 0.0,
-    auto_detect: bool = True,
-    snr_threshold: float = 10.0,
-    min_duration: float = 5.0,
-    trim_edge: float = 1.0,
-    witness_bkg: TimeSeries | None = None,
-    target_bkg: TimeSeries | None = None,
-    **kwargs: object,
-) -> ResponseFunctionResult:
-    """Helper function."""
-    analysis = ResponseFunctionAnalysis()
-    return analysis.compute(
-        witness,
-        target,
-        segments=segments,
-        fftlength=fftlength,
-        overlap=overlap,
-        auto_detect=auto_detect,
-        snr_threshold=snr_threshold,
-        min_duration=min_duration,
-        trim_edge=trim_edge,
-        witness_bkg=witness_bkg,
-        target_bkg=target_bkg,
-        **kwargs,
-    )

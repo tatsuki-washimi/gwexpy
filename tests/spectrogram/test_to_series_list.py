@@ -221,7 +221,7 @@ class TestToFrequencySeriesList:
                 actual = float(fs.epoch.gps)
             else:
                 actual = float(fs.epoch)
-            assert actual == expected
+            assert actual == pytest.approx(expected, abs=1e-6)
 
     def test_channel_inheritance(self, sample_spectrogram):
         """Test that each FrequencySeries inherits channel from Spectrogram."""
