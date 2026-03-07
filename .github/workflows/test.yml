@@ -35,6 +35,13 @@ jobs:
         if: matrix.python-version == '3.12'
         run: ruff check .
 
+      - name: Dead code check
+        if: matrix.python-version == '3.12'
+        continue-on-error: true
+        run: |
+          pip install vulture
+          vulture gwexpy/ --min-confidence 80
+
       - name: Run tests
         env:
           PYTHONFAULTHANDLER: "1"
