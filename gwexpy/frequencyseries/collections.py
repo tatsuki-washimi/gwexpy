@@ -30,6 +30,7 @@ from gwexpy.types.mixin._collection_mixin import (
     _make_dict_plain_method,
     _make_list_map_method,
 )
+from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from .frequencyseries import FrequencySeries, as_series_dict_class
 
@@ -258,7 +259,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
 
 
 @as_series_dict_class(FrequencySeries)
-class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]):
+class FrequencySeriesDict(PlotMixin, DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]):
     """Ordered mapping of `FrequencySeries` objects keyed by label."""
 
     EntryClass = FrequencySeries
@@ -542,12 +543,6 @@ class FrequencySeriesBaseList(list[_FS]):
     def copy(self) -> FrequencySeriesBaseList[_FS]:
         return self.__class__(*(item.copy() for item in self))
 
-    def plot(self, **kwargs: Any):
-        """Plot all series. Delegates to gwexpy.plot.Plot."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
-
     def plot_all(self, *args: Any, **kwargs: Any):
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
@@ -632,7 +627,7 @@ class FrequencySeriesBaseList(list[_FS]):
         return registry.write(self, target, *args, **kwargs)
 
 
-class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]):
+class FrequencySeriesList(PlotMixin, ListMapMixin, FrequencySeriesBaseList[FrequencySeries]):
     """List of `FrequencySeries` objects."""
 
     EntryClass = FrequencySeries

@@ -40,6 +40,7 @@ from gwexpy.types.mixin._collection_mixin import (
     _make_dict_map_method,
     _make_list_map_method,
 )
+from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from .spectral import coherence_matrix_from_collection, csd_matrix_from_collection
 
@@ -67,7 +68,7 @@ def _parse_fft_positional_args(
     return args[0], (args[1] if len(args) == 2 else None)
 
 
-class TimeSeriesDict(DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
+class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
     """Dictionary of TimeSeries objects."""
 
     @classmethod
@@ -616,12 +617,6 @@ class TimeSeriesDict(DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
             return target
         return super().write(target, *args, **kwargs)
 
-    def plot(self, **kwargs: Any):
-        """Plot all series. Delegates to gwexpy.plot.Plot."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
-
     def plot_all(self, *args: Any, **kwargs: Any):
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
@@ -979,7 +974,7 @@ class TimeSeriesDict(DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
         return self.to_matrix().ica(*args, **kwargs)
 
 
-class TimeSeriesList(ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesList):
+class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesList):
     """List of TimeSeries objects."""
 
     def csd_matrix(
@@ -1732,12 +1727,6 @@ class TimeSeriesList(ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesList):
     def ica(self, *args, **kwargs):
         """Perform ICA decomposition across channels."""
         return self.to_matrix().ica(*args, **kwargs)
-
-    def plot(self, **kwargs: Any):
-        """Plot all series. Delegates to gwexpy.plot.Plot."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
 
     def plot_all(self, *args: Any, **kwargs: Any):
         """Alias for plot(). Plots all series."""

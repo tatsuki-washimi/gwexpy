@@ -731,12 +731,6 @@ class SpectrogramMatrix(  # type: ignore[misc]
         # But core checks shape[-1].
         return self.shape
 
-    def plot(self, **kwargs):
-        """Plot the matrix data using gwexpy.plot.Plot."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
-
     def plot_summary(self, **kwargs):
         """
         Plot Matrix as side-by-side Spectrograms and percentile summaries.

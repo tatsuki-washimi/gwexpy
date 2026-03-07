@@ -26,6 +26,7 @@ from gwexpy.interop import (
 from gwexpy.interop._optional import require_optional
 from gwexpy.types._stats import StatisticalMethodsMixin
 from gwexpy.types.mixin import RegularityMixin, SignalAnalysisMixin
+from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 if TYPE_CHECKING:
     try:
@@ -49,6 +50,7 @@ except ImportError:
 
 
 class FrequencySeries(
+    PlotMixin,
     SignalAnalysisMixin,
     RegularityMixin,
     FittingMixin,
@@ -336,12 +338,6 @@ class FrequencySeries(
             channel=self.channel,
             epoch=self.epoch,
         )
-
-    def plot(self, **kwargs: Any) -> Any:
-        """Plot this FrequencySeries. Delegates to gwexpy.plot.Plot."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
 
     # --- Interop helpers ---
     def filterba(self, *args, **kwargs):

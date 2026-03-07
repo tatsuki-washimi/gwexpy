@@ -22,6 +22,7 @@ from numpy.typing import ArrayLike
 
 from gwexpy.fitting.mixin import FittingMixin
 from gwexpy.types.mixin import PhaseMethodsMixin, RegularityMixin, SignalAnalysisMixin
+from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from ._analysis import TimeSeriesAnalysisMixin
 from ._interop import TimeSeriesInteropMixin
@@ -43,6 +44,7 @@ if TYPE_CHECKING:
 
 
 class TimeSeries(
+    PlotMixin,  # Centralized plot() via deferred import
     TimeSeriesInteropMixin,  # Interoperability (highest priority)
     TimeSeriesAnalysisMixin,  # Analysis
     TimeSeriesResamplingMixin,  # Resampling
@@ -74,12 +76,6 @@ class TimeSeries(
             "t0": self.t0,
             "dt": self.dt,
         }
-
-    def plot(self, **kwargs: Any) -> Plot:
-        """Plot this TimeSeries. Delegates to gwexpy.plot.Plot."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
 
     def __new__(cls, data: ArrayLike, *args: Any, **kwargs: Any) -> TimeSeries:
         """

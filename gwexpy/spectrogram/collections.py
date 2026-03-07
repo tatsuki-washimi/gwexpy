@@ -25,6 +25,7 @@ from gwexpy.io.hdf5_collection import (
     write_hdf5_manifest,
 )
 from gwexpy.types.mixin import PhaseMethodsMixin
+from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from .spectrogram import Spectrogram
 
@@ -401,7 +402,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         return self.__class__([s.degree(unwrap=unwrap) for s in self])
 
 
-class SpectrogramDict(PhaseMethodsMixin, UserDict):
+class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
     """
     Dictionary of Spectrogram objects.
 
@@ -664,13 +665,6 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         if inplace:
             return self
         return target
-
-    def plot(self, **kwargs):
-        """Plot all spectrograms stacked vertically."""
-        from gwexpy.plot import Plot
-
-        # Pass self directly, Plot will unpack values
-        return Plot(self, **kwargs)
 
     def plot_summary(self, **kwargs):
         """
