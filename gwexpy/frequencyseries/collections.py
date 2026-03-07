@@ -675,17 +675,10 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
     # 4. Time Domain Conversion
     # ===============================
 
-    def ifft(self, *args, **kwargs):
-        """
-        Compute IFFT of each FrequencySeries.
-        Returns a TimeSeriesList.
-        """
-        from gwexpy.timeseries import TimeSeriesList
-
-        new_list = TimeSeriesList()
-        for fs in self:
-            list.append(new_list, fs.ifft(*args, **kwargs))
-        return new_list
+    ifft = _make_list_map_method(
+        "ifft", doc="Compute IFFT of each FrequencySeries. Returns a TimeSeriesList.",
+        result_class_path="gwexpy.timeseries.TimeSeriesList",
+    )
 
     # ===============================
     # 5. External Library Interop

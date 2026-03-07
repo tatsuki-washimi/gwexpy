@@ -1475,89 +1475,34 @@ class TimeSeriesList(ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesList):
 
     # --- Spectral Conversion ---
 
-    def fft(self, *args, **kwargs):
-        """
-        Apply FFT to each TimeSeries in the list.
-        Returns a FrequencySeriesList.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesList
-
-        new_list = FrequencySeriesList()
-        for ts in self:
-            list.append(new_list, ts.fft(*args, **kwargs))
-        return new_list
-
-    def average_fft(self, *args, **kwargs):
-        """
-        Apply average_fft to each TimeSeries in the list.
-        Returns a FrequencySeriesList.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesList
-
-        new_list = FrequencySeriesList()
-        for ts in self:
-            list.append(new_list, ts.average_fft(*args, **kwargs))
-        return new_list
-
-    def psd(self, *args, **kwargs):
-        """
-        Compute PSD for each TimeSeries in the list.
-        Returns a FrequencySeriesList.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesList
-
-        new_list = FrequencySeriesList()
-        for ts in self:
-            list.append(new_list, ts.psd(*args, **kwargs))
-        return new_list
-
-    def asd(self, *args, **kwargs):
-        """
-        Compute ASD for each TimeSeries in the list.
-        Returns a FrequencySeriesList.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesList
-
-        new_list = FrequencySeriesList()
-        for ts in self:
-            list.append(new_list, ts.asd(*args, **kwargs))
-        return new_list
-
-    def spectrogram(self, *args, **kwargs):
-        """
-        Compute spectrogram for each TimeSeries in the list.
-        Returns a SpectrogramList.
-        """
-        from gwexpy.spectrogram import SpectrogramList
-
-        new_list = SpectrogramList()
-        for ts in self:
-            new_list.append(ts.spectrogram(*args, **kwargs))
-        return new_list
-
-    def spectrogram2(self, *args, **kwargs):
-        """
-        Compute spectrogram2 for each TimeSeries in the list.
-        Returns a SpectrogramList.
-        """
-        from gwexpy.spectrogram import SpectrogramList
-
-        new_list = SpectrogramList()
-        for ts in self:
-            new_list.append(ts.spectrogram2(*args, **kwargs))
-        return new_list
-
-    def q_transform(self, *args, **kwargs):
-        """
-        Compute Q-transform for each TimeSeries in the list.
-        Returns a SpectrogramList.
-        """
-        from gwexpy.spectrogram import SpectrogramList
-
-        new_list = SpectrogramList()
-        for ts in self:
-            new_list.append(ts.q_transform(*args, **kwargs))
-        return new_list
+    fft = _make_list_map_method(
+        "fft", doc="Apply FFT to each TimeSeries. Returns a FrequencySeriesList.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
+    )
+    average_fft = _make_list_map_method(
+        "average_fft", doc="Apply average_fft to each TimeSeries. Returns a FrequencySeriesList.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
+    )
+    psd = _make_list_map_method(
+        "psd", doc="Compute PSD for each TimeSeries. Returns a FrequencySeriesList.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
+    )
+    asd = _make_list_map_method(
+        "asd", doc="Compute ASD for each TimeSeries. Returns a FrequencySeriesList.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
+    )
+    spectrogram = _make_list_map_method(
+        "spectrogram", doc="Compute spectrogram for each TimeSeries. Returns a SpectrogramList.",
+        result_class_path="gwexpy.spectrogram.SpectrogramList",
+    )
+    spectrogram2 = _make_list_map_method(
+        "spectrogram2", doc="Compute spectrogram2 for each TimeSeries. Returns a SpectrogramList.",
+        result_class_path="gwexpy.spectrogram.SpectrogramList",
+    )
+    q_transform = _make_list_map_method(
+        "q_transform", doc="Compute Q-transform for each TimeSeries. Returns a SpectrogramList.",
+        result_class_path="gwexpy.spectrogram.SpectrogramList",
+    )
 
     # --- Statistics & Measurements ---
 
