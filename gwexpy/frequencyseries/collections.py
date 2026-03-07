@@ -10,7 +10,6 @@ import h5py
 
 logger = logging.getLogger(__name__)
 import numpy as np
-from astropy import units as u
 
 from gwexpy.io.hdf5_collection import (
     LAYOUT_DATASET,
@@ -24,11 +23,11 @@ from gwexpy.io.hdf5_collection import (
     unique_hdf5_key,
     write_hdf5_manifest,
 )
-
 from gwexpy.types.mixin._collection_mixin import (
     DictMapMixin,
     ListMapMixin,
     _make_dict_map_method,
+    _make_dict_plain_method,
     _make_list_map_method,
 )
 
@@ -329,56 +328,31 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
     # 4. Time Domain Conversion
     # ===============================
 
-    def ifft(self, *args, **kwargs):
-        """
-        Compute IFFT of each FrequencySeries.
-        Returns a TimeSeriesDict.
-        """
-        from gwexpy.timeseries import TimeSeriesDict
-
-        new_dict = TimeSeriesDict()
-        for key, fs in self.items():
-            new_dict[key] = fs.ifft(*args, **kwargs)
-        return new_dict
+    ifft = _make_dict_map_method(
+        "ifft",
+        doc="Compute IFFT of each FrequencySeries. Returns a TimeSeriesDict.",
+        result_class_path="gwexpy.timeseries.TimeSeriesDict",
+    )
 
     # ===============================
     # 5. External Library Interop
     # ===============================
 
-    def to_control_frd(self, *args, **kwargs) -> dict:
-        """
-        Convert each item to control.FRD.
-        Returns a dict of FRD objects.
-        """
-        return {key: fs.to_control_frd(*args, **kwargs) for key, fs in self.items()}
-
-    def to_torch(self, *args, **kwargs) -> dict:
-        """
-        Convert each item to torch.Tensor.
-        Returns a dict of Tensors.
-        """
-        return {key: fs.to_torch(*args, **kwargs) for key, fs in self.items()}
-
-    def to_tensorflow(self, *args, **kwargs) -> dict:
-        """
-        Convert each item to tensorflow.Tensor.
-        Returns a dict of Tensors.
-        """
-        return {key: fs.to_tensorflow(*args, **kwargs) for key, fs in self.items()}
-
-    def to_jax(self, *args, **kwargs) -> dict:
-        """
-        Convert each item to jax.Array.
-        Returns a dict of Arrays.
-        """
-        return {key: fs.to_jax(*args, **kwargs) for key, fs in self.items()}
-
-    def to_cupy(self, *args, **kwargs) -> dict:
-        """
-        Convert each item to cupy.ndarray.
-        Returns a dict of Arrays.
-        """
-        return {key: fs.to_cupy(*args, **kwargs) for key, fs in self.items()}
+    to_control_frd = _make_dict_plain_method(
+        "to_control_frd", doc="Convert each item to control.FRD. Returns a dict."
+    )
+    to_torch = _make_dict_plain_method(
+        "to_torch", doc="Convert each item to torch.Tensor. Returns a dict."
+    )
+    to_tensorflow = _make_dict_plain_method(
+        "to_tensorflow", doc="Convert each item to tensorflow.Tensor. Returns a dict."
+    )
+    to_jax = _make_dict_plain_method(
+        "to_jax", doc="Convert each item to jax.Array. Returns a dict."
+    )
+    to_cupy = _make_dict_plain_method(
+        "to_cupy", doc="Convert each item to cupy.ndarray. Returns a dict."
+    )
 
     # ===============================
     # 6. Aggregation

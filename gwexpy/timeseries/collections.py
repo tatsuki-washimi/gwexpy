@@ -144,15 +144,9 @@ class TimeSeriesDict(DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
 
         return (GwpyTimeSeriesDict, (dict(self),))
 
-    def asfreq(self, rule, **kwargs):
-        """
-        Apply asfreq to each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.asfreq(rule, **kwargs)
-        return new_dict
+    asfreq = _make_dict_map_method(
+        "asfreq", doc="Apply asfreq to each TimeSeries in the dict."
+    )
 
     def resample(self, rate, **kwargs):
         """
@@ -512,63 +506,31 @@ class TimeSeriesDict(DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
 
         raise TypeError("other must be TimeSeries, TimeSeriesList/Dict, or None/'self'")
 
-    def psd(self, *args, **kwargs):
-        """Compute Power Spectral Density for each TimeSeries in the dict.
-        Returns a FrequencySeriesDict.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesDict
-
-        new_dict = FrequencySeriesDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.psd(*args, **kwargs)
-        return new_dict
-
-    def asd(self, *args, **kwargs):
-        """Compute Amplitude Spectral Density for each TimeSeries in the dict.
-        Returns a FrequencySeriesDict.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesDict
-
-        new_dict = FrequencySeriesDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.asd(*args, **kwargs)
-        return new_dict
-
-    def spectrogram(self, *args, **kwargs):
-        """
-        Compute spectrogram for each TimeSeries in the dict.
-        Returns a SpectrogramDict.
-        """
-        from gwexpy.spectrogram import SpectrogramDict
-
-        new_dict = SpectrogramDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.spectrogram(*args, **kwargs)
-        return new_dict
-
-    def spectrogram2(self, *args, **kwargs):
-        """
-        Compute spectrogram2 for each TimeSeries in the dict.
-        Returns a SpectrogramDict.
-        """
-        from gwexpy.spectrogram import SpectrogramDict
-
-        new_dict = SpectrogramDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.spectrogram2(*args, **kwargs)
-        return new_dict
-
-    def q_transform(self, *args, **kwargs):
-        """
-        Compute Q-transform for each TimeSeries in the dict.
-        Returns a SpectrogramDict.
-        """
-        from gwexpy.spectrogram import SpectrogramDict
-
-        new_dict = SpectrogramDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.q_transform(*args, **kwargs)
-        return new_dict
+    psd = _make_dict_map_method(
+        "psd",
+        doc="Compute PSD for each TimeSeries. Returns a FrequencySeriesDict.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesDict",
+    )
+    asd = _make_dict_map_method(
+        "asd",
+        doc="Compute ASD for each TimeSeries. Returns a FrequencySeriesDict.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesDict",
+    )
+    spectrogram = _make_dict_map_method(
+        "spectrogram",
+        doc="Compute spectrogram for each TimeSeries. Returns a SpectrogramDict.",
+        result_class_path="gwexpy.spectrogram.SpectrogramDict",
+    )
+    spectrogram2 = _make_dict_map_method(
+        "spectrogram2",
+        doc="Compute spectrogram2 for each TimeSeries. Returns a SpectrogramDict.",
+        result_class_path="gwexpy.spectrogram.SpectrogramDict",
+    )
+    q_transform = _make_dict_map_method(
+        "q_transform",
+        doc="Compute Q-transform for each TimeSeries. Returns a SpectrogramDict.",
+        result_class_path="gwexpy.spectrogram.SpectrogramDict",
+    )
 
     # ===============================
     # Interoperability Methods (P0)
@@ -664,16 +626,7 @@ class TimeSeriesDict(DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
 
-    def impute(
-        self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs
-    ):
-        """Apply impute to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.impute(
-                method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs
-            )
-        return new_dict
+    impute = _make_dict_map_method("impute", doc="Apply impute to each item.")
 
     def rolling_mean(
         self,
@@ -904,29 +857,16 @@ class TimeSeriesDict(DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
 
     # --- Spectral Conversion ---
 
-    def fft(self, *args, **kwargs):
-        """
-        Apply FFT to each TimeSeries in the dict.
-        Returns a FrequencySeriesDict.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesDict
-
-        new_dict = FrequencySeriesDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.fft(*args, **kwargs)
-        return new_dict
-
-    def average_fft(self, *args, **kwargs):
-        """
-        Apply averge_fft to each TimeSeries in the dict.
-        Returns a FrequencySeriesDict.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesDict
-
-        new_dict = FrequencySeriesDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.average_fft(*args, **kwargs)
-        return new_dict
+    fft = _make_dict_map_method(
+        "fft",
+        doc="Apply FFT to each TimeSeries. Returns a FrequencySeriesDict.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesDict",
+    )
+    average_fft = _make_dict_map_method(
+        "average_fft",
+        doc="Apply average_fft to each TimeSeries. Returns a FrequencySeriesDict.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesDict",
+    )
 
     # --- Statistics & Measurements ---
 
