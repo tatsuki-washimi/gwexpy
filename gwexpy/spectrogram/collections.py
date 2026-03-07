@@ -157,7 +157,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, start=None, end=None, copy=False, **kwargs):
+    def crop(self, start=None, end=None, copy=True, **kwargs):
         """Crop each spectrogram in time.
 
         Parameters
@@ -167,7 +167,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         end : float, optional
             End time.
         copy : bool, optional
-            If True, return a new list (default). If False, modify in place.
+            If True (default), return a new list. If False, modify in place.
         **kwargs
             Deprecated: ``t0``/``t1``/``inplace`` are accepted for
             backwards compatibility but will be removed in a future release.
@@ -522,7 +522,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, start=None, end=None, copy=False, **kwargs):
+    def crop(self, start=None, end=None, copy=True, **kwargs):
         """Crop each spectrogram in time.
 
         Parameters
@@ -532,7 +532,7 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         end : float, optional
             End time.
         copy : bool, optional
-            If True, return a new dict (default). If False, modify in place.
+            If True (default), return a new dict. If False, modify in place.
         **kwargs
             Deprecated: ``t0``/``t1``/``inplace`` are accepted for
             backwards compatibility but will be removed in a future release.
