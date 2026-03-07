@@ -17,6 +17,515 @@ if TYPE_CHECKING:
     pass
 
 
+# ---------------------------------------------------------------------------
+# Private helpers for the STLT method
+# ---------------------------------------------------------------------------
+
+
+def _stlt_legacy_fallback(self, **kwargs):
+    """Handle legacy STLT mode by delegating to ``_stlt_legacy``."""
+    # Extract the positional-style args that stlt() forwards
+    stride = kwargs.pop("stride", None)
+    window = kwargs.pop("window", None)
+    return self._stlt_legacy(stride, window, **kwargs)
+
+
+def _resolve_stlt_params(stride, window, fftlength, overlap, self):
+    """Resolve STLT time parameters and return resolved values.
+
+    Returns
+    -------
+    dict with keys:
+        nperseg, step, noverlap, win_dur, str_dur, ov_dur,
+        dt_s, window_func
+    """
+    import scipy.signal  # noqa: F401 - availability check
+
+    if self.dt is None:
+        raise ValueError("TimeSeries must have a valid dt.")
+    dt_s = self.dt.to("s").value
+    1.0 / dt_s  # side-effect preserved from original
+
+    def _to_sec(val, name):
+        if val is None:
+            return None
+        if isinstance(val, (int, float, np.number)):
+            return float(val)
+        q = u.Quantity(val)
+        if q.unit == u.dimensionless_unscaled:
+            return q.value
+        try:
+            return q.to("s").value
+        except u.UnitConversionError:
+            raise ValueError(f"{name} must be a time quantity (e.g. seconds).")
+
+    # Resolve fftlength (duration) / window (function vs duration)
+    window_func = "hann"
+    win_dur = None
+
+    if fftlength is not None:
+        win_dur = _to_sec(fftlength, "fftlength")
+        if window is not None and not isinstance(window, (u.Quantity, float, int)):
+            window_func = window
+    elif window is not None:
+        is_dur = False
+        if isinstance(window, (int, float, np.number)) or isinstance(
+            window, u.Quantity
+        ):
+            is_dur = True
+        elif isinstance(window, str) and any(c.isdigit() for c in window):
+            is_dur = True
+
+        if is_dur:
+            win_dur = _to_sec(window, "window")
+        else:
+            window_func = window
+
+    if win_dur is None:
+        raise ValueError("Must specify fftlength (or window duration).")
+
+    nperseg = int(np.round(win_dur / dt_s))
+    if nperseg < 1:
+        raise ValueError("Window duration too short.")
+
+    # Resolve Overlap/Stride
+    if overlap is not None:
+        ov_dur = _to_sec(overlap, "overlap")
+        noverlap = int(np.round(ov_dur / dt_s))
+        step = nperseg - noverlap
+        str_dur = step * dt_s
+    elif stride is not None:
+        str_dur = _to_sec(stride, "stride")
+        step = int(np.round(str_dur / dt_s))
+        noverlap = nperseg - step
+        ov_dur = noverlap * dt_s
+    else:
+        step = nperseg // 2
+        noverlap = nperseg - step
+        str_dur = step * dt_s
+        ov_dur = noverlap * dt_s
+
+    if step < 1:
+        raise ValueError("Stride must be positive (overlap < window).")
+
+    return {
+        "nperseg": nperseg,
+        "step": step,
+        "noverlap": noverlap,
+        "win_dur": win_dur,
+        "str_dur": str_dur,
+        "ov_dur": ov_dur,
+        "dt_s": dt_s,
+        "window_func": window_func,
+    }
+
+
+def _chunk_data(data, chunk_size, stride_samples):
+    """Chunk data into overlapping segments using a sliding window view.
+
+    Returns
+    -------
+    chunks : ndarray
+        View of shape ``(n_chunks, chunk_size)``.
+    """
+    from numpy.lib.stride_tricks import sliding_window_view
+
+    if len(data) < chunk_size:
+        raise ValueError("Data shorter than window length.")
+
+    chunks = sliding_window_view(data, window_shape=chunk_size, axis=0)[::stride_samples]
+    return chunks
+
+
+def _prepare_sigma(sigmas, n_freqs):
+    """Prepare sigma array from user input.
+
+    Parameters
+    ----------
+    sigmas : scalar, list, or Quantity
+        The sigma values supplied by the user.
+    n_freqs : ignored (kept for API compatibility with spec)
+
+    Returns
+    -------
+    sigmas_vals : ndarray of float
+    """
+    if np.isscalar(sigmas) or (isinstance(sigmas, u.Quantity) and sigmas.isscalar):
+        sigmas_arr = [sigmas]
+    else:
+        sigmas_arr = list(sigmas)
+
+    sigmas_vals_list: list[float] = []
+    for s in sigmas_arr:
+        if isinstance(s, u.Quantity):
+            sigmas_vals_list.append(float(s.to("1/s").value))
+        else:
+            sigmas_vals_list.append(float(s))  # type: ignore[arg-type]
+    return np.asarray(sigmas_vals_list, dtype=float)
+
+
+def _configure_frequency_domain(frequencies, onesided, dt, n_fft):
+    """Configure frequency domain parameters.
+
+    Returns
+    -------
+    dict with keys:
+        freqs_val, freqs_q, freq_mode, fft_indices, use_zoom, zoom_info,
+        reverse_zoom, custom_method, cached_phase, t_rel_for_phase
+    """
+    nperseg = n_fft
+    fs_val = 1.0 / dt
+    nyquist = fs_val / 2.0
+    df = fs_val / nperseg
+    tol = df * 1e-9
+
+    ZOOM_MIN_M = 256
+    PHASE_CACHE_MAX_M = 256
+
+    def _coerce_frequencies(freqs):
+        if isinstance(freqs, u.Quantity):
+            freqs_val = np.asarray(freqs.to("Hz").value, dtype=float)
+            freqs_q = freqs.to("Hz")
+        else:
+            freqs_val = np.asarray(freqs, dtype=float)
+            freqs_q = u.Quantity(freqs_val, "Hz")
+        if freqs_val.ndim != 1:
+            raise ValueError("frequencies must be a 1D array.")
+        if freqs_val.size == 0:
+            raise ValueError("frequencies must be non-empty.")
+        return freqs_val, freqs_q
+
+    def _validate_frequencies(freqs_val):
+        if onesided:
+            if np.any(freqs_val < -tol) or np.any(freqs_val > nyquist + tol):
+                raise ValueError(
+                    "frequencies must be within [0, Nyquist] for onesided STLT."
+                )
+        else:
+            if np.any(freqs_val < -nyquist - tol) or np.any(
+                freqs_val > nyquist + tol
+            ):
+                raise ValueError(
+                    "frequencies must be within [-Nyquist, Nyquist] for two-sided STLT."
+                )
+
+    def _fft_bin_indices(freqs_val):
+        if onesided:
+            k = np.rint(freqs_val / df).astype(int)
+            if np.any(k < 0) or np.any(k > nperseg // 2):
+                return None
+            if np.max(np.abs(freqs_val - k * df)) > tol:
+                return None
+            return k
+
+        k = np.rint(freqs_val / df).astype(int)
+        k_mod = k % nperseg
+        grid_freq = np.where(
+            k_mod <= nperseg // 2, k_mod * df, (k_mod - nperseg) * df
+        )
+        if np.max(np.abs(freqs_val - grid_freq)) > tol:
+            return None
+        return k_mod
+
+    freq_mode = "fft"
+    fft_indices = None
+    use_zoom = False
+    zoom_info = None
+    reverse_zoom = False
+    custom_method = None
+    cached_phase = None
+
+    if frequencies is None:
+        if onesided:
+            freqs_val = np.fft.rfftfreq(nperseg, d=dt)
+        else:
+            freqs_val = np.fft.fftfreq(nperseg, d=dt)
+        freqs_q = u.Quantity(freqs_val, "Hz")
+    else:
+        freqs_val, freqs_q = _coerce_frequencies(frequencies)
+        _validate_frequencies(freqs_val)
+
+        # Snap tiny values to 0 to reduce numeric drift
+        freqs_val = np.where(np.abs(freqs_val) < tol, 0.0, freqs_val)
+        freqs_q = u.Quantity(freqs_val, "Hz")
+
+        fft_indices = _fft_bin_indices(freqs_val)
+        if fft_indices is not None:
+            freq_mode = "fft_subset"
+        else:
+            freq_mode = "custom"
+
+            # Check for uniform grid to enable zoom FFT
+            if freqs_val.size >= 2:
+                diffs = np.diff(freqs_val)
+                diffs_close = np.allclose(diffs, diffs[0], rtol=0.0, atol=tol * 10)
+                if diffs_close and not np.isclose(diffs[0], 0.0, atol=tol):
+                    step = diffs[0]
+                    reverse_zoom = step < 0
+                    fmin = freqs_val[-1] if reverse_zoom else freqs_val[0]
+                    fmax = freqs_val[0] if reverse_zoom else freqs_val[-1]
+                    span = fmax - fmin
+                    m = freqs_val.size
+                    step_abs = abs(step)
+                    endpoint = abs(span - step_abs * (m - 1)) <= tol * 10
+                    if endpoint or abs(span - step_abs * m) <= tol * 10:
+                        if m > ZOOM_MIN_M:
+                            use_zoom = True
+                            zoom_info = (fmin, fmax, m, endpoint)
+                            custom_method = "zoom"
+                        else:
+                            custom_method = "dft"
+                    else:
+                        custom_method = "dft"
+                else:
+                    custom_method = "dft"
+            else:
+                custom_method = "dft"
+
+    return {
+        "freqs_val": freqs_val,
+        "freqs_q": freqs_q,
+        "freq_mode": freq_mode,
+        "fft_indices": fft_indices,
+        "use_zoom": use_zoom,
+        "zoom_info": zoom_info,
+        "reverse_zoom": reverse_zoom,
+        "custom_method": custom_method,
+        "cached_phase": cached_phase,
+        "tol": tol,
+        "PHASE_CACHE_MAX_M": PHASE_CACHE_MAX_M,
+    }
+
+
+def _prepare_decay(sigma, time_ref, dt, n_fft):
+    """Prepare the decay function ``exp(-sigma * t_rel)`` and validate stability.
+
+    Parameters
+    ----------
+    sigma : ndarray
+        Array of sigma values.
+    time_ref : str
+        'start' or 'center'.
+    dt : float
+        Sample interval in seconds.
+    n_fft : int
+        Window length in samples (nperseg).
+
+    Returns
+    -------
+    dict with keys:
+        t_rel, decay_matrix, win_base (None — caller sets this)
+    """
+    nperseg = n_fft
+    if time_ref == "start":
+        t_rel = np.arange(nperseg) * dt
+    elif time_ref == "center":
+        t_rel = (np.arange(nperseg) - (nperseg - 1) / 2.0) * dt
+    else:
+        raise ValueError(f"Unknown time_ref: {time_ref}. Use 'start' or 'center'.")
+
+    # Stability guardrails
+    min_sigma = sigma.min()
+    max_sigma = sigma.max()
+    max_t = t_rel.max()
+    min_t = t_rel.min()
+
+    max_exponent = max(
+        -min_sigma * min_t,
+        -min_sigma * max_t,
+        -max_sigma * min_t,
+        -max_sigma * max_t,
+    )
+
+    if max_exponent > 700:
+        raise ValueError(
+            f"Configuration leads to overflow: max exponent ~{max_exponent:.1f} > 700. "
+            f"Try reducing sigma magnitude or using time_ref='center'."
+        )
+
+    decay_matrix = np.exp(-sigma[:, None] * t_rel[None, :])
+
+    return {
+        "t_rel": t_rel,
+        "decay_matrix": decay_matrix,
+    }
+
+
+def _stlt_main_loop(chunks, decay, freq_config):
+    """Main STLT computation loop.
+
+    Parameters
+    ----------
+    chunks : dict
+        Must contain 'chunks' (ndarray), 'effective_windows' (ndarray),
+        'n_chunks', 'n_sigmas', 'n_freqs', 'dt_s', 'nperseg'.
+    decay : dict
+        Must contain 't_rel'.
+    freq_config : dict
+        Frequency domain configuration from ``_configure_frequency_domain``.
+
+    Returns
+    -------
+    out_cube : ndarray of shape ``(n_chunks, n_sigmas, n_freqs)``
+    """
+    import scipy.signal as _scipy_signal
+
+    chunk_data = chunks["chunks"]
+    effective_windows = chunks["effective_windows"]
+    n_chunks = chunks["n_chunks"]
+    n_sigmas = chunks["n_sigmas"]
+    n_freqs = chunks["n_freqs"]
+    nperseg = chunks["nperseg"]
+    dt_s = chunks["dt_s"]
+    onesided = chunks["onesided"]
+
+    freq_mode = freq_config["freq_mode"]
+    fft_indices = freq_config["fft_indices"]
+    use_zoom = freq_config["use_zoom"]
+    zoom_info = freq_config["zoom_info"]
+    reverse_zoom = freq_config["reverse_zoom"]
+    custom_method = freq_config["custom_method"]
+    cached_phase = freq_config["cached_phase"]
+    freqs_val = freq_config["freqs_val"]
+    t_rel = decay["t_rel"]
+
+    # Precompute phase matrix for small frequency sets (DFT path)
+    if custom_method == "dft" and freqs_val.size <= freq_config["PHASE_CACHE_MAX_M"]:
+        cached_phase = np.exp(
+            (-2j * np.pi) * (freqs_val[:, None] * t_rel[None, :])
+        )
+
+    dtype = np.result_type(chunk_data.dtype, np.complex64)
+    out_cube = np.zeros((n_chunks, n_sigmas, n_freqs), dtype=dtype)
+
+    BATCH_ELEMENTS = 5_000_000
+    elements_per_chunk = nperseg * n_sigmas
+    chunk_batch_size = max(1, BATCH_ELEMENTS // elements_per_chunk)
+
+    fs_val = 1.0 / dt_s
+
+    for i_chunk in range(0, n_chunks, chunk_batch_size):
+        end_chunk = min(i_chunk + chunk_batch_size, n_chunks)
+        batch_chunks = chunk_data[i_chunk:end_chunk]
+
+        weighted_batch = batch_chunks[:, None, :] * effective_windows[None, :, :]
+
+        if freq_mode == "fft":
+            fft_func = np.fft.rfft if onesided else np.fft.fft
+            spec = fft_func(weighted_batch, axis=-1)
+        elif freq_mode == "fft_subset":
+            fft_func = np.fft.rfft if onesided else np.fft.fft
+            spec_full = fft_func(weighted_batch, axis=-1)
+            spec = spec_full[:, :, fft_indices]
+        elif use_zoom and zoom_info is not None:
+            fmin, fmax, m, endpoint = zoom_info
+            spec = _scipy_signal.zoom_fft(
+                weighted_batch,
+                (fmin, fmax),
+                m=m,
+                fs=fs_val,
+                endpoint=endpoint,
+                axis=-1,
+            )
+            if reverse_zoom:
+                spec = spec[:, :, ::-1]
+        else:
+            # Arbitrary frequency evaluation (direct DFT)
+            if cached_phase is not None:
+                spec = np.tensordot(weighted_batch, cached_phase, axes=([-1], [1]))
+            else:
+                freq_chunk_size = max(16, min(256, int(2_000_000 // nperseg) or 16))
+                spec = np.zeros(
+                    (weighted_batch.shape[0], weighted_batch.shape[1], n_freqs),
+                    dtype=np.result_type(weighted_batch.dtype, np.complex64),
+                )
+                for i_freq in range(0, n_freqs, freq_chunk_size):
+                    f_end = min(i_freq + freq_chunk_size, n_freqs)
+                    f_chunk = freqs_val[i_freq:f_end]
+                    phase = np.exp(
+                        (-2j * np.pi) * (f_chunk[:, None] * t_rel[None, :])
+                    )
+                    spec[:, :, i_freq:f_end] = np.tensordot(
+                        weighted_batch, phase, axes=([-1], [1])
+                    )
+
+        out_cube[i_chunk:end_chunk, :, :] = spec
+
+    return out_cube
+
+
+def _apply_stlt_scaling(result, scaling, dt):
+    """Apply scaling to the STLT result array (in-place).
+
+    Parameters
+    ----------
+    result : ndarray
+        The output cube to scale.
+    scaling : str
+        'dt' or 'none'.
+    dt : float
+        Sample interval in seconds.
+    """
+    if scaling == "dt":
+        result *= dt
+    elif scaling == "none":
+        pass
+    else:
+        raise ValueError(f"Unknown scaling: {scaling}")
+
+
+def _create_stlt_container(result, times, frequencies, sigma, metadata):
+    """Create the LaplaceGram output container.
+
+    Parameters
+    ----------
+    result : ndarray
+        Output cube of shape ``(n_time, n_sigma, n_freq)``.
+    times : Quantity
+        Time axis values.
+    frequencies : Quantity
+        Frequency axis values.
+    sigma : ndarray
+        Sigma values (float, in 1/s).
+    metadata : dict
+        Must contain 'scaling', 'win_dur', 'str_dur', 'ov_dur',
+        'source_name', 'source_unit'.
+
+    Returns
+    -------
+    LaplaceGram
+    """
+    from gwexpy.types.array3d import Array3D
+    from gwexpy.types.time_plane_transform import LaplaceGram
+
+    axis_sigma = u.Quantity(sigma, "1/s")
+    axis_freq = frequencies
+
+    res_unit = metadata["source_unit"]
+    if metadata["scaling"] == "dt":
+        res_unit = res_unit * u.s
+
+    arr3d = Array3D(
+        result,
+        unit=res_unit,
+        axis0=times,
+        axis1=axis_sigma,
+        axis2=axis_freq,
+        axis_names=["time", "sigma", "frequency"],
+    )
+
+    return LaplaceGram(
+        arr3d,
+        kind="stlt",
+        meta={
+            "window": metadata["win_dur"],
+            "stride": metadata["str_dur"],
+            "overlap": metadata["ov_dur"],
+            "source": metadata["source_name"],
+        },
+    )
+
+
 class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
     """
     Mixin class providing special spectral transform methods.
