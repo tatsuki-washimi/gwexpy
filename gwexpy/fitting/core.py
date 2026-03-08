@@ -1005,15 +1005,15 @@ def fit_series(
     FitResult
         Object containing fit results, parameters, and plotting methods.
     """
-    # 0. モデルの解決
+    # 0. Resolve model
     if isinstance(model, str):
         model_name = model
         model = get_model(model_name)
 
-    # 1. データの準備 (Crop & Unit Stripping)
+    # 1. Prepare data (Crop & Unit Stripping)
     target = series.crop(*x_range) if x_range else series
 
-    # x軸の取得
+    # Get x-axis
     x_label = "x"
     y_label = "y"
 
@@ -1059,11 +1059,11 @@ def fit_series(
     elif y_label_unit:
         y_label = f"Amplitude {y_label_unit}"
 
-    # 誤差の処理
+    # Handle errors / uncertainty
     original_len = len(series)
     sigma_full_for_plot: np.ndarray | float | None = None
     if sigma is None:
-        # 重みなし最小二乗 (Cost function internally uses 1.0)
+        # Unweighted least squares (cost function internally uses 1.0)
         dy = np.ones(len(y))
         sigma_for_result = None
     else:

@@ -195,7 +195,7 @@ ignore = [
 python_version = "3.11"
 ignore_missing_imports = true
 check_untyped_defs = true
-exclude = "gwexpy/gui/(ui|reference-dtt|reference_ndscope)/.*|tests/.*"
+exclude = "gwexpy/gui/reference-dtt/.*|gwexpy/gui/reference_ndscope/.*|tests/.*"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
@@ -244,3 +244,4 @@ module = [
   "gwexpy.types.series_matrix_validation_mixin",
 ]
 ignore_errors = false
+

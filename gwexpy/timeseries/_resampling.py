@@ -32,6 +32,412 @@ QuantityLike: TypeAlias = Union[ArrayLike, u.Quantity]
 AggFunc: TypeAlias = Callable[[np.ndarray], float]
 
 
+def _parse_rule_to_dt(rule: str | NumberLike | u.Quantity) -> u.Quantity:
+    """Parse a string/number/Quantity rule into a dt Quantity."""
+    if isinstance(rule, (int, float, np.number)):
+        return u.Quantity(rule)
+    elif isinstance(rule, str):
+        try:
+            return u.Quantity(rule)
+        except (TypeError, ValueError):
+            import re
+
+            match = re.match(r"([0-9\.]+)([a-zA-Z]*)", rule)
+            if match:
+                val, unit_str = match.groups()
+                if not unit_str:
+                    return u.Quantity(float(val))
+                else:
+                    return float(val) * u.Unit(unit_str)
+            else:
+                raise ValueError(f"Could not parse rule: {rule}")
+    elif isinstance(rule, u.Quantity):
+        return rule
+    else:
+        raise TypeError("rule must be a string, number, or astropy Quantity.")
+
+
+def _validate_time_unit(
+    target_dt: u.Quantity, self_dt: u.Quantity | None = None
+) -> tuple[bool, bool]:
+    """Validate time units and return (is_time, is_dimless) flags.
+
+    Raises ValueError if the unit is neither time-like nor dimensionless.
+    """
+    is_time = target_dt.unit.physical_type == "time"
+    is_dimless = (
+        target_dt.unit is None
+        or target_dt.unit == u.dimensionless_unscaled
+        or target_dt.unit.physical_type == "dimensionless"
+    )
+
+    if not is_time and not is_dimless:
+        raise ValueError("rule must be time-like or dimensionless")
+
+    return is_time, is_dimless
+
+
+def _extract_old_times(
+    ts: TimeSeriesAttrs,
+) -> tuple[u.Quantity, np.ndarray, u.Unit, bool]:
+    """Extract old times, their values, the time unit, and whether the unit is dimensionless."""
+    old_times_q = ts.times
+    old_times_val = old_times_q.value
+    time_unit = old_times_q.unit
+    unit_is_dimensionless = (
+        time_unit is None
+        or time_unit == u.dimensionless_unscaled
+        or (
+            hasattr(time_unit, "physical_type")
+            and time_unit.physical_type == "dimensionless"
+        )
+    )
+    if unit_is_dimensionless:
+        time_unit = u.s
+
+    return old_times_q, old_times_val, time_unit, unit_is_dimensionless
+
+
+def _normalize_target_dt(
+    target_dt: u.Quantity,
+    old_times_q: u.Quantity,
+    time_unit: u.Unit,
+    unit_is_dimensionless: bool,
+    ts: TimeSeriesAttrs,
+) -> tuple[u.Quantity, u.Quantity, float, float]:
+    """Normalize target_dt into the time unit and compute start/stop values.
+
+    Returns (target_dt, target_dt_in_time_unit, start_time_val, stop_time_val).
+    """
+    target_dt_in_time_unit = None
+    start_time_val = None
+    stop_time_val = None
+
+    if unit_is_dimensionless and target_dt.unit.physical_type == "time":
+        time_unit_local = u.s
+        target_dt_in_time_unit = target_dt.to(u.s)
+
+        start_time_val = old_times_q[0].value
+
+        if hasattr(ts, "dt") and ts.dt is not None:
+            dt_q = ts.dt
+            if dt_q.unit is None or dt_q.unit == u.dimensionless_unscaled:
+                dt_val = dt_q.value
+            else:
+                dt_val = dt_q.to(u.s).value
+            stop_time_val = start_time_val + (len(ts) * dt_val)
+        else:
+            stop_time_val = old_times_q[-1].value
+    else:
+        safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
+        if target_dt.unit == u.dimensionless_unscaled:
+            target_dt_in_time_unit = u.Quantity(target_dt.value, safe_unit)
+            target_dt = target_dt_in_time_unit
+        else:
+            target_dt_in_time_unit = target_dt.to(safe_unit)
+
+        if unit_is_dimensionless or old_times_q.unit == u.dimensionless_unscaled:
+            start_time_val = old_times_q[0].value
+        else:
+            start_time_val = old_times_q[0].to(safe_unit).value
+
+        if hasattr(ts, "dt") and ts.dt is not None:
+            if ts.dt.unit == u.dimensionless_unscaled:
+                dt_input = ts.dt.value
+            else:
+                dt_input = ts.dt.to(safe_unit).value
+            stop_time_val = start_time_val + (len(ts) * dt_input)
+        else:
+            if (
+                unit_is_dimensionless
+                or old_times_q.unit == u.dimensionless_unscaled
+            ):
+                stop_time_val = old_times_q[-1].value
+            else:
+                stop_time_val = old_times_q[-1].to(safe_unit).value
+
+    if target_dt_in_time_unit is None:
+        safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
+        if isinstance(target_dt, u.Quantity):
+            if target_dt.unit == u.dimensionless_unscaled or target_dt.unit is None:
+                target_dt_in_time_unit = u.Quantity(target_dt.value, safe_unit)
+            else:
+                target_dt_in_time_unit = target_dt.to(safe_unit)
+        else:
+            target_dt_in_time_unit = u.Quantity(target_dt, safe_unit)
+
+    return target_dt, target_dt_in_time_unit, start_time_val, stop_time_val
+
+
+def _resolve_origin(
+    origin: str | NumberLike | u.Quantity,
+    offset: NumberLike | u.Quantity | None,
+    start_time_val: float,
+    time_unit: u.Unit,
+    align: Literal["ceil", "floor"],
+) -> float:
+    """Resolve origin and offset to a base value in time-unit space."""
+    safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
+
+    if origin == "t0":
+        origin_val = start_time_val
+    elif origin == "gps0":
+        origin_val = 0.0
+    elif isinstance(origin, (u.Quantity, str)):
+        try:
+            origin_val = u.Quantity(origin).to(safe_unit).value
+        except u.UnitConversionError:
+            q_origin = u.Quantity(origin)
+            if (
+                q_origin.unit == u.dimensionless_unscaled
+                and safe_unit.physical_type == "time"
+            ):
+                raise TypeError(
+                    "Cannot use dimensionless origin for time-based series."
+                )
+            raise
+    elif isinstance(origin, (int, float, np.number)):
+        origin_val = float(origin)
+    else:
+        origin_val = 0.0
+
+    if offset is None:
+        offset_val = 0.0
+    else:
+        q_offset = u.Quantity(offset)
+        try:
+            offset_val = q_offset.to(safe_unit).value
+        except u.UnitConversionError:
+            phys = getattr(q_offset.unit, "physical_type", None)
+            if q_offset.unit == u.dimensionless_unscaled or phys == "dimensionless":
+                offset_val = q_offset.value
+            else:
+                raise
+
+    return origin_val + offset_val
+
+
+def _generate_target_grid(
+    origin_val: float,
+    target_dt_sec: float,
+    t_start: float,
+    t_end: float,
+    align: Literal["ceil", "floor"],
+) -> tuple[np.ndarray, float]:
+    """Generate the target time grid. Returns (new_times_val, grid_start)."""
+    if align == "ceil":
+        k = np.ceil((t_start - origin_val) / target_dt_sec)
+    elif align == "floor":
+        k = np.floor((t_start - origin_val) / target_dt_sec)
+    else:
+        raise ValueError("align must be 'ceil' or 'floor'")
+
+    grid_start = origin_val + k * target_dt_sec
+
+    duration = t_end - grid_start
+    if duration <= 0:
+        n_points = 0
+    else:
+        n_points = int(np.ceil(duration / target_dt_sec))
+
+    new_times_val = grid_start + np.arange(n_points) * target_dt_sec
+    new_times_val = new_times_val[new_times_val < t_end]
+
+    return new_times_val, grid_start
+
+
+def _determine_output_dtype(
+    method: str | None,
+    fill_value: Any,
+    self_dtype: np.dtype,
+) -> tuple[np.dtype, Any]:
+    """Determine output dtype and possibly adjust fill_value. Returns (out_dtype, fill_value)."""
+    out_dtype: np.dtype[Any] = np.dtype(self_dtype)
+    if fill_value is None:
+        if self_dtype.kind in ("f", "c"):
+            fill_value = np.nan
+        else:
+            fill_value = np.nan
+            out_dtype = np.dtype(np.float64)
+
+    is_fill_nan = False
+    try:
+        is_fill_nan = np.isnan(fill_value)
+    except (TypeError, ValueError):
+        pass
+    if is_fill_nan and self_dtype.kind not in ("f", "c"):
+        out_dtype = np.dtype(np.float64)
+
+    out_dtype = np.dtype(out_dtype)
+    return out_dtype, fill_value
+
+
+def _reindex_by_method(
+    old_times_val: np.ndarray,
+    old_values: np.ndarray,
+    new_times_val: np.ndarray,
+    method: str | None,
+    fill_value: Any,
+    tolerance: float | u.Quantity | None,
+    max_gap: float | u.Quantity | None,
+    time_unit: u.Unit,
+    out_dtype: np.dtype,
+) -> np.ndarray:
+    """Reindex data by the chosen method (None/ffill/bfill/nearest). Returns new_data array."""
+
+    def _to_time_value(val: Any) -> float:
+        q = u.Quantity(val)
+        try:
+            return q.to(time_unit).value
+        except u.UnitConversionError:
+            phys = getattr(q.unit, "physical_type", None)
+            if q.unit == u.dimensionless_unscaled or phys == "dimensionless":
+                return q.value
+            raise
+
+    new_data = np.full(len(new_times_val), fill_value, dtype=out_dtype)
+    if out_dtype.kind == "c":
+        new_data = new_data.astype(np.complex128)
+
+    if method == "interpolate":
+        raise ValueError(
+            "asfreq does not interpolate; use resample() for interpolation or filtering."
+        )
+
+    idx_right = np.searchsorted(old_times_val, new_times_val, side="left")
+    np.clip(idx_right - 1, 0, len(old_times_val) - 1)
+    np.clip(idx_right, 0, len(old_times_val) - 1)
+
+    if method == "ffill" or method == "pad":
+        idx_side_right = np.searchsorted(
+            old_times_val, new_times_val, side="right"
+        )
+        fill_idx = idx_side_right - 1
+
+        valid_f = fill_idx >= 0
+        if tolerance is not None:
+            tol_val = _to_time_value(tolerance)
+            dt_diff = new_times_val - old_times_val[np.clip(fill_idx, 0, None)]
+            valid_f &= dt_diff <= tol_val
+        if max_gap is not None:
+            limit = _to_time_value(max_gap)
+            dt_diff = new_times_val - old_times_val[np.clip(fill_idx, 0, None)]
+            valid_f &= dt_diff <= limit
+
+        valid_out_indices = np.where(valid_f)[0]
+        src_indices = fill_idx[valid_f]
+        new_data[valid_out_indices] = old_values[src_indices]
+
+    elif method == "bfill" or method == "backfill":
+        idx_side_left = np.searchsorted(
+            old_times_val, new_times_val, side="left"
+        )
+        fill_idx = idx_side_left
+
+        valid_b = fill_idx < len(old_times_val)
+
+        if tolerance is not None:
+            tol_val = _to_time_value(tolerance)
+            dt_diff = (
+                old_times_val[np.clip(fill_idx, 0, len(old_times_val) - 1)]
+                - new_times_val
+            )
+            valid_b &= dt_diff <= tol_val
+        if max_gap is not None:
+            limit = _to_time_value(max_gap)
+            dt_diff = (
+                old_times_val[np.clip(fill_idx, 0, len(old_times_val) - 1)]
+                - new_times_val
+            )
+            valid_b &= dt_diff <= limit
+
+        valid_out_indices = np.where(valid_b)[0]
+        src_indices = fill_idx[valid_b]
+        new_data[valid_out_indices] = old_values[src_indices]
+
+    elif method == "nearest":
+        idx_side_left = np.searchsorted(
+            old_times_val, new_times_val, side="left"
+        )
+
+        idx_L = np.clip(idx_side_left - 1, 0, len(old_times_val) - 1)
+        idx_R = np.clip(idx_side_left, 0, len(old_times_val) - 1)
+
+        dist_L = np.abs(new_times_val - old_times_val[idx_L])
+        dist_R = np.abs(new_times_val - old_times_val[idx_R])
+
+        use_L = dist_L < dist_R
+
+        chosen_idx = np.where(use_L, idx_L, idx_R)
+        chosen_dist = np.where(use_L, dist_L, dist_R)
+
+        valid_n = np.ones(len(new_times_val), dtype=bool)
+        if tolerance is not None:
+            tol_val = _to_time_value(tolerance)
+            valid_n &= chosen_dist <= tol_val
+
+        if max_gap is not None:
+            limit = _to_time_value(max_gap)
+            valid_n &= chosen_dist <= limit
+
+        valid_out = np.where(valid_n)[0]
+        src_idx = chosen_idx[valid_n]
+        new_data[valid_out] = old_values[src_idx]
+
+    elif method is None:
+        tol_val = 1e-9 if tolerance is None else _to_time_value(tolerance)
+
+        idx_side_left = np.searchsorted(
+            old_times_val, new_times_val, side="left"
+        )
+
+        idx_L = np.clip(idx_side_left - 1, 0, len(old_times_val) - 1)
+        idx_R = np.clip(idx_side_left, 0, len(old_times_val) - 1)
+        dist_L = np.abs(new_times_val - old_times_val[idx_L])
+        dist_R = np.abs(new_times_val - old_times_val[idx_R])
+
+        min_dist = np.minimum(dist_L, dist_R)
+        chosen_from_min = np.where(dist_L < dist_R, idx_L, idx_R)
+
+        valid_exact = min_dist <= tol_val
+
+        valid_out = np.where(valid_exact)[0]
+        src_idx = chosen_from_min[valid_exact]
+        new_data[valid_out] = old_values[src_idx]
+    else:
+        raise ValueError(f"Unknown asfreq method: {method}")
+
+    return new_data
+
+
+def _construct_result(
+    ts: TimeSeriesAttrs,
+    new_values: np.ndarray,
+    new_times_val: np.ndarray,
+    target_dt: u.Quantity,
+    time_unit: u.Unit,
+    is_dimless: bool,
+    copy: bool,
+) -> TimeSeriesAttrs:
+    """Construct the result TimeSeries from reindexed data."""
+    # Convert dt back to original time unit to avoid plotting unit mismatch
+    final_dt = target_dt
+    if time_unit is not None and not is_dimless:
+        try:
+            final_dt = target_dt.to(time_unit)
+        except (ValueError, u.UnitConversionError):
+            pass
+
+    return ts.__class__(
+        new_values,
+        t0=u.Quantity(new_times_val[0], time_unit),
+        dt=final_dt,
+        unit=ts.unit,
+        name=ts.name,
+        channel=ts.channel,
+    )
+
+
 class TimeSeriesResamplingMixin(TimeSeriesAttrs):
     """
     Mixin class providing resampling methods for TimeSeries.
@@ -87,187 +493,39 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
             Reindexed series.
         """
         # 1. Parse rule to target dt (Quantity)
-        if isinstance(rule, (int, float, np.number)):
-            target_dt = u.Quantity(rule)
-        elif isinstance(rule, str):
-            try:
-                target_dt = u.Quantity(rule)
-            except (TypeError, ValueError):
-                import re
+        target_dt = _parse_rule_to_dt(rule)
 
-                match = re.match(r"([0-9\.]+)([a-zA-Z]*)", rule)
-                if match:
-                    val, unit_str = match.groups()
-                    if not unit_str:
-                        target_dt = u.Quantity(float(val))
-                    else:
-                        target_dt = float(val) * u.Unit(unit_str)
-                else:
-                    raise ValueError(f"Could not parse rule: {rule}")
-        elif isinstance(rule, u.Quantity):
-            target_dt = rule
-        else:
-            raise TypeError("rule must be a string, number, or astropy Quantity.")
+        # 2. Validate rule unit compatibility
+        _is_time, is_dimless = _validate_time_unit(target_dt)
 
-        # Validate rule unit compatibility
-        is_time = target_dt.unit.physical_type == "time"
-        is_dimless = (
-            target_dt.unit is None
-            or target_dt.unit == u.dimensionless_unscaled
-            or target_dt.unit.physical_type == "dimensionless"
+        # 3. Extract old times and determine time unit
+        old_times_q, old_times_val, time_unit, unit_is_dimensionless = (
+            _extract_old_times(self)
         )
 
-        if not is_time and not is_dimless:
-            raise ValueError("rule must be time-like or dimensionless")
-
-        # 2. Determine Original Times and Span
-        old_times_q = self.times
-        old_times_val = old_times_q.value
-        time_unit = old_times_q.unit
-        unit_is_dimensionless = (
-            time_unit is None
-            or time_unit == u.dimensionless_unscaled
-            or (
-                hasattr(time_unit, "physical_type")
-                and time_unit.physical_type == "dimensionless"
+        # 4. Normalize target dt and compute start/stop
+        target_dt, target_dt_in_time_unit, start_time_val, stop_time_val = (
+            _normalize_target_dt(
+                target_dt, old_times_q, time_unit, unit_is_dimensionless, self
             )
         )
-        if unit_is_dimensionless:
-            time_unit = u.s
-
-        is_dimensionless = unit_is_dimensionless
-
-        target_dt_in_time_unit = None
-        start_time_val = None
-        stop_time_val = None
-
-        if is_dimensionless and target_dt.unit.physical_type == "time":
-            time_unit = u.s
-            target_dt_in_time_unit = target_dt.to(u.s)
-
-            start_time_val = old_times_q[0].value
-
-            if hasattr(self, "dt") and self.dt is not None:
-                dt_q = self.dt
-                if dt_q.unit is None or dt_q.unit == u.dimensionless_unscaled:
-                    dt_val = dt_q.value
-                else:
-                    dt_val = dt_q.to(u.s).value
-                stop_time_val = start_time_val + (len(self) * dt_val)
-            else:
-                stop_time_val = old_times_q[-1].value
-        else:
-            safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
-            if target_dt.unit == u.dimensionless_unscaled:
-                target_dt_in_time_unit = u.Quantity(target_dt.value, safe_unit)
-                target_dt = target_dt_in_time_unit
-            else:
-                target_dt_in_time_unit = target_dt.to(safe_unit)
-
-            if unit_is_dimensionless or old_times_q.unit == u.dimensionless_unscaled:
-                start_time_val = old_times_q[0].value
-            else:
-                start_time_val = old_times_q[0].to(safe_unit).value
-
-            if hasattr(self, "dt") and self.dt is not None:
-                if self.dt.unit == u.dimensionless_unscaled:
-                    dt_input = self.dt.value
-                else:
-                    dt_input = self.dt.to(safe_unit).value
-                stop_time_val = start_time_val + (len(self) * dt_input)
-            else:
-                if (
-                    unit_is_dimensionless
-                    or old_times_q.unit == u.dimensionless_unscaled
-                ):
-                    stop_time_val = old_times_q[-1].value
-                else:
-                    stop_time_val = old_times_q[-1].to(safe_unit).value
-
-        if target_dt_in_time_unit is None:
-            safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
-            if isinstance(target_dt, u.Quantity):
-                if target_dt.unit == u.dimensionless_unscaled or target_dt.unit is None:
-                    target_dt_in_time_unit = u.Quantity(target_dt.value, safe_unit)
-                else:
-                    target_dt_in_time_unit = target_dt.to(safe_unit)
-            else:
-                target_dt_in_time_unit = u.Quantity(target_dt, safe_unit)
-
         dt_val = target_dt_in_time_unit.value
 
-        def _to_time_value(val):
-            q = u.Quantity(val)
-            try:
-                return q.to(time_unit).value
-            except u.UnitConversionError:
-                phys = getattr(q.unit, "physical_type", None)
-                if q.unit == u.dimensionless_unscaled or phys == "dimensionless":
-                    return q.value
-                raise
+        # 5. Determine origin base
+        base_val = _resolve_origin(
+            origin, offset, start_time_val, time_unit, align
+        )
 
-        # 3. Determine Origin Base
-        safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
+        # 6. Generate new grid
+        new_times_val, grid_start = _generate_target_grid(
+            base_val, dt_val, start_time_val, stop_time_val, align
+        )
 
-        if origin == "t0":
-            origin_val = start_time_val
-        elif origin == "gps0":
-            origin_val = 0.0
-        elif isinstance(origin, (u.Quantity, str)):
-            try:
-                origin_val = u.Quantity(origin).to(safe_unit).value
-            except u.UnitConversionError:
-                q_origin = u.Quantity(origin)
-                if (
-                    q_origin.unit == u.dimensionless_unscaled
-                    and safe_unit.physical_type == "time"
-                ):
-                    raise TypeError(
-                        "Cannot use dimensionless origin for time-based series."
-                    )
-                raise
-        elif isinstance(origin, (int, float, np.number)):
-            origin_val = float(origin)
-        else:
-            origin_val = 0.0
-
-        if offset is None:
-            offset_val = 0.0
-        else:
-            q_offset = u.Quantity(offset)
-            try:
-                offset_val = q_offset.to(safe_unit).value
-            except u.UnitConversionError:
-                phys = getattr(q_offset.unit, "physical_type", None)
-                if q_offset.unit == u.dimensionless_unscaled or phys == "dimensionless":
-                    offset_val = q_offset.value
-                else:
-                    raise
-
-        base_val = origin_val + offset_val
-
-        # 4. Generate New Grid
-        if align == "ceil":
-            k = np.ceil((start_time_val - base_val) / dt_val)
-        elif align == "floor":
-            k = np.floor((start_time_val - base_val) / dt_val)
-        else:
-            raise ValueError("align must be 'ceil' or 'floor'")
-
-        grid_start = base_val + k * dt_val
-
-        duration = stop_time_val - grid_start
-        if duration <= 0:
-            n_points = 0
-        else:
-            n_points = int(np.ceil(duration / dt_val))
-
-        new_times_val = grid_start + np.arange(n_points) * dt_val
-        new_times_val = new_times_val[new_times_val < stop_time_val]
-
-        # 5. Reindex / Interpolate
+        # 7. Handle empty grid
         if len(new_times_val) == 0:
-            safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
+            safe_unit = (
+                time_unit if time_unit is not None else u.dimensionless_unscaled
+            )
             safe_t0 = u.Quantity(grid_start, safe_unit)
             return self.__class__(
                 [],
@@ -278,152 +536,27 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
                 unit=self.unit,
             )
 
-        out_dtype: np.dtype[Any] = np.dtype(self.dtype)
-        if fill_value is None:
-            if self.dtype.kind in ("f", "c"):
-                fill_value = np.nan
-            else:
-                fill_value = np.nan
-                out_dtype = np.dtype(np.float64)
+        # 8. Determine output dtype
+        out_dtype, fill_value = _determine_output_dtype(
+            method, fill_value, self.dtype
+        )
 
-        is_fill_nan = False
-        try:
-            is_fill_nan = np.isnan(fill_value)
-        except (TypeError, ValueError):
-            pass
-        if is_fill_nan and self.dtype.kind not in ("f", "c"):
-            out_dtype = np.dtype(np.float64)
+        # 9. Reindex data
+        new_data = _reindex_by_method(
+            old_times_val,
+            self.value,
+            new_times_val,
+            method,
+            fill_value,
+            tolerance,
+            max_gap,
+            time_unit,
+            out_dtype,
+        )
 
-        out_dtype = np.dtype(out_dtype)
-        new_data = np.full(len(new_times_val), fill_value, dtype=out_dtype)
-        if out_dtype.kind == "c":
-            new_data = new_data.astype(np.complex128)
-
-        if method == "interpolate":
-            raise ValueError(
-                "asfreq does not interpolate; use resample() for interpolation or filtering."
-            )
-        else:
-            idx_right = np.searchsorted(old_times_val, new_times_val, side="left")
-            np.clip(idx_right - 1, 0, len(old_times_val) - 1)
-            np.clip(idx_right, 0, len(old_times_val) - 1)
-
-            if method == "ffill" or method == "pad":
-                idx_side_right = np.searchsorted(
-                    old_times_val, new_times_val, side="right"
-                )
-                fill_idx = idx_side_right - 1
-
-                valid_f = fill_idx >= 0
-                if tolerance is not None:
-                    tol_val = _to_time_value(tolerance)
-                    dt_diff = new_times_val - old_times_val[np.clip(fill_idx, 0, None)]
-                    valid_f &= dt_diff <= tol_val
-                if max_gap is not None:
-                    limit = _to_time_value(max_gap)
-                    dt_diff = new_times_val - old_times_val[np.clip(fill_idx, 0, None)]
-                    valid_f &= dt_diff <= limit
-
-                valid_out_indices = np.where(valid_f)[0]
-                src_indices = fill_idx[valid_f]
-                new_data[valid_out_indices] = self.value[src_indices]
-
-            elif method == "bfill" or method == "backfill":
-                idx_side_left = np.searchsorted(
-                    old_times_val, new_times_val, side="left"
-                )
-                fill_idx = idx_side_left
-
-                valid_b = fill_idx < len(old_times_val)
-
-                if tolerance is not None:
-                    tol_val = _to_time_value(tolerance)
-                    dt_diff = (
-                        old_times_val[np.clip(fill_idx, 0, len(old_times_val) - 1)]
-                        - new_times_val
-                    )
-                    valid_b &= dt_diff <= tol_val
-                if max_gap is not None:
-                    limit = _to_time_value(max_gap)
-                    dt_diff = (
-                        old_times_val[np.clip(fill_idx, 0, len(old_times_val) - 1)]
-                        - new_times_val
-                    )
-                    valid_b &= dt_diff <= limit
-
-                valid_out_indices = np.where(valid_b)[0]
-                src_indices = fill_idx[valid_b]
-                new_data[valid_out_indices] = self.value[src_indices]
-
-            elif method == "nearest":
-                idx_side_left = np.searchsorted(
-                    old_times_val, new_times_val, side="left"
-                )
-
-                idx_L = np.clip(idx_side_left - 1, 0, len(old_times_val) - 1)
-                idx_R = np.clip(idx_side_left, 0, len(old_times_val) - 1)
-
-                dist_L = np.abs(new_times_val - old_times_val[idx_L])
-                dist_R = np.abs(new_times_val - old_times_val[idx_R])
-
-                use_L = dist_L < dist_R
-
-                chosen_idx = np.where(use_L, idx_L, idx_R)
-                chosen_dist = np.where(use_L, dist_L, dist_R)
-
-                valid_n = np.ones(len(new_times_val), dtype=bool)
-                if tolerance is not None:
-                    tol_val = _to_time_value(tolerance)
-                    valid_n &= chosen_dist <= tol_val
-
-                if max_gap is not None:
-                    limit = _to_time_value(max_gap)
-                    valid_n &= chosen_dist <= limit
-
-                valid_out = np.where(valid_n)[0]
-                src_idx = chosen_idx[valid_n]
-                new_data[valid_out] = self.value[src_idx]
-
-            elif method is None:
-                tol_val = 1e-9 if tolerance is None else _to_time_value(tolerance)
-
-                idx_side_left = np.searchsorted(
-                    old_times_val, new_times_val, side="left"
-                )
-
-                idx_L = np.clip(idx_side_left - 1, 0, len(old_times_val) - 1)
-                idx_R = np.clip(idx_side_left, 0, len(old_times_val) - 1)
-                dist_L = np.abs(new_times_val - old_times_val[idx_L])
-                dist_R = np.abs(new_times_val - old_times_val[idx_R])
-
-                min_dist = np.minimum(dist_L, dist_R)
-                chosen_from_min = np.where(dist_L < dist_R, idx_L, idx_R)
-
-                valid_exact = min_dist <= tol_val
-
-                valid_out = np.where(valid_exact)[0]
-                src_idx = chosen_from_min[valid_exact]
-                new_data[valid_out] = self.value[src_idx]
-            else:
-                raise ValueError(f"Unknown asfreq method: {method}")
-
-        # Construct new TimeSeries
-        # Construct new TimeSeries
-        # Convert dt back to original time unit to avoid plotting unit mismatch
-        final_dt = target_dt
-        if time_unit is not None and not is_dimless:
-            try:
-                final_dt = target_dt.to(time_unit)
-            except (ValueError, u.UnitConversionError):
-                pass
-
-        return self.__class__(
-            new_data,
-            t0=u.Quantity(new_times_val[0], time_unit),
-            dt=final_dt,
-            unit=self.unit,
-            name=self.name,
-            channel=self.channel,
+        # 10. Construct result
+        return _construct_result(
+            self, new_data, new_times_val, target_dt, time_unit, is_dimless, copy
         )
 
     # ===============================

@@ -4,6 +4,9 @@ from __future__ import annotations
 import gwpy.astro
 
 
+__all__ = [name for name in dir(gwpy.astro) if not name.startswith("_")]
+
+
 def __getattr__(name):
     return getattr(gwpy.astro, name)
 

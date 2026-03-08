@@ -46,7 +46,7 @@ def test_spectrogram_list():
 
     # to_matrix
     mat = sl.to_matrix()
-    # Expect (2, 10, 10)
+    # Expect (2, 10, 10) - crop returns a copy, original is unchanged
     assert isinstance(mat, SpectrogramMatrix)
     assert mat.shape == (2, 10, 10)
     assert mat.times is not None
@@ -91,6 +91,6 @@ def test_spectrogram_dict():
     sd_cropped = sd.crop(2, 8)
     assert sd_cropped["a"].times[0].value >= 2
 
-    # Matrix
+    # Matrix - crop returns a copy, so sd is unchanged
     mat = sd.to_matrix()
     assert mat.shape == (2, 10, 10)
