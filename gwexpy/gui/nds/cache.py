@@ -112,8 +112,6 @@ class NDSDataCache(QObject):
                 self.nds_thread_obj.dataReceived.disconnect(self._on_data_received)
             except (TypeError, RuntimeError) as exc:
                 logger.debug("NDSThread signal already disconnected: %s", exc)
-            except Exception as exc:
-                logger.warning("Unexpected error disconnecting NDSThread: %s", exc)
             self.nds_thread_obj.stop()
             if not self.nds_thread_obj.wait(3000):
                 logger.warning("NDSThread did not stop in time, terminating.")
@@ -125,8 +123,6 @@ class NDSDataCache(QObject):
                 self.sim_thread.dataReceived.disconnect(self._on_data_received)
             except (TypeError, RuntimeError) as exc:
                 logger.debug("SimulationThread signal already disconnected: %s", exc)
-            except Exception as exc:
-                logger.warning("Unexpected error disconnecting SimulationThread: %s", exc)
             self.sim_thread.stop()
             if not self.sim_thread.wait(3000):
                 self.sim_thread.terminate()
