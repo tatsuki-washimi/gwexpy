@@ -12,11 +12,15 @@ measurement logic.
 from __future__ import annotations
 
 import logging
+from typing import Any, TYPE_CHECKING
 
 import numpy as np
 from PyQt5 import QtCore
 
 from gwexpy.numerics.scaling import safe_log_scale
+
+if TYPE_CHECKING:
+    from .main_window import MainWindow
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +46,7 @@ class PlotRenderer:
         Reference to the main window for accessing UI state.
     """
 
-    def __init__(self, main_window):
+    def __init__(self, main_window: MainWindow) -> None:
         """
         Initialize the PlotRenderer.
 
@@ -55,13 +59,13 @@ class PlotRenderer:
 
     def render_panel(
         self,
-        plot_idx,
-        info_root,
-        results,
-        graph_type,
-        start_time_gps=None,
-        is_time_axis=False,
-    ):
+        plot_idx: int,
+        info_root: dict[str, Any],
+        results: list[Any],
+        graph_type: str,
+        start_time_gps: float | None = None,
+        is_time_axis: bool = False,
+    ) -> None:
         """
         Render all traces for a single graph panel.
 
@@ -111,18 +115,18 @@ class PlotRenderer:
                     f"Error updating Graph {plot_idx + 1} Trace {t_idx}: {e}"
                 )
 
-    def _clear_trace(self, curve, bar, img):
+    def _clear_trace(self, curve: Any, bar: Any, img: Any) -> None:
         """Clear all trace items."""
         curve.setData([], [])
         if bar.isVisible():
             bar.setOpts(height=[])
         img.clear()
 
-    def _is_spectrogram_result(self, result):
+    def _is_spectrogram_result(self, result: Any) -> bool:
         """Check if the result is a spectrogram-type result."""
         return isinstance(result, dict) and result.get("type") == "spectrogram"
 
-    def _get_display_unit(self, info_root):
+    def _get_display_unit(self, info_root: dict[str, Any]) -> str:
         """Get the current display unit from UI controls."""
         try:
             return info_root.get("units", {}).get("display_y").currentText()
@@ -130,8 +134,8 @@ class PlotRenderer:
             return "None"
 
     def _apply_unit_conversion(
-        self, data, display_unit, graph_type, is_spectrogram=False
-    ):
+        self, data: np.ndarray, display_unit: str, graph_type: str, is_spectrogram: bool = False
+    ) -> np.ndarray:
         """
         Apply unit conversion to data based on display settings.
 
@@ -174,8 +178,8 @@ class PlotRenderer:
         return data
 
     def _render_spectrogram(
-        self, img, curve, bar, result, info_root, start_time_gps, graph_type
-    ):
+        self, img: Any, curve: Any, bar: Any, result: dict[str, Any], info_root: dict[str, Any], start_time_gps: float | None, graph_type: str
+    ) -> None:
         """
         Render a spectrogram result to an ImageItem.
 
@@ -264,15 +268,15 @@ class PlotRenderer:
 
     def _render_series(
         self,
-        curve,
-        bar,
-        img,
-        result,
-        info_root,
-        start_time_gps,
-        is_time_axis,
-        graph_type,
-    ):
+        curve: Any,
+        bar: Any,
+        img: Any,
+        result: tuple[np.ndarray, np.ndarray],
+        info_root: dict[str, Any],
+        start_time_gps: float | None,
+        is_time_axis: bool,
+        graph_type: str,
+    ) -> None:
         """
         Render a 1D series result to a curve or bar graph.
 
@@ -317,7 +321,7 @@ class PlotRenderer:
             bar_width = (x_vals[1] - x_vals[0]) if len(x_vals) > 1 else 1
             bar.setOpts(x=x_vals, height=y_vals, width=bar_width)
 
-    def _is_log_y(self, info_root):
+    def _is_log_y(self, info_root: dict[str, Any]) -> bool:
         """Check if Y-axis is in log scale."""
         if "panel" not in info_root:
             return False
@@ -326,7 +330,7 @@ class PlotRenderer:
         except (AttributeError, KeyError):
             return False
 
-    def update_axis_labels(self, info_root, start_time_gps, start_time_utc):
+    def update_axis_labels(self, info_root: dict[str, Any], start_time_gps: float, start_time_utc: str) -> None:
         """
         Update axis labels with time information.
 
@@ -343,8 +347,8 @@ class PlotRenderer:
         info_root["plot"].setLabel("bottom", label_text)
 
     def stabilize_streaming_range(
-        self, info_root, is_streaming, is_time_axis, nds_window
-    ):
+        self, info_root: dict[str, Any], is_streaming: bool, is_time_axis: bool, nds_window: float
+    ) -> None:
         """
         Stabilize plot range during streaming mode.
 
@@ -372,6 +376,7 @@ class PlotRenderer:
             # Still update Y-axis if auto mode
             panel = info_root.get("panel")
             if panel and hasattr(panel, "rb_y_auto") and panel.rb_y_auto.isChecked():
-                plot.enableAutoRange(axis="y")
+                if plot is not None:
+                    plot.enableAutoRange(axis="y")
         else:
             info_root["range_updater"]()

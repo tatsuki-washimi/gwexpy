@@ -9,15 +9,20 @@ from ..nds.cache import ChannelListCache
 from ..nds.nds_thread import ChannelListWorker
 
 try:
-    import sounddevice as sd
+    import sounddevice as sd  # type: ignore[import-untyped]
 except ImportError:
-    sd = None
+    sd = None  # type: ignore[assignment]
 
 
 class ChannelBrowserDialog(QtWidgets.QDialog):
     def __init__(
-        self, server, port, parent=None, audio_enabled=False, initial_source="NDS"
-    ):
+        self,
+        server: str,
+        port: int,
+        parent: QtWidgets.QWidget | None = None,
+        audio_enabled: bool = False,
+        initial_source: str = "NDS",
+    ) -> None:
         super().__init__(parent)
         self.setWindowTitle("Channel List")
         self.resize(800, 600)
@@ -26,9 +31,9 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.server_key = f"{server}:{port}"
         self.audio_enabled = audio_enabled
         self.current_source = initial_source
-        self.selected_channels = []
-        self.full_channel_list = []  # List of (name, rate, type)
-        self.worker = None
+        self.selected_channels: list[str] = []
+        self.full_channel_list: list[tuple[str, float, str]] = []
+        self.worker: ChannelListWorker | None = None
 
         # UI Components
         layout = QtWidgets.QVBoxLayout(self)
@@ -78,11 +83,11 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         # Initial Load
         QtCore.QTimer.singleShot(100, self.reload_channel_list)
 
-    def on_source_changed(self, idx=None):
+    def on_source_changed(self, idx: int | None = None) -> None:
         self.current_source = self.cb_source.currentData()
         self.reload_channel_list()
 
-    def reload_channel_list(self):
+    def reload_channel_list(self) -> None:
         self.full_channel_list = []
         try:
             self.search_tree.clear()
@@ -100,7 +105,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         data = cache.get_channels(self.server_key)
 
         if data is not None:
-            self.full_channel_list = data
+            self.full_channel_list = data  # type: ignore[assignment]
             self.lbl_info.setText(
                 f"server: <b>{self.server_key}</b> [{len(data)} channels (cached)]"
             )
@@ -118,7 +123,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             self.worker.finished.connect(self.on_worker_finished)
             self.worker.start()
 
-    def load_audio_devices(self):
+    def load_audio_devices(self) -> None:
         if sd is None:
             QtWidgets.QMessageBox.warning(
                 self, "Error", "sounddevice module not found."
@@ -144,7 +149,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             QtWidgets.QMessageBox.critical(self, "Error", str(e))
 
     # ... rest of methods ...
-    def setup_search_tab(self):
+    def setup_search_tab(self) -> None:
         layout = QtWidgets.QVBoxLayout(self.tab_search)
 
         self.search_edit = QtWidgets.QLineEdit()
@@ -159,7 +164,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.search_tree.itemDoubleClicked.connect(self.accept)
         layout.addWidget(self.search_tree)
 
-    def setup_tree_tab(self):
+    def setup_tree_tab(self) -> None:
         layout = QtWidgets.QVBoxLayout(self.tab_tree)
         self.hier_tree = QtWidgets.QTreeWidget()
         self.hier_tree.setHeaderLabels(["name", "rate"])
@@ -168,7 +173,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.hier_tree.itemDoubleClicked.connect(self.accept)
         layout.addWidget(self.hier_tree)
 
-    def setup_bottom_controls(self, parent_layout):
+    def setup_bottom_controls(self, parent_layout: QtWidgets.QVBoxLayout) -> None:
         # Filtering Radios
         h_filter = QtWidgets.QHBoxLayout()
 
@@ -220,12 +225,12 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
 
         parent_layout.addLayout(h_btns)
 
-    def load_data(self):
+    def load_data(self) -> None:
         cache = ChannelListCache()
         data = cache.get_channels(self.server_key)
 
         if data is not None:
-            self.full_channel_list = data
+            self.full_channel_list = data  # type: ignore[assignment]
             self.lbl_info.setText(
                 f"server: <b>{self.server_key}</b> [{len(data)} channels (cached)]"
             )
@@ -239,7 +244,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             self.worker.finished.connect(self.on_worker_finished)
             self.worker.start()
 
-    def on_worker_finished(self, results, error):
+    def on_worker_finished(self, results: list[tuple[str, float, str]], error: str | None) -> None:
         if error:
             # Only show error if we are still expecting NDS
             if self.current_source == "NDS":
@@ -250,7 +255,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             return
 
         # Update Cache (Always)
-        ChannelListCache().set_channels(self.server_key, results)
+        ChannelListCache().set_channels(self.server_key, results)  # type: ignore[arg-type]
 
         # Update UI only if still detecting NDS
         if self.current_source == "NDS":
@@ -261,16 +266,16 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             self.lbl_status.setText("Ready")
             self.populate_ui()
 
-    def populate_ui(self):
+    def populate_ui(self) -> None:
         # Build Tree
         self.build_hierarchy_tree(self.full_channel_list)
         # Initial Search Filter (All)
         self.apply_filter()
 
-    def on_filter_changed(self):
+    def on_filter_changed(self) -> None:
         self.apply_filter()
 
-    def apply_filter(self):
+    def apply_filter(self) -> None:
         pattern = self.search_edit.text()
         mode = "all"
         if self.rb_slow.isChecked():
@@ -332,7 +337,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         else:
             self.lbl_status.setText(f"Found {count} matches.")
 
-    def build_hierarchy_tree(self, channels):
+    def build_hierarchy_tree(self, channels: list[tuple[str, float, str]]) -> None:
         self.hier_tree.clear()
 
         # A simple tree builder: split by ':' then '-' or '_'
@@ -418,7 +423,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         top_items = dict_to_items(root)
         self.hier_tree.addTopLevelItems(top_items)
 
-    def accept(self):
+    def accept(self) -> None:
         # Gather selected from ACTIVE tab
         selected = []
         current_widget = self.tabs.currentWidget()
