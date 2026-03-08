@@ -15,6 +15,7 @@ Directory stores, zip stores, and any other backend supported by the
 from __future__ import annotations
 
 import os
+from collections.abc import Mapping
 
 import numpy as np
 from gwpy.io.registry import default_registry as io_registry
@@ -27,7 +28,7 @@ from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 _GWPY_INJECTED_KEYS = {"start", "end", "pad", "gap", "nproc", "scaled"}
 
 
-def _strip_gwpy_kwargs(kwargs: dict) -> dict:
+def _strip_gwpy_kwargs(kwargs: Mapping[str, object]) -> dict[str, object]:
     """Drop gwpy registry kwargs that are invalid for zarr.open_group."""
     return {k: v for k, v in kwargs.items() if k not in _GWPY_INJECTED_KEYS}
 

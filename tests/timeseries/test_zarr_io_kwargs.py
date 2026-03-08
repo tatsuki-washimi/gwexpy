@@ -26,7 +26,11 @@ class _FakeWriteStore:
 
     def create_array(self, key, data, overwrite=True):
         arr = _FakeArray(data, {})
-        self.arrays[key] = {"data": np.asarray(data), "overwrite": overwrite, "arr": arr}
+        self.arrays[key] = {
+            "data": np.asarray(data),
+            "overwrite": overwrite,
+            "arr": arr,
+        }
         return arr
 
 
@@ -35,7 +39,10 @@ class _FakeZarr:
         self.calls = []
         self.read_store = _FakeReadStore(
             {
-                "ch0": _FakeArray([1.0, 2.0, 3.0], {"sample_rate": 10.0, "t0": 123.0, "unit": "m"})
+                "ch0": _FakeArray(
+                    [1.0, 2.0, 3.0],
+                    {"sample_rate": 10.0, "t0": 123.0, "unit": "m"},
+                )
             }
         )
         self.write_store = _FakeWriteStore()
@@ -47,12 +54,13 @@ class _FakeZarr:
         return self.write_store
 
 
-def test_read_timeseriesdict_zarr_strips_gwpy_kwargs(monkeypatch):
+def test_high_level_zarr_read_strips_gwpy_kwargs(monkeypatch):
     fake_zarr = _FakeZarr()
     monkeypatch.setattr(zarr_io, "_import_zarr", lambda: fake_zarr)
 
-    out = zarr_io.read_timeseriesdict_zarr(
+    out = TimeSeriesDict.read(
         object(),
+        format="zarr",
         start=1,
         end=2,
         pad=np.nan,
@@ -71,7 +79,9 @@ def test_write_timeseriesdict_zarr_strips_gwpy_kwargs(monkeypatch):
     fake_zarr = _FakeZarr()
     monkeypatch.setattr(zarr_io, "_import_zarr", lambda: fake_zarr)
 
-    tsd = TimeSeriesDict({"ch0": TimeSeries([1.0, 2.0], t0=0, sample_rate=4, unit="m")})
+    tsd = TimeSeriesDict(
+        {"ch0": TimeSeries([1.0, 2.0], t0=0, sample_rate=4, unit="m")}
+    )
     zarr_io.write_timeseriesdict_zarr(
         tsd,
         object(),
