@@ -44,6 +44,36 @@ def _unit_to_seconds_scale(units: str) -> float | None:
     return None
 
 
+def _parse_cf_reference_to_unix_seconds(ref_text: str):
+    """Parse a CF reference time string into UNIX seconds, or return ``None``."""
+    import datetime as _dt
+
+    normalized = ref_text.strip()
+
+    # Handle explicit UTC suffix used by some datasets.
+    if normalized.endswith(" UTC"):
+        normalized = normalized[:-4] + "+00:00"
+    if normalized.endswith("Z"):
+        normalized = normalized[:-1] + "+00:00"
+
+    try:
+        parsed = _dt.datetime.fromisoformat(normalized)
+    except ValueError:
+        parsed = None
+
+    if parsed is not None:
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=_dt.UTC)
+        return parsed.timestamp()
+
+    try:
+        ref = np.datetime64(ref_text.strip())
+    except ValueError:
+        return None
+
+    return (ref - np.datetime64("1970-01-01T00:00:00", "ns")).astype(np.int64) / 1e9
+
+
 def _infer_time_axis(time_vals, coord_attrs):
     """Infer ``(t0, dt)`` from a NetCDF time coordinate."""
     import datetime as _dt
@@ -80,22 +110,8 @@ def _infer_time_axis(time_vals, coord_attrs):
         if m:
             scale = _unit_to_seconds_scale(m.group(1))
             if scale is not None:
-                ref_text = m.group(2).strip()
-                # numpy datetime64 either fails or emits a deprecation warning
-                # for timezone-bearing reference strings; keep numeric fallback
-                # in those cases to avoid requiring optional cftime.
-                if re.search(r"(?:\s|T)(?:Z|[+-]\d{2}:?\d{2})$", ref_text):
-                    ref = None
-                else:
-                    try:
-                        ref = np.datetime64(ref_text)
-                    except ValueError:
-                        ref = None
-
-                if ref is not None:
-                    ref_unix = (
-                        ref - np.datetime64("1970-01-01T00:00:00", "ns")
-                    ).astype(np.int64) / 1e9
+                ref_unix = _parse_cf_reference_to_unix_seconds(m.group(2))
+                if ref_unix is not None:
                     t0_datetime = _dt.datetime.fromtimestamp(
                         ref_unix + float(numeric[0]) * scale, tz=_dt.UTC
                     )
