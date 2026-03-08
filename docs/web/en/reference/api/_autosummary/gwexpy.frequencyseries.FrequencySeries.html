@@ -111,7 +111,7 @@
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.frequencyseries.</span></span><span class="sig-name descname"><span class="pre">FrequencySeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/gwexpy/frequencyseries/frequencyseries.html#FrequencySeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RegularityMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FittingMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PlotMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RegularityMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FittingMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code></p>
 <p>Light wrapper of gwpy’s FrequencySeries for compatibility and future extension.</p>
 <dl class="py method">
 <dt class="sig sig-object py">
@@ -362,7 +362,7 @@
 <td><p>Calculate the phase of this FrequencySeries.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot</span></code>(**kwargs)</p></td>
-<td><p>Plot this FrequencySeries.</p></td>
+<td><p>Plot this object using <code class="xref py py-class docutils literal notranslate"><span class="pre">gwexpy.plot.Plot</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepend</span></code>(other, *[, inplace, gap, pad, resize])</p></td>
 <td><p>Connect another series onto the start of the current one.</p></td>
@@ -768,12 +768,6 @@ If <cite>False</cite>, treat data as power (10 * log10).</p></li>
 <dd class="field-odd"><p><cite>FrequencySeries</cite></p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../../../../_modules/gwexpy/frequencyseries/frequencyseries.html#FrequencySeries.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Plot this FrequencySeries. Delegates to gwexpy.plot.Plot.</p>
 </dd></dl>
 
 <dl class="py method">

@@ -313,7 +313,7 @@ Falseの場合、サイズが一致していないとエラーになります。
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.frequencyseries.</span></span><span class="sig-name descname"><span class="pre">FrequencySeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/frequencyseries.html#FrequencySeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RegularityMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FittingMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PlotMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalAnalysisMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RegularityMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FittingMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StatisticalMethodsMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code></p>
 <p>Light wrapper of gwpy’s FrequencySeries for compatibility and future extension.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
@@ -691,12 +691,6 @@ Default is <cite>False</cite>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/frequencyseries.html#FrequencySeries.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Plot this FrequencySeries. Delegates to gwexpy.plot.Plot.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">quadrature_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/frequencyseries.html#FrequencySeries.quadrature_sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Compute sqrt(self^2 + other^2) assuming checking independence.</p>
 <p>Operates on magnitude. Phase information is lost (returns real).</p>
@@ -994,12 +988,6 @@ per-channel.</p>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeriesList</span></code></p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/matrix.html#FrequencySeriesMatrix.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Plot FrequencySeriesMatrix.</p>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">series_class</span></span></dt>
@@ -1144,7 +1132,7 @@ intentionally out-of-scope for this MVP.</p>
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.frequencyseries.</span></span><span class="sig-name descname"><span class="pre">FrequencySeriesDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeriesBaseDict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code>]</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PlotMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">DictMapMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeriesBaseDict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code>]</p>
 <p>Ordered mapping of <cite>FrequencySeries</cite> objects keyed by label.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
@@ -1167,9 +1155,8 @@ Returns self.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">apply_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.apply_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply response to each FrequencySeries.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">apply_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Apply response to each FrequencySeries.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1181,65 +1168,56 @@ In-place operation (GWpy-compatible). Returns self.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Compute phase (in degrees) of each FrequencySeries.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute phase (in degrees) of each FrequencySeries.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">differentiate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.differentiate_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply time differentiation to each item.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">differentiate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Apply time differentiation to each item.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply filter to each FrequencySeries.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Apply filter to each FrequencySeries.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">group_delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.group_delay"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Compute group delay of each item.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">group_delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute group delay of each item.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ifft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.ifft"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Compute IFFT of each FrequencySeries.
-Returns a TimeSeriesDict.</p>
+<span class="sig-name descname"><span class="pre">ifft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute IFFT of each FrequencySeries. Returns a TimeSeriesDict.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">integrate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.integrate_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply time integration to each item.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">integrate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Apply time integration to each item.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.interpolate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolate each FrequencySeries in the dict.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Interpolate each FrequencySeries in the dict.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">pad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.pad"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Pad each FrequencySeries in the dict.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">pad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Pad each FrequencySeries in the dict.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Compute phase of each FrequencySeries.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute phase of each FrequencySeries.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1251,44 +1229,38 @@ Returns self.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">rebin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.rebin"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Rebin each FrequencySeries in the dict.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">rebin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Rebin each FrequencySeries in the dict.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.smooth"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Smooth each FrequencySeries.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Smooth each FrequencySeries.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">to_control_frd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.to_control_frd"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Convert each item to control.FRD.
-Returns a dict of FRD objects.</p>
+<span class="sig-name descname"><span class="pre">to_control_frd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert each item to control.FRD. Returns a dict.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">to_cupy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.to_cupy"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Convert each item to cupy.ndarray.
-Returns a dict of Arrays.</p>
+<span class="sig-name descname"><span class="pre">to_cupy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert each item to cupy.ndarray. Returns a dict.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Convert each FrequencySeries to dB.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert each FrequencySeries to dB.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">to_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.to_jax"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Convert each item to jax.Array.
-Returns a dict of Arrays.</p>
+<span class="sig-name descname"><span class="pre">to_jax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert each item to jax.Array. Returns a dict.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1306,9 +1278,8 @@ Keys become columns.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">to_tensorflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.to_tensorflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Convert each item to tensorflow.Tensor.
-Returns a dict of Tensors.</p>
+<span class="sig-name descname"><span class="pre">to_tensorflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert each item to tensorflow.Tensor. Returns a dict.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1319,9 +1290,8 @@ Returns a dict of Tensors.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">to_torch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.to_torch"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Convert each item to torch.Tensor.
-Returns a dict of Tensors.</p>
+<span class="sig-name descname"><span class="pre">to_torch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert each item to torch.Tensor. Returns a dict.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1339,9 +1309,8 @@ Keys become data variables.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">zpk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesDict</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesDict.zpk"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply ZPK filter to each FrequencySeries.
-Returns a new FrequencySeriesDict.</p>
+<span class="sig-name descname"><span class="pre">zpk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Apply ZPK filter to each FrequencySeries.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1376,12 +1345,6 @@ Returns a new FrequencySeriesDict.</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_FS</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesBaseList.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesBaseList.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Plot all series. Delegates to gwexpy.plot.Plot.</p>
-</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
@@ -1426,7 +1389,7 @@ Returns a new FrequencySeriesDict.</p>
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.frequencyseries.</span></span><span class="sig-name descname"><span class="pre">FrequencySeriesList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_FS</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">_FS</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeriesBaseList</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code>]</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PlotMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ListMapMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeriesBaseList</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">FrequencySeries</span></code>]</p>
 <p>List of <cite>FrequencySeries</cite> objects.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
@@ -1442,93 +1405,80 @@ Returns a new FrequencySeriesDict.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">apply_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.apply_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply response to each FrequencySeries in the list.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">apply_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Apply response to each FrequencySeries in the list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">crop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.crop"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Crop each FrequencySeries in the list.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">crop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Crop each FrequencySeries in the list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.degree"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Compute phase (in degrees) of each FrequencySeries.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute phase (in degrees) of each FrequencySeries.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">differentiate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.differentiate_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply time differentiation to each item.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">differentiate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Apply time differentiation to each item.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply filter to each FrequencySeries in the list.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Apply filter to each FrequencySeries in the list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">group_delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.group_delay"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Compute group delay of each item.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">group_delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute group delay of each item.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ifft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.ifft"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Compute IFFT of each FrequencySeries.
-Returns a TimeSeriesList.</p>
+<span class="sig-name descname"><span class="pre">ifft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute IFFT of each FrequencySeries. Returns a TimeSeriesList.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">integrate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.integrate_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply time integration to each item.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">integrate_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Apply time integration to each item.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.interpolate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Interpolate each FrequencySeries in the list.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Interpolate each FrequencySeries in the list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">pad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.pad"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Pad each FrequencySeries in the list.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">pad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Pad each FrequencySeries in the list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Compute phase of each FrequencySeries.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Compute phase of each FrequencySeries.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">rebin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.rebin"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Rebin each FrequencySeries in the list.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">rebin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Rebin each FrequencySeries in the list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.smooth"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Smooth each FrequencySeries.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Smooth each FrequencySeries.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1547,9 +1497,8 @@ Returns a list of Arrays.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Convert each FrequencySeries to dB.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Convert each FrequencySeries to dB.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1601,9 +1550,8 @@ Concatenates along a new dimension ‘channel’.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">zpk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeriesList</span></span></span><a class="reference internal" href="../../../../_modules/gwexpy/frequencyseries/collections.html#FrequencySeriesList.zpk"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Apply ZPK filter to each FrequencySeries in the list.
-Returns a new FrequencySeriesList.</p>
+<span class="sig-name descname"><span class="pre">zpk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Apply ZPK filter to each FrequencySeries in the list.</p>
 </dd></dl>
 
 </dd></dl>

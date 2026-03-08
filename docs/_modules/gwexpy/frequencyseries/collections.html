@@ -84,7 +84,6 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.hdf5_collection</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">LAYOUT_DATASET</span><span class="p">,</span>
@@ -98,6 +97,14 @@
     <span class="n">unique_hdf5_key</span><span class="p">,</span>
     <span class="n">write_hdf5_manifest</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin._collection_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DictMapMixin</span><span class="p">,</span>
+    <span class="n">ListMapMixin</span><span class="p">,</span>
+    <span class="n">_make_dict_map_method</span><span class="p">,</span>
+    <span class="n">_make_dict_plain_method</span><span class="p">,</span>
+    <span class="n">_make_list_map_method</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin._plot_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotMixin</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">as_series_dict_class</span>
 
@@ -352,7 +359,7 @@
 <div class="viewcode-block" id="FrequencySeriesDict">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict">[docs]</a>
 <span class="nd">@as_series_dict_class</span><span class="p">(</span><span class="n">FrequencySeries</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesDict</span><span class="p">(</span><span class="n">FrequencySeriesBaseDict</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesDict</span><span class="p">(</span><span class="n">PlotMixin</span><span class="p">,</span> <span class="n">DictMapMixin</span><span class="p">,</span> <span class="n">FrequencySeriesBaseDict</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ordered mapping of `FrequencySeries` objects keyed by label.&quot;&quot;&quot;</span>
 
     <span class="n">EntryClass</span> <span class="o">=</span> <span class="n">FrequencySeries</span>
@@ -372,31 +379,8 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
-<div class="viewcode-block" id="FrequencySeriesDict.pad">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.pad">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Pad each FrequencySeries in the dict.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.interpolate">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.interpolate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Interpolate each FrequencySeries in the dict.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
+    <span class="n">pad</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;pad&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Pad each FrequencySeries in the dict.&quot;</span><span class="p">)</span>
+    <span class="n">interpolate</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Interpolate each FrequencySeries in the dict.&quot;</span><span class="p">)</span>
 
     <span class="c1"># --- In-place Element Operations ---</span>
 
@@ -428,61 +412,15 @@
     <span class="c1"># 2. Filter &amp; Response</span>
     <span class="c1"># ===============================</span>
 
-<div class="viewcode-block" id="FrequencySeriesDict.zpk">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.zpk">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">zpk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply ZPK filter to each FrequencySeries.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">zpk</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.filter">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.filter">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply filter to each FrequencySeries.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.apply_response">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.apply_response">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply response to each FrequencySeries.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">apply_response</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
+    <span class="n">zpk</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply ZPK filter to each FrequencySeries.&quot;</span><span class="p">)</span>
+    <span class="nb">filter</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply filter to each FrequencySeries.&quot;</span><span class="p">)</span>
+    <span class="n">apply_response</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;apply_response&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply response to each FrequencySeries.&quot;</span><span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 3. Analysis &amp; Conversion</span>
     <span class="c1"># ===============================</span>
 
-<div class="viewcode-block" id="FrequencySeriesDict.phase">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.phase">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute phase of each FrequencySeries.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;phase&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute phase of each FrequencySeries.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FrequencySeriesDict.angle">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.angle">[docs]</a>
@@ -491,169 +429,43 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="FrequencySeriesDict.degree">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.degree">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute phase (in degrees) of each FrequencySeries.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.to_db">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_db">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert each FrequencySeries to dB.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_db</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.differentiate_time">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.differentiate_time">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply time differentiation to each item.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">differentiate_time</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.integrate_time">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.integrate_time">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">integrate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply time integration to each item.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">integrate_time</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.group_delay">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.group_delay">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">group_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute group delay of each item.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">group_delay</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.smooth">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.smooth">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">smooth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Smooth each FrequencySeries.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.rebin">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.rebin">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesDict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Rebin each FrequencySeries in the dict.</span>
-<span class="sd">        Returns a new FrequencySeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">rebin</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
+    <span class="n">degree</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute phase (in degrees) of each FrequencySeries.&quot;</span><span class="p">)</span>
+    <span class="n">to_db</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;to_db&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Convert each FrequencySeries to dB.&quot;</span><span class="p">)</span>
+    <span class="n">differentiate_time</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;differentiate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time differentiation to each item.&quot;</span><span class="p">)</span>
+    <span class="n">integrate_time</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;integrate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time integration to each item.&quot;</span><span class="p">)</span>
+    <span class="n">group_delay</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;group_delay&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute group delay of each item.&quot;</span><span class="p">)</span>
+    <span class="n">smooth</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;smooth&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Smooth each FrequencySeries.&quot;</span><span class="p">)</span>
+    <span class="n">rebin</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;rebin&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Rebin each FrequencySeries in the dict.&quot;</span><span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 4. Time Domain Conversion</span>
     <span class="c1"># ===============================</span>
 
-<div class="viewcode-block" id="FrequencySeriesDict.ifft">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.ifft">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">ifft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute IFFT of each FrequencySeries.</span>
-<span class="sd">        Returns a TimeSeriesDict.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
-
-        <span class="n">new_dict</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">new_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">new_dict</span></div>
-
+    <span class="n">ifft</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;ifft&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute IFFT of each FrequencySeries. Returns a TimeSeriesDict.&quot;</span><span class="p">,</span>
+        <span class="n">result_class_path</span><span class="o">=</span><span class="s2">&quot;gwexpy.timeseries.TimeSeriesDict&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 5. External Library Interop</span>
     <span class="c1"># ===============================</span>
 
-<div class="viewcode-block" id="FrequencySeriesDict.to_control_frd">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_control_frd">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_control_frd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert each item to control.FRD.</span>
-<span class="sd">        Returns a dict of FRD objects.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_control_frd</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.to_torch">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_torch">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_torch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert each item to torch.Tensor.</span>
-<span class="sd">        Returns a dict of Tensors.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_torch</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.to_tensorflow">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_tensorflow">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_tensorflow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert each item to tensorflow.Tensor.</span>
-<span class="sd">        Returns a dict of Tensors.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_tensorflow</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.to_jax">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_jax">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_jax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert each item to jax.Array.</span>
-<span class="sd">        Returns a dict of Arrays.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_jax</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesDict.to_cupy">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesDict.to_cupy">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_cupy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert each item to cupy.ndarray.</span>
-<span class="sd">        Returns a dict of Arrays.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_cupy</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
-
+    <span class="n">to_control_frd</span> <span class="o">=</span> <span class="n">_make_dict_plain_method</span><span class="p">(</span>
+        <span class="s2">&quot;to_control_frd&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Convert each item to control.FRD. Returns a dict.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">to_torch</span> <span class="o">=</span> <span class="n">_make_dict_plain_method</span><span class="p">(</span>
+        <span class="s2">&quot;to_torch&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Convert each item to torch.Tensor. Returns a dict.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">to_tensorflow</span> <span class="o">=</span> <span class="n">_make_dict_plain_method</span><span class="p">(</span>
+        <span class="s2">&quot;to_tensorflow&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Convert each item to tensorflow.Tensor. Returns a dict.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">to_jax</span> <span class="o">=</span> <span class="n">_make_dict_plain_method</span><span class="p">(</span>
+        <span class="s2">&quot;to_jax&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Convert each item to jax.Array. Returns a dict.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">to_cupy</span> <span class="o">=</span> <span class="n">_make_dict_plain_method</span><span class="p">(</span>
+        <span class="s2">&quot;to_cupy&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Convert each item to cupy.ndarray. Returns a dict.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 6. Aggregation</span>
@@ -873,15 +685,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="FrequencySeriesBaseList.plot">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.plot">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot all series. Delegates to gwexpy.plot.Plot.&quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
-
-        <span class="k">return</span> <span class="n">Plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="FrequencySeriesBaseList.plot_all">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList.plot_all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
@@ -978,7 +781,7 @@
 
 <div class="viewcode-block" id="FrequencySeriesList">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesList</span><span class="p">(</span><span class="n">FrequencySeriesBaseList</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesList</span><span class="p">(</span><span class="n">PlotMixin</span><span class="p">,</span> <span class="n">ListMapMixin</span><span class="p">,</span> <span class="n">FrequencySeriesBaseList</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List of `FrequencySeries` objects.&quot;&quot;&quot;</span>
 
     <span class="n">EntryClass</span> <span class="o">=</span> <span class="n">FrequencySeries</span>
@@ -987,104 +790,23 @@
     <span class="c1"># 1. Axis &amp; Edit Operations</span>
     <span class="c1"># ===============================</span>
 
-<div class="viewcode-block" id="FrequencySeriesList.crop">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.crop">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Crop each FrequencySeries in the list.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesList.pad">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.pad">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">pad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Pad each FrequencySeries in the list.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesList.interpolate">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.interpolate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Interpolate each FrequencySeries in the list.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
+    <span class="n">crop</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;crop&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Crop each FrequencySeries in the list.&quot;</span><span class="p">)</span>
+    <span class="n">pad</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;pad&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Pad each FrequencySeries in the list.&quot;</span><span class="p">)</span>
+    <span class="n">interpolate</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Interpolate each FrequencySeries in the list.&quot;</span><span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 2. Filter &amp; Response</span>
     <span class="c1"># ===============================</span>
 
-<div class="viewcode-block" id="FrequencySeriesList.zpk">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.zpk">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">zpk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply ZPK filter to each FrequencySeries in the list.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">zpk</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesList.filter">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.filter">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply filter to each FrequencySeries in the list.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesList.apply_response">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.apply_response">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply response to each FrequencySeries in the list.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">apply_response</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
+    <span class="n">zpk</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply ZPK filter to each FrequencySeries in the list.&quot;</span><span class="p">)</span>
+    <span class="nb">filter</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply filter to each FrequencySeries in the list.&quot;</span><span class="p">)</span>
+    <span class="n">apply_response</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;apply_response&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply response to each FrequencySeries in the list.&quot;</span><span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 3. Analysis &amp; Conversion</span>
     <span class="c1"># ===============================</span>
 
-<div class="viewcode-block" id="FrequencySeriesList.phase">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.phase">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute phase of each FrequencySeries.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
+    <span class="n">phase</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;phase&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute phase of each FrequencySeries.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FrequencySeriesList.angle">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.angle">[docs]</a>
@@ -1093,115 +815,22 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="FrequencySeriesList.degree">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.degree">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute phase (in degrees) of each FrequencySeries.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesList.to_db">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.to_db">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert each FrequencySeries to dB.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">to_db</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesList.differentiate_time">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.differentiate_time">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply time differentiation to each item.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">differentiate_time</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesList.integrate_time">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.integrate_time">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">integrate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Apply time integration to each item.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">integrate_time</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesList.group_delay">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.group_delay">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">group_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute group delay of each item.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">group_delay</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesList.smooth">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.smooth">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">smooth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Smooth each FrequencySeries.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">smooth</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
-
-<div class="viewcode-block" id="FrequencySeriesList.rebin">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.rebin">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rebin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeriesList</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Rebin each FrequencySeries in the list.</span>
-<span class="sd">        Returns a new FrequencySeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">rebin</span><span class="p">(</span><span class="n">width</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
+    <span class="n">degree</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute phase (in degrees) of each FrequencySeries.&quot;</span><span class="p">)</span>
+    <span class="n">to_db</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;to_db&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Convert each FrequencySeries to dB.&quot;</span><span class="p">)</span>
+    <span class="n">differentiate_time</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;differentiate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time differentiation to each item.&quot;</span><span class="p">)</span>
+    <span class="n">integrate_time</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;integrate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time integration to each item.&quot;</span><span class="p">)</span>
+    <span class="n">group_delay</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;group_delay&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute group delay of each item.&quot;</span><span class="p">)</span>
+    <span class="n">smooth</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;smooth&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Smooth each FrequencySeries.&quot;</span><span class="p">)</span>
+    <span class="n">rebin</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;rebin&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Rebin each FrequencySeries in the list.&quot;</span><span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 4. Time Domain Conversion</span>
     <span class="c1"># ===============================</span>
 
-<div class="viewcode-block" id="FrequencySeriesList.ifft">
-<a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesList.ifft">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">ifft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute IFFT of each FrequencySeries.</span>
-<span class="sd">        Returns a TimeSeriesList.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesList</span>
-
-        <span class="n">new_list</span> <span class="o">=</span> <span class="n">TimeSeriesList</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fs</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_list</span><span class="p">,</span> <span class="n">fs</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">new_list</span></div>
-
+    <span class="n">ifft</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;ifft&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute IFFT of each FrequencySeries. Returns a TimeSeriesList.&quot;</span><span class="p">,</span>
+        <span class="n">result_class_path</span><span class="o">=</span><span class="s2">&quot;gwexpy.timeseries.TimeSeriesList&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 5. External Library Interop</span>
