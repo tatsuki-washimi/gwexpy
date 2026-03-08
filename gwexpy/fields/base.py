@@ -291,8 +291,9 @@ class FieldBase(Array4D):
         **kwargs
             Fixed coordinates (e.g. z=0) and plotting keyword arguments.
         """
-        # Defer import to avoid circular dependency
-        from ..plot.field import FieldPlot
+        from gwexpy.interop._registry import ConverterRegistry
+
+        FieldPlot = ConverterRegistry.get_constructor("FieldPlot")
 
         # Initialize empty FieldPlot, then add scalar
         fp = FieldPlot()
@@ -347,7 +348,9 @@ class FieldBase(Array4D):
         """
         from matplotlib.animation import FuncAnimation
 
-        from ..plot.field import FieldPlot
+        from gwexpy.interop._registry import ConverterRegistry
+
+        FieldPlot = ConverterRegistry.get_constructor("FieldPlot")
 
         # Identify axis to loop
         all_axes = [

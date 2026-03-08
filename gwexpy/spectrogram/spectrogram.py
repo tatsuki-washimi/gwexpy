@@ -527,7 +527,10 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         >>> ts_list[0].name
         'test_f10.0Hz'
         """
-        from gwexpy.timeseries import TimeSeries, TimeSeriesList
+        from gwexpy.interop._registry import ConverterRegistry
+
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+        TimeSeriesList = ConverterRegistry.get_constructor("TimeSeriesList")
 
         ntimes, nfreqs = self.shape
         # Extract raw ndarray to avoid unit doubling
@@ -599,7 +602,10 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         >>> fs_list[0].name
         'test_t0.0s'
         """
-        from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
+        from gwexpy.interop._registry import ConverterRegistry
+
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
+        FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
 
         ntimes, nfreqs = self.shape
         # Extract raw ndarray to avoid unit doubling

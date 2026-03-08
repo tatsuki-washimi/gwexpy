@@ -70,8 +70,7 @@ class Plot(BasePlot):
     warnings.filterwarnings("ignore", message="Glyph .* missing from font")
 
     def __init__(self, *args, **kwargs):
-        # Local import to avoid circular dependency
-        from gwexpy.frequencyseries import FrequencySeriesDict, FrequencySeriesList
+        from gwexpy.interop._registry import ConverterRegistry
         from gwexpy.plot import defaults
         from gwexpy.plot._init_helpers import (
             _adaptive_decimate_args,
@@ -90,13 +89,15 @@ class Plot(BasePlot):
             _manage_sharex_labels,
             _post_plot_overlay,
         )
-        from gwexpy.spectrogram import (
-            Spectrogram,
-            SpectrogramDict,
-            SpectrogramList,
-            SpectrogramMatrix,
-        )
-        from gwexpy.types.seriesmatrix import SeriesMatrix
+
+        # Retrieve concrete types from registry (avoids circular imports)
+        SeriesMatrix = ConverterRegistry.get_constructor("SeriesMatrix")
+        SpectrogramMatrix = ConverterRegistry.get_constructor("SpectrogramMatrix")
+        FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
+        FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
+        SpectrogramList = ConverterRegistry.get_constructor("SpectrogramList")
+        SpectrogramDict = ConverterRegistry.get_constructor("SpectrogramDict")
+        Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
         # 0. Handle monitor filtering
         monitor = kwargs.get("monitor")
@@ -305,7 +306,11 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
     import numpy as np
     from matplotlib import pyplot as plt
 
-    from gwexpy.spectrogram import SpectrogramDict, SpectrogramList, SpectrogramMatrix
+    from gwexpy.interop._registry import ConverterRegistry
+
+    SpectrogramMatrix = ConverterRegistry.get_constructor("SpectrogramMatrix")
+    SpectrogramDict = ConverterRegistry.get_constructor("SpectrogramDict")
+    SpectrogramList = ConverterRegistry.get_constructor("SpectrogramList")
 
     # Normalize collection to a dict-like or list of (name, spectrogram)
     if isinstance(sg_collection, SpectrogramMatrix):
