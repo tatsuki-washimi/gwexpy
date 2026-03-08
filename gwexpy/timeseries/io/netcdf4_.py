@@ -8,6 +8,7 @@ Reads variables that have a ``time`` dimension and converts them to
 from __future__ import annotations
 
 import logging
+import re
 
 import numpy as np
 from gwpy.io.registry import default_registry as io_registry
@@ -22,6 +23,128 @@ from gwexpy.io.utils import (
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 logger = logging.getLogger(__name__)
+
+
+def _unit_to_seconds_scale(units: str) -> float | None:
+    units_l = units.strip().lower()
+    if units_l.startswith(("second", "sec", "s ", "sinc")):
+        return 1.0
+    if units_l.startswith(("millisecond", "msec", "ms")):
+        return 1e-3
+    if units_l.startswith(("microsecond", "usecond", "us")):
+        return 1e-6
+    if units_l.startswith(("nanosecond", "nsec", "ns")):
+        return 1e-9
+    if units_l.startswith(("minute", "min")):
+        return 60.0
+    if units_l.startswith(("hour", "hr", "h ")):
+        return 3600.0
+    if units_l.startswith(("day", "d ")):
+        return 86400.0
+    return None
+
+
+def _parse_cf_reference_to_unix_seconds(ref_text: str):
+    """Parse a CF reference time string into UNIX seconds, or return ``None``."""
+    import datetime as _dt
+
+    normalized = ref_text.strip()
+
+    # Handle explicit UTC suffix used by some datasets.
+    if normalized.endswith(" UTC"):
+        normalized = normalized[:-4] + "+00:00"
+    if normalized.endswith("Z"):
+        normalized = normalized[:-1] + "+00:00"
+
+    try:
+        parsed = _dt.datetime.fromisoformat(normalized)
+    except ValueError:
+        parsed = None
+
+    if parsed is not None:
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=_dt.UTC)
+        return parsed.timestamp()
+
+    try:
+        ref = np.datetime64(ref_text.strip())
+    except ValueError:
+        return None
+
+    return (ref - np.datetime64("1970-01-01T00:00:00", "ns")).astype(np.int64) / 1e9
+
+
+def _infer_time_axis(time_vals, coord_attrs):
+    """Infer ``(t0, dt)`` from a NetCDF time coordinate."""
+    import datetime as _dt
+
+    vals = np.asarray(time_vals)
+
+    if np.issubdtype(vals.dtype, np.datetime64):
+        t0_dt64 = vals[0]
+        t0_unix_ns = (t0_dt64 - np.datetime64("1970-01-01T00:00:00", "ns")).astype(
+            np.int64
+        )
+        t0_datetime = _dt.datetime.fromtimestamp(t0_unix_ns / 1e9, tz=_dt.UTC)
+        t0 = datetime_to_gps(t0_datetime)
+        if len(vals) > 1:
+            diffs_ns = np.diff(vals.astype("datetime64[ns]").astype(np.int64))
+            dt = float(np.median(diffs_ns)) / 1e9
+        else:
+            dt = 1.0
+        return t0, dt
+
+    units = str(coord_attrs.get("units", "")).strip()
+    calendar = str(coord_attrs.get("calendar", "standard")).strip() or "standard"
+
+    # Numeric coordinate (either absolute values, or relative values with
+    # units such as "seconds since ...").
+    try:
+        numeric = vals.astype(np.float64)
+        if len(numeric) > 1:
+            dt = float(np.median(np.diff(numeric)))
+        else:
+            dt = 1.0
+
+        m = re.match(r"^\s*([A-Za-z]+)\s+since\s+(.+)$", units)
+        if m:
+            scale = _unit_to_seconds_scale(m.group(1))
+            if scale is not None:
+                ref_unix = _parse_cf_reference_to_unix_seconds(m.group(2))
+                if ref_unix is not None:
+                    t0_datetime = _dt.datetime.fromtimestamp(
+                        ref_unix + float(numeric[0]) * scale, tz=_dt.UTC
+                    )
+                    return datetime_to_gps(t0_datetime), dt * scale
+
+        return float(numeric[0]), dt
+    except (TypeError, ValueError):
+        pass
+
+    # cftime/object coordinate fallback.
+    try:
+        import cftime
+
+        unix_seconds = np.asarray(
+            cftime.date2num(
+                list(vals),
+                units="seconds since 1970-01-01 00:00:00",
+                calendar=calendar,
+            ),
+            dtype=np.float64,
+        )
+        t0_datetime = _dt.datetime.fromtimestamp(float(unix_seconds[0]), tz=_dt.UTC)
+        t0 = datetime_to_gps(t0_datetime)
+        if len(unix_seconds) > 1:
+            dt = float(np.median(np.diff(unix_seconds)))
+        else:
+            dt = 1.0
+        return t0, dt
+    except Exception as exc:  # pragma: no cover - defensive fallback
+        raise ValueError(
+            "Unsupported NetCDF time coordinate type. Provide a numeric time "
+            "axis or datetime64 values (or install cftime for CFTime decoding)."
+        ) from exc
 
 
 def _import_xarray():
@@ -88,37 +211,7 @@ def read_timeseriesdict_netcdf4(
             )
 
         time_vals = ds[tc].values
-
-        # Compute t0 (GPS) and dt (seconds).
-        # Handle both datetime64 and numeric time coordinates.
-        if np.issubdtype(np.asarray(time_vals).dtype, np.datetime64):
-            import datetime as _dt
-
-            t0_dt64 = time_vals[0]
-            t0_unix_ns = (
-                t0_dt64 - np.datetime64("1970-01-01T00:00:00", "ns")
-            ).astype(np.int64)
-            t0_datetime = _dt.datetime.fromtimestamp(
-                t0_unix_ns / 1e9, tz=_dt.UTC
-            )
-            t0 = datetime_to_gps(t0_datetime)
-
-            if len(time_vals) > 1:
-                diffs_ns = np.diff(
-                    time_vals.astype("datetime64[ns]").astype(np.int64)
-                )
-                dt = float(np.median(diffs_ns)) / 1e9
-            else:
-                dt = 1.0
-        else:
-            # Numeric time coordinate (e.g. seconds, GPS times, or cftime
-            # objects that were decoded to floats).
-            numeric = np.asarray(time_vals, dtype=np.float64)
-            t0 = float(numeric[0])
-            if len(numeric) > 1:
-                dt = float(np.median(np.diff(numeric)))
-            else:
-                dt = 1.0
+        t0, dt = _infer_time_axis(time_vals, ds[tc].attrs)
 
         tsd = TimeSeriesDict()
 
