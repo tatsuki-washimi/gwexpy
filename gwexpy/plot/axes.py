@@ -1,3 +1,25 @@
 from __future__ import annotations
 
-from gwpy.plot.axes import *  # noqa: F403
+from gwpy.plot.axes import (
+    Axes,
+    GPS_SCALES,
+    HandlerLine2D,
+    Line2D,
+    Number,
+    PlotArgsProcessor,
+    PolyCollection,
+    TYPE_CHECKING,
+    Time,
+    allow_rasterization,
+    annotations,
+    cast,
+    colorbar,
+    contextlib,
+    format_norm,
+    log,
+    numpy,
+    rcParams,
+    register_projection,
+    to_gps,
+    wraps,
+)

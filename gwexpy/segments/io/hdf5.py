@@ -1,3 +1,28 @@
 from __future__ import annotations
 
-from gwpy.segments.io.hdf5 import *  # noqa: F403
+from gwpy.segments.io.hdf5 import (
+    DataQualityDict,
+    DataQualityFlag,
+    LIGOTimeGPS,
+    Quantity,
+    Segment,
+    SegmentList,
+    Table,
+    UnitBase,
+    annotations,
+    default_registry,
+    h5py,
+    io_hdf5,
+    klass,
+    numpy,
+    read,
+    read_hdf5_dict,
+    read_hdf5_flag,
+    read_hdf5_segmentlist,
+    warnings,
+    write,
+    write_hdf5_dict,
+    write_hdf5_flag,
+    write_hdf5_flag_group,
+    write_hdf5_segmentlist,
+)

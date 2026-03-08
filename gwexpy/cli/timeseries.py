@@ -1,3 +1,13 @@
 from __future__ import annotations
 
-from gwpy.cli.timeseries import *  # noqa: F403
+from gwpy.cli.timeseries import (
+    Plot,
+    TYPE_CHECKING,
+    TimeDomainProduct,
+    TimeSeriesProduct,
+    annotations,
+    label_to_latex,
+    logger,
+    logging,
+    warnings,
+)
