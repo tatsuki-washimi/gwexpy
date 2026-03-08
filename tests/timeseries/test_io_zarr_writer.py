@@ -5,19 +5,29 @@ from gwexpy.timeseries.io import zarr_
 
 
 class _FakeArray:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, shape, dtype):
+        self.data = np.empty(shape, dtype=dtype)
         self.attrs = {}
+
+    def __setitem__(self, key, value):
+        self.data[key] = value
 
 
 class _FakeGroupV3:
     def __init__(self):
         self.created = {}
 
-    def create_array(self, name, *, data, shape, overwrite=False):
-        if shape != data.shape:
-            raise ValueError("shape mismatch")
-        arr = _FakeArray(data)
+    def create_array(self, name, *, shape=None, dtype=None, data=None, overwrite=False):
+        if data is not None and shape is not None:
+            raise ValueError(
+                "Either use the data parameter, or the shape parameter, but not both."
+            )
+        if shape is None:
+            shape = data.shape
+            dtype = data.dtype
+        arr = _FakeArray(shape, dtype)
+        if data is not None:
+            arr[...] = data
         self.created[name] = arr
         return arr
 
