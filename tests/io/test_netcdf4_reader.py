@@ -21,3 +21,13 @@ def test_infer_time_axis_numeric_absolute_fallback():
 
     assert np.isclose(t0, 1234.0)
     assert np.isclose(dt, 0.25)
+
+
+def test_infer_time_axis_numeric_since_timezone_reference_falls_back_to_numeric():
+    vals = np.array([10.0, 11.0, 12.0], dtype=np.float64)
+    t0, dt = _infer_time_axis(
+        vals, {"units": "seconds since 2024-01-01 00:00:00 +00:00"}
+    )
+
+    assert np.isclose(t0, 10.0)
+    assert np.isclose(dt, 1.0)

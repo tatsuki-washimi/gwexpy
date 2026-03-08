@@ -80,14 +80,26 @@ def _infer_time_axis(time_vals, coord_attrs):
         if m:
             scale = _unit_to_seconds_scale(m.group(1))
             if scale is not None:
-                ref = np.datetime64(m.group(2).strip())
-                ref_unix = (
-                    ref - np.datetime64("1970-01-01T00:00:00", "ns")
-                ).astype(np.int64) / 1e9
-                t0_datetime = _dt.datetime.fromtimestamp(
-                    ref_unix + float(numeric[0]) * scale, tz=_dt.UTC
-                )
-                return datetime_to_gps(t0_datetime), dt * scale
+                ref_text = m.group(2).strip()
+                # numpy datetime64 either fails or emits a deprecation warning
+                # for timezone-bearing reference strings; keep numeric fallback
+                # in those cases to avoid requiring optional cftime.
+                if re.search(r"(?:\s|T)(?:Z|[+-]\d{2}:?\d{2})$", ref_text):
+                    ref = None
+                else:
+                    try:
+                        ref = np.datetime64(ref_text)
+                    except ValueError:
+                        ref = None
+
+                if ref is not None:
+                    ref_unix = (
+                        ref - np.datetime64("1970-01-01T00:00:00", "ns")
+                    ).astype(np.int64) / 1e9
+                    t0_datetime = _dt.datetime.fromtimestamp(
+                        ref_unix + float(numeric[0]) * scale, tz=_dt.UTC
+                    )
+                    return datetime_to_gps(t0_datetime), dt * scale
 
         return float(numeric[0]), dt
     except (TypeError, ValueError):
