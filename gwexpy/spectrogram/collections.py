@@ -158,7 +158,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, start=None, end=None, copy=True, **kwargs):
+    def crop(self, start=None, end=None, *args, copy=True, **kwargs):
         """Crop each spectrogram in time.
 
         Parameters
@@ -173,6 +173,15 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
             Deprecated: ``t0``/``t1``/``inplace`` are accepted for
             backwards compatibility but will be removed in a future release.
         """
+        if args:
+            if len(args) > 1:
+                raise TypeError(f"crop() takes at most 4 positional arguments but {2 + len(args)} were given")
+            warnings.warn(
+                "Positional inplace argument is deprecated, use copy keyword",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            copy = not args[0]
         if "t0" in kwargs:
             warnings.warn("t0 is deprecated, use start", DeprecationWarning, stacklevel=2)
             start = kwargs.pop("t0")
@@ -523,7 +532,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, start=None, end=None, copy=True, **kwargs):
+    def crop(self, start=None, end=None, *args, copy=True, **kwargs):
         """Crop each spectrogram in time.
 
         Parameters
@@ -542,6 +551,15 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         -------
         SpectrogramDict
         """
+        if args:
+            if len(args) > 1:
+                raise TypeError(f"crop() takes at most 4 positional arguments but {2 + len(args)} were given")
+            warnings.warn(
+                "Positional inplace argument is deprecated, use copy keyword",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            copy = not args[0]
         if "t0" in kwargs:
             warnings.warn("t0 is deprecated, use start", DeprecationWarning, stacklevel=2)
             start = kwargs.pop("t0")
