@@ -23,7 +23,7 @@ class ListMapMixin:
         """Apply *method_name* to each element, returning a new collection."""
         new = self.__class__()
         for item in self:
-            list.append(new, getattr(item, method_name)(*args, **kwargs))
+            new.append(getattr(item, method_name)(*args, **kwargs))
         return new
 
 
@@ -105,7 +105,7 @@ def _make_list_map_method(
             cls = getattr(importlib.import_module(mod_path), cls_name)
             new = cls()
             for item in self:
-                list.append(new, getattr(item, method_name)(*args, **kwargs))
+                new.append(getattr(item, method_name)(*args, **kwargs))
             return new
 
     else:
