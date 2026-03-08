@@ -9,6 +9,7 @@ by calculating averaged ASDs for each stable frequency step.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import warnings
 from typing import TYPE_CHECKING, Any
 
 import matplotlib.pyplot as plt
@@ -499,11 +500,21 @@ def estimate_response_function(
     target_bkg: TimeSeries | None = None,
     **kwargs: object,
 ) -> ResponseFunctionResult:
-    """Helper function."""
-    analysis = ResponseFunctionAnalysis()
-    return analysis.compute(
-        witness,
-        target,
+    """Backward-compatible wrapper for :class:`ResponseFunctionAnalysis`.
+
+    This function preserves the historical module-level API used by external
+    callers and examples. New code should prefer
+    ``ResponseFunctionAnalysis().compute(...)``.
+    """
+    warnings.warn(
+        "estimate_response_function() is deprecated; use "
+        "ResponseFunctionAnalysis().compute(...) instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return ResponseFunctionAnalysis().compute(
+        witness=witness,
+        target=target,
         segments=segments,
         fftlength=fftlength,
         overlap=overlap,
@@ -515,3 +526,4 @@ def estimate_response_function(
         target_bkg=target_bkg,
         **kwargs,
     )
+

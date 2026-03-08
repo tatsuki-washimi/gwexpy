@@ -99,28 +99,3 @@ def datetime_utc_to_gps(dt: datetime) -> LIGOTimeGPS:
     return LIGOTimeGPS(t_gps)
 
 
-def gps_to_unix(gps, *, leap="raise") -> float:
-    """
-    Convert GPS to UNIX timestamp (POSIX seconds).
-
-    Parameters
-    ----------
-    gps : LIGOTimeGPS or float
-    leap : str
-
-    Returns
-    -------
-    float
-    """
-    # astropy Time.unix
-    t = Time(gps, format="gps", scale="utc")
-    # If it is a leap second, unix timestamp definition is ambiguous/implementation defined.
-    # Usually strictly POSIX time "repeats" or "stalls".
-    # Astropy unix conversion typically handles it smoothly in linear timeline but POSIX is step.
-
-    # GWpy suggests explicit handling. Time(gps).unix is valid float.
-    return t.unix
-
-
-def unix_to_gps(ts: float) -> LIGOTimeGPS:
-    return LIGOTimeGPS(Time(ts, format="unix").gps)

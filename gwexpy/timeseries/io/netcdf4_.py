@@ -221,7 +221,9 @@ def write_timeseriesdict_netcdf4(tsd, target, **kwargs):
     # Reconstruct datetime64 time axis from GPS t0
     from gwpy.time import from_gps
 
-    t0_dt = from_gps(t0_gps).to_pydatetime()
+    t0_dt = from_gps(t0_gps)
+    if hasattr(t0_dt, "to_pydatetime"):
+        t0_dt = t0_dt.to_pydatetime()
     if t0_dt.tzinfo is None:
         t0_dt = t0_dt.replace(tzinfo=_dt.UTC)
     t0_ns = np.datetime64(t0_dt, "ns")

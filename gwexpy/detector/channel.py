@@ -1,3 +1,23 @@
 from __future__ import annotations
 
-from gwpy.detector.channel import *  # noqa: F403
+from gwpy.detector.channel import (
+    BOOL_TYPES,
+    Channel,
+    ChannelList,
+    ChannelListRead,
+    ChannelListWrite,
+    QUOTE_REGEX,
+    TYPE_CHECKING,
+    UnifiedReadWriteMethod,
+    annotations,
+    ceil,
+    copy,
+    io_nds2,
+    numpy,
+    overload,
+    parse_unit,
+    parse_url,
+    re,
+    to_gps,
+    units,
+)

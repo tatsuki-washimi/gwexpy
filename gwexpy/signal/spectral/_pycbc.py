@@ -1,3 +1,13 @@
 from __future__ import annotations
 
-from gwpy.signal.spectral._pycbc import *  # noqa: F403
+from gwpy.signal.spectral._pycbc import (
+    FrequencySeries,
+    bartlett,
+    fft_registry,
+    func,
+    median,
+    median_mean,
+    nullcontext,
+    scale_timeseries_unit,
+    welch,
+)

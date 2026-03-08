@@ -1,3 +1,8 @@
 from __future__ import annotations
 
-from gwpy.signal.window import *  # noqa: F403
+from gwpy.signal.window import (
+    canonical_name,
+    get_window,
+    planck,
+    recommended_overlap,
+)
