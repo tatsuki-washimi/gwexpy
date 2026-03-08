@@ -94,3 +94,33 @@ def test_spectrogram_dict():
     # Matrix - crop returns a copy, so sd is unchanged
     mat = sd.to_matrix()
     assert mat.shape == (2, 10, 10)
+
+
+def test_spectrogram_list_crop_third_positional_arg_preserves_inplace():
+    s1 = create_mock_spectrogram("s1")
+    s2 = create_mock_spectrogram("s2")
+    sl = SpectrogramList([s1, s2])
+
+    out = sl.crop(2, 8, True)
+    assert out is sl
+    assert sl[0].times[0].value >= 2
+
+    sl2 = SpectrogramList([create_mock_spectrogram("s3"), create_mock_spectrogram("s4")])
+    out2 = sl2.crop(2, 8, False)
+    assert out2 is not sl2
+    assert out2[0].times[0].value >= 2
+
+
+def test_spectrogram_dict_crop_third_positional_arg_preserves_inplace():
+    s1 = create_mock_spectrogram("s1")
+    s2 = create_mock_spectrogram("s2")
+    sd = SpectrogramDict({"a": s1, "b": s2})
+
+    out = sd.crop(2, 8, True)
+    assert out is sd
+    assert sd["a"].times[0].value >= 2
+
+    sd2 = SpectrogramDict({"a": create_mock_spectrogram("s3"), "b": create_mock_spectrogram("s4")})
+    out2 = sd2.crop(2, 8, False)
+    assert out2 is not sd2
+    assert out2["a"].times[0].value >= 2
