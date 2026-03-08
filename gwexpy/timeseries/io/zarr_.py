@@ -159,10 +159,6 @@ def write_timeseriesdict_zarr(tsd, target, **kwargs):
             except TypeError:
                 # Some implementations infer shape from data.
                 arr = store.create_array(key, data=data, overwrite=True)
-            except ValueError:
-                # zarr v3 rejects calls that include both ``data`` and ``shape``.
-                # Fall back to data-only creation for backends with stricter validation.
-                arr = store.create_array(key, data=data, overwrite=True)
         else:
             arr = store.create_dataset(key, data=data, overwrite=True)
         arr.attrs["sample_rate"] = float(ts.sample_rate.value)

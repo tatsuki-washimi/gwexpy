@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from gwexpy.timeseries.io import zarr_
@@ -57,3 +58,23 @@ def test_write_timeseriesdict_zarr_uses_shape_for_zarr_v3(monkeypatch):
     assert arr.attrs["t0"] == float(ts.t0.value)
     assert arr.attrs["dt"] == float(ts.dt.value)
     assert arr.attrs["unit"] == str(ts.unit)
+
+
+class _FakeGroupShapeError:
+    def create_array(self, name, *, shape=None, dtype=None, data=None, overwrite=False):
+        raise ValueError("shape mismatch")
+
+
+class _FakeZarrShapeError:
+    def open_group(self, target, mode="r", **kwargs):
+        return _FakeGroupShapeError()
+
+
+def test_write_timeseriesdict_zarr_does_not_swallow_value_error(monkeypatch):
+    monkeypatch.setattr(zarr_, "_import_zarr", lambda: _FakeZarrShapeError())
+
+    ts = TimeSeries(np.arange(4, dtype=float), dt=1.0, t0=0.0)
+    tsd = TimeSeriesDict({"chan": ts})
+
+    with pytest.raises(ValueError, match="shape mismatch"):
+        zarr_.write_timeseriesdict_zarr(tsd, "unused-target")
