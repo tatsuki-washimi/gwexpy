@@ -9,6 +9,7 @@ by calculating averaged ASDs for each stable frequency step.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import warnings
 from typing import TYPE_CHECKING, Any
 
 import matplotlib.pyplot as plt
@@ -484,4 +485,45 @@ class ResponseFunctionAnalysis:
             target_name=str(target.name) if target.name else "Target",
         )
 
+
+def estimate_response_function(
+    witness: TimeSeries,
+    target: TimeSeries,
+    segments: list[tuple[float, float, float]] | None = None,
+    fftlength: float = 4.0,
+    overlap: float = 0.0,
+    auto_detect: bool = True,
+    snr_threshold: float = 10.0,
+    min_duration: float = 5.0,
+    trim_edge: float = 1.0,
+    witness_bkg: TimeSeries | None = None,
+    target_bkg: TimeSeries | None = None,
+    **kwargs: object,
+) -> ResponseFunctionResult:
+    """Backward-compatible wrapper for :class:`ResponseFunctionAnalysis`.
+
+    This function preserves the historical module-level API used by external
+    callers and examples. New code should prefer
+    ``ResponseFunctionAnalysis().compute(...)``.
+    """
+    warnings.warn(
+        "estimate_response_function() is deprecated; use "
+        "ResponseFunctionAnalysis().compute(...) instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return ResponseFunctionAnalysis().compute(
+        witness=witness,
+        target=target,
+        segments=segments,
+        fftlength=fftlength,
+        overlap=overlap,
+        auto_detect=auto_detect,
+        snr_threshold=snr_threshold,
+        min_duration=min_duration,
+        trim_edge=trim_edge,
+        witness_bkg=witness_bkg,
+        target_bkg=target_bkg,
+        **kwargs,
+    )
 
