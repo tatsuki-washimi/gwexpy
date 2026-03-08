@@ -24,6 +24,14 @@ from gwexpy.io.utils import apply_unit, filter_by_channels, set_provenance
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 
+_GWPY_INJECTED_KEYS = {"start", "end", "pad", "gap", "nproc", "scaled"}
+
+
+def _strip_gwpy_kwargs(kwargs: dict) -> dict:
+    """Drop gwpy registry kwargs that are invalid for zarr.open_group."""
+    return {k: v for k, v in kwargs.items() if k not in _GWPY_INJECTED_KEYS}
+
+
 def _import_zarr():
     try:
         import zarr
@@ -63,7 +71,8 @@ def read_timeseriesdict_zarr(
     # directly so that in-memory / remote stores work unchanged.
     if isinstance(source, (str, os.PathLike)):
         source = str(source)
-    store = zarr.open_group(source, mode="r", **kwargs)
+    zarr_kwargs = _strip_gwpy_kwargs(kwargs)
+    store = zarr.open_group(source, mode="r", **zarr_kwargs)
 
     tsd = TimeSeriesDict()
 
@@ -141,7 +150,8 @@ def write_timeseriesdict_zarr(tsd, target, **kwargs):
 
     if isinstance(target, (str, os.PathLike)):
         target = str(target)
-    store = zarr.open_group(target, mode="w", **kwargs)
+    zarr_kwargs = _strip_gwpy_kwargs(kwargs)
+    store = zarr.open_group(target, mode="w", **zarr_kwargs)
 
     for key, ts in tsd.items():
         data = np.asarray(ts.value, dtype=np.float64)
