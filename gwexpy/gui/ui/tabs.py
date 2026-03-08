@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Optional
+from typing import Any
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
@@ -9,14 +9,14 @@ from PyQt5 import QtCore, QtWidgets
 from .graph_panel import GraphPanel
 
 
-def _h_spacer():
+def _h_spacer() -> QtWidgets.QSpacerItem:
     s = QtWidgets.QSpacerItem(
         10, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
     )
     return s
 
 
-def _small_spin_int(min_val=-1000000000, max_val=1000000000, width=None):
+def _small_spin_int(min_val: int = -1000000000, max_val: int = 1000000000, width: int | None = None) -> QtWidgets.QSpinBox:
     w = QtWidgets.QSpinBox()
     w.setRange(min_val, max_val)
     if width:
@@ -24,7 +24,7 @@ def _small_spin_int(min_val=-1000000000, max_val=1000000000, width=None):
     return w
 
 
-def _small_spin_dbl(decimals=1, width=None, min_val=-1e12, max_val=1e12, step=0.1):
+def _small_spin_dbl(decimals: int = 1, width: int | None = None, min_val: float = -1e12, max_val: float = 1e12, step: float = 0.1) -> QtWidgets.QDoubleSpinBox:
     w = QtWidgets.QDoubleSpinBox()
     w.setRange(min_val, max_val)
     w.setDecimals(decimals)
@@ -35,7 +35,7 @@ def _small_spin_dbl(decimals=1, width=None, min_val=-1e12, max_val=1e12, step=0.
     return w
 
 
-def _create_group(title, layout_type="grid"):
+def _create_group(title: str, layout_type: str = "grid") -> tuple[QtWidgets.QGroupBox, Any]:
     gb = QtWidgets.QGroupBox(title)
     layout: Any
     if layout_type == "grid":
@@ -49,7 +49,7 @@ def _create_group(title, layout_type="grid"):
     return gb, layout
 
 
-def create_input_tab():
+def create_input_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
     tab = QtWidgets.QWidget()
     vbox = QtWidgets.QVBoxLayout(tab)
     vbox.setSpacing(10)
@@ -210,7 +210,7 @@ def create_input_tab():
     return tab, controls
 
 
-def create_measurement_tab():
+def create_measurement_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
     tab = QtWidgets.QWidget()
     outer = QtWidgets.QVBoxLayout(tab)
     outer.setContentsMargins(10, 10, 10, 10)
@@ -265,7 +265,7 @@ def create_measurement_tab():
     channel_states = [{"active": False, "name": ""} for _ in range(96)]
 
     # Callback for external updates (Main Window)
-    meas_callback: Optional[Callable[[], Any]] = None
+    meas_callback: Callable[[], Any] | None = None
 
     def on_widget_change():
         # Save current state immediately to model
@@ -630,7 +630,7 @@ def create_measurement_tab():
     return tab, controls
 
 
-def create_excitation_tab():
+def create_excitation_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
     tab = QtWidgets.QWidget()
     scroll = QtWidgets.QScrollArea()
     scroll.setWidgetResizable(True)
@@ -800,7 +800,7 @@ def create_excitation_tab():
     return tab, controls
 
 
-def create_result_tab(on_import=None):
+def create_result_tab(on_import: Callable[[], None] | None = None) -> tuple[QtWidgets.QWidget, dict[str, Any], dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
     tab = QtWidgets.QWidget()
     hsplit = QtWidgets.QSplitter(QtCore.Qt.Horizontal)  # type: ignore
     left_panel = QtWidgets.QWidget()

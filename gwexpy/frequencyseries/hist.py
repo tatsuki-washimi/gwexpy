@@ -1,3 +1,5 @@
 from __future__ import annotations
 
-from gwpy.frequencyseries.hist import *  # noqa: F403
+from gwpy.frequencyseries.hist import (
+    SpectralVariance,
+)

@@ -1,3 +1,8 @@
 from __future__ import annotations
 
-from gwpy.frequencyseries._fdcommon import *  # noqa: F403
+from gwpy.frequencyseries._fdcommon import (
+    TYPE_CHECKING,
+    annotations,
+    filter_design,
+    numpy,
+)

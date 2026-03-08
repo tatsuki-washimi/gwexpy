@@ -104,9 +104,3 @@ class FrequencySeriesMatrix(  # type: ignore[misc]
                         kwargs["names"] = cn
         obj = super().__new__(cls, data, **kwargs)
         return obj
-
-    def plot(self, **kwargs: Any) -> Any:
-        """Plot FrequencySeriesMatrix."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)

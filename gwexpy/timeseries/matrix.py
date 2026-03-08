@@ -212,12 +212,6 @@ class TimeSeriesMatrix(  # type: ignore[misc]
 
         return cast("TimeSeriesMatrix", obj)
 
-    def plot(self, **kwargs: Any) -> Any:
-        """Plot the matrix data."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
-
 
 # --- Dynamic Registration of TimeSeries Methods ---
 

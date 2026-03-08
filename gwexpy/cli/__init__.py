@@ -9,9 +9,29 @@ from __future__ import annotations
 
 import sys
 
-from gwpy.cli import *  # noqa: F403
-
+from gwpy.cli import (
+    CliProduct,
+    CoherenceProduct,
+    CoherencegramProduct,
+    PRODUCTS,
+    QtransformProduct,
+    SpectrogramProduct,
+    SpectrumProduct,
+    TimeSeriesProduct,
+    TransferFunctionProduct,
+    annotations,
+    cliproduct,
+    coherence,
+    coherencegram,
+    qtransform,
+    spectrogram,
+    spectrum,
+    timeseries,
+    transferfunction,
+)
 from .._version import __version__
+
+__all__ = ["main", "__version__"]
 
 
 def main(args=None):

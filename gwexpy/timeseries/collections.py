@@ -34,6 +34,13 @@ from gwexpy.io.hdf5_collection import (
 
 # --- Monkey Patch TimeSeriesDict ---
 from gwexpy.types.mixin import PhaseMethodsMixin
+from gwexpy.types.mixin._collection_mixin import (
+    DictMapMixin,
+    ListMapMixin,
+    _make_dict_map_method,
+    _make_list_map_method,
+)
+from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from .spectral import coherence_matrix_from_collection, csd_matrix_from_collection
 
@@ -61,7 +68,7 @@ def _parse_fft_positional_args(
     return args[0], (args[1] if len(args) == 2 else None)
 
 
-class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
+class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
     """Dictionary of TimeSeries objects."""
 
     @classmethod
@@ -138,15 +145,9 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
 
         return (GwpyTimeSeriesDict, (dict(self),))
 
-    def asfreq(self, rule, **kwargs):
-        """
-        Apply asfreq to each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.asfreq(rule, **kwargs)
-        return new_dict
+    asfreq = _make_dict_map_method(
+        "asfreq", doc="Apply asfreq to each TimeSeries in the dict."
+    )
 
     def resample(self, rate, **kwargs):
         """
@@ -175,28 +176,11 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             # gwpy's TimeSeriesDict.resample is in-place
             return super().resample(rate, **kwargs)
 
-    def hilbert(self, *args, **kwargs):
-        """Apply Hilbert transform to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.hilbert(*args, **kwargs)
-        return new_dict
-
-    def envelope(self, *args, **kwargs):
-        """Apply envelope to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.envelope(*args, **kwargs)
-        return new_dict
-
-    def instantaneous_phase(self, *args, **kwargs):
-        """Apply instantaneous_phase to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.instantaneous_phase(*args, **kwargs)
-        return new_dict
-
-        return new_dict
+    hilbert = _make_dict_map_method("hilbert", doc="Apply Hilbert transform to each item.")
+    envelope = _make_dict_map_method("envelope", doc="Apply envelope to each item.")
+    instantaneous_phase = _make_dict_map_method(
+        "instantaneous_phase", doc="Apply instantaneous_phase to each item."
+    )
 
     # ===============================
     # P2 Methods (Domain Specific)
@@ -243,56 +227,18 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             return obj
         return res
 
-    def radian(self, *args, **kwargs) -> TimeSeriesDict:
-        """Compute instantaneous phase (in radians) of each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.radian(*args, **kwargs)
-        return new_dict
-
-    def degree(self, *args, **kwargs) -> TimeSeriesDict:
-        """Compute instantaneous phase (in degrees) of each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.degree(*args, **kwargs)
-        return new_dict
+    radian = _make_dict_map_method("radian", doc="Compute instantaneous phase (in radians) of each item.")
+    degree = _make_dict_map_method("degree", doc="Compute instantaneous phase (in degrees) of each item.")
 
     # phase() and angle() are provided by PhaseMethodsMixin
 
-    def unwrap_phase(self, *args, **kwargs):
-        """Apply unwrap_phase to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.unwrap_phase(*args, **kwargs)
-        return new_dict
-
-    def instantaneous_frequency(self, *args, **kwargs):
-        """Apply instantaneous_frequency to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.instantaneous_frequency(*args, **kwargs)
-        return new_dict
-
-    def mix_down(self, *args, **kwargs):
-        """Apply mix_down to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.mix_down(*args, **kwargs)
-        return new_dict
-
-    def baseband(self, *args, **kwargs):
-        """Apply baseband to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.baseband(*args, **kwargs)
-        return new_dict
-
-    def heterodyne(self, *args, **kwargs):
-        """Apply heterodyne to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.heterodyne(*args, **kwargs)
-        return new_dict
+    unwrap_phase = _make_dict_map_method("unwrap_phase", doc="Apply unwrap_phase to each item.")
+    instantaneous_frequency = _make_dict_map_method(
+        "instantaneous_frequency", doc="Apply instantaneous_frequency to each item."
+    )
+    mix_down = _make_dict_map_method("mix_down", doc="Apply mix_down to each item.")
+    baseband = _make_dict_map_method("baseband", doc="Apply baseband to each item.")
+    heterodyne = _make_dict_map_method("heterodyne", doc="Apply heterodyne to each item.")
 
     def lock_in(self, *args, **kwargs):
         """
@@ -561,63 +507,31 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
 
         raise TypeError("other must be TimeSeries, TimeSeriesList/Dict, or None/'self'")
 
-    def psd(self, *args, **kwargs):
-        """Compute Power Spectral Density for each TimeSeries in the dict.
-        Returns a FrequencySeriesDict.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesDict
-
-        new_dict = FrequencySeriesDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.psd(*args, **kwargs)
-        return new_dict
-
-    def asd(self, *args, **kwargs):
-        """Compute Amplitude Spectral Density for each TimeSeries in the dict.
-        Returns a FrequencySeriesDict.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesDict
-
-        new_dict = FrequencySeriesDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.asd(*args, **kwargs)
-        return new_dict
-
-    def spectrogram(self, *args, **kwargs):
-        """
-        Compute spectrogram for each TimeSeries in the dict.
-        Returns a SpectrogramDict.
-        """
-        from gwexpy.spectrogram import SpectrogramDict
-
-        new_dict = SpectrogramDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.spectrogram(*args, **kwargs)
-        return new_dict
-
-    def spectrogram2(self, *args, **kwargs):
-        """
-        Compute spectrogram2 for each TimeSeries in the dict.
-        Returns a SpectrogramDict.
-        """
-        from gwexpy.spectrogram import SpectrogramDict
-
-        new_dict = SpectrogramDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.spectrogram2(*args, **kwargs)
-        return new_dict
-
-    def q_transform(self, *args, **kwargs):
-        """
-        Compute Q-transform for each TimeSeries in the dict.
-        Returns a SpectrogramDict.
-        """
-        from gwexpy.spectrogram import SpectrogramDict
-
-        new_dict = SpectrogramDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.q_transform(*args, **kwargs)
-        return new_dict
+    psd = _make_dict_map_method(
+        "psd",
+        doc="Compute PSD for each TimeSeries. Returns a FrequencySeriesDict.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesDict",
+    )
+    asd = _make_dict_map_method(
+        "asd",
+        doc="Compute ASD for each TimeSeries. Returns a FrequencySeriesDict.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesDict",
+    )
+    spectrogram = _make_dict_map_method(
+        "spectrogram",
+        doc="Compute spectrogram for each TimeSeries. Returns a SpectrogramDict.",
+        result_class_path="gwexpy.spectrogram.SpectrogramDict",
+    )
+    spectrogram2 = _make_dict_map_method(
+        "spectrogram2",
+        doc="Compute spectrogram2 for each TimeSeries. Returns a SpectrogramDict.",
+        result_class_path="gwexpy.spectrogram.SpectrogramDict",
+    )
+    q_transform = _make_dict_map_method(
+        "q_transform",
+        doc="Compute Q-transform for each TimeSeries. Returns a SpectrogramDict.",
+        result_class_path="gwexpy.spectrogram.SpectrogramDict",
+    )
 
     # ===============================
     # Interoperability Methods (P0)
@@ -703,26 +617,11 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             return target
         return super().write(target, *args, **kwargs)
 
-    def plot(self, **kwargs: Any):
-        """Plot all series. Delegates to gwexpy.plot.Plot."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
-
     def plot_all(self, *args: Any, **kwargs: Any):
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
 
-    def impute(
-        self, *, method="interpolate", limit=None, axis="time", max_gap=None, **kwargs
-    ):
-        """Apply impute to each item."""
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.impute(
-                method=method, limit=limit, axis=axis, max_gap=max_gap, **kwargs
-            )
-        return new_dict
+    impute = _make_dict_map_method("impute", doc="Apply impute to each item.")
 
     def rolling_mean(
         self,
@@ -936,133 +835,33 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
             ts.prepend(*args, **kwargs)
         return self
 
-    def shift(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Shift each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.shift(*args, **kwargs)
-        return new_dict
+    shift = _make_dict_map_method("shift", doc="Shift each TimeSeries in the dict.")
 
-    def gate(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Gate each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.gate(*args, **kwargs)
-        return new_dict
-
-    def mask(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Mask each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.mask(*args, **kwargs)
-        return new_dict
+    gate = _make_dict_map_method("gate", doc="Gate each TimeSeries in the dict.")
+    mask = _make_dict_map_method("mask", doc="Mask each TimeSeries in the dict.")
 
     # --- Signal Processing ---
 
-    def decimate(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Decimate each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.decimate(*args, **kwargs)
-        return new_dict
-
-    def filter(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Filter each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.filter(*args, **kwargs)
-        return new_dict
-
-    def whiten(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Whiten each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.whiten(*args, **kwargs)
-        return new_dict
-
-    def notch(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Notch filter each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.notch(*args, **kwargs)
-        return new_dict
-
-    def zpk(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Apply ZPK filter to each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.zpk(*args, **kwargs)
-        return new_dict
-
-    def detrend(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Detrend each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.detrend(*args, **kwargs)
-        return new_dict
-
-    def taper(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Taper each TimeSeries in the dict.
-        Returns a new TimeSeriesDict.
-        """
-        new_dict = self.__class__()
-        for key, ts in self.items():
-            new_dict[key] = ts.taper(*args, **kwargs)
-        return new_dict
+    decimate = _make_dict_map_method("decimate", doc="Decimate each TimeSeries in the dict.")
+    filter = _make_dict_map_method("filter", doc="Filter each TimeSeries in the dict.")
+    whiten = _make_dict_map_method("whiten", doc="Whiten each TimeSeries in the dict.")
+    notch = _make_dict_map_method("notch", doc="Notch filter each TimeSeries in the dict.")
+    zpk = _make_dict_map_method("zpk", doc="Apply ZPK filter to each TimeSeries in the dict.")
+    detrend = _make_dict_map_method("detrend", doc="Detrend each TimeSeries in the dict.")
+    taper = _make_dict_map_method("taper", doc="Taper each TimeSeries in the dict.")
 
     # --- Spectral Conversion ---
 
-    def fft(self, *args, **kwargs):
-        """
-        Apply FFT to each TimeSeries in the dict.
-        Returns a FrequencySeriesDict.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesDict
-
-        new_dict = FrequencySeriesDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.fft(*args, **kwargs)
-        return new_dict
-
-    def average_fft(self, *args, **kwargs):
-        """
-        Apply averge_fft to each TimeSeries in the dict.
-        Returns a FrequencySeriesDict.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesDict
-
-        new_dict = FrequencySeriesDict()
-        for key, ts in self.items():
-            new_dict[key] = ts.average_fft(*args, **kwargs)
-        return new_dict
+    fft = _make_dict_map_method(
+        "fft",
+        doc="Apply FFT to each TimeSeries. Returns a FrequencySeriesDict.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesDict",
+    )
+    average_fft = _make_dict_map_method(
+        "average_fft",
+        doc="Apply average_fft to each TimeSeries. Returns a FrequencySeriesDict.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesDict",
+    )
 
     # --- Statistics & Measurements ---
 
@@ -1175,7 +974,7 @@ class TimeSeriesDict(PhaseMethodsMixin, BaseTimeSeriesDict):
         return self.to_matrix().ica(*args, **kwargs)
 
 
-class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
+class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesList):
     """List of TimeSeries objects."""
 
     def csd_matrix(
@@ -1626,173 +1425,28 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
             list.append(new_list, ts.crop(start=start, end=end, copy=copy))
         return new_list
 
-    def shift(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        Shift each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.shift(*args, **kwargs))
-        return new_list
-
-    def gate(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        Gate each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.gate(*args, **kwargs))
-        return new_list
-
-    def mask(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        Mask each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.mask(*args, **kwargs))
-        return new_list
+    shift = _make_list_map_method("shift", doc="Shift each TimeSeries in the list.")
+    gate = _make_list_map_method("gate", doc="Gate each TimeSeries in the list.")
+    mask = _make_list_map_method("mask", doc="Mask each TimeSeries in the list.")
 
     # --- Signal Processing ---
 
-    def resample(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        Resample each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.resample(*args, **kwargs))
-        return new_list
-
-    def decimate(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        Decimate each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.decimate(*args, **kwargs))
-        return new_list
-
-    def filter(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        Filter each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.filter(*args, **kwargs))
-        return new_list
-
-    def whiten(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        Whiten each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.whiten(*args, **kwargs))
-        return new_list
-
-    def notch(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        Notch filter each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.notch(*args, **kwargs))
-        return new_list
-
-    def zpk(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        ZPK filter each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.zpk(*args, **kwargs))
-        return new_list
-
-    def detrend(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        Detrend each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.detrend(*args, **kwargs))
-        return new_list
-
-    def taper(self, *args, **kwargs) -> TimeSeriesList:
-        """
-        Taper each TimeSeries in the list.
-        Returns a new TimeSeriesList.
-        """
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.taper(*args, **kwargs))
-        return new_list
-
-    def hilbert(self, *args, **kwargs):
-        """Apply Hilbert transform to each item."""
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.hilbert(*args, **kwargs))
-        return new_list
-
-    def envelope(self, *args, **kwargs):
-        """Apply envelope to each item."""
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.envelope(*args, **kwargs))
-        return new_list
-
-    def instantaneous_phase(self, *args, **kwargs):
-        """Apply instantaneous_phase to each item."""
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.instantaneous_phase(*args, **kwargs))
-        return new_list
-
-    def unwrap_phase(self, *args, **kwargs):
-        """Apply unwrap_phase to each item."""
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.unwrap_phase(*args, **kwargs))
-        return new_list
-
-    def instantaneous_frequency(self, *args, **kwargs):
-        """Apply instantaneous_frequency to each item."""
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.instantaneous_frequency(*args, **kwargs))
-        return new_list
-
-    def mix_down(self, *args, **kwargs):
-        """Apply mix_down to each item."""
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.mix_down(*args, **kwargs))
-        return new_list
-
-    def baseband(self, *args, **kwargs):
-        """Apply baseband to each item."""
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.baseband(*args, **kwargs))
-        return new_list
-
-    def heterodyne(self, *args, **kwargs):
-        """Apply heterodyne to each item."""
-        new_list = self.__class__()
-        for ts in self:
-            list.append(new_list, ts.heterodyne(*args, **kwargs))
-        return new_list
+    resample = _make_list_map_method("resample", doc="Resample each TimeSeries in the list.")
+    decimate = _make_list_map_method("decimate", doc="Decimate each TimeSeries in the list.")
+    filter = _make_list_map_method("filter", doc="Filter each TimeSeries in the list.")
+    whiten = _make_list_map_method("whiten", doc="Whiten each TimeSeries in the list.")
+    notch = _make_list_map_method("notch", doc="Notch filter each TimeSeries in the list.")
+    zpk = _make_list_map_method("zpk", doc="ZPK filter each TimeSeries in the list.")
+    detrend = _make_list_map_method("detrend", doc="Detrend each TimeSeries in the list.")
+    taper = _make_list_map_method("taper", doc="Taper each TimeSeries in the list.")
+    hilbert = _make_list_map_method("hilbert", doc="Apply Hilbert transform to each item.")
+    envelope = _make_list_map_method("envelope", doc="Apply envelope to each item.")
+    instantaneous_phase = _make_list_map_method("instantaneous_phase", doc="Apply instantaneous_phase to each item.")
+    unwrap_phase = _make_list_map_method("unwrap_phase", doc="Apply unwrap_phase to each item.")
+    instantaneous_frequency = _make_list_map_method("instantaneous_frequency", doc="Apply instantaneous_frequency to each item.")
+    mix_down = _make_list_map_method("mix_down", doc="Apply mix_down to each item.")
+    baseband = _make_list_map_method("baseband", doc="Apply baseband to each item.")
+    heterodyne = _make_list_map_method("heterodyne", doc="Apply heterodyne to each item.")
 
     def lock_in(self, *args, **kwargs):
         """Apply lock_in to each item."""
@@ -1816,89 +1470,34 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
 
     # --- Spectral Conversion ---
 
-    def fft(self, *args, **kwargs):
-        """
-        Apply FFT to each TimeSeries in the list.
-        Returns a FrequencySeriesList.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesList
-
-        new_list = FrequencySeriesList()
-        for ts in self:
-            list.append(new_list, ts.fft(*args, **kwargs))
-        return new_list
-
-    def average_fft(self, *args, **kwargs):
-        """
-        Apply average_fft to each TimeSeries in the list.
-        Returns a FrequencySeriesList.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesList
-
-        new_list = FrequencySeriesList()
-        for ts in self:
-            list.append(new_list, ts.average_fft(*args, **kwargs))
-        return new_list
-
-    def psd(self, *args, **kwargs):
-        """
-        Compute PSD for each TimeSeries in the list.
-        Returns a FrequencySeriesList.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesList
-
-        new_list = FrequencySeriesList()
-        for ts in self:
-            list.append(new_list, ts.psd(*args, **kwargs))
-        return new_list
-
-    def asd(self, *args, **kwargs):
-        """
-        Compute ASD for each TimeSeries in the list.
-        Returns a FrequencySeriesList.
-        """
-        from gwexpy.frequencyseries import FrequencySeriesList
-
-        new_list = FrequencySeriesList()
-        for ts in self:
-            list.append(new_list, ts.asd(*args, **kwargs))
-        return new_list
-
-    def spectrogram(self, *args, **kwargs):
-        """
-        Compute spectrogram for each TimeSeries in the list.
-        Returns a SpectrogramList.
-        """
-        from gwexpy.spectrogram import SpectrogramList
-
-        new_list = SpectrogramList()
-        for ts in self:
-            new_list.append(ts.spectrogram(*args, **kwargs))
-        return new_list
-
-    def spectrogram2(self, *args, **kwargs):
-        """
-        Compute spectrogram2 for each TimeSeries in the list.
-        Returns a SpectrogramList.
-        """
-        from gwexpy.spectrogram import SpectrogramList
-
-        new_list = SpectrogramList()
-        for ts in self:
-            new_list.append(ts.spectrogram2(*args, **kwargs))
-        return new_list
-
-    def q_transform(self, *args, **kwargs):
-        """
-        Compute Q-transform for each TimeSeries in the list.
-        Returns a SpectrogramList.
-        """
-        from gwexpy.spectrogram import SpectrogramList
-
-        new_list = SpectrogramList()
-        for ts in self:
-            new_list.append(ts.q_transform(*args, **kwargs))
-        return new_list
+    fft = _make_list_map_method(
+        "fft", doc="Apply FFT to each TimeSeries. Returns a FrequencySeriesList.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
+    )
+    average_fft = _make_list_map_method(
+        "average_fft", doc="Apply average_fft to each TimeSeries. Returns a FrequencySeriesList.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
+    )
+    psd = _make_list_map_method(
+        "psd", doc="Compute PSD for each TimeSeries. Returns a FrequencySeriesList.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
+    )
+    asd = _make_list_map_method(
+        "asd", doc="Compute ASD for each TimeSeries. Returns a FrequencySeriesList.",
+        result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
+    )
+    spectrogram = _make_list_map_method(
+        "spectrogram", doc="Compute spectrogram for each TimeSeries. Returns a SpectrogramList.",
+        result_class_path="gwexpy.spectrogram.SpectrogramList",
+    )
+    spectrogram2 = _make_list_map_method(
+        "spectrogram2", doc="Compute spectrogram2 for each TimeSeries. Returns a SpectrogramList.",
+        result_class_path="gwexpy.spectrogram.SpectrogramList",
+    )
+    q_transform = _make_list_map_method(
+        "q_transform", doc="Compute Q-transform for each TimeSeries. Returns a SpectrogramList.",
+        result_class_path="gwexpy.spectrogram.SpectrogramList",
+    )
 
     # --- Statistics & Measurements ---
 
@@ -2129,29 +1728,12 @@ class TimeSeriesList(PhaseMethodsMixin, BaseTimeSeriesList):
         """Perform ICA decomposition across channels."""
         return self.to_matrix().ica(*args, **kwargs)
 
-    def plot(self, **kwargs: Any):
-        """Plot all series. Delegates to gwexpy.plot.Plot."""
-        from gwexpy.plot import Plot
-
-        return Plot(self, **kwargs)
-
     def plot_all(self, *args: Any, **kwargs: Any):
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
 
-    def radian(self, *args, **kwargs) -> TimeSeriesList:
-        """Compute instantaneous phase (in radians) of each item."""
-        new_list = self.__class__()
-        for ts in self:
-            new_list.append(ts.radian(*args, **kwargs))
-        return new_list
-
-    def degree(self, *args, **kwargs) -> TimeSeriesList:
-        """Compute instantaneous phase (in degrees) of each item."""
-        new_list = self.__class__()
-        for ts in self:
-            new_list.append(ts.degree(*args, **kwargs))
-        return new_list
+    radian = _make_list_map_method("radian", doc="Compute instantaneous phase (in radians) of each item.")
+    degree = _make_list_map_method("degree", doc="Compute instantaneous phase (in degrees) of each item.")
 
     # phase() and angle() are provided by PhaseMethodsMixin
 

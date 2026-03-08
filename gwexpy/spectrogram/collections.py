@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import warnings
 from collections import UserDict, UserList
 from typing import SupportsIndex
 
@@ -24,8 +25,75 @@ from gwexpy.io.hdf5_collection import (
     write_hdf5_manifest,
 )
 from gwexpy.types.mixin import PhaseMethodsMixin
+from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from .spectrogram import Spectrogram
+
+
+def _resolve_crop_compat_args(*args, **kwargs):
+    """Normalize deprecated crop arguments to (start, end, copy).
+
+    Supports:
+    - crop(start, end)
+    - crop(start, end, inplace)  — 3rd positional = legacy inplace (bool)
+    - crop(t0=..., t1=..., inplace=...)  — deprecated kwargs
+    - crop(start=..., end=..., copy=...)  — modern API
+
+    Raises TypeError for:
+    - Too many positional args (>3)
+    - Duplicate inplace (positional + keyword)
+    - Unexpected keyword arguments (deterministic sorted output)
+    """
+    if len(args) > 3:
+        raise TypeError(
+            f"crop() takes at most 3 positional arguments ({len(args)} given)"
+        )
+
+    start = args[0] if len(args) > 0 else kwargs.pop("start", None)
+    end = args[1] if len(args) > 1 else kwargs.pop("end", None)
+    copy = True  # default
+
+    # 3rd positional = legacy inplace
+    positional_inplace = None
+    if len(args) > 2:
+        positional_inplace = args[2]
+
+    # Legacy kwargs
+    if "t0" in kwargs:
+        warnings.warn(
+            "t0 is deprecated, use start", DeprecationWarning, stacklevel=3
+        )
+        start = kwargs.pop("t0")
+    if "t1" in kwargs:
+        warnings.warn(
+            "t1 is deprecated, use end", DeprecationWarning, stacklevel=3
+        )
+        end = kwargs.pop("t1")
+
+    if "inplace" in kwargs:
+        if positional_inplace is not None:
+            raise TypeError(
+                "Cannot specify inplace as both positional and keyword argument"
+            )
+        warnings.warn(
+            "inplace is deprecated, use copy", DeprecationWarning, stacklevel=3
+        )
+        copy = not kwargs.pop("inplace")
+    elif positional_inplace is not None:
+        warnings.warn(
+            "positional inplace is deprecated, use copy=",
+            DeprecationWarning,
+            stacklevel=3,
+        )
+        copy = not positional_inplace
+
+    if "copy" in kwargs:
+        copy = kwargs.pop("copy")
+
+    if kwargs:
+        raise TypeError(f"Unexpected keyword arguments: {sorted(kwargs)}")
+
+    return start, end, copy
 
 
 class SpectrogramList(PhaseMethodsMixin, UserList):
@@ -156,22 +224,33 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, t0, t1, inplace=False):
-        """Crop each spectrogram."""
-        if inplace:
-            target = self
-        else:
-            target = self.__class__()
+    def crop(self, *args, **kwargs):
+        """Crop each spectrogram in time.
 
-        for i, s in enumerate(self):
-            res = s.crop(t0, t1)
-            if inplace:
-                self[i] = res
-            else:
-                target.append(res)
-        if inplace:
+        Parameters
+        ----------
+        start : float, optional
+            Start time.
+        end : float, optional
+            End time.
+        copy : bool, optional
+            If True (default), return a new list. If False, modify in place.
+        *args, **kwargs
+            Deprecated: ``t0``/``t1``/``inplace`` and positional ``inplace``
+            are accepted for backwards compatibility but will be removed in
+            a future release.
+        """
+        start, end, copy = _resolve_crop_compat_args(*args, **kwargs)
+
+        if copy:
+            target = self.__class__()
+            for s in self:
+                target.append(s.crop(start, end))
+            return target
+        else:
+            for i, s in enumerate(self):
+                self[i] = s.crop(start, end)
             return self
-        return target
 
     def crop_frequencies(self, f0, f1, inplace=False):
         """Crop frequencies."""
@@ -380,7 +459,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         return self.__class__([s.degree(unwrap=unwrap) for s in self])
 
 
-class SpectrogramDict(PhaseMethodsMixin, UserDict):
+class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
     """
     Dictionary of Spectrogram objects.
 
@@ -501,33 +580,37 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, t0, t1, inplace=False):
+    def crop(self, *args, **kwargs):
         """Crop each spectrogram in time.
 
         Parameters
         ----------
-        t0, t1 : float
-            Start and end times.
-        inplace : bool, optional
-            If True, modify in place.
+        start : float, optional
+            Start time.
+        end : float, optional
+            End time.
+        copy : bool, optional
+            If True (default), return a new dict. If False, modify in place.
+        *args, **kwargs
+            Deprecated: ``t0``/``t1``/``inplace`` and positional ``inplace``
+            are accepted for backwards compatibility but will be removed in
+            a future release.
 
         Returns
         -------
         SpectrogramDict
         """
-        if inplace:
-            target = self
-        else:
+        start, end, copy = _resolve_crop_compat_args(*args, **kwargs)
+
+        if copy:
             target = self.__class__()
-        for k, v in self.items():
-            res = v.crop(t0, t1)
-            if inplace:
-                self[k] = res
-            else:
-                target[k] = res
-        if inplace:
+            for k, v in self.items():
+                target[k] = v.crop(start, end)
+            return target
+        else:
+            for k, v in self.items():
+                self[k] = v.crop(start, end)
             return self
-        return target
 
     def crop_frequencies(self, f0, f1, inplace=False):
         """Crop each spectrogram in frequency.
@@ -630,13 +713,6 @@ class SpectrogramDict(PhaseMethodsMixin, UserDict):
         if inplace:
             return self
         return target
-
-    def plot(self, **kwargs):
-        """Plot all spectrograms stacked vertically."""
-        from gwexpy.plot import Plot
-
-        # Pass self directly, Plot will unpack values
-        return Plot(self, **kwargs)
 
     def plot_summary(self, **kwargs):
         """

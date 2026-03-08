@@ -9,10 +9,12 @@ pattern of separating stimulus management from main UI logic.
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import numpy as np
 from gwpy.timeseries import TimeSeries
 
+from ..excitation.generator import SignalGenerator
 from ..excitation.params import GeneratorParams
 
 logger = logging.getLogger(__name__)
@@ -36,7 +38,7 @@ class ExcitationManager:
         Reference to the UI excitation controls dictionary.
     """
 
-    def __init__(self, sig_gen, exc_controls=None):
+    def __init__(self, sig_gen: SignalGenerator, exc_controls: dict[str, Any] | None = None) -> None:
         """
         Initialize the ExcitationManager.
 
@@ -50,7 +52,7 @@ class ExcitationManager:
         self.sig_gen = sig_gen
         self.exc_controls = exc_controls
 
-    def set_controls(self, exc_controls):
+    def set_controls(self, exc_controls: dict[str, Any]) -> None:
         """Update the reference to excitation controls."""
         self.exc_controls = exc_controls
 
@@ -63,7 +65,7 @@ class ExcitationManager:
                 return True
         return False
 
-    def inject_signals(self, data_map, times, sample_rate):
+    def inject_signals(self, data_map: dict[str, Any], times: np.ndarray | None, sample_rate: float) -> np.ndarray | None:
         """
         Generate and inject signals from all active excitation panels.
 
@@ -148,8 +150,12 @@ class ExcitationManager:
         return total_excitation
 
     def publish_excitation_channel(
-        self, data_map, total_excitation, times, sample_rate
-    ):
+        self,
+        data_map: dict[str, Any],
+        total_excitation: np.ndarray | None,
+        times: np.ndarray | None,
+        sample_rate: float,
+    ) -> None:
         """
         Publish the total excitation as a dedicated 'Excitation' channel.
 
@@ -164,7 +170,7 @@ class ExcitationManager:
         sample_rate : float
             Sample rate in Hz.
         """
-        if total_excitation is not None and np.any(total_excitation):
+        if total_excitation is not None and times is not None and np.any(total_excitation):
             data_map["Excitation"] = TimeSeries(
                 total_excitation,
                 t0=times[0],

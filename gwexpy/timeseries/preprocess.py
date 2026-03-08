@@ -133,57 +133,27 @@ def _bfill_numpy(val: NumericArray, limit: int | None = None) -> NumericArray:
     return out
 
 
-def align_timeseries_collection(
+def _validate_alignment_input(
     series_list: TimeSeriesSequence,
-    *,
-    how: Literal["intersection", "union"] = "intersection",
-    fill_value: Any = np.nan,
-    method: str | None = None,
-    tolerance: float | None = None,
-) -> tuple[npt.NDArray[Any], u.Quantity, dict[str, Any]]:
-    """
-    Align a collection of TimeSeries to a common time axis.
-
-    All time spans are treated as semi-open intervals [start, end) (end exclusive).
-    The common time grid uses ``n_samples = ceil((end - start) / dt)``, so samples
-    are generated at ``start + k * dt`` for ``k = 0..n_samples-1`` and never
-    include the end point, consistent with [start, end).
-
-    Parameters
-    ----------
-    series_list : list of TimeSeries
-        Input series to align.
-    how : str, optional
-        "intersection" (default) or "union".
-    fill_value : float, optional
-        Value to fill missing data with when how="union". Default is np.nan.
-    method : str, optional
-        Interpolation method for resampling/alignment (e.g. 'linear', 'nearest', 'pad').
-        Passed to TimeSeries.asfreq.
-    tolerance : float, optional
-        Tolerance for time comparison in seconds. Passed to TimeSeries.asfreq.
-
-    Returns
-    -------
-    values : np.ndarray
-        Shape (n_samples, n_channels).
-    times : np.ndarray
-        Common time axis (Time array).
-    meta : dict
-        Metadata including 'dt', 'epoch', 'channel_names', etc.
-
-    Notes
-    -----
-    - ``how="intersection"`` computes the semi-open intersection of spans and
-      raises ``ValueError`` if the intersection is empty.
-    - ``how="union"`` spans the semi-open union of all series and uses
-      ``fill_value`` outside each series' coverage.
-    """
+) -> None:
+    """Validate that the input series list is non-empty."""
     if not series_list:
         raise ValueError("No timeseries provided to align.")
 
-    # 1. Determine common sample rate (minimum rate / maximum dt)
-    dts = []
+
+def _detect_time_units(
+    series_list: TimeSeriesSequence,
+) -> tuple[list[u.Quantity], bool]:
+    """Detect dt values and whether any series has time-based dt.
+
+    Returns
+    -------
+    dts : list of Quantity
+        The dt for each series.
+    has_time_dt : bool
+        True if any dt has physical_type == 'time'.
+    """
+    dts: list[u.Quantity] = []
     has_time_dt = False
     for ts in series_list:
         # Check regularity safely
@@ -227,7 +197,25 @@ def align_timeseries_collection(
         if dt_unit is not None and getattr(dt_unit, "physical_type", None) == "time":
             has_time_dt = True
 
-    # 2. Determine time bounds and common unit
+    return dts, has_time_dt
+
+
+def _standardize_time_units(
+    dts: list[u.Quantity],
+    has_time_dt: bool,
+    series_list: TimeSeriesSequence,
+) -> tuple[u.Quantity, u.UnitBase, bool]:
+    """Convert dt values to a common time unit and determine the target dt.
+
+    Returns
+    -------
+    target_dt : Quantity
+        The maximum dt in common units (coarsest resolution).
+    common_time_unit : Unit
+        The common unit for time axes.
+    is_time_based : bool
+        Whether alignment is time-based.
+    """
     # Check if we should operate in physical time (seconds)
     is_time_based = has_time_dt
     if not is_time_based:
@@ -327,8 +315,25 @@ def align_timeseries_collection(
                     ) from exc
         target_dt = max(dt_candidates)
 
-    # Helper to get start/end in common unit
-    def get_span_val(ts: "TimeSeries") -> tuple[float, float]:  # noqa: UP037
+    return target_dt, common_time_unit, is_time_based
+
+
+def _extract_spans(
+    series_list: TimeSeriesSequence,
+    common_time_unit: u.UnitBase,
+    is_time_based: bool,
+) -> tuple[list[float], list[float]]:
+    """Get the start and end time (in common_time_unit) for each series.
+
+    Returns
+    -------
+    starts : list of float
+        Start times in common_time_unit.
+    ends : list of float
+        End times in common_time_unit.
+    """
+
+    def _get_span_val(ts: "TimeSeries") -> tuple[float, float]:  # noqa: UP037
         ts_u = ts.times.unit if ts.times.unit is not None else u.dimensionless_unscaled
 
         # t0 conversion
@@ -393,35 +398,66 @@ def align_timeseries_collection(
 
         return t0, end
 
-    starts = []
-    ends = []
+    starts: list[float] = []
+    ends: list[float] = []
     for ts in series_list:
-        s, e = get_span_val(ts)
+        s, e = _get_span_val(ts)
         starts.append(s)
         ends.append(e)
 
-    def float_min(x: Sequence[float]) -> float:
-        return min(x)
+    return starts, ends
 
-    def float_max(x: Sequence[float]) -> float:
-        return max(x)
 
+def _compute_common_bounds(
+    starts: list[float],
+    ends: list[float],
+    how: Literal["intersection", "union"],
+    fill_value: Any,
+) -> tuple[float, float]:
+    """Compute the common start and end based on the alignment strategy.
+
+    Returns
+    -------
+    common_t0 : float
+        Common start time.
+    common_end : float
+        Common end time.
+    """
     if how == "intersection":
-        common_t0 = float_max(starts)
-        common_end = float_min(ends)
+        common_t0 = max(starts)
+        common_end = min(ends)
         # Semi-open intersection is empty when end <= start.
         if common_end <= common_t0:
             raise ValueError(
                 f"No overlap found. common_t0={common_t0}, common_end={common_end}"
             )
     elif how == "union":
-        common_t0 = float_min(starts)
-        common_end = float_max(ends)
+        common_t0 = min(starts)
+        common_end = max(ends)
     else:
         raise ValueError(f"Unknown alignment how='{how}'.")
 
-    # 3. Create common time axis
-    # Use common_time_unit for output
+    return common_t0, common_end
+
+
+def _generate_time_grid(
+    common_t0: float,
+    common_end: float,
+    target_dt: u.Quantity,
+    common_time_unit: u.UnitBase,
+    how: Literal["intersection", "union"],
+) -> tuple[u.Quantity, int, float]:
+    """Generate the output time grid.
+
+    Returns
+    -------
+    common_times : Quantity
+        Common time axis.
+    n_samples : int
+        Number of samples in the grid.
+    target_dt_s : float
+        Target dt in common_time_unit.
+    """
     out_unit = common_time_unit
 
     duration = common_end - common_t0
@@ -433,7 +469,7 @@ def align_timeseries_collection(
         # Use ceil to ensure we cover the full range, matching asfreq behavior
         n_samples = int(np.ceil(duration / target_dt_s))
 
-    # Create common times in Seconds
+    # Create common times in common_time_unit
     common_times_s = common_t0 + np.arange(n_samples) * target_dt_s
     # Convert to output unit
     common_times = (common_times_s * common_time_unit).to(out_unit)
@@ -442,7 +478,28 @@ def align_timeseries_collection(
         # Fallback for empty
         pass
 
-    # 4. Fill matrix
+    return common_times, n_samples, target_dt_s
+
+
+def _align_series_to_grid(
+    series_list: TimeSeriesSequence,
+    common_t0: float,
+    n_samples: int,
+    target_dt: u.Quantity,
+    target_dt_s: float,
+    common_time_unit: u.UnitBase,
+    is_time_based: bool,
+    method: str | None,
+    tolerance: float | None,
+    fill_value: Any,
+) -> npt.NDArray[Any]:
+    """Align each series to the common grid and fill the output matrix.
+
+    Returns
+    -------
+    values : np.ndarray
+        Shape (n_samples, n_channels).
+    """
     n_channels = len(series_list)
     # Determine output dtype (promote if needed)
     # For now assume float or complex
@@ -510,6 +567,92 @@ def align_timeseries_collection(
         if buf_end > buf_start:
             values[buf_start:buf_end, i] = ts_aligned.value[ts_start:ts_end]
 
+    return values
+
+
+def align_timeseries_collection(
+    series_list: TimeSeriesSequence,
+    *,
+    how: Literal["intersection", "union"] = "intersection",
+    fill_value: Any = np.nan,
+    method: str | None = None,
+    tolerance: float | None = None,
+) -> tuple[npt.NDArray[Any], u.Quantity, dict[str, Any]]:
+    """
+    Align a collection of TimeSeries to a common time axis.
+
+    All time spans are treated as semi-open intervals [start, end) (end exclusive).
+    The common time grid uses ``n_samples = ceil((end - start) / dt)``, so samples
+    are generated at ``start + k * dt`` for ``k = 0..n_samples-1`` and never
+    include the end point, consistent with [start, end).
+
+    Parameters
+    ----------
+    series_list : list of TimeSeries
+        Input series to align.
+    how : str, optional
+        "intersection" (default) or "union".
+    fill_value : float, optional
+        Value to fill missing data with when how="union". Default is np.nan.
+    method : str, optional
+        Interpolation method for resampling/alignment (e.g. 'linear', 'nearest', 'pad').
+        Passed to TimeSeries.asfreq.
+    tolerance : float, optional
+        Tolerance for time comparison in seconds. Passed to TimeSeries.asfreq.
+
+    Returns
+    -------
+    values : np.ndarray
+        Shape (n_samples, n_channels).
+    times : np.ndarray
+        Common time axis (Time array).
+    meta : dict
+        Metadata including 'dt', 'epoch', 'channel_names', etc.
+
+    Notes
+    -----
+    - ``how="intersection"`` computes the semi-open intersection of spans and
+      raises ``ValueError`` if the intersection is empty.
+    - ``how="union"`` spans the semi-open union of all series and uses
+      ``fill_value`` outside each series' coverage.
+    """
+    # 1. Validate input
+    _validate_alignment_input(series_list)
+
+    # 2. Detect dt and time unit info from each series
+    dts, has_time_dt = _detect_time_units(series_list)
+
+    # 3. Standardize to a common time unit and determine target dt
+    target_dt, common_time_unit, is_time_based = _standardize_time_units(
+        dts, has_time_dt, series_list
+    )
+
+    # 4. Extract time spans (start, end) for each series
+    starts, ends = _extract_spans(series_list, common_time_unit, is_time_based)
+
+    # 5. Compute the common start/end bounds
+    common_t0, common_end = _compute_common_bounds(starts, ends, how, fill_value)
+
+    # 6. Generate the common time grid
+    common_times, n_samples, target_dt_s = _generate_time_grid(
+        common_t0, common_end, target_dt, common_time_unit, how
+    )
+
+    # 7. Align each series onto the grid
+    values = _align_series_to_grid(
+        series_list,
+        common_t0,
+        n_samples,
+        target_dt,
+        target_dt_s,
+        common_time_unit,
+        is_time_based,
+        method,
+        tolerance,
+        fill_value,
+    )
+
+    out_unit = common_time_unit
     meta = {
         "t0": u.Quantity(common_t0, common_time_unit).to(out_unit),
         "dt": target_dt,
