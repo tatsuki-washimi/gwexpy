@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from gwpy.timeseries import TimeSeries
@@ -42,7 +42,7 @@ def _log_db(data: np.ndarray, factor: float) -> np.ndarray:
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, enable_preload=True, data_backend=None):
+    def __init__(self, enable_preload: bool = True, data_backend: NDSDataCache | None = None) -> None:
         super().__init__()
         self._enable_preload = enable_preload
         self.setWindowTitle("pyaggui : a diaggui-like gwexpy GUI-tool")
@@ -103,16 +103,16 @@ class MainWindow(QtWidgets.QMainWindow):
             # res_tab.btn_calibration.clicked.connect(self.show_calibration_dialog)
 
         self.engine = Engine()
-        self.loaded_products = {}
+        self.loaded_products: dict[str, Any] = {}
         self.is_file_mode = False
         self.is_loading_file = False
 
         # NDS Integration
         self.nds_cache = data_backend if data_backend is not None else NDSDataCache()
         self.nds_cache.signal_data.connect(self.on_nds_data)
-        self.nds_latest_raw = None  # Stores latest DataBufferDict
+        self.nds_latest_raw: dict[str, Any] | None = None
         self.data_source = "SIM"  # SIM, FILE, NDS
-        self._preload_worker: Optional[ChannelListWorker] = None
+        self._preload_worker: ChannelListWorker | None = None
         self._reference_traces: dict[str, dict[str, Any]] = {}
 
         # Signal Generator
@@ -248,7 +248,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # Trigger update when switching away from Input tab (if settings changed)
             self.tabs.currentChanged.connect(lambda idx: self.preload_nds_channels())
 
-    def preload_nds_channels(self):
+    def preload_nds_channels(self) -> None:
         """Fetch NDS channels in background for the default server."""
         if not self._enable_preload:
             return
@@ -287,7 +287,7 @@ class MainWindow(QtWidgets.QMainWindow):
         except (AttributeError, KeyError, RuntimeError, TypeError) as e:
             logger.error(f"Preload Error: {e}")
 
-    def _on_preload_finished(self, key, results, error):
+    def _on_preload_finished(self, key: str, results: list[Any], error: str | None) -> None:
         from ..nds.cache import ChannelListCache
 
         if error:
@@ -297,7 +297,7 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.info(f"Pre-load complete for {key}: {len(results)} channels cached.")
         self._preload_worker = None  # Release ref
 
-    def update_x_link_logic(self):
+    def update_x_link_logic(self) -> None:
         """
         Dynamically link/unlink X-axes based on graph types AND range mode.
         - Time-based graphs (Time Series, Spectrogram) should be linked.
@@ -338,7 +338,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.graph_info2["plot"].setXLink(None)
             self._x_axes_linked = False
 
-    def on_measurement_channel_changed(self):
+    def on_measurement_channel_changed(self) -> None:
         # Update Result tab comboboxes based on active Measurement channels
         active_channels = []
         states = self.meas_controls["channel_states"]
@@ -418,7 +418,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                         combo.blockSignals(False)
 
-    def show_channel_browser(self, start_slot=None):
+    def show_channel_browser(self, start_slot: int | None = None) -> None:
         # Determine which server/port to use based on current selection in Input tab
         use_pc_audio = self.input_controls["pcaudio"].isChecked()
         ds_mode = self.input_controls["ds_combo"].currentText()
@@ -485,25 +485,25 @@ class MainWindow(QtWidgets.QMainWindow):
             self.meas_controls["set_all_channels"](new_states)
             logger.info(f"Added {count} channels from {server}:{port}")
 
-    def on_source_changed(self, text):
+    def on_source_changed(self, text: str) -> None:
         self.data_source = text
         if text == "NDS":
             self.nds_latest_raw = None
 
-    def on_stream_payload(self, payload):
+    def on_stream_payload(self, payload: dict[str, Any]) -> None:
         """Handle incremental NDS data."""
         self.accumulator.add_chunk(payload)
 
-    def on_nds_data(self, buffers):
+    def on_nds_data(self, buffers: dict[str, TimeSeries]) -> None:
         logger.debug("MainWindow received NDS data with %d channels", len(buffers))
         self.nds_latest_raw = buffers
 
-    def on_data_error(self, message):
+    def on_data_error(self, message: str) -> None:
         logger.warning("Data backend error: %s", message)
         if hasattr(self, "status_label"):
             self.status_label.setText(message)
 
-    def start_animation(self):
+    def start_animation(self) -> None:
         # Prevention: Do not start if already running
         if (
             self.timer.isActive()
@@ -633,7 +633,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.meas_start_gps = None  # Initialize measurement start time
         self.timer.start(50)
 
-    def pause_animation(self):
+    def pause_animation(self) -> None:
         self.timer.stop()
         self.btn_start.setEnabled(False)
         self.btn_pause.setEnabled(False)
@@ -641,7 +641,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.btn_abort.setEnabled(True)
         self.nds_cache.online_stop()
 
-    def resume_animation(self):
+    def resume_animation(self) -> None:
         self.timer.start(50)
         self.btn_start.setEnabled(False)
         self.btn_pause.setEnabled(True)
@@ -650,7 +650,7 @@ class MainWindow(QtWidgets.QMainWindow):
         win = self.input_controls["nds_win"].value()
         self.nds_cache.online_start(lookback=win)
 
-    def stop_animation(self):
+    def stop_animation(self) -> None:
         self.timer.stop()
         self.btn_start.setEnabled(True)
         self.btn_pause.setEnabled(False)
@@ -671,7 +671,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 t["img"].clear()
         self.time_counter = 0.0
 
-    def get_ui_params(self):
+    def get_ui_params(self) -> dict[str, Any]:
         p = {}
         c = self.meas_controls
         p.update(
@@ -693,7 +693,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         return p
 
-    def update_graphs(self):
+    def update_graphs(self) -> None:
         """
         Main update loop for streaming mode.
 
@@ -733,7 +733,7 @@ class MainWindow(QtWidgets.QMainWindow):
         except (RuntimeError, TypeError, ValueError):
             logger.exception("Error rendering graphs")
 
-    def _collect_data_map(self):
+    def _collect_data_map(self) -> tuple[dict[str, TimeSeries] | None, np.ndarray | None, float]:
         """
         Collect data from the current source into a data_map.
 
@@ -743,9 +743,9 @@ class MainWindow(QtWidgets.QMainWindow):
             (data_map, current_times, current_fs) where data_map may be empty
             or None if no data is available.
         """
-        data_map = {}
-        current_times = None
-        current_fs = 16384  # Fallback
+        data_map: dict[str, TimeSeries] = {}
+        current_times: np.ndarray | None = None
+        current_fs: float = 16384  # Fallback
 
         # Check if we have Active Excitation for fallback timebase
         has_active_excitation = self.excitation_manager.has_active_excitation()
@@ -807,7 +807,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return data_map, current_times, current_fs
 
-    def _apply_time_cropping(self, data_map, current_times):
+    def _apply_time_cropping(self, data_map: dict[str, TimeSeries], current_times: np.ndarray | None) -> None:
         """
         Crop data to measurement start time and remove stale data.
 
@@ -842,7 +842,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     except (RuntimeError, ValueError):
                         del data_map[k]
 
-    def _check_stop_condition(self, data_map):
+    def _check_stop_condition(self, data_map: dict[str, TimeSeries]) -> None:
         """
         Check if Fixed Averaging stop condition is met.
 
@@ -879,7 +879,7 @@ class MainWindow(QtWidgets.QMainWindow):
         except (AttributeError, StopIteration, TypeError, ValueError) as e:
             logger.debug(f"Error checking stop condition: {e}")
 
-    def _render_graphs(self, data_map, current_times):
+    def _render_graphs(self, data_map: dict[str, TimeSeries], current_times: np.ndarray | None) -> None:
         """
         Render analysis results to both graph panels.
 
@@ -931,7 +931,7 @@ class MainWindow(QtWidgets.QMainWindow):
             except (RuntimeError, TypeError, ValueError) as e:
                 logger.warning(f"Error in update_graphs for Graph {plot_idx + 1}: {e}")
 
-    def _update_panel_meta(self, info_root, data_map):
+    def _update_panel_meta(self, info_root: dict[str, Any], data_map: dict[str, TimeSeries]) -> None:
         """Update panel metadata display."""
         ui_p = self.get_ui_params()
         if data_map:
@@ -942,7 +942,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 info_root["panel"].meta_info["bw"] = ui_p.get("bw", 0)
                 info_root["panel"].update_params_display()
 
-    def _get_results(self, plot_idx, info_root, data_map, g_type):
+    def _get_results(self, plot_idx: int, info_root: dict[str, Any], data_map: dict[str, TimeSeries], g_type: str) -> list[Any]:
         """
         Get analysis results from accumulator or engine.
 
@@ -1006,7 +1006,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return results
 
-    def _get_start_time_gps(self, is_time_axis, current_times, results):
+    def _get_start_time_gps(self, is_time_axis: bool, current_times: np.ndarray | None, results: list[Any]) -> float | None:
         """
         Determine the GPS start time for time-axis graphs.
 
@@ -1046,7 +1046,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return None
 
-    def _gps_to_utc(self, gps_time):
+    def _gps_to_utc(self, gps_time: float) -> str:
         """Convert GPS time to UTC string."""
         try:
             from astropy.time import Time
@@ -1056,11 +1056,11 @@ class MainWindow(QtWidgets.QMainWindow):
         except (TypeError, ValueError):
             return "?"
 
-    def on_trace_channel_changed(self):
+    def on_trace_channel_changed(self) -> None:
         if not self.is_loading_file and self.is_file_mode:
             self.update_file_plot()
 
-    def update_file_plot(self):
+    def update_file_plot(self) -> None:
         if not self.loaded_products:
             return
         for graph_idx in [0, 1]:
@@ -1213,7 +1213,7 @@ class MainWindow(QtWidgets.QMainWindow):
             except (RuntimeError, TypeError, ValueError) as e:
                 print(f"Error in update_file_plot for Graph {graph_idx + 1}: {e}")
 
-    def export_data(self):
+    def export_data(self) -> None:
         """Export current plot data to file (HDF5/CSV/GWF)."""
         filters = [
             "HDF5 (*.h5 *.hdf5)",
@@ -1279,7 +1279,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self, "Export Error", f"Failed to export data:\n{e}"
             )
 
-    def open_new_result_window(self):
+    def open_new_result_window(self) -> None:
         """Open a new window sharing the same data (DTT New behavior)."""
         try:
             from .result_window import ResultWindow
@@ -1300,7 +1300,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 "(Full implementation pending)",
             )
 
-    def show_reference_dialog(self):
+    def show_reference_dialog(self) -> None:
         """Show reference trace management dialog (DTT Reference behavior)."""
         dialog = QtWidgets.QDialog(self)
         dialog.setWindowTitle("Reference Traces")
@@ -1376,7 +1376,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         dialog.exec_()
 
-    def show_calibration_dialog(self):
+    def show_calibration_dialog(self) -> None:
         """Show calibration table editor dialog (DTT Calibration behavior)."""
         dialog = QtWidgets.QDialog(self)
         dialog.setWindowTitle("Calibration Table Editor")
@@ -1496,7 +1496,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         "units": unit_item.text() if unit_item else "counts",
                     }
 
-    def open_file_dialog(self):
+    def open_file_dialog(self) -> None:
         filters = ["Data Files (*.xml *.gwf *.h5 *.hdf5 *.csv *.txt)", "All Files (*)"]
         f, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, "Open Data File", "", ";;".join(filters)
@@ -1504,7 +1504,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if f:
             self.open_file(f)
 
-    def reset_state(self):
+    def reset_state(self) -> None:
         """Reset the entire GUI and engine state to defaults."""
         self.is_loading_file = True
 
@@ -1536,7 +1536,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.is_loading_file = False
 
-    def open_file(self, filename):
+    def open_file(self, filename: str) -> None:
         try:
             # Prepare fresh state
             self.reset_state()

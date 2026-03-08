@@ -7,12 +7,18 @@ top-level QWidget for the tab (or, for the setup helpers, nothing).
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any, TYPE_CHECKING
+
 import numpy as np
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
 from gwexpy.gui.ui.graph_panel import _small_spin_dbl, _small_spin_int
+
+if TYPE_CHECKING:
+    from gwexpy.gui.ui.graph_panel import GraphPanel
 
 # ---------------------------------------------------------------------------
 # Shared constants
@@ -60,7 +66,7 @@ CHANNEL_NAMES = [
 # ---------------------------------------------------------------------------
 
 
-def _clr_box():
+def _clr_box() -> QtWidgets.QComboBox:
     """Create a colour-swatch combo box."""
     lc = QtWidgets.QComboBox()
     lc.setFixedWidth(40)
@@ -75,7 +81,7 @@ def _clr_box():
 # ---------------------------------------------------------------------------
 
 
-def _build_tab_bar_setup(panel):
+def _build_tab_bar_setup(panel: GraphPanel) -> None:
     """Create the two QTabBar rows, the QStackedWidget, and the switching
     logic.  Sets ``panel.tab_row1``, ``panel.tab_row2``, ``panel.main_stack``,
     and returns the outer QVBoxLayout ``pv`` so the caller can keep a
@@ -146,7 +152,7 @@ def _build_tab_bar_setup(panel):
 # ---------------------------------------------------------------------------
 
 
-def _build_traces_tab(panel):
+def _build_traces_tab(panel: GraphPanel) -> QtWidgets.QWidget:
     """Build the Traces tab with 8 trace pages.
 
     Sets ``panel.trace_controls``, ``panel.graph_combo``,
@@ -277,7 +283,7 @@ def _build_traces_tab(panel):
     return traces_tab_widget
 
 
-def _build_trace_page(panel, i, update_style):
+def _build_trace_page(panel: GraphPanel, i: int, update_style: Callable[[int], None]) -> QtWidgets.QWidget:
     """Build a single trace page and append the control set to
     ``panel.trace_controls``.
     """
@@ -398,7 +404,7 @@ def _build_trace_page(panel, i, update_style):
 # ---------------------------------------------------------------------------
 
 
-def _build_range_tab(panel):
+def _build_range_tab(panel: GraphPanel) -> QtWidgets.QWidget:
     """Build the Range tab (Y/X axis ranges).
 
     Sets ``panel.update_range_logic``, ``panel.rb_y_lin``, ``panel.rb_y_log``,
@@ -541,7 +547,7 @@ def _build_range_tab(panel):
 # ---------------------------------------------------------------------------
 
 
-def _build_units_tab(panel):
+def _build_units_tab(panel: GraphPanel) -> QtWidgets.QWidget:
     """Build the Units tab.  Sets ``panel.display_y_combo``.
 
     Returns the tab widget.
@@ -576,7 +582,7 @@ def _build_units_tab(panel):
 # ---------------------------------------------------------------------------
 
 
-def _build_cursor_tab(panel):
+def _build_cursor_tab(panel: GraphPanel) -> QtWidgets.QWidget:
     """Build the Cursor tab.
 
     Sets ``panel.cursor_trace_tab``, ``panel.cursor_states``,
@@ -804,7 +810,7 @@ def _build_cursor_tab(panel):
 # ---------------------------------------------------------------------------
 
 
-def _build_style_tab(panel):
+def _build_style_tab(panel: GraphPanel) -> QtWidgets.QWidget:
     """Build the Style tab (title, margins).
 
     Sets ``panel._style_title_edit``, ``panel._apply_title_style``,
@@ -945,7 +951,7 @@ def _build_style_tab(panel):
 # ---------------------------------------------------------------------------
 
 
-def _build_axis_tab(panel, axis: str):
+def _build_axis_tab(panel: GraphPanel, axis: str) -> QtWidgets.QWidget:
     """Build an axis configuration tab.
 
     *axis* must be ``"x"`` or ``"y"``.
@@ -1078,7 +1084,7 @@ def _build_axis_tab(panel, axis: str):
     return tab, ctrls
 
 
-def _connect_axis_signals(panel):
+def _connect_axis_signals(panel: GraphPanel) -> None:
     """Wire up axis-style application logic for both X and Y axis tabs.
 
     Must be called after both ``_build_axis_tab`` calls.
@@ -1179,7 +1185,7 @@ def _connect_axis_signals(panel):
 # ---------------------------------------------------------------------------
 
 
-def _build_legend_tab(panel):
+def _build_legend_tab(panel: GraphPanel) -> QtWidgets.QWidget:
     """Build the Legend tab.
 
     Sets ``panel.update_legend``, ``panel.user_labels``.
@@ -1376,7 +1382,7 @@ def _build_legend_tab(panel):
 # ---------------------------------------------------------------------------
 
 
-def _build_param_tab(panel):
+def _build_param_tab(panel: GraphPanel) -> QtWidgets.QWidget:
     """Build the Param tab.
 
     Sets ``panel.update_params_display``, ``panel.param_text``,
@@ -1530,7 +1536,7 @@ def _build_param_tab(panel):
 # ---------------------------------------------------------------------------
 
 
-def _build_config_tab(panel):
+def _build_config_tab(panel: GraphPanel) -> QtWidgets.QWidget:
     """Build the Config tab.
 
     Sets ``panel.cfg_plot_settings``, ``panel.cfg_respect_user``,
@@ -1594,7 +1600,7 @@ def _build_config_tab(panel):
 # ---------------------------------------------------------------------------
 
 
-def _assemble_stack(panel, tabs):
+def _assemble_stack(panel: GraphPanel, tabs: dict[str, QtWidgets.QWidget]) -> None:
     """Add all tab widgets to the stack in the correct order and wire up
     the cross-tab ``update_axis_labels`` logic.
 

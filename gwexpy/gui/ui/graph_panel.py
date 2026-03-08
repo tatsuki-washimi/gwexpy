@@ -8,7 +8,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
 
-def _small_spin_int(min_val=-1000000000, max_val=1000000000, width=None):
+def _small_spin_int(min_val: int = -1000000000, max_val: int = 1000000000, width: int | None = None) -> QtWidgets.QSpinBox:
     w = QtWidgets.QSpinBox()
     w.setRange(min_val, max_val)
     if width:
@@ -16,7 +16,7 @@ def _small_spin_int(min_val=-1000000000, max_val=1000000000, width=None):
     return w
 
 
-def _small_spin_dbl(decimals=1, width=None, min_val=-1e12, max_val=1e12, step=0.1):
+def _small_spin_dbl(decimals: int = 1, width: int | None = None, min_val: float = -1e12, max_val: float = 1e12, step: float = 0.1) -> QtWidgets.QDoubleSpinBox:
     w = QtWidgets.QDoubleSpinBox()
     w.setRange(min_val, max_val)
     w.setDecimals(decimals)
@@ -27,7 +27,7 @@ def _small_spin_dbl(decimals=1, width=None, min_val=-1e12, max_val=1e12, step=0.
 
 
 class GraphPanel(QtWidgets.QFrame):
-    def __init__(self, plot_idx, target_plot, traces_items, parent=None):
+    def __init__(self, plot_idx: int, target_plot: pg.PlotWidget, traces_items: list[dict[str, Any]], parent: QtWidgets.QWidget | None = None) -> None:
         super().__init__(parent)
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.plot_idx = plot_idx
@@ -42,7 +42,7 @@ class GraphPanel(QtWidgets.QFrame):
 
         self._init_ui()
 
-    def _init_ui(self):
+    def _init_ui(self) -> None:
         from gwexpy.gui.ui._tab_builders import (
             _assemble_stack,
             _build_axis_tab,
@@ -85,7 +85,7 @@ class GraphPanel(QtWidgets.QFrame):
             "param": param_w,
         })
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset plot settings, axes, and clear data."""
         self.graph_combo.blockSignals(True)
         self.graph_combo.setCurrentIndex(0)  # Time Series
@@ -121,7 +121,7 @@ class GraphPanel(QtWidgets.QFrame):
         # Sync UI labels
         self.update_range_logic()
 
-    def to_graph_info(self):
+    def to_graph_info(self) -> dict[str, Any]:
         return {
             "graph_combo": self.graph_combo,
             "traces": self.trace_controls,

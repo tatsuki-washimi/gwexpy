@@ -245,15 +245,3 @@ module = [
 ]
 ignore_errors = false
 
-[[tool.mypy.overrides]]
-module = [
-  "gwexpy.gui.ui",
-  "gwexpy.gui.ui.channel_browser",
-  "gwexpy.gui.ui.excitation_manager",
-  "gwexpy.gui.ui.main_window",
-  "gwexpy.gui.ui.plot_renderer",
-  "gwexpy.gui.ui.tabs",
-  "gwexpy.gui.ui.graph_panel",
-  "gwexpy.gui.ui._tab_builders",
-]
-ignore_errors = true  # Phase 1: ui/ tracked but not yet type-annotated; Phase 2 will fix
