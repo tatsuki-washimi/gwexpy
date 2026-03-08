@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import pytest
 from astropy import units as u
@@ -94,3 +96,107 @@ def test_spectrogram_dict():
     # Matrix - crop returns a copy, so sd is unchanged
     mat = sd.to_matrix()
     assert mat.shape == (2, 10, 10)
+
+
+# ---------------------------------------------------------------------------
+# crop compatibility tests
+# ---------------------------------------------------------------------------
+
+
+class TestCropCompat:
+    """Tests for _resolve_crop_compat_args via SpectrogramList/Dict.crop."""
+
+    def _make_list(self):
+        s1 = create_mock_spectrogram("s1")
+        s2 = create_mock_spectrogram("s2")
+        return SpectrogramList([s1, s2])
+
+    def _make_dict(self):
+        s1 = create_mock_spectrogram("s1")
+        s2 = create_mock_spectrogram("s2")
+        return SpectrogramDict({"a": s1, "b": s2})
+
+    # -- third positional inplace compatibility --
+
+    def test_third_positional_inplace_list(self):
+        """crop(start, end, True) treats 3rd arg as legacy inplace (True=inplace)."""
+        sl = self._make_list()
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            result = sl.crop(2, 8, True)
+            # inplace=True → copy=False → returns self
+            assert result is sl
+            assert any("positional inplace is deprecated" in str(x.message) for x in w)
+
+    def test_third_positional_inplace_dict(self):
+        """crop(start, end, True) treats 3rd arg as legacy inplace (True=inplace)."""
+        sd = self._make_dict()
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            result = sd.crop(2, 8, True)
+            assert result is sd
+            assert any("positional inplace is deprecated" in str(x.message) for x in w)
+
+    # -- deprecation warning emission --
+
+    def test_deprecation_warning_t0_t1_list(self):
+        """t0/t1 kwargs emit DeprecationWarning."""
+        sl = self._make_list()
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            sl.crop(t0=2, t1=8)
+            dep_msgs = [x for x in w if issubclass(x.category, DeprecationWarning)]
+            texts = [str(x.message) for x in dep_msgs]
+            assert any("t0 is deprecated" in t for t in texts)
+            assert any("t1 is deprecated" in t for t in texts)
+
+    def test_deprecation_warning_inplace_kwarg(self):
+        """inplace kwarg emits DeprecationWarning."""
+        sl = self._make_list()
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            sl.crop(2, 8, inplace=False)
+            dep_msgs = [x for x in w if issubclass(x.category, DeprecationWarning)]
+            assert any("inplace is deprecated" in str(x.message) for x in dep_msgs)
+
+    # -- too many positional args --
+
+    def test_too_many_positional_args_list(self):
+        """crop(1, 2, 3, 4) raises TypeError."""
+        sl = self._make_list()
+        with pytest.raises(TypeError, match="at most 3 positional arguments"):
+            sl.crop(1, 2, 3, 4)
+
+    def test_too_many_positional_args_dict(self):
+        """crop(1, 2, 3, 4) raises TypeError."""
+        sd = self._make_dict()
+        with pytest.raises(TypeError, match="at most 3 positional arguments"):
+            sd.crop(1, 2, 3, 4)
+
+    # -- duplicate legacy inplace rejection --
+
+    def test_duplicate_legacy_inplace_list(self):
+        """crop(start, end, True, inplace=True) raises TypeError."""
+        sl = self._make_list()
+        with pytest.raises(TypeError, match="both positional and keyword"):
+            sl.crop(2, 8, True, inplace=True)
+
+    def test_duplicate_legacy_inplace_dict(self):
+        """crop(start, end, True, inplace=True) raises TypeError."""
+        sd = self._make_dict()
+        with pytest.raises(TypeError, match="both positional and keyword"):
+            sd.crop(2, 8, True, inplace=True)
+
+    # -- deterministic unexpected kwargs error --
+
+    def test_deterministic_unexpected_kwargs_list(self):
+        """Unexpected kwargs error uses sorted() for deterministic output."""
+        sl = self._make_list()
+        with pytest.raises(TypeError, match=r"\['bar', 'foo'\]"):
+            sl.crop(2, 8, foo=1, bar=2)
+
+    def test_deterministic_unexpected_kwargs_dict(self):
+        """Unexpected kwargs error uses sorted() for deterministic output."""
+        sd = self._make_dict()
+        with pytest.raises(TypeError, match=r"\['bar', 'foo'\]"):
+            sd.crop(2, 8, foo=1, bar=2)

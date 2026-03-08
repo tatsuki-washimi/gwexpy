@@ -30,6 +30,72 @@ from gwexpy.types.mixin._plot_mixin import PlotMixin
 from .spectrogram import Spectrogram
 
 
+def _resolve_crop_compat_args(*args, **kwargs):
+    """Normalize deprecated crop arguments to (start, end, copy).
+
+    Supports:
+    - crop(start, end)
+    - crop(start, end, inplace)  — 3rd positional = legacy inplace (bool)
+    - crop(t0=..., t1=..., inplace=...)  — deprecated kwargs
+    - crop(start=..., end=..., copy=...)  — modern API
+
+    Raises TypeError for:
+    - Too many positional args (>3)
+    - Duplicate inplace (positional + keyword)
+    - Unexpected keyword arguments (deterministic sorted output)
+    """
+    if len(args) > 3:
+        raise TypeError(
+            f"crop() takes at most 3 positional arguments ({len(args)} given)"
+        )
+
+    start = args[0] if len(args) > 0 else kwargs.pop("start", None)
+    end = args[1] if len(args) > 1 else kwargs.pop("end", None)
+    copy = True  # default
+
+    # 3rd positional = legacy inplace
+    positional_inplace = None
+    if len(args) > 2:
+        positional_inplace = args[2]
+
+    # Legacy kwargs
+    if "t0" in kwargs:
+        warnings.warn(
+            "t0 is deprecated, use start", DeprecationWarning, stacklevel=3
+        )
+        start = kwargs.pop("t0")
+    if "t1" in kwargs:
+        warnings.warn(
+            "t1 is deprecated, use end", DeprecationWarning, stacklevel=3
+        )
+        end = kwargs.pop("t1")
+
+    if "inplace" in kwargs:
+        if positional_inplace is not None:
+            raise TypeError(
+                "Cannot specify inplace as both positional and keyword argument"
+            )
+        warnings.warn(
+            "inplace is deprecated, use copy", DeprecationWarning, stacklevel=3
+        )
+        copy = not kwargs.pop("inplace")
+    elif positional_inplace is not None:
+        warnings.warn(
+            "positional inplace is deprecated, use copy=",
+            DeprecationWarning,
+            stacklevel=3,
+        )
+        copy = not positional_inplace
+
+    if "copy" in kwargs:
+        copy = kwargs.pop("copy")
+
+    if kwargs:
+        raise TypeError(f"Unexpected keyword arguments: {sorted(kwargs)}")
+
+    return start, end, copy
+
+
 class SpectrogramList(PhaseMethodsMixin, UserList):
     """
     List of Spectrogram objects.
@@ -158,7 +224,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, start=None, end=None, copy=True, **kwargs):
+    def crop(self, *args, **kwargs):
         """Crop each spectrogram in time.
 
         Parameters
@@ -169,21 +235,12 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
             End time.
         copy : bool, optional
             If True (default), return a new list. If False, modify in place.
-        **kwargs
-            Deprecated: ``t0``/``t1``/``inplace`` are accepted for
-            backwards compatibility but will be removed in a future release.
+        *args, **kwargs
+            Deprecated: ``t0``/``t1``/``inplace`` and positional ``inplace``
+            are accepted for backwards compatibility but will be removed in
+            a future release.
         """
-        if "t0" in kwargs:
-            warnings.warn("t0 is deprecated, use start", DeprecationWarning, stacklevel=2)
-            start = kwargs.pop("t0")
-        if "t1" in kwargs:
-            warnings.warn("t1 is deprecated, use end", DeprecationWarning, stacklevel=2)
-            end = kwargs.pop("t1")
-        if "inplace" in kwargs:
-            warnings.warn("inplace is deprecated, use copy", DeprecationWarning, stacklevel=2)
-            copy = not kwargs.pop("inplace")
-        if kwargs:
-            raise TypeError(f"Unexpected keyword arguments: {set(kwargs)}")
+        start, end, copy = _resolve_crop_compat_args(*args, **kwargs)
 
         if copy:
             target = self.__class__()
@@ -523,7 +580,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         else:
             raise NotImplementedError(f"Format {format} not supported")
 
-    def crop(self, start=None, end=None, copy=True, **kwargs):
+    def crop(self, *args, **kwargs):
         """Crop each spectrogram in time.
 
         Parameters
@@ -534,25 +591,16 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
             End time.
         copy : bool, optional
             If True (default), return a new dict. If False, modify in place.
-        **kwargs
-            Deprecated: ``t0``/``t1``/``inplace`` are accepted for
-            backwards compatibility but will be removed in a future release.
+        *args, **kwargs
+            Deprecated: ``t0``/``t1``/``inplace`` and positional ``inplace``
+            are accepted for backwards compatibility but will be removed in
+            a future release.
 
         Returns
         -------
         SpectrogramDict
         """
-        if "t0" in kwargs:
-            warnings.warn("t0 is deprecated, use start", DeprecationWarning, stacklevel=2)
-            start = kwargs.pop("t0")
-        if "t1" in kwargs:
-            warnings.warn("t1 is deprecated, use end", DeprecationWarning, stacklevel=2)
-            end = kwargs.pop("t1")
-        if "inplace" in kwargs:
-            warnings.warn("inplace is deprecated, use copy", DeprecationWarning, stacklevel=2)
-            copy = not kwargs.pop("inplace")
-        if kwargs:
-            raise TypeError(f"Unexpected keyword arguments: {set(kwargs)}")
+        start, end, copy = _resolve_crop_compat_args(*args, **kwargs)
 
         if copy:
             target = self.__class__()
