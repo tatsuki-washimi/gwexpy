@@ -156,10 +156,22 @@ def write_timeseriesdict_zarr(tsd, target, **kwargs):
 
     for key, ts in tsd.items():
         data = np.asarray(ts.value, dtype=np.float64)
-        # zarr>=3 uses create_array(data=...) and removed create_dataset.
-        # zarr<3 has create_dataset; fall back for compatibility.
-        creator = getattr(store, "create_array", None) or store.create_dataset
-        arr = creator(key, data=data, overwrite=True)
+        # zarr>=3 prefers ``create_array`` and requires explicit ``shape``.
+        # zarr<3 exposes ``create_dataset`` with ``data=...``.
+        if hasattr(store, "create_array"):
+            try:
+                arr = store.create_array(
+                    key,
+                    shape=data.shape,
+                    dtype=data.dtype,
+                    overwrite=True,
+                )
+                arr[...] = data
+            except TypeError:
+                # Some implementations infer shape from data.
+                arr = store.create_array(key, data=data, overwrite=True)
+        else:
+            arr = store.create_dataset(key, data=data, overwrite=True)
         arr.attrs["sample_rate"] = float(ts.sample_rate.value)
         arr.attrs["t0"] = float(ts.t0.value)
         arr.attrs["dt"] = float(ts.dt.value)
