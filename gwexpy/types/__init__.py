@@ -56,6 +56,12 @@ __all__ = [
     "MetaDataCollectionType",
 ]
 
+# Register constructors for cross-module lookup (avoids circular imports)
+from gwexpy.interop._registry import ConverterRegistry as _CR
+
+_CR.register_constructor("SeriesMatrix", SeriesMatrix)
+del _CR
+
 # Dynamic import from gwpy (PEP 562)
 import gwpy.types as _gwpy_types
 

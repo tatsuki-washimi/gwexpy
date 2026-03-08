@@ -237,7 +237,9 @@ def fit_bootstrap_spectrum(
         # Recreate BifrequencyMap
         from astropy import units as u
 
-        from gwexpy.frequencyseries import BifrequencyMap
+        from gwexpy.interop._registry import ConverterRegistry
+
+        BifrequencyMap = ConverterRegistry.get_constructor("BifrequencyMap")
 
         freq_unit = psd.frequencies.unit
         cov_map = BifrequencyMap.from_points(

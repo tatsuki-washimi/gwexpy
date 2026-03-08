@@ -425,8 +425,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             )
 
         if isinstance(other, BaseTimeSeries):
-            from gwexpy.frequencyseries import FrequencySeriesDict
+            from gwexpy.interop._registry import ConverterRegistry
 
+            FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
             new_dict = FrequencySeriesDict()
             for key, ts in self.items():
                 new_dict[key] = ts.csd(
@@ -483,8 +484,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             )
 
         if isinstance(other, BaseTimeSeries):
-            from gwexpy.frequencyseries import FrequencySeriesDict
+            from gwexpy.interop._registry import ConverterRegistry
 
+            FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
             new_dict = FrequencySeriesDict()
             for key, ts in self.items():
                 new_dict[key] = ts.coherence(
@@ -1123,8 +1125,9 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             )
 
         if isinstance(other, BaseTimeSeries):
-            from gwexpy.frequencyseries import FrequencySeriesList
+            from gwexpy.interop._registry import ConverterRegistry
 
+            FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
             new_list = FrequencySeriesList()
             for ts in self:
                 list.append(
@@ -1188,8 +1191,9 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             )
 
         if isinstance(other, BaseTimeSeries):
-            from gwexpy.frequencyseries import FrequencySeriesList
+            from gwexpy.interop._registry import ConverterRegistry
 
+            FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
             new_list = FrequencySeriesList()
             for ts in self:
                 list.append(

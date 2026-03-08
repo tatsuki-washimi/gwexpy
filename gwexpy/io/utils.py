@@ -107,8 +107,9 @@ def apply_unit(series: Any, unit: Any | None) -> Any:
     if unit == "":
         return series
     try:
-        from gwexpy.types.seriesmatrix import SeriesMatrix  # lazy import
+        from gwexpy.interop._registry import ConverterRegistry
 
+        SeriesMatrix = ConverterRegistry.get_constructor("SeriesMatrix")
         series_matrix_types: tuple[type, ...] = (SeriesMatrix,)
     except ImportError:  # pragma: no cover - optional
         series_matrix_types = ()
