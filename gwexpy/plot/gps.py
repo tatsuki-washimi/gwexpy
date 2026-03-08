@@ -1,3 +1,31 @@
 from __future__ import annotations
 
-from gwpy.plot.gps import *  # noqa: F403
+from gwpy.plot.gps import (
+    Decimal,
+    GPSAutoLocator,
+    GPSAutoMinorLocator,
+    GPSFormatter,
+    GPSMixin,
+    GPSScale,
+    GPSTransform,
+    GPS_SCALES,
+    InvertedGPSTransform,
+    LinearScale,
+    Number,
+    TIME_UNITS,
+    TYPE_CHECKING,
+    Transform,
+    WEEK_SCALE_MAJOR_TICKS,
+    annotations,
+    cast,
+    contextlib,
+    from_gps,
+    get_scale_docs,
+    get_scale_names,
+    numpy,
+    register_gps_scale,
+    register_scale,
+    ticker,
+    to_gps,
+    units,
+)
