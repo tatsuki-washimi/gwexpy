@@ -178,8 +178,6 @@ def read_timeseries_ats_mth5(source, **kwargs):
     # If source does not end in .atss, we might fail or need to symlink.
     # We will pass it as is and let mth5 handle (or fail).
 
-    from gwexpy.timeseries import TimeSeries
-
     # mth5 read_atss returns a ChannelTS object (wrapping xarray)
     # or sometimes directly ChannelTS?
     # read_atss(fn) -> atss_obj.to_channel_ts()

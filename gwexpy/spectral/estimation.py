@@ -20,6 +20,8 @@ import warnings
 import numpy as np
 from scipy.signal import get_window
 
+from gwexpy.interop._registry import ConverterRegistry
+
 from ..frequencyseries import FrequencySeries
 
 logger = logging.getLogger(__name__)
@@ -712,7 +714,7 @@ def bootstrap_spectrogram(
     )  # Fixed Error High name
 
     if return_map:
-        from gwexpy.frequencyseries import BifrequencyMap
+        BifrequencyMap = ConverterRegistry.get_constructor("BifrequencyMap")
 
         if ignore_nan:
             # masked covariance? np.cov doesn't support nan directly well in all versions

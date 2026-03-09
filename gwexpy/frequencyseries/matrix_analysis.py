@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any, Protocol
 import numpy as np
 from astropy import units as u
 
+from gwexpy.interop._registry import ConverterRegistry
+
 if TYPE_CHECKING:
     from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 
@@ -39,7 +41,7 @@ class FrequencySeriesMatrixAnalysisMixin:
         """
         import numpy.fft as fft
 
-        from gwexpy.timeseries import TimeSeriesMatrix
+        TimeSeriesMatrix = ConverterRegistry.get_constructor("TimeSeriesMatrix")
 
         n_freq = self.shape[-1]
         nout = (n_freq - 1) * 2

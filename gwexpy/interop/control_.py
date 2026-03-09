@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from gwexpy.interop._registry import ConverterRegistry
+
 from ._optional import require_optional
 
 __all__ = ["to_control_frd", "from_control_frd", "from_control_response"]
@@ -134,14 +136,14 @@ def from_control_frd(cls, frd, frequency_unit: str = "Hz"):
         f0 = freqs[0] if len(freqs) > 0 else 0.0
 
         if is_matrix:
-            from gwexpy.frequencyseries import FrequencySeriesMatrix
+            FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
             return FrequencySeriesMatrix(data, df=df, f0=f0)
         return cls(np.asarray(data).flatten(), df=df, f0=f0)
 
     # Irregular frequencies
     if is_matrix:
-        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
         return FrequencySeriesMatrix(data, frequencies=freqs)
     return cls(np.asarray(data).flatten(), frequencies=freqs)
@@ -182,7 +184,8 @@ def from_control_response(cls, response, **kwargs):
 
     # MIMO check
     if response.noutputs > 1:
-        from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+        TimeSeriesDict = ConverterRegistry.get_constructor("TimeSeriesDict")
 
         # If the user called TimeSeries.from_control, we might still want to return
         # a Dict if it's MIMO, or we could raise an error.
@@ -201,7 +204,7 @@ def from_control_response(cls, response, **kwargs):
             tdict[name] = TimeSeries(outputs[i], dt=dt, t0=t0, name=name, **kwargs)
         return tdict
     else:
-        from gwexpy.timeseries import TimeSeries
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
         label = None
         if hasattr(response, "output_labels") and response.output_labels is not None:

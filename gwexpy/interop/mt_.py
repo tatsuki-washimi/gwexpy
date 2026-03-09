@@ -13,6 +13,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from gwexpy.interop._registry import ConverterRegistry
+
 from ._optional import require_optional
 
 logger = logging.getLogger("mth5")
@@ -198,7 +200,7 @@ def from_mth5(
     require_optional("mth5")
     import astropy.units as u
 
-    from gwexpy.timeseries import TimeSeries
+    TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
     # Handle filename vs open object
     file_managed = False

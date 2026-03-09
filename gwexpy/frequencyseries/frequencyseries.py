@@ -16,6 +16,7 @@ from gwpy.frequencyseries import FrequencySeries as BaseFrequencySeries
 
 from gwexpy.fitting.mixin import FittingMixin
 from gwexpy.interop._optional import require_optional
+from gwexpy.interop._registry import ConverterRegistry
 from gwexpy.types._stats import StatisticalMethodsMixin
 from gwexpy.types.mixin import RegularityMixin, SignalAnalysisMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
@@ -519,7 +520,7 @@ class FrequencySeries(
             Specify padding lengths for transient mode to override defaults.
         """
         self._check_regular("ifft")
-        from gwexpy.timeseries import TimeSeries
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
         mode_to_use = mode
         if mode == "auto":
@@ -661,7 +662,7 @@ class FrequencySeries(
         else:
             dt = 1.0 * u.s
 
-        from gwexpy.timeseries import TimeSeries
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
         return TimeSeries(
             out_data,
