@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from gwpy.detector.io.clf import (
     CHANNEL_DEFINITION,
+    TYPE_CHECKING,
     Channel,
     ChannelList,
-    TYPE_CHECKING,
     annotations,
     configparser,
     file_list,

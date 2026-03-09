@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from gwpy.cli.timeseries import (
-    Plot,
     TYPE_CHECKING,
+    Plot,
     TimeDomainProduct,
     TimeSeriesProduct,
     annotations,

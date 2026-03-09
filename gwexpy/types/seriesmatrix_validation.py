@@ -561,7 +561,7 @@ def _handle_dict(data, units, names, channels, shape, xindex, dx, x0, xunit):
             detected_xindex = all_xindex[0]
 
     # Convert each element to Series and collect values/attrs
-    series_list = []
+    series_list: list[list[Series]] = []
     unit_arr = np.empty((N, M), dtype=object)
     name_arr = np.empty((N, M), dtype=object)
     channel_arr = np.empty((N, M), dtype=object)
@@ -644,7 +644,7 @@ def _handle_list(data, units, names, channels, shape, xindex, dx, x0, xunit):
         xindex = build_index_if_needed(None, dx, x0, xunit, inferred_len)
 
     # Build Series for each cell
-    series_list = []
+    series_list: list[list[Series]] = []
     explicit_unit = np.zeros((N, M), dtype=bool)
     for row in data:
         series_row = []

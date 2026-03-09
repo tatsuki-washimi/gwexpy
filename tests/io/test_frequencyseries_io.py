@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 
 import gwexpy.frequencyseries.io.dttxml  # trigger registration
-
 from gwexpy.frequencyseries import (
     FrequencySeries,
     FrequencySeriesDict,

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from gwpy.signal.spectral._lal import (
-    FrequencySeries,
-    LAL_FFTPLANS,
     LAL_FFTPLAN_LEVEL,
+    LAL_FFTPLANS,
     LAL_WINDOWS,
-    Literal,
     TYPE_CHECKING,
+    FrequencySeries,
+    Literal,
     annotations,
     bartlett,
     canonical_name,

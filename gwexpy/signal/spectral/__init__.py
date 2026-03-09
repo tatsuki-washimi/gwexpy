@@ -14,4 +14,5 @@ from gwpy.signal.spectral import (
     spectrogram,
     welch,
 )
+
 __all__: list[str] = []

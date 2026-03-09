@@ -2,8 +2,12 @@ import pytest
 
 
 def test_gwf_lalframe_reexports_gwpy():
-    gwexpy_mod = pytest.importorskip("gwexpy.timeseries.io.gwf.lalframe")
-    gwpy_mod = pytest.importorskip("gwpy.timeseries.io.gwf.lalframe")
+    gwexpy_mod = pytest.importorskip(
+        "gwexpy.timeseries.io.gwf.lalframe", exc_type=ImportError
+    )
+    gwpy_mod = pytest.importorskip(
+        "gwpy.timeseries.io.gwf.lalframe", exc_type=ImportError
+    )
 
     exported = getattr(gwpy_mod, "__all__", [])
     if not exported:

@@ -8,7 +8,7 @@ top-level QWidget for the tab (or, for the setup helpers, nothing).
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pyqtgraph as pg

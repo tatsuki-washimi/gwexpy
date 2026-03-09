@@ -10,10 +10,10 @@ from __future__ import annotations
 import sys
 
 from gwpy.cli import (
-    CliProduct,
-    CoherenceProduct,
-    CoherencegramProduct,
     PRODUCTS,
+    CliProduct,
+    CoherencegramProduct,
+    CoherenceProduct,
     QtransformProduct,
     SpectrogramProduct,
     SpectrumProduct,
@@ -29,6 +29,7 @@ from gwpy.cli import (
     timeseries,
     transferfunction,
 )
+
 from .._version import __version__
 
 __all__ = ["main", "__version__"]

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 
 def _filter_monitor_args(args: tuple, monitor: Any, SeriesMatrix: type, SpectrogramMatrix: type) -> tuple:
@@ -12,31 +12,32 @@ def _filter_monitor_args(args: tuple, monitor: Any, SeriesMatrix: type, Spectrog
     new_args = []
     for arg in args:
         if isinstance(arg, (SeriesMatrix, SpectrogramMatrix)):
+            arg_obj = cast(Any, arg)
             try:
-                if type(arg).__name__ == "SpectrogramMatrix" and isinstance(
+                if type(arg_obj).__name__ == "SpectrogramMatrix" and isinstance(
                     monitor, (int, np.integer)
                 ):
-                    if arg.ndim == 4:
-                        nrow, ncol = arg.shape[:2]
+                    if arg_obj.ndim == 4:
+                        nrow, ncol = arg_obj.shape[:2]
                         row_idx = monitor // ncol
                         col_idx = monitor % ncol
-                        new_args.append(arg[row_idx, col_idx])
+                        new_args.append(arg_obj[row_idx, col_idx])
                         continue
-                filtered_arg = arg[monitor]
+                filtered_arg = arg_obj[monitor]
                 new_args.append(filtered_arg)
             except (IndexError, KeyError, TypeError, ValueError):
-                if type(arg).__name__ == "SpectrogramMatrix" and isinstance(
+                if type(arg_obj).__name__ == "SpectrogramMatrix" and isinstance(
                     monitor, (int, np.integer)
                 ):
-                    if arg.ndim == 4:
-                        nrow, ncol = arg.shape[:2]
+                    if arg_obj.ndim == 4:
+                        nrow, ncol = arg_obj.shape[:2]
                         row_idx = monitor // ncol
                         col_idx = monitor % ncol
-                        new_args.append(arg[row_idx, col_idx])
+                        new_args.append(arg_obj[row_idx, col_idx])
                     else:
-                        new_args.append(arg[monitor])
+                        new_args.append(arg_obj[monitor])
                 else:
-                    new_args.append(arg)
+                    new_args.append(arg_obj)
         else:
             new_args.append(arg)
     return tuple(new_args)
@@ -108,8 +109,10 @@ def _adaptive_decimate_args(final_args, decimate_threshold, decimate_points):
     from gwexpy.types.mixin._protocols import SupportsTimeSeries
 
     def _optimize_if_needed(val):
-        if isinstance(val, SupportsTimeSeries) and len(val) > decimate_threshold:
-            return adaptive_decimate(val, target_points=decimate_points)
+        if isinstance(val, SupportsTimeSeries):
+            val_obj = cast(Any, val)
+            if len(val_obj) > decimate_threshold:
+                return adaptive_decimate(val_obj, target_points=decimate_points)
         if isinstance(val, list):
             return [_optimize_if_needed(v) for v in val]
         if isinstance(val, tuple):

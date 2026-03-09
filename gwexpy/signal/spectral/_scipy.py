@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from gwpy.signal.spectral._scipy import (
-    FrequencySeries,
     TYPE_CHECKING,
+    FrequencySeries,
     Version,
     annotations,
     bartlett,

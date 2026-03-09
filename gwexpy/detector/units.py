@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from gwpy.detector.units import (
     ASTROPY_71,
-    GWpyFormat,
-    Generic,
     TYPE_CHECKING,
     UNRECOGNIZED_UNITS,
+    Generic,
+    GWpyFormat,
     Version,
     alias,
     aliases,

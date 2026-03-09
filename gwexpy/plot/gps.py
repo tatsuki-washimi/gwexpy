@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 from gwpy.plot.gps import (
+    GPS_SCALES,
+    TIME_UNITS,
+    TYPE_CHECKING,
+    WEEK_SCALE_MAJOR_TICKS,
     Decimal,
     GPSAutoLocator,
     GPSAutoMinorLocator,
@@ -8,14 +12,10 @@ from gwpy.plot.gps import (
     GPSMixin,
     GPSScale,
     GPSTransform,
-    GPS_SCALES,
     InvertedGPSTransform,
     LinearScale,
     Number,
-    TIME_UNITS,
-    TYPE_CHECKING,
     Transform,
-    WEEK_SCALE_MAJOR_TICKS,
     annotations,
     cast,
     contextlib,

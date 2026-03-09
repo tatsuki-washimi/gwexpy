@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from gwpy.segments.io.ligolw import (
+    TYPE_CHECKING,
     DataQualityDict,
     DataQualityFlag,
-    TYPE_CHECKING,
     annotations,
     build_content_handler,
     default_registry,

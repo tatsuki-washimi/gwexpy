@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, SupportsIndex
+from typing import Any, SupportsIndex, cast
 
 import h5py
 
@@ -91,7 +91,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
-            TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+            TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             _, items = read_collection_dir(
                 p,
@@ -106,7 +106,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 out[k] = v
             return out
         if fmt in ("hdf5", "h5", "hdf"):
-            TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+            TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             with h5py.File(source, "r") as h5f:
                 layout = detect_hdf5_layout(h5f)
@@ -1620,7 +1620,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
-            TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+            TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             _, items = read_collection_dir(
                 p,
@@ -1635,12 +1635,12 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                 dir_items.append(v)
             return cls(*dir_items)
         if fmt in ("hdf5", "h5", "hdf"):
-            TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+            TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             with h5py.File(source, "r") as h5f:
                 layout = detect_hdf5_layout(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
-                out_items: list[TimeSeries] = []
+                out_items: list[Any] = []
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in order:
                         try:

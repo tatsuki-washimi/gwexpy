@@ -12,7 +12,7 @@ class TestTdmsReader:
     def _write_tdms(self, path, group_name="Group", channel_name="Signal",
                     data=None, dt=0.001, wf_start_time=None):
         """Write a minimal TDMS file using nptdms."""
-        from nptdms import RootObject, GroupObject, ChannelObject, TdmsWriter
+        from nptdms import ChannelObject, GroupObject, RootObject, TdmsWriter
 
         if data is None:
             data = np.arange(100, dtype=np.float64)

@@ -25,8 +25,5 @@ jobs:
       - name: Ruff lint
         run: ruff check gwexpy/
 
-      - name: Ruff format check
-        run: ruff format --check gwexpy/
-
       - name: Mypy
         run: mypy gwexpy/

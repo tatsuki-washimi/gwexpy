@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Any
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any, cast
 
-import numpy as np
 from gwpy.plot import Plot as BasePlot
 
 if TYPE_CHECKING:
@@ -152,13 +152,13 @@ class Plot(BasePlot):
         for arg in args:
             if not isinstance(arg, (SeriesMatrix, SpectrogramMatrix)):
                 if isinstance(arg, (list, tuple)):
-                    expanded_args.extend(arg)
+                    expanded_args.extend(cast(Iterable[Any], arg))
                 elif isinstance(arg, dict):
-                    expanded_args.extend(arg.values())
+                    expanded_args.extend(cast(Iterable[Any], cast(Any, arg).values()))
                 elif isinstance(arg, (FrequencySeriesList, SpectrogramList)):
-                    expanded_args.extend(arg)
+                    expanded_args.extend(cast(Iterable[Any], arg))
                 elif isinstance(arg, (FrequencySeriesDict, SpectrogramDict)):
-                    expanded_args.extend(arg.values())
+                    expanded_args.extend(cast(Iterable[Any], cast(Any, arg).values()))
                 else:
                     expanded_args.append(arg)
 
@@ -308,32 +308,36 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
 
     from gwexpy.interop._registry import ConverterRegistry
 
-    SpectrogramMatrix = ConverterRegistry.get_constructor("SpectrogramMatrix")
-    SpectrogramDict = ConverterRegistry.get_constructor("SpectrogramDict")
-    SpectrogramList = ConverterRegistry.get_constructor("SpectrogramList")
+    SpectrogramMatrix = cast(
+        Any, ConverterRegistry.get_constructor("SpectrogramMatrix")
+    )
+    SpectrogramDict = cast(Any, ConverterRegistry.get_constructor("SpectrogramDict"))
+    SpectrogramList = cast(Any, ConverterRegistry.get_constructor("SpectrogramList"))
 
     # Normalize collection to a dict-like or list of (name, spectrogram)
     if isinstance(sg_collection, SpectrogramMatrix):
+        sg_obj = cast(Any, sg_collection)
         # We assume 3D (Batch, Time, Freq) for now as typical use case
-        if sg_collection.ndim == 3:
-            names = list(sg_collection.row_keys())
+        if sg_obj.ndim == 3:
+            names = list(sg_obj.row_keys())
             if not names:
-                names = [f"Channel {i}" for i in range(sg_collection.shape[0])]
-            sgs = sg_collection.to_series_1Dlist()
+                names = [f"Channel {i}" for i in range(sg_obj.shape[0])]
+            sgs = sg_obj.to_series_1Dlist()
             items = list(zip(names, sgs))
         else:
             # Flatten 4D if needed, but 3D is primary target for "list of spectrograms"
             items = []
-            r_keys = sg_collection.row_keys()
-            c_keys = sg_collection.col_keys()
+            r_keys = sg_obj.row_keys()
+            c_keys = sg_obj.col_keys()
             for r in r_keys:
                 for c in c_keys:
-                    items.append((f"{r}/{c}", sg_collection[r, c]))
+                    items.append((f"{r}/{c}", sg_obj[r, c]))
     elif isinstance(sg_collection, SpectrogramDict):
-        items = list(sg_collection.items())
+        items = list(cast(Any, sg_collection).items())
     elif isinstance(sg_collection, (SpectrogramList, list)):
+        sg_list = cast(list[Any], sg_collection)
         items = [
-            (getattr(s, "name", f"Channel {i}"), s) for i, s in enumerate(sg_collection)
+            (getattr(s, "name", f"Channel {i}"), s) for i, s in enumerate(sg_list)
         ]
     else:
         raise TypeError(f"Unsupported collection type: {type(sg_collection)}")

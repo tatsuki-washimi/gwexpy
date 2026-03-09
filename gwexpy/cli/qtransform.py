@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from gwpy.cli.qtransform import (
+    TYPE_CHECKING,
     Path,
     QtransformProduct,
     Quantity,
     Segment,
     Sequence,
     SpectrogramProduct,
-    TYPE_CHECKING,
     annotations,
     cast,
     logger,

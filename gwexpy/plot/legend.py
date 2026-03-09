@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from gwpy.plot.legend import (
-    HandlerLine2D,
     TYPE_CHECKING,
+    HandlerLine2D,
     annotations,
     legend_handler,
 )

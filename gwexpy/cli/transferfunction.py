@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from gwpy.cli.transferfunction import (
+    TYPE_CHECKING,
     BodePlot,
     FrequencyDomainProduct,
     OrderedDict,
-    TYPE_CHECKING,
     Time,
     TransferFunctionProduct,
     annotations,
