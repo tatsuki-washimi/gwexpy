@@ -14,6 +14,16 @@ from .plot import Plot, plot_mmm
 
 __all__ = ["Plot", "plot_mmm", "SkyMap", "GeoMap", "PairPlot"]
 
+# Register Plot and FieldPlot for cross-module lookup (avoids circular imports)
+from gwexpy.interop._registry import ConverterRegistry as _CR
+
+_CR.register_constructor("Plot", Plot)
+
+from .field import FieldPlot  # noqa: E402
+
+_CR.register_constructor("FieldPlot", FieldPlot)
+del _CR
+
 # Dynamic import from gwpy (PEP 562)
 import importlib
 

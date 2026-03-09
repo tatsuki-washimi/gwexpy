@@ -13,6 +13,15 @@ __all__ = [
     "SpectrogramMatrix",
 ]
 
+# Register constructors for cross-module lookup (avoids circular imports)
+from gwexpy.interop._registry import ConverterRegistry as _CR
+
+_CR.register_constructor("Spectrogram", Spectrogram)
+_CR.register_constructor("SpectrogramDict", SpectrogramDict)
+_CR.register_constructor("SpectrogramList", SpectrogramList)
+_CR.register_constructor("SpectrogramMatrix", SpectrogramMatrix)
+del _CR
+
 # Dynamic import from gwpy (PEP 562)
 import gwpy.spectrogram as _gwpy_spectrogram
 

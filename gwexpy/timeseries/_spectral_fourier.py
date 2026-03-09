@@ -16,6 +16,8 @@ import numpy as np
 import numpy.typing as npt
 from astropy import units as u
 
+from gwexpy.interop._registry import ConverterRegistry
+
 from ._typing import TimeSeriesAttrs
 
 if TYPE_CHECKING:
@@ -136,7 +138,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         self, nfft: NumberLike | None = None, **kwargs: Any
     ) -> FrequencySeries:
         """Internal method for standard GWpy FFT."""
-        from gwexpy.frequencyseries import FrequencySeries as GWEXFrequencySeries
+        GWEXFrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         base_fs = self._super_ts().fft(nfft=nfft, **kwargs)
         if isinstance(base_fs, GWEXFrequencySeries):
@@ -241,7 +243,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
                 # Odd length: only DC=0 is unique (no Nyquist)
                 dft[1:] *= 2.0
 
-        from gwexpy.frequencyseries import FrequencySeries
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         fs = FrequencySeries(
             dft,
@@ -315,21 +317,21 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
     def psd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("psd")
-        from gwexpy.frequencyseries import FrequencySeries
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().psd(*args, **kwargs)
         return res.view(FrequencySeries)
 
     def asd(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("asd")
-        from gwexpy.frequencyseries import FrequencySeries
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().asd(*args, **kwargs)
         return res.view(FrequencySeries)
 
     def csd(self, other: Any, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("csd")
-        from gwexpy.frequencyseries import FrequencySeries
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().csd(other, *args, **kwargs)
         # GWpy's csd sometimes returns incorrect units when inputs have different units
@@ -343,7 +345,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
     def coherence(self, *args: Any, **kwargs: Any) -> FrequencySeries:
         self._check_regular("coherence")
-        from gwexpy.frequencyseries import FrequencySeries
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         res = self._super_ts().coherence(*args, **kwargs)
         return res.view(FrequencySeries)
@@ -360,7 +362,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         Spectrogram
             gwexpy.spectrogram.Spectrogram instance
         """
-        from gwexpy.spectrogram import Spectrogram
+        Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
         res = self._super_ts().spectrogram(*args, **kwargs)
         return res.view(Spectrogram)
@@ -370,7 +372,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         Compute an alternative spectrogram (spectrogram2).
         Returns Spectrogram.
         """
-        from gwexpy.spectrogram import Spectrogram
+        Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
         res = self._super_ts().spectrogram2(*args, **kwargs)
         return res.view(Spectrogram)
@@ -437,7 +439,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         freqs_val = k / (2 * N * dt)
         frequencies = u.Quantity(freqs_val, "Hz")
 
-        from gwexpy.frequencyseries import FrequencySeries
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         fs = FrequencySeries(
             out_dct,
@@ -544,7 +546,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         quefrencies = np.arange(n) * dt
         quefrencies = u.Quantity(quefrencies, "s")
 
-        from gwexpy.frequencyseries import FrequencySeries
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         fs = FrequencySeries(
             ceps,

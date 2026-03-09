@@ -68,8 +68,9 @@ def adaptive_decimate(ts, target_points=10000):
     )
 
     # Create new TimeSeries
-    from gwexpy.timeseries import TimeSeries
+    from gwexpy.interop._registry import ConverterRegistry
 
+    TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
     new_ts = TimeSeries(
         decimated_data,
         times=new_times,

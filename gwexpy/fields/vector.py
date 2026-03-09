@@ -220,8 +220,9 @@ class VectorField(FieldDict):
             Fixed coordinates and arguments passed to FieldPlot.add_vector.
         """
         # Defer import
-        from ..plot.field import FieldPlot
+        from gwexpy.interop._registry import ConverterRegistry
 
+        FieldPlot = ConverterRegistry.get_constructor("FieldPlot")
         fp = FieldPlot()
 
         # Split kwargs
@@ -260,8 +261,9 @@ class VectorField(FieldDict):
         **kwargs
             Fixed coordinates and arguments passed to FieldPlot.add_vector.
         """
-        from ..plot.field import FieldPlot
+        from gwexpy.interop._registry import ConverterRegistry
 
+        FieldPlot = ConverterRegistry.get_constructor("FieldPlot")
         fp = FieldPlot()
 
         first_field = next(iter(self.values()))
@@ -294,8 +296,9 @@ class VectorField(FieldDict):
         # A bit tricky. For now, pass most to scalar plot, add quiver with default black
 
         # Defer
-        from ..plot.field import FieldPlot
+        from gwexpy.interop._registry import ConverterRegistry
 
+        FieldPlot = ConverterRegistry.get_constructor("FieldPlot")
         fp = FieldPlot()
 
         first_field = next(iter(self.values()))

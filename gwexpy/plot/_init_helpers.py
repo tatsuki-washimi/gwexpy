@@ -105,10 +105,10 @@ def _expand_args(args, separate, final_args_out, *, SeriesMatrix, SpectrogramMat
 def _adaptive_decimate_args(final_args, decimate_threshold, decimate_points):
     """Apply adaptive decimation to TimeSeries that exceed threshold."""
     from gwexpy.plot.utils import adaptive_decimate
-    from gwexpy.timeseries import TimeSeries
+    from gwexpy.types.mixin._protocols import SupportsTimeSeries
 
     def _optimize_if_needed(val):
-        if isinstance(val, TimeSeries) and len(val) > decimate_threshold:
+        if isinstance(val, SupportsTimeSeries) and len(val) > decimate_threshold:
             return adaptive_decimate(val, target_points=decimate_points)
         if isinstance(val, list):
             return [_optimize_if_needed(v) for v in val]

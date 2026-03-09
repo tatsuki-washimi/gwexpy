@@ -21,6 +21,8 @@ import numpy as np
 from astropy import units as u
 from astropy.units import Quantity
 
+from gwexpy.interop._registry import ConverterRegistry
+
 if TYPE_CHECKING:
     from gwexpy.fields import ScalarField
     from gwexpy.fields.collections import FieldDict
@@ -494,7 +496,8 @@ def compute_psd(
     """
     from scipy.signal import welch
 
-    from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
+    FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
+    FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
 
     from ..utils.fft_args import (
         check_deprecated_kwargs,
@@ -913,7 +916,7 @@ def compute_xcorr(
     """
     from scipy.signal import correlate, get_window
 
-    from gwexpy.timeseries import TimeSeries
+    TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
     # Extract time series
     dt_value, dt_unit = _validate_regular_time_axis(field)

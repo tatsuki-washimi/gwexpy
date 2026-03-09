@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from gwexpy.interop._registry import ConverterRegistry
+
 from ._optional import require_optional
 
 if TYPE_CHECKING:  # pragma: no cover - type hints only
@@ -39,12 +41,10 @@ class TimeSeriesWindowDataset:
         if self.window <= 0 or self.stride <= 0:
             raise ValueError("window and stride must be positive integers.")
 
-        from gwexpy.timeseries import (
-            TimeSeries,
-            TimeSeriesDict,
-            TimeSeriesList,
-            TimeSeriesMatrix,
-        )
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+        TimeSeriesDict = ConverterRegistry.get_constructor("TimeSeriesDict")
+        TimeSeriesList = ConverterRegistry.get_constructor("TimeSeriesList")
+        TimeSeriesMatrix = ConverterRegistry.get_constructor("TimeSeriesMatrix")
 
         from .base import to_plain_array
 
