@@ -4,7 +4,28 @@ This module provides a lightweight registry that allows modules to look up
 concrete classes (e.g., TimeSeries, FrequencySeries) without importing
 them directly, breaking circular import chains.
 
-Classes are registered at module load time in each subpackage's __init__.py.
+Classes are registered at module load time in each subpackage's ``__init__.py``.
+
+Usage
+-----
+**Registration** (in subpackage ``__init__.py``)::
+
+    from gwexpy.interop._registry import ConverterRegistry as _CR
+    from .timeseries import TimeSeries
+
+    _CR.register_constructor("TimeSeries", TimeSeries)
+
+**Lookup** (in any module that needs the class)::
+
+    from gwexpy.interop._registry import ConverterRegistry
+
+    def my_transform(self):
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
+        return FrequencySeries(data, frequencies=freqs)
+
+See Also
+--------
+docs/developers/guides/coding_standards.md : Section 6 for full guidelines.
 """
 
 from __future__ import annotations
@@ -17,6 +38,16 @@ class ConverterRegistry:
 
     This avoids circular imports by allowing modules to look up classes
     by name instead of importing them directly.
+
+    The registry is a class-level singleton — all state lives on the class
+    itself (``_constructors``, ``_converters``), so no instantiation is needed.
+
+    Notes
+    -----
+    * **Thread safety**: Registration happens at import time (module ``__init__``),
+      which is serialized by the GIL. Lookups are dict reads and are safe.
+    * **Error messages**: ``get_constructor`` / ``get_converter`` list all
+      available keys on ``KeyError`` for easy debugging.
     """
 
     _constructors: dict[str, type] = {}
