@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 from astropy import units as u
 
+from gwexpy.interop._registry import ConverterRegistry
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
 
 from .utils import _extract_axis_info, _validate_common_axis
@@ -20,7 +21,7 @@ class TimeSeriesMatrixSpectralMixin:
         """
         Vectorized implementation of FFT.
         """
-        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
         # We assume regular sampling for vectorized FFT
         cast("TimeSeriesMatrix", self)._check_regular("Vectorized FFT")
@@ -60,7 +61,7 @@ class TimeSeriesMatrixSpectralMixin:
         """
         from scipy.signal import welch
 
-        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
         from gwexpy.utils.fft_args import (
             check_deprecated_kwargs,
             get_default_overlap,
@@ -122,7 +123,7 @@ class TimeSeriesMatrixSpectralMixin:
         """
         from scipy.signal import csd
 
-        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
         from gwexpy.utils.fft_args import (
             check_deprecated_kwargs,
             get_default_overlap,
@@ -178,7 +179,7 @@ class TimeSeriesMatrixSpectralMixin:
         """
         from scipy.signal import coherence
 
-        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
         from gwexpy.utils.fft_args import (
             check_deprecated_kwargs,
             get_default_overlap,
@@ -380,7 +381,7 @@ class TimeSeriesMatrixSpectralMixin:
         """
         Helper for fft, psd, asd.
         """
-        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
         N, M, K = cast("TimeSeriesMatrix", self).shape
 

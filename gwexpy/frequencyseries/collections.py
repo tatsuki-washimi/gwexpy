@@ -126,7 +126,9 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         **kwargs
             other keyword arguments passed to the plot method
         """
-        from gwexpy.plot import Plot
+        from gwexpy.interop._registry import ConverterRegistry
+
+        Plot = ConverterRegistry.get_constructor("Plot")
 
         kwargs = dict(kwargs)
         separate = kwargs.get("separate", False)

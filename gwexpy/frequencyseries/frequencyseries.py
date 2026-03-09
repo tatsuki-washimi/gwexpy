@@ -15,15 +15,8 @@ from astropy import units as u
 from gwpy.frequencyseries import FrequencySeries as BaseFrequencySeries
 
 from gwexpy.fitting.mixin import FittingMixin
-from gwexpy.interop import (
-    from_hdf5_frequencyseries,
-    from_pandas_frequencyseries,
-    from_xarray_frequencyseries,
-    to_hdf5_frequencyseries,
-    to_pandas_frequencyseries,
-    to_xarray_frequencyseries,
-)
 from gwexpy.interop._optional import require_optional
+from gwexpy.interop._registry import ConverterRegistry
 from gwexpy.types._stats import StatisticalMethodsMixin
 from gwexpy.types.mixin import RegularityMixin, SignalAnalysisMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
@@ -350,11 +343,15 @@ class FrequencySeries(
         self, index: str = "frequency", *, name: str | None = None, copy: bool = False
     ) -> Any:
         """Convert to pandas.Series."""
+        from gwexpy.interop import to_pandas_frequencyseries
+
         return to_pandas_frequencyseries(self, index=index, name=name, copy=copy)
 
     @classmethod
     def from_pandas(cls: type[FrequencySeries], series: Any, **kwargs: Any) -> Any:
         """Create FrequencySeries from pandas.Series."""
+        from gwexpy.interop import from_pandas_frequencyseries
+
         return from_pandas_frequencyseries(cls, series, **kwargs)
 
     # ===============================
@@ -457,11 +454,15 @@ class FrequencySeries(
 
     def to_xarray(self, freq_coord: str = "Hz") -> Any:
         """Convert to xarray.DataArray."""
+        from gwexpy.interop import to_xarray_frequencyseries
+
         return to_xarray_frequencyseries(self, freq_coord=freq_coord)
 
     @classmethod
     def from_xarray(cls: type[FrequencySeries], da: Any, **kwargs: Any) -> Any:
         """Create FrequencySeries from xarray.DataArray."""
+        from gwexpy.interop import from_xarray_frequencyseries
+
         return from_xarray_frequencyseries(cls, da, **kwargs)
 
     def to_hdf5_dataset(
@@ -474,6 +475,8 @@ class FrequencySeries(
         compression_opts: Any = None,
     ) -> Any:
         """Write to HDF5 dataset within a group."""
+        from gwexpy.interop import to_hdf5_frequencyseries
+
         return to_hdf5_frequencyseries(
             self,
             group,
@@ -486,6 +489,8 @@ class FrequencySeries(
     @classmethod
     def from_hdf5_dataset(cls: type[FrequencySeries], group: Any, path: str) -> Any:
         """Read FrequencySeries from HDF5 dataset."""
+        from gwexpy.interop import from_hdf5_frequencyseries
+
         return from_hdf5_frequencyseries(cls, group, path)
 
     # --- Time Calculus ---
@@ -515,7 +520,7 @@ class FrequencySeries(
             Specify padding lengths for transient mode to override defaults.
         """
         self._check_regular("ifft")
-        from gwexpy.timeseries import TimeSeries
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
         mode_to_use = mode
         if mode == "auto":
@@ -657,7 +662,7 @@ class FrequencySeries(
         else:
             dt = 1.0 * u.s
 
-        from gwexpy.timeseries import TimeSeries
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
         return TimeSeries(
             out_data,

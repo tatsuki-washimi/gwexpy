@@ -168,3 +168,131 @@ Use `warnings.warn` for deprecations or non-fatal data issues (e.g., invalid met
 - **Type Hints in Docstrings**: Redundant if type annotations are present in the signature. Focusing on _meaning_ in docstrings is better.
 
 ---
+
+## 6. Circular Dependency Resolution — ConverterRegistry
+
+`gwexpy` uses **`ConverterRegistry`** (`gwexpy.interop._registry`) to break circular import chains between subpackages. This is the **only approved pattern** for cross-package class references at runtime.
+
+### 6.1 Background
+
+`gwexpy` has a layered package structure:
+
+```
+timeseries/ ←→ frequencyseries/ ←→ spectrogram/
+     ↕               ↕                  ↕
+   types/          fields/            plot/
+```
+
+Many operations need to construct objects from other subpackages (e.g., `TimeSeries.fft()` returns a `FrequencySeries`). Direct imports like `from gwexpy.frequencyseries import FrequencySeries` inside method bodies create fragile deferred imports that are error-prone and inconsistent.
+
+`ConverterRegistry` centralizes these lookups via string-based registration.
+
+### 6.2 How It Works
+
+**Registration** — Each subpackage registers its classes in `__init__.py`:
+
+```python
+# gwexpy/timeseries/__init__.py
+from gwexpy.interop._registry import ConverterRegistry as _CR
+
+from .timeseries import TimeSeries
+from .collections import TimeSeriesDict, TimeSeriesList
+from .matrix import TimeSeriesMatrix
+
+_CR.register_constructor("TimeSeries", TimeSeries)
+_CR.register_constructor("TimeSeriesDict", TimeSeriesDict)
+_CR.register_constructor("TimeSeriesList", TimeSeriesList)
+_CR.register_constructor("TimeSeriesMatrix", TimeSeriesMatrix)
+```
+
+**Lookup** — Any module retrieves the class by name:
+
+```python
+from gwexpy.interop._registry import ConverterRegistry
+
+def my_transform(self):
+    FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
+    return FrequencySeries(data, frequencies=freqs)
+```
+
+### 6.3 Rules
+
+| Rule | Description |
+|------|-------------|
+| **MUST** use `ConverterRegistry` | When constructing objects from a *different* subpackage inside a function body. |
+| **MUST NOT** use deferred `from gwexpy.X import Y` | Inside function/method bodies for class constructors. Use `ConverterRegistry.get_constructor()` instead. |
+| **MAY** use `TYPE_CHECKING` imports | For type annotations only (no runtime effect). |
+| **MAY** use direct imports | Within the *same* subpackage (e.g., `timeseries/` importing from `timeseries/`). |
+| **Exceptions** | Function imports (not constructors), optional-dependency lazy loading (e.g., `fitting/mixin.py` with iminuit). |
+
+### 6.4 Registered Constructors
+
+As of v0.7, the following constructors are registered:
+
+| Name | Package | Registered in |
+|------|---------|---------------|
+| `TimeSeries` | `timeseries` | `timeseries/__init__.py` |
+| `TimeSeriesDict` | `timeseries` | `timeseries/__init__.py` |
+| `TimeSeriesList` | `timeseries` | `timeseries/__init__.py` |
+| `TimeSeriesMatrix` | `timeseries` | `timeseries/__init__.py` |
+| `FrequencySeries` | `frequencyseries` | `frequencyseries/__init__.py` |
+| `FrequencySeriesDict` | `frequencyseries` | `frequencyseries/__init__.py` |
+| `FrequencySeriesList` | `frequencyseries` | `frequencyseries/__init__.py` |
+| `FrequencySeriesMatrix` | `frequencyseries` | `frequencyseries/__init__.py` |
+| `BifrequencyMap` | `frequencyseries` | `frequencyseries/__init__.py` |
+| `Spectrogram` | `spectrogram` | `spectrogram/__init__.py` |
+| `SpectrogramDict` | `spectrogram` | `spectrogram/__init__.py` |
+| `SpectrogramList` | `spectrogram` | `spectrogram/__init__.py` |
+| `SpectrogramMatrix` | `spectrogram` | `spectrogram/__init__.py` |
+| `Plot` | `plot` | `plot/__init__.py` |
+| `FieldPlot` | `plot` | `plot/__init__.py` |
+| `SeriesMatrix` | `types` | `types/__init__.py` |
+
+### 6.5 Adding a New Class
+
+1. Define the class in its subpackage.
+2. Register it in the subpackage's `__init__.py`:
+   ```python
+   _CR.register_constructor("MyNewClass", MyNewClass)
+   ```
+3. Use `ConverterRegistry.get_constructor("MyNewClass")` in other subpackages.
+
+### 6.6 Anti-patterns
+
+```python
+# BAD — deferred import of class constructor
+def compute(self):
+    from gwexpy.frequencyseries import FrequencySeries
+    return FrequencySeries(data)
+
+# BAD — top-level cross-package import causing circular dependency
+from gwexpy.frequencyseries import FrequencySeries  # at module level in timeseries/
+
+# GOOD — ConverterRegistry lookup
+from gwexpy.interop._registry import ConverterRegistry
+
+def compute(self):
+    FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
+    return FrequencySeries(data)
+
+# GOOD — TYPE_CHECKING for annotations only (no runtime cost)
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gwexpy.frequencyseries import FrequencySeries
+
+def compute(self) -> FrequencySeries:
+    FS = ConverterRegistry.get_constructor("FrequencySeries")
+    return FS(data)
+```
+
+### 6.7 Verifying No Deferred Imports Remain
+
+Run this check to ensure all class constructor imports use the registry:
+
+```bash
+# Should return only TYPE_CHECKING block hits (no function-body imports)
+grep -rn "from gwexpy\.\(timeseries\|frequencyseries\|spectrogram\) import" \
+  gwexpy/ --include="*.py" | grep -v "TYPE_CHECKING" | grep -v "__init__"
+```
+
+---
