@@ -11,7 +11,6 @@ from typing import Any, Literal, TypedDict
 import numpy as np
 
 
-
 class ChannelInfo(TypedDict):
     name: str
     active: bool
