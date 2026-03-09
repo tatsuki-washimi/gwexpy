@@ -1,0 +1,81 @@
+name: NDS Live Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      nds_host:
+        description: "NDS host"
+        required: true
+        default: "nds.ligo.caltech.edu"
+      nds_port:
+        description: "NDS port"
+        required: true
+        default: "31200"
+      nds_channels:
+        description: "Comma-separated channels for smoke tests"
+        required: true
+        default: "L1:GDS-CALIB_STRAIN"
+      nds_channel_pattern:
+        description: "Channel search pattern for ChannelListWorker"
+        required: true
+        default: "*"
+      nds_timeout_ms:
+        description: "NDS wait timeout in milliseconds"
+        required: true
+        default: "30000"
+
+jobs:
+  nds-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up micromamba (conda-forge)
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: gwexpy-nds
+          condarc: |
+            channels:
+              - conda-forge
+            channel_priority: strict
+          init-shell: bash
+          generate-run-shell: false
+          post-cleanup: none
+          create-args: >-
+            python=3.11
+            pip
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+
+      - name: Install nds2 client
+        shell: bash -l {0}
+        run: |
+          micromamba install -n gwexpy-nds -y -c conda-forge nds2-client || \
+          micromamba install -n gwexpy-nds -y -c conda-forge python-nds2-client
+
+      - name: Install Python dependencies
+        shell: bash -l {0}
+        run: |
+          micromamba run -n gwexpy-nds python -m pip install --upgrade pip
+          micromamba run -n gwexpy-nds pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0" scikit-learn
+          micromamba run -n gwexpy-nds pip install -e . --no-deps
+          micromamba run -n gwexpy-nds pip install pytest pytest-qt qtpy PyQt5 pyqtgraph
+
+      - name: Run NDS live tests
+        shell: bash -l {0}
+        env:
+          GWEXPY_ENABLE_NDS_TESTS: "1"
+          GWEXPY_NDS_HOST: ${{ inputs.nds_host }}
+          GWEXPY_NDS_PORT: ${{ inputs.nds_port }}
+          GWEXPY_NDS_CHANNELS: ${{ inputs.nds_channels }}
+          GWEXPY_NDS_CHANNEL_PATTERN: ${{ inputs.nds_channel_pattern }}
+          GWEXPY_NDS_TIMEOUT_MS: ${{ inputs.nds_timeout_ms }}
+          PYTHONFAULTHANDLER: "1"
+        run: |
+          micromamba run -n gwexpy-nds xvfb-run -a -s "-screen 0 1920x1080x24" \
+            pytest -q -m nds tests/nds -s --maxfail=1
