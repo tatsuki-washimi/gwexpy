@@ -19,6 +19,8 @@ from gwpy.timeseries import TimeSeries as BaseTimeSeries
 from gwpy.timeseries import TimeSeriesDict as BaseTimeSeriesDict
 from gwpy.timeseries import TimeSeriesList as BaseTimeSeriesList
 
+# --- Monkey Patch TimeSeriesDict ---
+from gwexpy.interop._registry import ConverterRegistry
 from gwexpy.io.hdf5_collection import (
     LAYOUT_DATASET,
     LAYOUT_GROUP,
@@ -31,9 +33,6 @@ from gwexpy.io.hdf5_collection import (
     unique_hdf5_key,
     write_hdf5_manifest,
 )
-
-# --- Monkey Patch TimeSeriesDict ---
-from gwexpy.interop._registry import ConverterRegistry
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.mixin._collection_mixin import (
     DictMapMixin,
