@@ -5,6 +5,8 @@ from typing import Any
 import numpy as np
 from astropy import units as u
 
+from gwexpy.interop._registry import ConverterRegistry
+
 
 def _is_time_unit(unit: Any) -> bool:
     try:
@@ -119,7 +121,7 @@ def as_series(axis, unit=None, *, name=None):
         if not _is_time_unit(value_unit):
             raise ValueError("unit must be time-like for a time axis")
 
-        from gwexpy.timeseries import TimeSeries
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
         values_q = axis_q.to(value_unit)
         times_axis = axis_q
@@ -141,7 +143,7 @@ def as_series(axis, unit=None, *, name=None):
         else:
             values_q = axis_hz.to(value_unit)
 
-        from gwexpy.frequencyseries import FrequencySeries
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         freq_axis = (
             axis

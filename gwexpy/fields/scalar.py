@@ -7,6 +7,8 @@ import numpy as np
 from astropy import units as u
 from scipy import fft as sp_fft
 
+from gwexpy.interop._registry import ConverterRegistry
+
 from .base import FieldBase
 
 if TYPE_CHECKING:
@@ -857,7 +859,9 @@ class ScalarField(FieldBase):
             )
 
         from gwexpy.plot._coord import nearest_index, slice_from_index
-        from gwexpy.timeseries import TimeSeries, TimeSeriesList
+
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+        TimeSeriesList = ConverterRegistry.get_constructor("TimeSeriesList")
 
         result_list = []
         for point in points:

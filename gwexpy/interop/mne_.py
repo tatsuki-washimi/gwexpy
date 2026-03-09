@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import numpy as np
 
+from gwexpy.interop._registry import ConverterRegistry
+
 from ._optional import require_optional
 
 if TYPE_CHECKING:
@@ -372,7 +374,7 @@ def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
         val = data[0] if data.ndim == 2 else data
         return cls(val, frequencies=freqs, name=ch_names[0], **kwargs)
 
-    from gwexpy.frequencyseries import FrequencySeriesDict
+    FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
 
     fsd = FrequencySeriesDict()
     for i, name in enumerate(ch_names):
@@ -469,7 +471,7 @@ def _mne_tfr_to_spec(cls, tfr, **kwargs):
     # Now (n_ch, n_fr, n_ti)
 
     # Convert to gwexpy: (n_ti, n_fr) usually?
-    from gwexpy.spectrogram import SpectrogramDict
+    SpectrogramDict = ConverterRegistry.get_constructor("SpectrogramDict")
 
     sd = SpectrogramDict()
 

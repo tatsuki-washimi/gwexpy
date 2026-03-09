@@ -33,6 +33,7 @@ from gwexpy.io.hdf5_collection import (
 )
 
 # --- Monkey Patch TimeSeriesDict ---
+from gwexpy.interop._registry import ConverterRegistry
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.mixin._collection_mixin import (
     DictMapMixin,
@@ -91,7 +92,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
-            from gwexpy.timeseries import TimeSeries
+            TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
             _, items = read_collection_dir(
                 p,
@@ -106,7 +107,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 out[k] = v
             return out
         if fmt in ("hdf5", "h5", "hdf"):
-            from gwexpy.timeseries import TimeSeries
+            TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
             with h5py.File(source, "r") as h5f:
                 layout = detect_hdf5_layout(h5f)
@@ -1620,7 +1621,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
-            from gwexpy.timeseries import TimeSeries
+            TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
             _, items = read_collection_dir(
                 p,
@@ -1635,7 +1636,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                 dir_items.append(v)
             return cls(*dir_items)
         if fmt in ("hdf5", "h5", "hdf"):
-            from gwexpy.timeseries import TimeSeries
+            TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
 
             with h5py.File(source, "r") as h5f:
                 layout = detect_hdf5_layout(h5f)
