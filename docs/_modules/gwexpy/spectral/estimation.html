@@ -90,6 +90,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_window</span>
@@ -796,7 +797,9 @@
     <span class="p">)</span>  <span class="c1"># Fixed Error High name</span>
 
     <span class="k">if</span> <span class="n">return_map</span><span class="p">:</span>
-        <span class="n">BifrequencyMap</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;BifrequencyMap&quot;</span><span class="p">)</span>
+        <span class="n">bifrequency_map_ctor</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+            <span class="n">Any</span><span class="p">,</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;BifrequencyMap&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">ignore_nan</span><span class="p">:</span>
             <span class="c1"># masked covariance? np.cov doesn&#39;t support nan directly well in all versions</span>
@@ -815,7 +818,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cov_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">resampled_stats</span><span class="p">,</span> <span class="n">rowvar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">bfm</span> <span class="o">=</span> <span class="n">BifrequencyMap</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>
+        <span class="n">bfm</span> <span class="o">=</span> <span class="n">bifrequency_map_ctor</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>
             <span class="n">cov_matrix</span><span class="p">,</span>
             <span class="n">f2</span><span class="o">=</span><span class="n">out_freqs</span><span class="p">,</span>
             <span class="n">f1</span><span class="o">=</span><span class="n">out_freqs</span><span class="p">,</span>

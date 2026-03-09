@@ -83,7 +83,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -316,15 +316,20 @@
 
         <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
 
-        <span class="n">BifrequencyMap</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;BifrequencyMap&quot;</span><span class="p">)</span>
+        <span class="n">bifrequency_map_ctor</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+            <span class="n">Any</span><span class="p">,</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;BifrequencyMap&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
 
         <span class="n">freq_unit</span> <span class="o">=</span> <span class="n">psd</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">unit</span>
-        <span class="n">cov_map</span> <span class="o">=</span> <span class="n">BifrequencyMap</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>
-            <span class="n">cov_cropped</span><span class="p">,</span>
-            <span class="n">f2</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq_unit</span><span class="p">),</span>
-            <span class="n">f1</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq_unit</span><span class="p">),</span>
-            <span class="n">unit</span><span class="o">=</span><span class="n">cov_map</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">cov_map</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">cov_map</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+            <span class="n">Any</span><span class="p">,</span>
+            <span class="n">bifrequency_map_ctor</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>
+                <span class="n">cov_cropped</span><span class="p">,</span>
+                <span class="n">f2</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq_unit</span><span class="p">),</span>
+                <span class="n">f1</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">freq_unit</span><span class="p">),</span>
+                <span class="n">unit</span><span class="o">=</span><span class="n">cov_map</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">cov_map</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
     <span class="c1"># 4. GLS Fitting</span>
