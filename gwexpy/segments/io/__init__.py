@@ -6,4 +6,5 @@ from gwpy.segments.io import (
     ligolw,
     segwizard,
 )
+
 __all__: list[str] = []

@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-import numpy as np
 import pyqtgraph as pg
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5 import QtWidgets
 
 
 def _small_spin_int(min_val: int = -1000000000, max_val: int = 1000000000, width: int | None = None) -> QtWidgets.QSpinBox:

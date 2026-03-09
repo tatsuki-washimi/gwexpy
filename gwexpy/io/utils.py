@@ -3,15 +3,12 @@ from __future__ import annotations
 import contextlib
 import datetime as _dt
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import numpy as np
 from astropy import units as u
 from gwpy.time import to_gps
-
-if TYPE_CHECKING:
-    from gwexpy.types.seriesmatrix import SeriesMatrix
 
 
 def parse_timezone(tz: Any) -> _dt.tzinfo:
@@ -114,12 +111,12 @@ def apply_unit(series: Any, unit: Any | None) -> Any:
     except ImportError:  # pragma: no cover - optional
         series_matrix_types = ()
     if isinstance(series, series_matrix_types):
-        series_matrix = cast("SeriesMatrix", series)
+        series_obj = cast(Any, series)
         try:
-            for i in range(series_matrix.meta.shape[0]):
-                for j in range(series_matrix.meta.shape[1]):
-                    series_matrix.meta[i, j]["unit"] = u.Unit(unit)
-            return series_matrix
+            for i in range(series_obj.meta.shape[0]):
+                for j in range(series_obj.meta.shape[1]):
+                    series_obj.meta[i, j]["unit"] = u.Unit(unit)
+            return series_obj
         except (KeyError, IndexError, AttributeError):
             pass
     # GWpy series objects keep `.unit` immutable after construction, but

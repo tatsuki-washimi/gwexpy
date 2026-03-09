@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 from gwpy.plot.segments import (
+    HATCHES,
+    TYPE_CHECKING,
     Axes,
     Formatter,
-    HATCHES,
     MultipleLocator,
     PatchCollection,
     Rectangle,
     SegmentAxes,
     SegmentFormatter,
     SegmentRectangle,
-    TYPE_CHECKING,
     allow_rasterization,
     annotations,
     igwn_segments,

@@ -53,7 +53,6 @@ dependencies = [
   "gpstime",
   "dqsegdb2",
   "dateparser",
-  "python-framel",
   "dttxml",
   # Experimental Physics I/O
   "obspy",
@@ -91,6 +90,7 @@ Changelog = "https://github.com/tatsuki-washimi/gwexpy/blob/main/CHANGELOG.md"
 # Optional lists can be provided for users who want to use them if needed.
 
 [project.optional-dependencies]
+analysis = []
 gui = [
   "PyQt5",
   "pyqtgraph",
@@ -160,6 +160,44 @@ ignore = [
 "gwexpy/*/tests/*" = ["F401", "E741"]
 # GUI code: compact style is acceptable; allow Optional/Union for py39 runtime safety
 "gwexpy/gui/*" = ["E701", "E702", "UP045"]
+"gwexpy/astro/range.py" = ["F401"]
+"gwexpy/cli/*.py" = ["F401"]
+"gwexpy/detector/channel.py" = ["F401"]
+"gwexpy/detector/units.py" = ["F401"]
+"gwexpy/detector/io/*.py" = ["F401"]
+"gwexpy/frequencyseries/_fdcommon.py" = ["F401"]
+"gwexpy/frequencyseries/hist.py" = ["F401"]
+"gwexpy/frequencyseries/io/*.py" = ["F401"]
+"gwexpy/io/datafind.py" = ["F401"]
+"gwexpy/io/ffldatafind.py" = ["F401"]
+"gwexpy/io/gwf.py" = ["F401"]
+"gwexpy/io/hdf5.py" = ["F401"]
+"gwexpy/io/kerberos.py" = ["F401"]
+"gwexpy/io/ligolw.py" = ["F401"]
+"gwexpy/io/nds2.py" = ["F401"]
+"gwexpy/io/registry.py" = ["F401"]
+"gwexpy/plot/axes.py" = ["F401"]
+"gwexpy/plot/bode.py" = ["F401"]
+"gwexpy/plot/colorbar.py" = ["F401"]
+"gwexpy/plot/colors.py" = ["F401"]
+"gwexpy/plot/gps.py" = ["F401"]
+"gwexpy/plot/legend.py" = ["F401"]
+"gwexpy/plot/log.py" = ["F401"]
+"gwexpy/plot/rc.py" = ["F401"]
+"gwexpy/plot/segments.py" = ["F401"]
+"gwexpy/plot/tex.py" = ["F401"]
+"gwexpy/plot/text.py" = ["F401"]
+"gwexpy/plot/units.py" = ["F401"]
+"gwexpy/segments/flag.py" = ["F401"]
+"gwexpy/segments/segments.py" = ["F401"]
+"gwexpy/segments/io/*.py" = ["F401"]
+"gwexpy/signal/filter_design.py" = ["F401"]
+"gwexpy/signal/qtransform.py" = ["F401"]
+"gwexpy/signal/spectral/*.py" = ["F401"]
+"gwexpy/signal/window.py" = ["F401"]
+"gwexpy/spectrogram/coherence.py" = ["F401"]
+"gwexpy/spectrogram/io/__init__.py" = ["F401"]
+"gwexpy/spectrogram/io/hdf5.py" = ["F401"]
 "docs/guide/tutorials/22_hht.ipynb" = ["F401"]
 "examples/advanced-methods/tutorial_Bruco.ipynb" = ["F811", "F821"]
 "docs/web/en/user_guide/tutorials/advanced_hht.ipynb" = ["F401", "F811", "F821", "I001", "W291", "W293"]
@@ -221,3 +259,25 @@ module = [
 ]
 ignore_errors = false
 
+[[tool.mypy.overrides]]
+module = [
+  "gwexpy.astro.range",
+  "gwexpy.cli.*",
+  "gwexpy.detector.channel",
+  "gwexpy.detector.io.*",
+  "gwexpy.detector.units",
+  "gwexpy.frequencyseries._fdcommon",
+  "gwexpy.io.ffldatafind",
+  "gwexpy.plot.*",
+  "gwexpy.segments.io.*",
+  "gwexpy.signal.spectral.*",
+  "gwexpy.spectrogram.coherence",
+]
+disable_error_code = ["no-redef"]
+
+[[tool.mypy.overrides]]
+module = [
+  "gwexpy.types.seriesmatrix_validation",
+  "gwexpy.frequencyseries.collections",
+]
+ignore_errors = false

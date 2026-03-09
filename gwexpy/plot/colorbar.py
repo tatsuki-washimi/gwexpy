@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from gwpy.plot.colorbar import (
+    TYPE_CHECKING,
     Figure,
     LogFormatter,
     LogFormatterSciNotation,
     LogNorm,
-    TYPE_CHECKING,
     annotations,
     colorbar,
     contextlib,

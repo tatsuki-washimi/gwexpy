@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from gwpy.detector.io.omega import (
+    TYPE_CHECKING,
     Channel,
     ChannelList,
-    TYPE_CHECKING,
     annotations,
     omega_param,
     parse_omega_channel,

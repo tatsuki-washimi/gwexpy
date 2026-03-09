@@ -5,4 +5,5 @@ from gwpy.detector.io import (
     clf,
     omega,
 )
+
 __all__: list[str] = []

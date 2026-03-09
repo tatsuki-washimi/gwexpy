@@ -2,8 +2,12 @@ import pytest
 
 
 def test_gwf_framecpp_reexports_gwpy():
-    gwexpy_mod = pytest.importorskip("gwexpy.timeseries.io.gwf.framecpp")
-    gwpy_mod = pytest.importorskip("gwpy.timeseries.io.gwf.framecpp")
+    gwexpy_mod = pytest.importorskip(
+        "gwexpy.timeseries.io.gwf.framecpp", exc_type=ImportError
+    )
+    gwpy_mod = pytest.importorskip(
+        "gwpy.timeseries.io.gwf.framecpp", exc_type=ImportError
+    )
 
     exported = getattr(gwpy_mod, "__all__", [])
     # Note: gwpy.timeseries.io.gwf.framecpp.__all__ may be empty in some versions

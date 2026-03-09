@@ -7,8 +7,6 @@ from pathlib import Path
 from typing import Any, SupportsIndex, TypeVar
 
 import h5py
-
-logger = logging.getLogger(__name__)
 import numpy as np
 
 from gwexpy.io.hdf5_collection import (
@@ -30,11 +28,11 @@ from gwexpy.types.mixin._collection_mixin import (
     _make_dict_plain_method,
     _make_list_map_method,
 )
-from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from .frequencyseries import FrequencySeries, as_series_dict_class
 
 _FS = TypeVar("_FS", bound=FrequencySeries)
+logger = logging.getLogger(__name__)
 
 
 class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
@@ -261,7 +259,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
 
 
 @as_series_dict_class(FrequencySeries)
-class FrequencySeriesDict(PlotMixin, DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]):
+class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]):
     """Ordered mapping of `FrequencySeries` objects keyed by label."""
 
     EntryClass = FrequencySeries
@@ -542,6 +540,13 @@ class FrequencySeriesBaseList(list[_FS]):
             return self.__class__(*super().__getitem__(index))
         return super().__getitem__(index)
 
+    def plot(self, **kwargs: Any) -> Any:
+        """Plot this collection using gwexpy Plot."""
+        from gwexpy.interop._registry import ConverterRegistry
+
+        Plot = ConverterRegistry.get_constructor("Plot")
+        return Plot(self, **kwargs)
+
     def copy(self) -> FrequencySeriesBaseList[_FS]:
         return self.__class__(*(item.copy() for item in self))
 
@@ -629,7 +634,7 @@ class FrequencySeriesBaseList(list[_FS]):
         return registry.write(self, target, *args, **kwargs)
 
 
-class FrequencySeriesList(PlotMixin, ListMapMixin, FrequencySeriesBaseList[FrequencySeries]):
+class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]):
     """List of `FrequencySeries` objects."""
 
     EntryClass = FrequencySeries

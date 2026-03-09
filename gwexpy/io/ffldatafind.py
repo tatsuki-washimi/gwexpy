@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from gwpy.io.ffldatafind import (
-    Path,
     TYPE_CHECKING,
+    Path,
     annotations,
     cache,
     cache_segments,

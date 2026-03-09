@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from gwpy.plot.log import (
+    TYPE_CHECKING,
     LogFormatter,
     LogScale,
-    TYPE_CHECKING,
     annotations,
     ceil,
     floor,

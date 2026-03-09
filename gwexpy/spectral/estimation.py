@@ -16,6 +16,7 @@ from __future__ import annotations
 import logging
 import os
 import warnings
+from typing import Any, cast
 
 import numpy as np
 from scipy.signal import get_window
@@ -714,7 +715,9 @@ def bootstrap_spectrogram(
     )  # Fixed Error High name
 
     if return_map:
-        BifrequencyMap = ConverterRegistry.get_constructor("BifrequencyMap")
+        bifrequency_map_ctor = cast(
+            Any, ConverterRegistry.get_constructor("BifrequencyMap")
+        )
 
         if ignore_nan:
             # masked covariance? np.cov doesn't support nan directly well in all versions
@@ -733,7 +736,7 @@ def bootstrap_spectrogram(
         else:
             cov_matrix = np.cov(resampled_stats, rowvar=False)
 
-        bfm = BifrequencyMap.from_points(
+        bfm = bifrequency_map_ctor.from_points(
             cov_matrix,
             f2=out_freqs,
             f1=out_freqs,

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from gwpy.cli.spectrum import (
+    TYPE_CHECKING,
     FrequencyDomainProduct,
     Plot,
     SpectrumProduct,
-    TYPE_CHECKING,
     Time,
     annotations,
     label_to_latex,

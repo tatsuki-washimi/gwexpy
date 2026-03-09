@@ -1,16 +1,6 @@
 from __future__ import annotations
 
 import numpy as np
-from gwpy.plot.utils import (
-    AXES_PARAMS,
-    FIGURE_PARAMS,
-    TYPE_CHECKING,
-    annotations,
-    color_cycle,
-    itertools,
-    marker_cycle,
-    rcParams,
-)
 
 
 def adaptive_decimate(ts, target_points=10000):

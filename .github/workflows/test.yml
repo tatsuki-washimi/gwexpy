@@ -24,10 +24,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # Keep CI stable with pip wheels; avoid optional deps that require building from source.
-          pip install ".[dev,analysis]"
+          # Install only runtime deps needed by tests, then install local package without resolving heavy optional deps.
+          pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0"
           pip install "scikit-learn"
-          pip install pytest-forked
+          pip install -e . --no-deps
+          pip install ruff pytest pytest-cov nbmake pytest-forked pytest-qt qtpy PyQt5 pyqtgraph
           sudo apt-get update
           sudo apt-get install -y xvfb
 
@@ -87,18 +88,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xvfb
 
-      - name: Install gwexpy (editable, pip) + optional mictools
+      - name: Install dependencies (minimal, stable)
         shell: bash -l {0}
         run: |
           micromamba run -n gwexpy-full python -m pip install --upgrade pip
-          # Pre-install build requirements and build minepy from source before mictools
-          micromamba run -n gwexpy-full pip install cython numpy scipy
-          micromamba run -n gwexpy-full python scripts/install_minepy.py
-          # Install dev deps first, then analysis deps separately to avoid resolver hangs
-          micromamba run -n gwexpy-full pip install -e ".[dev]" mictools
-          micromamba run -n gwexpy-full pip install --default-timeout=300 ".[analysis]"
-          # Install pytest-forked to isolate segfaults per test process
-          micromamba run -n gwexpy-full pip install pytest-forked
+          # Install only dependencies required to run test workflows.
+          micromamba run -n gwexpy-full pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0"
+          micromamba run -n gwexpy-full pip install scikit-learn
+          micromamba run -n gwexpy-full pip install -e . --no-deps
+          micromamba run -n gwexpy-full pip install pytest pytest-cov nbmake pytest-forked pytest-qt qtpy PyQt5 pyqtgraph
+          # Optional tools: don't fail this job if unavailable.
+          micromamba run -n gwexpy-full pip install cython || true
+          if micromamba run -n gwexpy-full python scripts/install_minepy.py; then
+            micromamba run -n gwexpy-full pip install mictools || true
+          else
+            echo "Skipping optional mictools setup (minepy build failed)."
+          fi
 
       - name: Run unit tests (forked for crash isolation)
         timeout-minutes: 30

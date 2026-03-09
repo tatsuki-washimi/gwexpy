@@ -142,7 +142,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
         base_fs = self._super_ts().fft(nfft=nfft, **kwargs)
         if isinstance(base_fs, GWEXFrequencySeries):
-            return base_fs
+            return cast(FrequencySeries, base_fs)
         return GWEXFrequencySeries(
             base_fs.value,
             frequencies=base_fs.frequencies,

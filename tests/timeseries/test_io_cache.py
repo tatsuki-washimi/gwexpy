@@ -2,8 +2,10 @@ import pytest
 
 
 def test_cache_reexports_gwpy():
-    gwexpy_cache = pytest.importorskip("gwexpy.timeseries.io.cache")
-    gwpy_cache = pytest.importorskip("gwpy.timeseries.io.cache")
+    gwexpy_cache = pytest.importorskip(
+        "gwexpy.timeseries.io.cache", exc_type=ImportError
+    )
+    gwpy_cache = pytest.importorskip("gwpy.timeseries.io.cache", exc_type=ImportError)
 
     exported = getattr(gwpy_cache, "__all__", [])
     if not exported:

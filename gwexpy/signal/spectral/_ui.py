@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from gwpy.signal.spectral._ui import (
-    Quantity,
     TYPE_CHECKING,
+    Quantity,
     annotations,
     average_spectrogram,
     canonical_name,

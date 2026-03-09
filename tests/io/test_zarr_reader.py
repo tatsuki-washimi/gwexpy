@@ -74,7 +74,10 @@ class TestZarrRoundtrip:
         assert str(tsd["x"].unit) == "V"
 
     def test_single_timeseries_read(self, tmp_path):
-        from gwexpy.timeseries.io.zarr_ import read_timeseries_zarr, write_timeseriesdict_zarr
+        from gwexpy.timeseries.io.zarr_ import (
+            read_timeseries_zarr,
+            write_timeseriesdict_zarr,
+        )
 
         path = tmp_path / "single.zarr"
         ts = TimeSeries(np.arange(20, dtype=np.float64), t0=0, sample_rate=10, name="x")

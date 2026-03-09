@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 from gwpy.plot.axes import (
-    Axes,
     GPS_SCALES,
+    TYPE_CHECKING,
+    Axes,
     HandlerLine2D,
     Line2D,
     Number,
     PlotArgsProcessor,
     PolyCollection,
-    TYPE_CHECKING,
     Time,
     allow_rasterization,
     annotations,

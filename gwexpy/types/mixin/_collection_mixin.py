@@ -2,7 +2,18 @@
 
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Iterable, Iterator
+from typing import Any, Protocol, cast
+
+
+class _DictLike(Protocol):
+    def items(self) -> Iterable[tuple[Any, Any]]: ...
+    def __setitem__(self, key: Any, value: Any) -> None: ...
+
+
+class _ListLike(Protocol):
+    def __iter__(self) -> Iterator[Any]: ...
+    def append(self, value: Any) -> None: ...
 
 
 class DictMapMixin:
@@ -10,8 +21,9 @@ class DictMapMixin:
 
     def _map_new(self, method_name: str, *args: Any, **kwargs: Any):
         """Apply *method_name* to each value, returning a new collection."""
-        new = self.__class__()
-        for key, val in self.items():
+        this = cast(_DictLike, self)
+        new = cast(_DictLike, self.__class__())
+        for key, val in this.items():
             new[key] = getattr(val, method_name)(*args, **kwargs)
         return new
 
@@ -21,8 +33,9 @@ class ListMapMixin:
 
     def _map_new_list(self, method_name: str, *args: Any, **kwargs: Any):
         """Apply *method_name* to each element, returning a new collection."""
-        new = self.__class__()
-        for item in self:
+        this = cast(_ListLike, self)
+        new = cast(_ListLike, self.__class__())
+        for item in this:
             new.append(getattr(item, method_name)(*args, **kwargs))
         return new
 

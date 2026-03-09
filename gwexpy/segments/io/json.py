@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from gwpy.segments.io.json import (
-    DataQualityFlag,
     IO,
+    DataQualityFlag,
     default_registry,
     identify_factory,
     json,

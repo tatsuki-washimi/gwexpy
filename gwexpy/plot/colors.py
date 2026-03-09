@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from gwpy.plot.colors import (
-    GWPY_COLORS,
     GW_OBSERVATORY_COLORS,
+    GWPY_COLORS,
+    TYPE_CHECKING,
     LogNorm,
     Normalize,
-    TYPE_CHECKING,
     annotations,
     format_norm,
     get_named_colors_mapping,

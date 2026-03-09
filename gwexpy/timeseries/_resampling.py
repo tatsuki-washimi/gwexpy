@@ -11,7 +11,7 @@ This module provides resampling functionality as a mixin class:
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Literal, Union
+from typing import TYPE_CHECKING, Any, Literal, Union, cast
 
 try:
     from typing import TypeAlias
@@ -114,7 +114,6 @@ def _normalize_target_dt(
     stop_time_val = None
 
     if unit_is_dimensionless and target_dt.unit.physical_type == "time":
-        time_unit_local = u.s
         target_dt_in_time_unit = target_dt.to(u.s)
 
         start_time_val = old_times_q[0].value
@@ -555,8 +554,11 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         )
 
         # 10. Construct result
-        return _construct_result(
-            self, new_data, new_times_val, target_dt, time_unit, is_dimless, copy
+        return cast(
+            TimeSeriesResamplingMixin,
+            _construct_result(
+                self, new_data, new_times_val, target_dt, time_unit, is_dimless, copy
+            ),
         )
 
     # ===============================

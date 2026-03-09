@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from gwexpy.frequencyseries import FrequencySeries
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
 class TestCsvEdgeCases:
