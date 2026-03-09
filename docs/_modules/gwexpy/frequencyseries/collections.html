@@ -213,7 +213,9 @@
 <span class="sd">        **kwargs</span>
 <span class="sd">            other keyword arguments passed to the plot method</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+        <span class="n">Plot</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;Plot&quot;</span><span class="p">)</span>
 
         <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">separate</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;separate&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>

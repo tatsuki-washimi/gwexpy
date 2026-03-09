@@ -95,6 +95,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields.collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDict</span>
@@ -570,7 +572,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">welch</span>
 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">FrequencySeriesList</span>
+    <span class="n">FrequencySeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeries&quot;</span><span class="p">)</span>
+    <span class="n">FrequencySeriesList</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesList&quot;</span><span class="p">)</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.fft_args</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
         <span class="n">check_deprecated_kwargs</span><span class="p">,</span>
@@ -995,7 +998,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">correlate</span><span class="p">,</span> <span class="n">get_window</span>
 
-    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
 
     <span class="c1"># Extract time series</span>
     <span class="n">dt_value</span><span class="p">,</span> <span class="n">dt_unit</span> <span class="o">=</span> <span class="n">_validate_regular_time_axis</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>

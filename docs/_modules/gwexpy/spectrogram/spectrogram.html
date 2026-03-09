@@ -650,7 +650,10 @@
 <span class="sd">        &gt;&gt;&gt; ts_list[0].name</span>
 <span class="sd">        &#39;test_f10.0Hz&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesList</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+        <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
+        <span class="n">TimeSeriesList</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeriesList&quot;</span><span class="p">)</span>
 
         <span class="n">ntimes</span><span class="p">,</span> <span class="n">nfreqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
         <span class="c1"># Extract raw ndarray to avoid unit doubling</span>
@@ -725,7 +728,10 @@
 <span class="sd">        &gt;&gt;&gt; fs_list[0].name</span>
 <span class="sd">        &#39;test_t0.0s&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">FrequencySeriesList</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+        <span class="n">FrequencySeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeries&quot;</span><span class="p">)</span>
+        <span class="n">FrequencySeriesList</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesList&quot;</span><span class="p">)</span>
 
         <span class="n">ntimes</span><span class="p">,</span> <span class="n">nfreqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
         <span class="c1"># Extract raw ndarray to avoid unit doubling</span>

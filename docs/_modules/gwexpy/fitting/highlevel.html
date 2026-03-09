@@ -314,7 +314,9 @@
         <span class="c1"># Recreate BifrequencyMap</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
 
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">BifrequencyMap</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+        <span class="n">BifrequencyMap</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;BifrequencyMap&quot;</span><span class="p">)</span>
 
         <span class="n">freq_unit</span> <span class="o">=</span> <span class="n">psd</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">unit</span>
         <span class="n">cov_map</span> <span class="o">=</span> <span class="n">BifrequencyMap</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span>

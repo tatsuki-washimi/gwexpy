@@ -89,15 +89,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span> <span class="k">as</span> <span class="n">BaseFrequencySeries</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">FittingMixin</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">from_hdf5_frequencyseries</span><span class="p">,</span>
-    <span class="n">from_pandas_frequencyseries</span><span class="p">,</span>
-    <span class="n">from_xarray_frequencyseries</span><span class="p">,</span>
-    <span class="n">to_hdf5_frequencyseries</span><span class="p">,</span>
-    <span class="n">to_pandas_frequencyseries</span><span class="p">,</span>
-    <span class="n">to_xarray_frequencyseries</span><span class="p">,</span>
-<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._optional</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types._stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">StatisticalMethodsMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">RegularityMixin</span><span class="p">,</span> <span class="n">SignalAnalysisMixin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin._plot_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotMixin</span>
@@ -452,6 +445,8 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;frequency&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to pandas.Series.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_pandas_frequencyseries</span>
+
         <span class="k">return</span> <span class="n">to_pandas_frequencyseries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span></div>
 
 
@@ -460,6 +455,8 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_pandas</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">],</span> <span class="n">series</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries from pandas.Series.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pandas_frequencyseries</span>
+
         <span class="k">return</span> <span class="n">from_pandas_frequencyseries</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -580,6 +577,8 @@
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeries.to_xarray">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_xarray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_coord</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Hz&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to xarray.DataArray.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_xarray_frequencyseries</span>
+
         <span class="k">return</span> <span class="n">to_xarray_frequencyseries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_coord</span><span class="o">=</span><span class="n">freq_coord</span><span class="p">)</span></div>
 
 
@@ -588,6 +587,8 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_xarray</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">],</span> <span class="n">da</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries from xarray.DataArray.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_xarray_frequencyseries</span>
+
         <span class="k">return</span> <span class="n">from_xarray_frequencyseries</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">da</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -603,6 +604,8 @@
         <span class="n">compression_opts</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Write to HDF5 dataset within a group.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_hdf5_frequencyseries</span>
+
         <span class="k">return</span> <span class="n">to_hdf5_frequencyseries</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">group</span><span class="p">,</span>
@@ -618,6 +621,8 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_hdf5_dataset</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">FrequencySeries</span><span class="p">],</span> <span class="n">group</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read FrequencySeries from HDF5 dataset.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_hdf5_frequencyseries</span>
+
         <span class="k">return</span> <span class="n">from_hdf5_frequencyseries</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
 
@@ -650,7 +655,7 @@
 <span class="sd">            Specify padding lengths for transient mode to override defaults.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_regular</span><span class="p">(</span><span class="s2">&quot;ifft&quot;</span><span class="p">)</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+        <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
 
         <span class="n">mode_to_use</span> <span class="o">=</span> <span class="n">mode</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
@@ -795,7 +800,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
 
-        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+        <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span>
             <span class="n">out_data</span><span class="p">,</span>
