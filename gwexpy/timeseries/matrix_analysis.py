@@ -773,7 +773,7 @@ class TimeSeriesMatrixAnalysisMixin:
                         {"row": i, "col": j, "channel": ts.name, "score": score}
                     )
 
-        if parallel <= 1:
+        if parallel is None or parallel <= 1:
             _run_serial()
         else:
             try:
@@ -834,12 +834,11 @@ class TimeSeriesMatrixAnalysisMixin:
                 if shrinkage != "auto":
                     raise ValueError(f"Unknown shrinkage: {shrinkage}")
                 shrinkage = min(1.0, n_channels / max(1, n_samples))
-            if not 0.0 <= float(shrinkage) <= 1.0:
+            shrink = cast(float, shrinkage)
+            if not 0.0 <= shrink <= 1.0:
                 raise ValueError("shrinkage must be within [0, 1].")
             avg_var = np.trace(cov) / n_channels
-            cov = (1.0 - float(shrinkage)) * cov + float(shrinkage) * avg_var * np.eye(
-                n_channels
-            )
+            cov = (1.0 - shrink) * cov + shrink * avg_var * np.eye(n_channels)
 
         if eps is not None and eps > 0:
             cov = cov + eps * np.eye(n_channels)

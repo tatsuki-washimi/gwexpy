@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
+
+from gwexpy.interop._registry import ConverterRegistry
 
 from ._optional import require_optional
 
@@ -39,33 +41,36 @@ class TimeSeriesWindowDataset:
         if self.window <= 0 or self.stride <= 0:
             raise ValueError("window and stride must be positive integers.")
 
-        from gwexpy.timeseries import (
-            TimeSeries,
-            TimeSeriesDict,
-            TimeSeriesList,
-            TimeSeriesMatrix,
+        TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
+        TimeSeriesDict = cast(Any, ConverterRegistry.get_constructor("TimeSeriesDict"))
+        TimeSeriesList = cast(Any, ConverterRegistry.get_constructor("TimeSeriesList"))
+        TimeSeriesMatrix = cast(
+            Any, ConverterRegistry.get_constructor("TimeSeriesMatrix")
         )
 
         from .base import to_plain_array
 
         data_obj = series
         if multivariate and isinstance(series, (TimeSeriesDict, TimeSeriesList)):
-            data_obj = series.to_matrix(align=align)
+            series_obj = cast(Any, series)
+            data_obj = series_obj.to_matrix(align=align)
 
         if isinstance(data_obj, TimeSeriesMatrix):
-            self.t0 = data_obj.t0
-            self.dt = data_obj.dt
-            vals = to_plain_array(data_obj)
-            self._feature_names = getattr(data_obj, "channel_names", None)
+            matrix_obj = cast(Any, data_obj)
+            self.t0 = matrix_obj.t0
+            self.dt = matrix_obj.dt
+            vals = to_plain_array(matrix_obj)
+            self._feature_names = getattr(matrix_obj, "channel_names", None)
             self.data = vals.reshape(-1, vals.shape[-1])
             self.unit = None
         elif isinstance(data_obj, TimeSeries):
-            self.t0 = data_obj.t0
-            self.dt = data_obj.dt
-            self.data = to_plain_array(data_obj)[None, :]
-            self.unit = getattr(data_obj, "unit", None)
+            ts_obj = cast(Any, data_obj)
+            self.t0 = ts_obj.t0
+            self.dt = ts_obj.dt
+            self.data = to_plain_array(ts_obj)[None, :]
+            self.unit = getattr(ts_obj, "unit", None)
             self._feature_names = (
-                [data_obj.name] if getattr(data_obj, "name", None) else None
+                [ts_obj.name] if getattr(ts_obj, "name", None) else None
             )
         else:
             raise TypeError(
@@ -74,7 +79,7 @@ class TimeSeriesWindowDataset:
 
         self.labels = labels
         if isinstance(labels, (TimeSeries, TimeSeriesMatrix)):
-            label_vals = to_plain_array(labels)
+            label_vals = to_plain_array(cast(Any, labels))
             self.label_array = label_vals.reshape(-1, label_vals.shape[-1])
         elif isinstance(labels, np.ndarray):
             arr = labels

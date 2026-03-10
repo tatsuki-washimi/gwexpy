@@ -10,9 +10,6 @@ from typing import Any, Literal, TypedDict
 
 import numpy as np
 
-from gwexpy.frequencyseries import FrequencySeries
-from gwexpy.timeseries import TimeSeries
-
 
 class ChannelInfo(TypedDict):
     name: str
@@ -445,6 +442,11 @@ def load_dttxml_products(source, *, native: bool = False):
     def create_series(
         data, x_axis=None, dt=None, t0=0, unit=None, name=None, type="time"
     ):
+        from gwexpy.interop._registry import ConverterRegistry
+
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
+        TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
+
         try:
             if type == "time":
                 if dt is None and x_axis is not None and len(x_axis) > 1:

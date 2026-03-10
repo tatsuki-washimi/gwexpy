@@ -314,7 +314,9 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
 
     def plot(self, **kwargs):
         """Plot all spectrograms stacked vertically."""
-        from gwexpy.plot import Plot
+        from gwexpy.interop._registry import ConverterRegistry
+
+        Plot = ConverterRegistry.get_constructor("Plot")
 
         if "separate" not in kwargs:
             kwargs["separate"] = True
@@ -439,7 +441,9 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
 
     def bootstrap(self, *args, **kwargs):
         """Estimate robust ASD from each spectrogram in the list (returns FrequencySeriesList)."""
-        from gwexpy.frequencyseries import FrequencySeriesList
+        from gwexpy.interop._registry import ConverterRegistry
+
+        FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
 
         new_list = FrequencySeriesList()
         for v in self:
@@ -828,7 +832,9 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
 
     def bootstrap(self, *args, **kwargs):
         """Estimate robust ASD from each spectrogram in the dict (returns FrequencySeriesDict)."""
-        from gwexpy.frequencyseries import FrequencySeriesDict
+        from gwexpy.interop._registry import ConverterRegistry
+
+        FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
 
         new_dict = FrequencySeriesDict()
         for k, v in self.items():

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, SupportsIndex
+from typing import Any, SupportsIndex, cast
 
 import h5py
 
@@ -19,6 +19,8 @@ from gwpy.timeseries import TimeSeries as BaseTimeSeries
 from gwpy.timeseries import TimeSeriesDict as BaseTimeSeriesDict
 from gwpy.timeseries import TimeSeriesList as BaseTimeSeriesList
 
+# --- Monkey Patch TimeSeriesDict ---
+from gwexpy.interop._registry import ConverterRegistry
 from gwexpy.io.hdf5_collection import (
     LAYOUT_DATASET,
     LAYOUT_GROUP,
@@ -31,8 +33,6 @@ from gwexpy.io.hdf5_collection import (
     unique_hdf5_key,
     write_hdf5_manifest,
 )
-
-# --- Monkey Patch TimeSeriesDict ---
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.mixin._collection_mixin import (
     DictMapMixin,
@@ -91,7 +91,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
-            from gwexpy.timeseries import TimeSeries
+            TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             _, items = read_collection_dir(
                 p,
@@ -106,7 +106,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 out[k] = v
             return out
         if fmt in ("hdf5", "h5", "hdf"):
-            from gwexpy.timeseries import TimeSeries
+            TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             with h5py.File(source, "r") as h5f:
                 layout = detect_hdf5_layout(h5f)
@@ -435,8 +435,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             )
 
         if isinstance(other, BaseTimeSeries):
-            from gwexpy.frequencyseries import FrequencySeriesDict
+            from gwexpy.interop._registry import ConverterRegistry
 
+            FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
             new_dict = FrequencySeriesDict()
             for key, ts in self.items():
                 new_dict[key] = ts.csd(
@@ -493,8 +494,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             )
 
         if isinstance(other, BaseTimeSeries):
-            from gwexpy.frequencyseries import FrequencySeriesDict
+            from gwexpy.interop._registry import ConverterRegistry
 
+            FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
             new_dict = FrequencySeriesDict()
             for key, ts in self.items():
                 new_dict[key] = ts.coherence(
@@ -1141,8 +1143,9 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             )
 
         if isinstance(other, BaseTimeSeries):
-            from gwexpy.frequencyseries import FrequencySeriesList
+            from gwexpy.interop._registry import ConverterRegistry
 
+            FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
             new_list = FrequencySeriesList()
             for ts in self:
                 list.append(
@@ -1206,8 +1209,9 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             )
 
         if isinstance(other, BaseTimeSeries):
-            from gwexpy.frequencyseries import FrequencySeriesList
+            from gwexpy.interop._registry import ConverterRegistry
 
+            FrequencySeriesList = ConverterRegistry.get_constructor("FrequencySeriesList")
             new_list = FrequencySeriesList()
             for ts in self:
                 list.append(
@@ -1659,7 +1663,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         if p is not None and p.is_dir() and (fmt in (None, "csv", "txt")):
             from gwexpy.io.collection_dir import read_collection_dir
             from gwexpy.io.utils import apply_unit
-            from gwexpy.timeseries import TimeSeries
+            TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             _, items = read_collection_dir(
                 p,
@@ -1674,12 +1678,12 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                 dir_items.append(v)
             return cls(*dir_items)
         if fmt in ("hdf5", "h5", "hdf"):
-            from gwexpy.timeseries import TimeSeries
+            TimeSeries = cast(Any, ConverterRegistry.get_constructor("TimeSeries"))
 
             with h5py.File(source, "r") as h5f:
                 layout = detect_hdf5_layout(h5f)
                 order = read_hdf5_order(h5f) or list(h5f.keys())
-                out_items: list[TimeSeries] = []
+                out_items: list[Any] = []
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in order:
                         try:

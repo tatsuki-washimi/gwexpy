@@ -108,3 +108,122 @@ class AxisApiHost(Copyable, Protocol):
     def _get_axis_index(self, key: int | str) -> int: ...
 
     def _swapaxes_int(self, a: int, b: int) -> Any: ...
+
+
+# ----------------------------------------------------------------
+# Structural protocols for cross-module type checking
+# (used to break circular dependencies between modules)
+# ----------------------------------------------------------------
+
+
+@runtime_checkable
+class SupportsPlot(HasSeriesData, HasSeriesMetadata, Protocol):
+    """Protocol for objects that can be plotted.
+
+    Matches TimeSeries, FrequencySeries, and other series types
+    that expose value, xindex, unit, and name.
+    """
+
+    @property
+    def xindex(self) -> Any:
+        """The x-axis index (times, frequencies, etc.)."""
+        ...
+
+
+@runtime_checkable
+class SupportsTimeSeries(HasSeriesData, HasSeriesMetadata, Protocol):
+    """Structural protocol for TimeSeries-like objects.
+
+    Used by plot, spectrogram, and interop modules to check for
+    time-domain data without importing the concrete TimeSeries class.
+    """
+
+    @property
+    def t0(self) -> Any:
+        """Start time."""
+        ...
+
+    @property
+    def dt(self) -> Any:
+        """Time step."""
+        ...
+
+    @property
+    def times(self) -> Any:
+        """Time axis."""
+        ...
+
+    @property
+    def sample_rate(self) -> Any:
+        """Sample rate."""
+        ...
+
+
+@runtime_checkable
+class SupportsFrequencySeries(HasSeriesData, HasSeriesMetadata, Protocol):
+    """Structural protocol for FrequencySeries-like objects.
+
+    Used by plot, spectrogram, and interop modules to check for
+    frequency-domain data without importing the concrete class.
+    """
+
+    @property
+    def frequencies(self) -> Any:
+        """Frequency axis."""
+        ...
+
+    @property
+    def df(self) -> Any:
+        """Frequency step."""
+        ...
+
+    @property
+    def f0(self) -> Any:
+        """Starting frequency."""
+        ...
+
+
+@runtime_checkable
+class SupportsSpectrogram(HasSeriesData, Protocol):
+    """Structural protocol for Spectrogram-like objects.
+
+    Used by plot and interop modules to check for time-frequency
+    data without importing the concrete Spectrogram class.
+    """
+
+    @property
+    def times(self) -> Any:
+        """Time axis."""
+        ...
+
+    @property
+    def frequencies(self) -> Any:
+        """Frequency axis."""
+        ...
+
+
+@runtime_checkable
+class SupportsSeriesCollection(Protocol):
+    """Protocol for dict-like series collections (TimeSeriesDict, etc.)."""
+
+    def keys(self) -> Any: ...
+    def values(self) -> Any: ...
+    def items(self) -> Any: ...
+
+
+@runtime_checkable
+class SupportsSeriesList(Protocol):
+    """Protocol for list-like series collections (TimeSeriesList, etc.)."""
+
+    def __iter__(self) -> Any: ...
+    def __len__(self) -> int: ...
+    def append(self, item: Any) -> None: ...
+
+
+@runtime_checkable
+class SupportsMatrix(Protocol):
+    """Protocol for SeriesMatrix-like objects."""
+
+    def to_series_1Dlist(self) -> Any: ...
+    def row_keys(self) -> Any: ...
+    def col_keys(self) -> Any: ...

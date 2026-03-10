@@ -25,9 +25,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           # Keep GWpy/Astropy compatibility stable in CI.
-          pip install "numpy<2.0" "astropy<7.0"
-          pip install ".[dev,analysis]"
-          pip install pytest-forked
+          pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0"
+          pip install -e . --no-deps
+          pip install pytest pytest-forked
 
       - name: Run gwpy-compat focused tests
         env:

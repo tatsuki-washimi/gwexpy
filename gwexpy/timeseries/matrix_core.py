@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 from astropy import units as u
 
+from gwexpy.interop._registry import ConverterRegistry
 from gwexpy.types.metadata import MetaData, MetaDataMatrix
 
 from .utils import (
@@ -236,7 +237,7 @@ class TimeSeriesMatrixCoreMixin:
         """
         Apply a bivariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
         """
-        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
         if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
             raise NotImplementedError(
@@ -312,7 +313,7 @@ class TimeSeriesMatrixCoreMixin:
         """
         Apply a univariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
         """
-        from gwexpy.frequencyseries import FrequencySeriesMatrix
+        FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
         if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
             raise NotImplementedError(
@@ -385,7 +386,7 @@ class TimeSeriesMatrixCoreMixin:
         """
         Apply a TimeSeries spectrogram method element-wise and return SpectrogramMatrix.
         """
-        from gwexpy.spectrogram import SpectrogramMatrix
+        SpectrogramMatrix = ConverterRegistry.get_constructor("SpectrogramMatrix")
 
         if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
             raise NotImplementedError(

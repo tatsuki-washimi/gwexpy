@@ -339,7 +339,9 @@ class TensorField(FieldDict):
         if self.rank != 2:
             raise NotImplementedError("plot_components only supports rank-2 tensors")
 
-        from ..plot.field import FieldPlot
+        from gwexpy.interop._registry import ConverterRegistry
+
+        FieldPlot = ConverterRegistry.get_constructor("FieldPlot")
 
         # Determine dimensions
         indices_i = {k[0] for k in self.keys()}
