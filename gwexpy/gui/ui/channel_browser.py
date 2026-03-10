@@ -244,7 +244,9 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             self.worker.finished.connect(self.on_worker_finished)
             self.worker.start()
 
-    def on_worker_finished(self, results: list[tuple[str, float, str]], error: str | None) -> None:
+    def on_worker_finished(
+        self, results: list[tuple[str, float, str]], error: str | None
+    ) -> None:
         if error:
             # Only show error if we are still expecting NDS
             if self.current_source == "NDS":

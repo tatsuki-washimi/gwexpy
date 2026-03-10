@@ -2,7 +2,18 @@
 
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Iterable, Iterator
+from typing import Any, Protocol, cast
+
+
+class _DictCollection(Protocol):
+    def items(self) -> Iterable[tuple[Any, Any]]: ...
+    def __setitem__(self, key: Any, value: Any) -> None: ...
+
+
+class _ListCollection(Protocol):
+    def __iter__(self) -> Iterator[Any]: ...
+    def append(self, value: Any) -> Any: ...
 
 
 class DictMapMixin:
@@ -10,8 +21,9 @@ class DictMapMixin:
 
     def _map_new(self, method_name: str, *args: Any, **kwargs: Any):
         """Apply *method_name* to each value, returning a new collection."""
-        new = self.__class__()
-        for key, val in self.items():
+        container = cast(_DictCollection, self)
+        new = cast(_DictCollection, self.__class__())
+        for key, val in container.items():
             new[key] = getattr(val, method_name)(*args, **kwargs)
         return new
 
@@ -21,8 +33,9 @@ class ListMapMixin:
 
     def _map_new_list(self, method_name: str, *args: Any, **kwargs: Any):
         """Apply *method_name* to each element, returning a new collection."""
-        new = self.__class__()
-        for item in self:
+        container = cast(_ListCollection, self)
+        new = cast(_ListCollection, self.__class__())
+        for item in container:
             new.append(getattr(item, method_name)(*args, **kwargs))
         return new
 
@@ -50,8 +63,9 @@ def _make_dict_map_method(
 
             mod_path, cls_name = result_class_path.rsplit(".", 1)
             cls = getattr(importlib.import_module(mod_path), cls_name)
-            new = cls()
-            for key, val in self.items():
+            container = cast(_DictCollection, self)
+            new = cast(_DictCollection, cls())
+            for key, val in container.items():
                 new[key] = getattr(val, method_name)(*args, **kwargs)
             return new
 
@@ -70,9 +84,10 @@ def _make_dict_plain_method(method_name: str, *, doc: str = "") -> Any:
     """Create a delegation method returning a plain dict (not a collection)."""
 
     def method(self, *args, **kwargs):
+        container = cast(_DictCollection, self)
         return {
             key: getattr(val, method_name)(*args, **kwargs)
-            for key, val in self.items()
+            for key, val in container.items()
         }
 
     method.__name__ = method_name
@@ -103,8 +118,9 @@ def _make_list_map_method(
 
             mod_path, cls_name = result_class_path.rsplit(".", 1)
             cls = getattr(importlib.import_module(mod_path), cls_name)
-            new = cls()
-            for item in self:
+            container = cast(_ListCollection, self)
+            new = cast(_ListCollection, cls())
+            for item in container:
                 new.append(getattr(item, method_name)(*args, **kwargs))
             return new
 

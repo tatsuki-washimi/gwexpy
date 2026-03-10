@@ -3,7 +3,6 @@ from __future__ import annotations
 # Dynamic import from gwpy (PEP 562)
 import gwpy.table
 
-
 __all__ = [name for name in dir(gwpy.table) if not name.startswith("_")]
 
 

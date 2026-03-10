@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 from gwpy.plot import Plot as BasePlot
@@ -118,16 +118,23 @@ class Plot(BasePlot):
         # 2. Expand Arguments
         final_args: list = []
         _expand_args(
-            args, separate, final_args,
-            SeriesMatrix=SeriesMatrix, SpectrogramMatrix=SpectrogramMatrix,
-            FrequencySeriesList=FrequencySeriesList, FrequencySeriesDict=FrequencySeriesDict,
-            SpectrogramList=SpectrogramList, SpectrogramDict=SpectrogramDict,
+            args,
+            separate,
+            final_args,
+            SeriesMatrix=SeriesMatrix,
+            SpectrogramMatrix=SpectrogramMatrix,
+            FrequencySeriesList=FrequencySeriesList,
+            FrequencySeriesDict=FrequencySeriesDict,
+            SpectrogramList=SpectrogramList,
+            SpectrogramDict=SpectrogramDict,
         )
 
         # 2.5 Adaptive Decimation
         decimate_threshold = kwargs.pop("decimate_threshold", 50000)
         decimate_points = kwargs.pop("decimate_points", 10000)
-        final_args = _adaptive_decimate_args(final_args, decimate_threshold, decimate_points)
+        final_args = _adaptive_decimate_args(
+            final_args, decimate_threshold, decimate_points
+        )
 
         # 3. Determine Scales and Labels
         scan_data = _flatten_scan(final_args)
@@ -163,7 +170,9 @@ class Plot(BasePlot):
 
         # 5. Extract params and call super().__init__
         layout_kwargs, fig_params, use_cl, use_tl, labels_list = (
-            _extract_layout_and_fig_params(kwargs, separate, geometry, final_args, defaults)
+            _extract_layout_and_fig_params(
+                kwargs, separate, geometry, final_args, defaults
+            )
         )
         force_ylabel = layout_kwargs.get("ylabel")
         force_xlabel = layout_kwargs.get("xlabel")
@@ -184,8 +193,14 @@ class Plot(BasePlot):
 
         # 8. Post-Plotting overlay
         _post_plot_overlay(
-            self, use_overlay, matrix_args, subplots_orig, expanded_args,
-            layout_kwargs, SeriesMatrix, SpectrogramMatrix,
+            self,
+            use_overlay,
+            matrix_args,
+            subplots_orig,
+            expanded_args,
+            layout_kwargs,
+            SeriesMatrix,
+            SpectrogramMatrix,
         )
 
         # 9. Spectrogram colorbars
@@ -302,7 +317,6 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
     **kwargs
         Passed to Plot constructor for global settings.
     """
-    import numpy as np
     from matplotlib import pyplot as plt
 
     from gwexpy.spectrogram import SpectrogramDict, SpectrogramList, SpectrogramMatrix

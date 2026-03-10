@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Any
 
-import numpy as np
 import pyqtgraph as pg
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5 import QtWidgets
 
 
-def _small_spin_int(min_val: int = -1000000000, max_val: int = 1000000000, width: int | None = None) -> QtWidgets.QSpinBox:
+def _small_spin_int(
+    min_val: int = -1000000000, max_val: int = 1000000000, width: int | None = None
+) -> QtWidgets.QSpinBox:
     w = QtWidgets.QSpinBox()
     w.setRange(min_val, max_val)
     if width:
@@ -16,7 +16,13 @@ def _small_spin_int(min_val: int = -1000000000, max_val: int = 1000000000, width
     return w
 
 
-def _small_spin_dbl(decimals: int = 1, width: int | None = None, min_val: float = -1e12, max_val: float = 1e12, step: float = 0.1) -> QtWidgets.QDoubleSpinBox:
+def _small_spin_dbl(
+    decimals: int = 1,
+    width: int | None = None,
+    min_val: float = -1e12,
+    max_val: float = 1e12,
+    step: float = 0.1,
+) -> QtWidgets.QDoubleSpinBox:
     w = QtWidgets.QDoubleSpinBox()
     w.setRange(min_val, max_val)
     w.setDecimals(decimals)
@@ -27,7 +33,13 @@ def _small_spin_dbl(decimals: int = 1, width: int | None = None, min_val: float 
 
 
 class GraphPanel(QtWidgets.QFrame):
-    def __init__(self, plot_idx: int, target_plot: pg.PlotWidget, traces_items: list[dict[str, Any]], parent: QtWidgets.QWidget | None = None) -> None:
+    def __init__(
+        self,
+        plot_idx: int,
+        target_plot: pg.PlotWidget,
+        traces_items: list[dict[str, Any]],
+        parent: QtWidgets.QWidget | None = None,
+    ) -> None:
         super().__init__(parent)
         self.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.plot_idx = plot_idx
@@ -74,16 +86,19 @@ class GraphPanel(QtWidgets.QFrame):
         config_w = _build_config_tab(self)
 
         # Assemble all tabs into the stacked widget and wire cross-tab logic
-        _assemble_stack(self, {
-            "traces": traces_w,
-            "range": range_w,
-            "units": units_w,
-            "cursor": cursor_w,
-            "config": config_w,
-            "style": style_w,
-            "legend": legend_w,
-            "param": param_w,
-        })
+        _assemble_stack(
+            self,
+            {
+                "traces": traces_w,
+                "range": range_w,
+                "units": units_w,
+                "cursor": cursor_w,
+                "config": config_w,
+                "style": style_w,
+                "legend": legend_w,
+                "param": param_w,
+            },
+        )
 
     def reset(self) -> None:
         """Reset plot settings, axes, and clear data."""

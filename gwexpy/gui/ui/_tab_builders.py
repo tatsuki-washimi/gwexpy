@@ -8,7 +8,7 @@ top-level QWidget for the tab (or, for the setup helpers, nothing).
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pyqtgraph as pg
@@ -259,9 +259,7 @@ def _build_traces_tab(panel: GraphPanel) -> QtWidgets.QWidget:
         if ctrl["sym_chk"].isChecked():
             c_hex = COLORS[ctrl["sym_c"].currentIndex()][1]
             ctrl["sym_c"].setStyleSheet(f"background-color: {c_hex};")
-            target_curve.setSymbol(
-                ctrl["sym_s"].itemData(ctrl["sym_s"].currentIndex())
-            )
+            target_curve.setSymbol(ctrl["sym_s"].itemData(ctrl["sym_s"].currentIndex()))
             target_curve.setSymbolBrush(c_hex)
             target_curve.setSymbolPen(c_hex)
             target_curve.setSymbolSize(ctrl["sym_w"].value())
@@ -283,7 +281,9 @@ def _build_traces_tab(panel: GraphPanel) -> QtWidgets.QWidget:
     return traces_tab_widget
 
 
-def _build_trace_page(panel: GraphPanel, i: int, update_style: Callable[[int], None]) -> QtWidgets.QWidget:
+def _build_trace_page(
+    panel: GraphPanel, i: int, update_style: Callable[[int], None]
+) -> QtWidgets.QWidget:
     """Build a single trace page and append the control set to
     ``panel.trace_controls``.
     """
@@ -499,9 +499,7 @@ def _build_range_tab(panel: GraphPanel) -> QtWidgets.QWidget:
         if y_auto:
             panel.target_plot.enableAutoRange(axis="y")
         else:
-            panel.target_plot.setYRange(
-                sb_y_from.value(), sb_y_to.value(), padding=0
-            )
+            panel.target_plot.setYRange(sb_y_from.value(), sb_y_to.value(), padding=0)
         x_log = rb_x_log.isChecked()
         x_auto = rb_x_auto.isChecked()
         panel.target_plot.setLogMode(x=x_log)
@@ -652,18 +650,10 @@ def _build_cursor_tab(panel: GraphPanel) -> QtWidgets.QWidget:
 
     # Cursor Logic
     cursors = {
-        "c1_v": pg.InfiniteLine(
-            angle=90, movable=True, pen=pg.mkPen("g", width=1.5)
-        ),
-        "c1_h": pg.InfiniteLine(
-            angle=0, movable=True, pen=pg.mkPen("g", width=1.5)
-        ),
-        "c2_v": pg.InfiniteLine(
-            angle=90, movable=True, pen=pg.mkPen("y", width=1.5)
-        ),
-        "c2_h": pg.InfiniteLine(
-            angle=0, movable=True, pen=pg.mkPen("y", width=1.5)
-        ),
+        "c1_v": pg.InfiniteLine(angle=90, movable=True, pen=pg.mkPen("g", width=1.5)),
+        "c1_h": pg.InfiniteLine(angle=0, movable=True, pen=pg.mkPen("g", width=1.5)),
+        "c2_v": pg.InfiniteLine(angle=90, movable=True, pen=pg.mkPen("y", width=1.5)),
+        "c2_h": pg.InfiniteLine(angle=0, movable=True, pen=pg.mkPen("y", width=1.5)),
     }
 
     for line in cursors.values():
@@ -1105,9 +1095,7 @@ def _connect_axis_signals(panel: GraphPanel) -> None:
         weight = ctrls["font_weight"].currentText()
 
         # Title Label Style (Apply via css-like args)
-        t_px = (
-            f"{int(ctrls['t_size'].value() * 300)}pt"  # Scale normalized to points
-        )
+        t_px = f"{int(ctrls['t_size'].value() * 300)}pt"  # Scale normalized to points
         label_style = {
             "color": t_clr,
             "font-size": t_px,
@@ -1473,9 +1461,7 @@ def _build_param_tab(panel: GraphPanel) -> QtWidgets.QWidget:
 
         if v_third.isChecked():
             g_type = panel.graph_combo.currentText()
-            if any(
-                x in g_type for x in ["Series", "Density", "Coherence", "Function"]
-            ):
+            if any(x in g_type for x in ["Series", "Density", "Coherence", "Function"]):
                 val = panel.meta_info.get("bw", 0)
                 if val:
                     header_lines.append(f"<b>BW:</b> {val:.3g} Hz")
@@ -1502,9 +1488,7 @@ def _build_param_tab(panel: GraphPanel) -> QtWidgets.QWidget:
                     )
 
             if rows:
-                html += (
-                    "<table border='0' cellspacing='5' style='margin-top: 2px;'>"
-                )
+                html += "<table border='0' cellspacing='5' style='margin-top: 2px;'>"
                 html += "<tr><th align='left'>Ch</th><th>Mean</th><th>RMS</th><th>Pk-Pk</th></tr>"
                 html += "".join(rows) + "</table>"
 
@@ -1606,16 +1590,16 @@ def _assemble_stack(panel: GraphPanel, tabs: dict[str, QtWidgets.QWidget]) -> No
 
     *tabs* is a dict mapping tab names to their widgets.
     """
-    panel.main_stack.addWidget(tabs["traces"])      # 0
-    panel.main_stack.addWidget(tabs["range"])        # 1
-    panel.main_stack.addWidget(tabs["units"])        # 2
-    panel.main_stack.addWidget(tabs["cursor"])       # 3
-    panel.main_stack.addWidget(tabs["config"])       # 4
-    panel.main_stack.addWidget(tabs["style"])        # 5
-    panel.main_stack.addWidget(panel.xaxis_tab_widget)   # 6
-    panel.main_stack.addWidget(panel.yaxis_tab_widget)   # 7
-    panel.main_stack.addWidget(tabs["legend"])       # 8
-    panel.main_stack.addWidget(tabs["param"])        # 9
+    panel.main_stack.addWidget(tabs["traces"])  # 0
+    panel.main_stack.addWidget(tabs["range"])  # 1
+    panel.main_stack.addWidget(tabs["units"])  # 2
+    panel.main_stack.addWidget(tabs["cursor"])  # 3
+    panel.main_stack.addWidget(tabs["config"])  # 4
+    panel.main_stack.addWidget(tabs["style"])  # 5
+    panel.main_stack.addWidget(panel.xaxis_tab_widget)  # 6
+    panel.main_stack.addWidget(panel.yaxis_tab_widget)  # 7
+    panel.main_stack.addWidget(tabs["legend"])  # 8
+    panel.main_stack.addWidget(tabs["param"])  # 9
 
     panel.tab_row2.setCurrentIndex(0)
 
