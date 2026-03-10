@@ -7,7 +7,7 @@ cd "${repo_root}"
 mode="${1:-pytest}"
 shift || true
 
-target="${GUI_TEST_TARGET:-tests/gui/integration}"
+target="${GUI_TEST_TARGET:-tests/gui}"
 
 pytest_args=()
 if [ -n "${PYTEST_ARGS:-}" ]; then

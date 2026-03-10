@@ -4,6 +4,11 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${repo_root}"
 
+pytest_args=(-v)
+if [ "$#" -gt 0 ]; then
+  pytest_args=("$@")
+fi
+
 if ! command -v xvfb-run >/dev/null 2>&1; then
   echo "ERROR: xvfb-run not found. Install Xvfb/xvfb-run or run without headless mode." >&2
   exit 127
@@ -29,7 +34,7 @@ if [ "${GWEXPY_ENABLE_NDS_TESTS}" != "1" ]; then
 fi
 
 echo "Checking NDS test prerequisites..."
-PYTHONPATH=".:${PYTHONPATH:-}" python3 -c "
+PYTHONPATH=".:${PYTHONPATH:-}" python -c "
 import os
 import sys
 try:
@@ -87,4 +92,4 @@ if not success:
 echo "Running GUI NDS Integration Tests..."
 xvfb-run -a -s "-screen 0 1920x1080x24" env PYTHONFAULTHANDLER=1 PYTHONUNBUFFERED=1 \
   PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 GWEXPY_ENABLE_NDS_TESTS=1 \
-  python -u -m pytest -p pytestqt.plugin -m "nds and gui" -v
+  python -u -m pytest -p pytestqt.plugin -m "nds and gui" "${pytest_args[@]}"
