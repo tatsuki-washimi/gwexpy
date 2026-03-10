@@ -16,7 +16,9 @@ def _h_spacer() -> QtWidgets.QSpacerItem:
     return s
 
 
-def _small_spin_int(min_val: int = -1000000000, max_val: int = 1000000000, width: int | None = None) -> QtWidgets.QSpinBox:
+def _small_spin_int(
+    min_val: int = -1000000000, max_val: int = 1000000000, width: int | None = None
+) -> QtWidgets.QSpinBox:
     w = QtWidgets.QSpinBox()
     w.setRange(min_val, max_val)
     if width:
@@ -24,7 +26,13 @@ def _small_spin_int(min_val: int = -1000000000, max_val: int = 1000000000, width
     return w
 
 
-def _small_spin_dbl(decimals: int = 1, width: int | None = None, min_val: float = -1e12, max_val: float = 1e12, step: float = 0.1) -> QtWidgets.QDoubleSpinBox:
+def _small_spin_dbl(
+    decimals: int = 1,
+    width: int | None = None,
+    min_val: float = -1e12,
+    max_val: float = 1e12,
+    step: float = 0.1,
+) -> QtWidgets.QDoubleSpinBox:
     w = QtWidgets.QDoubleSpinBox()
     w.setRange(min_val, max_val)
     w.setDecimals(decimals)
@@ -35,7 +43,9 @@ def _small_spin_dbl(decimals: int = 1, width: int | None = None, min_val: float 
     return w
 
 
-def _create_group(title: str, layout_type: str = "grid") -> tuple[QtWidgets.QGroupBox, Any]:
+def _create_group(
+    title: str, layout_type: str = "grid"
+) -> tuple[QtWidgets.QGroupBox, Any]:
     gb = QtWidgets.QGroupBox(title)
     layout: Any
     if layout_type == "grid":
@@ -800,7 +810,15 @@ def create_excitation_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
     return tab, controls
 
 
-def create_result_tab(on_import: Callable[[], None] | None = None) -> tuple[QtWidgets.QWidget, dict[str, Any], dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
+def create_result_tab(
+    on_import: Callable[[], None] | None = None,
+) -> tuple[
+    QtWidgets.QWidget,
+    dict[str, Any],
+    dict[str, Any],
+    list[dict[str, Any]],
+    list[dict[str, Any]],
+]:
     tab = QtWidgets.QWidget()
     hsplit = QtWidgets.QSplitter(QtCore.Qt.Horizontal)  # type: ignore
     left_panel = QtWidgets.QWidget()

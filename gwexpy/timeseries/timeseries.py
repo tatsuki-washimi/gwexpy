@@ -37,7 +37,6 @@ from ._statistics import StatisticsMixin
 from ._timeseries_legacy import TimeSeries as _LegacyTimeSeries
 
 if TYPE_CHECKING:
-    from gwpy.plot import Plot
     from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 
     from gwexpy.timeseries import TimeSeriesDict

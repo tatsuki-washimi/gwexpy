@@ -12,7 +12,7 @@ measurement logic.
 from __future__ import annotations
 
 import logging
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from PyQt5 import QtCore
@@ -134,7 +134,11 @@ class PlotRenderer:
             return "None"
 
     def _apply_unit_conversion(
-        self, data: np.ndarray, display_unit: str, graph_type: str, is_spectrogram: bool = False
+        self,
+        data: np.ndarray,
+        display_unit: str,
+        graph_type: str,
+        is_spectrogram: bool = False,
     ) -> np.ndarray:
         """
         Apply unit conversion to data based on display settings.
@@ -178,7 +182,14 @@ class PlotRenderer:
         return data
 
     def _render_spectrogram(
-        self, img: Any, curve: Any, bar: Any, result: dict[str, Any], info_root: dict[str, Any], start_time_gps: float | None, graph_type: str
+        self,
+        img: Any,
+        curve: Any,
+        bar: Any,
+        result: dict[str, Any],
+        info_root: dict[str, Any],
+        start_time_gps: float | None,
+        graph_type: str,
     ) -> None:
         """
         Render a spectrogram result to an ImageItem.
@@ -330,7 +341,9 @@ class PlotRenderer:
         except (AttributeError, KeyError):
             return False
 
-    def update_axis_labels(self, info_root: dict[str, Any], start_time_gps: float, start_time_utc: str) -> None:
+    def update_axis_labels(
+        self, info_root: dict[str, Any], start_time_gps: float, start_time_utc: str
+    ) -> None:
         """
         Update axis labels with time information.
 
@@ -347,7 +360,11 @@ class PlotRenderer:
         info_root["plot"].setLabel("bottom", label_text)
 
     def stabilize_streaming_range(
-        self, info_root: dict[str, Any], is_streaming: bool, is_time_axis: bool, nds_window: float
+        self,
+        info_root: dict[str, Any],
+        is_streaming: bool,
+        is_time_axis: bool,
+        nds_window: float,
     ) -> None:
         """
         Stabilize plot range during streaming mode.

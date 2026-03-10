@@ -259,7 +259,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
 
 
 @as_series_dict_class(FrequencySeries)
-class FrequencySeriesDict(PlotMixin, DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]):
+class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]):
     """Ordered mapping of `FrequencySeries` objects keyed by label."""
 
     EntryClass = FrequencySeries
@@ -277,7 +277,9 @@ class FrequencySeriesDict(PlotMixin, DictMapMixin, FrequencySeriesBaseDict[Frequ
         return self
 
     pad = _make_dict_map_method("pad", doc="Pad each FrequencySeries in the dict.")
-    interpolate = _make_dict_map_method("interpolate", doc="Interpolate each FrequencySeries in the dict.")
+    interpolate = _make_dict_map_method(
+        "interpolate", doc="Interpolate each FrequencySeries in the dict."
+    )
 
     # --- In-place Element Operations ---
 
@@ -304,8 +306,12 @@ class FrequencySeriesDict(PlotMixin, DictMapMixin, FrequencySeriesBaseDict[Frequ
     # ===============================
 
     zpk = _make_dict_map_method("zpk", doc="Apply ZPK filter to each FrequencySeries.")
-    filter = _make_dict_map_method("filter", doc="Apply filter to each FrequencySeries.")
-    apply_response = _make_dict_map_method("apply_response", doc="Apply response to each FrequencySeries.")
+    filter = _make_dict_map_method(
+        "filter", doc="Apply filter to each FrequencySeries."
+    )
+    apply_response = _make_dict_map_method(
+        "apply_response", doc="Apply response to each FrequencySeries."
+    )
 
     # ===============================
     # 3. Analysis & Conversion
@@ -317,13 +323,23 @@ class FrequencySeriesDict(PlotMixin, DictMapMixin, FrequencySeriesBaseDict[Frequ
         """Alias for phase(). Returns a new FrequencySeriesDict."""
         return self.phase(*args, **kwargs)
 
-    degree = _make_dict_map_method("degree", doc="Compute phase (in degrees) of each FrequencySeries.")
+    degree = _make_dict_map_method(
+        "degree", doc="Compute phase (in degrees) of each FrequencySeries."
+    )
     to_db = _make_dict_map_method("to_db", doc="Convert each FrequencySeries to dB.")
-    differentiate_time = _make_dict_map_method("differentiate_time", doc="Apply time differentiation to each item.")
-    integrate_time = _make_dict_map_method("integrate_time", doc="Apply time integration to each item.")
-    group_delay = _make_dict_map_method("group_delay", doc="Compute group delay of each item.")
+    differentiate_time = _make_dict_map_method(
+        "differentiate_time", doc="Apply time differentiation to each item."
+    )
+    integrate_time = _make_dict_map_method(
+        "integrate_time", doc="Apply time integration to each item."
+    )
+    group_delay = _make_dict_map_method(
+        "group_delay", doc="Compute group delay of each item."
+    )
     smooth = _make_dict_map_method("smooth", doc="Smooth each FrequencySeries.")
-    rebin = _make_dict_map_method("rebin", doc="Rebin each FrequencySeries in the dict.")
+    rebin = _make_dict_map_method(
+        "rebin", doc="Rebin each FrequencySeries in the dict."
+    )
 
     # ===============================
     # 4. Time Domain Conversion
@@ -487,7 +503,7 @@ class FrequencySeriesDict(PlotMixin, DictMapMixin, FrequencySeriesBaseDict[Frequ
         return registry.write(self, target, *args, **kwargs)
 
 
-class FrequencySeriesBaseList(list[_FS]):
+class FrequencySeriesBaseList(PlotMixin, list[_FS]):
     """List container for `FrequencySeries` objects with type enforcement."""
 
     EntryClass = FrequencySeries
@@ -627,7 +643,7 @@ class FrequencySeriesBaseList(list[_FS]):
         return registry.write(self, target, *args, **kwargs)
 
 
-class FrequencySeriesList(PlotMixin, ListMapMixin, FrequencySeriesBaseList[FrequencySeries]):
+class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]):
     """List of `FrequencySeries` objects."""
 
     EntryClass = FrequencySeries
@@ -638,15 +654,23 @@ class FrequencySeriesList(PlotMixin, ListMapMixin, FrequencySeriesBaseList[Frequ
 
     crop = _make_list_map_method("crop", doc="Crop each FrequencySeries in the list.")
     pad = _make_list_map_method("pad", doc="Pad each FrequencySeries in the list.")
-    interpolate = _make_list_map_method("interpolate", doc="Interpolate each FrequencySeries in the list.")
+    interpolate = _make_list_map_method(
+        "interpolate", doc="Interpolate each FrequencySeries in the list."
+    )
 
     # ===============================
     # 2. Filter & Response
     # ===============================
 
-    zpk = _make_list_map_method("zpk", doc="Apply ZPK filter to each FrequencySeries in the list.")
-    filter = _make_list_map_method("filter", doc="Apply filter to each FrequencySeries in the list.")
-    apply_response = _make_list_map_method("apply_response", doc="Apply response to each FrequencySeries in the list.")
+    zpk = _make_list_map_method(
+        "zpk", doc="Apply ZPK filter to each FrequencySeries in the list."
+    )
+    filter = _make_list_map_method(
+        "filter", doc="Apply filter to each FrequencySeries in the list."
+    )
+    apply_response = _make_list_map_method(
+        "apply_response", doc="Apply response to each FrequencySeries in the list."
+    )
 
     # ===============================
     # 3. Analysis & Conversion
@@ -658,20 +682,31 @@ class FrequencySeriesList(PlotMixin, ListMapMixin, FrequencySeriesBaseList[Frequ
         """Alias for phase(). Returns a new FrequencySeriesList."""
         return self.phase(*args, **kwargs)
 
-    degree = _make_list_map_method("degree", doc="Compute phase (in degrees) of each FrequencySeries.")
+    degree = _make_list_map_method(
+        "degree", doc="Compute phase (in degrees) of each FrequencySeries."
+    )
     to_db = _make_list_map_method("to_db", doc="Convert each FrequencySeries to dB.")
-    differentiate_time = _make_list_map_method("differentiate_time", doc="Apply time differentiation to each item.")
-    integrate_time = _make_list_map_method("integrate_time", doc="Apply time integration to each item.")
-    group_delay = _make_list_map_method("group_delay", doc="Compute group delay of each item.")
+    differentiate_time = _make_list_map_method(
+        "differentiate_time", doc="Apply time differentiation to each item."
+    )
+    integrate_time = _make_list_map_method(
+        "integrate_time", doc="Apply time integration to each item."
+    )
+    group_delay = _make_list_map_method(
+        "group_delay", doc="Compute group delay of each item."
+    )
     smooth = _make_list_map_method("smooth", doc="Smooth each FrequencySeries.")
-    rebin = _make_list_map_method("rebin", doc="Rebin each FrequencySeries in the list.")
+    rebin = _make_list_map_method(
+        "rebin", doc="Rebin each FrequencySeries in the list."
+    )
 
     # ===============================
     # 4. Time Domain Conversion
     # ===============================
 
     ifft = _make_list_map_method(
-        "ifft", doc="Compute IFFT of each FrequencySeries. Returns a TimeSeriesList.",
+        "ifft",
+        doc="Compute IFFT of each FrequencySeries. Returns a TimeSeriesList.",
         result_class_path="gwexpy.timeseries.TimeSeriesList",
     )
 
