@@ -1,18 +1,11 @@
 import faulthandler
 import logging
 import os
-import sys
 
 import pytest
 
 QT_AVAILABLE = True
-if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
-    QT_AVAILABLE = False
-    pytestmark = pytest.mark.skip("GUI tests skipped (plugin autoload disabled)")
-    collect_ignore_glob = ["test_*.py", "integration/test_*.py"]
 try:
-    import faulthandler
-
     import pytestqt  # noqa: F401
     from PyQt5.QtWidgets import QApplication
 except Exception:  # pragma: no cover - guard for headless/CI
