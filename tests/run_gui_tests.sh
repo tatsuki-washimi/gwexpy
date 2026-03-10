@@ -31,9 +31,6 @@ for arg in "${pytest_args[@]}"; do
       ;;
   esac
 done
-if [ "$has_markexpr" -eq 0 ]; then
-  pytest_args+=(-m "not nds")
-fi
 
 export PYTHONFAULTHANDLER=1
 export PYTHONUNBUFFERED=1
@@ -118,6 +115,14 @@ if [ "$use_system_display" -eq 1 ] && [ -z "${XAUTHORITY:-}" ]; then
     fallback_xauth="/tmp/gwexpy-empty.Xauthority"
     touch "$fallback_xauth"
     export XAUTHORITY="$fallback_xauth"
+  fi
+fi
+
+if [ "$has_markexpr" -eq 0 ]; then
+  if [ "$use_system_display" -eq 1 ]; then
+    pytest_args+=(-m "not nds")
+  else
+    pytest_args+=(-m "not nds and not pyautogui")
   fi
 fi
 

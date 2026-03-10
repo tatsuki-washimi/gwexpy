@@ -6,6 +6,7 @@ from qtpy import QtCore
 from gwexpy.gui.ui.main_window import MainWindow
 
 
+@pytest.mark.pyautogui
 @pytest.mark.gui
 def test_pyautogui_start_stop(qtbot, log_gui_action):
     if not os.environ.get("DISPLAY"):

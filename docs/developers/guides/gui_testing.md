@@ -1,19 +1,33 @@
-# GUI Testing (Headless)
+# GUI Testing
 
-## Quick Run
-
-```bash
-PYTHONFAULTHANDLER=1 xvfb-run -a -s "-screen 0 1920x1080x24" pytest -q
-```
-
-For convenience, you can also run:
+## Default Suite
 
 ```bash
-scripts/run_gui_tests.sh
+tests/run_gui_tests.sh
 ```
 
-GUI test failures attempt to capture a screenshot to `PYTEST_SCREENSHOT_DIR`
-(defaults to `tests/.screenshots`).
+The default runner uses `xvfb-run` and excludes `@pytest.mark.pyautogui` tests
+unless you explicitly pass your own `-m/--markexpr`.
+
+## PyAutoGUI
+
+PyAutoGUI tests require a real system display with working pointer injection.
+Run them explicitly:
+
+```bash
+GUI_TEST_TARGET=tests/gui/integration/test_pyautogui_smoke.py \
+tests/run_gui_tests.sh
+```
+
+If you need to force the real display for another GUI target, use:
+
+```bash
+GUI_USE_SYSTEM_DISPLAY=1 tests/run_gui_tests.sh
+```
+
+The runner will populate `XAUTHORITY` automatically when possible.
+
+GUI test failures attempt to capture a screenshot under `tests/gui/screenshots`.
 
 ## Core Dumps
 
