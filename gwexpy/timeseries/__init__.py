@@ -29,6 +29,15 @@ __all__ = [
     "ICATransform",
 ]
 
+# Register constructors for cross-module lookup (avoids circular imports)
+from gwexpy.interop._registry import ConverterRegistry as _CR
+
+_CR.register_constructor("TimeSeries", TimeSeries)
+_CR.register_constructor("TimeSeriesDict", TimeSeriesDict)
+_CR.register_constructor("TimeSeriesList", TimeSeriesList)
+_CR.register_constructor("TimeSeriesMatrix", TimeSeriesMatrix)
+del _CR
+
 # Register I/O readers on import
 # Dynamic import from gwpy (PEP 562)
 import gwpy.timeseries as _gwpy_timeseries

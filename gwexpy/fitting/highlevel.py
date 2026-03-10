@@ -8,7 +8,7 @@ combining bootstrap estimation, GLS fitting, and MCMC in a single API.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 import numpy as np
 
@@ -237,15 +237,22 @@ def fit_bootstrap_spectrum(
         # Recreate BifrequencyMap
         from astropy import units as u
 
-        from gwexpy.frequencyseries import BifrequencyMap
+        from gwexpy.interop._registry import ConverterRegistry
+
+        bifrequency_map_ctor = cast(
+            Any, ConverterRegistry.get_constructor("BifrequencyMap")
+        )
 
         freq_unit = psd.frequencies.unit
-        cov_map = BifrequencyMap.from_points(
-            cov_cropped,
-            f2=u.Quantity(frequencies, unit=freq_unit),
-            f1=u.Quantity(frequencies, unit=freq_unit),
-            unit=cov_map.unit,
-            name=cov_map.name,
+        cov_map = cast(
+            Any,
+            bifrequency_map_ctor.from_points(
+                cov_cropped,
+                f2=u.Quantity(frequencies, unit=freq_unit),
+                f1=u.Quantity(frequencies, unit=freq_unit),
+                unit=cov_map.unit,
+                name=cov_map.name,
+            ),
         )
 
     # 4. GLS Fitting

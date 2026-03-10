@@ -33,23 +33,51 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
+  # Core & Computation
+  "numpy>=1.21.0,<2.0.0",
+  "scipy>=1.7.0",
   "astropy>=5.0",
   "gwpy>=4.0.0,<5.0.0",
-  "numpy>=1.21.0,<2.0.0",
   "pandas>=1.3.0",
-  "scipy>=1.7.0",
   "matplotlib>=3.5.0",
+  "typing_extensions",
+  "bottleneck",
+  # File I/O
+  "h5py",
+  # Gravitational Wave Data I/O & Meta
   "lalsuite",
   "gwdatafind",
   "gwosc",
-  "gpstime",
   "igwn-segments",
-  "ligo.skymap",
   "ligotimegps",
+  "gpstime",
   "dqsegdb2",
   "dateparser",
-  "h5py",
-  "typing_extensions"
+  "dttxml",
+  # Experimental Physics I/O
+  "obspy",
+  "mth5",
+  "mtpy",
+  "mt_metadata",
+  "nptdms",
+  # Visualization & Noise Modeling
+  "ligo.skymap",
+  "pygmt",
+  "gwinc",
+  # Advanced Signal Processing & Stats
+  "scikit-learn",
+  "statsmodels",
+  "pmdarima",
+  "dcor",
+  "hurst",
+  "hurst-exponent",
+  "exp-hurst",
+  "iminuit",
+  "emcee",
+  "corner",
+  "EMD-signal",
+  "PyWavelets",
+  "control"
 ]
 
 [project.urls]
@@ -58,81 +86,29 @@ Repository = "https://github.com/tatsuki-washimi/gwexpy"
 Documentation = "https://tatsuki-washimi.github.io/gwexpy/"
 Changelog = "https://github.com/tatsuki-washimi/gwexpy/blob/main/CHANGELOG.md"
 
+# Note: For heavy ML and external system I/O, packages are left out.
+# Optional lists can be provided for users who want to use them if needed.
+
 [project.optional-dependencies]
-dev = [
-  "pytest",
-  "pytest-cov",
-  "pytest-qt",
-  "nbmake",
-  "freezegun",
-  "requests-mock",
-  "ruff",
-  "mypy",
-  "types-requests",
+analysis = []
+gui = [
   "PyQt5",
   "pyqtgraph",
   "qtpy",
+  "sounddevice"
 ]
-gw = [
-  "pycbc",
-  "python-framel",
-  "ldas-tools-framecpp",
-  "nds2-client",
-  "gwinc",
-  "dttxml",
-  "nptdms"
-]
-stats = [
-  "polars",
-  "scikit-learn",
-  "statsmodels",
-  "pmdarima",
-  "dcor",
-  "hurst",
-  "hurst-exponent",
-  "exp-hurst",
-  "bottleneck"
-]
-fitting = ["iminuit", "emcee", "corner"]
-astro = ["specutils", "pyspeckit"]
-geophysics = [
-  "obspy",
-  "mth5",
-  "mtpy",
-  "mt_metadata",
-  "netCDF4",
-]
-audio = ["librosa", "pydub"]
-bio = ["mne", "elephant", "neo"]
-interop = [
-  "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy",
-  "xarray", "quantities", "simpeg"
-]
-control = ["control"]
-gui = ["PyQt5", "pyqtgraph", "qtpy", "sounddevice", "nds2-client"]
-plot = ["pygmt"]
-analysis = [
-    # NOTE: The pip name "pyemd" is a different project (Earth Mover's Distance).
-    # EMD decomposition (module: PyEMD) is provided by the "EMD-signal" distribution.
-    "EMD-signal",
-    "PyWavelets",
-    "librosa",
-    "obspy"
-]
-all = [
-    "pycbc", "python-framel", "ldas-tools-framecpp", "gwinc", "dttxml", "nptdms",
-    "nds2-client",
-    "polars", "scikit-learn", "statsmodels", "pmdarima", "dcor", "hurst", "hurst-exponent", "exp-hurst", "bottleneck",
-    "iminuit", "emcee", "corner",
-    "specutils", "pyspeckit",
-    "obspy", "mth5", "mtpy", "mt_metadata", "netCDF4",
-    "librosa", "pydub",
-    "mne", "elephant", "neo",
-    "torch", "tensorflow", "jax", "jaxlib", "dask", "zarr", "cupy", "simpeg",
-    "xarray", "quantities",
-    "control", "PyQt5", "pyqtgraph", "qtpy", "sounddevice",
-    "pygmt",
-    "EMD-signal", "PyWavelets"
+dev = [
+  "ruff",
+  "mypy",
+  "pytest",
+  "pytest-qt",
+  "pytest-xvfb",
+  "debugpy",
+  "pytest-cov",
+  "nbmake",
+  "freezegun",
+  "requests-mock",
+  "types-requests"
 ]
 
 [tool.setuptools.package-data]
@@ -184,6 +160,44 @@ ignore = [
 "gwexpy/*/tests/*" = ["F401", "E741"]
 # GUI code: compact style is acceptable; allow Optional/Union for py39 runtime safety
 "gwexpy/gui/*" = ["E701", "E702", "UP045"]
+"gwexpy/astro/range.py" = ["F401"]
+"gwexpy/cli/*.py" = ["F401"]
+"gwexpy/detector/channel.py" = ["F401"]
+"gwexpy/detector/units.py" = ["F401"]
+"gwexpy/detector/io/*.py" = ["F401"]
+"gwexpy/frequencyseries/_fdcommon.py" = ["F401"]
+"gwexpy/frequencyseries/hist.py" = ["F401"]
+"gwexpy/frequencyseries/io/*.py" = ["F401"]
+"gwexpy/io/datafind.py" = ["F401"]
+"gwexpy/io/ffldatafind.py" = ["F401"]
+"gwexpy/io/gwf.py" = ["F401"]
+"gwexpy/io/hdf5.py" = ["F401"]
+"gwexpy/io/kerberos.py" = ["F401"]
+"gwexpy/io/ligolw.py" = ["F401"]
+"gwexpy/io/nds2.py" = ["F401"]
+"gwexpy/io/registry.py" = ["F401"]
+"gwexpy/plot/axes.py" = ["F401"]
+"gwexpy/plot/bode.py" = ["F401"]
+"gwexpy/plot/colorbar.py" = ["F401"]
+"gwexpy/plot/colors.py" = ["F401"]
+"gwexpy/plot/gps.py" = ["F401"]
+"gwexpy/plot/legend.py" = ["F401"]
+"gwexpy/plot/log.py" = ["F401"]
+"gwexpy/plot/rc.py" = ["F401"]
+"gwexpy/plot/segments.py" = ["F401"]
+"gwexpy/plot/tex.py" = ["F401"]
+"gwexpy/plot/text.py" = ["F401"]
+"gwexpy/plot/units.py" = ["F401"]
+"gwexpy/segments/flag.py" = ["F401"]
+"gwexpy/segments/segments.py" = ["F401"]
+"gwexpy/segments/io/*.py" = ["F401"]
+"gwexpy/signal/filter_design.py" = ["F401"]
+"gwexpy/signal/qtransform.py" = ["F401"]
+"gwexpy/signal/spectral/*.py" = ["F401"]
+"gwexpy/signal/window.py" = ["F401"]
+"gwexpy/spectrogram/coherence.py" = ["F401"]
+"gwexpy/spectrogram/io/__init__.py" = ["F401"]
+"gwexpy/spectrogram/io/hdf5.py" = ["F401"]
 "docs/guide/tutorials/22_hht.ipynb" = ["F401"]
 "examples/advanced-methods/tutorial_Bruco.ipynb" = ["F811", "F821"]
 "docs/web/en/user_guide/tutorials/advanced_hht.ipynb" = ["F401", "F811", "F821", "I001", "W291", "W293"]
@@ -245,3 +259,25 @@ module = [
 ]
 ignore_errors = false
 
+[[tool.mypy.overrides]]
+module = [
+  "gwexpy.astro.range",
+  "gwexpy.cli.*",
+  "gwexpy.detector.channel",
+  "gwexpy.detector.io.*",
+  "gwexpy.detector.units",
+  "gwexpy.frequencyseries._fdcommon",
+  "gwexpy.io.ffldatafind",
+  "gwexpy.plot.*",
+  "gwexpy.segments.io.*",
+  "gwexpy.signal.spectral.*",
+  "gwexpy.spectrogram.coherence",
+]
+disable_error_code = ["no-redef"]
+
+[[tool.mypy.overrides]]
+module = [
+  "gwexpy.types.seriesmatrix_validation",
+  "gwexpy.frequencyseries.collections",
+]
+ignore_errors = false

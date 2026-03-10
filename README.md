@@ -126,14 +126,8 @@ pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 # From a local checkout
 pip install .
 
-# With a specific extra (example)
-pip install "gwexpy[analysis]"
-
-# With all optional dependencies (all-in-one)
-pip install "gwexpy[all]"
-
-# With a specific extra from GitHub
-pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+# With optional GUI components
+pip install "gwexpy[gui]"
 ```
 
 > [!IMPORTANT]
@@ -144,10 +138,16 @@ pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.gi
 > ```
 
 > [!NOTE]
-> NDS/frames support (`[gw]` extra) depends on `nds2-client`, which is not published on PyPI.
-> Install it via Conda first (e.g., `conda install -c conda-forge nds2-client`) before adding `[gw]`.
+> **Heavy / External Dependencies**:
+> Most gravitational wave and data science features are installed by default. However, standard PyPI installation does not include packages requiring specialized C/C++ builds. If you need NDS2 client or frame data support, install them explicitly via Conda (or your preferred package manager):
+>
+> ```bash
+> conda install -c conda-forge nds2-client ldas-tools-framecpp
+> ```
+>
+> Similarly, for machine learning, GPU computing, and advanced physics format operations (e.g., PyTorch, TensorFlow, librosa), please install the respective official packages independently according to your system's hardware configuration.
 
-For other domain-specific extras (e.g., `[geophysics]`, `[fitting]`, `[analysis]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/installation.html).
+For further configuration (e.g., `[dev]`, `[gui]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/installation.html).
 
 ---
 

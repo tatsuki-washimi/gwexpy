@@ -5,58 +5,47 @@ from __future__ import annotations
 from typing import Any, cast
 
 
-def _filter_monitor_args(
-    args: tuple[Any, ...], monitor: Any, SeriesMatrix: type, SpectrogramMatrix: type
-) -> tuple[Any, ...]:
+def _filter_monitor_args(args: tuple, monitor: Any, SeriesMatrix: type, SpectrogramMatrix: type) -> tuple:
     """Filter args by monitor index for SeriesMatrix/SpectrogramMatrix."""
     import numpy as np
 
     new_args = []
     for arg in args:
         if isinstance(arg, (SeriesMatrix, SpectrogramMatrix)):
-            matrix_arg = cast(Any, arg)
+            arg_obj = cast(Any, arg)
             try:
-                if type(matrix_arg).__name__ == "SpectrogramMatrix" and isinstance(
+                if type(arg_obj).__name__ == "SpectrogramMatrix" and isinstance(
                     monitor, (int, np.integer)
                 ):
-                    if matrix_arg.ndim == 4:
-                        nrow, ncol = matrix_arg.shape[:2]
+                    if arg_obj.ndim == 4:
+                        nrow, ncol = arg_obj.shape[:2]
                         row_idx = monitor // ncol
                         col_idx = monitor % ncol
-                        new_args.append(matrix_arg[row_idx, col_idx])
+                        new_args.append(arg_obj[row_idx, col_idx])
                         continue
-                filtered_arg = matrix_arg[monitor]
+                filtered_arg = arg_obj[monitor]
                 new_args.append(filtered_arg)
             except (IndexError, KeyError, TypeError, ValueError):
-                if type(matrix_arg).__name__ == "SpectrogramMatrix" and isinstance(
+                if type(arg_obj).__name__ == "SpectrogramMatrix" and isinstance(
                     monitor, (int, np.integer)
                 ):
-                    if matrix_arg.ndim == 4:
-                        nrow, ncol = matrix_arg.shape[:2]
+                    if arg_obj.ndim == 4:
+                        nrow, ncol = arg_obj.shape[:2]
                         row_idx = monitor // ncol
                         col_idx = monitor % ncol
-                        new_args.append(matrix_arg[row_idx, col_idx])
+                        new_args.append(arg_obj[row_idx, col_idx])
                     else:
-                        new_args.append(matrix_arg[monitor])
+                        new_args.append(arg_obj[monitor])
                 else:
-                    new_args.append(matrix_arg)
+                    new_args.append(arg_obj)
         else:
             new_args.append(arg)
     return tuple(new_args)
 
 
-def _expand_args(
-    args,
-    separate,
-    final_args_out,
-    *,
-    SeriesMatrix,
-    SpectrogramMatrix,
-    FrequencySeriesList,
-    FrequencySeriesDict,
-    SpectrogramList,
-    SpectrogramDict,
-):
+def _expand_args(args, separate, final_args_out, *, SeriesMatrix, SpectrogramMatrix,
+                 FrequencySeriesList, FrequencySeriesDict,
+                 SpectrogramList, SpectrogramDict):
     """Expand arguments based on separate mode, appending to final_args_out."""
     for arg in args:
         is_matrix = isinstance(arg, (SeriesMatrix, SpectrogramMatrix))
@@ -117,11 +106,13 @@ def _expand_args(
 def _adaptive_decimate_args(final_args, decimate_threshold, decimate_points):
     """Apply adaptive decimation to TimeSeries that exceed threshold."""
     from gwexpy.plot.utils import adaptive_decimate
-    from gwexpy.timeseries import TimeSeries
+    from gwexpy.types.mixin._protocols import SupportsTimeSeries
 
     def _optimize_if_needed(val):
-        if isinstance(val, TimeSeries) and len(val) > decimate_threshold:
-            return adaptive_decimate(val, target_points=decimate_points)
+        if isinstance(val, SupportsTimeSeries):
+            val_obj = cast(Any, val)
+            if len(val_obj) > decimate_threshold:
+                return adaptive_decimate(val_obj, target_points=decimate_points)
         if isinstance(val, list):
             return [_optimize_if_needed(v) for v in val]
         if isinstance(val, tuple):
@@ -142,9 +133,7 @@ def _flatten_scan(ax_args):
     return flat
 
 
-def _determine_scales_and_labels(
-    scan_data, kwargs, defaults, Spectrogram, SpectrogramMatrix
-):
+def _determine_scales_and_labels(scan_data, kwargs, defaults, Spectrogram, SpectrogramMatrix):
     """Determine scales, labels, norms, and limits from scanned data."""
     if "method" not in kwargs:
         has_spectrogram = any(
@@ -211,20 +200,9 @@ def _extract_layout_and_fig_params(kwargs, separate, geometry, final_args, defau
 
     layout_kwargs = {}
     for k in [
-        "separate",
-        "geometry",
-        "sharex",
-        "sharey",
-        "xscale",
-        "yscale",
-        "norm",
-        "xlim",
-        "ylim",
-        "xlabel",
-        "ylabel",
-        "title",
-        "legend",
-        "method",
+        "separate", "geometry", "sharex", "sharey",
+        "xscale", "yscale", "norm", "xlim", "ylim",
+        "xlabel", "ylabel", "title", "legend", "method",
     ]:
         if k in kwargs:
             layout_kwargs[k] = kwargs.pop(k)
@@ -236,13 +214,8 @@ def _extract_layout_and_fig_params(kwargs, separate, geometry, final_args, defau
 
     fig_params = {}
     for k in [
-        "figsize",
-        "dpi",
-        "facecolor",
-        "edgecolor",
-        "linewidth",
-        "frameon",
-        "subplotpars",
+        "figsize", "dpi", "facecolor", "edgecolor",
+        "linewidth", "frameon", "subplotpars",
     ]:
         if k in kwargs:
             fig_params[k] = kwargs.pop(k)
@@ -342,7 +315,9 @@ def _apply_individual_axis_labels(fig, final_args, force_ylabel, defaults):
         return
     for ax, data_item in zip(fig.axes, final_args):
         if not ax.get_ylabel():
-            d_list = data_item if isinstance(data_item, (list, tuple)) else [data_item]
+            d_list = (
+                data_item if isinstance(data_item, (list, tuple)) else [data_item]
+            )
             lbl = defaults.determine_ylabel(d_list)
             if lbl:
                 ax.set_ylabel(lbl)
@@ -398,16 +373,8 @@ def _force_scales(fig, layout_kwargs):
                 pass
 
 
-def _post_plot_overlay(
-    fig,
-    use_overlay,
-    matrix_args,
-    subplots_orig,
-    expanded_args,
-    layout_kwargs,
-    SeriesMatrix,
-    SpectrogramMatrix,
-):
+def _post_plot_overlay(fig, use_overlay, matrix_args, subplots_orig, expanded_args,
+                       layout_kwargs, SeriesMatrix, SpectrogramMatrix):
     """Handle post-plotting overlay for matrix args."""
     if not (use_overlay and matrix_args):
         return

@@ -10,6 +10,7 @@ import numpy as np
 from astropy import units as u
 
 from gwexpy.interop._optional import require_optional
+from gwexpy.interop._registry import ConverterRegistry
 
 from ._typing import TimeSeriesAttrs
 
@@ -652,7 +653,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             complex_exp_chunk = np.exp(phase_chunk)
             out_data[i:end] = np.dot(complex_exp_chunk, data_weighted) * norm_factor
 
-        from gwexpy.frequencyseries import FrequencySeries
+        FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         if normalize == "integral":
             out_unit = self.unit * u.s

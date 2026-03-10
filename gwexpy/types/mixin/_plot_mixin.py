@@ -14,6 +14,7 @@ class PlotMixin:
 
     def plot(self, **kwargs: Any) -> Any:
         """Plot this object using :class:`gwexpy.plot.Plot`."""
-        from gwexpy.plot import Plot
+        from gwexpy.interop._registry import ConverterRegistry
 
+        Plot = ConverterRegistry.get_constructor("Plot")
         return Plot(self, **kwargs)

@@ -1,1 +1,27 @@
 from __future__ import annotations
+
+from gwpy.signal.spectral._lal import (
+    LAL_FFTPLAN_LEVEL,
+    LAL_FFTPLANS,
+    LAL_WINDOWS,
+    TYPE_CHECKING,
+    FrequencySeries,
+    Literal,
+    annotations,
+    bartlett,
+    canonical_name,
+    cast,
+    fft_registry,
+    func,
+    generate_fft_plan,
+    generate_window,
+    median,
+    median_mean,
+    numpy,
+    re,
+    scale_timeseries_unit,
+    units,
+    warnings,
+    welch,
+    window_from_array,
+)

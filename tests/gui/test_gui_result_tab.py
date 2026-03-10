@@ -109,3 +109,37 @@ def test_export_data_dialog_flow(window):
             )
             mock_info.assert_called_once()
             assert "Data exported to" in mock_info.call_args[0][2]
+
+
+def test_export_data_uses_accumulator_fallback_and_appends_csv_extension(window):
+    mock_result = MagicMock()
+    window.loaded_products = {}
+    window.accumulator.latest_result = mock_result
+
+    with patch.object(
+        QtWidgets.QFileDialog,
+        "getSaveFileName",
+        return_value=("accumulator_export", "CSV (*.csv *.txt)"),
+    ):
+        with patch.object(QtWidgets.QMessageBox, "information") as mock_info:
+            window.export_data()
+
+    mock_result.write.assert_called_once_with("accumulator_export.csv", format="csv")
+    mock_info.assert_called_once()
+
+
+def test_export_data_writes_only_first_exportable_item(window):
+    first = MagicMock()
+    second = MagicMock()
+    window.loaded_products = {"first": first, "second": second}
+
+    with patch.object(
+        QtWidgets.QFileDialog,
+        "getSaveFileName",
+        return_value=("multi_export", "GWF Frame (*.gwf)"),
+    ):
+        with patch.object(QtWidgets.QMessageBox, "information"):
+            window.export_data()
+
+    first.write.assert_called_once_with("multi_export.gwf", format="gwf")
+    second.write.assert_not_called()

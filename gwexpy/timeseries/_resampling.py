@@ -11,7 +11,7 @@ This module provides resampling functionality as a mixin class:
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Literal, Union
+from typing import TYPE_CHECKING, Any, Literal, Union, cast
 
 try:
     from typing import TypeAlias
@@ -537,8 +537,11 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         )
 
         # 10. Construct result
-        return _construct_result(
-            self, new_data, new_times_val, target_dt, time_unit, is_dimless, copy
+        return cast(
+            TimeSeriesResamplingMixin,
+            _construct_result(
+                self, new_data, new_times_val, target_dt, time_unit, is_dimless, copy
+            ),
         )
 
     # ===============================
