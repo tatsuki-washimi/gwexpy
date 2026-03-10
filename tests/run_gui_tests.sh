@@ -72,8 +72,22 @@ if command -v xvfb-run >/dev/null 2>&1; then
   has_xvfb_run=1
 fi
 
+use_system_display=0
+if [ "${GUI_USE_SYSTEM_DISPLAY:-0}" = "1" ] && [ -n "${DISPLAY:-}" ]; then
+  use_system_display=1
+fi
+if [ "$use_system_display" -eq 0 ] && [ -n "${DISPLAY:-}" ]; then
+  case "$target" in
+    *test_pyautogui_smoke.py)
+      use_system_display=1
+      ;;
+  esac
+fi
+
 use_pytest_xvfb=0
-if [ "${GUI_USE_PYTEST_XVFB:-0}" = "1" ]; then
+if [ "$use_system_display" -eq 1 ]; then
+  use_pytest_xvfb=0
+elif [ "${GUI_USE_PYTEST_XVFB:-0}" = "1" ]; then
   if [ "$has_pytest_xvfb" -eq 1 ]; then
     use_pytest_xvfb=1
   fi
@@ -84,15 +98,26 @@ elif [ "$has_pytest_xvfb" -eq 1 ]; then
 fi
 
 use_xvfb=0
-if [ "$use_pytest_xvfb" -eq 1 ] || [ "$has_xvfb_run" -eq 1 ]; then
+if [ "$use_system_display" -eq 0 ] && { [ "$use_pytest_xvfb" -eq 1 ] || [ "$has_xvfb_run" -eq 1 ]; }; then
   use_xvfb=1
 fi
 
 if [ -z "${QT_QPA_PLATFORM:-}" ]; then
-  if [ "$use_xvfb" -eq 1 ]; then
+  if [ "$use_system_display" -eq 1 ] || [ "$use_xvfb" -eq 1 ]; then
     export QT_QPA_PLATFORM="xcb"
   else
     export QT_QPA_PLATFORM="minimal"
+  fi
+fi
+
+if [ "$use_system_display" -eq 1 ] && [ -z "${XAUTHORITY:-}" ]; then
+  default_xauth="${HOME}/.Xauthority"
+  if [ -f "$default_xauth" ]; then
+    export XAUTHORITY="$default_xauth"
+  else
+    fallback_xauth="/tmp/gwexpy-empty.Xauthority"
+    touch "$fallback_xauth"
+    export XAUTHORITY="$fallback_xauth"
   fi
 fi
 
@@ -132,7 +157,7 @@ case "$mode" in
     ;;
 esac
 
-if [ "$use_pytest_xvfb" -eq 0 ]; then
+if [ "$use_system_display" -eq 0 ] && [ "$use_pytest_xvfb" -eq 0 ]; then
   if [ "$has_xvfb_run" -eq 1 ]; then
     runner_cmd=(xvfb-run -a -s "-screen 0 1920x1080x24" "${runner_cmd[@]}")
   else
@@ -140,7 +165,9 @@ if [ "$use_pytest_xvfb" -eq 0 ]; then
   fi
 fi
 
-if [ "$use_pytest_xvfb" -eq 1 ]; then
+if [ "$use_system_display" -eq 1 ]; then
+  xvfb_note=" + system-display"
+elif [ "$use_pytest_xvfb" -eq 1 ]; then
   xvfb_note=" + pytest-xvfb"
 elif [ "$has_xvfb_run" -eq 1 ]; then
   xvfb_note=" + xvfb-run"
