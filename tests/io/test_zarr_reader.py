@@ -1,9 +1,13 @@
 """Tests for Zarr reader/writer roundtrip."""
 
+import os
+
 import numpy as np
 import pytest
 
 zarr = pytest.importorskip("zarr")
+if os.environ.get("GWEXPY_ALLOW_ZARR", "") != "1":
+    pytest.skip("zarr tests require GWEXPY_ALLOW_ZARR=1", allow_module_level=True)
 
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 

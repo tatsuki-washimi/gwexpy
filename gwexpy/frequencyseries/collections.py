@@ -28,6 +28,7 @@ from gwexpy.types.mixin._collection_mixin import (
     _make_dict_plain_method,
     _make_list_map_method,
 )
+from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from .frequencyseries import FrequencySeries, as_series_dict_class
 
