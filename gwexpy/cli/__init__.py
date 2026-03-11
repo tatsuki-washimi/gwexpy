@@ -29,6 +29,7 @@ from gwpy.cli import (
     timeseries,
     transferfunction,
 )
+
 from .._version import __version__
 
 __all__ = ["main", "__version__"]
