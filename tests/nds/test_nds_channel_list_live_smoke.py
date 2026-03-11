@@ -27,7 +27,7 @@ def test_channel_list_worker_fetches_live_channels(nds_backend):
     timeout_ms = int(os.getenv("GWEXPY_NDS_TIMEOUT_MS", "30000"))
     pattern = _default_channel_pattern()
 
-    app = QtCore.QCoreApplication.instance() or QtCore.QCoreApplication([])
+    QtCore.QCoreApplication.instance() or QtCore.QCoreApplication([])
     loop = QtCore.QEventLoop()
     timer = QtCore.QTimer()
     timer.setSingleShot(True)

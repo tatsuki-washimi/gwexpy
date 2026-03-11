@@ -22,7 +22,7 @@ def test_nds_thread_emits_live_payload(nds_backend):
     channel = _first_test_channel()
     timeout_ms = int(os.getenv("GWEXPY_NDS_TIMEOUT_MS", "30000"))
 
-    app = QtCore.QCoreApplication.instance() or QtCore.QCoreApplication([])
+    QtCore.QCoreApplication.instance() or QtCore.QCoreApplication([])
     loop = QtCore.QEventLoop()
     timer = QtCore.QTimer()
     timer.setSingleShot(True)
