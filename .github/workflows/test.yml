@@ -28,7 +28,12 @@ jobs:
           pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0"
           pip install "scikit-learn"
           pip install -e . --no-deps
-          pip install ruff pytest pytest-cov nbmake pytest-forked pytest-qt qtpy PyQt5 pyqtgraph
+          pip install ruff pytest pytest-cov nbmake pytest-forked
+
+      - name: Install GUI dependencies (conditional)
+        if: contains(github.event.head_commit.message, '[gui-test]')
+        run: |
+          pip install pytest-qt qtpy PyQt5 pyqtgraph
           sudo apt-get update
           sudo apt-get install -y xvfb
 
@@ -43,7 +48,15 @@ jobs:
           pip install vulture
           vulture gwexpy/ --min-confidence 80
 
-      - name: Run tests
+      - name: Run tests (without GUI)
+        if: "!contains(github.event.head_commit.message, '[gui-test]')"
+        env:
+          PYTHONFAULTHANDLER: "1"
+        run: |
+          pytest -q --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy --ignore=tests/gui/ tests/ gwexpy/
+
+      - name: Run tests (with GUI)
+        if: contains(github.event.head_commit.message, '[gui-test]')
         env:
           PYTHONFAULTHANDLER: "1"
           PYTEST_SCREENSHOT_DIR: artifacts/screenshots
@@ -83,7 +96,8 @@ jobs:
             python=3.11
             pip
 
-      - name: Install system dependencies
+      - name: Install system dependencies (conditional)
+        if: contains(github.event.head_commit.message, '[gui-test]')
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb
@@ -96,7 +110,13 @@ jobs:
           micromamba run -n gwexpy-full pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0"
           micromamba run -n gwexpy-full pip install scikit-learn
           micromamba run -n gwexpy-full pip install -e . --no-deps
-          micromamba run -n gwexpy-full pip install pytest pytest-cov nbmake pytest-forked pytest-qt qtpy PyQt5 pyqtgraph
+          micromamba run -n gwexpy-full pip install pytest pytest-cov nbmake pytest-forked
+
+      - name: Install GUI dependencies (conditional)
+        if: contains(github.event.head_commit.message, '[gui-test]')
+        shell: bash -l {0}
+        run: |
+          micromamba run -n gwexpy-full pip install pytest-qt qtpy PyQt5 pyqtgraph
           # Optional tools: don't fail this job if unavailable.
           micromamba run -n gwexpy-full pip install cython || true
           if micromamba run -n gwexpy-full python scripts/install_minepy.py; then
@@ -105,7 +125,17 @@ jobs:
             echo "Skipping optional mictools setup (minepy build failed)."
           fi
 
-      - name: Run unit tests (forked for crash isolation)
+      - name: Run unit tests (forked, without GUI)
+        if: "!contains(github.event.head_commit.message, '[gui-test]')"
+        timeout-minutes: 30
+        env:
+          PYTHONFAULTHANDLER: "1"
+        shell: bash -l {0}
+        run: |
+          micromamba run -n gwexpy-full pytest -q --forked --cov=gwexpy --ignore=tests/gui/ tests/
+
+      - name: Run unit tests (forked, with GUI)
+        if: contains(github.event.head_commit.message, '[gui-test]')
         timeout-minutes: 30
         env:
           PYTHONFAULTHANDLER: "1"

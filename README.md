@@ -126,8 +126,9 @@ pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 # From a local checkout
 pip install .
 
-# With optional GUI components
-pip install "gwexpy[gui]"
+# With optional extras
+pip install "gwexpy[audio]"     # Audio file support (pydub, tinytag)
+pip install "gwexpy[gui]"        # GUI components (experimental, not included in v0.1.0)
 ```
 
 > [!IMPORTANT]
