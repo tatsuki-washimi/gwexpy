@@ -7,13 +7,23 @@ from __future__ import annotations
 
 import datetime
 import warnings
+from pathlib import Path
 from typing import Any
 
 import numpy as np
+from astropy import units as u
 from gwpy.io.registry import default_registry as io_registry
 from gwpy.time import to_gps
 
+from gwexpy.io.utils import (
+    apply_unit,
+    datetime_to_gps,
+    ensure_dependency,
+    set_provenance,
+)
+
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._registration import register_timeseries_format
 
 _ATS_HEADER_MIN_SIZE = 1024
 
@@ -99,18 +109,36 @@ def read_timeseriesdict_ats(source, **kwargs):
     return TimeSeriesDict({ts.name: ts})
 
 
-def read_timeseries_ats(source, **kwargs):
+def read_timeseries_ats(
+    source: str | Path,
+    *,
+    unit: str | u.Unit | None = None,
+    epoch: float | datetime.datetime | None = None,
+    **kwargs,
+):
     """
     Read a Metronix ATS file into a TimeSeries.
+
+    Parameters
+    ----------
+    source : str or Path
+        Path to the ATS file, or an open file object.
+    unit : str or Unit, optional
+        Physical unit override (default: V).
+    epoch : float or datetime, optional
+        Override the start time (GPS seconds or datetime).
+        If not provided, uses the timestamp from the ATS header.
+    **kwargs
+        Additional keyword arguments.
     """
     if hasattr(source, "read"):
-        return _read_timeseries_ats_file(source, **kwargs)
+        return _read_timeseries_ats_file(source, unit=unit, epoch=epoch, **kwargs)
 
-    with open(str(source), mode="rb") as f:
-        return _read_timeseries_ats_file(f, **kwargs)
+    with open(source, mode="rb") as f:
+        return _read_timeseries_ats_file(f, unit=unit, epoch=epoch, **kwargs)
 
 
-def _read_timeseries_ats_file(f, **kwargs):
+def _read_timeseries_ats_file(f, *, unit=None, epoch=None, **kwargs):
     hdr = _read_ats_header(f)
 
     sample_freq = float(hdr["sample_freq"])
@@ -130,9 +158,20 @@ def _read_timeseries_ats_file(f, **kwargs):
     chname = f"Metronix_{system_type}_{adu_serial:03}_{channel_type}_{sensor_type}_{sensor_serial:04}"
 
     # Calculate t0
-    # StartTime is Unix timestamp
-    dt_obj = datetime.datetime.fromtimestamp(start_time_unix, tz=datetime.UTC)
-    t0 = to_gps(dt_obj)
+    if epoch is not None:
+        # epoch オーバーライド
+        if isinstance(epoch, (int, float)):
+            t0 = float(epoch)
+        elif isinstance(epoch, datetime.datetime):
+            t0 = datetime_to_gps(epoch)
+        else:
+            raise TypeError(f"epoch must be float or datetime, got {type(epoch)}")
+        epoch_source = "user"
+    else:
+        # ヘッダーから取得（既存の動作）
+        dt_obj = datetime.datetime.fromtimestamp(start_time_unix, tz=datetime.UTC)
+        t0 = to_gps(dt_obj)
+        epoch_source = "ats_header"
 
     # Read Data
     f.seek(header_length)
@@ -158,6 +197,21 @@ def _read_timeseries_ats_file(f, **kwargs):
         channel=chname,
         unit="V",  # 'Volt'
     )
+
+    # unit 適用
+    if unit is not None:
+        ts = apply_unit(ts, unit)
+
+    # provenance 記録
+    set_provenance(
+        ts,
+        {
+            "format": "ats",
+            "epoch_source": epoch_source,
+            "unit_source": "override" if unit else "ats_header",
+        },
+    )
+
     return ts
 
 
@@ -171,7 +225,8 @@ def read_timeseries_ats_mth5(source, **kwargs):
     `read_timeseries_ats` which parses the binary header directly.
     """
     try:
-        from mth5.io.metronix import metronix_atss
+        mth5 = ensure_dependency("mth5")
+        metronix_atss = mth5.io.metronix.metronix_atss
     except ImportError:
         raise ImportError(
             "mth5 library is required to use this reader. Install it via pip."
@@ -222,28 +277,12 @@ def read_timeseries_ats_mth5(source, **kwargs):
 
 # -- Registration
 
-for fmt in ["ats"]:
-    io_registry.register_reader(
-        fmt, TimeSeriesDict, read_timeseriesdict_ats, force=True
-    )
-    io_registry.register_reader(fmt, TimeSeries, read_timeseries_ats, force=True)
-    io_registry.register_reader(
-        fmt,
-        TimeSeriesMatrix,
-        lambda *a, **k: read_timeseriesdict_ats(*a, **k).to_matrix(),
-        force=True,
-    )
-
-    io_registry.register_identifier(
-        fmt,
-        TimeSeriesDict,
-        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
-    )
-    io_registry.register_identifier(
-        fmt,
-        TimeSeries,
-        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
-    )
+register_timeseries_format(
+    "ats",
+    reader_dict=read_timeseriesdict_ats,
+    reader_single=read_timeseries_ats,
+    extension="ats",
+)
 
 # Register mth5 variant
 io_registry.register_reader("ats.mth5", TimeSeries, read_timeseries_ats_mth5)

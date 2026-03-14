@@ -23,16 +23,25 @@ from __future__ import annotations
 
 import struct
 import warnings
+from pathlib import Path
 
 import numpy as np
 from gwpy.io.registry import default_registry as io_registry
 
-try:
-    from obspy import Stream, Trace, UTCDateTime
+from gwexpy.io.utils import ensure_dependency
+from gwexpy.timeseries.io._registration import register_timeseries_format
 
+try:
+    obspy = ensure_dependency("obspy")
+    Stream = obspy.Stream
+    Trace = obspy.Trace
+    UTCDateTime = obspy.UTCDateTime
     HAS_OBSPY = True
 except ImportError:
     HAS_OBSPY = False
+    Stream = None  # type: ignore
+    Trace = None  # type: ignore
+    UTCDateTime = None  # type: ignore
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
@@ -63,10 +72,17 @@ def _apply_4bit_deltas(output: list[int], sdata: bytes, n_deltas: int) -> None:
             remaining -= 1
 
 
-def _read_win_fixed(filename, century="20"):
+def _read_win_fixed(filename: str | Path, century="20"):
     """
     Reads a WIN file and returns a Stream object.
     Based on obspy.io.win.core._read_win but with patches applied.
+
+    Parameters
+    ----------
+    filename : str or Path
+        Path to the WIN file.
+    century : str, optional
+        Century prefix (default: "20").
     """
     output: dict[str, list[int]] = {}
     srates: dict[str, int] = {}
@@ -223,28 +239,8 @@ def read_win_file(source, **kwargs) -> TimeSeriesDict:
 # -- Registration
 if HAS_OBSPY:
     for fmt in ["win", "win32"]:
-        io_registry.register_reader(fmt, TimeSeriesDict, read_win_file, force=True)
-        io_registry.register_reader(
+        register_timeseries_format(
             fmt,
-            TimeSeries,
-            lambda *a, **k: read_win_file(*a, **k)[
-                next(iter(read_win_file(*a, **k).keys()))
-            ],
-            force=True,
-        )
-        io_registry.register_reader(
-            fmt,
-            TimeSeriesMatrix,
-            lambda *a, **k: read_win_file(*a, **k).to_matrix(),
-            force=True,
-        )
-        io_registry.register_identifier(
-            fmt,
-            TimeSeriesDict,
-            lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
-        )
-        io_registry.register_identifier(
-            fmt,
-            TimeSeries,
-            lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
+            reader_dict=read_win_file,
+            extension=fmt,
         )

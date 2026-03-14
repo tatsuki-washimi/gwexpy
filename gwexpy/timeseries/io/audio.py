@@ -7,32 +7,44 @@ FLAC decoding may work without ffmpeg if the audioop module is available.
 
 from __future__ import annotations
 
+from datetime import datetime
+from collections.abc import Iterable
+
 import numpy as np
+from astropy import units as u
 from gwpy.io.registry import default_registry as io_registry
 
-from gwexpy.io.utils import apply_unit, filter_by_channels, set_provenance
+from gwexpy.io.utils import (
+    apply_unit,
+    datetime_to_gps,
+    ensure_dependency,
+    filter_by_channels,
+    set_provenance,
+)
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._registration import register_timeseries_format
 
 
 def _import_pydub():
     try:
-        from pydub import AudioSegment
+        pydub = ensure_dependency("pydub")
+        return pydub.AudioSegment
     except ImportError as exc:
         raise ImportError(
             "pydub is required for reading audio files (MP3, FLAC, OGG, M4A). "
             "Install with `pip install pydub`. "
             "MP3/M4A encoding also requires ffmpeg (`apt install ffmpeg` or equivalent)."
         ) from exc
-    return AudioSegment
 
 
 def read_timeseriesdict_audio(
     source,
     *,
-    format_hint=None,
-    channels=None,
-    unit=None,
+    format_hint: str | None = None,
+    channels: Iterable[str] | None = None,
+    unit: str | u.Unit | None = None,
+    epoch: float | datetime | None = None,
     **kwargs,
 ) -> TimeSeriesDict:
     """Read an audio file into a TimeSeriesDict via pydub.
@@ -48,6 +60,9 @@ def read_timeseriesdict_audio(
         Channel names to keep (e.g. ``["channel_0"]``).
     unit : str, optional
         Physical unit override.
+    epoch : float or datetime, optional
+        Override the start time (GPS seconds or datetime).
+        If not provided, defaults to 0.0 (audio files do not carry absolute timestamps).
     """
     AudioSegment = _import_pydub()
 
@@ -75,7 +90,17 @@ def read_timeseriesdict_audio(
 
     tsd = TimeSeriesDict()
     dt = 1.0 / sample_rate
-    t0 = 0.0  # audio files carry no absolute timestamp
+
+    # epoch 処理
+    if epoch is not None:
+        if isinstance(epoch, (int, float)):
+            t0 = float(epoch)
+        elif isinstance(epoch, datetime):
+            t0 = datetime_to_gps(epoch)
+        else:
+            raise TypeError(f"epoch must be float or datetime, got {type(epoch)}")
+    else:
+        t0 = 0.0  # audio files carry no absolute timestamp
 
     for i in range(n_channels):
         name = f"channel_{i}"
@@ -99,6 +124,7 @@ def read_timeseriesdict_audio(
             "sample_rate": sample_rate,
             "sample_width_bytes": sample_width,
             "original_channels": n_channels,
+            "epoch_source": "user" if epoch else "default",
             "unit_source": "override" if unit else "normalised_float",
         },
     )
@@ -177,62 +203,55 @@ def write_timeseries_audio(ts, target, **kwargs):
 
 # -- Registration --------------------------------------------------------------
 
-_AUDIO_FORMATS = {
+_AUDIO_EXTENSIONS = {
     "mp3": ".mp3",
     "flac": ".flac",
     "ogg": ".ogg",
     "m4a": ".m4a",
 }
 
-for _fmt, _ext in _AUDIO_FORMATS.items():
-    # Readers
-    io_registry.register_reader(
-        _fmt,
-        TimeSeriesDict,
-        lambda src, _f=_fmt, **kw: read_timeseriesdict_audio(src, format_hint=_f, **kw),
-        force=True,
-    )
-    io_registry.register_reader(
-        _fmt,
-        TimeSeries,
-        lambda src, _f=_fmt, **kw: read_timeseries_audio(src, format_hint=_f, **kw),
-        force=True,
-    )
-    io_registry.register_reader(
-        _fmt,
-        TimeSeriesMatrix,
-        lambda src, _f=_fmt, **kw: read_timeseriesmatrix_audio(
-            src, format_hint=_f, **kw
-        ),
-        force=True,
+
+def _register_audio_format(name, extension):
+    def reader_dict(src, **kw):
+        """
+        Read audio data into a TimeSeriesDict.
+        """
+        return read_timeseriesdict_audio(src, format_hint=name, **kw)
+
+    def reader_single(src, **kw):
+        """
+        Read audio data into a TimeSeries.
+        """
+        return read_timeseries_audio(src, format_hint=name, **kw)
+
+    def reader_matrix(src, **kw):
+        """
+        Read audio data into a TimeSeriesMatrix.
+        """
+        return read_timeseriesmatrix_audio(src, format_hint=name, **kw)
+
+    def writer_dict(tsd, tgt, **kw):
+        """
+        Write TimeSeriesDict to an audio file.
+        """
+        return write_timeseriesdict_audio(tsd, tgt, format_hint=name, **kw)
+
+    def writer_single(ts, tgt, **kw):
+        """
+        Write TimeSeries to an audio file.
+        """
+        return write_timeseries_audio(ts, tgt, format_hint=name, **kw)
+
+    register_timeseries_format(
+        name,
+        reader_dict=reader_dict,
+        reader_single=reader_single,
+        reader_matrix=reader_matrix,
+        writer_dict=writer_dict,
+        writer_single=writer_single,
+        extension=extension,
     )
 
-    # Writers
-    io_registry.register_writer(
-        _fmt,
-        TimeSeriesDict,
-        lambda tsd, tgt, _f=_fmt, **kw: write_timeseriesdict_audio(
-            tsd, tgt, format_hint=_f, **kw
-        ),
-        force=True,
-    )
-    io_registry.register_writer(
-        _fmt,
-        TimeSeries,
-        lambda ts, tgt, _f=_fmt, **kw: write_timeseries_audio(
-            ts, tgt, format_hint=_f, **kw
-        ),
-        force=True,
-    )
 
-    # Identifiers
-    io_registry.register_identifier(
-        _fmt,
-        TimeSeriesDict,
-        lambda *args, _e=_ext, **kwargs: str(args[1]).lower().endswith(_e),
-    )
-    io_registry.register_identifier(
-        _fmt,
-        TimeSeries,
-        lambda *args, _e=_ext, **kwargs: str(args[1]).lower().endswith(_e),
-    )
+for _fmt, _ext in _AUDIO_EXTENSIONS.items():
+    _register_audio_format(_fmt, _ext)

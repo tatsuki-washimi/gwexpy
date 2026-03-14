@@ -19,14 +19,20 @@ import os
 import numpy as np
 from gwpy.io.registry import default_registry as io_registry
 
-from gwexpy.io.utils import apply_unit, filter_by_channels, set_provenance
+from gwexpy.io.utils import (
+    apply_unit,
+    ensure_dependency,
+    filter_by_channels,
+    set_provenance,
+)
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._registration import register_timeseries_format
 
 
 def _import_zarr():
     try:
-        import zarr
+        zarr = ensure_dependency("zarr")
     except ImportError as exc:
         raise ImportError(
             "zarr is required for reading/writing Zarr stores. "
@@ -164,26 +170,12 @@ def write_timeseries_zarr(ts, target, **kwargs):
 
 # -- Registration --------------------------------------------------------------
 
-io_registry.register_reader(
-    "zarr", TimeSeriesDict, read_timeseriesdict_zarr, force=True
-)
-io_registry.register_reader("zarr", TimeSeries, read_timeseries_zarr, force=True)
-io_registry.register_reader(
-    "zarr", TimeSeriesMatrix, read_timeseriesmatrix_zarr, force=True
-)
-
-io_registry.register_writer(
-    "zarr", TimeSeriesDict, write_timeseriesdict_zarr, force=True
-)
-io_registry.register_writer("zarr", TimeSeries, write_timeseries_zarr, force=True)
-
-io_registry.register_identifier(
+register_timeseries_format(
     "zarr",
-    TimeSeriesDict,
-    lambda *args, **kwargs: str(args[1]).lower().endswith(".zarr"),
-)
-io_registry.register_identifier(
-    "zarr",
-    TimeSeries,
-    lambda *args, **kwargs: str(args[1]).lower().endswith(".zarr"),
+    reader_dict=read_timeseriesdict_zarr,
+    reader_single=read_timeseries_zarr,
+    reader_matrix=read_timeseriesmatrix_zarr,
+    writer_dict=write_timeseriesdict_zarr,
+    writer_single=write_timeseries_zarr,
+    extension="zarr",
 )
