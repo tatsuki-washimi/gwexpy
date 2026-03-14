@@ -6,6 +6,7 @@ Based on binary header parsing logic provided by user (ats2gwf.py).
 from __future__ import annotations
 
 import datetime
+import warnings
 from typing import Any
 
 import numpy as np
@@ -137,8 +138,11 @@ def _read_timeseries_ats_file(f, **kwargs):
     f.seek(header_length)
     data_raw = np.fromfile(f, dtype=data_dtype, count=total_samples)
     if data_raw.size != total_samples:
-        raise ValueError(
-            f"ATS data block shorter than expected: got {data_raw.size}, expected {total_samples}"
+        warnings.warn(
+            f"ATS data block size mismatch: got {data_raw.size} samples, "
+            f"expected {total_samples} (header). Using actual data size.",
+            UserWarning,
+            stacklevel=2,
         )
 
     # Scale Data

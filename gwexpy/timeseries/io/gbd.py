@@ -10,6 +10,7 @@ from __future__ import annotations
 import contextlib
 import io
 import re
+import warnings
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
@@ -375,8 +376,21 @@ def _read_data_block(fh, header: GBDHeader) -> np.ndarray:
     raw = fh.read(expected * header.dtype.itemsize)
     array = np.frombuffer(raw, dtype=header.dtype, count=expected)
     if array.size != expected:
-        raise ValueError("GBD data block shorter than expected")
-    data = array.reshape((header.counts, n_channels))
+        actual_counts = array.size // n_channels
+        warnings.warn(
+            f"GBD data block size mismatch: got {array.size} elements "
+            f"({actual_counts} samples × {n_channels} channels), "
+            f"expected {expected} ({header.counts} samples × {n_channels} channels). "
+            f"Using actual data size.",
+            UserWarning,
+            stacklevel=3,
+        )
+        # Trim to complete samples only (discard incomplete final row)
+        complete_size = actual_counts * n_channels
+        array = array[:complete_size]
+        data = array.reshape((actual_counts, n_channels))
+    else:
+        data = array.reshape((header.counts, n_channels))
     return data.astype(np.float64)
 
 
