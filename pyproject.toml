@@ -91,6 +91,10 @@ Changelog = "https://github.com/tatsuki-washimi/gwexpy/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 analysis = []
+audio = [
+  "pydub",
+  "tinytag>=1.10"
+]
 gui = [
   "PyQt5",
   "pyqtgraph",
