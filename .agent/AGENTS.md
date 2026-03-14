@@ -1,6 +1,7 @@
 # GWexpy AI Agent Guidelines
 
-**Summary.** This repository is optimized for collaboration with AI Coding Agents (Claude, Codex, Antigravity, Cursor, GitHub Copilot Workspace, etc.). Agents **must** read and follow these guidelines before performing any code changes, tests, or documentation updates.
+**Summary.**  
+This repository is optimized for collaboration with AI Coding Agents (Claude, Codex, Antigravity, Cursor, GitHub Copilot Workspace, etc.). Agents **must** read and follow these guidelines before performing any code changes, tests, or documentation updates.
 
 ---
 

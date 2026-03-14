@@ -70,15 +70,23 @@ venv/
 *.xml
 *.gwf
 *.GBD
+*.tdms
 *.h5
 *.hdf5
 *.hdf
 *.miniseed
-*.tdms
+*.sac
+*.win
+*.win32
+*.ats
 *.zarr
+*.sdb
+*.wav
+*.mp3
 !**/schemas/*.xml
 !**/config/*.xml
 tests/sample-data/**
+gwexpy/gui/test-data/**
 
 # Notebook backups
 *.ipynb.bak
@@ -111,3 +119,7 @@ test_results.html
 stored_responses/
 .venv-*/
 gwexpy/gui/test-data/
+
+# Large test data (Database)
+gwexpy/gui/test-data/*.sdb
+gwexpy/gui/test-data/*:Zone.Identifier
