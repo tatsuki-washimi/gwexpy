@@ -8,12 +8,13 @@ and TimeSeriesMatrix types.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from gwpy.io.registry import default_registry as io_registry
 
 if TYPE_CHECKING:
-    from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+    pass
 
 __all__ = ["register_timeseries_format"]
 
@@ -104,6 +105,7 @@ def register_timeseries_format(
     """
     # Import here to avoid circular dependencies
     import functools
+
     from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
     # Register TimeSeriesDict reader
@@ -123,7 +125,7 @@ def register_timeseries_format(
             if not tsd:
                 raise ValueError(f"No data found in {format_name} file")
             return tsd[next(iter(tsd.keys()))]
-        
+
         _adapted_single_reader.__doc__ = f"\n    Read {format_name} data into a TimeSeries.\n    "
         reader_single = _adapted_single_reader
 
@@ -141,7 +143,7 @@ def register_timeseries_format(
         def _adapted_matrix_reader(*args, **kwargs):
             tsd = reader_dict(*args, **kwargs)
             return tsd.to_matrix()
-        
+
         _adapted_matrix_reader.__doc__ = f"\n    Read {format_name} data into a TimeSeriesMatrix.\n    "
         reader_matrix = _adapted_matrix_reader
 
@@ -169,7 +171,7 @@ def register_timeseries_format(
 
             tsd = TimeSeriesDict({ts.name: ts})
             return writer_dict(tsd, target, *args, **kwargs)
-        
+
         _adapted_single_writer.__doc__ = f"\n    Write TimeSeries to {format_name} format.\n    "
         writer_single = _adapted_single_writer
 
@@ -187,7 +189,7 @@ def register_timeseries_format(
         def _adapted_matrix_writer(tsm, target, *args, **kwargs):
             tsd = tsm.to_dict()
             return writer_dict(tsd, target, *args, **kwargs)
-        
+
         _adapted_matrix_writer.__doc__ = f"\n    Write TimeSeriesMatrix to {format_name} format.\n    "
         writer_matrix = _adapted_matrix_writer
 

@@ -5,12 +5,11 @@ Wrapper around scipy.io.wavfile to support TimeSeriesDict and metadata.
 
 from __future__ import annotations
 
-from datetime import datetime
 from collections.abc import Iterable
+from datetime import datetime
 
 import numpy as np
 from astropy import units as u
-from gwpy.io.registry import default_registry as io_registry
 from scipy.io import wavfile
 
 from gwexpy.io.utils import (
@@ -20,7 +19,7 @@ from gwexpy.io.utils import (
     set_provenance,
 )
 
-from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from .. import TimeSeries, TimeSeriesDict
 from ._registration import register_timeseries_format
 
 

@@ -9,7 +9,6 @@ from collections.abc import Iterable
 
 import numpy as np
 from astropy import units as u
-from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.utils import (
     apply_unit,

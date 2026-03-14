@@ -22,7 +22,7 @@ from gwexpy.io.utils import (
     set_provenance,
 )
 
-from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from .. import TimeSeries, TimeSeriesDict
 from ._registration import register_timeseries_format
 
 _ATS_HEADER_MIN_SIZE = 1024

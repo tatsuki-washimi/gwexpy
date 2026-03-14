@@ -10,7 +10,6 @@ from __future__ import annotations
 import logging
 
 import numpy as np
-from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.utils import (
     apply_unit,

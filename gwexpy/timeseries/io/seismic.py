@@ -5,7 +5,6 @@ Readers/Writers for ObsPy-supported seismic formats (miniSEED, SAC, GSE2, KNET).
 from __future__ import annotations
 
 import numpy as np
-from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.utils import (
     apply_unit,
@@ -16,7 +15,7 @@ from gwexpy.io.utils import (
     set_provenance,
 )
 
-from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from .. import TimeSeries, TimeSeriesDict
 from ._registration import register_timeseries_format
 
 

@@ -10,9 +10,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from astropy.time import Time
-from gwpy.io.registry import default_registry as io_registry
 
-from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from .. import TimeSeries, TimeSeriesDict
 from ._registration import register_timeseries_format
 
 # Unit extraction factors (Imperial to Metric)
