@@ -1,9 +1,14 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.0] - 2026-03-15
+
+### Release Summary
+
+First stable release of GWexpy for SoftwareX publication. This release focuses on API stability, GWpy compatibility, and reproducible commissioning workflows.
 
 ### Changed
 
+- **Version**: Updated from `0.1.0b2` to `0.1.0` (stable release)
 - **GWpy API UX Compatibility**: Aligned key spectral API call conventions with GWpy 4.x usage patterns.
   - `TimeSeries.transfer_function` now accepts GWpy-style positional calls:
     - `transfer_function(other, fftlength, overlap, window, average, ...)`
@@ -11,6 +16,7 @@
     - `csd`, `coherence`, `csd_matrix`, `coherence_matrix`
     - positional `(fftlength, overlap)` is supported in addition to keyword usage
   - Mixed positional+keyword specification of `fftlength`/`overlap` now raises clear `TypeError`.
+- **Authors**: Removed email from `pyproject.toml` to prevent spam (contact via GitHub Issues or paper)
 
 ### Added
 
@@ -24,6 +30,9 @@
 - **CI workflow for compatibility gate**:
   - `.github/workflows/test-compat-gwpy.yml`
   - Runs focused GWpy-compat tests plus `tests/timeseries`, with pinned `numpy<2.0` and `astropy<7.0`.
+- **Publication materials**:
+  - Paper source: `docs/gwexpy-paper/main.tex`
+  - Publication preparation plan: `docs/developers/plans/for_paper_publication.md`
 
 ## [0.1.0b2] - 2026-02-23
 
