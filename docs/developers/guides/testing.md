@@ -47,9 +47,14 @@ The exact package names vary by platform. Typical options are:
 python -m pytest
 ```
 
-GUI tests run by default when a display is available. In headless environments
-(no `DISPLAY`/`WAYLAND_DISPLAY` or `QT_QPA_PLATFORM=offscreen/minimal`), the
-harness skips GUI tests and disables pytest plugin autoloading to avoid Qt
-crashes. To run GUI tests in headless CI, use xvfb (see
-`docs/developers/guides/gui_testing.md`) and ensure
-`PYTEST_DISABLE_PLUGIN_AUTOLOAD` is unset.
+GUI tests are split into two buckets:
+
+- The default GUI suite is headless-safe and runs under the GUI runner with
+  Xvfb.
+- `pyautogui` tests require real pointer injection and should be run against a
+  real desktop/session display, not the default Xvfb path.
+
+In headless environments (no `DISPLAY`/`WAYLAND_DISPLAY` or
+`QT_QPA_PLATFORM=offscreen/minimal`), the harness skips GUI tests and disables
+pytest plugin autoloading to avoid Qt crashes. To run GUI tests in headless CI,
+use the GUI runner described in `docs/developers/guides/gui_testing.md`.

@@ -1,10 +1,12 @@
 import os
 
 import pytest
+from qtpy import QtCore
 
 from gwexpy.gui.ui.main_window import MainWindow
 
 
+@pytest.mark.pyautogui
 @pytest.mark.gui
 def test_pyautogui_start_stop(qtbot, log_gui_action):
     if not os.environ.get("DISPLAY"):
@@ -29,7 +31,8 @@ def test_pyautogui_start_stop(qtbot, log_gui_action):
     window.raise_()
     window.activateWindow()
     qtbot.waitExposed(window, timeout=5000)
-    qtbot.wait(100)
+    qtbot.wait(250)
+    window.setFocus(QtCore.Qt.ActiveWindowFocusReason)
 
     window.input_controls["ds_combo"].setCurrentText("Simulation")
 
@@ -43,12 +46,29 @@ def test_pyautogui_start_stop(qtbot, log_gui_action):
         center = widget.mapToGlobal(widget.rect().center())
         for attempt in range(2):
             pyautogui.moveTo(center.x(), center.y(), duration=0.05)
+            cursor = pyautogui.position()
+            logger.info(
+                "PyAutoGUI move attempt=%s target=(%s,%s) cursor=(%s,%s) active=%s",
+                attempt + 1,
+                center.x(),
+                center.y(),
+                cursor.x,
+                cursor.y,
+                window.isActiveWindow(),
+            )
+            if abs(cursor.x - center.x()) > 4 or abs(cursor.y - center.y()) > 4:
+                if os.environ.get("WAYLAND_DISPLAY") and os.path.exists("/mnt/wslg"):
+                    pytest.skip("PyAutoGUI pointer injection unavailable on WSLg/XWayland")
             pyautogui.click(center.x(), center.y(), button="left")
             try:
                 qtbot.waitUntil(condition, timeout=timeout)
                 return
             except Exception:
                 if attempt == 1:
+                    if os.environ.get("WAYLAND_DISPLAY") and os.path.exists("/mnt/wslg"):
+                        pytest.skip(
+                            "PyAutoGUI click injection did not reach the Qt window on WSLg/XWayland"
+                        )
                     raise
                 qtbot.wait(100)
 

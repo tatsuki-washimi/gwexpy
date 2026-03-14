@@ -97,5 +97,3 @@ def datetime_utc_to_gps(dt: datetime) -> LIGOTimeGPS:
 
     t_gps = Time(dt, format="datetime", scale="utc").gps
     return LIGOTimeGPS(t_gps)
-
-

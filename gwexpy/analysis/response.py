@@ -526,4 +526,3 @@ def estimate_response_function(
         target_bkg=target_bkg,
         **kwargs,
     )
-

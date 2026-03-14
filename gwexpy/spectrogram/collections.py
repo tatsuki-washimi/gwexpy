@@ -60,14 +60,10 @@ def _resolve_crop_compat_args(*args, **kwargs):
 
     # Legacy kwargs
     if "t0" in kwargs:
-        warnings.warn(
-            "t0 is deprecated, use start", DeprecationWarning, stacklevel=3
-        )
+        warnings.warn("t0 is deprecated, use start", DeprecationWarning, stacklevel=3)
         start = kwargs.pop("t0")
     if "t1" in kwargs:
-        warnings.warn(
-            "t1 is deprecated, use end", DeprecationWarning, stacklevel=3
-        )
+        warnings.warn("t1 is deprecated, use end", DeprecationWarning, stacklevel=3)
         end = kwargs.pop("t1")
 
     if "inplace" in kwargs:

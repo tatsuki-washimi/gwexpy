@@ -246,8 +246,15 @@ def _slice_metadata_dict(meta_dict, key, prefix):
 # ---------------------------------------------------------------------------
 
 
-def _make_attr_arrays(units, names, channels, shape2d, unit_default=None,
-                      name_default=None, channel_default=None):
+def _make_attr_arrays(
+    units,
+    names,
+    channels,
+    shape2d,
+    unit_default=None,
+    name_default=None,
+    channel_default=None,
+):
     """Build unit/name/channel 2-D arrays by broadcasting or filling defaults.
 
     Parameters
@@ -258,6 +265,7 @@ def _make_attr_arrays(units, names, channels, shape2d, unit_default=None,
         corresponding user override is None.  Can be a scalar (broadcast)
         or a pre-built ndarray.
     """
+
     def _resolve(user_val, attr_name, default):
         if user_val is not None:
             return _broadcast_attr(user_val, shape2d, attr_name)
@@ -294,8 +302,7 @@ def _convert_units_loop(arr, unit_arr, base_unit, N, M, err_prefix=""):
                 raise u.UnitConversionError(msg)
 
 
-def _convert_units_with_explicit(arr, unit_arr, intrinsic_units, explicit_unit,
-                                 N, M):
+def _convert_units_with_explicit(arr, unit_arr, intrinsic_units, explicit_unit, N, M):
     """Convert units only for cells where *explicit_unit* is True.
 
     *intrinsic_units* is the per-cell unit array extracted from the input
@@ -311,9 +318,9 @@ def _convert_units_with_explicit(arr, unit_arr, intrinsic_units, explicit_unit,
                 continue
             if explicit_unit[i, j]:
                 try:
-                    arr[i, j] = u.Quantity(
-                        arr[i, j], intrinsic_units[i, j]
-                    ).to_value(tgt)
+                    arr[i, j] = u.Quantity(arr[i, j], intrinsic_units[i, j]).to_value(
+                        tgt
+                    )
                 except (u.UnitConversionError, TypeError, ValueError) as e:
                     raise u.UnitConversionError(
                         f"Unit conversion failed at ({i},{j}): {e}"
@@ -349,9 +356,7 @@ def _extract_series_attrs(series_list, N, M):
     channel_arr = np.full((N, M), None, dtype=object)
     for i, row in enumerate(series_list):
         for j, s in enumerate(row):
-            unit_arr[i, j] = (
-                s.unit if hasattr(s, "unit") else u.dimensionless_unscaled
-            )
+            unit_arr[i, j] = s.unit if hasattr(s, "unit") else u.dimensionless_unscaled
             name_arr[i, j] = s.name if hasattr(s, "name") else None
             channel_arr[i, j] = s.channel if hasattr(s, "channel") else None
     return unit_arr, name_arr, channel_arr
@@ -385,7 +390,10 @@ def _resolve_scalar_shape(shape, xindex):
 
 def _handle_none(data, units, names, channels, shape, xindex, dx, x0, xunit):
     unit_arr, name_arr, channel_arr = _make_attr_arrays(
-        units, names, channels, (0, 0),
+        units,
+        names,
+        channels,
+        (0, 0),
         unit_default=np.empty((0, 0), dtype=object),
         name_default=np.empty((0, 0), dtype=object),
         channel_default=np.empty((0, 0), dtype=object),
@@ -397,7 +405,10 @@ def _handle_scalar(data, units, names, channels, shape, xindex, dx, x0, xunit):
     shape = _resolve_scalar_shape(shape, xindex)
     arr = np.full(shape, data)
     unit_arr, name_arr, channel_arr = _make_attr_arrays(
-        units, names, channels, shape[:2],
+        units,
+        names,
+        channels,
+        shape[:2],
         unit_default=u.dimensionless_unscaled,
         name_default=None,
         channel_default=None,
@@ -405,11 +416,13 @@ def _handle_scalar(data, units, names, channels, shape, xindex, dx, x0, xunit):
     return arr, _pack_attrs(unit_arr, name_arr, channel_arr), None
 
 
-def _handle_scalar_quantity(data, units, names, channels, shape, xindex, dx,
-                            x0, xunit):
+def _handle_scalar_quantity(data, units, names, channels, shape, xindex, dx, x0, xunit):
     shape = _resolve_scalar_shape(shape, xindex)
     unit_arr, name_arr, channel_arr = _make_attr_arrays(
-        units, names, channels, shape[:2],
+        units,
+        names,
+        channels,
+        shape[:2],
         unit_default=data.unit,
         name_default=None,
         channel_default=None,
@@ -433,7 +446,10 @@ def _handle_scalar_quantity(data, units, names, channels, shape, xindex, dx,
 def _handle_series(data, units, names, channels, shape, xindex, dx, x0, xunit):
     arr = np.asarray(data.value).reshape(1, 1, -1)
     unit_arr, name_arr, channel_arr = _make_attr_arrays(
-        units, names, channels, (1, 1),
+        units,
+        names,
+        channels,
+        (1, 1),
         unit_default=np.array([[data.unit]], dtype=object),
         name_default=np.array([[getattr(data, "name", None)]], dtype=object),
         channel_default=np.array([[getattr(data, "channel", None)]], dtype=object),
@@ -443,16 +459,17 @@ def _handle_series(data, units, names, channels, shape, xindex, dx, x0, xunit):
         try:
             arr[0, 0] = u.Quantity(arr[0, 0], data.unit).to_value(tgt)
         except (u.UnitConversionError, TypeError, ValueError) as e:
-            raise u.UnitConversionError(
-                f"Unit conversion failed for Series input: {e}"
-            )
+            raise u.UnitConversionError(f"Unit conversion failed for Series input: {e}")
     return arr, _pack_attrs(unit_arr, name_arr, channel_arr), data.xindex
 
 
 def _handle_array(data, units, names, channels, shape, xindex, dx, x0, xunit):
     arr = np.asarray(data.value).reshape(1, 1, -1)
     unit_arr, name_arr, channel_arr = _make_attr_arrays(
-        units, names, channels, (1, 1),
+        units,
+        names,
+        channels,
+        (1, 1),
         unit_default=np.array([[data.unit]], dtype=object),
         name_default=np.array([[getattr(data, "name", None)]], dtype=object),
         channel_default=np.array([[getattr(data, "channel", None)]], dtype=object),
@@ -462,14 +479,11 @@ def _handle_array(data, units, names, channels, shape, xindex, dx, x0, xunit):
         try:
             arr[0, 0] = u.Quantity(arr[0, 0], data.unit).to_value(tgt)
         except (u.UnitConversionError, TypeError, ValueError) as e:
-            raise u.UnitConversionError(
-                f"Unit conversion failed for Array input: {e}"
-            )
+            raise u.UnitConversionError(f"Unit conversion failed for Array input: {e}")
     return arr, _pack_attrs(unit_arr, name_arr, channel_arr), None
 
 
-def _handle_ndarray_1d_2d(data, units, names, channels, shape, xindex, dx, x0,
-                          xunit):
+def _handle_ndarray_1d_2d(data, units, names, channels, shape, xindex, dx, x0, xunit):
     is_quantity = isinstance(data, u.Quantity)
     if is_quantity:
         quantity_data = cast(u.Quantity, data)
@@ -487,7 +501,10 @@ def _handle_ndarray_1d_2d(data, units, names, channels, shape, xindex, dx, x0,
         arr = np.asarray(arr_raw).reshape(N, 1, M)
 
     unit_arr, name_arr, channel_arr = _make_attr_arrays(
-        units, names, channels, (N, M),
+        units,
+        names,
+        channels,
+        (N, M),
         unit_default=base_unit,
         name_default=None,
         channel_default=None,
@@ -498,14 +515,16 @@ def _handle_ndarray_1d_2d(data, units, names, channels, shape, xindex, dx, x0,
     return arr, _pack_attrs(unit_arr, name_arr, channel_arr), None
 
 
-def _handle_ndarray_3d(data, units, names, channels, shape, xindex, dx, x0,
-                       xunit):
+def _handle_ndarray_3d(data, units, names, channels, shape, xindex, dx, x0, xunit):
     arr = data.value if isinstance(data, u.Quantity) else data
     _unit = data.unit if isinstance(data, u.Quantity) else u.dimensionless_unscaled
     N, M, _ = arr.shape
 
     unit_arr, name_arr, channel_arr = _make_attr_arrays(
-        units, names, channels, (N, M),
+        units,
+        names,
+        channels,
+        (N, M),
         unit_default=_unit,
         name_default=None,
         channel_default=None,
@@ -578,9 +597,7 @@ def _handle_dict(data, units, names, channels, shape, xindex, dx, x0, xunit):
                 s = to_series(v, xindex=series_xindex, name=f"elem_{i}_{j}")
 
             row_series.append(s.value)
-            unit_arr[i, j] = (
-                s.unit if hasattr(s, "unit") else u.dimensionless_unscaled
-            )
+            unit_arr[i, j] = s.unit if hasattr(s, "unit") else u.dimensionless_unscaled
             name_arr[i, j] = s.name if hasattr(s, "name") else None
             channel_arr[i, j] = s.channel if hasattr(s, "channel") else None
 
@@ -593,9 +610,7 @@ def _handle_dict(data, units, names, channels, shape, xindex, dx, x0, xunit):
 
     if units is not None:
         target_units = _broadcast_attr(units, (N, M), "units")
-        _convert_units_with_explicit(
-            arr, target_units, unit_arr, explicit_unit, N, M
-        )
+        _convert_units_with_explicit(arr, target_units, unit_arr, explicit_unit, N, M)
         unit_arr = target_units
 
     name_arr = (
@@ -613,7 +628,10 @@ def _handle_list(data, units, names, channels, shape, xindex, dx, x0, xunit):
     # Empty list
     if len(data) == 0:
         unit_arr, name_arr, channel_arr = _make_attr_arrays(
-            units, names, channels, (0, 0),
+            units,
+            names,
+            channels,
+            (0, 0),
             unit_default=np.empty((0, 0), dtype=object),
             name_default=np.empty((0, 0), dtype=object),
             channel_default=np.empty((0, 0), dtype=object),
@@ -647,7 +665,7 @@ def _handle_list(data, units, names, channels, shape, xindex, dx, x0, xunit):
     series_list: list[list[Series]] = []
     explicit_unit = np.zeros((N, M), dtype=bool)
     for row in data:
-        series_row = []
+        series_row: list[Series] = []
         i = len(series_list)
         for j, v in enumerate(row):
             explicit_unit[i, j] = isinstance(v, (Series, Array, u.Quantity))
@@ -662,7 +680,10 @@ def _handle_list(data, units, names, channels, shape, xindex, dx, x0, xunit):
     value_list = [s.value for row in series_list for s in row]
     if N == 0 or M == 0:
         unit_arr, name_arr, channel_arr = _make_attr_arrays(
-            units, names, channels, (N, M),
+            units,
+            names,
+            channels,
+            (N, M),
             unit_default=np.empty((N, M), dtype=object),
             name_default=np.empty((N, M), dtype=object),
             channel_default=np.empty((N, M), dtype=object),
@@ -679,9 +700,7 @@ def _handle_list(data, units, names, channels, shape, xindex, dx, x0, xunit):
 
     if units is not None:
         target_units = _broadcast_attr(units, (N, M), "units")
-        _convert_units_with_explicit(
-            arr, target_units, unit_arr, explicit_unit, N, M
-        )
+        _convert_units_with_explicit(arr, target_units, unit_arr, explicit_unit, N, M)
         unit_arr = target_units
 
     name_arr = (
@@ -695,11 +714,13 @@ def _handle_list(data, units, names, channels, shape, xindex, dx, x0, xunit):
     return arr, _pack_attrs(unit_arr, name_arr, channel_arr), detected_xindex
 
 
-def _handle_seriesmatrix(data, units, names, channels, shape, xindex, dx, x0,
-                         xunit):
+def _handle_seriesmatrix(data, units, names, channels, shape, xindex, dx, x0, xunit):
     arr = np.array(data)
     unit_arr, name_arr, channel_arr = _make_attr_arrays(
-        units, names, channels, data.units.shape,
+        units,
+        names,
+        channels,
+        data.units.shape,
         unit_default=data.units.copy(),
         name_default=data.names.copy(),
         channel_default=data.channels.copy(),
@@ -730,7 +751,8 @@ def _detect_input_type(data):
     if isinstance(data, Array):
         return "array"
     if isinstance(data, (np.ndarray, u.Quantity)) and getattr(data, "ndim", 0) in (
-        1, 2,
+        1,
+        2,
     ):
         return "ndarray_1d_2d"
     if isinstance(data, (np.ndarray, u.Quantity)) and getattr(data, "ndim", 0) == 3:
@@ -787,9 +809,7 @@ def _normalize_input(
         if isinstance(data, SeriesMatrix):
             type_key = "seriesmatrix"
         else:
-            raise TypeError(
-                f"Unsupported data type for SeriesMatrix: {type(data)}"
-            )
+            raise TypeError(f"Unsupported data type for SeriesMatrix: {type(data)}")
 
     handler = _NORMALIZE_HANDLERS[type_key]
     return handler(data, units, names, channels, shape, xindex, dx, x0, xunit)

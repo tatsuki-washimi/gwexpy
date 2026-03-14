@@ -120,5 +120,9 @@ jobs:
           PYTHONFAULTHANDLER: "1"
         shell: bash -l {0}
         run: |
+          if ! find gwexpy -name '*.ipynb' -print -quit | grep -q .; then
+            echo "No notebooks under gwexpy/, skipping nbmake."
+            exit 0
+          fi
           micromamba run -n gwexpy-full xvfb-run -a -s "-screen 0 1920x1080x24" \
             pytest -q --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 gwexpy/
