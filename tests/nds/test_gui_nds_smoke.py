@@ -2,10 +2,6 @@ import os
 
 import pytest
 
-if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
-    pytest.skip(
-        "GUI/qtbot tests skipped (plugin autoload disabled)", allow_module_level=True
-    )
 pytest.importorskip("pytestqt")
 from qtpy import QtCore
 

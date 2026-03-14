@@ -147,10 +147,7 @@ def _normalize_target_dt(
                 dt_input = ts.dt.to(safe_unit).value
             stop_time_val = start_time_val + (len(ts) * dt_input)
         else:
-            if (
-                unit_is_dimensionless
-                or old_times_q.unit == u.dimensionless_unscaled
-            ):
+            if unit_is_dimensionless or old_times_q.unit == u.dimensionless_unscaled:
                 stop_time_val = old_times_q[-1].value
             else:
                 stop_time_val = old_times_q[-1].to(safe_unit).value
@@ -308,9 +305,7 @@ def _reindex_by_method(
     np.clip(idx_right, 0, len(old_times_val) - 1)
 
     if method == "ffill" or method == "pad":
-        idx_side_right = np.searchsorted(
-            old_times_val, new_times_val, side="right"
-        )
+        idx_side_right = np.searchsorted(old_times_val, new_times_val, side="right")
         fill_idx = idx_side_right - 1
 
         valid_f = fill_idx >= 0
@@ -328,9 +323,7 @@ def _reindex_by_method(
         new_data[valid_out_indices] = old_values[src_indices]
 
     elif method == "bfill" or method == "backfill":
-        idx_side_left = np.searchsorted(
-            old_times_val, new_times_val, side="left"
-        )
+        idx_side_left = np.searchsorted(old_times_val, new_times_val, side="left")
         fill_idx = idx_side_left
 
         valid_b = fill_idx < len(old_times_val)
@@ -355,9 +348,7 @@ def _reindex_by_method(
         new_data[valid_out_indices] = old_values[src_indices]
 
     elif method == "nearest":
-        idx_side_left = np.searchsorted(
-            old_times_val, new_times_val, side="left"
-        )
+        idx_side_left = np.searchsorted(old_times_val, new_times_val, side="left")
 
         idx_L = np.clip(idx_side_left - 1, 0, len(old_times_val) - 1)
         idx_R = np.clip(idx_side_left, 0, len(old_times_val) - 1)
@@ -386,9 +377,7 @@ def _reindex_by_method(
     elif method is None:
         tol_val = 1e-9 if tolerance is None else _to_time_value(tolerance)
 
-        idx_side_left = np.searchsorted(
-            old_times_val, new_times_val, side="left"
-        )
+        idx_side_left = np.searchsorted(old_times_val, new_times_val, side="left")
 
         idx_L = np.clip(idx_side_left - 1, 0, len(old_times_val) - 1)
         idx_R = np.clip(idx_side_left, 0, len(old_times_val) - 1)
@@ -410,14 +399,14 @@ def _reindex_by_method(
 
 
 def _construct_result(
-    ts: TimeSeriesAttrs,
+    ts: TimeSeriesResamplingMixin,
     new_values: np.ndarray,
     new_times_val: np.ndarray,
     target_dt: u.Quantity,
     time_unit: u.Unit,
     is_dimless: bool,
     copy: bool,
-) -> TimeSeriesAttrs:
+) -> TimeSeriesResamplingMixin:
     """Construct the result TimeSeries from reindexed data."""
     # Convert dt back to original time unit to avoid plotting unit mismatch
     final_dt = target_dt
@@ -511,9 +500,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         dt_val = target_dt_in_time_unit.value
 
         # 5. Determine origin base
-        base_val = _resolve_origin(
-            origin, offset, start_time_val, time_unit, align
-        )
+        base_val = _resolve_origin(origin, offset, start_time_val, time_unit, align)
 
         # 6. Generate new grid
         new_times_val, grid_start = _generate_target_grid(
@@ -522,9 +509,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
 
         # 7. Handle empty grid
         if len(new_times_val) == 0:
-            safe_unit = (
-                time_unit if time_unit is not None else u.dimensionless_unscaled
-            )
+            safe_unit = time_unit if time_unit is not None else u.dimensionless_unscaled
             safe_t0 = u.Quantity(grid_start, safe_unit)
             return self.__class__(
                 [],
@@ -536,9 +521,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
             )
 
         # 8. Determine output dtype
-        out_dtype, fill_value = _determine_output_dtype(
-            method, fill_value, self.dtype
-        )
+        out_dtype, fill_value = _determine_output_dtype(method, fill_value, self.dtype)
 
         # 9. Reindex data
         new_data = _reindex_by_method(

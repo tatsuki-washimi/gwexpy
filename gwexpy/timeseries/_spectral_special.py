@@ -126,7 +126,9 @@ def _chunk_data(data, chunk_size, stride_samples):
     if len(data) < chunk_size:
         raise ValueError("Data shorter than window length.")
 
-    chunks = sliding_window_view(data, window_shape=chunk_size, axis=0)[::stride_samples]
+    chunks = sliding_window_view(data, window_shape=chunk_size, axis=0)[
+        ::stride_samples
+    ]
     return chunks
 
 
@@ -195,9 +197,7 @@ def _configure_frequency_domain(frequencies, onesided, dt, n_fft):
                     "frequencies must be within [0, Nyquist] for onesided STLT."
                 )
         else:
-            if np.any(freqs_val < -nyquist - tol) or np.any(
-                freqs_val > nyquist + tol
-            ):
+            if np.any(freqs_val < -nyquist - tol) or np.any(freqs_val > nyquist + tol):
                 raise ValueError(
                     "frequencies must be within [-Nyquist, Nyquist] for two-sided STLT."
                 )
@@ -213,9 +213,7 @@ def _configure_frequency_domain(frequencies, onesided, dt, n_fft):
 
         k = np.rint(freqs_val / df).astype(int)
         k_mod = k % nperseg
-        grid_freq = np.where(
-            k_mod <= nperseg // 2, k_mod * df, (k_mod - nperseg) * df
-        )
+        grid_freq = np.where(k_mod <= nperseg // 2, k_mod * df, (k_mod - nperseg) * df)
         if np.max(np.abs(freqs_val - grid_freq)) > tol:
             return None
         return k_mod
@@ -384,9 +382,7 @@ def _stlt_main_loop(chunks, decay, freq_config):
 
     # Precompute phase matrix for small frequency sets (DFT path)
     if custom_method == "dft" and freqs_val.size <= freq_config["PHASE_CACHE_MAX_M"]:
-        cached_phase = np.exp(
-            (-2j * np.pi) * (freqs_val[:, None] * t_rel[None, :])
-        )
+        cached_phase = np.exp((-2j * np.pi) * (freqs_val[:, None] * t_rel[None, :]))
 
     dtype = np.result_type(chunk_data.dtype, np.complex64)
     out_cube = np.zeros((n_chunks, n_sigmas, n_freqs), dtype=dtype)
@@ -435,9 +431,7 @@ def _stlt_main_loop(chunks, decay, freq_config):
                 for i_freq in range(0, n_freqs, freq_chunk_size):
                     f_end = min(i_freq + freq_chunk_size, n_freqs)
                     f_chunk = freqs_val[i_freq:f_end]
-                    phase = np.exp(
-                        (-2j * np.pi) * (f_chunk[:, None] * t_rel[None, :])
-                    )
+                    phase = np.exp((-2j * np.pi) * (f_chunk[:, None] * t_rel[None, :]))
                     spec[:, :, i_freq:f_end] = np.tensordot(
                         weighted_batch, phase, axes=([-1], [1])
                     )

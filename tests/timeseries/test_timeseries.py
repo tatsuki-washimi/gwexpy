@@ -15,12 +15,28 @@ from gwpy.timeseries.tests.test_timeseries import *  # noqa: F401,F403
 class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
     """Extended TestTimeSeries with xfail markers for known upstream issues."""
 
-    def test_find_datafind_runtimeerror(self, *args, **kwargs):
+    @staticmethod
+    def _require_host(host: str, reason: str) -> None:
         try:
-            socket.getaddrinfo("datafind.gwosc.org", 443)
+            socket.getaddrinfo(host, 443)
         except OSError:
-            pytest.skip("network unavailable for datafind tests")
+            pytest.skip(reason)
+
+    def test_find_datafind_runtimeerror(self, *args, **kwargs):
+        self._require_host(
+            "datafind.gwosc.org", "network unavailable for datafind tests"
+        )
         return super().test_find_datafind_runtimeerror(*args, **kwargs)
+
+    def test_fetch_open_data_error(self, *args, **kwargs):
+        self._require_host("gwosc.org", "network unavailable for GWOSC tests")
+        return super().test_fetch_open_data_error(*args, **kwargs)
+
+    def test_find_datafind_httperror(self, *args, **kwargs):
+        self._require_host(
+            "datafind.gwosc.org", "network unavailable for datafind tests"
+        )
+        return super().test_find_datafind_httperror(*args, **kwargs)
 
     @pytest.mark.xfail(
         reason="gwpy no longer emits UserWarning for median_mean with lal",

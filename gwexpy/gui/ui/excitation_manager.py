@@ -38,7 +38,9 @@ class ExcitationManager:
         Reference to the UI excitation controls dictionary.
     """
 
-    def __init__(self, sig_gen: SignalGenerator, exc_controls: dict[str, Any] | None = None) -> None:
+    def __init__(
+        self, sig_gen: SignalGenerator, exc_controls: dict[str, Any] | None = None
+    ) -> None:
         """
         Initialize the ExcitationManager.
 
@@ -65,7 +67,9 @@ class ExcitationManager:
                 return True
         return False
 
-    def inject_signals(self, data_map: dict[str, Any], times: np.ndarray | None, sample_rate: float) -> np.ndarray | None:
+    def inject_signals(
+        self, data_map: dict[str, Any], times: np.ndarray | None, sample_rate: float
+    ) -> np.ndarray | None:
         """
         Generate and inject signals from all active excitation panels.
 
@@ -170,7 +174,11 @@ class ExcitationManager:
         sample_rate : float
             Sample rate in Hz.
         """
-        if total_excitation is not None and times is not None and np.any(total_excitation):
+        if (
+            total_excitation is not None
+            and times is not None
+            and np.any(total_excitation)
+        ):
             data_map["Excitation"] = TimeSeries(
                 total_excitation,
                 t0=times[0],

@@ -42,7 +42,9 @@ def _log_db(data: np.ndarray, factor: float) -> np.ndarray:
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, enable_preload: bool = True, data_backend: NDSDataCache | None = None) -> None:
+    def __init__(
+        self, enable_preload: bool = True, data_backend: NDSDataCache | None = None
+    ) -> None:
         super().__init__()
         self._enable_preload = enable_preload
         self.setWindowTitle("pyaggui : a diaggui-like gwexpy GUI-tool")
@@ -287,7 +289,9 @@ class MainWindow(QtWidgets.QMainWindow):
         except (AttributeError, KeyError, RuntimeError, TypeError) as e:
             logger.error(f"Preload Error: {e}")
 
-    def _on_preload_finished(self, key: str, results: list[Any], error: str | None) -> None:
+    def _on_preload_finished(
+        self, key: str, results: list[Any], error: str | None
+    ) -> None:
         from ..nds.cache import ChannelListCache
 
         if error:
@@ -733,7 +737,9 @@ class MainWindow(QtWidgets.QMainWindow):
         except (RuntimeError, TypeError, ValueError):
             logger.exception("Error rendering graphs")
 
-    def _collect_data_map(self) -> tuple[dict[str, TimeSeries] | None, np.ndarray | None, float]:
+    def _collect_data_map(
+        self,
+    ) -> tuple[dict[str, TimeSeries] | None, np.ndarray | None, float]:
         """
         Collect data from the current source into a data_map.
 
@@ -807,7 +813,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return data_map, current_times, current_fs
 
-    def _apply_time_cropping(self, data_map: dict[str, TimeSeries], current_times: np.ndarray | None) -> None:
+    def _apply_time_cropping(
+        self, data_map: dict[str, TimeSeries], current_times: np.ndarray | None
+    ) -> None:
         """
         Crop data to measurement start time and remove stale data.
 
@@ -879,7 +887,9 @@ class MainWindow(QtWidgets.QMainWindow):
         except (AttributeError, StopIteration, TypeError, ValueError) as e:
             logger.debug(f"Error checking stop condition: {e}")
 
-    def _render_graphs(self, data_map: dict[str, TimeSeries], current_times: np.ndarray | None) -> None:
+    def _render_graphs(
+        self, data_map: dict[str, TimeSeries], current_times: np.ndarray | None
+    ) -> None:
         """
         Render analysis results to both graph panels.
 
@@ -931,7 +941,9 @@ class MainWindow(QtWidgets.QMainWindow):
             except (RuntimeError, TypeError, ValueError) as e:
                 logger.warning(f"Error in update_graphs for Graph {plot_idx + 1}: {e}")
 
-    def _update_panel_meta(self, info_root: dict[str, Any], data_map: dict[str, TimeSeries]) -> None:
+    def _update_panel_meta(
+        self, info_root: dict[str, Any], data_map: dict[str, TimeSeries]
+    ) -> None:
         """Update panel metadata display."""
         ui_p = self.get_ui_params()
         if data_map:
@@ -942,7 +954,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 info_root["panel"].meta_info["bw"] = ui_p.get("bw", 0)
                 info_root["panel"].update_params_display()
 
-    def _get_results(self, plot_idx: int, info_root: dict[str, Any], data_map: dict[str, TimeSeries], g_type: str) -> list[Any]:
+    def _get_results(
+        self,
+        plot_idx: int,
+        info_root: dict[str, Any],
+        data_map: dict[str, TimeSeries],
+        g_type: str,
+    ) -> list[Any]:
         """
         Get analysis results from accumulator or engine.
 
@@ -1006,7 +1024,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return results
 
-    def _get_start_time_gps(self, is_time_axis: bool, current_times: np.ndarray | None, results: list[Any]) -> float | None:
+    def _get_start_time_gps(
+        self, is_time_axis: bool, current_times: np.ndarray | None, results: list[Any]
+    ) -> float | None:
         """
         Determine the GPS start time for time-axis graphs.
 

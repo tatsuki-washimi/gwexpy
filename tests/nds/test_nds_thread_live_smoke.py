@@ -3,12 +3,7 @@ from __future__ import annotations
 import os
 
 import pytest
-
-if os.environ.get("PYTEST_DISABLE_PLUGIN_AUTOLOAD"):
-    pytest.skip(
-        "Qt/qtbot tests skipped (plugin autoload disabled)", allow_module_level=True
-    )
-pytest.importorskip("pytestqt")
+from qtpy import QtCore
 
 from gwexpy.gui.nds.nds_thread import NDSThread
 
@@ -19,7 +14,7 @@ def _first_test_channel() -> str:
 
 
 @pytest.mark.nds
-def test_nds_thread_emits_live_payload(qtbot, nds_backend):
+def test_nds_thread_emits_live_payload(nds_backend):
     """
     Live smoke test for NDSThread.
     Requires reachable NDS and at least one valid test channel.
@@ -27,20 +22,32 @@ def test_nds_thread_emits_live_payload(qtbot, nds_backend):
     channel = _first_test_channel()
     timeout_ms = int(os.getenv("GWEXPY_NDS_TIMEOUT_MS", "30000"))
 
+    QtCore.QCoreApplication.instance() or QtCore.QCoreApplication([])
+    loop = QtCore.QEventLoop()
+    timer = QtCore.QTimer()
+    timer.setSingleShot(True)
+    timer.timeout.connect(loop.quit)
+
     thread = NDSThread([channel], nds_backend["host"], nds_backend["port"])
     received: list[tuple[dict, str, bool]] = []
 
     thread.dataReceived.connect(
-        lambda payload, trend, is_online: received.append((payload, trend, is_online))
+        lambda payload, trend, is_online: (
+            received.append((payload, trend, is_online)),
+            loop.quit(),
+        )
     )
 
     thread.start()
     try:
-        qtbot.waitUntil(lambda: len(received) > 0, timeout=timeout_ms)
+        timer.start(timeout_ms)
+        loop.exec_()
     finally:
+        timer.stop()
         thread.stop()
         thread.wait(5000)
 
+    assert received, f"NDSThread produced no payload within {timeout_ms} ms"
     payload, trend, is_online = received[0]
 
     assert trend == "raw"

@@ -176,7 +176,9 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             # gwpy's TimeSeriesDict.resample is in-place
             return super().resample(rate, **kwargs)
 
-    hilbert = _make_dict_map_method("hilbert", doc="Apply Hilbert transform to each item.")
+    hilbert = _make_dict_map_method(
+        "hilbert", doc="Apply Hilbert transform to each item."
+    )
     envelope = _make_dict_map_method("envelope", doc="Apply envelope to each item.")
     instantaneous_phase = _make_dict_map_method(
         "instantaneous_phase", doc="Apply instantaneous_phase to each item."
@@ -227,18 +229,26 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             return obj
         return res
 
-    radian = _make_dict_map_method("radian", doc="Compute instantaneous phase (in radians) of each item.")
-    degree = _make_dict_map_method("degree", doc="Compute instantaneous phase (in degrees) of each item.")
+    radian = _make_dict_map_method(
+        "radian", doc="Compute instantaneous phase (in radians) of each item."
+    )
+    degree = _make_dict_map_method(
+        "degree", doc="Compute instantaneous phase (in degrees) of each item."
+    )
 
     # phase() and angle() are provided by PhaseMethodsMixin
 
-    unwrap_phase = _make_dict_map_method("unwrap_phase", doc="Apply unwrap_phase to each item.")
+    unwrap_phase = _make_dict_map_method(
+        "unwrap_phase", doc="Apply unwrap_phase to each item."
+    )
     instantaneous_frequency = _make_dict_map_method(
         "instantaneous_frequency", doc="Apply instantaneous_frequency to each item."
     )
     mix_down = _make_dict_map_method("mix_down", doc="Apply mix_down to each item.")
     baseband = _make_dict_map_method("baseband", doc="Apply baseband to each item.")
-    heterodyne = _make_dict_map_method("heterodyne", doc="Apply heterodyne to each item.")
+    heterodyne = _make_dict_map_method(
+        "heterodyne", doc="Apply heterodyne to each item."
+    )
 
     def lock_in(self, *args, **kwargs):
         """
@@ -844,12 +854,20 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     # --- Signal Processing ---
 
-    decimate = _make_dict_map_method("decimate", doc="Decimate each TimeSeries in the dict.")
+    decimate = _make_dict_map_method(
+        "decimate", doc="Decimate each TimeSeries in the dict."
+    )
     filter = _make_dict_map_method("filter", doc="Filter each TimeSeries in the dict.")
     whiten = _make_dict_map_method("whiten", doc="Whiten each TimeSeries in the dict.")
-    notch = _make_dict_map_method("notch", doc="Notch filter each TimeSeries in the dict.")
-    zpk = _make_dict_map_method("zpk", doc="Apply ZPK filter to each TimeSeries in the dict.")
-    detrend = _make_dict_map_method("detrend", doc="Detrend each TimeSeries in the dict.")
+    notch = _make_dict_map_method(
+        "notch", doc="Notch filter each TimeSeries in the dict."
+    )
+    zpk = _make_dict_map_method(
+        "zpk", doc="Apply ZPK filter to each TimeSeries in the dict."
+    )
+    detrend = _make_dict_map_method(
+        "detrend", doc="Detrend each TimeSeries in the dict."
+    )
     taper = _make_dict_map_method("taper", doc="Taper each TimeSeries in the dict.")
 
     # --- Spectral Conversion ---
@@ -1435,22 +1453,40 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
 
     # --- Signal Processing ---
 
-    resample = _make_list_map_method("resample", doc="Resample each TimeSeries in the list.")
-    decimate = _make_list_map_method("decimate", doc="Decimate each TimeSeries in the list.")
+    resample = _make_list_map_method(
+        "resample", doc="Resample each TimeSeries in the list."
+    )
+    decimate = _make_list_map_method(
+        "decimate", doc="Decimate each TimeSeries in the list."
+    )
     filter = _make_list_map_method("filter", doc="Filter each TimeSeries in the list.")
     whiten = _make_list_map_method("whiten", doc="Whiten each TimeSeries in the list.")
-    notch = _make_list_map_method("notch", doc="Notch filter each TimeSeries in the list.")
+    notch = _make_list_map_method(
+        "notch", doc="Notch filter each TimeSeries in the list."
+    )
     zpk = _make_list_map_method("zpk", doc="ZPK filter each TimeSeries in the list.")
-    detrend = _make_list_map_method("detrend", doc="Detrend each TimeSeries in the list.")
+    detrend = _make_list_map_method(
+        "detrend", doc="Detrend each TimeSeries in the list."
+    )
     taper = _make_list_map_method("taper", doc="Taper each TimeSeries in the list.")
-    hilbert = _make_list_map_method("hilbert", doc="Apply Hilbert transform to each item.")
+    hilbert = _make_list_map_method(
+        "hilbert", doc="Apply Hilbert transform to each item."
+    )
     envelope = _make_list_map_method("envelope", doc="Apply envelope to each item.")
-    instantaneous_phase = _make_list_map_method("instantaneous_phase", doc="Apply instantaneous_phase to each item.")
-    unwrap_phase = _make_list_map_method("unwrap_phase", doc="Apply unwrap_phase to each item.")
-    instantaneous_frequency = _make_list_map_method("instantaneous_frequency", doc="Apply instantaneous_frequency to each item.")
+    instantaneous_phase = _make_list_map_method(
+        "instantaneous_phase", doc="Apply instantaneous_phase to each item."
+    )
+    unwrap_phase = _make_list_map_method(
+        "unwrap_phase", doc="Apply unwrap_phase to each item."
+    )
+    instantaneous_frequency = _make_list_map_method(
+        "instantaneous_frequency", doc="Apply instantaneous_frequency to each item."
+    )
     mix_down = _make_list_map_method("mix_down", doc="Apply mix_down to each item.")
     baseband = _make_list_map_method("baseband", doc="Apply baseband to each item.")
-    heterodyne = _make_list_map_method("heterodyne", doc="Apply heterodyne to each item.")
+    heterodyne = _make_list_map_method(
+        "heterodyne", doc="Apply heterodyne to each item."
+    )
 
     def lock_in(self, *args, **kwargs):
         """Apply lock_in to each item."""
@@ -1475,31 +1511,38 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     # --- Spectral Conversion ---
 
     fft = _make_list_map_method(
-        "fft", doc="Apply FFT to each TimeSeries. Returns a FrequencySeriesList.",
+        "fft",
+        doc="Apply FFT to each TimeSeries. Returns a FrequencySeriesList.",
         result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
     )
     average_fft = _make_list_map_method(
-        "average_fft", doc="Apply average_fft to each TimeSeries. Returns a FrequencySeriesList.",
+        "average_fft",
+        doc="Apply average_fft to each TimeSeries. Returns a FrequencySeriesList.",
         result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
     )
     psd = _make_list_map_method(
-        "psd", doc="Compute PSD for each TimeSeries. Returns a FrequencySeriesList.",
+        "psd",
+        doc="Compute PSD for each TimeSeries. Returns a FrequencySeriesList.",
         result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
     )
     asd = _make_list_map_method(
-        "asd", doc="Compute ASD for each TimeSeries. Returns a FrequencySeriesList.",
+        "asd",
+        doc="Compute ASD for each TimeSeries. Returns a FrequencySeriesList.",
         result_class_path="gwexpy.frequencyseries.FrequencySeriesList",
     )
     spectrogram = _make_list_map_method(
-        "spectrogram", doc="Compute spectrogram for each TimeSeries. Returns a SpectrogramList.",
+        "spectrogram",
+        doc="Compute spectrogram for each TimeSeries. Returns a SpectrogramList.",
         result_class_path="gwexpy.spectrogram.SpectrogramList",
     )
     spectrogram2 = _make_list_map_method(
-        "spectrogram2", doc="Compute spectrogram2 for each TimeSeries. Returns a SpectrogramList.",
+        "spectrogram2",
+        doc="Compute spectrogram2 for each TimeSeries. Returns a SpectrogramList.",
         result_class_path="gwexpy.spectrogram.SpectrogramList",
     )
     q_transform = _make_list_map_method(
-        "q_transform", doc="Compute Q-transform for each TimeSeries. Returns a SpectrogramList.",
+        "q_transform",
+        doc="Compute Q-transform for each TimeSeries. Returns a SpectrogramList.",
         result_class_path="gwexpy.spectrogram.SpectrogramList",
     )
 
@@ -1736,8 +1779,12 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
 
-    radian = _make_list_map_method("radian", doc="Compute instantaneous phase (in radians) of each item.")
-    degree = _make_list_map_method("degree", doc="Compute instantaneous phase (in degrees) of each item.")
+    radian = _make_list_map_method(
+        "radian", doc="Compute instantaneous phase (in radians) of each item."
+    )
+    degree = _make_list_map_method(
+        "degree", doc="Compute instantaneous phase (in degrees) of each item."
+    )
 
     # phase() and angle() are provided by PhaseMethodsMixin
 

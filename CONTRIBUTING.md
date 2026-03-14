@@ -1,6 +1,6 @@
-# Contributing to GWExPy
+# Contributing to GWexpy
 
-Thanks for your interest in contributing to GWExPy!
+Thanks for your interest in contributing to GWexpy!
 
 ## Development setup
 
