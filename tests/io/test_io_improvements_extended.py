@@ -219,7 +219,6 @@ def test_wav_scipy_kwargs_filtering(tmp_path):
         path,
         format="wav",
         start=0,  # These are gwpy-specific, not scipy
-        end=10,
-        # format='wav'  # This would conflict with scipy's format parameter
+        end=0.1,
     )
     assert isinstance(ts, TimeSeries)
