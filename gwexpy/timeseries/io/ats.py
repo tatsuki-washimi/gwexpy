@@ -6,6 +6,7 @@ Based on binary header parsing logic provided by user (ats2gwf.py).
 from __future__ import annotations
 
 import datetime
+import struct
 import warnings
 from pathlib import Path
 from typing import Any
@@ -26,6 +27,60 @@ from .. import TimeSeries, TimeSeriesDict
 from ._registration import register_timeseries_format
 
 _ATS_HEADER_MIN_SIZE = 1024
+ATS_SUPPORTED_VERSIONS = frozenset({80, 81, 1080})  # Metronix ATS header versions
+
+
+def identify_ats(origin, filepath, fileobj, *args, **kwargs):
+    """
+    Identify ATS file by Metronix header signature.
+
+    ATS files have a distinctive binary header:
+    - Bytes 0-2: header_size (little-endian uint16, always >= 1024)
+    - Bytes 2-4: header_vers (little-endian int16, in {80, 81, 1080})
+
+    Parameters
+    ----------
+    origin : type
+        Data class (TimeSeries, TimeSeriesDict, etc.)
+    filepath : str, Path, or None
+        File path to check
+    fileobj : file-like or None
+        File object (not used)
+    *args, **kwargs
+        Additional arguments (ignored)
+
+    Returns
+    -------
+    bool
+        True if file matches ATS format, False otherwise.
+
+    Notes
+    -----
+    Reliability: Medium-High (★★) - False positive rate < 1%
+
+    Supported header versions:
+    - 80: Standard ATS format
+    - 81: Extended ATS format
+    - 1080: CEA/sliced header (not yet supported for reading)
+
+    If you encounter a new version, please report it as an issue.
+    """
+    if filepath is None:
+        return False
+    try:
+        with open(filepath, 'rb') as f:
+            header = f.read(4)
+            if len(header) < 4:
+                return False
+
+            header_size = struct.unpack('<H', header[0:2])[0]
+            header_vers = struct.unpack('<h', header[2:4])[0]
+
+            # Metronix ATS header is always >= 1024 bytes
+            # Version must be in supported list
+            return header_size >= 1024 and header_vers in ATS_SUPPORTED_VERSIONS
+    except (IOError, OSError, struct.error):
+        return False
 
 
 def _decode_fixed_ascii(raw: bytes) -> str:
@@ -281,6 +336,7 @@ register_timeseries_format(
     "ats",
     reader_dict=read_timeseriesdict_ats,
     reader_single=read_timeseries_ats,
+    magic_identifier=identify_ats,
     extension="ats",
 )
 

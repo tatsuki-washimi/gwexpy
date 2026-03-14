@@ -30,6 +30,7 @@ def register_timeseries_format(
     writer_matrix: Callable[..., Any] | None = None,
     identifier_dict: Callable[..., bool] | None = None,
     identifier_single: Callable[..., bool] | None = None,
+    magic_identifier: Callable[..., bool] | None = None,
     extension: str | None = None,
     auto_adapt: bool = True,
     force: bool = True,
@@ -66,6 +67,10 @@ def register_timeseries_format(
         will be auto-generated.
     identifier_single : callable, optional
         Identifier function for TimeSeries. If None, uses identifier_dict.
+    magic_identifier : callable, optional
+        Magic number-based identifier function. If provided along with extension,
+        creates a combined identifier that checks magic number first, then falls
+        back to extension matching.
     extension : str, optional
         File extension (e.g., "ats", "wav"). Used for auto-generating identifiers.
     auto_adapt : bool, optional
@@ -201,15 +206,36 @@ def register_timeseries_format(
         )
 
     # Register identifiers
-    if identifier_dict is None and extension is not None:
-        # Auto-generate extension-based identifier
-        def _extension_identifier(*args, **kwargs):
-            # args[1] is the source path in gwpy's identifier signature
-            if len(args) < 2:
-                return False
-            return str(args[1]).lower().endswith(f".{extension}")
+    if identifier_dict is None:
+        # Create combined identifier if magic_identifier is provided
+        if magic_identifier is not None:
+            def _combined_identifier(origin, filepath, fileobj, *args, **kwargs):
+                """Check magic number first, then fall back to extension."""
+                # 1. Try magic number identification (high reliability)
+                if magic_identifier is not None:
+                    try:
+                        if magic_identifier(origin, filepath, fileobj, *args, **kwargs):
+                            return True
+                    except Exception:
+                        pass  # Fall through to extension check
 
-        identifier_dict = _extension_identifier
+                # 2. Fall back to extension check
+                if extension is not None and filepath is not None:
+                    return str(filepath).lower().endswith(f".{extension}")
+
+                return False
+
+            identifier_dict = _combined_identifier
+
+        elif extension is not None:
+            # Auto-generate extension-only identifier
+            def _extension_identifier(*args, **kwargs):
+                # args[1] is the source path in gwpy's identifier signature
+                if len(args) < 2:
+                    return False
+                return str(args[1]).lower().endswith(f".{extension}")
+
+            identifier_dict = _extension_identifier
 
     if identifier_dict is not None:
         io_registry.register_identifier(format_name, TimeSeriesDict, identifier_dict)
