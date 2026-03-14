@@ -11,16 +11,18 @@ from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
     ensure_datetime,
+    ensure_dependency,
     parse_timezone,
     set_provenance,
 )
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._registration import register_timeseries_format
 
 
 def _import_obspy():
     try:
-        import obspy  # type: ignore
+        obspy = ensure_dependency("obspy")
     except ImportError as exc:  # pragma: no cover - optional dependency
         raise ImportError(
             "ObsPy is required for reading seismic files. "
@@ -198,66 +200,43 @@ def write_gse2(tsd, target, **kwargs):
 # -- Registration
 
 # MINISEED
-io_registry.register_reader("miniseed", TimeSeriesDict, read_miniseed_timeseriesdict)
-io_registry.register_reader(
+register_timeseries_format(
     "miniseed",
-    TimeSeries,
-    lambda *a, **k: _adapt_timeseries(read_miniseed_timeseriesdict, *a, **k),
-)
-io_registry.register_reader(
-    "miniseed",
-    TimeSeriesMatrix,
-    lambda *a, **k: _adapt_matrix(read_miniseed_timeseriesdict, *a, **k),
-)
-io_registry.register_writer("miniseed", TimeSeriesDict, write_miniseed)
-io_registry.register_writer(
-    "miniseed", TimeSeries, lambda ts, f, **k: write_miniseed({ts.name: ts}, f, **k)
+    reader_dict=read_miniseed_timeseriesdict,
+    reader_single=lambda *a, **k: _adapt_timeseries(read_miniseed_timeseriesdict, *a, **k),
+    reader_matrix=lambda *a, **k: _adapt_matrix(read_miniseed_timeseriesdict, *a, **k),
+    writer_dict=write_miniseed,
+    writer_single=lambda ts, f, **k: write_miniseed({ts.name: ts}, f, **k),
+    auto_adapt=False,
 )
 
 # SAC
-io_registry.register_reader("sac", TimeSeriesDict, read_sac_timeseriesdict)
-io_registry.register_reader(
+register_timeseries_format(
     "sac",
-    TimeSeries,
-    lambda *a, **k: _adapt_timeseries(read_sac_timeseriesdict, *a, **k),
-)
-io_registry.register_reader(
-    "sac",
-    TimeSeriesMatrix,
-    lambda *a, **k: _adapt_matrix(read_sac_timeseriesdict, *a, **k),
-)
-io_registry.register_writer("sac", TimeSeriesDict, write_sac)
-io_registry.register_writer(
-    "sac", TimeSeries, lambda ts, f, **k: write_sac({ts.name: ts}, f, **k)
+    reader_dict=read_sac_timeseriesdict,
+    reader_single=lambda *a, **k: _adapt_timeseries(read_sac_timeseriesdict, *a, **k),
+    reader_matrix=lambda *a, **k: _adapt_matrix(read_sac_timeseriesdict, *a, **k),
+    writer_dict=write_sac,
+    writer_single=lambda ts, f, **k: write_sac({ts.name: ts}, f, **k),
+    auto_adapt=False,
 )
 
 # GSE2
-io_registry.register_reader("gse2", TimeSeriesDict, read_gse2_timeseriesdict)
-io_registry.register_reader(
+register_timeseries_format(
     "gse2",
-    TimeSeries,
-    lambda *a, **k: _adapt_timeseries(read_gse2_timeseriesdict, *a, **k),
+    reader_dict=read_gse2_timeseriesdict,
+    reader_single=lambda *a, **k: _adapt_timeseries(read_gse2_timeseriesdict, *a, **k),
+    reader_matrix=lambda *a, **k: _adapt_matrix(read_gse2_timeseriesdict, *a, **k),
+    writer_dict=write_gse2,
+    writer_single=lambda ts, f, **k: write_gse2({ts.name: ts}, f, **k),
+    auto_adapt=False,
 )
-io_registry.register_reader(
-    "gse2",
-    TimeSeriesMatrix,
-    lambda *a, **k: _adapt_matrix(read_gse2_timeseriesdict, *a, **k),
-)
-io_registry.register_writer("gse2", TimeSeriesDict, write_gse2)
-io_registry.register_writer(
-    "gse2", TimeSeries, lambda ts, f, **k: write_gse2({ts.name: ts}, f, **k)
-)
-
 
 # KNET (Read only typically)
-io_registry.register_reader("knet", TimeSeriesDict, read_knet_timeseriesdict)
-io_registry.register_reader(
+register_timeseries_format(
     "knet",
-    TimeSeries,
-    lambda *a, **k: _adapt_timeseries(read_knet_timeseriesdict, *a, **k),
-)
-io_registry.register_reader(
-    "knet",
-    TimeSeriesMatrix,
-    lambda *a, **k: _adapt_matrix(read_knet_timeseriesdict, *a, **k),
+    reader_dict=read_knet_timeseriesdict,
+    reader_single=lambda *a, **k: _adapt_timeseries(read_knet_timeseriesdict, *a, **k),
+    reader_matrix=lambda *a, **k: _adapt_matrix(read_knet_timeseriesdict, *a, **k),
+    auto_adapt=False,
 )

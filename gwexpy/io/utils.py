@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import datetime as _dt
+import importlib
 from collections.abc import Iterable
 from typing import Any, cast
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -181,3 +182,47 @@ def maybe_pad_timeseries(ts, pad_value=np.nan, start=None, end=None, gap="pad"):
     if gap not in ("pad", "raise"):
         return ts
     return _pad_series(ts, pad_value, start=start, end=end, error=(gap == "raise"))
+
+
+def ensure_dependency(
+    package_name: str,
+    *,
+    extra: str | None = None,
+    import_name: str | None = None,
+) -> Any:
+    """
+    Import a package or raise a standardized ImportError.
+
+    Parameters
+    ----------
+    package_name : str
+        PyPI package name (for pip install instructions).
+    extra : str, optional
+        Optional extras specifier (e.g., "gui", "analysis").
+    import_name : str, optional
+        Import name if different from package_name.
+
+    Returns
+    -------
+    module
+        The imported module.
+
+    Raises
+    ------
+    ImportError
+        With standardized installation instructions.
+
+    Examples
+    --------
+    >>> xarray = ensure_dependency("xarray")  # doctest: +SKIP
+    >>> nptdms = ensure_dependency("nptdms", import_name="nptdms")  # doctest: +SKIP
+    """
+    try:
+        name = import_name or package_name
+        return importlib.import_module(name)
+    except ImportError as exc:
+        install_cmd = f"pip install {package_name}"
+        if extra:
+            install_cmd += f"[{extra}]"
+        msg = f"{package_name} is required. Install with: {install_cmd}"
+        raise ImportError(msg) from exc

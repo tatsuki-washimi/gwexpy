@@ -5,35 +5,56 @@ TDMS (National Instruments) reader for gwexpy.
 from __future__ import annotations
 
 import datetime
+from collections.abc import Iterable
 
 import numpy as np
+from astropy import units as u
 from gwpy.io.registry import default_registry as io_registry
 
-from gwexpy.io.utils import apply_unit, set_provenance
+from gwexpy.io.utils import (
+    apply_unit,
+    datetime_to_gps,
+    ensure_dependency,
+    set_provenance,
+)
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._registration import register_timeseries_format
 
 
 def _import_nptdms():
     try:
-        from nptdms import TdmsFile
+        nptdms = ensure_dependency("nptdms")
+        return nptdms.TdmsFile
     except ImportError as exc:
         raise ImportError(
             "npTDMS is required for reading TDMS files. "
             "Install with `pip install nptdms`."
         ) from exc
-    return TdmsFile
 
 
 def read_timeseriesdict_tdms(
     source,
     *,
-    channels=None,
-    unit=None,
+    channels: Iterable[str] | None = None,
+    unit: str | u.Unit | None = None,
+    epoch: float | datetime.datetime | None = None,
     **kwargs,
 ) -> TimeSeriesDict:
     """
     Read a TDMS file into a TimeSeriesDict.
+
+    Parameters
+    ----------
+    source : str or Path
+        Path to the TDMS file.
+    channels : iterable of str, optional
+        Channel names to keep.
+    unit : str or Unit, optional
+        Physical unit override.
+    epoch : float or datetime, optional
+        Override the start time (GPS seconds or datetime).
+        If not provided, uses the timestamp from the TDMS file properties.
     """
     TdmsFile = _import_nptdms()
     tdms_file = TdmsFile.read(source)
@@ -68,10 +89,16 @@ def read_timeseriesdict_tdms(
             ) and "DateTime" in tdms_file.properties:
                 t0 = tdms_file.properties["DateTime"]
 
+            # epoch オーバーライド処理
+            if epoch is not None:
+                if isinstance(epoch, (int, float)):
+                    t0 = float(epoch)
+                elif isinstance(epoch, datetime.datetime):
+                    t0 = datetime_to_gps(epoch)
+                else:
+                    raise TypeError(f"epoch must be float or datetime, got {type(epoch)}")
             # Convert numpy.datetime64 or datetime.datetime to GPS
-            if isinstance(t0, (np.datetime64, datetime.datetime)):
-                from gwexpy.io.utils import datetime_to_gps
-
+            elif isinstance(t0, (np.datetime64, datetime.datetime)):
                 if isinstance(t0, np.datetime64):
                     if np.isnat(t0):
                         t0 = 0.0
@@ -103,6 +130,8 @@ def read_timeseriesdict_tdms(
         {
             "format": "tdms",
             "channels": list(tsd.keys()),
+            "epoch_source": "user" if epoch else "tdms_properties",
+            "unit_source": "override" if unit else "tdms",
         },
     )
     return tsd
@@ -121,15 +150,11 @@ def read_timeseriesmatrix_tdms(*args, channels=None, **kwargs) -> TimeSeriesMatr
 
 
 # -- Registration
-io_registry.register_reader("tdms", TimeSeriesDict, read_timeseriesdict_tdms)
-io_registry.register_reader("tdms", TimeSeries, read_timeseries_tdms)
-io_registry.register_reader("tdms", TimeSeriesMatrix, read_timeseriesmatrix_tdms)
 
-io_registry.register_identifier(
+register_timeseries_format(
     "tdms",
-    TimeSeriesDict,
-    lambda *args, **kwargs: str(args[1]).lower().endswith(".tdms"),
-)
-io_registry.register_identifier(
-    "tdms", TimeSeries, lambda *args, **kwargs: str(args[1]).lower().endswith(".tdms")
+    reader_dict=read_timeseriesdict_tdms,
+    reader_single=read_timeseries_tdms,
+    reader_matrix=read_timeseriesmatrix_tdms,
+    extension="tdms",
 )

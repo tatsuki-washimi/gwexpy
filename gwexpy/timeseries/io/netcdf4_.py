@@ -15,18 +15,20 @@ from gwpy.io.registry import default_registry as io_registry
 from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
+    ensure_dependency,
     filter_by_channels,
     set_provenance,
 )
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._registration import register_timeseries_format
 
 logger = logging.getLogger(__name__)
 
 
 def _import_xarray():
     try:
-        import xarray as xr
+        xr = ensure_dependency("xarray")
     except ImportError as exc:
         raise ImportError(
             "xarray is required for reading/writing NetCDF4 files. "
@@ -254,25 +256,12 @@ def write_timeseries_netcdf4(ts, target, **kwargs):
 # -- Registration --------------------------------------------------------------
 
 for _fmt in ("netcdf4", "nc"):
-    io_registry.register_reader(
-        _fmt, TimeSeriesDict, read_timeseriesdict_netcdf4, force=True
+    register_timeseries_format(
+        _fmt,
+        reader_dict=read_timeseriesdict_netcdf4,
+        reader_single=read_timeseries_netcdf4,
+        reader_matrix=read_timeseriesmatrix_netcdf4,
+        writer_dict=write_timeseriesdict_netcdf4,
+        writer_single=write_timeseries_netcdf4,
+        extension="nc" if _fmt == "netcdf4" else _fmt,
     )
-    io_registry.register_reader(_fmt, TimeSeries, read_timeseries_netcdf4, force=True)
-    io_registry.register_reader(
-        _fmt, TimeSeriesMatrix, read_timeseriesmatrix_netcdf4, force=True
-    )
-    io_registry.register_writer(
-        _fmt, TimeSeriesDict, write_timeseriesdict_netcdf4, force=True
-    )
-    io_registry.register_writer(_fmt, TimeSeries, write_timeseries_netcdf4, force=True)
-
-io_registry.register_identifier(
-    "netcdf4",
-    TimeSeriesDict,
-    lambda *args, **kwargs: str(args[1]).lower().endswith(".nc"),
-)
-io_registry.register_identifier(
-    "netcdf4",
-    TimeSeries,
-    lambda *args, **kwargs: str(args[1]).lower().endswith(".nc"),
-)

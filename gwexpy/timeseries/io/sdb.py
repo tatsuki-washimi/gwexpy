@@ -5,6 +5,7 @@ SDB (Davis Vantage Pro2 Weather Station / WeeWX SQLite) format reader.
 from __future__ import annotations
 
 import sqlite3
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -12,6 +13,7 @@ from astropy.time import Time
 from gwpy.io.registry import default_registry as io_registry
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._registration import register_timeseries_format
 
 # Unit extraction factors (Imperial to Metric)
 UNIT_CONVERSION = {
@@ -38,22 +40,23 @@ UNIT_CONVERSION = {
 }
 
 
-def read_timeseriesdict_sdb(source, table="archive", columns=None, **kwargs):
+def read_timeseriesdict_sdb(
+    source: str | Path, table="archive", columns=None, **kwargs
+):
     """
     Read SDB (SQLite) file into TimeSeriesDict.
 
     Parameters
     ----------
-    source : str
+    source : str or Path
         Path to SQLite database file.
     table : str, optional
         Table name to read from, default 'archive'.
     columns : list, optional
         List of column names to read. If None, reads all columns found in UNIT_CONVERSION + dateTime.
     """
-    filename = str(source)
-    # Open SQLite connection
-    conn = sqlite3.connect(filename)
+    # Open SQLite connection (Python 3.4+ accepts Path objects)
+    conn = sqlite3.connect(source)
 
     try:
         # Determine columns to query
@@ -159,24 +162,9 @@ def read_timeseries_sdb(source, **kwargs):
 # -- Registration
 
 for fmt in ["sdb", "sqlite", "sqlite3"]:
-    io_registry.register_reader(
-        fmt, TimeSeriesDict, read_timeseriesdict_sdb, force=True
-    )
-    io_registry.register_reader(fmt, TimeSeries, read_timeseries_sdb, force=True)
-    io_registry.register_reader(
+    register_timeseries_format(
         fmt,
-        TimeSeriesMatrix,
-        lambda *a, **k: read_timeseriesdict_sdb(*a, **k).to_matrix(),
-        force=True,
-    )
-
-    io_registry.register_identifier(
-        fmt,
-        TimeSeriesDict,
-        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
-    )
-    io_registry.register_identifier(
-        fmt,
-        TimeSeries,
-        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
+        reader_dict=read_timeseriesdict_sdb,
+        reader_single=read_timeseries_sdb,
+        extension=fmt,
     )

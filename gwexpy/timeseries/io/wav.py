@@ -5,20 +5,64 @@ Wrapper around scipy.io.wavfile to support TimeSeriesDict and metadata.
 
 from __future__ import annotations
 
+from datetime import datetime
+from collections.abc import Iterable
+
 import numpy as np
+from astropy import units as u
 from gwpy.io.registry import default_registry as io_registry
 from scipy.io import wavfile
 
+from gwexpy.io.utils import (
+    apply_unit,
+    datetime_to_gps,
+    filter_by_channels,
+    set_provenance,
+)
+
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._registration import register_timeseries_format
 
 
-def read_timeseriesdict_wav(source, **kwargs):
+def read_timeseriesdict_wav(
+    source,
+    *,
+    channels: Iterable[str] | None = None,
+    unit: str | u.Unit | None = None,
+    epoch: float | datetime | None = None,
+    **kwargs,
+):
     """
     Read a WAV file into a TimeSeriesDict.
 
+    Parameters
+    ----------
+    source : str or Path
+        Path to the WAV file.
+    channels : iterable of str, optional
+        Channel names to keep (e.g., ["channel_0"]).
+    unit : str or Unit, optional
+        Physical unit override.
+    epoch : float or datetime, optional
+        Override the start time (GPS seconds or datetime).
+        If not provided, defaults to 0.0 (WAV files do not carry absolute timestamps).
+    **kwargs
+        Additional arguments passed to scipy.io.wavfile.read.
+
+    Returns
+    -------
+    TimeSeriesDict
+        Dictionary of TimeSeries objects, one per channel.
+
+    Notes
+    -----
     Channels are named 'channel_0', 'channel_1', etc.
     """
-    rate, data = wavfile.read(source, **kwargs)
+    # Filter kwargs for wavfile.read
+    scipy_kwargs = {
+        k: v for k, v in kwargs.items() if k not in ("start", "end", "format")
+    }
+    rate, data = wavfile.read(source, **scipy_kwargs)
 
     # Check dimensions
     if data.ndim == 1:
@@ -29,11 +73,19 @@ def read_timeseriesdict_wav(source, **kwargs):
         # Multi-channel
         n_channels = data.shape[1]
 
+    # epoch 処理
+    if epoch is not None:
+        if isinstance(epoch, (int, float)):
+            t0 = float(epoch)
+        elif isinstance(epoch, datetime):
+            t0 = datetime_to_gps(epoch)
+        else:
+            raise TypeError(f"epoch must be float or datetime, got {type(epoch)}")
+    else:
+        t0 = 0.0  # 既存の動作を維持
+
     tsd = TimeSeriesDict()
     dt = 1.0 / rate
-
-    # WAV does not store absolute time, so default to 0 (GPS)
-    t0 = 0.0
 
     for i in range(n_channels):
         name = f"channel_{i}"
@@ -45,7 +97,24 @@ def read_timeseriesdict_wav(source, **kwargs):
             name=name,
             channel=name,
         )
+        # unit 適用
+        if unit is not None:
+            ts = apply_unit(ts, unit)
         tsd[name] = ts
+
+    # channels フィルタリング
+    if channels is not None:
+        tsd = TimeSeriesDict(filter_by_channels(tsd, channels))
+
+    # provenance 記録
+    set_provenance(
+        tsd,
+        {
+            "format": "wav",
+            "epoch_source": "user" if epoch else "default",
+            "unit_source": "override" if unit else "wav",
+        },
+    )
 
     return tsd
 
@@ -62,27 +131,11 @@ def read_timeseries_wav(source, **kwargs):
 
 
 # -- Registration
+# Override gwpy's default wav reader to ensure consistent behavior
 
-for fmt in ["wav"]:
-    io_registry.register_reader(
-        fmt, TimeSeriesDict, read_timeseriesdict_wav, force=True
-    )
-    # Override gwpy's default wav reader to ensure consistent behavior
-    io_registry.register_reader(fmt, TimeSeries, read_timeseries_wav, force=True)
-    io_registry.register_reader(
-        fmt,
-        TimeSeriesMatrix,
-        lambda *a, **k: read_timeseriesdict_wav(*a, **k).to_matrix(),
-        force=True,
-    )
-
-    io_registry.register_identifier(
-        fmt,
-        TimeSeriesDict,
-        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
-    )
-    io_registry.register_identifier(
-        fmt,
-        TimeSeries,
-        lambda *args, **kwargs: str(args[1]).lower().endswith(f".{fmt}"),
-    )
+register_timeseries_format(
+    "wav",
+    reader_dict=read_timeseriesdict_wav,
+    reader_single=read_timeseries_wav,
+    extension="wav",
+)

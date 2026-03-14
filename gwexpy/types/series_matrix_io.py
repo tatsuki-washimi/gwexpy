@@ -54,7 +54,9 @@ class SeriesMatrixIOMixin:
 
     # -- I/O (HDF5) -------------------------------------------------
     def to_pandas(self, format="wide"):
-        """Convert matrix to a pandas DataFrame."""
+        """
+        Convert matrix to a pandas DataFrame.
+        """
         pd = require_optional("pandas")
         if format == "wide":
             N, M, K = self._value.shape
@@ -105,8 +107,12 @@ class SeriesMatrixIOMixin:
             raise ValueError(f"Unknown format: {format}")
 
     def write(self, target, format=None, **kwargs):
-        """Write matrix to file."""
+        """
+        Write matrix to file.
+        """
         from pathlib import Path
+
+        from gwpy.io.registry import default_registry as io_registry
 
         if format is None:
             ext = Path(target).suffix.lower()
@@ -116,18 +122,26 @@ class SeriesMatrixIOMixin:
                 format = "csv"
             elif ext in [".parquet", ".pq"]:
                 format = "parquet"
-            else:
-                format = "hdf5"
+
         if format == "hdf5":
             return self.to_hdf5(target, **kwargs)
-        elif format == "csv":
+        if format == "csv":
             df = self.to_pandas(format="wide")
             return df.to_csv(target, **kwargs)
-        elif format == "parquet":
+        if format == "parquet":
             df = self.to_pandas(format="wide")
             return df.to_parquet(target, **kwargs)
-        else:
-            raise ValueError(f"Unsupported format: {format}")
+
+        # Fall back to unified registry
+        try:
+            return io_registry.write(self, target, format=format, **kwargs)
+        except (KeyError, TypeError, ValueError, Exception):
+            if format is None:
+                raise ValueError(
+                    f"Could not identify format for {target}. "
+                    "Please specify 'format' argument."
+                )
+            raise
 
     def to_hdf5(self, filepath, **kwargs):
         """Write matrix to HDF5 file."""
@@ -251,15 +265,24 @@ class SeriesMatrixIOMixin:
 
         import h5py  # noqa: F401 - availability check
 
+        from gwpy.io.registry import default_registry as io_registry
+
         if format is None:
             ext = Path(source).suffix.lower()
             if ext in [".h5", ".hdf5", ".hdf"]:
                 format = "hdf5"
-            else:
-                format = "hdf5"
 
         if format != "hdf5":
-            raise NotImplementedError(f"Format {format} is not supported for read")
+            # Fall back to unified registry
+            try:
+                return io_registry.read(cls, source, format=format, **kwargs)
+            except (KeyError, TypeError, ValueError, Exception):
+                if format is None:
+                    raise ValueError(
+                        f"Could not identify format for {source}. "
+                        "Please specify 'format' argument."
+                    )
+                raise
 
         with h5py.File(source, "r") as f:
             data = f["data"][:]

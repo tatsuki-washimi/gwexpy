@@ -28,6 +28,7 @@ from gwexpy.io.utils import (
 )
 
 from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from ._registration import register_timeseries_format
 
 HEADER_SIZE_PATTERN = re.compile(r"HeaderSiz[e]?\s*[:=]\s*(\d+)", re.IGNORECASE)
 GBD_FULL_SCALE = 20000.0
@@ -396,12 +397,10 @@ def _read_data_block(fh, header: GBDHeader) -> np.ndarray:
 
 # -- registration
 
-io_registry.register_reader("gbd", TimeSeriesDict, read_timeseriesdict_gbd)
-io_registry.register_reader("gbd", TimeSeries, read_timeseries_gbd)
-io_registry.register_reader("gbd", TimeSeriesMatrix, read_timeseriesmatrix_gbd)
-io_registry.register_identifier(
-    "gbd", TimeSeriesDict, lambda *args, **kwargs: str(args[1]).lower().endswith(".gbd")
-)
-io_registry.register_identifier(
-    "gbd", TimeSeries, lambda *args, **kwargs: str(args[1]).lower().endswith(".gbd")
+register_timeseries_format(
+    "gbd",
+    reader_dict=read_timeseriesdict_gbd,
+    reader_single=read_timeseries_gbd,
+    reader_matrix=read_timeseriesmatrix_gbd,
+    extension="gbd",
 )
