@@ -1,0 +1,1 @@
+Please refer to [.agent/AGENTS.md](.agent/AGENTS.md) for all instructions and guidelines.
