@@ -3,7 +3,9 @@ from __future__ import annotations
 import contextlib
 import datetime as _dt
 import importlib
+import warnings
 from collections.abc import Iterable
+from pathlib import Path
 from typing import Any, cast
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -226,3 +228,74 @@ def ensure_dependency(
             install_cmd += f"[{extra}]"
         msg = f"{package_name} is required. Install with: {install_cmd}"
         raise ImportError(msg) from exc
+
+
+def extract_audio_metadata(source: str | Path) -> dict[str, Any]:
+    """
+    Extract audio metadata using tinytag.
+
+    Attempts to read common audio metadata fields (title, artist, album, genre,
+    duration, bitrate, etc.) from audio files. Returns an empty dictionary if
+    tinytag is not installed or if metadata extraction fails.
+
+    Parameters
+    ----------
+    source : str or Path
+        Path to the audio file.
+
+    Returns
+    -------
+    dict
+        Dictionary of metadata fields. Only non-None values are included.
+        Possible keys: title, artist, album, genre, duration, bitrate,
+        comment, track, year.
+
+    Notes
+    -----
+    Requires the optional ``tinytag`` package::
+
+        pip install tinytag
+
+    Or install with the ``audio`` extra::
+
+        pip install gwexpy[audio]
+
+    Examples
+    --------
+    >>> metadata = extract_audio_metadata("song.mp3")  # doctest: +SKIP
+    >>> print(metadata.get("title"))  # doctest: +SKIP
+    'Song Title'
+    """
+    try:
+        from tinytag import TinyTag
+
+        tag = TinyTag.get(str(source))
+        metadata = {
+            "title": tag.title,
+            "artist": tag.artist,
+            "album": tag.album,
+            "genre": tag.genre,
+            "duration": tag.duration,
+            "bitrate": tag.bitrate,
+            "comment": tag.comment,
+            "track": tag.track,
+            "year": tag.year,
+        }
+        # Filter out None values
+        return {k: v for k, v in metadata.items() if v is not None}
+    except ImportError:
+        warnings.warn(
+            "tinytag is required for metadata extraction. "
+            "Install with: pip install tinytag",
+            UserWarning,
+            stacklevel=3,
+        )
+        return {}
+    except Exception as e:
+        # Metadata extraction failure should not break file reading
+        warnings.warn(
+            f"Failed to extract metadata: {e}",
+            UserWarning,
+            stacklevel=3,
+        )
+        return {}

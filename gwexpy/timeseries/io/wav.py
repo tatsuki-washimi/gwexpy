@@ -15,6 +15,7 @@ from scipy.io import wavfile
 from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
+    extract_audio_metadata,
     filter_by_channels,
     set_provenance,
 )
@@ -29,6 +30,7 @@ def read_timeseriesdict_wav(
     channels: Iterable[str] | None = None,
     unit: str | u.Unit | None = None,
     epoch: float | datetime | None = None,
+    extract_metadata: bool = False,
     **kwargs,
 ):
     """
@@ -45,6 +47,11 @@ def read_timeseriesdict_wav(
     epoch : float or datetime, optional
         Override the start time (GPS seconds or datetime).
         If not provided, defaults to 0.0 (WAV files do not carry absolute timestamps).
+    extract_metadata : bool, optional
+        If True, attempt to extract audio metadata (title, artist, album, etc.)
+        using tinytag. Metadata is stored in the provenance. Requires the
+        optional ``tinytag`` package (``pip install gwexpy[audio]``).
+        Default: False (for backward compatibility).
     **kwargs
         Additional arguments passed to scipy.io.wavfile.read.
 
@@ -105,15 +112,20 @@ def read_timeseriesdict_wav(
     if channels is not None:
         tsd = TimeSeriesDict(filter_by_channels(tsd, channels))
 
-    # provenance 記録
-    set_provenance(
-        tsd,
-        {
-            "format": "wav",
-            "epoch_source": "user" if epoch else "default",
-            "unit_source": "override" if unit else "wav",
-        },
-    )
+    # Build provenance metadata
+    provenance = {
+        "format": "wav",
+        "epoch_source": "user" if epoch else "default",
+        "unit_source": "override" if unit else "wav",
+    }
+
+    # Extract audio metadata if requested
+    if extract_metadata:
+        metadata = extract_audio_metadata(source)
+        if metadata:
+            provenance.update(metadata)
+
+    set_provenance(tsd, provenance)
 
     return tsd
 

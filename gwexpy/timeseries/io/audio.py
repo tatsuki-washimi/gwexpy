@@ -17,6 +17,7 @@ from gwexpy.io.utils import (
     apply_unit,
     datetime_to_gps,
     ensure_dependency,
+    extract_audio_metadata,
     filter_by_channels,
     set_provenance,
 )
@@ -44,6 +45,7 @@ def read_timeseriesdict_audio(
     channels: Iterable[str] | None = None,
     unit: str | u.Unit | None = None,
     epoch: float | datetime | None = None,
+    extract_metadata: bool = False,
     **kwargs,
 ) -> TimeSeriesDict:
     """Read an audio file into a TimeSeriesDict via pydub.
@@ -62,6 +64,11 @@ def read_timeseriesdict_audio(
     epoch : float or datetime, optional
         Override the start time (GPS seconds or datetime).
         If not provided, defaults to 0.0 (audio files do not carry absolute timestamps).
+    extract_metadata : bool, optional
+        If True, attempt to extract audio metadata (title, artist, album, etc.)
+        using tinytag. Metadata is stored in the provenance. Requires the
+        optional ``tinytag`` package (``pip install gwexpy[audio]``).
+        Default: False (for backward compatibility).
     """
     AudioSegment = _import_pydub()
 
@@ -116,17 +123,23 @@ def read_timeseriesdict_audio(
     if channels:
         tsd = TimeSeriesDict(filter_by_channels(tsd, channels))
 
-    set_provenance(
-        tsd,
-        {
-            "format": format_hint or "audio",
-            "sample_rate": sample_rate,
-            "sample_width_bytes": sample_width,
-            "original_channels": n_channels,
-            "epoch_source": "user" if epoch else "default",
-            "unit_source": "override" if unit else "normalised_float",
-        },
-    )
+    # Build provenance metadata
+    provenance = {
+        "format": format_hint or "audio",
+        "sample_rate": sample_rate,
+        "sample_width_bytes": sample_width,
+        "original_channels": n_channels,
+        "epoch_source": "user" if epoch else "default",
+        "unit_source": "override" if unit else "normalised_float",
+    }
+
+    # Extract audio metadata if requested
+    if extract_metadata:
+        metadata = extract_audio_metadata(source)
+        if metadata:
+            provenance.update(metadata)
+
+    set_provenance(tsd, provenance)
     return tsd
 
 
