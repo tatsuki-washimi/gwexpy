@@ -102,6 +102,7 @@
     <span class="n">_make_dict_plain_method</span><span class="p">,</span>
     <span class="n">_make_list_map_method</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.types.mixin._plot_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlotMixin</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span><span class="p">,</span> <span class="n">as_series_dict_class</span>
 
@@ -380,7 +381,9 @@
 
 
     <span class="n">pad</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;pad&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Pad each FrequencySeries in the dict.&quot;</span><span class="p">)</span>
-    <span class="n">interpolate</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Interpolate each FrequencySeries in the dict.&quot;</span><span class="p">)</span>
+    <span class="n">interpolate</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Interpolate each FrequencySeries in the dict.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># --- In-place Element Operations ---</span>
 
@@ -413,8 +416,12 @@
     <span class="c1"># ===============================</span>
 
     <span class="n">zpk</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply ZPK filter to each FrequencySeries.&quot;</span><span class="p">)</span>
-    <span class="nb">filter</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply filter to each FrequencySeries.&quot;</span><span class="p">)</span>
-    <span class="n">apply_response</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;apply_response&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply response to each FrequencySeries.&quot;</span><span class="p">)</span>
+    <span class="nb">filter</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply filter to each FrequencySeries.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">apply_response</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;apply_response&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply response to each FrequencySeries.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 3. Analysis &amp; Conversion</span>
@@ -429,13 +436,23 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-    <span class="n">degree</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute phase (in degrees) of each FrequencySeries.&quot;</span><span class="p">)</span>
+    <span class="n">degree</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute phase (in degrees) of each FrequencySeries.&quot;</span>
+    <span class="p">)</span>
     <span class="n">to_db</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;to_db&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Convert each FrequencySeries to dB.&quot;</span><span class="p">)</span>
-    <span class="n">differentiate_time</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;differentiate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time differentiation to each item.&quot;</span><span class="p">)</span>
-    <span class="n">integrate_time</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;integrate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time integration to each item.&quot;</span><span class="p">)</span>
-    <span class="n">group_delay</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;group_delay&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute group delay of each item.&quot;</span><span class="p">)</span>
+    <span class="n">differentiate_time</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;differentiate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time differentiation to each item.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">integrate_time</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;integrate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time integration to each item.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">group_delay</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;group_delay&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute group delay of each item.&quot;</span>
+    <span class="p">)</span>
     <span class="n">smooth</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;smooth&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Smooth each FrequencySeries.&quot;</span><span class="p">)</span>
-    <span class="n">rebin</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;rebin&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Rebin each FrequencySeries in the dict.&quot;</span><span class="p">)</span>
+    <span class="n">rebin</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;rebin&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Rebin each FrequencySeries in the dict.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 4. Time Domain Conversion</span>
@@ -617,7 +634,7 @@
 
 <div class="viewcode-block" id="FrequencySeriesBaseList">
 <a class="viewcode-back" href="../../../web/ja/reference/api/frequencyseries.html#gwexpy.frequencyseries.FrequencySeriesBaseList">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesBaseList</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">_FS</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FrequencySeriesBaseList</span><span class="p">(</span><span class="n">PlotMixin</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">_FS</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;List container for `FrequencySeries` objects with type enforcement.&quot;&quot;&quot;</span>
 
     <span class="n">EntryClass</span> <span class="o">=</span> <span class="n">FrequencySeries</span>
@@ -802,15 +819,23 @@
 
     <span class="n">crop</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;crop&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Crop each FrequencySeries in the list.&quot;</span><span class="p">)</span>
     <span class="n">pad</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;pad&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Pad each FrequencySeries in the list.&quot;</span><span class="p">)</span>
-    <span class="n">interpolate</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Interpolate each FrequencySeries in the list.&quot;</span><span class="p">)</span>
+    <span class="n">interpolate</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;interpolate&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Interpolate each FrequencySeries in the list.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 2. Filter &amp; Response</span>
     <span class="c1"># ===============================</span>
 
-    <span class="n">zpk</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply ZPK filter to each FrequencySeries in the list.&quot;</span><span class="p">)</span>
-    <span class="nb">filter</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply filter to each FrequencySeries in the list.&quot;</span><span class="p">)</span>
-    <span class="n">apply_response</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;apply_response&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply response to each FrequencySeries in the list.&quot;</span><span class="p">)</span>
+    <span class="n">zpk</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply ZPK filter to each FrequencySeries in the list.&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">filter</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply filter to each FrequencySeries in the list.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">apply_response</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;apply_response&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply response to each FrequencySeries in the list.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 3. Analysis &amp; Conversion</span>
@@ -825,20 +850,31 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-    <span class="n">degree</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute phase (in degrees) of each FrequencySeries.&quot;</span><span class="p">)</span>
+    <span class="n">degree</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute phase (in degrees) of each FrequencySeries.&quot;</span>
+    <span class="p">)</span>
     <span class="n">to_db</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;to_db&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Convert each FrequencySeries to dB.&quot;</span><span class="p">)</span>
-    <span class="n">differentiate_time</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;differentiate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time differentiation to each item.&quot;</span><span class="p">)</span>
-    <span class="n">integrate_time</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;integrate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time integration to each item.&quot;</span><span class="p">)</span>
-    <span class="n">group_delay</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;group_delay&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute group delay of each item.&quot;</span><span class="p">)</span>
+    <span class="n">differentiate_time</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;differentiate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time differentiation to each item.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">integrate_time</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;integrate_time&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply time integration to each item.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">group_delay</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;group_delay&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute group delay of each item.&quot;</span>
+    <span class="p">)</span>
     <span class="n">smooth</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;smooth&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Smooth each FrequencySeries.&quot;</span><span class="p">)</span>
-    <span class="n">rebin</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;rebin&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Rebin each FrequencySeries in the list.&quot;</span><span class="p">)</span>
+    <span class="n">rebin</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;rebin&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Rebin each FrequencySeries in the list.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># ===============================</span>
     <span class="c1"># 4. Time Domain Conversion</span>
     <span class="c1"># ===============================</span>
 
     <span class="n">ifft</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
-        <span class="s2">&quot;ifft&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute IFFT of each FrequencySeries. Returns a TimeSeriesList.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ifft&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute IFFT of each FrequencySeries. Returns a TimeSeriesList.&quot;</span><span class="p">,</span>
         <span class="n">result_class_path</span><span class="o">=</span><span class="s2">&quot;gwexpy.timeseries.TimeSeriesList&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 

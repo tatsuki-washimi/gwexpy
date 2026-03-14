@@ -258,7 +258,9 @@
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-    <span class="n">hilbert</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;hilbert&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply Hilbert transform to each item.&quot;</span><span class="p">)</span>
+    <span class="n">hilbert</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;hilbert&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply Hilbert transform to each item.&quot;</span>
+    <span class="p">)</span>
     <span class="n">envelope</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;envelope&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply envelope to each item.&quot;</span><span class="p">)</span>
     <span class="n">instantaneous_phase</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
         <span class="s2">&quot;instantaneous_phase&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply instantaneous_phase to each item.&quot;</span>
@@ -318,18 +320,26 @@
         <span class="k">return</span> <span class="n">res</span></div>
 
 
-    <span class="n">radian</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;radian&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute instantaneous phase (in radians) of each item.&quot;</span><span class="p">)</span>
-    <span class="n">degree</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute instantaneous phase (in degrees) of each item.&quot;</span><span class="p">)</span>
+    <span class="n">radian</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;radian&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute instantaneous phase (in radians) of each item.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">degree</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute instantaneous phase (in degrees) of each item.&quot;</span>
+    <span class="p">)</span>
 
     <span class="c1"># phase() and angle() are provided by PhaseMethodsMixin</span>
 
-    <span class="n">unwrap_phase</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;unwrap_phase&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply unwrap_phase to each item.&quot;</span><span class="p">)</span>
+    <span class="n">unwrap_phase</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;unwrap_phase&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply unwrap_phase to each item.&quot;</span>
+    <span class="p">)</span>
     <span class="n">instantaneous_frequency</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
         <span class="s2">&quot;instantaneous_frequency&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply instantaneous_frequency to each item.&quot;</span>
     <span class="p">)</span>
     <span class="n">mix_down</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;mix_down&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply mix_down to each item.&quot;</span><span class="p">)</span>
     <span class="n">baseband</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;baseband&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply baseband to each item.&quot;</span><span class="p">)</span>
-    <span class="n">heterodyne</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;heterodyne&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply heterodyne to each item.&quot;</span><span class="p">)</span>
+    <span class="n">heterodyne</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;heterodyne&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply heterodyne to each item.&quot;</span>
+    <span class="p">)</span>
 
 <div class="viewcode-block" id="TimeSeriesDict.lock_in">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesDict.lock_in">[docs]</a>
@@ -998,12 +1008,20 @@
 
     <span class="c1"># --- Signal Processing ---</span>
 
-    <span class="n">decimate</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;decimate&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Decimate each TimeSeries in the dict.&quot;</span><span class="p">)</span>
+    <span class="n">decimate</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;decimate&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Decimate each TimeSeries in the dict.&quot;</span>
+    <span class="p">)</span>
     <span class="nb">filter</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Filter each TimeSeries in the dict.&quot;</span><span class="p">)</span>
     <span class="n">whiten</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;whiten&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Whiten each TimeSeries in the dict.&quot;</span><span class="p">)</span>
-    <span class="n">notch</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;notch&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Notch filter each TimeSeries in the dict.&quot;</span><span class="p">)</span>
-    <span class="n">zpk</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply ZPK filter to each TimeSeries in the dict.&quot;</span><span class="p">)</span>
-    <span class="n">detrend</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;detrend&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Detrend each TimeSeries in the dict.&quot;</span><span class="p">)</span>
+    <span class="n">notch</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;notch&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Notch filter each TimeSeries in the dict.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">zpk</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply ZPK filter to each TimeSeries in the dict.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">detrend</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;detrend&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Detrend each TimeSeries in the dict.&quot;</span>
+    <span class="p">)</span>
     <span class="n">taper</span> <span class="o">=</span> <span class="n">_make_dict_map_method</span><span class="p">(</span><span class="s2">&quot;taper&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Taper each TimeSeries in the dict.&quot;</span><span class="p">)</span>
 
     <span class="c1"># --- Spectral Conversion ---</span>
@@ -1679,22 +1697,40 @@
 
     <span class="c1"># --- Signal Processing ---</span>
 
-    <span class="n">resample</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;resample&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Resample each TimeSeries in the list.&quot;</span><span class="p">)</span>
-    <span class="n">decimate</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;decimate&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Decimate each TimeSeries in the list.&quot;</span><span class="p">)</span>
+    <span class="n">resample</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;resample&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Resample each TimeSeries in the list.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">decimate</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;decimate&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Decimate each TimeSeries in the list.&quot;</span>
+    <span class="p">)</span>
     <span class="nb">filter</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Filter each TimeSeries in the list.&quot;</span><span class="p">)</span>
     <span class="n">whiten</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;whiten&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Whiten each TimeSeries in the list.&quot;</span><span class="p">)</span>
-    <span class="n">notch</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;notch&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Notch filter each TimeSeries in the list.&quot;</span><span class="p">)</span>
+    <span class="n">notch</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;notch&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Notch filter each TimeSeries in the list.&quot;</span>
+    <span class="p">)</span>
     <span class="n">zpk</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;ZPK filter each TimeSeries in the list.&quot;</span><span class="p">)</span>
-    <span class="n">detrend</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;detrend&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Detrend each TimeSeries in the list.&quot;</span><span class="p">)</span>
+    <span class="n">detrend</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;detrend&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Detrend each TimeSeries in the list.&quot;</span>
+    <span class="p">)</span>
     <span class="n">taper</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;taper&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Taper each TimeSeries in the list.&quot;</span><span class="p">)</span>
-    <span class="n">hilbert</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;hilbert&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply Hilbert transform to each item.&quot;</span><span class="p">)</span>
+    <span class="n">hilbert</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;hilbert&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply Hilbert transform to each item.&quot;</span>
+    <span class="p">)</span>
     <span class="n">envelope</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;envelope&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply envelope to each item.&quot;</span><span class="p">)</span>
-    <span class="n">instantaneous_phase</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;instantaneous_phase&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply instantaneous_phase to each item.&quot;</span><span class="p">)</span>
-    <span class="n">unwrap_phase</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;unwrap_phase&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply unwrap_phase to each item.&quot;</span><span class="p">)</span>
-    <span class="n">instantaneous_frequency</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;instantaneous_frequency&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply instantaneous_frequency to each item.&quot;</span><span class="p">)</span>
+    <span class="n">instantaneous_phase</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;instantaneous_phase&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply instantaneous_phase to each item.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">unwrap_phase</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;unwrap_phase&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply unwrap_phase to each item.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">instantaneous_frequency</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;instantaneous_frequency&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply instantaneous_frequency to each item.&quot;</span>
+    <span class="p">)</span>
     <span class="n">mix_down</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;mix_down&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply mix_down to each item.&quot;</span><span class="p">)</span>
     <span class="n">baseband</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;baseband&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply baseband to each item.&quot;</span><span class="p">)</span>
-    <span class="n">heterodyne</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;heterodyne&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply heterodyne to each item.&quot;</span><span class="p">)</span>
+    <span class="n">heterodyne</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;heterodyne&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply heterodyne to each item.&quot;</span>
+    <span class="p">)</span>
 
 <div class="viewcode-block" id="TimeSeriesList.lock_in">
 <a class="viewcode-back" href="../../../web/ja/reference/api/timeseries.html#gwexpy.timeseries.TimeSeriesList.lock_in">[docs]</a>
@@ -1722,31 +1758,38 @@
     <span class="c1"># --- Spectral Conversion ---</span>
 
     <span class="n">fft</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
-        <span class="s2">&quot;fft&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply FFT to each TimeSeries. Returns a FrequencySeriesList.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;fft&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply FFT to each TimeSeries. Returns a FrequencySeriesList.&quot;</span><span class="p">,</span>
         <span class="n">result_class_path</span><span class="o">=</span><span class="s2">&quot;gwexpy.frequencyseries.FrequencySeriesList&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">average_fft</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
-        <span class="s2">&quot;average_fft&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply average_fft to each TimeSeries. Returns a FrequencySeriesList.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;average_fft&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Apply average_fft to each TimeSeries. Returns a FrequencySeriesList.&quot;</span><span class="p">,</span>
         <span class="n">result_class_path</span><span class="o">=</span><span class="s2">&quot;gwexpy.frequencyseries.FrequencySeriesList&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">psd</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
-        <span class="s2">&quot;psd&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute PSD for each TimeSeries. Returns a FrequencySeriesList.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;psd&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute PSD for each TimeSeries. Returns a FrequencySeriesList.&quot;</span><span class="p">,</span>
         <span class="n">result_class_path</span><span class="o">=</span><span class="s2">&quot;gwexpy.frequencyseries.FrequencySeriesList&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">asd</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
-        <span class="s2">&quot;asd&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute ASD for each TimeSeries. Returns a FrequencySeriesList.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;asd&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute ASD for each TimeSeries. Returns a FrequencySeriesList.&quot;</span><span class="p">,</span>
         <span class="n">result_class_path</span><span class="o">=</span><span class="s2">&quot;gwexpy.frequencyseries.FrequencySeriesList&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">spectrogram</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
-        <span class="s2">&quot;spectrogram&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute spectrogram for each TimeSeries. Returns a SpectrogramList.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;spectrogram&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute spectrogram for each TimeSeries. Returns a SpectrogramList.&quot;</span><span class="p">,</span>
         <span class="n">result_class_path</span><span class="o">=</span><span class="s2">&quot;gwexpy.spectrogram.SpectrogramList&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">spectrogram2</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
-        <span class="s2">&quot;spectrogram2&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute spectrogram2 for each TimeSeries. Returns a SpectrogramList.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;spectrogram2&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute spectrogram2 for each TimeSeries. Returns a SpectrogramList.&quot;</span><span class="p">,</span>
         <span class="n">result_class_path</span><span class="o">=</span><span class="s2">&quot;gwexpy.spectrogram.SpectrogramList&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">q_transform</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
-        <span class="s2">&quot;q_transform&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute Q-transform for each TimeSeries. Returns a SpectrogramList.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;q_transform&quot;</span><span class="p">,</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute Q-transform for each TimeSeries. Returns a SpectrogramList.&quot;</span><span class="p">,</span>
         <span class="n">result_class_path</span><span class="o">=</span><span class="s2">&quot;gwexpy.spectrogram.SpectrogramList&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -2037,8 +2080,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-    <span class="n">radian</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;radian&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute instantaneous phase (in radians) of each item.&quot;</span><span class="p">)</span>
-    <span class="n">degree</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span><span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute instantaneous phase (in degrees) of each item.&quot;</span><span class="p">)</span></div>
+    <span class="n">radian</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;radian&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute instantaneous phase (in radians) of each item.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">degree</span> <span class="o">=</span> <span class="n">_make_list_map_method</span><span class="p">(</span>
+        <span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Compute instantaneous phase (in degrees) of each item.&quot;</span>
+    <span class="p">)</span></div>
 
 
     <span class="c1"># phase() and angle() are provided by PhaseMethodsMixin</span>
