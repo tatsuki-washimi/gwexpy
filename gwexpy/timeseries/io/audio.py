@@ -7,12 +7,11 @@ FLAC decoding may work without ffmpeg if the audioop module is available.
 
 from __future__ import annotations
 
-from datetime import datetime
 from collections.abc import Iterable
+from datetime import datetime
 
 import numpy as np
 from astropy import units as u
-from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.utils import (
     apply_unit,

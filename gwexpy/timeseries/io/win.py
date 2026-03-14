@@ -26,7 +26,6 @@ import warnings
 from pathlib import Path
 
 import numpy as np
-from gwpy.io.registry import default_registry as io_registry
 
 from gwexpy.io.utils import ensure_dependency
 from gwexpy.timeseries.io._registration import register_timeseries_format
@@ -43,7 +42,7 @@ except ImportError:
     Trace = None  # type: ignore
     UTCDateTime = None  # type: ignore
 
-from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+from .. import TimeSeries, TimeSeriesDict
 
 
 def s4(v):
