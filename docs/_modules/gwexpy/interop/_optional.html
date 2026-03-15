@@ -136,7 +136,52 @@
     <span class="c1"># Map package name to help message for installation</span>
     <span class="c1"># Aligned with pyproject.toml [project.optional-dependencies]</span>
     <span class="n">_EXTRA_MAP</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="c1"># interop: Deep Learning &amp; Big Data frameworks</span>
+        <span class="c1"># analysis: Signal analysis and statistics</span>
+        <span class="s2">&quot;scikit-learn&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sklearn&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;statsmodels&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pmdarima&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dcor&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;hurst&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;hurst-exponent&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;exp-hurst&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EMD-signal&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PyEMD&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;PyWavelets&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pywt&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
+        <span class="c1"># fitting: Curve fitting and MCMC</span>
+        <span class="s2">&quot;iminuit&quot;</span><span class="p">:</span> <span class="s2">&quot;fitting&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;emcee&quot;</span><span class="p">:</span> <span class="s2">&quot;fitting&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;corner&quot;</span><span class="p">:</span> <span class="s2">&quot;fitting&quot;</span><span class="p">,</span>
+        <span class="c1"># control: Control systems</span>
+        <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="s2">&quot;control&quot;</span><span class="p">,</span>
+        <span class="c1"># seismic: Seismic and magnetotelluric data</span>
+        <span class="s2">&quot;obspy&quot;</span><span class="p">:</span> <span class="s2">&quot;seismic&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mth5&quot;</span><span class="p">:</span> <span class="s2">&quot;seismic&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mtpy&quot;</span><span class="p">:</span> <span class="s2">&quot;seismic&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mt_metadata&quot;</span><span class="p">:</span> <span class="s2">&quot;seismic&quot;</span><span class="p">,</span>
+        <span class="c1"># gw: Gravitational wave data access and tools</span>
+        <span class="s2">&quot;lalsuite&quot;</span><span class="p">:</span> <span class="s2">&quot;gw&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gwdatafind&quot;</span><span class="p">:</span> <span class="s2">&quot;gw&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gwosc&quot;</span><span class="p">:</span> <span class="s2">&quot;gw&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dqsegdb2&quot;</span><span class="p">:</span> <span class="s2">&quot;gw&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dttxml&quot;</span><span class="p">:</span> <span class="s2">&quot;gw&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gwinc&quot;</span><span class="p">:</span> <span class="s2">&quot;gw&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ligo.skymap&quot;</span><span class="p">:</span> <span class="s2">&quot;gw&quot;</span><span class="p">,</span>
+        <span class="c1"># io: Experimental data I/O</span>
+        <span class="s2">&quot;nptdms&quot;</span><span class="p">:</span> <span class="s2">&quot;io&quot;</span><span class="p">,</span>
+        <span class="c1"># plotting: Advanced plotting</span>
+        <span class="s2">&quot;pygmt&quot;</span><span class="p">:</span> <span class="s2">&quot;plotting&quot;</span><span class="p">,</span>
+        <span class="c1"># audio: Audio processing</span>
+        <span class="s2">&quot;pydub&quot;</span><span class="p">:</span> <span class="s2">&quot;audio&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tinytag&quot;</span><span class="p">:</span> <span class="s2">&quot;audio&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;librosa&quot;</span><span class="p">:</span> <span class="s2">&quot;audio&quot;</span><span class="p">,</span>
+        <span class="c1"># gui: GUI components</span>
+        <span class="s2">&quot;PyQt5&quot;</span><span class="p">:</span> <span class="s2">&quot;gui&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pyqtgraph&quot;</span><span class="p">:</span> <span class="s2">&quot;gui&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;qtpy&quot;</span><span class="p">:</span> <span class="s2">&quot;gui&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sounddevice&quot;</span><span class="p">:</span> <span class="s2">&quot;gui&quot;</span><span class="p">,</span>
+        <span class="c1"># Future/interop: Deep Learning &amp; Big Data frameworks (not in pyproject.toml yet)</span>
         <span class="s2">&quot;torch&quot;</span><span class="p">:</span> <span class="s2">&quot;interop&quot;</span><span class="p">,</span>
         <span class="s2">&quot;torchaudio&quot;</span><span class="p">:</span> <span class="s2">&quot;audio&quot;</span><span class="p">,</span>
         <span class="s2">&quot;tensorflow&quot;</span><span class="p">:</span> <span class="s2">&quot;interop&quot;</span><span class="p">,</span>
@@ -145,33 +190,13 @@
         <span class="s2">&quot;zarr&quot;</span><span class="p">:</span> <span class="s2">&quot;interop&quot;</span><span class="p">,</span>
         <span class="s2">&quot;cupy&quot;</span><span class="p">:</span> <span class="s2">&quot;interop&quot;</span><span class="p">,</span>
         <span class="s2">&quot;xarray&quot;</span><span class="p">:</span> <span class="s2">&quot;interop&quot;</span><span class="p">,</span>
-        <span class="c1"># stats: Statistical analysis</span>
-        <span class="s2">&quot;polars&quot;</span><span class="p">:</span> <span class="s2">&quot;stats&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;statsmodels&quot;</span><span class="p">:</span> <span class="s2">&quot;stats&quot;</span><span class="p">,</span>
-        <span class="c1"># fitting: Curve fitting and MCMC</span>
-        <span class="s2">&quot;iminuit&quot;</span><span class="p">:</span> <span class="s2">&quot;fitting&quot;</span><span class="p">,</span>
-        <span class="c1"># audio: Audio processing</span>
-        <span class="s2">&quot;librosa&quot;</span><span class="p">:</span> <span class="s2">&quot;audio&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pydub&quot;</span><span class="p">:</span> <span class="s2">&quot;audio&quot;</span><span class="p">,</span>
-        <span class="c1"># geophysics: Earth science</span>
-        <span class="s2">&quot;obspy&quot;</span><span class="p">:</span> <span class="s2">&quot;geophysics&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;mth5&quot;</span><span class="p">:</span> <span class="s2">&quot;geophysics&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;netCDF4&quot;</span><span class="p">:</span> <span class="s2">&quot;geophysics&quot;</span><span class="p">,</span>
-        <span class="c1"># bio: Bioscience</span>
+        <span class="s2">&quot;netCDF4&quot;</span><span class="p">:</span> <span class="s2">&quot;seismic&quot;</span><span class="p">,</span>
+        <span class="c1"># Future/bio: Bioscience (not in pyproject.toml yet)</span>
         <span class="s2">&quot;mne&quot;</span><span class="p">:</span> <span class="s2">&quot;bio&quot;</span><span class="p">,</span>
         <span class="s2">&quot;neo&quot;</span><span class="p">:</span> <span class="s2">&quot;bio&quot;</span><span class="p">,</span>
-        <span class="c1"># control: Control systems</span>
-        <span class="s2">&quot;control&quot;</span><span class="p">:</span> <span class="s2">&quot;control&quot;</span><span class="p">,</span>
-        <span class="c1"># analysis: Signal analysis</span>
-        <span class="s2">&quot;PyEMD&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pywt&quot;</span><span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span>
-        <span class="c1"># gw: Gravitational wave specific</span>
-        <span class="s2">&quot;dttxml&quot;</span><span class="p">:</span> <span class="s2">&quot;gw&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;gwinc&quot;</span><span class="p">:</span> <span class="s2">&quot;gw&quot;</span><span class="p">,</span>
+        <span class="c1"># Future/stats: Statistical analysis (not in pyproject.toml yet)</span>
+        <span class="s2">&quot;polars&quot;</span><span class="p">:</span> <span class="s2">&quot;stats&quot;</span><span class="p">,</span>
         <span class="s2">&quot;joblib&quot;</span><span class="p">:</span> <span class="s2">&quot;stats&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;corner&quot;</span><span class="p">:</span> <span class="s2">&quot;fitting&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;emcee&quot;</span><span class="p">:</span> <span class="s2">&quot;fitting&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;mtpy&quot;</span><span class="p">:</span> <span class="s2">&quot;geophysics&quot;</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="k">try</span><span class="p">:</span>

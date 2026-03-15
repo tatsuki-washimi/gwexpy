@@ -427,24 +427,35 @@
 
 <div class="viewcode-block" id="BrucoResult.get_ranked_channels">
 <a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.BrucoResult.get_ranked_channels">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_ranked_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_ranked_channels</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">band</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of channels ranked by their total coherence contribution.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            limit: Maximum number of channels to return.</span>
+<span class="sd">            band: Optional ``(f_low, f_high)`` tuple (Hz).  When given, only</span>
+<span class="sd">                frequency bins inside the band contribute to the per-channel</span>
+<span class="sd">                score.  Bins outside the band that happen to appear in the</span>
+<span class="sd">                Top-N arrays are ignored.  NaN bins (outside Top-N) are always</span>
+<span class="sd">                excluded via :func:`numpy.nanmax`.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List of channel names sorted by importance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">band</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">f_low</span><span class="p">,</span> <span class="n">f_high</span> <span class="o">=</span> <span class="n">band</span>
+            <span class="n">freq_mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">&gt;=</span> <span class="n">f_low</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">&lt;=</span> <span class="n">f_high</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">freq_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
         <span class="n">channel_scores</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_n</span><span class="p">):</span>
-            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_channels</span><span class="p">[:,</span> <span class="n">rank</span><span class="p">]</span>
-            <span class="n">cohs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_coherence</span><span class="p">[:,</span> <span class="n">rank</span><span class="p">]</span>
-            <span class="c1"># Vectorized summation for this rank?</span>
-            <span class="c1"># Channels are mixed in the column.</span>
-            <span class="c1"># Iteration might be slow if bins are huge, but numpy unique is fast.</span>
-            <span class="c1"># Let&#39;s iterate over unique names in this rank.</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_channels</span><span class="p">[</span><span class="n">freq_mask</span><span class="p">,</span> <span class="n">rank</span><span class="p">]</span>
+            <span class="n">cohs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_coherence</span><span class="p">[</span><span class="n">freq_mask</span><span class="p">,</span> <span class="n">rank</span><span class="p">]</span>
             <span class="n">unique_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="n">names</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">])</span>  <span class="c1"># noqa: E711</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">unique_names</span><span class="p">:</span>
                 <span class="n">mask</span> <span class="o">=</span> <span class="n">names</span> <span class="o">==</span> <span class="n">name</span>
@@ -455,6 +466,66 @@
             <span class="n">channel_scores</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">sorted_channels</span><span class="p">[:</span><span class="n">limit</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="BrucoResult.topk">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.BrucoResult.topk">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">topk</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">band</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the top-*n* channels ranked by coherence.</span>
+
+<span class="sd">        This is a convenience alias for :meth:`get_ranked_channels`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n: Number of channels to return.</span>
+<span class="sd">            band: Optional ``(f_low, f_high)`` frequency band (Hz) for</span>
+<span class="sd">                band-limited scoring.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of up to *n* channel names, most coherent first.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ranked_channels</span><span class="p">(</span><span class="n">limit</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">band</span><span class="o">=</span><span class="n">band</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BrucoResult.plot_ranked">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.BrucoResult.plot_ranked">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_ranked</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">band</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asd</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">coherence_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">save_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot coherence spectra for the top-ranked channels.</span>
+
+<span class="sd">        Selects channels via :meth:`topk` (optionally band-limited) and</span>
+<span class="sd">        delegates to :meth:`plot_coherence`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            top_k: Number of top channels to plot.</span>
+<span class="sd">            band: Optional ``(f_low, f_high)`` frequency band (Hz) for</span>
+<span class="sd">                band-limited ranking.</span>
+<span class="sd">            asd: If True (default), plot Amplitude Coherence ``sqrt(Coh^2)``.</span>
+<span class="sd">            coherence_threshold: Draw a horizontal reference line at this</span>
+<span class="sd">                value (default ``0.0`` = off).</span>
+<span class="sd">            save_path: Optional file path to save the figure.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`matplotlib.figure.Figure`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topk</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">top_k</span><span class="p">,</span> <span class="n">band</span><span class="o">=</span><span class="n">band</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_coherence</span><span class="p">(</span>
+            <span class="n">channels</span><span class="o">=</span><span class="n">channels</span><span class="p">,</span>
+            <span class="n">asd</span><span class="o">=</span><span class="n">asd</span><span class="p">,</span>
+            <span class="n">coherence_threshold</span><span class="o">=</span><span class="n">coherence_threshold</span><span class="p">,</span>
+            <span class="n">save_path</span><span class="o">=</span><span class="n">save_path</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BrucoResult.coherence_for_channel">
