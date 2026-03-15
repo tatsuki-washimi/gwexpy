@@ -55,6 +55,17 @@ jobs:
         run: |
           pytest -q --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy --ignore=tests/gui/ tests/ gwexpy/
 
+      - name: Run paper notebooks
+        if: "!contains(github.event.head_commit.message, '[gui-test]')"
+        env:
+          PYTHONFAULTHANDLER: "1"
+        run: |
+          if [ -d notebooks/ ] && find notebooks/ -name '*.ipynb' -print -quit | grep -q .; then
+            pytest -q --nbmake notebooks/ --nbmake-timeout=600 --nbmake-kernel=python3
+          else
+            echo "No notebooks found in notebooks/, skipping."
+          fi
+
       - name: Run tests (with GUI)
         if: contains(github.event.head_commit.message, '[gui-test]')
         env:
@@ -62,6 +73,17 @@ jobs:
           PYTEST_SCREENSHOT_DIR: artifacts/screenshots
         run: |
           xvfb-run -a -s "-screen 0 1920x1080x24" pytest -q --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy tests/ gwexpy/
+
+      - name: Run paper notebooks (with GUI)
+        if: contains(github.event.head_commit.message, '[gui-test]')
+        env:
+          PYTHONFAULTHANDLER: "1"
+        run: |
+          if [ -d notebooks/ ] && find notebooks/ -name '*.ipynb' -print -quit | grep -q .; then
+            xvfb-run -a -s "-screen 0 1920x1080x24" pytest -q --nbmake notebooks/ --nbmake-timeout=600 --nbmake-kernel=python3
+          else
+            echo "No notebooks found in notebooks/, skipping."
+          fi
 
       - name: Upload GUI failure screenshots
         if: failure()

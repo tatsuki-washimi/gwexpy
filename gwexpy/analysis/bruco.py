@@ -337,24 +337,35 @@ class BrucoResult:
         values, counts = np.unique(channels, return_counts=True)
         return values[np.argmax(counts)]
 
-    def get_ranked_channels(self, limit: int = 5) -> list[str]:
+    def get_ranked_channels(
+        self,
+        limit: int = 5,
+        band: tuple[float, float] | None = None,
+    ) -> list[str]:
         """
         Get a list of channels ranked by their total coherence contribution.
 
         Args:
             limit: Maximum number of channels to return.
+            band: Optional ``(f_low, f_high)`` tuple (Hz).  When given, only
+                frequency bins inside the band contribute to the per-channel
+                score.  Bins outside the band that happen to appear in the
+                Top-N arrays are ignored.  NaN bins (outside Top-N) are always
+                excluded via :func:`numpy.nanmax`.
 
         Returns:
             List of channel names sorted by importance.
         """
+        if band is not None:
+            f_low, f_high = band
+            freq_mask = (self.frequencies >= f_low) & (self.frequencies <= f_high)
+        else:
+            freq_mask = np.ones(len(self.frequencies), dtype=bool)
+
         channel_scores: dict[str, float] = {}
         for rank in range(self.top_n):
-            names = self.top_channels[:, rank]
-            cohs = self.top_coherence[:, rank]
-            # Vectorized summation for this rank?
-            # Channels are mixed in the column.
-            # Iteration might be slow if bins are huge, but numpy unique is fast.
-            # Let's iterate over unique names in this rank.
+            names = self.top_channels[freq_mask, rank]
+            cohs = self.top_coherence[freq_mask, rank]
             unique_names = np.unique(names[names != None])  # noqa: E711
             for name in unique_names:
                 mask = names == name
@@ -365,6 +376,60 @@ class BrucoResult:
             channel_scores.items(), key=lambda x: x[1], reverse=True
         )
         return [name for name, score in sorted_channels[:limit]]
+
+    def topk(
+        self,
+        n: int = 5,
+        band: tuple[float, float] | None = None,
+    ) -> list[str]:
+        """
+        Return the top-*n* channels ranked by coherence.
+
+        This is a convenience alias for :meth:`get_ranked_channels`.
+
+        Args:
+            n: Number of channels to return.
+            band: Optional ``(f_low, f_high)`` frequency band (Hz) for
+                band-limited scoring.
+
+        Returns:
+            List of up to *n* channel names, most coherent first.
+        """
+        return self.get_ranked_channels(limit=n, band=band)
+
+    def plot_ranked(
+        self,
+        top_k: int = 3,
+        band: tuple[float, float] | None = None,
+        asd: bool = True,
+        coherence_threshold: float = 0.0,
+        save_path: str | None = None,
+    ) -> plt.Figure:
+        """
+        Plot coherence spectra for the top-ranked channels.
+
+        Selects channels via :meth:`topk` (optionally band-limited) and
+        delegates to :meth:`plot_coherence`.
+
+        Args:
+            top_k: Number of top channels to plot.
+            band: Optional ``(f_low, f_high)`` frequency band (Hz) for
+                band-limited ranking.
+            asd: If True (default), plot Amplitude Coherence ``sqrt(Coh^2)``.
+            coherence_threshold: Draw a horizontal reference line at this
+                value (default ``0.0`` = off).
+            save_path: Optional file path to save the figure.
+
+        Returns:
+            :class:`matplotlib.figure.Figure`
+        """
+        channels = self.topk(n=top_k, band=band)
+        return self.plot_coherence(
+            channels=channels,
+            asd=asd,
+            coherence_threshold=coherence_threshold,
+            save_path=save_path,
+        )
 
     def coherence_for_channel(
         self,
