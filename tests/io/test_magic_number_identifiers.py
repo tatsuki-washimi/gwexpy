@@ -16,7 +16,6 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from gwexpy.timeseries.io.ats import ATS_SUPPORTED_VERSIONS, identify_ats
 from gwexpy.timeseries.io.gbd import identify_gbd
 
-
 # --- GBD Tests ---
 
 

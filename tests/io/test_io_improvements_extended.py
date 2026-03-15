@@ -42,7 +42,7 @@ def test_ats_epoch_with_datetime(tmp_path):
     _create_minimal_ats(path, n_samples=10)
 
     # Test with datetime object
-    epoch_dt = datetime.datetime(2024, 1, 1, 12, 0, 0, tzinfo=datetime.timezone.utc)
+    epoch_dt = datetime.datetime(2024, 1, 1, 12, 0, 0, tzinfo=datetime.UTC)
     expected_gps = float(to_gps(epoch_dt))
 
     ts = TimeSeries.read(path, format="ats", epoch=epoch_dt)
@@ -176,7 +176,7 @@ def test_registration_auto_adapt_disabled():
 
     def custom_single_reader(source, **kwargs):
         # Custom implementation (not auto-adapted)
-        tsd = mock_reader_dict(source, **kwargs)
+        mock_reader_dict(source, **kwargs)
         return TimeSeries([99, 99], t0=0, dt=1, name="custom")
 
     register_timeseries_format(
