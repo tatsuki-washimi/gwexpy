@@ -264,7 +264,6 @@ class SeriesMatrixIOMixin:
         from pathlib import Path
 
         import h5py  # noqa: F401 - availability check
-
         from gwpy.io.registry import default_registry as io_registry
 
         if format is None:

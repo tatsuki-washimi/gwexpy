@@ -6,7 +6,8 @@ Tests core functionality without pytest dependency.
 
 import sys
 import traceback
-from pathlib import Path
+from typing import Any
+
 
 def test_imports():
     """Test that all modules can be imported successfully."""
@@ -94,8 +95,8 @@ def test_registration_helper():
     print("TEST 3: register_timeseries_format Helper")
     print("=" * 60)
 
-    from gwexpy.timeseries.io._registration import register_timeseries_format
     from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+    from gwexpy.timeseries.io._registration import register_timeseries_format
 
     tests_passed = 0
     tests_failed = 0
@@ -161,7 +162,7 @@ def test_reader_signatures():
 
     for name, import_code, expected_params in tests:
         try:
-            namespace = {}
+            namespace: dict[str, Any] = {}
             exec(import_code, namespace)
             func = namespace["func"]
             sig = inspect.signature(func)
@@ -186,7 +187,6 @@ def test_pathlib_support():
     print("TEST 5: Pathlib Support")
     print("=" * 60)
 
-    from pathlib import Path
     import inspect
 
     tests = [
@@ -200,7 +200,7 @@ def test_pathlib_support():
 
     for name, import_code in tests:
         try:
-            namespace = {}
+            namespace: dict[str, Any] = {}
             exec(import_code, namespace)
             func = namespace["func"]
             sig = inspect.signature(func)

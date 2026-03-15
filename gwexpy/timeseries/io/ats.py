@@ -79,7 +79,7 @@ def identify_ats(origin, filepath, fileobj, *args, **kwargs):
             # Metronix ATS header is always >= 1024 bytes
             # Version must be in supported list
             return header_size >= 1024 and header_vers in ATS_SUPPORTED_VERSIONS
-    except (IOError, OSError, struct.error):
+    except (OSError, struct.error):
         return False
 
 

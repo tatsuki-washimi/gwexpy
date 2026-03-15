@@ -66,7 +66,7 @@ def identify_gbd(origin, filepath, fileobj, *args, **kwargs):
         with open(filepath, 'rb') as f:
             probe = f.read(4096).decode('ascii', errors='ignore')
             return HEADER_SIZE_PATTERN.search(probe) is not None
-    except (IOError, OSError):
+    except OSError:
         return False
 
 
