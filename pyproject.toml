@@ -257,13 +257,13 @@ addopts = "--import-mode=importlib"
 testpaths = ["tests"]
 pythonpath = ["."]
 norecursedirs = ["gwexpy/gui/reference-dtt"]
-qt_api = "pyqt5"
 markers = [
     "gui: GUI integration tests",
     "nds: NDS server connection tests",
     "cvmfs: tests requiring CVMFS access (from gwpy)",
     "freeze_time: tests that use freezegun to mock time",
     "long: long running tests",
+    "flaky: mark test as flaky (used by gwpy)",
 ]
 filterwarnings = [
     "ignore:Module already imported so cannot be rewritten. gwpy.testing.fixtures:pytest.PytestAssertRewriteWarning",

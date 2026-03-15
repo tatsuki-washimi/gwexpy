@@ -3,6 +3,7 @@ import os
 import pytest
 
 pytest.importorskip("pytestqt")
+pytest.importorskip("qtpy")
 from qtpy import QtCore
 
 from gwexpy.gui.ui.main_window import MainWindow
