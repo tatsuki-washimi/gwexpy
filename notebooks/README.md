@@ -1,16 +1,24 @@
 # Notebooks for Paper
 
-This directory contains executable notebooks that reproduce the examples and figures from the GWexpy paper.
+This directory contains executable marimo notebooks that reproduce the examples and figures from the GWexpy paper.
 
 ## Contents
 
-These notebooks demonstrate the key features of GWexpy as described in the SoftwareX manuscript:
+These marimo notebooks demonstrate the key features of GWexpy as described in the SoftwareX manuscript:
 
-1. **DTT XML I/O** - Reading DTT XML files with the `products` parameter
-2. **Transfer Function Workflow** - Computing transfer functions in steady and transient modes
-3. **Multi-Format Integration** - Reading and integrating heterogeneous data formats
+1. **01_transfer_function_workflow.py** - Transfer function estimation (Figure 2)
+   - DTT XML I/O workflow
+   - Computing transfer functions using `TimeSeries.transfer_function()`
+   - Bode plot visualization with `gwexpy.plot.Plot`
+   - Exports: `docs/gwexpy-paper/figure2_transfer_function.{png,pdf}`
 
-## Running the Notebooks
+2. **02_coherence_ranking.py** - Coherence-based coupling analysis (Figure 3)
+   - Multi-channel `TimeSeriesMatrix` construction
+   - `coherence_ranking()` for BruCo-style noise hunting
+   - Top-k channel identification with `topk()` and `plot_ranked()`
+   - Exports: `docs/gwexpy-paper/figure3_coherence_ranking.{png,pdf}`
+
+## Prerequisites
 
 Install GWexpy with the required extras:
 
@@ -18,20 +26,47 @@ Install GWexpy with the required extras:
 pip install -e ".[analysis,gw]"
 ```
 
-Then run the notebooks:
+Install marimo:
 
 ```bash
-jupyter notebook notebooks/
+pip install marimo
 ```
+
+## Running the Notebooks
+
+### Interactive mode (browser-based)
+
+```bash
+marimo edit notebooks/01_transfer_function_workflow.py
+```
+
+### Script mode (headless)
+
+```bash
+marimo run notebooks/01_transfer_function_workflow.py
+```
+
+Or execute directly:
+
+```bash
+python notebooks/01_transfer_function_workflow.py
+```
+
+## Generated Figures
+
+Running the notebooks will generate paper figures in `docs/gwexpy-paper/`:
+- `figure2_transfer_function.{png,pdf}`
+- `figure3_coherence_ranking.{png,pdf}`
 
 ## CI Testing
 
-These notebooks are automatically executed in CI using `nbmake` to ensure reproducibility:
+These marimo notebooks are standard Python scripts and can be executed in CI:
 
 ```bash
-pytest --nbmake notebooks/ --nbmake-timeout=600
+python notebooks/01_transfer_function_workflow.py
+python notebooks/02_coherence_ranking.py
 ```
 
 ## Data
 
-All notebooks use synthetic or anonymized data to ensure reproducibility without requiring access to proprietary detector data.
+All notebooks use synthetic data to ensure reproducibility without requiring access to proprietary detector data.
