@@ -856,3 +856,87 @@ class TimeSeriesMatrixAnalysisMixin:
         if return_precision:
             return pcorr, precision
         return pcorr
+
+    def coherence_ranking(
+        self: Any,
+        target: str,
+        band: tuple[float, float] | None = None,
+        top_n: int = 5,
+        fftlength: float = 2.0,
+        overlap: float | None = None,
+        parallel: int = 4,
+    ) -> Any:
+        """
+        Compute pairwise Welch coherence between *target* and all other
+        channels in the matrix, and return a ranked summary.
+
+        Internally delegates to :class:`~gwexpy.analysis.bruco.Bruco` (lazy
+        import) so that the heavy coherence computation is isolated from the
+        core time-series module.
+
+        Parameters
+        ----------
+        target:
+            Name of the target channel (must match one of
+            :attr:`~gwexpy.types.series_matrix_core.SeriesMatrixCoreMixin.channel_names`).
+        band:
+            Optional ``(f_low, f_high)`` tuple in Hz for band-limited
+            coherence scoring.  Passed through to
+            :meth:`~gwexpy.analysis.bruco.BrucoResult.get_ranked_channels`.
+        top_n:
+            Number of top-coherent channels to track per frequency bin.
+        fftlength:
+            FFT segment length in seconds for the Welch estimator.
+        overlap:
+            Overlap between consecutive FFT segments in seconds.
+            Defaults to ``fftlength / 2``.
+        parallel:
+            Number of worker processes for the coherence scan.
+
+        Returns
+        -------
+        BrucoResult
+            A result object with :meth:`~gwexpy.analysis.bruco.BrucoResult.topk`
+            and :meth:`~gwexpy.analysis.bruco.BrucoResult.plot_ranked` helpers.
+
+        Raises
+        ------
+        KeyError
+            If *target* is not among the channel names of this matrix.
+        """
+        from gwpy.timeseries import TimeSeriesDict as _TimeSeriesDict
+
+        from gwexpy.analysis.bruco import Bruco
+
+        flat: dict[str, Any] = self.to_dict_flat()  # type: ignore[attr-defined]
+
+        if target not in flat:
+            raise KeyError(
+                f"Target channel {target!r} not found in matrix. "
+                f"Available channels: {list(flat.keys())}"
+            )
+
+        target_ts = flat[target]
+        # Build a TimeSeriesDict so Bruco.compute takes Case A-1 (in-memory)
+        # and does NOT fall through to the network-fetch Case B.
+        aux_tsdict = _TimeSeriesDict(
+            {k: v for k, v in flat.items() if k != target}
+        )
+
+        _overlap = overlap if overlap is not None else fftlength / 2
+
+        # Pass aux_channels=[] so that Bruco.channels_to_scan is empty
+        # and the network-fetch Case B in compute() is skipped entirely.
+        # All aux data is supplied in-memory via aux_data.
+        bruco = Bruco(
+            target_channel=target,
+            aux_channels=[],
+        )
+        return bruco.compute(
+            fftlength=fftlength,
+            overlap=_overlap,
+            parallel=parallel,
+            top_n=top_n,
+            target_data=target_ts,
+            aux_data=aux_tsdict,
+        )

@@ -102,25 +102,172 @@ pip install -e .[gui]  # GUI依存ありでインストール成功
 |-----------|------|
 | **Opus** (分析) / **Sonnet** (実装) | 1-2日 |
 
+### 現状分析
+
+現在の `pyproject.toml` には **46パッケージ** が core dependencies に含まれており、多くがオプショナル機能向けです。コード内では既に `require_optional()`、`ensure_dependency()`、try-except パターンでオプショナルインポートが実装されています。
+
+### 依存関係の分類
+
+#### Core（必須 - 削除不可）
+| パッケージ | 理由 |
+|-----------|------|
+| `numpy>=1.21.0,<2.0.0` | 数値計算の基盤 |
+| `scipy>=1.7.0` | 信号処理・統計の基盤 |
+| `astropy>=5.0` | 単位系・座標系・時刻処理 |
+| `gwpy>=4.0.0,<5.0.0` | GWpy拡張の基盤 |
+| `pandas>=1.3.0` | DataFrame操作（広く使用） |
+| `matplotlib>=3.5.0` | 可視化の基盤 |
+| `typing_extensions` | 型ヒント互換性 |
+| `bottleneck` | 高速NaN処理 |
+| `h5py` | HDF5読み書き |
+| `igwn-segments` | 軽量、基本的なセグメント管理 |
+| `ligotimegps`, `gpstime` | GPS時刻処理（基本機能） |
+
+#### 既にオプショナル設計されている（コード内で `require_optional()` or try-except ガード済み）
+| パッケージ | 使用箇所 | 推奨extras |
+|-----------|----------|-----------|
+| `obspy` | noise/obspy_.py | `[seismic]` |
+| `mth5`, `mtpy`, `mt_metadata` | interop/mt_.py | `[seismic]` |
+| `scikit-learn` | timeseries/decomposition.py（PCA/ICA） | `[analysis]` |
+| `statsmodels`, `pmdarima` | timeseries/arima.py | `[analysis]` |
+| `iminuit`, `emcee`, `corner` | fitting/*.py | `[fitting]` |
+| `PyEMD (EMD-signal)` | timeseries/_spectral_special.py | `[analysis]` |
+| `PyWavelets` | timeseries/_spectral_special.py | `[analysis]` |
+| `control` | interop/control_.py | `[control]` |
+| `nptdms` | timeseries/io/tdms.py | `[io]` |
+| `gwinc` | noise/gwinc_.py | `[gw]` |
+| `pygmt` | plot/geomap.py | `[plotting]` |
+| `ligo.skymap` | plot/skymap.py | `[gw]` |
+| `dcor` | timeseries/_statistics.py | `[analysis]` |
+| `hurst`, `hurst-exponent`, `exp-hurst` | timeseries/hurst.py | `[analysis]` |
+
+#### extras へ分離すべき GW Data Access パッケージ
+| パッケージ | 理由 | 推奨extras |
+|-----------|------|-----------|
+| `lalsuite` | GUI loader のみで使用 | `[gw]` |
+| `gwdatafind` | GWpy依存（直接使用なし） | `[gw]` |
+| `gwosc` | GWpy依存（直接使用なし） | `[gw]` |
+| `dqsegdb2` | セグメント検索（オプション） | `[gw]` |
+| `dttxml` | io/dttxml_common.py（既に optional設計） | `[gw]` |
+
+#### 削除候補
+| パッケージ | 状態 |
+|-----------|------|
+| `dateparser` | import箇所なし → **削除** |
+
+### 推奨 extras 構造
+
+```toml
+[project.optional-dependencies]
+analysis = [
+    "scikit-learn",
+    "statsmodels",
+    "pmdarima",
+    "dcor",
+    "hurst",
+    "EMD-signal",
+    "PyWavelets",
+]
+
+fitting = [
+    "iminuit",
+    "emcee",
+    "corner",
+]
+
+control = [
+    "control",
+]
+
+seismic = [
+    "obspy",
+    "mth5",
+    "mtpy",
+    "mt_metadata",
+]
+
+gw = [
+    "lalsuite",
+    "gwdatafind",
+    "gwosc",
+    "dqsegdb2",
+    "dttxml",
+    "gwinc",
+    "ligo.skymap",
+]
+
+io = [
+    "nptdms",
+]
+
+plotting = [
+    "pygmt",
+]
+
+# Existing
+audio = [
+    "pydub",
+    "tinytag>=1.10",
+]
+
+gui = [
+    "PyQt5",
+    "pyqtgraph",
+    "qtpy",
+    "sounddevice",
+]
+
+# Convenience
+all = [
+    "gwexpy[analysis]",
+    "gwexpy[fitting]",
+    "gwexpy[control]",
+    "gwexpy[seismic]",
+    "gwexpy[gw]",
+    "gwexpy[io]",
+    "gwexpy[plotting]",
+    "gwexpy[audio]",
+]
+```
+
+### 最小 core dependencies（提案）
+
+```toml
+dependencies = [
+    "numpy>=1.21.0,<2.0.0",
+    "scipy>=1.7.0",
+    "astropy>=5.0",
+    "gwpy>=4.0.0,<5.0.0",
+    "pandas>=1.3.0",
+    "matplotlib>=3.5.0",
+    "typing_extensions",
+    "bottleneck",
+    "h5py",
+    "igwn-segments",
+    "ligotimegps",
+    "gpstime",
+]
+```
+
+**削減効果**: 46 → 12 パッケージ（約74%削減）
+
 ### 作業内容
 
-- [ ] `pyproject.toml` の `dependencies` を最小化:
-  - core: `gwpy`, `numpy`, `scipy`, `astropy`, `pandas`, `matplotlib`
-- [ ] `optional-dependencies` (extras) に分離:
-  - `[analysis]`: scikit-learn, statsmodels, pmdarima
-  - `[seismic]`: obspy, mth5, mtpy
-  - `[ml]`: torch
-  - `[control]`: python-control
-  - `[audio]`: pydub, tinytag
-  - `[gui]`: PyQt5, pyqtgraph 等
-- [ ] `pyproject.toml` の authors email を空欄に（スパム対策）
+- [ ] 現在の `_EXTRA_MAP` in `gwexpy/interop/_optional.py` をテンプレートとして使用
+- [ ] `pyproject.toml` の `dependencies` を上記の 12 パッケージに削減
+- [ ] `optional-dependencies` を上記の構造で定義
+- [ ] 不要なパッケージ（`dateparser`）を削除
+- [ ] `interop/_optional.py` の `_EXTRA_MAP` と同期
 
 ### 検証
 
 ```bash
-pip install -e .            # core のみ
-pip install -e .[analysis]  # + 分析ツール
-pip install -e .[gui]       # + GUI
+pip install -e .                  # core のみ（12パッケージ）
+pip install -e .[analysis]        # + 分析ツール
+pip install -e .[fitting]         # + fitting（iminuit等）
+pip install -e .[seismic]         # + 地震学データ
+pip install -e .[gw]              # + GW data access
+pip install -e "[all]"            # 全て
 ```
 
 ---
