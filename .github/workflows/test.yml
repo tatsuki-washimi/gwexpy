@@ -178,3 +178,38 @@ jobs:
           fi
           micromamba run -n gwexpy-full xvfb-run -a -s "-screen 0 1920x1080x24" \
             pytest -q --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 gwexpy/
+
+  build:
+    name: Build and verify package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: pip install build twine
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Check package metadata
+        run: twine check dist/*
+
+      - name: Test clean install (wheel)
+        run: |
+          python -m venv /tmp/test-venv
+          source /tmp/test-venv/bin/activate
+          pip install dist/*.whl
+          python -c "import gwexpy; print(f'gwexpy version: {gwexpy.__version__}')"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
