@@ -7,7 +7,6 @@ import pytest
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-
 from gwpy.timeseries import TimeSeries
 
 from gwexpy.timeseries import TimeSeriesMatrix
