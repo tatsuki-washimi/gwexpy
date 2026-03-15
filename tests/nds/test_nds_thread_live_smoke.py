@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 
 import pytest
+
+pytest.importorskip("qtpy")
 from qtpy import QtCore
 
 from gwexpy.gui.nds.nds_thread import NDSThread
