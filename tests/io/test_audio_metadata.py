@@ -82,7 +82,7 @@ def test_extract_audio_metadata_no_tinytag(tmp_path):
             # Should produce warning
             assert len(w) >= 1
             assert "tinytag is required" in str(w[0].message)
-            assert w[0].category == UserWarning
+            assert w[0].category is UserWarning
 
 
 def test_extract_audio_metadata_invalid_file(tmp_path):

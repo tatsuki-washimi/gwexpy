@@ -1,6 +1,7 @@
-import os
 import datetime
+import os
 from pathlib import Path
+
 import numpy as np
 import pytest
 from astropy import units as u
@@ -8,6 +9,7 @@ from astropy import units as u
 from gwexpy.io.utils import ensure_dependency
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from gwexpy.timeseries.io._registration import register_timeseries_format
+
 
 def test_ensure_dependency_success():
     # numpy is already installed
@@ -72,7 +74,7 @@ def test_pathlib_support_ats(tmp_path):
     struct.pack_into("<I", header, 12, 0)   # start
     struct.pack_into("<d", header, 16, 1.0) # LSB
     data = np.zeros(10, dtype="<i4").tobytes()
-    
+
     path = tmp_path / "test.ats"
     path.write_bytes(header + data)
 
@@ -89,15 +91,15 @@ def test_wav_new_arguments(tmp_path):
     wavfile.write(path, rate, data)
 
     # Test unit and epoch
-    epoch_dt = datetime.datetime(2024, 1, 1, tzinfo=datetime.timezone.utc)
+    epoch_dt = datetime.datetime(2024, 1, 1, tzinfo=datetime.UTC)
     from gwpy.time import to_gps
     expected_gps = float(to_gps(epoch_dt))
 
     tsd = TimeSeriesDict.read(path, format="wav", unit="m/s", epoch=epoch_dt)
-    
+
     assert tsd["channel_0"].unit == u.Unit("m/s")
     assert float(tsd["channel_0"].t0.value) == expected_gps
-    
+
     # Test channels filter
     tsd_filtered = TimeSeriesDict.read(path, format="wav", channels=["channel_1"])
     assert list(tsd_filtered.keys()) == ["channel_1"]
@@ -111,8 +113,9 @@ def test_audio_epoch_handling(tmp_path):
 
     # We don't actually read because it might fail without ffmpeg
     # But we can test if the reader has the epoch argument
-    from gwexpy.timeseries.io.audio import read_timeseriesdict_audio
     import inspect
+
+    from gwexpy.timeseries.io.audio import read_timeseriesdict_audio
     sig = inspect.signature(read_timeseriesdict_audio)
     assert "epoch" in sig.parameters
     assert "unit" in sig.parameters
