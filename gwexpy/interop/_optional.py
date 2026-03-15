@@ -60,7 +60,52 @@ def require_optional(name: str) -> Any:
     # Map package name to help message for installation
     # Aligned with pyproject.toml [project.optional-dependencies]
     _EXTRA_MAP = {
-        # interop: Deep Learning & Big Data frameworks
+        # analysis: Signal analysis and statistics
+        "scikit-learn": "analysis",
+        "sklearn": "analysis",
+        "statsmodels": "analysis",
+        "pmdarima": "analysis",
+        "dcor": "analysis",
+        "hurst": "analysis",
+        "hurst-exponent": "analysis",
+        "exp-hurst": "analysis",
+        "EMD-signal": "analysis",
+        "PyEMD": "analysis",
+        "PyWavelets": "analysis",
+        "pywt": "analysis",
+        # fitting: Curve fitting and MCMC
+        "iminuit": "fitting",
+        "emcee": "fitting",
+        "corner": "fitting",
+        # control: Control systems
+        "control": "control",
+        # seismic: Seismic and magnetotelluric data
+        "obspy": "seismic",
+        "mth5": "seismic",
+        "mtpy": "seismic",
+        "mt_metadata": "seismic",
+        # gw: Gravitational wave data access and tools
+        "lalsuite": "gw",
+        "gwdatafind": "gw",
+        "gwosc": "gw",
+        "dqsegdb2": "gw",
+        "dttxml": "gw",
+        "gwinc": "gw",
+        "ligo.skymap": "gw",
+        # io: Experimental data I/O
+        "nptdms": "io",
+        # plotting: Advanced plotting
+        "pygmt": "plotting",
+        # audio: Audio processing
+        "pydub": "audio",
+        "tinytag": "audio",
+        "librosa": "audio",
+        # gui: GUI components
+        "PyQt5": "gui",
+        "pyqtgraph": "gui",
+        "qtpy": "gui",
+        "sounddevice": "gui",
+        # Future/interop: Deep Learning & Big Data frameworks (not in pyproject.toml yet)
         "torch": "interop",
         "torchaudio": "audio",
         "tensorflow": "interop",
@@ -69,33 +114,13 @@ def require_optional(name: str) -> Any:
         "zarr": "interop",
         "cupy": "interop",
         "xarray": "interop",
-        # stats: Statistical analysis
-        "polars": "stats",
-        "statsmodels": "stats",
-        # fitting: Curve fitting and MCMC
-        "iminuit": "fitting",
-        # audio: Audio processing
-        "librosa": "audio",
-        "pydub": "audio",
-        # geophysics: Earth science
-        "obspy": "geophysics",
-        "mth5": "geophysics",
-        "netCDF4": "geophysics",
-        # bio: Bioscience
+        "netCDF4": "seismic",
+        # Future/bio: Bioscience (not in pyproject.toml yet)
         "mne": "bio",
         "neo": "bio",
-        # control: Control systems
-        "control": "control",
-        # analysis: Signal analysis
-        "PyEMD": "analysis",
-        "pywt": "analysis",
-        # gw: Gravitational wave specific
-        "dttxml": "gw",
-        "gwinc": "gw",
+        # Future/stats: Statistical analysis (not in pyproject.toml yet)
+        "polars": "stats",
         "joblib": "stats",
-        "corner": "fitting",
-        "emcee": "fitting",
-        "mtpy": "geophysics",
     }
 
     try:
