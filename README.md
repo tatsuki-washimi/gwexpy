@@ -126,9 +126,18 @@ pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 # From a local checkout
 pip install .
 
-# With optional extras
-pip install "gwexpy[audio]"     # Audio file support (pydub, tinytag)
-pip install "gwexpy[gui]"        # GUI components (experimental, not included in v0.1.0)
+# With optional extras (install only what you need)
+pip install "gwexpy[analysis]"   # Advanced statistics (scikit-learn, statsmodels, pmdarima)
+pip install "gwexpy[seismic]"    # Seismic/MT data (ObsPy, mth5, mtpy)
+pip install "gwexpy[control]"    # Control systems (python-control)
+pip install "gwexpy[audio]"      # Audio file support (pydub, tinytag)
+pip install "gwexpy[gw]"         # GW-specific tools (lalsuite, gwosc, gwinc)
+pip install "gwexpy[fitting]"    # Curve fitting/MCMC (iminuit, emcee, corner)
+pip install "gwexpy[io]"         # Experimental I/O (nptdms for LabVIEW)
+pip install "gwexpy[gui]"        # GUI components (experimental, PyQt5-based)
+
+# Multiple extras
+pip install "gwexpy[analysis,seismic,control]"
 ```
 
 > [!IMPORTANT]
@@ -148,7 +157,22 @@ pip install "gwexpy[gui]"        # GUI components (experimental, not included in
 >
 > Similarly, for machine learning, GPU computing, and advanced physics format operations (e.g., PyTorch, TensorFlow, librosa), please install the respective official packages independently according to your system's hardware configuration.
 
-For further configuration (e.g., `[dev]`, `[gui]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/installation.html).
+### Optional Dependencies Summary
+
+The default installation (`pip install gwexpy`) includes core dependencies for time-series analysis, basic signal processing, and standard I/O. Optional extras enable specialized workflows:
+
+| Extra         | Description                  | Key Packages                          |
+|---------------|------------------------------|---------------------------------------|
+| `[analysis]`  | Advanced statistics & ML     | scikit-learn, statsmodels, pmdarima   |
+| `[seismic]`   | Seismic/MT data formats      | ObsPy, mth5, mtpy                     |
+| `[control]`   | Control systems              | python-control                        |
+| `[audio]`     | Audio file I/O               | pydub, tinytag                        |
+| `[gw]`        | GW-specific tools            | lalsuite, gwosc, gwinc                |
+| `[fitting]`   | Curve fitting & MCMC         | iminuit, emcee, corner                |
+| `[io]`        | Experimental I/O             | nptdms (LabVIEW)                      |
+| `[gui]`       | GUI (experimental)           | PyQt5, pyqtgraph                      |
+
+For further configuration (e.g., `[dev]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/installation.html).
 
 ---
 
@@ -182,6 +206,17 @@ For more complex examples, browse our **[Tutorials](https://tatsuki-washimi.gith
 
 ---
 
+## Examples & Notebooks
+
+Executable Jupyter notebooks demonstrating key workflows are available in the [`notebooks/`](notebooks/) directory:
+
+- **Transfer Function Workflow** ([`01_transfer_function_workflow.ipynb`](notebooks/01_transfer_function_workflow.ipynb)): DTT XML import, transfer function estimation, and Bode plotting
+- **Coherence Ranking** ([`02_coherence_ranking.ipynb`](notebooks/02_coherence_ranking.ipynb)): Heterogeneous format fusion and noise coupling analysis
+
+These notebooks are validated in CI and mirror the examples presented in the [SoftwareX publication](docs/gwexpy-paper/).
+
+---
+
 ## Testing
 
 ```bash
@@ -195,3 +230,17 @@ sample files under `tests/sample-data/gui/` (see the test paths for exact names)
 ## Contributing
 
 Contributions are welcome! Please open issues or submit PRs on [GitHub](https://github.com/tatsuki-washimi/gwexpy).
+
+---
+
+## Support & Contact
+
+For questions, bug reports, or feature requests:
+
+- **GitHub Issues**: [https://github.com/tatsuki-washimi/gwexpy/issues](https://github.com/tatsuki-washimi/gwexpy/issues) (recommended)
+- **Discussions**: [https://github.com/tatsuki-washimi/gwexpy/discussions](https://github.com/tatsuki-washimi/gwexpy/discussions) (for general questions)
+
+For academic citations and correspondence, please refer to the [published SoftwareX paper](docs/gwexpy-paper/) (DOI pending).
+
+> [!NOTE]
+> To protect against spam, direct email addresses are not listed here. For private inquiries, please use GitHub Discussions or open a confidential issue.
