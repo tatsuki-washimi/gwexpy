@@ -44,40 +44,10 @@ dependencies = [
   "bottleneck",
   # File I/O
   "h5py",
-  # Gravitational Wave Data I/O & Meta
-  "lalsuite",
-  "gwdatafind",
-  "gwosc",
+  # GPS Time (lightweight, widely used)
   "igwn-segments",
   "ligotimegps",
   "gpstime",
-  "dqsegdb2",
-  "dateparser",
-  "dttxml",
-  # Experimental Physics I/O
-  "obspy",
-  "mth5",
-  "mtpy",
-  "mt_metadata",
-  "nptdms",
-  # Visualization & Noise Modeling
-  "ligo.skymap",
-  "pygmt",
-  "gwinc",
-  # Advanced Signal Processing & Stats
-  "scikit-learn",
-  "statsmodels",
-  "pmdarima",
-  "dcor",
-  "hurst",
-  "hurst-exponent",
-  "exp-hurst",
-  "iminuit",
-  "emcee",
-  "corner",
-  "EMD-signal",
-  "PyWavelets",
-  "control"
 ]
 
 [project.urls]
@@ -86,21 +56,76 @@ Repository = "https://github.com/tatsuki-washimi/gwexpy"
 Documentation = "https://tatsuki-washimi.github.io/gwexpy/"
 Changelog = "https://github.com/tatsuki-washimi/gwexpy/blob/main/CHANGELOG.md"
 
-# Note: For heavy ML and external system I/O, packages are left out.
-# Optional lists can be provided for users who want to use them if needed.
-
 [project.optional-dependencies]
-analysis = []
+# Signal analysis and statistics
+analysis = [
+  "scikit-learn",
+  "statsmodels",
+  "pmdarima",
+  "dcor",
+  "hurst",
+  "hurst-exponent",
+  "exp-hurst",
+  "EMD-signal",
+  "PyWavelets",
+]
+
+# Curve fitting and MCMC
+fitting = [
+  "iminuit",
+  "emcee",
+  "corner",
+]
+
+# Control systems analysis
+control = [
+  "control",
+]
+
+# Seismic and magnetotelluric data
+seismic = [
+  "obspy",
+  "mth5",
+  "mtpy",
+  "mt_metadata",
+]
+
+# Gravitational wave data access and tools
+gw = [
+  "lalsuite",
+  "gwdatafind",
+  "gwosc",
+  "dqsegdb2",
+  "dttxml",
+  "gwinc",
+  "ligo.skymap",
+]
+
+# Experimental data I/O
+io = [
+  "nptdms",
+]
+
+# Advanced plotting
+plotting = [
+  "pygmt",
+]
+
+# Audio processing
 audio = [
   "pydub",
-  "tinytag>=1.10"
+  "tinytag>=1.10",
 ]
+
+# GUI (experimental, not included in v0.1.0 release)
 gui = [
   "PyQt5",
   "pyqtgraph",
   "qtpy",
-  "sounddevice"
+  "sounddevice",
 ]
+
+# Development tools
 dev = [
   "ruff",
   "mypy",
@@ -112,7 +137,19 @@ dev = [
   "nbmake",
   "freezegun",
   "requests-mock",
-  "types-requests"
+  "types-requests",
+]
+
+# Convenience: install all optional features
+all = [
+  "gwexpy[analysis]",
+  "gwexpy[fitting]",
+  "gwexpy[control]",
+  "gwexpy[seismic]",
+  "gwexpy[gw]",
+  "gwexpy[io]",
+  "gwexpy[plotting]",
+  "gwexpy[audio]",
 ]
 
 [tool.setuptools.package-data]
