@@ -227,6 +227,11 @@ Note: GUI/IO sample fixtures are stored under `tests/sample-data/` and are not
 versioned in git. If you need to run the data-dependent tests locally, place the
 sample files under `tests/sample-data/gui/` (see the test paths for exact names).
 
+## Repository layout
+
+The package source lives in `gwexpy/` (not `src/gwexpy/`).
+This flat layout is intentional: it mirrors the convention used by [GWpy](https://github.com/gwpy/gwpy) and other scientific Python packages in the gravitational-wave ecosystem, ensuring that import paths and developer tooling remain consistent with upstream.
+
 ## Contributing
 
 Contributions are welcome! Please open issues or submit PRs on [GitHub](https://github.com/tatsuki-washimi/gwexpy).
