@@ -289,7 +289,9 @@ def _format_unit_label(unit):
     if unit != u.dimensionless_unscaled:
         # Fallback to physical type (gwpy-style)
         try:
-            label_text = str(unit.physical_type).title()
+            pt = str(unit.physical_type)
+            if pt and pt.lower() != "unknown":
+                label_text = pt.title()
         except (AttributeError, ValueError):
             pass
 
