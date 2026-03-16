@@ -77,6 +77,12 @@ def main():
 
     plot = Plot(mag_db, phase_deg, separate=True, sharex=True, figsize=(7, 5))
 
+    # Set y-axis labels explicitly
+    axes = plot.axes if hasattr(plot, 'axes') else plot.figure.axes
+    if len(axes) >= 2:
+        axes[0].set_ylabel('Amplitude [dB]')
+        axes[1].set_ylabel('Phase [°]')
+
     # Save figures for paper
     output_dir = Path(__file__).parent.parent / "docs" / "gwexpy-paper"
     output_dir.mkdir(parents=True, exist_ok=True)
