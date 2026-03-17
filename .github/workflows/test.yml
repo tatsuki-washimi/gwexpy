@@ -66,6 +66,21 @@ jobs:
             echo "No notebooks found in notebooks/, skipping."
           fi
 
+      - name: Run paper notebook smoke script (synthetic)
+        if: "!contains(github.event.head_commit.message, '[gui-test]') && matrix.python-version == '3.11'"
+        env:
+          PYTHONFAULTHANDLER: "1"
+        run: |
+          python notebooks/02_coherence_ranking.py
+
+      - name: Run paper notebook smoke script (GWOSC, optional)
+        if: "!contains(github.event.head_commit.message, '[gui-test]') && matrix.python-version == '3.11' && contains(github.event.head_commit.message, '[network-test]')"
+        env:
+          PYTHONFAULTHANDLER: "1"
+        run: |
+          pip install gwosc
+          python notebooks/03_gwosc_case_study.py
+
       - name: Run tests (with GUI)
         if: contains(github.event.head_commit.message, '[gui-test]')
         env:
@@ -84,6 +99,13 @@ jobs:
           else
             echo "No notebooks found in notebooks/, skipping."
           fi
+
+      - name: Run paper notebook smoke script with GUI tag (synthetic)
+        if: contains(github.event.head_commit.message, '[gui-test]') && matrix.python-version == '3.11'
+        env:
+          PYTHONFAULTHANDLER: "1"
+        run: |
+          xvfb-run -a -s "-screen 0 1920x1080x24" python notebooks/02_coherence_ranking.py
 
       - name: Upload GUI failure screenshots
         if: failure()
@@ -178,6 +200,14 @@ jobs:
           fi
           micromamba run -n gwexpy-full xvfb-run -a -s "-screen 0 1920x1080x24" \
             pytest -q --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 gwexpy/
+
+      - name: Run paper notebook smoke script (synthetic)
+        timeout-minutes: 30
+        env:
+          PYTHONFAULTHANDLER: "1"
+        shell: bash -l {0}
+        run: |
+          micromamba run -n gwexpy-full python notebooks/02_coherence_ranking.py
 
   build:
     name: Build and verify package

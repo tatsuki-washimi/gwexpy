@@ -17,6 +17,16 @@ Run with: marimo edit 02_coherence_ranking.py
 Or as a script: python 02_coherence_ranking.py
 """
 
+import sys
+from pathlib import Path
+
+# Ensure the development version of gwexpy is preferred over any installed release.
+# When running as `python notebooks/02_coherence_ranking.py` from the project root,
+# Python sets sys.path[0] to the notebooks/ directory, not the project root.
+_repo_root = Path(__file__).resolve().parent.parent
+if str(_repo_root) not in sys.path:
+    sys.path.insert(0, str(_repo_root))
+
 
 def main():
     """Main execution function"""
@@ -25,9 +35,8 @@ def main():
 
     import numpy as np
     from pathlib import Path
-    from gwpy.timeseries import TimeSeries
 
-    from gwexpy.timeseries import TimeSeriesMatrix
+    from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 
     # ==== 1. Generate synthetic multi-channel data ====
     print("=" * 60)

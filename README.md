@@ -196,9 +196,9 @@ ts = as_series((1419724818 + np.arange(10)) * u.s, unit="h")
 ### 2. TimeSeriesMatrix & Decomposition
 
 ```python
-from gwexpy.timeseries import TimeSeriesMatrix
+from gwexpy.timeseries import TimeSeriesList
 # Create matrix from multiple series and perform PCA
-mat = TimeSeriesMatrix.from_list([series1, series2, series3])
+mat = TimeSeriesList([series1, series2, series3]).to_matrix()
 scores = mat.standardize().pca(n_components=2)
 ```
 
@@ -208,12 +208,33 @@ For more complex examples, browse our **[Tutorials](https://tatsuki-washimi.gith
 
 ## Examples & Notebooks
 
-Executable Jupyter notebooks demonstrating key workflows are available in the [`notebooks/`](notebooks/) directory:
+Executable marimo notebooks demonstrating key workflows are available in the [`notebooks/`](notebooks/) directory:
 
-- **Transfer Function Workflow** ([`01_transfer_function_workflow.ipynb`](notebooks/01_transfer_function_workflow.ipynb)): DTT XML import, transfer function estimation, and Bode plotting
-- **Coherence Ranking** ([`02_coherence_ranking.ipynb`](notebooks/02_coherence_ranking.ipynb)): Heterogeneous format fusion and noise coupling analysis
+- **Transfer Function Workflow** ([`01_transfer_function_workflow.py`](notebooks/01_transfer_function_workflow.py)): DTT XML import, transfer function estimation, and Bode plotting
+- **Coherence Ranking** ([`02_coherence_ranking.py`](notebooks/02_coherence_ranking.py)): Synthetic multichannel coherence ranking used for the paper figure
+- **GWOSC Case Study** ([`03_gwosc_case_study.py`](notebooks/03_gwosc_case_study.py)): Public GWOSC strain data with derived proxy auxiliary channels
 
-These notebooks are validated in CI and mirror the examples presented in the [SoftwareX publication](docs/gwexpy-paper/).
+The synthetic paper notebook is exercised in CI; the GWOSC case study is documented as an optional network-dependent reproduction path. Reproduction instructions are collected in [`docs/repro/README.md`](docs/repro/README.md).
+
+## Reproducibility
+
+The SoftwareX manuscript and this repository are tied to the archived release DOI `10.5281/zenodo.19059423`. The code record for the submitted version is the GitHub repository plus the archived Zenodo release, while the reproducibility path is provided through executable marimo notebooks in `notebooks/`.
+
+Typical local reproduction flow:
+
+```bash
+pip install "gwexpy[analysis,gw]"
+python -m marimo run notebooks/02_coherence_ranking.py
+python notebooks/02_coherence_ranking.py
+```
+
+For the optional public-data example:
+
+```bash
+python -m marimo run notebooks/03_gwosc_case_study.py
+```
+
+See [`docs/repro/README.md`](docs/repro/README.md) for figure-generation commands, network caveats, and the distinction between CI-covered synthetic workflows and optional GWOSC-backed workflows.
 
 ---
 
