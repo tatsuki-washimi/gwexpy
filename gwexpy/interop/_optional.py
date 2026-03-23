@@ -28,6 +28,7 @@ _OPTIONAL_DEPENDENCIES = {
     "neo": "neo",
     "dttxml": "dttxml",
     "gwinc": "gwinc",
+    "finesse": "finesse",
     "joblib": "joblib",
 }
 
@@ -91,6 +92,7 @@ def require_optional(name: str) -> Any:
         "dqsegdb2": "gw",
         "dttxml": "gw",
         "gwinc": "gw",
+        "finesse": "gw",
         "ligo.skymap": "gw",
         # io: Experimental data I/O
         "nptdms": "io",
