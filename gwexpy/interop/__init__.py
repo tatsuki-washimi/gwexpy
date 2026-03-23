@@ -10,6 +10,7 @@ if "JAX_PLATFORMS" not in os.environ:
 from ._optional import require_optional
 from .astropy_ import from_astropy_timeseries, to_astropy_timeseries
 from .control_ import from_control_frd, from_control_response, to_control_frd
+from .finesse_ import from_finesse_frequency_response, from_finesse_noise
 from .cupy_ import from_cupy, is_cupy_available, to_cupy
 from .dask_ import from_dask, to_dask
 from .frequency import (
@@ -139,6 +140,9 @@ __all__ = [
     "to_control_frd",
     "from_control_frd",
     "from_control_response",
+    # P1 - finesse
+    "from_finesse_frequency_response",
+    "from_finesse_noise",
     # P1 - jax
     "to_jax",
     "from_jax",

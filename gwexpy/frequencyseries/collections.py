@@ -453,6 +453,50 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
 
         return to_tmultigraph(self, name=name)
 
+    # ===============================
+    # 7. Finesse 3 Interop
+    # ===============================
+
+    @classmethod
+    def from_finesse_frequency_response(
+        cls, sol: Any, *, unit: Any | None = None
+    ) -> FrequencySeriesDict:
+        """Create from finesse FrequencyResponseSolution.
+
+        Returns a dict keyed by ``"output -> input"`` for all DOF pairs.
+
+        Parameters
+        ----------
+        sol : finesse.analysis.actions.lti.FrequencyResponseSolution
+            The frequency response solution from a Finesse 3 simulation.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data.
+        """
+        from gwexpy.interop import from_finesse_frequency_response
+
+        return from_finesse_frequency_response(cls, sol, unit=unit)
+
+    @classmethod
+    def from_finesse_noise(
+        cls, sol: Any, *, output: Any | None = None, unit: Any | None = None
+    ) -> FrequencySeriesDict:
+        """Create from finesse NoiseProjectionSolution.
+
+        Returns a dict keyed by ``"output: noise_source"`` strings.
+
+        Parameters
+        ----------
+        sol : finesse.analysis.actions.noise.NoiseProjectionSolution
+            The noise projection solution from a Finesse 3 simulation.
+        output : str or object, optional
+            Output node name. If *None*, all outputs are included.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data (e.g., ``"m/sqrt(Hz)"``).
+        """
+        from gwexpy.interop import from_finesse_noise
+
+        return from_finesse_noise(cls, sol, output=output, unit=unit)
+
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write dict to file (HDF5, ROOT, etc.)."""
         fmt = kwargs.get("format")

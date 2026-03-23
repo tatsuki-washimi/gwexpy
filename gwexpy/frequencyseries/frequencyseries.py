@@ -875,6 +875,71 @@ class FrequencySeries(
 
         return from_control_frd(cls, frd, frequency_unit=frequency_unit)
 
+    # --- Finesse 3 Interop ---
+
+    @classmethod
+    def from_finesse_frequency_response(
+        cls: type[FrequencySeries],
+        sol: Any,
+        *,
+        output: Any | None = None,
+        input_dof: Any | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """Create from finesse FrequencyResponseSolution.
+
+        Parameters
+        ----------
+        sol : finesse.analysis.actions.lti.FrequencyResponseSolution
+            The frequency response solution from a Finesse 3 simulation.
+        output : str or object, optional
+            Output DOF name. Combined with *input_dof* to select one
+            transfer function.
+        input_dof : str or object, optional
+            Input DOF name.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data.
+
+        Returns
+        -------
+        FrequencySeries or FrequencySeriesMatrix
+        """
+        from gwexpy.interop import from_finesse_frequency_response
+
+        return from_finesse_frequency_response(
+            cls, sol, output=output, input_dof=input_dof, unit=unit
+        )
+
+    @classmethod
+    def from_finesse_noise(
+        cls: type[FrequencySeries],
+        sol: Any,
+        *,
+        output: Any | None = None,
+        noise: str | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """Create from finesse NoiseProjectionSolution.
+
+        Parameters
+        ----------
+        sol : finesse.analysis.actions.noise.NoiseProjectionSolution
+            The noise projection solution from a Finesse 3 simulation.
+        output : str or object, optional
+            Output node name.
+        noise : str, optional
+            Specific noise source name.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data (e.g., ``"m/sqrt(Hz)"``).
+
+        Returns
+        -------
+        FrequencySeries or FrequencySeriesDict
+        """
+        from gwexpy.interop import from_finesse_noise
+
+        return from_finesse_noise(cls, sol, output=output, noise=noise, unit=unit)
+
     # --- ML Framework Interop ---
 
     def to_torch(
