@@ -32,6 +32,7 @@ _OPTIONAL_DEPENDENCIES = {
     "joblib": "joblib",
     "PySpice": "PySpice",
     "skrf": "skrf",
+    "pyroomacoustics": "pyroomacoustics",
 }
 
 
@@ -106,6 +107,7 @@ def require_optional(name: str) -> Any:
         "pydub": "audio",
         "tinytag": "audio",
         "librosa": "audio",
+        "pyroomacoustics": "audio",
         # gui: GUI components
         "PyQt5": "gui",
         "pyqtgraph": "gui",
