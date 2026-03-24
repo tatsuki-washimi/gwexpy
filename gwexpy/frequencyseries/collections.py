@@ -453,6 +453,122 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
 
         return to_tmultigraph(self, name=name)
 
+    # ===============================
+    # 7. Finesse 3 Interop
+    # ===============================
+
+    @classmethod
+    def from_finesse_frequency_response(
+        cls, sol: Any, *, unit: Any | None = None
+    ) -> FrequencySeriesDict:
+        """Create from finesse FrequencyResponseSolution.
+
+        Returns a dict keyed by ``"output -> input"`` for all DOF pairs.
+
+        Parameters
+        ----------
+        sol : finesse.analysis.actions.lti.FrequencyResponseSolution
+            The frequency response solution from a Finesse 3 simulation.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data.
+        """
+        from gwexpy.interop import from_finesse_frequency_response
+
+        return from_finesse_frequency_response(cls, sol, unit=unit)
+
+    @classmethod
+    def from_finesse_noise(
+        cls, sol: Any, *, output: Any | None = None, unit: Any | None = None
+    ) -> FrequencySeriesDict:
+        """Create from finesse NoiseProjectionSolution.
+
+        Returns a dict keyed by ``"output: noise_source"`` strings.
+
+        Parameters
+        ----------
+        sol : finesse.analysis.actions.noise.NoiseProjectionSolution
+            The noise projection solution from a Finesse 3 simulation.
+        output : str or object, optional
+            Output node name. If *None*, all outputs are included.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data (e.g., ``"m/sqrt(Hz)"``).
+        """
+        from gwexpy.interop import from_finesse_noise
+
+        return from_finesse_noise(cls, sol, output=output, unit=unit)
+
+    # ===============================
+    # 8. PySpice Interop
+    # ===============================
+
+    @classmethod
+    def from_pyspice_ac(
+        cls, analysis: Any, *, unit: Any | None = None
+    ) -> FrequencySeriesDict:
+        """Create from a PySpice AcAnalysis.
+
+        Returns a dict keyed by signal name for all nodes and branches.
+
+        Parameters
+        ----------
+        analysis : PySpice.Spice.Simulation.AcAnalysis
+            The AC analysis result from a PySpice simulation.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data.
+        """
+        from gwexpy.interop import from_pyspice_ac
+
+        return from_pyspice_ac(cls, analysis, unit=unit)
+
+    @classmethod
+    def from_pyspice_noise(
+        cls, analysis: Any, *, unit: Any | None = None
+    ) -> FrequencySeriesDict:
+        """Create from a PySpice NoiseAnalysis.
+
+        Returns a dict keyed by signal name for all noise nodes.
+
+        Parameters
+        ----------
+        analysis : PySpice.Spice.Simulation.NoiseAnalysis
+            The noise analysis result from a PySpice simulation.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data.
+        """
+        from gwexpy.interop import from_pyspice_noise
+
+        return from_pyspice_noise(cls, analysis, unit=unit)
+
+    # ===============================
+    # 9. scikit-rf Interop
+    # ===============================
+
+    @classmethod
+    def from_skrf_network(
+        cls,
+        ntwk: Any,
+        *,
+        parameter: str = "s",
+        unit: Any | None = None,
+    ) -> FrequencySeriesDict:
+        """Create from a scikit-rf Network.
+
+        Returns a dict keyed by port-pair labels (e.g. ``"S11"``, ``"S21"``).
+
+        Parameters
+        ----------
+        ntwk : skrf.Network
+            The scikit-rf Network object.
+        parameter : str, default ``"s"``
+            Which network parameter to extract (``"s"``, ``"z"``, ``"y"``,
+            ``"a"``, ``"t"``, or ``"h"``).
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data.
+        """
+        from gwexpy.interop import from_skrf_network
+
+        return from_skrf_network(cls, ntwk, parameter=parameter, unit=unit)
+
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write dict to file (HDF5, ROOT, etc.)."""
         fmt = kwargs.get("format")

@@ -12,6 +12,7 @@ from .astropy_ import from_astropy_timeseries, to_astropy_timeseries
 from .control_ import from_control_frd, from_control_response, to_control_frd
 from .cupy_ import from_cupy, is_cupy_available, to_cupy
 from .dask_ import from_dask, to_dask
+from .finesse_ import from_finesse_frequency_response, from_finesse_noise
 from .frequency import (
     from_hdf5_frequencyseries,
     from_pandas_frequencyseries,
@@ -45,7 +46,22 @@ from .polars_ import (
 
 # P2
 from .pydub_ import from_pydub, to_librosa, to_pydub
+from .pyroomacoustics_ import (
+    from_pyroomacoustics_field,
+    from_pyroomacoustics_mic_signals,
+    from_pyroomacoustics_rir,
+    from_pyroomacoustics_source,
+    from_pyroomacoustics_stft,
+    to_pyroomacoustics_source,
+    to_pyroomacoustics_stft,
+)
 from .pyspeckit_ import from_pyspeckit, to_pyspeckit
+from .pyspice_ import (
+    from_pyspice_ac,
+    from_pyspice_distortion,
+    from_pyspice_noise,
+    from_pyspice_transient,
+)
 from .quantities_ import from_quantity, to_quantity
 from .root_ import (
     from_root,
@@ -56,6 +72,12 @@ from .root_ import (
     write_root_file,
 )
 from .simpeg_ import from_simpeg, to_simpeg
+from .skrf_ import (
+    from_skrf_impulse_response,
+    from_skrf_network,
+    from_skrf_step_response,
+    to_skrf_network,
+)
 from .specutils_ import from_specutils, to_specutils
 from .sqlite_ import from_sqlite, to_sqlite
 from .tensorflow_ import from_tf, to_tf
@@ -139,6 +161,27 @@ __all__ = [
     "to_control_frd",
     "from_control_frd",
     "from_control_response",
+    # P1 - finesse
+    "from_finesse_frequency_response",
+    "from_finesse_noise",
+    # P1 - pyspice
+    "from_pyspice_transient",
+    "from_pyspice_ac",
+    "from_pyspice_noise",
+    "from_pyspice_distortion",
+    # P1 - skrf
+    "from_skrf_network",
+    "to_skrf_network",
+    "from_skrf_impulse_response",
+    "from_skrf_step_response",
+    # P1 - pyroomacoustics
+    "from_pyroomacoustics_rir",
+    "from_pyroomacoustics_mic_signals",
+    "from_pyroomacoustics_source",
+    "from_pyroomacoustics_stft",
+    "from_pyroomacoustics_field",
+    "to_pyroomacoustics_source",
+    "to_pyroomacoustics_stft",
     # P1 - jax
     "to_jax",
     "from_jax",

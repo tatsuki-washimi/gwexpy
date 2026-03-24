@@ -764,6 +764,45 @@ class ScalarField(FieldBase):
         )
 
     # =========================================================================
+    # pyroomacoustics interop
+    # =========================================================================
+
+    @classmethod
+    def from_pyroomacoustics_field(
+        cls,
+        room: Any,
+        *,
+        grid_shape: tuple[int, ...],
+        source: int = 0,
+        mode: str = "rir",
+        unit: Any | None = None,
+    ) -> ScalarField:
+        """Create from pyroomacoustics room with grid-placed microphones.
+
+        Parameters
+        ----------
+        room : pyroomacoustics.Room
+            Room with microphones on a regular spatial grid.
+        grid_shape : tuple of int
+            Spatial grid shape ``(nx, ny, nz)`` or ``(nx, ny)``.
+        source : int, default 0
+            Source index (for ``mode='rir'``).
+        mode : {'rir', 'signals'}
+            ``'rir'`` for impulse responses, ``'signals'`` for mic signals.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data.
+
+        Returns
+        -------
+        ScalarField
+        """
+        from gwexpy.interop import from_pyroomacoustics_field
+
+        return from_pyroomacoustics_field(
+            cls, room, grid_shape=grid_shape, source=source, mode=mode, unit=unit
+        )
+
+    # =========================================================================
     # Simulation
     # =========================================================================
 

@@ -944,3 +944,228 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         from gwexpy.interop import to_neo
 
         return to_neo(self, units=units)
+
+    # ===============================
+    # PySpice
+    # ===============================
+
+    @classmethod
+    def from_pyspice_transient(
+        cls,
+        analysis: Any,
+        *,
+        node: str | None = None,
+        branch: str | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """
+        Create from a PySpice TransientAnalysis.
+
+        Parameters
+        ----------
+        analysis : PySpice.Spice.Simulation.TransientAnalysis
+            The transient analysis result from a PySpice simulation.
+        node : str, optional
+            Node name to extract. If *None* and *branch* is also *None*,
+            all nodes and branches are returned as a :class:`TimeSeriesDict`.
+        branch : str, optional
+            Branch name to extract (e.g. the name of a voltage source for
+            current measurement). Cannot be combined with *node*.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        TimeSeries or TimeSeriesDict
+        """
+        from gwexpy.interop import from_pyspice_transient
+
+        return from_pyspice_transient(cls, analysis, node=node, branch=branch, unit=unit)
+
+    # ===============================
+    # scikit-rf
+    # ===============================
+
+    @classmethod
+    def from_skrf_impulse_response(
+        cls,
+        ntwk: Any,
+        *,
+        port_pair: tuple[int, int] | None = None,
+        n: int | None = None,
+        pad: int = 0,
+        unit: Any | None = None,
+    ) -> Any:
+        """
+        Create from a scikit-rf Network impulse response.
+
+        Parameters
+        ----------
+        ntwk : skrf.Network
+            The scikit-rf Network object.
+        port_pair : tuple[int, int], optional
+            Zero-based ``(row, col)`` port indices to compute the impulse
+            response for. If *None*, all port pairs are computed and a
+            :class:`TimeSeriesDict` is returned for multi-port networks.
+        n : int, optional
+            Number of IFFT points. See ``Network.impulse_response``.
+        pad : int, default 0
+            Number of zero-padding points.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        TimeSeries or TimeSeriesDict
+        """
+        from gwexpy.interop import from_skrf_impulse_response
+
+        return from_skrf_impulse_response(
+            cls, ntwk, port_pair=port_pair, n=n, pad=pad, unit=unit
+        )
+
+    @classmethod
+    def from_skrf_step_response(
+        cls,
+        ntwk: Any,
+        *,
+        port_pair: tuple[int, int] | None = None,
+        n: int | None = None,
+        pad: int = 0,
+        unit: Any | None = None,
+    ) -> Any:
+        """
+        Create from a scikit-rf Network step response.
+
+        Parameters
+        ----------
+        ntwk : skrf.Network
+            The scikit-rf Network object.
+        port_pair : tuple[int, int], optional
+            Zero-based ``(row, col)`` port indices to compute the step
+            response for. If *None*, all port pairs are computed and a
+            :class:`TimeSeriesDict` is returned for multi-port networks.
+        n : int, optional
+            Number of IFFT points. See ``Network.step_response``.
+        pad : int, default 0
+            Number of zero-padding points.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        TimeSeries or TimeSeriesDict
+        """
+        from gwexpy.interop import from_skrf_step_response
+
+        return from_skrf_step_response(
+            cls, ntwk, port_pair=port_pair, n=n, pad=pad, unit=unit
+        )
+
+    # ===============================
+    # pyroomacoustics
+    # ===============================
+
+    @classmethod
+    def from_pyroomacoustics_rir(
+        cls,
+        room: Any,
+        *,
+        source: int | None = None,
+        mic: int | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """
+        Create from pyroomacoustics room impulse responses.
+
+        Parameters
+        ----------
+        room : pyroomacoustics.Room
+            Room object after ``compute_rir()`` or ``simulate()`` has been called.
+        source : int, optional
+            Source index. If *None* and *mic* is also *None*, all pairs
+            are returned as a :class:`TimeSeriesDict`.
+        mic : int, optional
+            Microphone index.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        TimeSeries or TimeSeriesDict
+        """
+        from gwexpy.interop import from_pyroomacoustics_rir
+
+        return from_pyroomacoustics_rir(cls, room, source=source, mic=mic, unit=unit)
+
+    @classmethod
+    def from_pyroomacoustics_mic_signals(
+        cls,
+        room: Any,
+        *,
+        mic: int | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """
+        Create from pyroomacoustics simulated microphone signals.
+
+        Parameters
+        ----------
+        room : pyroomacoustics.Room
+            Room object after ``simulate()`` has been called.
+        mic : int, optional
+            Microphone index. If *None*, all microphones are returned
+            as a :class:`TimeSeriesDict`.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        TimeSeries or TimeSeriesDict
+        """
+        from gwexpy.interop import from_pyroomacoustics_mic_signals
+
+        return from_pyroomacoustics_mic_signals(cls, room, mic=mic, unit=unit)
+
+    @classmethod
+    def from_pyroomacoustics_source(
+        cls,
+        room: Any,
+        *,
+        source: int = 0,
+        unit: Any | None = None,
+    ) -> Any:
+        """
+        Create from a pyroomacoustics sound source signal.
+
+        Parameters
+        ----------
+        room : pyroomacoustics.Room
+            Room object with at least one source added.
+        source : int, default 0
+            Source index.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        TimeSeries
+        """
+        from gwexpy.interop import from_pyroomacoustics_source
+
+        return from_pyroomacoustics_source(cls, room, source=source, unit=unit)
+
+    def to_pyroomacoustics_source(self) -> tuple[np.ndarray, int]:
+        """
+        Export as a signal and sample rate tuple for pyroomacoustics.
+
+        Returns
+        -------
+        signal : numpy.ndarray
+            1D float64 array of the signal samples.
+        fs : int
+            Sample rate in Hz.
+        """
+        from gwexpy.interop import to_pyroomacoustics_source
+
+        return to_pyroomacoustics_source(self)

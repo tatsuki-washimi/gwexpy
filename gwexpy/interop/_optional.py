@@ -28,7 +28,11 @@ _OPTIONAL_DEPENDENCIES = {
     "neo": "neo",
     "dttxml": "dttxml",
     "gwinc": "gwinc",
+    "finesse": "finesse",
     "joblib": "joblib",
+    "PySpice": "PySpice",
+    "skrf": "skrf",
+    "pyroomacoustics": "pyroomacoustics",
 }
 
 
@@ -91,7 +95,10 @@ def require_optional(name: str) -> Any:
         "dqsegdb2": "gw",
         "dttxml": "gw",
         "gwinc": "gw",
+        "finesse": "gw",
         "ligo.skymap": "gw",
+        "PySpice": "eda",
+        "skrf": "eda",
         # io: Experimental data I/O
         "nptdms": "io",
         # plotting: Advanced plotting
@@ -100,6 +107,7 @@ def require_optional(name: str) -> Any:
         "pydub": "audio",
         "tinytag": "audio",
         "librosa": "audio",
+        "pyroomacoustics": "audio",
         # gui: GUI components
         "PyQt5": "gui",
         "pyqtgraph": "gui",

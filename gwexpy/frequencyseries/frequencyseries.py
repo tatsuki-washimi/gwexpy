@@ -875,6 +875,228 @@ class FrequencySeries(
 
         return from_control_frd(cls, frd, frequency_unit=frequency_unit)
 
+    # --- Finesse 3 Interop ---
+
+    @classmethod
+    def from_finesse_frequency_response(
+        cls: type[FrequencySeries],
+        sol: Any,
+        *,
+        output: Any | None = None,
+        input_dof: Any | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """Create from finesse FrequencyResponseSolution.
+
+        Parameters
+        ----------
+        sol : finesse.analysis.actions.lti.FrequencyResponseSolution
+            The frequency response solution from a Finesse 3 simulation.
+        output : str or object, optional
+            Output DOF name. Combined with *input_dof* to select one
+            transfer function.
+        input_dof : str or object, optional
+            Input DOF name.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data.
+
+        Returns
+        -------
+        FrequencySeries or FrequencySeriesMatrix
+        """
+        from gwexpy.interop import from_finesse_frequency_response
+
+        return from_finesse_frequency_response(
+            cls, sol, output=output, input_dof=input_dof, unit=unit
+        )
+
+    @classmethod
+    def from_finesse_noise(
+        cls: type[FrequencySeries],
+        sol: Any,
+        *,
+        output: Any | None = None,
+        noise: str | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """Create from finesse NoiseProjectionSolution.
+
+        Parameters
+        ----------
+        sol : finesse.analysis.actions.noise.NoiseProjectionSolution
+            The noise projection solution from a Finesse 3 simulation.
+        output : str or object, optional
+            Output node name.
+        noise : str, optional
+            Specific noise source name.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the data (e.g., ``"m/sqrt(Hz)"``).
+
+        Returns
+        -------
+        FrequencySeries or FrequencySeriesDict
+        """
+        from gwexpy.interop import from_finesse_noise
+
+        return from_finesse_noise(cls, sol, output=output, noise=noise, unit=unit)
+
+    # --- PySpice Interop ---
+
+    @classmethod
+    def from_pyspice_ac(
+        cls: type[FrequencySeries],
+        analysis: Any,
+        *,
+        node: str | None = None,
+        branch: str | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """Create from a PySpice AcAnalysis.
+
+        Parameters
+        ----------
+        analysis : PySpice.Spice.Simulation.AcAnalysis
+            The AC analysis result from a PySpice simulation.
+        node : str, optional
+            Node name to extract. If *None* and *branch* is also *None*,
+            all signals are returned as a :class:`FrequencySeriesDict`.
+        branch : str, optional
+            Branch name to extract.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        FrequencySeries or FrequencySeriesDict
+        """
+        from gwexpy.interop import from_pyspice_ac
+
+        return from_pyspice_ac(cls, analysis, node=node, branch=branch, unit=unit)
+
+    @classmethod
+    def from_pyspice_noise(
+        cls: type[FrequencySeries],
+        analysis: Any,
+        *,
+        node: str | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """Create from a PySpice NoiseAnalysis.
+
+        Parameters
+        ----------
+        analysis : PySpice.Spice.Simulation.NoiseAnalysis
+            The noise analysis result from a PySpice simulation.
+        node : str, optional
+            Node name to extract (e.g. ``"onoise"``). If *None*, all signals
+            are returned as a :class:`FrequencySeriesDict`.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        FrequencySeries or FrequencySeriesDict
+        """
+        from gwexpy.interop import from_pyspice_noise
+
+        return from_pyspice_noise(cls, analysis, node=node, unit=unit)
+
+    @classmethod
+    def from_pyspice_distortion(
+        cls: type[FrequencySeries],
+        analysis: Any,
+        *,
+        node: str | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """Create from a PySpice DistortionAnalysis.
+
+        Parameters
+        ----------
+        analysis : PySpice.Spice.Simulation.DistortionAnalysis
+            The distortion analysis result from a PySpice simulation.
+        node : str, optional
+            Node name to extract. If *None*, all signals are returned as a
+            :class:`FrequencySeriesDict`.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        FrequencySeries or FrequencySeriesDict
+        """
+        from gwexpy.interop import from_pyspice_distortion
+
+        return from_pyspice_distortion(cls, analysis, node=node, unit=unit)
+
+    # --- scikit-rf Interop ---
+
+    @classmethod
+    def from_skrf_network(
+        cls: type[FrequencySeries],
+        ntwk: Any,
+        *,
+        parameter: str = "s",
+        port_pair: tuple[int, int] | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """Create from a scikit-rf Network.
+
+        Parameters
+        ----------
+        ntwk : skrf.Network
+            The scikit-rf Network object.
+        parameter : str, default ``"s"``
+            Which network parameter to extract (``"s"``, ``"z"``, ``"y"``,
+            ``"a"``, ``"t"``, or ``"h"``).
+        port_pair : tuple[int, int], optional
+            Zero-based ``(row, col)`` port indices. If *None*, 1-port networks
+            return a :class:`FrequencySeries` and multi-port networks return a
+            :class:`FrequencySeriesMatrix`.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        FrequencySeries or FrequencySeriesMatrix
+        """
+        from gwexpy.interop import from_skrf_network
+
+        return from_skrf_network(
+            cls, ntwk, parameter=parameter, port_pair=port_pair, unit=unit
+        )
+
+    def to_skrf_network(
+        self,
+        *,
+        parameter: str = "s",
+        z0: float = 50.0,
+        port_names: list[str] | None = None,
+        name: str | None = None,
+    ) -> Any:
+        """Convert to a scikit-rf Network.
+
+        Parameters
+        ----------
+        parameter : str, default ``"s"``
+            Network parameter the data represents.
+        z0 : float, default 50.0
+            Reference impedance in Ohms.
+        port_names : list[str], optional
+            Names for each port.
+        name : str, optional
+            Name for the resulting Network.
+
+        Returns
+        -------
+        skrf.Network
+        """
+        from gwexpy.interop import to_skrf_network
+
+        return to_skrf_network(
+            self, parameter=parameter, z0=z0, port_names=port_names, name=name
+        )
+
     # --- ML Framework Interop ---
 
     def to_torch(
