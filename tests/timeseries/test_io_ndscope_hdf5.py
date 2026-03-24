@@ -260,3 +260,75 @@ class TestWrite:
         tsd2 = TimeSeriesDict.read(str(p), format="ndscope-hdf5")
         assert set(tsd2.keys()) == {"K1:CH.max", "K1:CH.mean", "K1:CH.min"}
         np.testing.assert_allclose(tsd2["K1:CH.min"].value, 0.0)
+
+    def test_write_inconsistent_rate_raises(self, tmp_path):
+        """Writer must reject series with mismatched sample_rate in same group."""
+        p = tmp_path / "bad_rate.hdf5"
+        tsd = TimeSeriesDict(
+            {
+                "K1:CH.mean": TimeSeries(
+                    np.ones(60), sample_rate=1.0, t0=1e9, name="K1:CH.mean", unit="ct"
+                ),
+                "K1:CH.min": TimeSeries(
+                    np.zeros(120),
+                    sample_rate=2.0,  # different!
+                    t0=1e9,
+                    name="K1:CH.min",
+                    unit="ct",
+                ),
+            }
+        )
+        with pytest.raises(ValueError, match="sample_rate"):
+            tsd.write(str(p), format="ndscope-hdf5")
+
+    def test_write_inconsistent_t0_raises(self, tmp_path):
+        """Writer must reject series with mismatched gps_start in same group."""
+        p = tmp_path / "bad_t0.hdf5"
+        tsd = TimeSeriesDict(
+            {
+                "K1:CH.mean": TimeSeries(
+                    np.ones(60), sample_rate=1.0, t0=1e9, name="K1:CH.mean", unit="ct"
+                ),
+                "K1:CH.min": TimeSeries(
+                    np.zeros(60),
+                    sample_rate=1.0,
+                    t0=1e9 + 1,  # different!
+                    name="K1:CH.min",
+                    unit="ct",
+                ),
+            }
+        )
+        with pytest.raises(ValueError, match="gps_start"):
+            tsd.write(str(p), format="ndscope-hdf5")
+
+
+# ---------------------------------------------------------------------------
+# Regression tests (covering PR review findings)
+# ---------------------------------------------------------------------------
+
+
+class TestRegressions:
+    def test_raw_always_uses_bare_channel_name(self, tmp_path):
+        """raw dataset key must always be grp_name, even when mean/min/max co-exist."""
+        p = tmp_path / "mixed.hdf5"
+        n = 64
+        with h5py.File(str(p), "w") as f:
+            grp = f.create_group("K1:CH")
+            grp.create_dataset("raw", data=np.ones(n))
+            grp.create_dataset("mean", data=np.ones(n) * 0.5)
+            grp.create_dataset("min", data=np.zeros(n))
+            grp.create_dataset("max", data=np.ones(n) * 2)
+            grp.attrs["rate_hz"] = 16.0
+            grp.attrs["gps_start"] = 1e9
+            grp.attrs["unit"] = "ct"
+
+        tsd = read_timeseriesdict_ndscope_hdf5(p)
+
+        # raw must always be accessible as the bare channel name
+        assert "K1:CH" in tsd, "raw dataset must map to bare grp_name 'K1:CH'"
+        # trend datasets must have suffixes
+        assert "K1:CH.mean" in tsd
+        assert "K1:CH.min" in tsd
+        assert "K1:CH.max" in tsd
+        # raw must NOT appear with a .raw suffix
+        assert "K1:CH.raw" not in tsd, "raw must not be renamed to 'K1:CH.raw'"

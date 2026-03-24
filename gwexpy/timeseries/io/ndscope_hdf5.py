@@ -144,8 +144,10 @@ def read_timeseriesdict_ndscope_hdf5(
 
             for ds_name in ds_names:
                 data = np.asarray(item[ds_name])
-                # Build the channel key: append .stat for trend datasets
-                if ds_name == "raw" and len(ds_names) == 1:
+                # "raw" always maps to the bare channel name (grp_name).
+                # Trend datasets (mean/min/max) are always suffixed so they
+                # are unambiguous regardless of what other datasets are present.
+                if ds_name == "raw":
                     ch_key = grp_name
                 else:
                     ch_key = f"{grp_name}.{ds_name}"
@@ -197,6 +199,9 @@ def write_timeseriesdict_ndscope_hdf5(
         If ``True``, overwrite an existing file.  Default: ``False``.
     """
     mode = "w" if overwrite else "w-"
+    # group_meta tracks the first-seen metadata for each group so that
+    # subsequent series in the same group can be validated for consistency.
+    group_meta: dict[str, dict[str, float | str]] = {}
     with h5py.File(_resolve_source(target), mode) as f:
         groups: dict[str, h5py.Group] = {}
         for key, ts in tsdict.items():
@@ -212,15 +217,42 @@ def write_timeseriesdict_ndscope_hdf5(
                     ds_name = suffix
                     break
 
+            rate_hz = float(ts.sample_rate.value)
+            gps_start = float(ts.t0.value)
+            unit = str(ts.unit) if ts.unit else ""
+
             if grp_name not in groups:
                 grp = f.create_group(grp_name)
                 groups[grp_name] = grp
-            grp = groups[grp_name]
+                group_meta[grp_name] = {
+                    "rate_hz": rate_hz,
+                    "gps_start": gps_start,
+                    "unit": unit,
+                }
+                grp.attrs["rate_hz"] = rate_hz
+                grp.attrs["gps_start"] = gps_start
+                grp.attrs["unit"] = unit
+            else:
+                # Validate consistency with the first series in this group.
+                meta = group_meta[grp_name]
+                if rate_hz != meta["rate_hz"]:
+                    raise ValueError(
+                        f"Inconsistent sample_rate for group {grp_name!r}: "
+                        f"expected {meta['rate_hz']} Hz, got {rate_hz} Hz"
+                    )
+                if gps_start != meta["gps_start"]:
+                    raise ValueError(
+                        f"Inconsistent gps_start for group {grp_name!r}: "
+                        f"expected {meta['gps_start']}, got {gps_start}"
+                    )
+                if unit != meta["unit"]:
+                    raise ValueError(
+                        f"Inconsistent unit for group {grp_name!r}: "
+                        f"expected {meta['unit']!r}, got {unit!r}"
+                    )
 
+            grp = groups[grp_name]
             grp.create_dataset(ds_name, data=ts.value)
-            grp.attrs["rate_hz"] = float(ts.sample_rate.value)
-            grp.attrs["gps_start"] = float(ts.t0.value)
-            grp.attrs["unit"] = str(ts.unit) if ts.unit else ""
 
 
 # ---------------------------------------------------------------------------
