@@ -30,6 +30,8 @@ _OPTIONAL_DEPENDENCIES = {
     "gwinc": "gwinc",
     "finesse": "finesse",
     "joblib": "joblib",
+    "PySpice": "PySpice",
+    "skrf": "skrf",
 }
 
 
@@ -94,6 +96,8 @@ def require_optional(name: str) -> Any:
         "gwinc": "gw",
         "finesse": "gw",
         "ligo.skymap": "gw",
+        "PySpice": "eda",
+        "skrf": "eda",
         # io: Experimental data I/O
         "nptdms": "io",
         # plotting: Advanced plotting
