@@ -11,6 +11,18 @@ from ._optional import require_optional
 from .astropy_ import from_astropy_timeseries, to_astropy_timeseries
 from .control_ import from_control_frd, from_control_response, to_control_frd
 from .finesse_ import from_finesse_frequency_response, from_finesse_noise
+from .pyspice_ import (
+    from_pyspice_ac,
+    from_pyspice_distortion,
+    from_pyspice_noise,
+    from_pyspice_transient,
+)
+from .skrf_ import (
+    from_skrf_impulse_response,
+    from_skrf_network,
+    from_skrf_step_response,
+    to_skrf_network,
+)
 from .cupy_ import from_cupy, is_cupy_available, to_cupy
 from .dask_ import from_dask, to_dask
 from .frequency import (
@@ -143,6 +155,16 @@ __all__ = [
     # P1 - finesse
     "from_finesse_frequency_response",
     "from_finesse_noise",
+    # P1 - pyspice
+    "from_pyspice_transient",
+    "from_pyspice_ac",
+    "from_pyspice_noise",
+    "from_pyspice_distortion",
+    # P1 - skrf
+    "from_skrf_network",
+    "to_skrf_network",
+    "from_skrf_impulse_response",
+    "from_skrf_step_response",
     # P1 - jax
     "to_jax",
     "from_jax",
