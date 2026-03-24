@@ -330,6 +330,71 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         return from_obspy(cls, stream, **kwargs)
 
+    # ===============================
+    # pyroomacoustics
+    # ===============================
+
+    @classmethod
+    def from_pyroomacoustics_stft(
+        cls,
+        stft_obj: Any,
+        *,
+        channel: int | None = None,
+        fs: float | None = None,
+        unit: Any | None = None,
+    ) -> Any:
+        """
+        Create from a pyroomacoustics STFT object.
+
+        Parameters
+        ----------
+        stft_obj : pyroomacoustics.stft.STFT
+            STFT object with ``.X``, ``.hop``, and ``.N`` attributes.
+        channel : int, optional
+            Channel index. If *None*, all channels are returned as a
+            :class:`SpectrogramDict` for multi-channel data.
+        fs : float, optional
+            Sample rate in Hz. Required if ``stft_obj`` has no ``fs`` attribute.
+        unit : str or astropy.units.Unit, optional
+            Unit to assign to the result.
+
+        Returns
+        -------
+        Spectrogram or SpectrogramDict
+        """
+        from gwexpy.interop import from_pyroomacoustics_stft
+
+        return from_pyroomacoustics_stft(
+            cls, stft_obj, channel=channel, fs=fs, unit=unit
+        )
+
+    def to_pyroomacoustics_stft(
+        self,
+        *,
+        hop: int | None = None,
+        analysis_window: Any | None = None,
+    ) -> Any:
+        """
+        Export as a pyroomacoustics STFT object.
+
+        Parameters
+        ----------
+        hop : int, optional
+            Hop size in samples. If *None*, estimated from the spectrogram
+            metadata.
+        analysis_window : numpy.ndarray, optional
+            Analysis window for the STFT object.
+
+        Returns
+        -------
+        pyroomacoustics.stft.STFT
+        """
+        from gwexpy.interop import to_pyroomacoustics_stft
+
+        return to_pyroomacoustics_stft(
+            self, hop=hop, analysis_window=analysis_window
+        )
+
     def rebin(
         self, dt: float | u.Quantity | None = None, df: float | u.Quantity | None = None
     ) -> Spectrogram:
