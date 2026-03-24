@@ -251,6 +251,35 @@ class TestFromFinesseFrequencyResponse:
         for key in result:
             assert key.startswith("DARM -> ")
 
+    def test_output_only_matrix_non_first_output(self):
+        """output=<non-first> via FrequencySeriesMatrix must not raise IndexError.
+
+        Regression test for the index mismatch bug where _build_frequency_response_collection
+        was iterating over sol.outputs instead of the filtered outputs list.
+        """
+        freqs = np.linspace(1, 100, 20)
+        rng = np.random.default_rng(7)
+        n_freq = len(freqs)
+        data = rng.standard_normal((3, 2, n_freq)) + 1j * rng.standard_normal(
+            (3, 2, n_freq)
+        )
+        sol = _mock_frequency_response_solution(
+            freqs, outputs=["EX", "MICH", "EY"], inputs=["L1", "L2"], data=data
+        )
+
+        # Select the *second* output so i=1 in sol.outputs; previously this would
+        # cause matrix_data[1, :, :] to be written while matrix_data has shape (1,…)
+        result = from_finesse_frequency_response(
+            FrequencySeriesMatrix, sol, output="MICH"
+        )
+
+        assert isinstance(result, FrequencySeriesMatrix)
+        # Shape: (1 output, 2 inputs, 20 freqs)
+        assert result.value.shape == (1, 2, n_freq)
+        # Data must match the MICH row (index 1 in the original data)
+        np.testing.assert_array_almost_equal(result.value[0, 0, :], data[1, 0, :])
+        np.testing.assert_array_almost_equal(result.value[0, 1, :], data[1, 1, :])
+
 
 # ---------------------------------------------------------------------------
 # NoiseProjectionSolution tests
