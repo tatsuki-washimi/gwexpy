@@ -159,11 +159,10 @@ def _build_frequency_response_collection(
     matrix_data = np.empty((n_out, n_in, n_freq), dtype=complex)
     channel_names = np.empty((n_out, n_in), dtype=object)
 
-    for i, out_dof in enumerate(sol.outputs):
-        for j, in_dof in enumerate(sol.inputs):
-            if (out_dof, in_dof) in pairs or len(pairs) == n_out * n_in:
-                matrix_data[i, j, :] = np.asarray(sol[out_dof, in_dof])
-                channel_names[i, j] = f"{out_dof} -> {in_dof}"
+    for i, out_dof in enumerate(outputs):
+        for j, in_dof in enumerate(inputs):
+            matrix_data[i, j, :] = np.asarray(sol[out_dof, in_dof])
+            channel_names[i, j] = f"{out_dof} -> {in_dof}"
 
     sol_name = getattr(sol, "name", None)
 

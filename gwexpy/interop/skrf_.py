@@ -223,6 +223,13 @@ def to_skrf_network(
     """
     skrf = require_optional("skrf")
 
+    if parameter != "s":
+        raise ValueError(
+            f"parameter={parameter!r} is not supported. "
+            "Only 's' (S-parameters) can be passed directly to skrf.Network; "
+            "convert other parameter types manually before calling to_skrf_network()."
+        )
+
     freqs = np.asarray(fs.frequencies.value, dtype=np.float64)
     data = np.asarray(fs.value)
 
