@@ -17,7 +17,7 @@ import pandas as pd
 
 from gwexpy.table.segment_cell import SegmentCell
 
-__all__ = ["SegmentTable"]
+__all__ = ["RowProxy", "SegmentTable"]
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -71,6 +71,11 @@ class RowProxy:
             return table._meta.at[self._index, key]
         # Payload column
         return table._payload[key][self._index].get()
+
+    @property
+    def index(self) -> int:
+        """The 0-based row index within the parent :class:`SegmentTable`."""
+        return self._index
 
     def keys(self) -> list[str]:
         """Return all column names."""
@@ -615,7 +620,7 @@ class SegmentTable:
             payload = row[column]
             return {out_col: payload.asd(**kwargs)}
 
-        target = self if False else self.copy()  # always returns new table
+        target = self.copy()
         results = []
         for i in range(len(self)):
             row = self.row(i)
@@ -831,12 +836,14 @@ class SegmentTable:
         x: str,
         y: str,
         color: Optional[str] = None,
+        *,
+        selection: Optional[Any] = None,
         **kwargs: Any,
     ) -> Any:
         """Scatter plot of two scalar columns."""
         from gwexpy.table.segment_plot import scatter_segment_table
 
-        return scatter_segment_table(self, x, y, color=color, **kwargs)
+        return scatter_segment_table(self, x, y, color=color, selection=selection, **kwargs)
 
     def hist(
         self,
@@ -929,8 +936,6 @@ class SegmentTable:
     # Display
     # ------------------------------------------------------------------
 
-    def __len__(self) -> int:  # noqa: F811 (re-declared for clarity)
-        return len(self._meta)
 
     def __repr__(self) -> str:
         n_rows = len(self)

@@ -12,3 +12,4 @@
    ../user_guide/tutorials/case_noise_budget
    ../user_guide/tutorials/case_transfer_function
    ../user_guide/tutorials/case_active_damping
+   ../user_guide/tutorials/case_segment_analysis

@@ -42,7 +42,7 @@ def _require_column(st: SegmentTable, col: str) -> None:
 def _require_scalar_column(st: SegmentTable, col: str) -> None:
     _require_column(st, col)
     kind = st.schema[col]
-    if kind not in ("meta", "object", "segment"):
+    if kind not in ("meta", "object"):
         raise TypeError(
             f"Column {col!r} has kind {kind!r}; only scalar/meta columns are "
             "supported for this plot type."
@@ -491,8 +491,8 @@ def overlay_spectra_segment_table(
     # Set up axes
     if ax is not None:
         _ax = ax
-        from gwpy.plot import Plot
-        plot = Plot()
+        # Reuse the figure that owns the provided axes
+        plot = ax.figure
     else:
         plot = _get_plot()
         _ax = plot.add_subplot(111)
