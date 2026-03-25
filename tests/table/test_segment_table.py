@@ -2,28 +2,24 @@
 
 from __future__ import annotations
 
-import math
-from typing import List
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
 import pytest
-
+from gwpy.frequencyseries import FrequencySeries
 from gwpy.segments import Segment
 from gwpy.timeseries import TimeSeries, TimeSeriesDict
-from gwpy.frequencyseries import FrequencySeries
 
 from gwexpy.table.segment_cell import SegmentCell
 from gwexpy.table.segment_table import RowProxy, SegmentTable
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
 
 
-def _make_segments(n: int = 4) -> List[Segment]:
+def _make_segments(n: int = 4) -> list[Segment]:
     return [Segment(i * 4, i * 4 + 4) for i in range(n)]
 
 
