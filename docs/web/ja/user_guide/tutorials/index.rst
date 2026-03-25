@@ -81,6 +81,19 @@ V. 特殊ツール
 
    advanced_bruco
 
+VI. セグメント解析
+-----------------
+時間区間（セグメント）をベースとした表形式の解析手法について説明します。
+
+.. toctree::
+   :maxdepth: 1
+   :caption: セグメント解析
+
+   SegmentTable の基本 <intro_segment_table>
+   ASD 解析パイプライン <segment_asd_pipeline>
+   可視化テクニック <segment_visualization>
+   イベント同期ケーススタディ <case_segment_analysis>
+
 .. note::
    実践的なケーススタディと応用例は :doc:`../../examples/index` に統合されています。
    ノイズバジェット解析、伝達関数計算、アクティブダンピングなどの実例集を参照してください。

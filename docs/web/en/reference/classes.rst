@@ -40,3 +40,5 @@ Class Index
    FFT_Conventions
    Bruco
    SeriesMatrix
+   SegmentTable
+   SegmentCell
