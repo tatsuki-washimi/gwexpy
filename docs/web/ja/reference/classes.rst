@@ -40,3 +40,5 @@
    FFT規約 (FFT_Conventions) <FFT_Conventions>
    Bruco (Bruco) <Bruco>
    シリーズ行列 (SeriesMatrix) <SeriesMatrix>
+   セグメントテーブル (SegmentTable) <SegmentTable>
+   セグメントセル (SegmentCell) <SegmentCell>

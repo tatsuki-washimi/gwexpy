@@ -81,6 +81,19 @@ Tools for specific noise hunting and diagnostics tasks.
 
    Noise Hunting with Bruco <advanced_bruco>
 
+VI. Segment Analysis
+--------------------
+Table-based analysis for time segments.
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Segment Analysis
+
+   SegmentTable Basics <intro_segment_table>
+   ASD Analysis Pipeline <segment_asd_pipeline>
+   Visualization Deep Dive <segment_visualization>
+   Event Matching Case Study <case_segment_analysis>
+
 .. note::
    Practical case studies and applications are consolidated in :doc:`../../examples/index`.
    See the examples section for real-world applications like noise budget analysis,

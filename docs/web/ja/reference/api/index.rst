@@ -14,4 +14,5 @@ API リファレンス
    preprocessing
    fitting
    types
+   table
    extra
