@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import h5py
 import numpy as np
 import pytest
@@ -11,6 +13,8 @@ from gwexpy.timeseries.io.ndscope_hdf5 import (
     identify_ndscope_hdf5,
     read_timeseriesdict_ndscope_hdf5,
 )
+
+SAMPLE_HDF5 = Path(__file__).parent.parent / "sample-data" / "ndscope.hdf5"
 
 # ---------------------------------------------------------------------------
 # Helpers to create synthetic ndscope HDF5 files
@@ -332,3 +336,59 @@ class TestRegressions:
         assert "K1:CH.max" in tsd
         # raw must NOT appear with a .raw suffix
         assert "K1:CH.raw" not in tsd, "raw must not be renamed to 'K1:CH.raw'"
+
+
+# ---------------------------------------------------------------------------
+# Real-data tests using tests/sample-data/ndscope.hdf5
+# ---------------------------------------------------------------------------
+
+_REAL_CHANNELS = [
+    "K1:PEM-SEIS_BS_GND_EW_IN1_DQ",
+    "K1:PEM-SEIS_BS_GND_NS_IN1_DQ",
+    "K1:PEM-SEIS_BS_GND_UD_IN1_DQ",
+]
+_REAL_RATE_HZ = 512.0
+_REAL_GPS_START = 1457936560.2988281
+_REAL_UNIT = "ct"
+_REAL_N_SAMPLES = 48677
+
+
+@pytest.mark.skipif(not SAMPLE_HDF5.exists(), reason="sample data not found")
+class TestRealData:
+    def test_identify_real_file(self):
+        assert identify_ndscope_hdf5(TimeSeriesDict, str(SAMPLE_HDF5), None) is True
+
+    def test_read_all_channels(self):
+        tsd = read_timeseriesdict_ndscope_hdf5(SAMPLE_HDF5)
+        assert len(tsd) == 3
+
+    def test_channel_names(self):
+        tsd = read_timeseriesdict_ndscope_hdf5(SAMPLE_HDF5)
+        assert set(tsd.keys()) == set(_REAL_CHANNELS)
+
+    def test_metadata(self):
+        tsd = read_timeseriesdict_ndscope_hdf5(SAMPLE_HDF5)
+        for ch in _REAL_CHANNELS:
+            ts = tsd[ch]
+            assert float(ts.sample_rate.value) == pytest.approx(_REAL_RATE_HZ)
+            assert float(ts.t0.value) == pytest.approx(_REAL_GPS_START, rel=1e-9)
+            assert str(ts.unit) == _REAL_UNIT
+
+    def test_data_length(self):
+        tsd = read_timeseriesdict_ndscope_hdf5(SAMPLE_HDF5)
+        for ch in _REAL_CHANNELS:
+            assert len(tsd[ch]) == _REAL_N_SAMPLES
+
+    def test_channel_filter(self):
+        target = _REAL_CHANNELS[0]
+        tsd = read_timeseriesdict_ndscope_hdf5(SAMPLE_HDF5, channels=[target])
+        assert list(tsd.keys()) == [target]
+
+    def test_time_crop(self):
+        start = _REAL_GPS_START + 10.0
+        end = _REAL_GPS_START + 20.0
+        tsd = read_timeseriesdict_ndscope_hdf5(SAMPLE_HDF5, start=start, end=end)
+        for ch in _REAL_CHANNELS:
+            ts = tsd[ch]
+            assert float(ts.t0.value) == pytest.approx(start)
+            assert float(ts.duration.value) == pytest.approx(10.0)
