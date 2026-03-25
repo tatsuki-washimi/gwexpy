@@ -91,6 +91,7 @@ from . import (
     timeseries,
     types,
 )
+from ._bootstrap import register_all
 from ._version import __version__
 from .fields import FieldDict, FieldList, ScalarField, TensorField, VectorField
 from .frequencyseries import (
@@ -133,6 +134,8 @@ from .types import (
 )
 
 __all__ = [
+    # Bootstrap
+    "register_all",
     # Version
     "__version__",
     # TimeSeries types
@@ -211,3 +214,7 @@ try:
     enable_series_fit()
 except ImportError:
     pass
+
+# Mark bootstrap as complete — all subpackages have been imported above,
+# so the registry is fully populated.
+register_all()

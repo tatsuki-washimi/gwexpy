@@ -11,6 +11,7 @@ Before any code changes or runs, ensure ALL items below are satisfied:
 - Read `.agent/<skill>/SKILL.md` for the skills you intend to use.
 - Inspect `docs/developers/plans/` for relevant historical context and design decisions.
 - Ensure you have local environment with `.[dev,test,docs]` installed.
+- **Bootstrap the registry**: call `gwexpy.register_all()` or simply `import gwexpy` before using `ConverterRegistry` lookups.  If you see a `KeyError` mentioning “not registered”, call `gwexpy.register_all()`.
 - Confirm that changes requiring physics judgement will be flagged for **human review**.
 - Log every high-level action and attach it to the PR (see “Audit & tagging” below).
 

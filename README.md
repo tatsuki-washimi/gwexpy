@@ -178,6 +178,11 @@ For further configuration (e.g., `[dev]`), see the [Installation Guide](https://
 
 ## Quick Start
 
+> **Note:** `import gwexpy` automatically registers all constructors and I/O
+> formats.  If you import submodules directly and encounter a `KeyError` from
+> `ConverterRegistry`, call `gwexpy.register_all()` to ensure the registry is
+> fully populated.
+
 ### 1. Vectorized Time Conversion & Auto Series
 
 ```python
