@@ -889,13 +889,21 @@ def to_xarray_field(
 
 #### 実装方針
 
-- **次元自動検出**: `time`/`frequency` → axis0、`x`/`easting`/`west_east` → axis1、等
-  - CF Convention の `axis` 属性 (`T`, `X`, `Y`, `Z`) があれば優先
-  - MetPy の `_metpy_axis` 属性も認識
-- **4D 化**: 2D/3D DataArray は不足次元を singleton で補完
-- **単位**: `da.attrs["units"]` → `astropy.units` に変換
-- **VectorField**: `xarray.Dataset` の data variable を成分として解釈
-- **逆変換**: ScalarField → DataArray（座標付き）、VectorField → Dataset
+**設計判定**: 既存の `xarray_.py` (76行) に追記する。`from_xarray`（1D）と `from_xarray_field`（4D）は名前で区別でき、同じパッケージの変換なので凝集度は高い。追記後の総行数 ~180 行に収まる。
+
+- **次元自動検出の優先度**: CF Convention `axis` 属性 (`T`/`X`/`Y`/`Z`) > MetPy `_metpy_axis` > ヒューリスティック名前マッチ
+  - axis0 候補: `time`, `t`, `frequency`, `freq`, `f`
+  - axis1 候補 (x): `x`, `easting`, `west_east`, `lon`, `longitude`
+  - axis2 候補 (y): `y`, `northing`, `south_north`, `lat`, `latitude`
+  - axis3 候補 (z): `z`, `upward`, `height`, `altitude`, `bottom_top`, `level`
+- **ドメイン固有の対応は Task 9 で実装**: 本ブリッジは汎用ヒューリスティックのみ。WRF の2D lat/lon → 1D 軸抽出などの前処理は Task 9 各コンバータが担当
+- **不足次元の singleton 補完順序**: 自動検出された空間次元を axis1 から詰める
+  - 空間1D → `(axis0, n, 1, 1)`
+  - 空間2D → `(axis0, nx, ny, 1)`
+  - 空間3D → `(axis0, nx, ny, nz)`
+- **単位**: `da.attrs["units"]` → `astropy.units` に変換。変換失敗時は警告 + `None`
+- **VectorField**: `xarray.Dataset` の全データ変数を成分として解釈。成分名は data variable 名を使用
+- **逆変換**: ScalarField → DataArray（座標付き）、VectorField → Dataset。座標名は `field.axis_names` を使用、`dim_names` でオーバーライド可
 
 #### テストケース
 
@@ -903,8 +911,11 @@ def to_xarray_field(
 - 2D DataArray (easting × northing) → ScalarField (1, nx, ny, 1)
 - 3D DataArray (time × lat × lon) → ScalarField (nt, nlat, nlon, 1)
 - CF Convention axis 属性からの自動検出
+- MetPy `_metpy_axis` 属性の認識
 - Dataset (u, v, w) → VectorField (3 コンポーネント)
 - 単位の保持（attrs["units"] → astropy unit）
+- VectorField → Dataset → VectorField のラウンドトリップ
+- 不足次元の自動 singleton 補完（2D → 4D）
 
 ---
 
@@ -987,14 +998,40 @@ mypy gwexpy/interop/openems_.py gwexpy/interop/emg3d_.py gwexpy/utils/units.py
 
 各タスクの規模が大きいため、**サブタスク分割** で段階的に実装する。
 
-### 依存関係
+### 中期フェーズの全体構成（Task 6-7）
+
+**MVP フェーズ（Task 1-5）が完了した後の中期タスク**:
 
 ```
-Task 8 (FEniCSx)     ← meshio 依存。xarray↔Field (Task 6) とは独立
-Task 9 (気象スキーマ) ← Task 6 (xarray↔Field) + Task 7 (Pint↔astropy) が前提
-Task 10 (モーダル)    ← FrequencySeriesMatrix の成熟度に依存。xarray は補助的
-Task 11 (multitaper)  ← 独立。FrequencySeries のみ使用
+Task 6 (xarray↔Field) ──────────┐
+Task 7 (Pint↔astropy)  ─────────┤── 長期タスク（8-11）のブロッカー
+Task 4 (openEMS)   ─── 並行可 ──┤
+Task 5 (emg3d)     ─── 並行可 ──┘
 ```
+
+推奨マージ順序: **Task 6 → Task 7 → Task 4 / Task 5（並行）**
+
+### 長期フェーズの全体構成（Task 8-11）
+
+**中期フェーズ完了後の長期タスク**:
+
+```
+Task 6 (xarray↔Field)  ─────────────────┐
+Task 7 (Pint↔astropy)  ─────────────────┤
+                                         │
+Task 11 (multitaper)   ─── 独立、最小規模
+Task 8 (meshio)        ─── scipy 補間のみ依存
+Task 9 (気象)           ─── Task 6+7 前提、xarray→ScalarField
+Task 10 (モーダル)      ─── FrequencySeriesMatrix 成熟度に依存、最大規模
+```
+
+推奨マージ順序: **Task 11 → Task 8 → Task 9 → Task 10（サブタスク A→B→C→D→E）**
+
+**依存関係詳細**:
+- Task 8 (FEniCSx/meshio): 完全に独立。Task 6 とは無依存
+- Task 9 (気象): Task 6 (xarray↔Field) + Task 7 (Pint↔astropy) が必須。各ライブラリの xarray 出力を ScalarField に変換する前処理を実装
+- Task 10 (モーダル): FrequencySeriesMatrix/TimeSeriesMatrix API の成熟度が重要。Task 6 は補助的（モード形状を将来 xarray Dataset で返す場合のみ）
+- Task 11 (multitaper): 完全に独立。FrequencySeries のみ使用
 
 ---
 
@@ -1026,36 +1063,36 @@ meshio を中間層として利用し、GWexpy 側では **正則グリッドへ
 
 | 操作 | ファイル |
 |---|---|
-| 新規 | `gwexpy/interop/fenics_.py` (~300行) |
-| 新規 | `tests/interop/test_interop_fenics.py` (~250行) |
-| 変更 | `gwexpy/interop/_optional.py` — `"meshio"` マッピング追加 |
+| 新規 | `gwexpy/interop/meshio_.py` (~200行) |
+| 新規 | `tests/interop/test_interop_meshio.py` (~200行) |
+| 変更 | `gwexpy/interop/_optional.py` — `"meshio"`, `"scipy"` マッピング追加 |
 | 変更 | `gwexpy/interop/__init__.py` — import + `__all__` 追加 |
 
 #### 関数シグネチャ
 
 ```python
-# gwexpy/interop/fenics_.py
+# gwexpy/interop/meshio_.py
 
-# サブタスク A: meshio Mesh からの読み込み（dolfinx 不要）
 def from_meshio(
     cls: type,                          # ScalarField or VectorField
     mesh: Any,                          # meshio.Mesh
     *,
     field_name: str | None = None,      # point_data / cell_data のキー名
-    interpolate_to_grid: bool = False,  # True → 正則グリッドへ scipy 補間
-    grid_resolution: float | None = None,  # 補間先の解像度
+    grid_resolution: float,             # 補間先の解像度（必須）
+    method: str = "linear",             # "linear" | "nearest"
     axis0: np.ndarray | None = None,    # 時系列の場合
     axis0_domain: Literal["time", "frequency"] = "time",
-) -> ScalarField
+    unit: Any | None = None,
+) -> ScalarField | VectorField
 
-# サブタスク B: XDMF/VTK ファイルからの読み込み
 def from_fenics_xdmf(
     cls: type,
     filepath: str | Path,
     *,
     field_name: str | None = None,
-    interpolate_to_grid: bool = False,
-    grid_resolution: float | None = None,
+    grid_resolution: float,             # 補間先の解像度（必須）
+    method: str = "linear",
+    unit: Any | None = None,
 ) -> ScalarField | VectorField
 
 def from_fenics_vtk(
@@ -1063,17 +1100,14 @@ def from_fenics_vtk(
     filepath: str | Path,
     *,
     field_name: str | None = None,
-    interpolate_to_grid: bool = False,
-    grid_resolution: float | None = None,
+    grid_resolution: float,             # 補間先の解像度（必須）
+    method: str = "linear",
+    unit: Any | None = None,
 ) -> ScalarField | VectorField
 
 # 内部ヘルパー
-def _meshio_to_unstructured_dict(mesh, field_name) -> dict
-def _interpolate_unstructured_to_grid(
-    points: np.ndarray,
-    values: np.ndarray,
-    resolution: float,
-) -> tuple[np.ndarray, tuple[np.ndarray, ...]]
+def _build_regular_grid(points, values, resolution, method="linear") -> tuple[np.ndarray, tuple[np.ndarray, ...]]
+def _detect_vector_components(data_dict: dict) -> dict[str, np.ndarray]
 ```
 
 #### サブタスク分割
@@ -1082,28 +1116,34 @@ def _interpolate_unstructured_to_grid(
 |---|---|---|
 | 8A | `from_meshio`: meshio.Mesh → ScalarField（正則グリッド補間） | 中 |
 | 8B | `from_fenics_xdmf` / `from_fenics_vtk`: ファイル → meshio → ScalarField | 小 |
-| 8C | 時系列対応: 複数タイムステップの XDMF を axis0 に展開 | 中 |
-| 8D | VectorField 対応: ベクトル場の自動検出と成分分離 | 小 |
+| 8C | VectorField 対応: ベクトル場の自動検出と成分分離 | 小 |
+| 8D | 時系列対応（後続）: 複数タイムステップの XDMF を axis0 に展開 | 中 |
 
 #### 実装方針
 
+**設計判定**:
+- **ファイル名**: `meshio_.py`。FEniCSx のみでなく、meshio に対応した他のソルバー（COMSOL、Abaqus、Gmsh等）にも使える汎用性を重視
+- **非構造データの扱い**: ScalarField は正則グリッド前提で設計されているため、**MVP では補間を必須にする**（`grid_resolution` パラメータは必須、デフォルト値なし）。将来 `interpolate_to_grid=False` を追加する余地は残すが、非構造データをそのまま ScalarField に格納することはしない（設計上対応不可）
+- **MVP スコープ**: 単一タイムステップのみ対応。時系列 XDMF（複数タイムステップ）はサブタスク 8D として後続タスクに後回し
+
+実装詳細:
 - `require_optional("meshio")` + `require_optional("scipy")` (補間時)
-- **非構造→正則補間**: `scipy.interpolate.griddata` で最近傍 or 線形補間
+- **非構造→正則補間**: `scipy.interpolate.griddata` で補間 (`method="linear"` or `"nearest"`)
   - bounding box を自動検出 → `grid_resolution` で等間隔グリッド生成
   - 補間不可の点は `NaN` でマスク
-- **時系列 XDMF**: XDMF XML をパースして `<Time>` タグを収集 → 各ステップの field を積み上げて axis0 に
-- **metadata**: `mesh_type` (triangle/tetrahedron 等)、`interpolation_method`、元ファイルパスを保持
+- **VectorField**: ベクトル成分を自動検出（`ex`, `ey`, `ez` など、`_VECTOR_COMPONENTS` マッピング）
+- **metadata**: `mesh_type` (triangle/tetrahedron 等)、`interpolation_method`、元ファイルパス を保持
 - 2D メッシュ (三角形) → ScalarField (1, nx, ny, 1)。3D メッシュ (四面体) → ScalarField (1, nx, ny, nz)
 
 #### テストケース
 
-- 2D 三角形メッシュ + point_data → ScalarField (正則グリッド補間)
-- 3D 四面体メッシュ + cell_data → ScalarField
-- 時系列 XDMF (3タイムステップ) → axis0 の展開
-- ベクトル場 (3成分) → VectorField
-- `interpolate_to_grid=False` 時の振る舞い（ValueError: 非構造データ）
+- 2D 三角形メッシュ + point_data → ScalarField (正則グリッド補間、線形)
+- 3D 四面体メッシュ + cell_data → ScalarField (最近傍補間)
+- ベクトル場 (ex, ey, ez 成分) → VectorField
 - 補間精度: 既知の解析解（放物面など）との比較
 - meshio.Mesh を手動生成してテスト（dolfinx 不要）
+- `grid_resolution` 未指定で TypeError
+- 不正なフィールド名で ValueError
 
 ---
 
@@ -1220,6 +1260,7 @@ FRF / 伝達関数      → FrequencySeriesMatrix (response × reference × freq
 
 | 操作 | ファイル |
 |---|---|
+| 新規 | `gwexpy/interop/_modal_helpers.py` (~150行) |
 | 新規 | `gwexpy/interop/sdynpy_.py` (~200行) |
 | 新規 | `gwexpy/interop/sdypy_.py` (~150行) |
 | 新規 | `gwexpy/interop/pyoma_.py` (~100行) |
@@ -1237,15 +1278,37 @@ FRF / 伝達関数      → FrequencySeriesMatrix (response × reference × freq
 
 | サブタスク | 内容 | 規模 |
 |---|---|---|
-| 10A | SDynPy: `from_sdynpy_shape` (ShapeArray → DataFrame + xarray)、`from_sdynpy_frf` (TransferFunctionArray → FrequencySeriesMatrix)、`from_sdynpy_timehistory` (TimeHistoryArray → TimeSeriesMatrix) | 大 |
+| 10A | SDynPy: `from_sdynpy_shape` (ShapeArray → DataFrame)、`from_sdynpy_frf` (TransferFunctionArray → FrequencySeriesMatrix)、`from_sdynpy_timehistory` (TimeHistoryArray → TimeSeriesMatrix) | 大 |
 | 10B | SDyPy/pyuff: `from_uff_dataset58` (UFF type 58 → FrequencySeries/TimeSeries)、`from_uff_dataset55` (UFF type 55 → DataFrame) | 中 |
-| 10C | pyOMA: `from_pyoma_results` (結果 dict → DataFrame + FrequencySeriesMatrix) | 小 |
+| 10C | pyOMA: `from_pyoma_results` (結果 dict → FrequencySeriesMatrix + DataFrame) | 小 |
 | 10D | OpenSeesPy: `from_opensees_recorder` (テキスト → TimeSeriesMatrix、node/DOF メタ付き) | 中 |
 | 10E | Exudyn: `from_exudyn_sensor` (テキスト/ndarray → TimeSeries/TimeSeriesMatrix) | 中 |
 
 #### 関数シグネチャ（主要関数のみ）
 
 ```python
+# gwexpy/interop/_modal_helpers.py（共通ヘルパー）
+def build_mode_dataframe(
+    frequencies: np.ndarray,            # (n_modes,) Hz
+    damping_ratios: np.ndarray,         # (n_modes,) dimensionless
+    mode_shapes: np.ndarray | None = None,  # (n_dof, n_modes) complex or real
+    node_ids: np.ndarray | None = None,     # (n_nodes,)
+    dof_labels: np.ndarray | None = None,   # (n_dof,) e.g. ["1:+X", "1:+Y", ...]
+    coordinates: np.ndarray | None = None,  # (n_nodes, 3) x, y, z
+) -> "pandas.DataFrame"
+
+def build_frf_matrix(
+    cls: type,                          # FrequencySeriesMatrix
+    frequencies: np.ndarray,            # (n_freq,) Hz
+    frf_data: np.ndarray,               # (n_resp, n_ref, n_freq) complex
+    response_names: list[str] | None = None,
+    reference_names: list[str] | None = None,
+    unit: Any | None = None,
+) -> FrequencySeriesMatrix
+
+def infer_unit_from_response_type(response_type: str) -> "astropy.units.Unit"
+    # "disp" → m, "vel" → m/s, "accel" → m/s^2, "force" → N, etc.
+
 # gwexpy/interop/sdynpy_.py
 def from_sdynpy_shape(shape_array: Any) -> "pandas.DataFrame"
 def from_sdynpy_frf(
@@ -1296,19 +1359,27 @@ def from_exudyn_sensor(
 
 #### 実装方針
 
+**設計判定**:
+- **アーキテクチャ**: 個別変換 + 共通ヘルパー（案C）。中間表現 `ModalData` は YAGNI 寄り。5ライブラリの出力構造が十分に異なるため、共通ヘルパー `_modal_helpers.py` で DataFrame/Matrix 構築パターンを共有しつつ、各コンバータは独立してテスト可能に
+- **モード形状の表現**: MVP では **pandas DataFrame**。列は `node_id, dof, x, y, z, mode_1, mode_2, ...`。xarray Dataset 表現は Task 6 完了後の拡張とする（Task 10E の後続パッチ）
+
+各ライブラリの実装方針:
 - **SDynPy**: `ShapeArray` の構造化配列フィールドを直接アクセス。`coordinate` (node+direction) を DOF ラベルに変換。FRF は `abscissa` → 周波数軸、`ordinate` → 複素値
 - **SDyPy/pyuff**: `pyuff.UFF().read_sets()` で dict リストを取得。dataset type 58 の `x`/`data` をそのまま Series に。type 55 の modal parameter を DataFrame に
-- **pyOMA**: 結果 dict の `Fn`, `Zeta`, `Phi` キーを取り出し。モード形状は `(n_channels, n_modes)` → DataFrame/xarray
+- **pyOMA**: 結果 dict の `Fn`, `Zeta`, `Phi` キーを取り出し。`build_mode_dataframe` と `build_frf_matrix` で統一化
 - **OpenSeesPy**: テキストファイルを `np.loadtxt()` で読み込み。列は `[time, n1_d1, n1_d2, ..., n2_d1, ...]` の順。`nodes` × `dofs` から列名を生成
-- **Exudyn**: `np.loadtxt()` or 直接 ndarray。col 0 = time, 残り = sensor 値。`output_variable` で単位を推定（Displacement → m, Force → N 等）
+- **Exudyn**: `np.loadtxt()` or 直接 ndarray。col 0 = time, 残り = sensor 値。`infer_unit_from_response_type` で単位を推定
 - 全て mock ベースのテスト（5ライブラリの import は不要）
 
 #### テストケース
 
-- SDynPy ShapeArray: 3モード × 10ノード × 3DOF → DataFrame (30行 × mode/f/zeta/...)
+- SDynPy ShapeArray: 3モード × 10ノード × 3DOF → DataFrame (30行 × mode/f/zeta/x/y/z)
 - SDynPy FRF: 5×3 (response×reference) × 1024freq → FrequencySeriesMatrix
+- `build_mode_dataframe`: 周波数・減衰比・座標を 1 つの DataFrame に結合
+- `build_frf_matrix`: 複素 FRF → FrequencySeriesMatrix（複素値保持）
+- `infer_unit_from_response_type`: "disp" → m, "accel" → m/s^2
 - pyuff dataset 58: 時系列/FRF の判別と変換
-- pyOMA: 結果 dict → DataFrame のモードパラメータ
+- pyOMA: 結果 dict → DataFrame + FrequencySeriesMatrix のマッピング
 - OpenSeesPy: 3ノード×2DOF のテキスト → TimeSeriesMatrix (6列)
 - Exudyn: 3成分 sensor → TimeSeriesMatrix (3列)、列名の保持
 
