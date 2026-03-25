@@ -33,6 +33,8 @@ _OPTIONAL_DEPENDENCIES = {
     "PySpice": "PySpice",
     "skrf": "skrf",
     "pyroomacoustics": "pyroomacoustics",
+    "pycbc": "pycbc",
+    "meep": "meep",
 }
 
 
@@ -90,6 +92,8 @@ def require_optional(name: str) -> Any:
         "mt_metadata": "seismic",
         # gw: Gravitational wave data access and tools
         "lalsuite": "gw",
+        "lal": "gw",
+        "pycbc": "gw",
         "gwdatafind": "gw",
         "gwosc": "gw",
         "dqsegdb2": "gw",

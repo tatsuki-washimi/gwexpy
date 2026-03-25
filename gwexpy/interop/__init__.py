@@ -9,6 +9,20 @@ if "JAX_PLATFORMS" not in os.environ:
     os.environ["JAX_PLATFORMS"] = "cpu"
 from ._optional import require_optional
 from .astropy_ import from_astropy_timeseries, to_astropy_timeseries
+from .gwinc_ import from_gwinc_budget
+from .meep_ import from_meep_hdf5
+from .lal_ import (
+    from_lal_frequencyseries,
+    from_lal_timeseries,
+    to_lal_frequencyseries,
+    to_lal_timeseries,
+)
+from .pycbc_ import (
+    from_pycbc_frequencyseries,
+    from_pycbc_timeseries,
+    to_pycbc_frequencyseries,
+    to_pycbc_timeseries,
+)
 from .control_ import from_control_frd, from_control_response, to_control_frd
 from .cupy_ import from_cupy, is_cupy_available, to_cupy
 from .dask_ import from_dask, to_dask
@@ -215,6 +229,20 @@ __all__ = [
     "from_json",
     "to_dict",
     "from_dict",
+    # gw - gwinc
+    "from_gwinc_budget",
+    # meep
+    "from_meep_hdf5",
+    # gw - lal
+    "from_lal_timeseries",
+    "to_lal_timeseries",
+    "from_lal_frequencyseries",
+    "to_lal_frequencyseries",
+    # gw - pycbc
+    "from_pycbc_timeseries",
+    "to_pycbc_timeseries",
+    "from_pycbc_frequencyseries",
+    "to_pycbc_frequencyseries",
     # torch dataset
     "TimeSeriesWindowDataset",
     "to_torch_dataset",
