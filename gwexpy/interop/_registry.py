@@ -30,6 +30,7 @@ docs/developers/guides/coding_standards.md : Section 6 for full guidelines.
 
 from __future__ import annotations
 
+import warnings
 from typing import Any
 
 
@@ -64,6 +65,13 @@ class ConverterRegistry:
         klass : type
             The concrete class to register.
         """
+        existing = cls._constructors.get(name)
+        if existing is not None and existing is not klass:
+            warnings.warn(
+                f"ConverterRegistry: overwriting constructor {name!r} "
+                f"({existing!r} -> {klass!r})",
+                stacklevel=2,
+            )
         cls._constructors[name] = klass
 
     @classmethod
@@ -90,12 +98,21 @@ class ConverterRegistry:
         except KeyError:
             raise KeyError(
                 f"Constructor {name!r} not registered. "
-                f"Available: {sorted(cls._constructors)}"
+                f"Available: {sorted(cls._constructors)}. "
+                f"Hint: call gwexpy.register_all() to ensure all "
+                f"constructors are loaded."
             ) from None
 
     @classmethod
     def register_converter(cls, name: str, func: Any) -> None:
         """Register a converter function by name."""
+        existing = cls._converters.get(name)
+        if existing is not None and existing is not func:
+            warnings.warn(
+                f"ConverterRegistry: overwriting converter {name!r} "
+                f"({existing!r} -> {func!r})",
+                stacklevel=2,
+            )
         cls._converters[name] = func
 
     @classmethod
@@ -106,7 +123,9 @@ class ConverterRegistry:
         except KeyError:
             raise KeyError(
                 f"Converter {name!r} not registered. "
-                f"Available: {sorted(cls._converters)}"
+                f"Available: {sorted(cls._converters)}. "
+                f"Hint: call gwexpy.register_all() to ensure all "
+                f"converters are loaded."
             ) from None
 
     @classmethod
