@@ -627,3 +627,833 @@ pytest tests/interop/ -v
 ruff check gwexpy/interop/ tests/interop/
 mypy gwexpy/interop/lal_.py gwexpy/interop/pycbc_.py gwexpy/interop/gwinc_.py gwexpy/interop/meep_.py
 ```
+
+### MVP 完了ステータス（2026-03-25 実装済み）
+
+全 3 タスクは commit `c9cf9eef` で実装・テスト・マージ済み。
+- Task 1: `gwexpy/interop/lal_.py` (4関数), `gwexpy/interop/pycbc_.py` (4関数) — 14+13 テスト
+- Task 2: `gwexpy/interop/gwinc_.py` (1関数) — 21 テスト
+- Task 3: `gwexpy/interop/meep_.py` (1関数) — 24 テスト
+- 全 194 interop テスト PASS、ruff clean
+
+---
+
+## 中期実装計画（2026-03-26 追記）
+
+### 概要
+
+MVP 完了を受け、ロードマップ表の **中期フェーズ 3 タスク** の詳細実装計画を定義する。
+中期タスクは EM シミュレータの場データ読み込みに焦点を当て、Meep（MVP）で確立したパターンを openEMS・emg3d に展開する。
+加えて、長期タスクの基盤となる **共有インフラ 2 件**（xarray↔Field ブリッジ、Pint→astropy 単位変換）を整備する。
+
+### 依存関係
+
+```
+Task 4 (openEMS) ← Meep パターン（MVP Task 3）を参照
+Task 5 (emg3d)   ← 独立（emg3d 固有の Field/TensorMesh 構造）
+Task 6 (xarray↔Field ブリッジ) ← 独立（長期 Task 8-10 の前提）
+Task 7 (Pint→astropy 単位変換) ← 独立（長期 Task 9 の前提）
+```
+
+Task 4 と Task 5 は並行可能。Task 6・7 は長期タスクの **前提インフラ** であり、中期に先行整備する。
+
+---
+
+### Task 4: openEMS dump reader（HDF5/VTK）
+
+#### 目的
+
+openEMS の `CSPropDumpBox` が生成する HDF5 フィールドダンプを読み込み、
+`ScalarField` / `VectorField` を構築する。MATLAB の `ReadHDF5FieldData.m` / `ReadHDF5Mesh.m` に
+相当する Python リーダーが公式に存在しないため、GWexpy が初の汎用 Python 実装となる。
+
+#### openEMS HDF5 フォーマット仕様
+
+```
+/Mesh/
+    x   → 1D array (メッシュ x 座標)
+    y   → 1D array
+    z   → 1D array
+
+/FieldData/
+    TD/                          # 時間ドメイン
+        <timestep_0>  → 4D (Nx, Ny, Nz, 3)   # 3 = x,y,z コンポーネント
+        <timestep_1>  → ...
+    FD/                          # 周波数ドメイン
+        f<n>_real     → 4D (Nx, Ny, Nz, 3)
+        f<n>_imag     → 4D (Nx, Ny, Nz, 3)
+```
+
+**DumpType と物理量の対応**:
+
+| DumpType | ドメイン | 物理量 | 単位 |
+|---|---|---|---|
+| 0 | TD | E-field | V/m |
+| 1 | TD | H-field | A/m |
+| 2 | TD | 電流密度 J | A/m^2 |
+| 3 | TD | 全電流密度 rot(H) | A/m^2 |
+| 10 | FD | E-field (complex) | V/m |
+| 11 | FD | H-field (complex) | A/m |
+| 20-22 | FD | SAR (local/1g/10g) | W/kg |
+
+#### 変更ファイル
+
+| 操作 | ファイル |
+|---|---|
+| 新規 | `gwexpy/interop/openems_.py` (~250行) |
+| 新規 | `tests/interop/test_interop_openems.py` (~250行) |
+| 変更 | `gwexpy/interop/_optional.py` — `"openems"` マッピング追加 |
+| 変更 | `gwexpy/interop/__init__.py` — import + `__all__` 追加 |
+
+#### 関数シグネチャ
+
+```python
+# gwexpy/interop/openems_.py
+from gwexpy.fields import ScalarField, VectorField
+
+# DumpType → (物理量名, 単位文字列, ドメイン) マッピング
+DUMP_TYPE_MAP: dict[int, tuple[str, str, str]]
+
+def from_openems_hdf5(
+    cls: type,                          # ScalarField or VectorField
+    filepath: str | Path,
+    *,
+    dump_type: int = 0,                 # DumpType 値
+    timestep: int | None = None,        # TD: 特定ステップ。None → 全ステップ
+    frequency_index: int | None = None, # FD: 特定周波数。None → 全周波数
+    component: str | None = None,       # "x","y","z" or None (→VectorField)
+    unit: Any | None = None,            # 上書き。None → DumpType から自動
+) -> ScalarField | VectorField
+
+# 内部ヘルパー
+def _read_openems_mesh(h5file) -> tuple[np.ndarray, np.ndarray, np.ndarray]
+def _read_openems_td(h5file, timestep) -> tuple[np.ndarray, np.ndarray]
+def _read_openems_fd(h5file, freq_idx) -> tuple[np.ndarray, np.ndarray]
+```
+
+#### 実装方針
+
+- `require_optional("h5py")` のみ（openEMS 本体は不要 — Meep パターンと同様）
+- `/Mesh/x,y,z` → 空間座標軸。`/FieldData/TD` or `/FieldData/FD` → データ
+- TD: 各 timestep の time 属性を `axis0` に収集。形状 `(n_time, Nx, Ny, Nz, 3)`
+- FD: `f<n>_real + 1j * f<n>_imag` で複素場を再構成。周波数属性を `axis0` に
+- SAR (DumpType 20-22): スカラー量 → コンポーネント次元なし → `ScalarField` のみ
+- `component` 指定時は単一成分を `ScalarField` で返す。`None` なら `VectorField`
+- `DUMP_TYPE_MAP` で `dump_type` → astropy unit への自動マッピング
+
+#### テストケース（h5py で一時ファイルを生成）
+
+- TD E-field: 3ステップの3Dベクトル場 → VectorField (3コンポーネント)
+- FD E-field: 複素場の real/imag 再構成 → VectorField (complex dtype)
+- SAR (DumpType=20): スカラー場 → ScalarField
+- メッシュ座標の正確性（不等間隔グリッド）
+- 特定 timestep / frequency_index の抽出
+- 特定 component ("x") → ScalarField
+- TD/FD グループ不在 → ValueError
+- `axis0_domain` が TD="time"、FD="frequency" に自動設定される検証
+
+---
+
+### Task 5: emg3d Field 統合
+
+#### 目的
+
+`emg3d.fields.Field`（1D ndarray に fx/fy/fz ビューを持つ構造）と
+`emg3d.meshes.TensorMesh`（セル幅配列 hx/hy/hz + origin）を読み込み、
+`VectorField`（3コンポーネントの `ScalarField` 集合）を構築する。
+逆変換（GWexpy → emg3d）と `emg3d.io.save/load` 経由の HDF5 ラウンドトリップもサポート。
+
+#### emg3d データ構造
+
+- **Field**: `np.ndarray` のサブクラス。1D に `[fx, fy, fz]` をフラット格納
+  - E-field (edge): `fx.shape = (nCx, nNy, nNz)`, `fy.shape = (nNx, nCy, nNz)`, `fz.shape = (nNx, nNy, nCz)`
+  - H-field (face): `fx.shape = (nNx, nCy, nCz)`, 他は転置
+  - 属性: `field.grid` (TensorMesh), `field.frequency` (float Hz), `field.electric` (bool)
+- **TensorMesh**: `hx, hy, hz` (セル幅 1D 配列) + `origin` (3-tuple)
+  - `cell_centers_x/y/z`, `nodes_x/y/z` で座標取得
+- **I/O**: `emg3d.save(fname, field=f, model=m)` / `emg3d.load(fname)` (h5/npz/json)
+
+#### 設計上の課題
+
+emg3d の E-field / H-field はスタガードグリッド上で **各コンポーネントの shape が異なる**。
+GWexpy の `ScalarField` は全コンポーネントが同一 shape を前提とする。
+
+**対処方針**: セル中心へ補間（node → cell center の平均）して shape を統一する。
+元のスタガード情報は metadata (`interpolated_from="edge"/"face"`) に保持する。
+
+#### 変更ファイル
+
+| 操作 | ファイル |
+|---|---|
+| 新規 | `gwexpy/interop/emg3d_.py` (~200行) |
+| 新規 | `tests/interop/test_interop_emg3d.py` (~200行) |
+| 変更 | `gwexpy/interop/_optional.py` — `"emg3d"` マッピング追加 |
+| 変更 | `gwexpy/interop/__init__.py` — import + `__all__` 追加 |
+
+#### 関数シグネチャ
+
+```python
+# gwexpy/interop/emg3d_.py
+def from_emg3d_field(
+    cls: type,                          # VectorField (推奨) or ScalarField
+    field: Any,                         # emg3d.fields.Field
+    *,
+    component: str | None = None,       # "x","y","z" → ScalarField。None → VectorField
+    interpolate_to_cell_center: bool = True,  # スタガード→セル中心補間
+) -> ScalarField | VectorField
+
+def to_emg3d_field(
+    vf: VectorField | ScalarField,
+    *,
+    frequency: float | None = None,
+    electric: bool = True,
+) -> "emg3d.fields.Field"
+
+def from_emg3d_h5(
+    cls: type,
+    filepath: str | Path,
+    *,
+    name: str = "field",                # emg3d.save() の kwarg 名
+    component: str | None = None,
+    interpolate_to_cell_center: bool = True,
+) -> ScalarField | VectorField
+
+# 内部ヘルパー
+def _interpolate_edge_to_cell(arr: np.ndarray, axis: int) -> np.ndarray
+def _interpolate_face_to_cell(arr: np.ndarray, axis: int) -> np.ndarray
+def _build_cell_center_coords(mesh) -> tuple[np.ndarray, np.ndarray, np.ndarray]
+```
+
+#### 実装方針
+
+- `from_emg3d_field`: `field.fx/fy/fz` を取得 → `interpolate_to_cell_center=True` なら隣接ノード/面の平均でセル中心へ → `ScalarField` を3つ作成 → `VectorField({"x": sf_x, "y": sf_y, "z": sf_z})`
+- 空間座標は `mesh.cell_centers_x/y/z`（補間時）または `mesh.nodes_x/y/z`（補間なし時）
+- `axis0` は `field.frequency` があれば `[frequency]` (singleton)、なければ `None`
+- `axis0_domain` は `frequency > 0` → "frequency"、`None` → "time"（静的場）
+- 単位: E-field → `V/m`、H-field → `A/m`（`field.electric` で判定）
+- `to_emg3d_field`: VectorField の3コンポーネントを取り出し → `np.concatenate([fx.ravel(), fy.ravel(), fz.ravel()])` → `emg3d.Field(grid, data, frequency, electric)`
+- `from_emg3d_h5`: `emg3d.load(filepath)` → dict から Field と TensorMesh を取り出し → `from_emg3d_field` に委譲
+
+#### テストケース
+
+- E-field (edge): 不等間隔グリッド、セル中心補間後の shape 一致
+- H-field (face): 同上
+- 複素場（frequency > 0）の dtype 検証
+- 周波数属性 → axis0 への反映
+- VectorField → emg3d.Field → VectorField のラウンドトリップ
+- component="x" → ScalarField (単一成分)
+- `interpolate_to_cell_center=False` 時の ValueError（shape 不一致の場合）
+- 単位の自動設定（electric=True → V/m、False → A/m）
+- metadata に `interpolated_from` が保存される検証
+
+---
+
+### Task 6: xarray ↔ ScalarField ブリッジ（共有インフラ）
+
+#### 目的
+
+長期タスク（MetPy、wrf-python、Harmonica）はいずれも `xarray.DataArray` を主要出力とする。
+xarray の N次元ラベル付き配列と GWexpy の `ScalarField`（4D: axis0 + xyz）を
+相互変換するブリッジを整備し、長期タスクの実装コストを大幅に削減する。
+
+既存の `gwexpy/interop/xarray_.py` は `TimeSeries`/`FrequencySeries` 向けであり、
+空間場（ScalarField）には対応していない。
+
+#### 変更ファイル
+
+| 操作 | ファイル |
+|---|---|
+| 変更 | `gwexpy/interop/xarray_.py` — ScalarField/VectorField 対応を追加 (~100行) |
+| 新規 | `tests/interop/test_interop_xarray_field.py` (~150行) |
+
+#### 関数シグネチャ
+
+```python
+# gwexpy/interop/xarray_.py に追加
+def from_xarray_field(
+    cls: type,                          # ScalarField or VectorField
+    da: "xarray.DataArray | xarray.Dataset",
+    *,
+    axis0_dim: str | None = None,       # axis0 に対応する次元名（自動検出可）
+    spatial_dims: tuple[str, ...] | None = None,  # 空間軸の次元名（自動検出可）
+    axis0_domain: Literal["time", "frequency"] = "time",
+    space_domain: Literal["real", "k"] = "real",
+) -> ScalarField | VectorField
+
+def to_xarray_field(
+    field: ScalarField | VectorField,
+    *,
+    dim_names: tuple[str, str, str, str] | None = None,
+) -> "xarray.DataArray | xarray.Dataset"
+```
+
+#### 実装方針
+
+- **次元自動検出**: `time`/`frequency` → axis0、`x`/`easting`/`west_east` → axis1、等
+  - CF Convention の `axis` 属性 (`T`, `X`, `Y`, `Z`) があれば優先
+  - MetPy の `_metpy_axis` 属性も認識
+- **4D 化**: 2D/3D DataArray は不足次元を singleton で補完
+- **単位**: `da.attrs["units"]` → `astropy.units` に変換
+- **VectorField**: `xarray.Dataset` の data variable を成分として解釈
+- **逆変換**: ScalarField → DataArray（座標付き）、VectorField → Dataset
+
+#### テストケース
+
+- 4D DataArray → ScalarField → DataArray のラウンドトリップ
+- 2D DataArray (easting × northing) → ScalarField (1, nx, ny, 1)
+- 3D DataArray (time × lat × lon) → ScalarField (nt, nlat, nlon, 1)
+- CF Convention axis 属性からの自動検出
+- Dataset (u, v, w) → VectorField (3 コンポーネント)
+- 単位の保持（attrs["units"] → astropy unit）
+
+---
+
+### Task 7: Pint ↔ astropy 単位変換ユーティリティ（共有インフラ）
+
+#### 目的
+
+MetPy は Pint 単位系を使用するが、GWexpy は astropy.units を基調とする。
+SI 単位の相互変換ユーティリティを整備し、長期タスク（特に MetPy 統合）の前提を確保する。
+
+#### 変更ファイル
+
+| 操作 | ファイル |
+|---|---|
+| 新規 | `gwexpy/utils/units.py` (~80行) |
+| 新規 | `tests/utils/test_units.py` (~100行) |
+
+#### 関数シグネチャ
+
+```python
+# gwexpy/utils/units.py
+def pint_to_astropy(pint_quantity: Any) -> "astropy.units.Quantity"
+def astropy_to_pint(astropy_quantity: Any) -> Any
+def pint_unit_to_astropy_unit(pint_unit: Any) -> "astropy.units.Unit"
+def astropy_unit_to_pint_unit(astropy_unit: Any) -> Any
+```
+
+#### 実装方針
+
+- Pint Quantity の `.magnitude` と `.units` を分離
+- 単位文字列 (`str(pint_unit)`) を `astropy.units.Unit()` でパース
+- 既知の不一致マッピング表: `degC` ↔ `deg_C`、`percent` ↔ `%`、等
+- エッジケース: 複合単位 (`m/s^2`)、無次元 (`dimensionless`)
+- Pint の application registry 対応（MetPy がカスタムレジストリを使用）
+
+#### テストケース
+
+- 基本 SI 単位 (m, s, Hz, V, A, K) のラウンドトリップ
+- 複合単位 (m/s, V/m, W/kg, 1/sqrt(Hz))
+- 温度単位 (degC ↔ K)
+- 無次元量
+- MetPy の UnitRegistry からの変換
+
+---
+
+### 中期フェーズの実装順序
+
+```
+Task 6 (xarray↔Field) ──────────┐
+Task 7 (Pint↔astropy)  ─────────┤── 長期タスクのブロッカー
+Task 4 (openEMS)   ─── 並行可 ──┤
+Task 5 (emg3d)     ─── 並行可 ──┘
+```
+
+推奨マージ順序: Task 6 → Task 7 → Task 4 / Task 5（並行）
+
+### 中期フェーズ検証方法
+
+```bash
+# 各タスク個別
+pytest tests/interop/test_interop_openems.py -v
+pytest tests/interop/test_interop_emg3d.py -v
+pytest tests/interop/test_interop_xarray_field.py -v
+pytest tests/utils/test_units.py -v
+
+# 回帰確認
+pytest tests/interop/ tests/utils/ -v
+ruff check gwexpy/interop/ gwexpy/utils/ tests/
+mypy gwexpy/interop/openems_.py gwexpy/interop/emg3d_.py gwexpy/utils/units.py
+```
+
+---
+
+## 長期実装計画（2026-03-26 追記）
+
+### 概要
+
+長期フェーズでは **3 つのドメインスキーマ** と **1 つのスペクトル統合** を定義する。
+中期で整備した xarray↔Field ブリッジと Pint→astropy 変換が前提となる。
+
+各タスクの規模が大きいため、**サブタスク分割** で段階的に実装する。
+
+### 依存関係
+
+```
+Task 8 (FEniCSx)     ← meshio 依存。xarray↔Field (Task 6) とは独立
+Task 9 (気象スキーマ) ← Task 6 (xarray↔Field) + Task 7 (Pint↔astropy) が前提
+Task 10 (モーダル)    ← FrequencySeriesMatrix の成熟度に依存。xarray は補助的
+Task 11 (multitaper)  ← 独立。FrequencySeries のみ使用
+```
+
+---
+
+### Task 8: FEniCSx（dolfinx）メッシュ場読み込み
+
+#### 目的
+
+dolfinx が出力する XDMF/VTK ファイルを meshio 経由で読み込み、
+非構造格子上のスカラー/ベクトル場を GWexpy の表現で保持する。
+
+dolfinx の I/O は可視化向け（`write_function` は P0/P1 限定、round-trip 不可）であるため、
+meshio を中間層として利用し、GWexpy 側では **正則グリッドへの補間パス** と
+**非構造データのそのまま保持** の両方を提供する。
+
+#### dolfinx I/O 制約
+
+- XDMF `write_function`: P0 (DG0) または P1 (CG1) のみ。高次は補間が必要
+- VTK/VTX: 任意次数の Lagrange に対応するが、ADIOS2 依存
+- round-trip 不可: `write_function` → `read_function` のパスが公式に存在しない
+- DOF 順序がメッシュノード順序と一致しない場合がある
+
+#### meshio を中間層として使う理由
+
+- XDMF (XML + HDF5)、VTK/VTU など 40+ フォーマットに対応
+- `meshio.Mesh` オブジェクト: `points` (N×3), `cells`, `point_data`, `cell_data`
+- dolfinx の関数空間セマンティクスは失われるが、座標+値のペアとしては十分
+
+#### 変更ファイル
+
+| 操作 | ファイル |
+|---|---|
+| 新規 | `gwexpy/interop/fenics_.py` (~300行) |
+| 新規 | `tests/interop/test_interop_fenics.py` (~250行) |
+| 変更 | `gwexpy/interop/_optional.py` — `"meshio"` マッピング追加 |
+| 変更 | `gwexpy/interop/__init__.py` — import + `__all__` 追加 |
+
+#### 関数シグネチャ
+
+```python
+# gwexpy/interop/fenics_.py
+
+# サブタスク A: meshio Mesh からの読み込み（dolfinx 不要）
+def from_meshio(
+    cls: type,                          # ScalarField or VectorField
+    mesh: Any,                          # meshio.Mesh
+    *,
+    field_name: str | None = None,      # point_data / cell_data のキー名
+    interpolate_to_grid: bool = False,  # True → 正則グリッドへ scipy 補間
+    grid_resolution: float | None = None,  # 補間先の解像度
+    axis0: np.ndarray | None = None,    # 時系列の場合
+    axis0_domain: Literal["time", "frequency"] = "time",
+) -> ScalarField
+
+# サブタスク B: XDMF/VTK ファイルからの読み込み
+def from_fenics_xdmf(
+    cls: type,
+    filepath: str | Path,
+    *,
+    field_name: str | None = None,
+    interpolate_to_grid: bool = False,
+    grid_resolution: float | None = None,
+) -> ScalarField | VectorField
+
+def from_fenics_vtk(
+    cls: type,
+    filepath: str | Path,
+    *,
+    field_name: str | None = None,
+    interpolate_to_grid: bool = False,
+    grid_resolution: float | None = None,
+) -> ScalarField | VectorField
+
+# 内部ヘルパー
+def _meshio_to_unstructured_dict(mesh, field_name) -> dict
+def _interpolate_unstructured_to_grid(
+    points: np.ndarray,
+    values: np.ndarray,
+    resolution: float,
+) -> tuple[np.ndarray, tuple[np.ndarray, ...]]
+```
+
+#### サブタスク分割
+
+| サブタスク | 内容 | 規模 |
+|---|---|---|
+| 8A | `from_meshio`: meshio.Mesh → ScalarField（正則グリッド補間） | 中 |
+| 8B | `from_fenics_xdmf` / `from_fenics_vtk`: ファイル → meshio → ScalarField | 小 |
+| 8C | 時系列対応: 複数タイムステップの XDMF を axis0 に展開 | 中 |
+| 8D | VectorField 対応: ベクトル場の自動検出と成分分離 | 小 |
+
+#### 実装方針
+
+- `require_optional("meshio")` + `require_optional("scipy")` (補間時)
+- **非構造→正則補間**: `scipy.interpolate.griddata` で最近傍 or 線形補間
+  - bounding box を自動検出 → `grid_resolution` で等間隔グリッド生成
+  - 補間不可の点は `NaN` でマスク
+- **時系列 XDMF**: XDMF XML をパースして `<Time>` タグを収集 → 各ステップの field を積み上げて axis0 に
+- **metadata**: `mesh_type` (triangle/tetrahedron 等)、`interpolation_method`、元ファイルパスを保持
+- 2D メッシュ (三角形) → ScalarField (1, nx, ny, 1)。3D メッシュ (四面体) → ScalarField (1, nx, ny, nz)
+
+#### テストケース
+
+- 2D 三角形メッシュ + point_data → ScalarField (正則グリッド補間)
+- 3D 四面体メッシュ + cell_data → ScalarField
+- 時系列 XDMF (3タイムステップ) → axis0 の展開
+- ベクトル場 (3成分) → VectorField
+- `interpolate_to_grid=False` 時の振る舞い（ValueError: 非構造データ）
+- 補間精度: 既知の解析解（放物面など）との比較
+- meshio.Mesh を手動生成してテスト（dolfinx 不要）
+
+---
+
+### Task 9: 気象・環境場スキーマ（MetPy / wrf-python / Harmonica）
+
+#### 目的
+
+気象・地球物理の xarray ベースデータを ScalarField に写像する。
+中期 Task 6 (xarray↔Field ブリッジ) と Task 7 (Pint↔astropy) が前提。
+
+3 ライブラリは共通して xarray を使用するが、座標体系と単位系に差異がある:
+
+| ライブラリ | 座標 | 単位 | 特記 |
+|---|---|---|---|
+| MetPy | CF Convention, `metpy_crs`, `_metpy_axis` 属性 | Pint (`.quantify()`) | `.metpy` accessor |
+| wrf-python | `south_north`/`west_east` 次元 + 2D `XLAT`/`XLONG` | 文字列 attrs | `wrf.getvar()` |
+| Harmonica | `easting`/`northing` or `longitude`/`spherical_latitude` | 暗黙 SI | Verde ベース |
+
+#### 変更ファイル
+
+| 操作 | ファイル |
+|---|---|
+| 新規 | `gwexpy/interop/metpy_.py` (~150行) |
+| 新規 | `gwexpy/interop/wrf_.py` (~150行) |
+| 新規 | `gwexpy/interop/harmonica_.py` (~100行) |
+| 新規 | `tests/interop/test_interop_metpy.py` (~150行) |
+| 新規 | `tests/interop/test_interop_wrf.py` (~150行) |
+| 新規 | `tests/interop/test_interop_harmonica.py` (~100行) |
+| 変更 | `gwexpy/interop/_optional.py` — 3ライブラリのマッピング追加 |
+| 変更 | `gwexpy/interop/__init__.py` — import + `__all__` 追加 |
+
+#### サブタスク分割
+
+| サブタスク | 内容 | 前提 | 規模 |
+|---|---|---|---|
+| 9A | `from_metpy_dataarray`: MetPy xr.DataArray → ScalarField | Task 6 + Task 7 | 中 |
+| 9B | `from_wrf_variable`: wrf.getvar() 出力 → ScalarField | Task 6 | 中 |
+| 9C | `from_harmonica_grid`: Harmonica xr.Dataset → ScalarField | Task 6 | 小 |
+
+#### 関数シグネチャ
+
+```python
+# gwexpy/interop/metpy_.py
+def from_metpy_dataarray(
+    cls: type,                          # ScalarField
+    da: "xarray.DataArray",
+    *,
+    dequantify: bool = True,            # Pint → magnitude + astropy unit
+    axis0_domain: Literal["time", "frequency"] = "time",
+) -> ScalarField
+
+# gwexpy/interop/wrf_.py
+def from_wrf_variable(
+    cls: type,                          # ScalarField
+    da: "xarray.DataArray",             # wrf.getvar() の返り値
+    *,
+    vertical_dim: str | None = None,    # 鉛直次元名（auto-detect 可）
+    axis0_domain: Literal["time", "frequency"] = "time",
+) -> ScalarField
+
+# gwexpy/interop/harmonica_.py
+def from_harmonica_grid(
+    cls: type,                          # ScalarField or VectorField
+    ds: "xarray.Dataset | xarray.DataArray",
+    *,
+    data_name: str | None = None,       # Dataset 内の変数名
+) -> ScalarField | VectorField
+```
+
+#### 実装方針
+
+- **MetPy**: `.metpy.dequantify()` で Pint → magnitude + attrs["units"] → Task 7 で astropy 変換 → Task 6 で ScalarField
+- **wrf-python**: 2D XLAT/XLONG から 1D 軸を抽出（正則グリッドの場合）。不正則なら補間。`bottom_top` → 鉛直座標（圧力/高度を getvar で取得）
+- **Harmonica**: easting/northing → axis1/axis2、upward → axis3 (or singleton)。単位は暗黙 SI → astropy.units.m
+- 全て内部的に `from_xarray_field` (Task 6) を最終変換に使用
+
+#### テストケース
+
+- MetPy: Pint Quantity 付き DataArray → ScalarField。単位変換の正確性
+- wrf-python: 4D (time × bottom_top × south_north × west_east) → ScalarField
+- Harmonica: 2D 重力グリッド (northing × easting) → ScalarField (1, nx, ny, 1)
+- 座標ラベル・単位のメタデータ保持
+- Mock ベース（MetPy/wrf-python/Harmonica 本体は不要）
+
+---
+
+### Task 10: モーダル統一スキーマ（SDynPy / SDyPy / pyOMA / OpenSeesPy / Exudyn）
+
+#### 目的
+
+振動解析・構造動力学の5ライブラリが出力する時系列・FRF・モード形状を、
+GWexpy の型体系に統一的にマッピングする。
+
+#### ライブラリ別データ構造の要約
+
+| ライブラリ | 主要出力型 | ファイル形式 | メタデータ所在 |
+|---|---|---|---|
+| SDynPy | NumPy 構造化配列 (ShapeArray, NDDataArray, TransferFunctionArray) | UNV/UFF, .npy | 構造化配列のフィールド内 |
+| SDyPy/pyuff | NumPy 配列 + Python dict | UNV/UFF (dataset 58/55), LVM | dict キー (UFF 仕様) |
+| pyOMA | NumPy 配列 | なし (in-memory) | 結果 dict のキー |
+| OpenSeesPy | テキストファイル / float | .txt (スペース区切り), .xml, .bin | 外部 (recorder コマンド引数) |
+| Exudyn | テキストファイル / NumPy (GetSensorStoredData) | .txt (スペース区切り) | 外部 (sensor 定義引数) |
+
+#### GWexpy へのマッピング方針
+
+```
+時系列データ         → TimeSeriesMatrix / TimeSeriesDict
+FRF / 伝達関数      → FrequencySeriesMatrix (response × reference × freq)
+モード周波数・減衰比 → pandas DataFrame (mode, f_Hz, zeta, ...)
+モード形状           → xarray Dataset (dims: mode, node, dof; coords: x, y, z)
+```
+
+#### 変更ファイル
+
+| 操作 | ファイル |
+|---|---|
+| 新規 | `gwexpy/interop/sdynpy_.py` (~200行) |
+| 新規 | `gwexpy/interop/sdypy_.py` (~150行) |
+| 新規 | `gwexpy/interop/pyoma_.py` (~100行) |
+| 新規 | `gwexpy/interop/opensees_.py` (~150行) |
+| 新規 | `gwexpy/interop/exudyn_.py` (~120行) |
+| 新規 | `tests/interop/test_interop_sdynpy.py` (~200行) |
+| 新規 | `tests/interop/test_interop_sdypy.py` (~150行) |
+| 新規 | `tests/interop/test_interop_pyoma.py` (~100行) |
+| 新規 | `tests/interop/test_interop_opensees.py` (~150行) |
+| 新規 | `tests/interop/test_interop_exudyn.py` (~120行) |
+| 変更 | `gwexpy/interop/_optional.py` — 5ライブラリのマッピング追加 |
+| 変更 | `gwexpy/interop/__init__.py` — import + `__all__` 追加 |
+
+#### サブタスク分割
+
+| サブタスク | 内容 | 規模 |
+|---|---|---|
+| 10A | SDynPy: `from_sdynpy_shape` (ShapeArray → DataFrame + xarray)、`from_sdynpy_frf` (TransferFunctionArray → FrequencySeriesMatrix)、`from_sdynpy_timehistory` (TimeHistoryArray → TimeSeriesMatrix) | 大 |
+| 10B | SDyPy/pyuff: `from_uff_dataset58` (UFF type 58 → FrequencySeries/TimeSeries)、`from_uff_dataset55` (UFF type 55 → DataFrame) | 中 |
+| 10C | pyOMA: `from_pyoma_results` (結果 dict → DataFrame + FrequencySeriesMatrix) | 小 |
+| 10D | OpenSeesPy: `from_opensees_recorder` (テキスト → TimeSeriesMatrix、node/DOF メタ付き) | 中 |
+| 10E | Exudyn: `from_exudyn_sensor` (テキスト/ndarray → TimeSeries/TimeSeriesMatrix) | 中 |
+
+#### 関数シグネチャ（主要関数のみ）
+
+```python
+# gwexpy/interop/sdynpy_.py
+def from_sdynpy_shape(shape_array: Any) -> "pandas.DataFrame"
+def from_sdynpy_frf(
+    cls: type,  # FrequencySeriesMatrix
+    tfa: Any,   # TransferFunctionArray
+) -> FrequencySeriesMatrix
+def from_sdynpy_timehistory(
+    cls: type,  # TimeSeriesMatrix or TimeSeriesDict
+    tha: Any,   # TimeHistoryArray
+) -> TimeSeriesMatrix | TimeSeriesDict
+
+# gwexpy/interop/sdypy_.py
+def from_uff_dataset58(
+    cls: type,  # TimeSeries, FrequencySeries, or Dict
+    uff_data: dict,
+) -> TimeSeries | FrequencySeries
+def from_uff_dataset55(uff_data: dict) -> "pandas.DataFrame"
+
+# gwexpy/interop/pyoma_.py
+def from_pyoma_results(
+    cls: type,  # FrequencySeriesMatrix or DataFrame
+    results: dict,
+    *,
+    fs: float,
+) -> FrequencySeriesMatrix | "pandas.DataFrame"
+
+# gwexpy/interop/opensees_.py
+def from_opensees_recorder(
+    cls: type,         # TimeSeriesMatrix or TimeSeriesDict
+    filepath: str | Path,
+    *,
+    nodes: list[int],          # ノード番号リスト
+    dofs: list[int],           # DOF 番号リスト (1-based)
+    response_type: str = "disp",  # disp/vel/accel/force
+    dt: float | None = None,   # サンプリング間隔（-time なしの場合）
+    has_time_column: bool = True,
+) -> TimeSeriesMatrix
+
+# gwexpy/interop/exudyn_.py
+def from_exudyn_sensor(
+    cls: type,         # TimeSeries or TimeSeriesMatrix
+    data: np.ndarray | str | Path,  # GetSensorStoredData() or ファイルパス
+    *,
+    output_variable: str = "Displacement",  # 物理量名
+    column_names: list[str] | None = None,
+) -> TimeSeries | TimeSeriesMatrix
+```
+
+#### 実装方針
+
+- **SDynPy**: `ShapeArray` の構造化配列フィールドを直接アクセス。`coordinate` (node+direction) を DOF ラベルに変換。FRF は `abscissa` → 周波数軸、`ordinate` → 複素値
+- **SDyPy/pyuff**: `pyuff.UFF().read_sets()` で dict リストを取得。dataset type 58 の `x`/`data` をそのまま Series に。type 55 の modal parameter を DataFrame に
+- **pyOMA**: 結果 dict の `Fn`, `Zeta`, `Phi` キーを取り出し。モード形状は `(n_channels, n_modes)` → DataFrame/xarray
+- **OpenSeesPy**: テキストファイルを `np.loadtxt()` で読み込み。列は `[time, n1_d1, n1_d2, ..., n2_d1, ...]` の順。`nodes` × `dofs` から列名を生成
+- **Exudyn**: `np.loadtxt()` or 直接 ndarray。col 0 = time, 残り = sensor 値。`output_variable` で単位を推定（Displacement → m, Force → N 等）
+- 全て mock ベースのテスト（5ライブラリの import は不要）
+
+#### テストケース
+
+- SDynPy ShapeArray: 3モード × 10ノード × 3DOF → DataFrame (30行 × mode/f/zeta/...)
+- SDynPy FRF: 5×3 (response×reference) × 1024freq → FrequencySeriesMatrix
+- pyuff dataset 58: 時系列/FRF の判別と変換
+- pyOMA: 結果 dict → DataFrame のモードパラメータ
+- OpenSeesPy: 3ノード×2DOF のテキスト → TimeSeriesMatrix (6列)
+- Exudyn: 3成分 sensor → TimeSeriesMatrix (3列)、列名の保持
+
+---
+
+### Task 11: multitaper / mtspec スペクトル統合
+
+#### 目的
+
+multitaper パッケージ (Prieto) の `MTSpec` / `MTSine` と
+mtspec パッケージ (Krischer) の関数出力を `FrequencySeries` に変換し、
+信頼区間（jackknife CI）をメタデータとして保持する。
+
+#### データ構造
+
+**multitaper.mtspec.MTSpec** (Prieto):
+- `freq`: 周波数ベクトル `(nf,)`
+- `spec`: 適応重み付き PSD `(nf,)`
+- `spec_ci`: 95% jackknife CI `(nf, 2)` — `[lower, upper]`
+- `yk`: 固有係数 (複素) `(nf, kspec)`
+- `se`: 各周波数の自由度 `(nf,)`
+
+**mtspec (Krischer)**: `mtspec(data, delta, time_bandwidth)` → `(spectrum, freq)` + optional CI
+
+#### 変更ファイル
+
+| 操作 | ファイル |
+|---|---|
+| 新規 | `gwexpy/interop/multitaper_.py` (~120行) |
+| 新規 | `tests/interop/test_interop_multitaper.py` (~150行) |
+| 変更 | `gwexpy/interop/_optional.py` — `"multitaper"`, `"mtspec"` マッピング追加 |
+| 変更 | `gwexpy/interop/__init__.py` — import + `__all__` 追加 |
+
+#### 関数シグネチャ
+
+```python
+# gwexpy/interop/multitaper_.py
+
+# Prieto パッケージ
+def from_mtspec(
+    cls: type,                          # FrequencySeries or FrequencySeriesDict
+    mt: Any,                            # MTSpec or MTSine
+    *,
+    quantity: Literal["psd", "asd"] = "psd",
+    include_ci: bool = True,            # CI を Dict で返すか
+) -> FrequencySeries | FrequencySeriesDict
+
+# Krischer パッケージ
+def from_mtspec_array(
+    cls: type,                          # FrequencySeries
+    spectrum: np.ndarray,
+    freq: np.ndarray,
+    *,
+    quantity: Literal["psd", "asd"] = "psd",
+    ci_lower: np.ndarray | None = None,
+    ci_upper: np.ndarray | None = None,
+    unit: Any | None = None,
+) -> FrequencySeries | FrequencySeriesDict
+```
+
+#### 実装方針
+
+- **MTSpec**: `mt.freq` → `f0=freq[0]`, `df=freq[1]-freq[0]`。`mt.spec` → data。`quantity="asd"` なら `np.sqrt`
+- **CI 処理**: `include_ci=True` かつ `mt.spec_ci` が存在する場合 → `FrequencySeriesDict({"psd": fs, "ci_lower": fs_lo, "ci_upper": fs_hi})`
+- **MTSine**: 同じインターフェースだが CI は自由度ベース（`2 * kuse`）。メタデータに `kuse` を保持
+- **Krischer**: 配列ベース。`ci_lower`/`ci_upper` が渡されれば Dict で返す
+- 単位: PSD は `unit^2/Hz`、ASD は `unit/sqrt(Hz)`。`unit` 引数 or メタから推定
+- メタデータ: `nw` (time-bandwidth), `kspec` (taper 数), `method` ("adaptive"/"sine")
+
+#### テストケース
+
+- MTSpec: 正弦波データ → PSD のピーク周波数が一致
+- MTSine: 同上 + `kuse` のメタデータ保持
+- ASD 変換: `asd^2 ≈ psd` の検証
+- CI 付き → FrequencySeriesDict (3エントリ: psd, ci_lower, ci_upper)
+- CI なし → 単一 FrequencySeries
+- Krischer 関数出力 → FrequencySeries
+- 不等間隔 freq → ValueError（FrequencySeries は等間隔前提）
+
+---
+
+### 長期フェーズの実装順序
+
+```
+Task 11 (multitaper)  ─── 独立、最小規模 ──────────────────────┐
+Task 8 (FEniCSx)      ─── meshio 依存、中規模 ────────────────┤
+Task 9 (気象)          ─── Task 6+7 前提、中規模 ─────────────┤
+Task 10 (モーダル)     ─── 最大規模、5サブタスク ──────────────┘
+```
+
+推奨マージ順序: Task 11 → Task 8 → Task 9 → Task 10
+
+### 長期フェーズ検証方法
+
+```bash
+# 各タスク個別
+pytest tests/interop/test_interop_multitaper.py -v
+pytest tests/interop/test_interop_fenics.py -v
+pytest tests/interop/test_interop_metpy.py tests/interop/test_interop_wrf.py tests/interop/test_interop_harmonica.py -v
+pytest tests/interop/test_interop_sdynpy.py tests/interop/test_interop_sdypy.py tests/interop/test_interop_pyoma.py tests/interop/test_interop_opensees.py tests/interop/test_interop_exudyn.py -v
+
+# 全回帰確認
+pytest tests/ -v
+ruff check gwexpy/ tests/
+```
+
+---
+
+## 全体ロードマップ（更新版）
+
+```mermaid
+gantt
+  title GWexpy 外部ライブラリ統合ロードマップ（2026-03 更新）
+  dateFormat  YYYY-MM-DD
+  axisFormat  %m/%d
+
+  section MVP（完了）
+  Task 1: LALSuite/PyCBC 変換           :done, a1, 2026-03-25, 1d
+  Task 2: gwinc サブトレース展開         :done, a2, 2026-03-25, 1d
+  Task 3: Meep HDF5 field reader        :done, a3, 2026-03-25, 1d
+
+  section 中期
+  Task 6: xarray↔Field ブリッジ          :b0, 2026-04-01, 10d
+  Task 7: Pint↔astropy 単位変換          :b1, 2026-04-01, 7d
+  Task 4: openEMS dump reader            :b2, 2026-04-07, 14d
+  Task 5: emg3d Field 統合               :b3, 2026-04-07, 14d
+
+  section 長期
+  Task 11: multitaper/mtspec             :c0, 2026-04-28, 10d
+  Task 8: FEniCSx メッシュ場             :c1, 2026-05-01, 30d
+  Task 9A: MetPy → ScalarField           :c2, 2026-05-12, 14d
+  Task 9B: wrf-python → ScalarField      :c3, after c2, 14d
+  Task 9C: Harmonica → ScalarField       :c4, after c2, 7d
+  Task 10A: SDynPy 統合                  :c5, 2026-06-01, 20d
+  Task 10B: SDyPy/pyuff 統合             :c6, after c5, 14d
+  Task 10C: pyOMA 統合                   :c7, after c5, 7d
+  Task 10D: OpenSeesPy recorder          :c8, after c5, 14d
+  Task 10E: Exudyn sensor                :c9, after c8, 10d
+```
+
+### 規模見積サマリー
+
+| フェーズ | タスク | 新規ファイル数 | 推定行数 | テスト数 |
+|---|---|---|---|---|
+| **MVP（完了）** | Task 1-3 | 8 | ~2,600 | 72 |
+| **中期** | Task 4-7 | 6 | ~1,530 | ~80 |
+| **長期** | Task 8-11 | 16 | ~3,220 | ~150 |
+| **合計** | 11 タスク | 30 | ~7,350 | ~300 |
