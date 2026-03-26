@@ -1,5 +1,31 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **interop/multitaper**: `from_mtspec` / `from_mtspec_array` が `cls` パラメータを
+  無視して CI 付き入力でも常に `FrequencySeriesDict` を返していた問題を修正。
+  `cls=FrequencySeries` を渡した場合は常に `FrequencySeries` が返る。
+  (commit `63a0fb31`)
+
+- **interop/meshio**: `cell_data` のみを持つ `meshio.Mesh` を `from_meshio` に渡した場合、
+  セル値をノード座標へ無言で流し込んで `griddata` に渡す誤った補間経路を廃止。
+  `cell_data` のみの場合は明確な `ValueError` を送出する。
+  (commit `3af0e143`)
+
+- **interop/pyroomacoustics**: `from_pyroomacoustics_rir` / `from_pyroomacoustics_field` が
+  `room.rir` を `rir[source][mic]` として扱っていたが、実ライブラリの規約は
+  `rir[mic][source]`（外側=マイク）であるため修正。
+  マルチソース・マルチマイク構成での選択に影響する。
+  (commit `4b039498`)
+
+- **interop/openems**: `from_openems_hdf5` の内部関数 `_read_openems_td` /
+  `_read_openems_fd` が axis0 に合成整数インデックスを使っていた問題を修正。
+  HDF5 データセットの `"Time"` / `"frequency"` 属性が存在する場合は物理値を使用し、
+  属性がない場合は従来の整数インデックスにフォールバックする。
+  (commit `7f96e805`)
+
 ## [0.1.0] - 2026-03-15
 
 ### Release Summary

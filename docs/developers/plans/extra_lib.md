@@ -96,7 +96,7 @@ I/O は基本的に GWpy の `read/write`（GWF/ASCII/HDF5 等）を継承しつ
 | **PySpice** | `TransientAnalysis`, `AcAnalysis`, `NoiseAnalysis`（WaveForm）citeturn17search1turn17search7 | SPICE netlist、ngspice | Transient→TimeSeries/Dict、AC/Noise→FrequencySeries/Dict | **既に実装**fileciteturn21file0L1-L1 | (1) 単位の扱い（V/A/√Hz）を明示し `unit=` を自動設定、(2) Noise の「入力換算/出力換算」の区別を name/meta へ、(3) WaveFormの複素表現（ACの位相）に対応 |
 | **scikit-rf** | `Network`, `Frequency` | Touchstone `.sNp`、pickle `.ntwk`citeturn0search1turn0search0turn0search7 | Network→FrequencySeries/Matrix、IR/step→TimeSeries/Dict、逆変換は `to_skrf_network` | **既に実装**fileciteturn22file0L1-L1 | (1) `z/y/h/a/t` 等の全パラメータ一般化、(2) Touchstone を GWpy I/O registry へ登録するか（`FrequencySeries.read("x.s2p")` 的UX）、(3) port名・z0 のメタ移送 |
 | **Meep** | `Simulation`、場出力は HDF5（datasets） | HDF5出力、`output_field_function` が real/imag dataset を作るciteturn3search6 | HDF5→ScalarField/VectorField（Ex/Ey/Ez 等）、時間依存なら axis0=time | **未実装** | (1) HDF5 dataset 命名規約（`name*.r/.i` 等）を読んで複素場再構成citeturn3search6 (2) 格子座標（dx, origin）を軸に入れる（メタ or coords）、(3) 複数コンポーネントを `VectorField` へ束ねる |
-| **openEMS** | `CSXCAD.ContinuousStructure`、dump設定は `AddDump` | Field dump：VTK または HDF5（時間/周波数、dump_typeで選択）citeturn3search7turn3search5turn3search9 | dump→ScalarField/VectorField、周波数dump→FrequencySeries/Field | **未実装** | (1) dumpファイル（VTK/HDF5）の読込ラッパー、(2) `DumpType` と物理量（E/H/J等）対応表の実装citeturn3search5turn3search9 (3) CSXCAD XML（形状/材料）をメタとして保存 |
+| **openEMS** | `CSXCAD.ContinuousStructure`、dump設定は `AddDump` | Field dump：VTK または HDF5（時間/周波数、dump_typeで選択）citeturn3search7turn3search5turn3search9 | dump→ScalarField/VectorField、周波数dump→FrequencySeries/Field | **実装済み**（2026-03-26）`gwexpy/interop/openems_.py`。TD/FD HDF5対応、DumpType→物理量マップ、`"Time"`/`"frequency"` attrs から物理 axis0 を読み込み | 残：CSXCAD XML（形状/材料）をメタとして保存citeturn3search5turn3search9 (3) CSXCAD XML（形状/材料）をメタとして保存 |
 | **FEniCSx（dolfinx）** | `dolfinx.fem.Function`, `Mesh` | XDMF(HDF5) / VTK / VTXWriter(ADIOS2)citeturn4search2turn4search0 | **非構造格子場**：推奨は xarray Dataset か `MeshField` 新設 | **未実装** | (1) XDMF/VTK 読み込み（meshio等）→統一表現、(2) `write_function` の制約（低次要素等）を考慮した補間ヘルパーciteturn4search0turn2search5 (3) GWexpy側に MeshField または Field↔xarray API を追加 |
 | **SimPEG** | `simpeg.data.Data`, survey/source/rx, mesh | 基本はnumpy。EMモジュールの枠組みありciteturn4search1turn4search5 | Data↔Time/FrequencySeries、Fields/Model/mesh↔（xarray/MeshField） | **Dataのみ既存**fileciteturn23file0L1-L1 | (1) `Fields` や mesh（discretize）からの空間場取り込み、(2) 単位体系の整備（SI前提）、(3) 多受信点データを Matrix/Dict へ自然に割当 |
 | **emg3d** | `emg3d.fields.Field`（fx,fy,fz view）、`TensorMesh` | `.h5/.npz/.json` で save/load（公式）citeturn5search2turn5search5turn5search0 | Field→VectorField（各成分をScalarFieldに）、I/OはHDF5経由で直接変換可 | **未実装** | (1) `Field.f{x,y,z}` を3D arraysとして軸/セル位置を決める、(2) frequency属性を axis0=frequency or metaに、(3) emg3d.io.load の出力 dict→GWexpy objects auto-cast |
@@ -109,7 +109,7 @@ I/O は基本的に GWpy の `read/write`（GWF/ASCII/HDF5 等）を継承しつ
 | **Harmonica** | xarray DataArray（正則グリッド） | NetCDF/xarray 互換が主流 | DataArray→ScalarField（2D/3D）または FrequencySeries | **未実装** | (1) CF属性/単位の扱い、(2) 高さ一定グリッド→ScalarField(axis0をtime/freq無しで扱う設計)citeturn5search1turn5search4 |
 | **MetPy** | xarray + Pint（`.metpy` accessor、`.quantify()`）citeturn11search0 | NetCDF/GRIB は xarray 経由 | DataArray→ScalarField（気象場）、時系列→TimeSeries | **未実装** | (1) Pint単位→astropy単位への橋渡し、(2) CRS/座標をScalarFieldの axis/attrs に落とす |
 | **wrf-python** | `wrf.getvar` が xarray DataArray 対応、座標キャッシュ等citeturn9search1turn10search3 | WRF出力 NetCDF | DataArray→ScalarField（time×z×y×x 等） | **未実装** | (1) WRF座標（XLAT/XLONG等）→Field軸へ、(2) 大規模データの lazy（dask）に配慮 |
-| **mtspec / multitaper** | `mtspec.MTSpec/MTSine`（freq/spec/err）citeturn10search1 | 入力は配列、出力はオブジェクト | スペクトル→FrequencySeries、時間窓スペログラム→Spectrogram | **未実装** | (1) `MTSpec.spec` などを FrequencySeries に、誤差帯（err/CI）を Meta or 追加Seriesとして保持 |
+| **mtspec / multitaper** | `mtspec.MTSpec/MTSine`（freq/spec/err）citeturn10search1 | 入力は配列、出力はオブジェクト | スペクトル→FrequencySeries、時間窓スペログラム→Spectrogram | **実装済み**（2026-03-26）`gwexpy/interop/multitaper_.py`。`from_mtspec`/`from_mtspec_array` 対応、`cls` ゲートで CI 有無を制御 | 残：時間窓スペクトログラム（MTSine）→Spectrogram |
 | **python-control**（参考） | `FRD`, `TimeResponseData` | なし（pickle等） | FRD→FrequencySeries/Matrix、時応答→TimeSeries | 既存（GWexpy側に多い）fileciteturn35file0L1-L1 | 伝達の行列次元・入出力名の扱いを統一（Matrixメタ） |
 
 ---
@@ -156,12 +156,12 @@ I/O は基本的に GWpy の `read/write`（GWF/ASCII/HDF5 等）を継承しつ
 | **MVP** | LALSuite / PyCBC 変換の “GWexpy型で返す” | `TimeSeries.from_lal/from_pycbc` を override（GWpyの結果をGWexpyへ再構築）。FrequencySeries側も同様 | 小 | 乱数データで epoch/dt/df/unit/name が保たれること、complexも一致 |
 | **MVP** | gwinc trace 展開 | totalだけでなく `trace['Quantum']` 等を `FrequencySeriesDict` 化（asd/psd選択可） | 小〜中 | サブトレース数・周波数一致、単位（ASD/PSD）一致 |
 | **MVP** | Meep HDF5 field reader | `output_field_function` の `name*.r/.i` などを読んで複素場を再構成→ScalarField/VectorFieldciteturn3search6 | 中 | dataset名パターン、complex再構成、軸・shape検証 |
-| **中期** | openEMS dump reader（VTK/HDF5） | dump_type→物理量(E/H/J)マップ、VTK/HDF5 をFieldへ | 中 | dump_typeごとの読み分け、単位・コンポーネント数 |
+| ~~**中期**~~ **✅ 完了 2026-03-26** | openEMS dump reader（HDF5） | dump_type→物理量(E/H/J)マップ、HDF5 をScalarField/VectorFieldへ。`"Time"`/`"frequency"` attrs から物理 axis0 を読み込み。 | 中 | dump_typeごとの読み分け、単位・コンポーネント数 |
 | **中期** | emg3d Field統合 | `Field.f{x,y,z}` view→VectorField、`emg3d.io.load/save` dict→GWexpy auto-castciteturn5search2turn5search0 | 中 | f{x,y,z} shape、grid coords、周波数属性の保持 |
 | **中期** | FEniCSx（dolfinx）メッシュ場 | XDMF/VTK から mesh + function を読み込み、xarray Dataset or MeshFieldに格納。XDMFの制約も補間で回避citeturn4search0turn4search2 | 大 | 最低次要素のwrite_function、補間後の整合性、parallel時のpiece対応（将来） |
 | **長期** | モーダル統一スキーマ | SDynPy/SDyPy/pyOMA/OpenSeesPy/Exudyn の “時系列/FRF/モード表/形状” を統一（xarray+DataFrame）。FRF→FrequencySeriesMatrix | 大 | 既知例（小梁など）でFRF shape、mode shapes dims、units |
 | **長期** | 気象・環境場スキーマ | wrf-python/MetPy の xarray を ScalarField へ写像（座標、鉛直、CRS、単位）citeturn11search0turn9search1 | 大 | CF座標推定、単位変換(pint↔astropy)、lazy/dask保全 |
-| **長期** | multitaper/mtspec 統合 | MTSpec/MTSine の `freq/spec/err` を FrequencySeries + error band として保持citeturn10search1 | 中 | 既知信号でピーク周波数一致、CIメタが保存される |
+| ~~**長期**~~ **✅ 完了 2026-03-26** | multitaper/mtspec 統合 | `from_mtspec`/`from_mtspec_array` — `cls` ゲートで FrequencySeries/FrequencySeriesDict を制御。CI はオプション。 | 中 | 既知信号でピーク周波数一致、CIメタが保存される |
 
 ### 実装パターン（GWexpy流）
 
@@ -1019,8 +1019,8 @@ Task 5 (emg3d)     ─── 並行可 ──┘
 Task 6 (xarray↔Field)  ─────────────────┐
 Task 7 (Pint↔astropy)  ─────────────────┤
                                          │
-Task 11 (multitaper)   ─── 独立、最小規模
-Task 8 (meshio)        ─── scipy 補間のみ依存
+Task 11 (multitaper)   ─── 独立、最小規模  ✅ 完了 2026-03-26
+Task 8 (meshio)        ─── scipy 補間のみ依存  ✅ 完了 2026-03-26
 Task 9 (気象)           ─── Task 6+7 前提、xarray→ScalarField
 Task 10 (モーダル)      ─── FrequencySeriesMatrix 成熟度に依存、最大規模
 ```
@@ -1114,9 +1114,9 @@ def _detect_vector_components(data_dict: dict) -> dict[str, np.ndarray]
 
 | サブタスク | 内容 | 規模 |
 |---|---|---|
-| 8A | `from_meshio`: meshio.Mesh → ScalarField（正則グリッド補間） | 中 |
-| 8B | `from_fenics_xdmf` / `from_fenics_vtk`: ファイル → meshio → ScalarField | 小 |
-| 8C | VectorField 対応: ベクトル場の自動検出と成分分離 | 小 |
+| 8A | `from_meshio`: meshio.Mesh → ScalarField（正則グリッド補間） ✅ 完了 2026-03-26 | 中 |
+| 8B | `from_fenics_xdmf` / `from_fenics_vtk`: ファイル → meshio → ScalarField ✅ 完了 2026-03-26 | 小 |
+| 8C | VectorField 対応: ベクトル場の自動検出と成分分離 ✅ 完了 2026-03-26 | 小 |
 | 8D | 時系列対応（後続）: 複数タイムステップの XDMF を axis0 に展開 | 中 |
 
 #### 実装方針
