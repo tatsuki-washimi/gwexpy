@@ -10,6 +10,7 @@ from gwexpy.timeseries import (
     TimeSeries,
     TimeSeriesMatrix,
 )
+from gwexpy.timeseries.collections import TimeSeriesDict, TimeSeriesList
 
 
 def test_pipeline_pca_inverse_roundtrip():
@@ -61,3 +62,128 @@ def test_rolling_statistics_quantity_window():
     std_ts = ts.rolling_std(2, nan_policy="omit", ddof=0)
     expected_std = [0.0, 0.0, 0.0, 0.5]
     np.testing.assert_allclose(std_ts.value, expected_std, equal_nan=True)
+
+
+# --- ImputeTransform ---
+
+def test_impute_transform_timeseries():
+    data = np.array([1.0, np.nan, 3.0, 4.0])
+    ts = TimeSeries(data, dt=1.0 * u.s, unit=u.m)
+    result = ImputeTransform(method="mean").transform(ts)
+    assert isinstance(result, TimeSeries)
+    assert not np.any(np.isnan(result.value))
+
+
+def test_impute_transform_matrix():
+    data = np.array([[[1.0, np.nan, 3.0], [2.0, 2.0, 2.0]]])
+    mat = TimeSeriesMatrix(data, dt=1.0 * u.s, t0=0.0 * u.s)
+    result = ImputeTransform(method="mean").transform(mat)
+    assert isinstance(result, TimeSeriesMatrix)
+    assert not np.any(np.isnan(result.value))
+
+
+def test_impute_transform_dict():
+    ts1 = TimeSeries([1.0, np.nan, 3.0], dt=1.0 * u.s, unit=u.m)
+    ts2 = TimeSeries([np.nan, 2.0, 3.0], dt=1.0 * u.s, unit=u.m)
+    td = TimeSeriesDict({"a": ts1, "b": ts2})
+    result = ImputeTransform(method="mean").transform(td)
+    assert isinstance(result, TimeSeriesDict)
+    assert not np.any(np.isnan(result["a"].value))
+    assert not np.any(np.isnan(result["b"].value))
+
+
+def test_impute_transform_list():
+    ts1 = TimeSeries([1.0, np.nan, 3.0], dt=1.0 * u.s, unit=u.m)
+    tl = TimeSeriesList([ts1])
+    result = ImputeTransform(method="mean").transform(tl)
+    assert isinstance(result, TimeSeriesList)
+    assert not np.any(np.isnan(result[0].value))
+
+
+def test_impute_transform_unsupported_type():
+    with pytest.raises(TypeError):
+        ImputeTransform().transform([1, 2, 3])
+
+
+# --- StandardizeTransform ---
+
+def test_standardize_timeseries_roundtrip():
+    ts = TimeSeries([1.0, 2.0, 3.0, 4.0, 5.0], dt=1.0 * u.s, unit=u.m)
+    st = StandardizeTransform()
+    standardized = st.fit_transform(ts)
+    assert isinstance(standardized, TimeSeries)
+    np.testing.assert_allclose(np.nanmean(standardized.value), 0.0, atol=1e-10)
+
+    restored = st.inverse_transform(standardized)
+    np.testing.assert_allclose(restored.value, ts.value, atol=1e-10)
+
+
+def test_standardize_timeseries_robust():
+    ts = TimeSeries([1.0, 2.0, 3.0, 4.0, 100.0], dt=1.0 * u.s, unit=u.m)
+    st = StandardizeTransform(robust=True)
+    result = st.fit_transform(ts)
+    assert isinstance(result, TimeSeries)
+
+
+def test_standardize_matrix_roundtrip():
+    rng = np.random.default_rng(42)
+    data = rng.normal(size=(2, 1, 50))
+    mat = TimeSeriesMatrix(data, dt=0.1 * u.s, t0=0.0 * u.s)
+    st = StandardizeTransform()
+    standardized = st.fit_transform(mat)
+    restored = st.inverse_transform(standardized)
+    np.testing.assert_allclose(restored.value, mat.value, atol=1e-10)
+
+
+def test_standardize_dict_roundtrip():
+    ts1 = TimeSeries([1.0, 2.0, 3.0, 4.0, 5.0], dt=1.0 * u.s, unit=u.m)
+    ts2 = TimeSeries([10.0, 20.0, 30.0, 40.0, 50.0], dt=1.0 * u.s, unit=u.m)
+    td = TimeSeriesDict({"a": ts1, "b": ts2})
+    st = StandardizeTransform()
+    standardized = st.fit_transform(td)
+    assert isinstance(standardized, TimeSeriesDict)
+    restored = st.inverse_transform(standardized)
+    np.testing.assert_allclose(restored["a"].value, ts1.value, atol=1e-10)
+
+
+def test_standardize_list_roundtrip():
+    ts1 = TimeSeries([1.0, 2.0, 3.0], dt=1.0 * u.s, unit=u.m)
+    ts2 = TimeSeries([4.0, 5.0, 6.0], dt=1.0 * u.s, unit=u.m)
+    tl = TimeSeriesList([ts1, ts2])
+    st = StandardizeTransform()
+    standardized = st.fit_transform(tl)
+    assert isinstance(standardized, TimeSeriesList)
+    restored = st.inverse_transform(standardized)
+    np.testing.assert_allclose(restored[0].value, ts1.value, atol=1e-10)
+
+
+def test_standardize_inverse_not_fitted():
+    st = StandardizeTransform()
+    ts = TimeSeries([1.0, 2.0, 3.0], dt=1.0 * u.s, unit=u.m)
+    with pytest.raises(ValueError, match="not been fitted"):
+        st.inverse_transform(ts)
+
+
+def test_standardize_zero_scale():
+    """Constant series should not cause division by zero."""
+    ts = TimeSeries([5.0, 5.0, 5.0, 5.0], dt=1.0 * u.s, unit=u.m)
+    st = StandardizeTransform()
+    result = st.fit_transform(ts)
+    assert np.all(np.isfinite(result.value))
+
+
+# --- Pipeline: fit / transform independently ---
+
+def test_pipeline_fit_then_transform():
+    pytest.importorskip("sklearn")
+    rng = np.random.default_rng(1)
+    data = rng.normal(size=(2, 1, 64))
+    mat = TimeSeriesMatrix(data, dt=0.1 * u.s, t0=0.0 * u.s)
+
+    pipe = Pipeline([
+        ("standardize", StandardizeTransform()),
+        ("pca", PCATransform(n_components=2)),
+    ])
+    pipe.fit(mat)
+    result = pipe.transform(mat)
+    assert isinstance(result, TimeSeriesMatrix)
