@@ -4,7 +4,7 @@
 import nbformat
 
 # Read notebook
-nb = nbformat.read("examples/tutorials/intro_ScalarField.ipynb", as_version=4)
+nb = nbformat.read("examples/basic-new-methods/intro_ScalarField.ipynb", as_version=4)
 
 # Find and fix cells with plotting issues
 # Cell 8: FFT spectrum plot
@@ -57,5 +57,5 @@ for i, cell in enumerate(nb.cells):
             print(f"Fixed cell {i}: K-space spectrum plot")
 
 # Write back
-nbformat.write(nb, "examples/tutorials/intro_ScalarField.ipynb")
-print("\n✓ Fixed: examples/tutorials/intro_ScalarField.ipynb")
+nbformat.write(nb, "examples/basic-new-methods/intro_ScalarField.ipynb")
+print("\n✓ Fixed: examples/basic-new-methods/intro_ScalarField.ipynb")

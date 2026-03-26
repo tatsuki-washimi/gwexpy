@@ -60,10 +60,10 @@ jobs:
         env:
           PYTHONFAULTHANDLER: "1"
         run: |
-          if [ -d notebooks/ ] && find notebooks/ -name '*.ipynb' -print -quit | grep -q .; then
-            pytest -q --nbmake notebooks/ --nbmake-timeout=600 --nbmake-kernel=python3
+          if [ -d examples/paper-figures/ ] && find examples/paper-figures/ -name '*.ipynb' -print -quit | grep -q .; then
+            pytest -q --nbmake examples/paper-figures/ --nbmake-timeout=600 --nbmake-kernel=python3
           else
-            echo "No notebooks found in notebooks/, skipping."
+            echo "No notebooks found in examples/paper-figures/, skipping."
           fi
 
       - name: Run paper notebook smoke script (synthetic)
@@ -71,7 +71,7 @@ jobs:
         env:
           PYTHONFAULTHANDLER: "1"
         run: |
-          python notebooks/02_coherence_ranking.py
+          python examples/paper-figures/02_coherence_ranking.py
 
       - name: Run paper notebook smoke script (GWOSC, optional)
         if: "!contains(github.event.head_commit.message, '[gui-test]') && matrix.python-version == '3.11' && contains(github.event.head_commit.message, '[network-test]')"
@@ -79,7 +79,7 @@ jobs:
           PYTHONFAULTHANDLER: "1"
         run: |
           pip install gwosc
-          python notebooks/03_gwosc_case_study.py
+          python examples/paper-figures/03_gwosc_case_study.py
 
       - name: Run tests (with GUI)
         if: contains(github.event.head_commit.message, '[gui-test]')
@@ -94,10 +94,10 @@ jobs:
         env:
           PYTHONFAULTHANDLER: "1"
         run: |
-          if [ -d notebooks/ ] && find notebooks/ -name '*.ipynb' -print -quit | grep -q .; then
-            xvfb-run -a -s "-screen 0 1920x1080x24" pytest -q --nbmake notebooks/ --nbmake-timeout=600 --nbmake-kernel=python3
+          if [ -d examples/paper-figures/ ] && find examples/paper-figures/ -name '*.ipynb' -print -quit | grep -q .; then
+            xvfb-run -a -s "-screen 0 1920x1080x24" pytest -q --nbmake examples/paper-figures/ --nbmake-timeout=600 --nbmake-kernel=python3
           else
-            echo "No notebooks found in notebooks/, skipping."
+            echo "No notebooks found in examples/paper-figures/, skipping."
           fi
 
       - name: Run paper notebook smoke script with GUI tag (synthetic)
@@ -105,7 +105,7 @@ jobs:
         env:
           PYTHONFAULTHANDLER: "1"
         run: |
-          xvfb-run -a -s "-screen 0 1920x1080x24" python notebooks/02_coherence_ranking.py
+          xvfb-run -a -s "-screen 0 1920x1080x24" python examples/paper-figures/02_coherence_ranking.py
 
       - name: Upload GUI failure screenshots
         if: failure()
@@ -207,7 +207,7 @@ jobs:
           PYTHONFAULTHANDLER: "1"
         shell: bash -l {0}
         run: |
-          micromamba run -n gwexpy-full python notebooks/02_coherence_ranking.py
+          micromamba run -n gwexpy-full python examples/paper-figures/02_coherence_ranking.py
 
   build:
     name: Build and verify package

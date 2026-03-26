@@ -22,8 +22,8 @@ import sys
 from pathlib import Path
 
 # Ensure the development version of gwexpy is preferred over any installed release.
-# When running as `python notebooks/03_gwosc_case_study.py` from the project root,
-# Python sets sys.path[0] to the notebooks/ directory, not the project root.
+# When running as `python examples/paper-figures/03_gwosc_case_study.py` from the project root,
+# Python sets sys.path[0] to the examples/paper-figures/ directory, not the project root.
 # This line restores the project root so the local source tree takes priority.
 _repo_root = Path(__file__).resolve().parent.parent
 if str(_repo_root) not in sys.path:

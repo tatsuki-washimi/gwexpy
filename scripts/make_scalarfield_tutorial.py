@@ -417,8 +417,8 @@ nb.cells.append(
 
 # Write notebook
 with open(
-    "/home/washimi/work/gwexpy/examples/tutorials/intro_ScalarField.ipynb", "w"
+    "/home/washimi/work/gwexpy/examples/basic-new-methods/intro_ScalarField.ipynb", "w"
 ) as f:
     nbf.write(nb, f)
 
-print("✓ Created: examples/tutorials/intro_ScalarField.ipynb")
+print("✓ Created: examples/basic-new-methods/intro_ScalarField.ipynb")

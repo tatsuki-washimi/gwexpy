@@ -109,7 +109,8 @@ tests/run_gui_tests.sh~
 tests/unit/
 .conda-envs/
 .conda-pkgs/
-docs/developers/references/*
+docs_internal/references/*
+!docs_internal/references/**/*.md
 *.log
 
 # cover-agent artifacts
@@ -123,5 +124,5 @@ gwexpy/gui/test-data/
 # Large test data (Database)
 gwexpy/gui/test-data/*.sdb
 gwexpy/gui/test-data/*:Zone.Identifier
-# Paper files (confidential until publication)
-docs/gwexpy-paper/
+# Publications (confidential until publication)
+docs_internal/publications/
