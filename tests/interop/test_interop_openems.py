@@ -207,6 +207,84 @@ class TestReadOpenemsΦΔ:
 
 
 # ---------------------------------------------------------------------------
+# Physical metadata tests
+# ---------------------------------------------------------------------------
+
+
+class TestOpenemsPhysicalMetadata:
+    """Regression: physical time/frequency values must be read from HDF5 attrs."""
+
+    def test_td_reads_time_attrs_all_steps(self, tmp_path):
+        """When all TD datasets carry 'Time' attr, times must reflect physical values."""
+        p = tmp_path / "td_with_time.h5"
+        with h5py.File(str(p), "w") as f:
+            _make_mesh(f)
+            td = f.require_group("FieldData/TD")
+            for i, t_val in enumerate([0.0, 1e-9, 2e-9]):
+                ds = td.create_dataset(str(i), data=np.ones((NX, NY, NZ, 3)))
+                ds.attrs["Time"] = t_val
+        with h5py.File(str(p), "r") as f:
+            _, times = _read_openems_td(f, timestep=None)
+        np.testing.assert_allclose(times, [0.0, 1e-9, 2e-9])
+
+    def test_td_reads_time_attr_single_step(self, tmp_path):
+        """Single-step TD read must use 'Time' attr when present."""
+        p = tmp_path / "td_single.h5"
+        with h5py.File(str(p), "w") as f:
+            _make_mesh(f)
+            td = f.require_group("FieldData/TD")
+            ds = td.create_dataset("1", data=np.ones((NX, NY, NZ, 3)))
+            ds.attrs["Time"] = 5e-9
+        with h5py.File(str(p), "r") as f:
+            _, times = _read_openems_td(f, timestep=1)
+        np.testing.assert_allclose(times[0], 5e-9)
+
+    def test_td_fallback_to_indices_when_no_attrs(self, tmp_path):
+        """Without 'Time' attrs, times must fall back to integer indices."""
+        p = tmp_path / "td_no_attrs.h5"
+        _make_td_file(p, n_steps=3)
+        with h5py.File(str(p), "r") as f:
+            _, times = _read_openems_td(f, timestep=None)
+        np.testing.assert_allclose(times, [0.0, 1.0, 2.0])
+
+    def test_fd_reads_frequency_attrs_all(self, tmp_path):
+        """When all FD datasets carry 'frequency' attr, freqs must be physical."""
+        p = tmp_path / "fd_with_freq.h5"
+        phys_freqs = [1e6, 2.4e9, 5e9]
+        with h5py.File(str(p), "w") as f:
+            _make_mesh(f)
+            fd = f.require_group("FieldData/FD")
+            for i, fval in enumerate(phys_freqs):
+                ds_r = fd.create_dataset(f"f{i}_real", data=np.ones((NX, NY, NZ, 3)))
+                fd.create_dataset(f"f{i}_imag", data=np.zeros((NX, NY, NZ, 3)))
+                ds_r.attrs["frequency"] = fval
+        with h5py.File(str(p), "r") as f:
+            _, freqs = _read_openems_fd(f, freq_idx=None)
+        np.testing.assert_allclose(freqs, phys_freqs)
+
+    def test_fd_reads_frequency_attr_single(self, tmp_path):
+        """Single-freq FD read must use 'frequency' attr when present."""
+        p = tmp_path / "fd_single_freq.h5"
+        with h5py.File(str(p), "w") as f:
+            _make_mesh(f)
+            fd = f.require_group("FieldData/FD")
+            ds_r = fd.create_dataset("f0_real", data=np.ones((NX, NY, NZ, 3)))
+            fd.create_dataset("f0_imag", data=np.zeros((NX, NY, NZ, 3)))
+            ds_r.attrs["frequency"] = 2.4e9
+        with h5py.File(str(p), "r") as f:
+            _, freqs = _read_openems_fd(f, freq_idx=0)
+        np.testing.assert_allclose(freqs[0], 2.4e9)
+
+    def test_fd_fallback_to_indices_when_no_attrs(self, tmp_path):
+        """Without 'frequency' attrs, freqs must fall back to integer indices."""
+        p = tmp_path / "fd_no_attrs.h5"
+        _make_fd_file(p, n_freq=2)
+        with h5py.File(str(p), "r") as f:
+            _, freqs = _read_openems_fd(f, freq_idx=None)
+        np.testing.assert_allclose(freqs, [0.0, 1.0])
+
+
+# ---------------------------------------------------------------------------
 # from_openems_hdf5 — time-domain
 # ---------------------------------------------------------------------------
 

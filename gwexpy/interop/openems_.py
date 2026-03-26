@@ -137,11 +137,19 @@ def _read_openems_td(
                 f"Available: {keys}"
             )
         arr = np.asarray(td[key], dtype=np.float64)[np.newaxis, ...]  # (1, Nx, Ny, Nz, 3)
-        times = np.array([timestep], dtype=np.float64)
+        t_attr = td[key].attrs.get("Time", None)
+        times = np.array(
+            [float(t_attr) if t_attr is not None else timestep], dtype=np.float64
+        )
     else:
         slices = [np.asarray(td[k], dtype=np.float64) for k in keys]
         arr = np.stack(slices, axis=0)  # (n_time, Nx, Ny, Nz, 3)
-        times = np.arange(len(keys), dtype=np.float64)
+        # Try to read physical time values from dataset attributes
+        time_vals = [td[k].attrs.get("Time", None) for k in keys]
+        if all(v is not None for v in time_vals):
+            times = np.array([float(v) for v in time_vals], dtype=np.float64)
+        else:
+            times = np.arange(len(keys), dtype=np.float64)
 
     return arr, times
 
@@ -186,15 +194,25 @@ def _read_openems_fd(
         real = np.asarray(fd[rk], dtype=np.float64)
         imag = np.asarray(fd[ik], dtype=np.float64)
         arr = (real + 1j * imag)[np.newaxis, ...]  # (1, Nx, Ny, Nz, 3)
-        freqs = np.array([freq_idx], dtype=np.float64)
+        f_attr = fd[rk].attrs.get("frequency", None)
+        freqs = np.array(
+            [float(f_attr) if f_attr is not None else freq_idx], dtype=np.float64
+        )
     else:
         slices = []
+        freq_vals = []
         for idx in indices:
-            real = np.asarray(fd[f"f{idx}_real"], dtype=np.float64)
+            rk = f"f{idx}_real"
+            real = np.asarray(fd[rk], dtype=np.float64)
             imag = np.asarray(fd[f"f{idx}_imag"], dtype=np.float64)
             slices.append(real + 1j * imag)
+            f_attr = fd[rk].attrs.get("frequency", None)
+            freq_vals.append(float(f_attr) if f_attr is not None else None)
         arr = np.stack(slices, axis=0)  # (n_freq, Nx, Ny, Nz, 3)
-        freqs = np.array(indices, dtype=np.float64)
+        if all(v is not None for v in freq_vals):
+            freqs = np.array(freq_vals, dtype=np.float64)
+        else:
+            freqs = np.array(indices, dtype=np.float64)
 
     return arr, freqs
 
