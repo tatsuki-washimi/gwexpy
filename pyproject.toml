@@ -322,3 +322,24 @@ module = [
   "gwexpy.frequencyseries.collections",
 ]
 ignore_errors = false
+
+[tool.coverage.run]
+source = ["gwexpy"]
+omit = [
+    "gwexpy/gui/*",
+    "gwexpy/cli/*",
+    "*/test*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.",
+    "@overload",
+]
+show_missing = true
+skip_covered = true
+
+[tool.coverage.xml]
+output = "coverage.xml"
