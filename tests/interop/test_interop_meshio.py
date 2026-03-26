@@ -19,7 +19,6 @@ from gwexpy.interop.meshio_ import (
     from_meshio,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers to create mock meshio.Mesh objects
 # ---------------------------------------------------------------------------
@@ -240,20 +239,20 @@ class TestFromMeshioOptions:
 
 
 class TestFromMeshioCellData:
-    def test_cell_data_used_when_no_point_data(self):
+    def test_cell_data_only_raises(self):
+        """cell_data without point_data must raise ValueError (unsupported interpolation)."""
         mesh = MagicMock()
-        x = np.linspace(0, 1, 20)
-        y = np.linspace(0, 1, 20)
-        xx, yy = np.meshgrid(x, y)
-        mesh.points = np.column_stack([xx.ravel(), yy.ravel(), np.zeros(400)])
+        mesh.points = np.column_stack([
+            np.linspace(0, 1, 100),
+            np.linspace(0, 1, 100),
+            np.zeros(100),
+        ])
         mesh.point_data = {}
-        # Concatenated cell_data matches point count → works
-        mesh.cell_data = {
-            "sigma": [np.ones(200), np.ones(200)],
-        }
+        # Realistic mesh: 50 cells != 100 points
+        mesh.cell_data = {"sigma": [np.ones(30), np.ones(20)]}
         mesh.cells = []
-        sf = from_meshio(ScalarField, mesh, grid_resolution=0.1)
-        assert isinstance(sf, ScalarField)
+        with pytest.raises(ValueError, match="cell_data"):
+            from_meshio(ScalarField, mesh, grid_resolution=0.1)
 
     def test_no_data_raises(self):
         mesh = MagicMock()
