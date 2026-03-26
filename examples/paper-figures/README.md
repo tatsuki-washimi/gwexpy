@@ -10,19 +10,19 @@ These marimo notebooks demonstrate the key features of GWexpy as described in th
    - DTT XML I/O workflow
    - Computing transfer functions using `TimeSeries.transfer_function()`
    - Bode plot visualization with `gwexpy.plot.Plot`
-   - Exports: `docs/gwexpy-paper/figure2_transfer_function.{png,pdf}`
+   - Exports: `docs_internal/publications/paper_softwarex/figure2_transfer_function.{png,pdf}`
 
 2. **02_coherence_ranking.py** - Coherence-based coupling analysis (Figure 3)
    - Multi-channel `TimeSeriesMatrix` construction
    - `coherence_ranking()` for BruCo-style noise hunting
    - Top-k channel identification with `topk()` and `plot_ranked()`
-   - Exports: `docs/gwexpy-paper/figure3_coherence_ranking.{png,pdf}`
+   - Exports: `docs_internal/publications/paper_softwarex/figure3_coherence_ranking.{png,pdf}`
 
 3. **03_gwosc_case_study.py** - GWOSC public data coherence analysis (Figure 5)
    - Downloads public GWOSC H1 strain data
    - Derives proxy auxiliary channels from the public strain stream
    - Runs `TimeSeriesMatrix.coherence_ranking()` on the resulting matrix
-   - Exports: `docs/gwexpy-paper/figure5_gwosc_case_study.{png,pdf}`
+   - Exports: `docs_internal/publications/paper_softwarex/figure5_gwosc_case_study.{png,pdf}`
 
 ## Prerequisites
 
@@ -43,24 +43,24 @@ pip install marimo
 ### Interactive mode (browser-based)
 
 ```bash
-marimo edit notebooks/01_transfer_function_workflow.py
+marimo edit examples/paper-figures/01_transfer_function_workflow.py
 ```
 
 ### Script mode (headless)
 
 ```bash
-marimo run notebooks/01_transfer_function_workflow.py
+marimo run examples/paper-figures/01_transfer_function_workflow.py
 ```
 
 Or execute directly:
 
 ```bash
-python notebooks/01_transfer_function_workflow.py
+python examples/paper-figures/01_transfer_function_workflow.py
 ```
 
 ## Generated Figures
 
-Running the notebooks will generate paper figures in `docs/gwexpy-paper/`:
+Running the notebooks will generate paper figures in `docs_internal/publications/paper_softwarex/`:
 - `figure3_coherence_ranking.{png,pdf}`
 - `figure5_gwosc_case_study.{png,pdf}`
 
@@ -69,13 +69,13 @@ Running the notebooks will generate paper figures in `docs/gwexpy-paper/`:
 These marimo notebooks are standard Python scripts and can be executed in CI:
 
 ```bash
-python notebooks/02_coherence_ranking.py
+python examples/paper-figures/02_coherence_ranking.py
 ```
 
 The GWOSC example is network-dependent and is therefore treated as an optional reproduction path rather than a default CI step:
 
 ```bash
-python notebooks/03_gwosc_case_study.py
+python examples/paper-figures/03_gwosc_case_study.py
 ```
 
 ## Data

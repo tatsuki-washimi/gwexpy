@@ -13,7 +13,7 @@ Single-point example (gwexpy_native):
   python scripts/bruco_bench.py --n-bins 20000 --n-channels 300
 
 Parameter sweep (all three implementations, generates CSV + figures):
-  python scripts/bruco_bench.py --sweep --output-dir docs/gwexpy-paper
+  python scripts/bruco_bench.py --sweep --output-dir docs_internal/publications/paper_softwarex
 """
 
 from __future__ import annotations
@@ -379,7 +379,7 @@ def main() -> None:
         default="gwexpy_native",
         help="Which implementation to benchmark (single-point mode)",
     )
-    parser.add_argument("--output-dir", type=str, default="docs/gwexpy-paper")
+    parser.add_argument("--output-dir", type=str, default="docs_internal/publications/paper_softwarex")
     args = parser.parse_args()
 
     block_size = args.block_size

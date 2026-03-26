@@ -53,7 +53,7 @@ with open("notebook.ipynb", "w") as f:
 ```python
 from glob import glob
 
-for path in glob("notebooks/**/*.ipynb", recursive=True):
+for path in glob("examples/**/*.ipynb", recursive=True):
     # Process each notebook...
 ```
 

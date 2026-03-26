@@ -33,34 +33,3 @@ Development Guidelines
    guides/testing
    guides/gui_testing
 
-Active Plans
-------------
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   plans/*
-
-Recent Reports
---------------
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   reports/*
-
-Archive (Hidden)
-----------------
-
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-   :glob:
-
-   analysis/*
-   archive/plans/*
-   archive/reports/*
-   archive/reviews/*
-   archive/analysis/*
