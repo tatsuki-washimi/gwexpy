@@ -98,6 +98,10 @@ def from_mtspec(
     has_ci = spec_ci is not None and include_ci
 
     FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
+    FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
+    want_dict = FrequencySeriesDict is not None and (
+        cls is FrequencySeriesDict or _is_subclass_safe(cls, FrequencySeriesDict)
+    )
 
     label = quantity_lower
     fs_main = FrequencySeries(
@@ -115,7 +119,7 @@ def from_mtspec(
             except Exception:
                 pass
 
-    if not has_ci:
+    if not has_ci or not want_dict:
         return fs_main
 
     # Build CI series
@@ -138,7 +142,6 @@ def from_mtspec(
         name=f"multitaper {label} ci_upper",
     )
 
-    FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
     result = FrequencySeriesDict()
     result[label] = fs_main
     result["ci_lower"] = fs_lo
@@ -209,6 +212,10 @@ def from_mtspec_array(
     _check_equal_spacing(freq_arr)
 
     FrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
+    FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
+    want_dict = FrequencySeriesDict is not None and (
+        cls is FrequencySeriesDict or _is_subclass_safe(cls, FrequencySeriesDict)
+    )
     label = quantity_lower
 
     fs_main = FrequencySeries(
@@ -219,13 +226,12 @@ def from_mtspec_array(
     )
 
     has_ci = ci_lower is not None or ci_upper is not None
-    if not has_ci:
+    if not has_ci or not want_dict:
         return fs_main
 
     ci_lo_arr = np.asarray(ci_lower, dtype=np.float64).ravel() if ci_lower is not None else spec_arr
     ci_hi_arr = np.asarray(ci_upper, dtype=np.float64).ravel() if ci_upper is not None else spec_arr
 
-    FrequencySeriesDict = ConverterRegistry.get_constructor("FrequencySeriesDict")
     result = FrequencySeriesDict()
     result[label] = fs_main
     result["ci_lower"] = FrequencySeries(
@@ -240,6 +246,14 @@ def from_mtspec_array(
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
+
+
+def _is_subclass_safe(cls: type, parent: type) -> bool:
+    """Return True if *cls* is a subclass of *parent*, without raising."""
+    try:
+        return issubclass(cls, parent)
+    except TypeError:
+        return False
 
 
 def _check_equal_spacing(freq: np.ndarray, rtol: float = 1e-4) -> None:
