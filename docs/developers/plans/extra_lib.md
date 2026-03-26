@@ -96,8 +96,8 @@ I/O は基本的に GWpy の `read/write`（GWF/ASCII/HDF5 等）を継承しつ
 | **PySpice** | `TransientAnalysis`, `AcAnalysis`, `NoiseAnalysis`（WaveForm）citeturn17search1turn17search7 | SPICE netlist、ngspice | Transient→TimeSeries/Dict、AC/Noise→FrequencySeries/Dict | **既に実装**fileciteturn21file0L1-L1 | (1) 単位の扱い（V/A/√Hz）を明示し `unit=` を自動設定、(2) Noise の「入力換算/出力換算」の区別を name/meta へ、(3) WaveFormの複素表現（ACの位相）に対応 |
 | **scikit-rf** | `Network`, `Frequency` | Touchstone `.sNp`、pickle `.ntwk`citeturn0search1turn0search0turn0search7 | Network→FrequencySeries/Matrix、IR/step→TimeSeries/Dict、逆変換は `to_skrf_network` | **既に実装**fileciteturn22file0L1-L1 | (1) `z/y/h/a/t` 等の全パラメータ一般化、(2) Touchstone を GWpy I/O registry へ登録するか（`FrequencySeries.read("x.s2p")` 的UX）、(3) port名・z0 のメタ移送 |
 | **Meep** | `Simulation`、場出力は HDF5（datasets） | HDF5出力、`output_field_function` が real/imag dataset を作るciteturn3search6 | HDF5→ScalarField/VectorField（Ex/Ey/Ez 等）、時間依存なら axis0=time | **未実装** | (1) HDF5 dataset 命名規約（`name*.r/.i` 等）を読んで複素場再構成citeturn3search6 (2) 格子座標（dx, origin）を軸に入れる（メタ or coords）、(3) 複数コンポーネントを `VectorField` へ束ねる |
-| **openEMS** | `CSXCAD.ContinuousStructure`、dump設定は `AddDump` | Field dump：VTK または HDF5（時間/周波数、dump_typeで選択）citeturn3search7turn3search5turn3search9 | dump→ScalarField/VectorField、周波数dump→FrequencySeries/Field | **実装済み**（2026-03-26）`gwexpy/interop/openems_.py`。TD/FD HDF5対応、DumpType→物理量マップ、`"Time"`/`"frequency"` attrs から物理 axis0 を読み込み | 残：CSXCAD XML（形状/材料）をメタとして保存citeturn3search5turn3search9 (3) CSXCAD XML（形状/材料）をメタとして保存 |
-| **FEniCSx（dolfinx）** | `dolfinx.fem.Function`, `Mesh` | XDMF(HDF5) / VTK / VTXWriter(ADIOS2)citeturn4search2turn4search0 | **非構造格子場**：推奨は xarray Dataset か `MeshField` 新設 | **未実装** | (1) XDMF/VTK 読み込み（meshio等）→統一表現、(2) `write_function` の制約（低次要素等）を考慮した補間ヘルパーciteturn4search0turn2search5 (3) GWexpy側に MeshField または Field↔xarray API を追加 |
+| **openEMS** | `CSXCAD.ContinuousStructure`、dump設定は `AddDump` | Field dump：VTK または HDF5（時間/周波数、dump_typeで選択）citeturn3search7turn3search5turn3search9 | dump→ScalarField/VectorField、周波数dump→FrequencySeries/Field | **実装済み**（2026-03-26）`gwexpy/interop/openems_.py`。TD/FD HDF5対応、DumpType→物理量マップ、`"Time"`/`"frequency"` attrs から物理 axis0 を読み込み | 残：CSXCAD XML（形状/材料）をメタとして保存citeturn3search5turn3search9 |
+| **FEniCSx（dolfinx）** | `dolfinx.fem.Function`, `Mesh` | XDMF(HDF5) / VTK / VTXWriter(ADIOS2)citeturn4search2turn4search0 | **非構造格子場**：推奨は xarray Dataset か `MeshField` 新設 | **部分実装**（2026-03-26）`gwexpy/interop/meshio_.py` による XDMF/VTK → 正則グリッド補間 (`from_fenics_xdmf` / `from_fenics_vtk`) は対応済み | 残：(1) 非構造格子のそのまま保持、(2) `write_function` 制約を考慮した高次要素対応、(3) GWexpy側に MeshField または Field↔xarray API を追加 |
 | **SimPEG** | `simpeg.data.Data`, survey/source/rx, mesh | 基本はnumpy。EMモジュールの枠組みありciteturn4search1turn4search5 | Data↔Time/FrequencySeries、Fields/Model/mesh↔（xarray/MeshField） | **Dataのみ既存**fileciteturn23file0L1-L1 | (1) `Fields` や mesh（discretize）からの空間場取り込み、(2) 単位体系の整備（SI前提）、(3) 多受信点データを Matrix/Dict へ自然に割当 |
 | **emg3d** | `emg3d.fields.Field`（fx,fy,fz view）、`TensorMesh` | `.h5/.npz/.json` で save/load（公式）citeturn5search2turn5search5turn5search0 | Field→VectorField（各成分をScalarFieldに）、I/OはHDF5経由で直接変換可 | **未実装** | (1) `Field.f{x,y,z}` を3D arraysとして軸/セル位置を決める、(2) frequency属性を axis0=frequency or metaに、(3) emg3d.io.load の出力 dict→GWexpy objects auto-cast |
 | **SDynPy** | FRF生成関数、ShapeArray（UNV） | UNV/UFF（ユニバーサルファイル）等 | FRF→FrequencySeriesMatrix、Shape→xarray Dataset（mode,node,dof） | **未実装** | (1) `timedata2frf` の出力行列を GWexpy Matrixへマップciteturn7search5 (2) UNV読込→ShapeArray→標準スキーマ化citeturn7search6 |
@@ -1020,7 +1020,7 @@ Task 6 (xarray↔Field)  ─────────────────┐
 Task 7 (Pint↔astropy)  ─────────────────┤
                                          │
 Task 11 (multitaper)   ─── 独立、最小規模  ✅ 完了 2026-03-26
-Task 8 (meshio)        ─── scipy 補間のみ依存  ✅ 完了 2026-03-26
+Task 8 (meshio)        ─── scipy 補間のみ依存  ✅ 完了 2026-03-26（正則グリッド補間パス）
 Task 9 (気象)           ─── Task 6+7 前提、xarray→ScalarField
 Task 10 (モーダル)      ─── FrequencySeriesMatrix 成熟度に依存、最大規模
 ```
@@ -1504,12 +1504,12 @@ gantt
   section 中期
   Task 6: xarray↔Field ブリッジ          :b0, 2026-04-01, 10d
   Task 7: Pint↔astropy 単位変換          :b1, 2026-04-01, 7d
-  Task 4: openEMS dump reader            :b2, 2026-04-07, 14d
+  Task 4: openEMS dump reader            :done, b2, 2026-03-26, 1d
   Task 5: emg3d Field 統合               :b3, 2026-04-07, 14d
 
   section 長期
-  Task 11: multitaper/mtspec             :c0, 2026-04-28, 10d
-  Task 8: FEniCSx メッシュ場             :c1, 2026-05-01, 30d
+  Task 11: multitaper/mtspec             :done, c0, 2026-03-26, 1d
+  Task 8: meshio/FEniCSx 基盤整備        :done, c1, 2026-03-26, 1d
   Task 9A: MetPy → ScalarField           :c2, 2026-05-12, 14d
   Task 9B: wrf-python → ScalarField      :c3, after c2, 14d
   Task 9C: Harmonica → ScalarField       :c4, after c2, 7d
