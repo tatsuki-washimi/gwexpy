@@ -17,6 +17,11 @@ from .meshio_ import from_fenics_vtk, from_fenics_xdmf, from_meshio
 from .metpy_ import from_metpy_dataarray
 from .wrf_ import from_wrf_variable
 from .harmonica_ import from_harmonica_grid
+from .sdynpy_ import from_sdynpy_frf, from_sdynpy_shape, from_sdynpy_timehistory
+from .sdypy_ import from_uff_dataset55, from_uff_dataset58
+from .pyoma_ import from_pyoma_results
+from .opensees_ import from_opensees_recorder
+from .exudyn_ import from_exudyn_sensor
 from .lal_ import (
     from_lal_frequencyseries,
     from_lal_timeseries,
@@ -269,4 +274,17 @@ __all__ = [
     "TimeSeriesWindowDataset",
     "to_torch_dataset",
     "to_torch_dataloader",
+    # modal - sdynpy
+    "from_sdynpy_shape",
+    "from_sdynpy_frf",
+    "from_sdynpy_timehistory",
+    # modal - sdypy/pyuff
+    "from_uff_dataset58",
+    "from_uff_dataset55",
+    # modal - pyoma
+    "from_pyoma_results",
+    # modal - opensees
+    "from_opensees_recorder",
+    # modal - exudyn
+    "from_exudyn_sensor",
 ]
