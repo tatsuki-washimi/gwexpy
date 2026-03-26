@@ -120,8 +120,11 @@ class TestFromPyroomacousticsRir:
 
     def test_single_source_multiple_mics(self):
         """source=0 with multiple mics returns TimeSeriesDict."""
+        # Real layout: rir[mic][source] → 3 mics, 1 source each
         rir_data = [
-            [np.ones(100), np.ones(100) * 0.5, np.ones(100) * 0.3]
+            [np.ones(100)],            # mic 0, source 0
+            [np.ones(100) * 0.5],      # mic 1, source 0
+            [np.ones(100) * 0.3],      # mic 2, source 0
         ]
         room = _mock_room(fs=16000, rir=rir_data)
 
@@ -134,10 +137,11 @@ class TestFromPyroomacousticsRir:
         assert "mic_2" in result
 
     def test_multiple_sources_all_pairs(self):
-        """No selection with 2 sources × 2 mics returns TimeSeriesDict."""
+        """No selection with 2 mics × 2 sources returns TimeSeriesDict."""
+        # Real layout: rir[mic][source] → 2 mics, 2 sources each
         rir_data = [
-            [np.ones(50), np.ones(60)],
-            [np.ones(55), np.ones(45)],
+            [np.ones(50), np.ones(60)],   # mic 0: source 0, source 1
+            [np.ones(55), np.ones(45)],   # mic 1: source 0, source 1
         ]
         room = _mock_room(fs=44100, rir=rir_data)
 
@@ -152,9 +156,11 @@ class TestFromPyroomacousticsRir:
 
     def test_source_and_mic_specified(self):
         """Both source and mic specified returns a single TimeSeries."""
+        # Real layout: rir[mic][source]
+        # source=1, mic=0 → rir[0][1] should return [5.0, 6.0]
         rir_data = [
-            [np.array([1.0, 2.0]), np.array([3.0, 4.0])],
-            [np.array([5.0, 6.0]), np.array([7.0, 8.0])],
+            [np.array([1.0, 2.0]), np.array([5.0, 6.0])],  # mic 0: src 0, src 1
+            [np.array([3.0, 4.0]), np.array([7.0, 8.0])],  # mic 1: src 0, src 1
         ]
         room = _mock_room(fs=8000, rir=rir_data)
 
@@ -165,10 +171,9 @@ class TestFromPyroomacousticsRir:
 
     def test_mic_only_returns_all_sources(self):
         """mic=0 with 3 sources returns TimeSeriesDict keyed by source."""
+        # Real layout: rir[mic][source] → 1 mic, 3 sources
         rir_data = [
-            [np.ones(10)],
-            [np.ones(10) * 2],
-            [np.ones(10) * 3],
+            [np.ones(10), np.ones(10) * 2, np.ones(10) * 3],  # mic 0: src 0, 1, 2
         ]
         room = _mock_room(fs=16000, rir=rir_data)
 
@@ -406,8 +411,8 @@ class TestFromPyroomacousticsField:
         rir_list = [np.random.default_rng(5).standard_normal(nt) for _ in range(n_mics)]
 
         room = _mock_room(fs=16000, rir=[[r] for r in [rir_list[0]]])
-        # Override with proper structure
-        room.rir = [rir_list]  # 1 source, n_mics mics
+        # Real layout: rir[mic][source] → n_mics outer, 1 source each
+        room.rir = [[r] for r in rir_list]
         room.mic_array.R = R
 
         field = from_pyroomacoustics_field(
@@ -453,7 +458,7 @@ class TestFromPyroomacousticsField:
 
         rir_list = [np.ones(nt) * (i + 1) for i in range(n_mics)]
         room = _mock_room(fs=16000)
-        room.rir = [rir_list]
+        room.rir = [[r] for r in rir_list]  # rir[mic][source]: n_mics outer, 1 source each
         room.mic_array.R = R
 
         field = from_pyroomacoustics_field(
@@ -466,7 +471,8 @@ class TestFromPyroomacousticsField:
     def test_grid_shape_mismatch_raises(self):
         """ValueError when grid_shape doesn't match n_mics."""
         R = np.zeros((3, 10))
-        room = _mock_room(fs=16000, rir=[[np.ones(5)] * 10])
+        # rir[mic][source]: 10 mics, 1 source each
+        room = _mock_room(fs=16000, rir=[[np.ones(5)] for _ in range(10)])
         room.mic_array.R = R
 
         with pytest.raises(ValueError, match="implies 12 microphones"):
@@ -488,7 +494,7 @@ class TestFromPyroomacousticsField:
 
         rir_list = [np.ones(nt) for _ in range(n_mics)]
         room = _mock_room(fs=16000)
-        room.rir = [rir_list]
+        room.rir = [[r] for r in rir_list]  # rir[mic][source]: n_mics outer, 1 source each
         room.mic_array.R = R
 
         field = from_pyroomacoustics_field(
@@ -509,7 +515,7 @@ class TestFromPyroomacousticsField:
         R = np.zeros((3, n_mics))
         rir_list = [np.ones(nt) for _ in range(n_mics)]
         room = _mock_room(fs=fs)
-        room.rir = [rir_list]
+        room.rir = [[r] for r in rir_list]  # rir[mic][source]: n_mics outer, 1 source each
         room.mic_array.R = R
 
         field = from_pyroomacoustics_field(
@@ -620,7 +626,7 @@ class TestConvenienceMethods:
 
         rir_list = [np.ones(nt) for _ in range(n_mics)]
         room = _mock_room(fs=16000)
-        room.rir = [rir_list]
+        room.rir = [[r] for r in rir_list]  # rir[mic][source]: n_mics outer, 1 source each
         room.mic_array.R = R
 
         field = ScalarField.from_pyroomacoustics_field(

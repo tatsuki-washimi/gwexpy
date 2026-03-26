@@ -92,12 +92,13 @@ def from_pyroomacoustics_rir(
         cls is TimeSeriesDict or _is_subclass_safe(cls, TimeSeriesDict)
     )
 
-    n_sources = len(rir)
-    n_mics = len(rir[0]) if n_sources > 0 else 0
+    # Real pyroomacoustics convention: rir[mic_index][source_index]
+    n_mics = len(rir)
+    n_sources = len(rir[0]) if n_mics > 0 else 0
 
     # Single pair
     if source is not None and mic is not None:
-        data = np.asarray(rir[source][mic], dtype=np.float64)
+        data = np.asarray(rir[mic][source], dtype=np.float64)
         name = f"rir_src{source}_mic{mic}"
         return TimeSeries(data, dt=dt, t0=0.0, name=name, unit=unit)
 
@@ -105,7 +106,7 @@ def from_pyroomacoustics_rir(
     if source is not None:
         result = TimeSeriesDict()
         for m in range(n_mics):
-            data = np.asarray(rir[source][m], dtype=np.float64)
+            data = np.asarray(rir[m][source], dtype=np.float64)
             name = f"mic_{m}"
             result[name] = TimeSeries(data, dt=dt, t0=0.0, name=name, unit=unit)
         return result
@@ -114,20 +115,20 @@ def from_pyroomacoustics_rir(
     if mic is not None:
         result = TimeSeriesDict()
         for s in range(n_sources):
-            data = np.asarray(rir[s][mic], dtype=np.float64)
+            data = np.asarray(rir[mic][s], dtype=np.float64)
             name = f"src_{s}"
             result[name] = TimeSeries(data, dt=dt, t0=0.0, name=name, unit=unit)
         return result
 
     # All pairs
-    if n_sources == 1 and n_mics == 1 and not want_dict:
+    if n_mics == 1 and n_sources == 1 and not want_dict:
         data = np.asarray(rir[0][0], dtype=np.float64)
         return TimeSeries(data, dt=dt, t0=0.0, name="rir", unit=unit)
 
     result = TimeSeriesDict()
     for s in range(n_sources):
         for m in range(n_mics):
-            data = np.asarray(rir[s][m], dtype=np.float64)
+            data = np.asarray(rir[m][s], dtype=np.float64)
             name = f"src{s}_mic{m}"
             result[name] = TimeSeries(data, dt=dt, t0=0.0, name=name, unit=unit)
     return result
@@ -402,7 +403,7 @@ def from_pyroomacoustics_field(
             raise ValueError(
                 "RIR not computed. Call room.compute_rir() or room.simulate() first."
             )
-        rir_list = rir[source]  # list of n_mics arrays
+        rir_list = [rir[m][source] for m in range(n_mics)]  # gather across mics for one source
         # Pad to max length
         max_len = max(len(r) for r in rir_list)
         data_2d = np.zeros((n_mics, max_len), dtype=np.float64)
