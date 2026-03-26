@@ -35,6 +35,14 @@ _OPTIONAL_DEPENDENCIES = {
     "pyroomacoustics": "pyroomacoustics",
     "pycbc": "pycbc",
     "meep": "meep",
+    "openems": "openems",
+    "emg3d": "emg3d",
+    "meshio": "meshio",
+    "scipy": "scipy",
+    "metpy": "metpy",
+    "wrf": "wrf",
+    "harmonica": "harmonica",
+    "pint": "pint",
 }
 
 
