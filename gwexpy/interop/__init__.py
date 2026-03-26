@@ -11,6 +11,12 @@ from ._optional import require_optional
 from .astropy_ import from_astropy_timeseries, to_astropy_timeseries
 from .gwinc_ import from_gwinc_budget
 from .meep_ import from_meep_hdf5
+from .openems_ import from_openems_hdf5
+from .emg3d_ import from_emg3d_field, from_emg3d_h5, to_emg3d_field
+from .meshio_ import from_fenics_vtk, from_fenics_xdmf, from_meshio
+from .metpy_ import from_metpy_dataarray
+from .wrf_ import from_wrf_variable
+from .harmonica_ import from_harmonica_grid
 from .lal_ import (
     from_lal_frequencyseries,
     from_lal_timeseries,
@@ -103,7 +109,7 @@ from .torch_dataset import (
     to_torch_dataloader,
     to_torch_dataset,
 )
-from .xarray_ import from_xarray, to_xarray
+from .xarray_ import from_xarray, from_xarray_field, to_xarray, to_xarray_field
 from .zarr_ import from_zarr, to_zarr
 
 __all__ = [
@@ -115,6 +121,8 @@ __all__ = [
     # xarray
     "to_xarray",
     "from_xarray",
+    "to_xarray_field",
+    "from_xarray_field",
     # hdf5
     "to_hdf5",
     "from_hdf5",
@@ -233,6 +241,20 @@ __all__ = [
     "from_gwinc_budget",
     # meep
     "from_meep_hdf5",
+    # openems
+    "from_openems_hdf5",
+    # emg3d
+    "from_emg3d_field",
+    "from_emg3d_h5",
+    "to_emg3d_field",
+    # meshio
+    "from_meshio",
+    "from_fenics_xdmf",
+    "from_fenics_vtk",
+    # metpy / wrf / harmonica
+    "from_metpy_dataarray",
+    "from_wrf_variable",
+    "from_harmonica_grid",
     # gw - lal
     "from_lal_timeseries",
     "to_lal_timeseries",
