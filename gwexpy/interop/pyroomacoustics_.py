@@ -54,6 +54,8 @@ def from_pyroomacoustics_rir(
         The TimeSeries (or TimeSeriesDict) class to instantiate.
     room : pyroomacoustics.Room
         The room object after ``compute_rir()`` or ``simulate()`` has been called.
+        ``room.rir`` must follow the pyroomacoustics convention
+        ``rir[mic_index][source_index]`` (outer index = microphone).
     source : int, optional
         Source index to extract. If *None* and *mic* is also *None*, all
         source-mic pairs are returned.

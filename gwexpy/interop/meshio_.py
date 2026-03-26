@@ -210,6 +210,13 @@ def from_meshio(
     Returns
     -------
     ScalarField or VectorField
+
+    Notes
+    -----
+    Only ``point_data`` is supported for interpolation.  If the mesh contains
+    only ``cell_data`` and no ``point_data``, a ``ValueError`` is raised.
+    To use cell data, first convert it to point data
+    (e.g. meshio's ``cell_data_to_point_data`` utility).
     """
     require_optional("scipy")
 

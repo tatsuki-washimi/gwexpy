@@ -46,9 +46,10 @@ def from_mtspec(
     Parameters
     ----------
     cls : type
-        Target type.  Use ``FrequencySeries`` for a plain spectrum, or
-        ``FrequencySeriesDict`` to request a dict that also contains
-        confidence-interval series.
+        Target type.  Pass ``FrequencySeries`` to always receive a plain
+        spectrum (CI is discarded even when available).  Pass
+        ``FrequencySeriesDict`` to receive a dict that includes CI series
+        when CI is available.
     mt : multitaper.mtspec.MTSpec or multitaper.mtsine.MTSine
         Computed multitaper object.  Expected attributes:
 
@@ -164,8 +165,10 @@ def from_mtspec_array(
     Parameters
     ----------
     cls : type
-        Target type.  Use ``FrequencySeries`` for a plain spectrum, or
-        ``FrequencySeriesDict`` to receive CI series alongside the main one.
+        Target type.  Pass ``FrequencySeries`` to always receive a plain
+        spectrum (CI is discarded even when available).  Pass
+        ``FrequencySeriesDict`` to receive a dict that includes CI series
+        when CI is available.
     spectrum : array-like, shape (nf,)
         PSD (or ASD, depending on ``quantity``) array returned by
         ``mtspec.mtspec()``.

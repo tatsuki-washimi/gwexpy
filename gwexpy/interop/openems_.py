@@ -26,6 +26,14 @@ The DumpType value (set in the CSXCAD ``AddDump`` call) controls which physical
 quantity is stored and in which domain.  Only ``h5py`` is required; the openEMS
 Python bindings are not needed.
 
+HDF5 dataset attributes
+-----------------------
+If time-domain datasets carry a ``"Time"`` attribute (float, seconds), the
+returned axis0 uses those physical time values.  If frequency-domain datasets
+carry a ``"frequency"`` attribute (float, Hz), axis0 uses those physical
+frequency values.  Both fall back to integer indices when the attribute is
+absent.
+
 References
 ----------
 https://openems.de/index.php/HDF5_Field_Dumps.html
