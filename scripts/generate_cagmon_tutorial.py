@@ -14,6 +14,19 @@ def create_cagmon_tutorial():
         "2.  **線形 vs 非線形カップリングの識別**: Pearson 相関係数 (PCC) と Maximal Information Coefficient (MIC) の組み合わせで、カップリングの性質を判別します。\n"
         "3.  **因果関係の推定**: Granger 因果性テストを用いて、ノイズの流れの方向性を確認します。"))
 
+    # --- Theory ---
+    nb.cells.append(nbf.v4.new_markdown_cell("## CAGMon で用いられる相関統計量\n\nCAGMon では、線形・非線形を問わずカップリングを特定するために複数の統計量を組み合わせて評価します。\n\n"
+        "### 1. Pearson Correlation Coefficient (PCC)\n"
+        "線形相関の強度を測る最も一般的な指標です。$-1 \\le r \\le 1$ の値をとり、非線形な関係（例: 二乗の関係）に対しては感度が低くなります。\n\n"
+        "$$ r = \\frac{\\sum_{i=1}^n (x_i - \\bar{x})(y_i - \\bar{y})}{\\sqrt{\\sum_{i=1}^n (x_i - \\bar{x})^2} \\sqrt{\\sum_{i=1}^n (y_i - \\bar{y})^2}} $$\n\n"
+        "### 2. Kendall's Rank Correlation Coefficient ($\\tau$)\n"
+        "データ値の大小関係（順位）に注目するノンパラメトリックな指標です。単調な非線形関係にも対応でき、外れ値に強い特徴があります。\n\n"
+        "$$ \\tau = \\frac{2}{n(n-1)} \\sum_{i < j} \\text{sgn}(x_i - x_j) \\text{sgn}(y_i - y_j) $$\n\n"
+        "### 3. Maximal Information Coefficient (MIC)\n"
+        "散布図上に描いたグリッドの相互情報量 $I(X;Y)$ の最大値を求める手法です。**線形・非線形を問わずあらゆる関数関係**に対して高いスコア（$0 \\le MIC \\le 1$）を出力します。\n\n"
+        "$$ MIC(x, y) = \\max_{|X||Y| < B} \\frac{I(X; Y)}{\\log_2(\\min(|X|, |Y|))} $$\n\n"
+        "CAGMon では、**PCC が低いのに MIC が高い** チャネルを探すことで、従来は見逃されていた非線形ノイズカップリングを特定します。"))
+
     # --- Setup ---
     nb.cells.append(nbf.v4.new_markdown_cell("## 1. Setup & Imports\n\nまずは必要なライブラリをインポートし、GWexpy を初期化します。"))
     nb.cells.append(nbf.v4.new_code_cell("import numpy as np\nimport matplotlib.pyplot as plt\nimport gwexpy\nfrom gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix\nfrom gwexpy.noise import asd, wave\nfrom gwexpy.analysis.stat_info import association_edges, build_graph\n\n# 可視化スタイルの設定\nplt.rcParams['figure.figsize'] = (10, 6)\nplt.rcParams['font.size'] = 12"))
