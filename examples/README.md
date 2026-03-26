@@ -18,6 +18,8 @@ These notebooks focus on introducing specific classes and methods within the `gw
 - **[intro_Noise.ipynb](basic-new-methods/intro_Noise.ipynb)**: Noise generation and physics-based noise models.
 - **[intro_Interop.ipynb](basic-new-methods/intro_Interop.ipynb)**: Data exchange with PyTorch, TensorFlow, JAX, Dask, Polars, etc.
 - **[intro_Fitting.ipynb](basic-new-methods/intro_Fitting.ipynb)**: Parameter estimation using `iminuit` and MCMC.
+- **[intro_ScalarField.ipynb](basic-new-methods/intro_ScalarField.ipynb)**: Introduction to `ScalarField` — 4D physical field type added by gwexpy.
+- **[plot_ScalarField.ipynb](basic-new-methods/plot_ScalarField.ipynb)**: Visualization of `ScalarField` data.
 
 ## 2. Case Studies & Applications (`case-studies/example_*.ipynb`)
 These notebooks demonstrate how to combine multiple `gwexpy` features to solve practical data analysis problems.
@@ -39,3 +41,23 @@ These notebooks provide in-depth tutorials on specific advanced analysis techniq
 - **[tutorial_Correlation.ipynb](advanced-methods/tutorial_Correlation.ipynb)**: Advanced statistical features including Granger Causality and Distance Correlation.
 - **[tutorial_ShortTimeLaplaceTransformation.ipynb](advanced-methods/tutorial_ShortTimeLaplaceTransformation.ipynb)**: Time-frequency analysis using the Short-Time Laplace Transform (STLT).
 - **[tutorial_Bruco.ipynb](advanced-methods/tutorial_Bruco.ipynb)**: Brute-force coherence analysis (BruCo) for noise hunting.
+- **[tutorial_Control_00_DiscretizationBasics.ipynb](advanced-methods/tutorial_Control_00_DiscretizationBasics.ipynb)**: Discretization theory for control systems.
+- **[tutorial_Control_01_Basics.ipynb](advanced-methods/tutorial_Control_01_Basics.ipynb)**: Control engineering basics with gwexpy.
+- **[tutorial_Control_02_Modeling.ipynb](advanced-methods/tutorial_Control_02_Modeling.ipynb)**: System modeling for control design.
+- **[tutorial_Control_03_Design.ipynb](advanced-methods/tutorial_Control_03_Design.ipynb)**: Control system design workflow.
+
+## 4. Paper Figures (`paper-figures/`)
+Executable [marimo](https://marimo.io/) scripts that reproduce the figures in the gwexpy paper.
+These serve as both reproducibility artifacts and advanced usage examples.
+
+- **[01_transfer_function_workflow.py](paper-figures/01_transfer_function_workflow.py)**: DTT XML import, transfer function estimation, and Bode plotting.
+- **[02_coherence_ranking.py](paper-figures/02_coherence_ranking.py)**: Multichannel coherence ranking (synthetic data, CI-covered).
+- **[03_gwosc_case_study.py](paper-figures/03_gwosc_case_study.py)**: Public GWOSC strain data analysis (network-dependent, optional).
+
+```bash
+# Run interactively
+python -m marimo run examples/paper-figures/02_coherence_ranking.py
+
+# Or as a plain script
+python examples/paper-figures/02_coherence_ranking.py
+```
