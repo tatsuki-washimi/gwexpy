@@ -43,6 +43,11 @@ _OPTIONAL_DEPENDENCIES = {
     "wrf": "wrf",
     "harmonica": "harmonica",
     "pint": "pint",
+    "sdynpy": "sdynpy",
+    "pyuff": "pyuff",
+    "pyOMA": "pyOMA",
+    "openseespy": "openseespy",
+    "exudyn": "exudyn",
 }
 
 
