@@ -31,7 +31,6 @@ def _make_freq():
 
 def _make_psd(freq, f0=100.0, width=5.0, noise_level=1e-10):
     """Gaussian peak PSD centred at f0."""
-    rng = np.random.default_rng(42)
     psd = noise_level * np.ones(len(freq))
     psd += np.exp(-0.5 * ((freq - f0) / width) ** 2)
     return psd
@@ -145,6 +144,18 @@ class TestFromMtspec:
         # MTSine has no spec_ci → must return FrequencySeries, not dict
         assert isinstance(result, FrequencySeries)
 
+    def test_cls_fs_with_ci_returns_fs(self):
+        """cls=FrequencySeries must return FrequencySeries even when CI is present."""
+        mt = _make_mtspec_obj(with_ci=True)
+        result = from_mtspec(FrequencySeries, mt, include_ci=True)
+        assert isinstance(result, FrequencySeries)
+
+    def test_cls_fsdict_with_ci_returns_dict(self):
+        """cls=FrequencySeriesDict with CI must return FrequencySeriesDict."""
+        mt = _make_mtspec_obj(with_ci=True)
+        result = from_mtspec(FrequencySeriesDict, mt, include_ci=True)
+        assert isinstance(result, FrequencySeriesDict)
+
     def test_ci_lower_le_main_le_upper(self):
         mt = _make_mtspec_obj(with_ci=True)
         result = from_mtspec(FrequencySeriesDict, mt, quantity="psd")
@@ -219,3 +230,21 @@ class TestFromMtspecArray:
         spec = np.ones(5)
         with pytest.raises(ValueError, match="equally spaced"):
             from_mtspec_array(FrequencySeries, spec, freq)
+
+    def test_cls_fs_with_ci_returns_fs(self):
+        """cls=FrequencySeries must return FrequencySeries even when CI arrays given."""
+        freq = _make_freq()
+        spec = _make_psd(freq)
+        result = from_mtspec_array(
+            FrequencySeries, spec, freq, ci_lower=spec * 0.8, ci_upper=spec * 1.2
+        )
+        assert isinstance(result, FrequencySeries)
+
+    def test_cls_fsdict_with_ci_returns_dict(self):
+        """cls=FrequencySeriesDict with CI arrays must return FrequencySeriesDict."""
+        freq = _make_freq()
+        spec = _make_psd(freq)
+        result = from_mtspec_array(
+            FrequencySeriesDict, spec, freq, ci_lower=spec * 0.8, ci_upper=spec * 1.2
+        )
+        assert isinstance(result, FrequencySeriesDict)
