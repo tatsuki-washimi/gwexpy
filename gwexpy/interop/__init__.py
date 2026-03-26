@@ -22,6 +22,7 @@ from .sdypy_ import from_uff_dataset55, from_uff_dataset58
 from .pyoma_ import from_pyoma_results
 from .opensees_ import from_opensees_recorder
 from .exudyn_ import from_exudyn_sensor
+from .multitaper_ import from_mtspec, from_mtspec_array
 from .lal_ import (
     from_lal_frequencyseries,
     from_lal_timeseries,
@@ -287,4 +288,7 @@ __all__ = [
     "from_opensees_recorder",
     # modal - exudyn
     "from_exudyn_sensor",
+    # multitaper spectral estimation
+    "from_mtspec",
+    "from_mtspec_array",
 ]
