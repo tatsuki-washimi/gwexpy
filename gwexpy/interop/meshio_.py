@@ -132,10 +132,16 @@ def _get_field_data(
     if mesh.point_data:
         data_dict = dict(mesh.point_data)
     elif mesh.cell_data:
-        # Concatenate cell data across blocks
-        data_dict = {}
-        for key in mesh.cell_data:
-            data_dict[key] = np.concatenate(mesh.cell_data[key])
+        # Cell-data values are associated with cell centroids, not mesh nodes.
+        # Interpolating using mesh.points coordinates with cell-data values is
+        # incorrect because len(cell_data) != len(points) in general meshes.
+        raise ValueError(
+            "meshio.Mesh has cell_data but no point_data. "
+            "Cell-data interpolation is not supported because cell values "
+            "are associated with cell centroids, not mesh nodes. "
+            "Convert cell_data to point_data before calling from_meshio() "
+            "(e.g. use meshio's cell_data_to_point_data utility)."
+        )
     else:
         raise ValueError("meshio.Mesh has neither point_data nor cell_data.")
 
