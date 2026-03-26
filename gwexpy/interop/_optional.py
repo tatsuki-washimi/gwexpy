@@ -48,6 +48,8 @@ _OPTIONAL_DEPENDENCIES = {
     "pyOMA": "pyOMA",
     "openseespy": "openseespy",
     "exudyn": "exudyn",
+    "multitaper": "multitaper",
+    "mtspec": "mtspec",
 }
 
 
