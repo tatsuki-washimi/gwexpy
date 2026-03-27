@@ -12,9 +12,11 @@ import pytest
 from astropy import units as u
 
 from gwexpy.analysis.coupling import (
+    CouplingResult,
     PercentileThreshold,
     RatioThreshold,
     SigmaThreshold,
+    _index_values,
 )
 from gwexpy.frequencyseries import FrequencySeries
 
@@ -154,3 +156,145 @@ class TestEdgeCases:
 
         # No excess with identical PSDs
         assert np.sum(mask) == 0
+
+
+# ---------------------------------------------------------------------------
+# _index_values helper
+# ---------------------------------------------------------------------------
+
+
+class TestIndexValues:
+    def test_with_value_attr(self):
+        class Obj:
+            value = np.array([1.0, 2.0, 3.0])
+        result = _index_values(Obj())
+        np.testing.assert_array_equal(result, [1.0, 2.0, 3.0])
+
+    def test_with_plain_array(self):
+        arr = np.array([4.0, 5.0])
+        result = _index_values(arr)
+        np.testing.assert_array_equal(result, [4.0, 5.0])
+
+
+# ---------------------------------------------------------------------------
+# SigmaThreshold — additional branches
+# ---------------------------------------------------------------------------
+
+
+class TestSigmaThresholdExtra:
+    def test_check_n_avg_zero_returns_all_true(self, sample_psd_inj, sample_psd_bkg):
+        strategy = SigmaThreshold(sigma=3.0)
+        mask = strategy.check(sample_psd_inj, sample_psd_bkg, n_avg=0)
+        assert np.all(mask)
+
+    def test_check_n_avg_negative_returns_all_true(self, sample_psd_inj, sample_psd_bkg):
+        strategy = SigmaThreshold(sigma=3.0)
+        mask = strategy.check(sample_psd_inj, sample_psd_bkg, n_avg=-1)
+        assert np.all(mask)
+
+    def test_check_non_numeric_n_avg_raises(self, sample_psd_inj, sample_psd_bkg):
+        strategy = SigmaThreshold(sigma=3.0)
+        with pytest.raises(TypeError):
+            strategy.check(sample_psd_inj, sample_psd_bkg, n_avg="a")
+
+    def test_threshold_n_avg_zero_returns_bkg(self, sample_psd_inj, sample_psd_bkg):
+        strategy = SigmaThreshold(sigma=3.0)
+        thresh = strategy.threshold(sample_psd_inj, sample_psd_bkg, n_avg=0)
+        np.testing.assert_array_equal(thresh, sample_psd_bkg.value)
+
+    def test_threshold_non_numeric_n_avg_raises(self, sample_psd_inj, sample_psd_bkg):
+        strategy = SigmaThreshold(sigma=3.0)
+        with pytest.raises(TypeError):
+            strategy.threshold(sample_psd_inj, sample_psd_bkg, n_avg="a")
+
+    def test_check_high_n_avg_no_warning(self, sample_psd_inj, sample_psd_bkg):
+        strategy = SigmaThreshold(sigma=3.0)
+        import warnings as _warnings
+        with _warnings.catch_warnings(record=True) as w:
+            _warnings.simplefilter("always")
+            strategy.check(sample_psd_inj, sample_psd_bkg, n_avg=100.0)
+        assert not any("SigmaThreshold" in str(x.message) for x in w)
+
+
+# ---------------------------------------------------------------------------
+# PercentileThreshold — additional branches
+# ---------------------------------------------------------------------------
+
+
+class TestPercentileThresholdExtra:
+    def test_check_requires_fftlength(self, sample_psd_inj, sample_psd_bkg):
+        strategy = PercentileThreshold(percentile=95)
+        from gwexpy.timeseries import TimeSeries
+        ts = TimeSeries(np.ones(100), t0=0, dt=0.01)
+        with pytest.raises(ValueError, match="requires"):
+            strategy.check(sample_psd_inj, sample_psd_bkg, raw_bkg=ts)
+
+    def test_threshold_non_numeric_fftlength_raises(self, sample_psd_inj, sample_psd_bkg):
+        strategy = PercentileThreshold(percentile=95)
+        from gwexpy.timeseries import TimeSeries
+        ts = TimeSeries(np.ones(100), t0=0, dt=0.01)
+        with pytest.raises(TypeError):
+            strategy.threshold(sample_psd_inj, sample_psd_bkg, raw_bkg=ts, fftlength="a")
+
+    def test_threshold_non_numeric_overlap_raises(self, sample_psd_inj, sample_psd_bkg):
+        strategy = PercentileThreshold(percentile=95)
+        from gwexpy.timeseries import TimeSeries
+        ts = TimeSeries(np.ones(1000), t0=0, dt=0.01)
+        with pytest.raises(TypeError):
+            strategy.threshold(sample_psd_inj, sample_psd_bkg, raw_bkg=ts, fftlength=1.0, overlap="x")
+
+
+# ---------------------------------------------------------------------------
+# CouplingResult — construction and properties
+# ---------------------------------------------------------------------------
+
+
+def _make_fs(n=50):
+    freqs = np.linspace(1, 100, n) * u.Hz
+    vals = np.random.default_rng(42).uniform(0.1, 1.0, n)
+    return FrequencySeries(vals, frequencies=freqs, unit=u.Unit("1/Hz"))
+
+
+class TestCouplingResult:
+    def _make_result(self, **kwargs):
+        fs = _make_fs()
+        defaults = dict(
+            cf=fs,
+            psd_witness_inj=fs,
+            psd_witness_bkg=fs,
+            psd_target_inj=fs,
+            psd_target_bkg=fs,
+            valid_mask=np.ones(50, dtype=bool),
+            witness_name="W",
+            target_name="T",
+        )
+        defaults.update(kwargs)
+        return CouplingResult(**defaults)
+
+    def test_init_basic(self):
+        result = self._make_result()
+        assert result.witness_name == "W"
+        assert result.target_name == "T"
+
+    def test_frequencies_property(self):
+        result = self._make_result()
+        assert hasattr(result.frequencies, "__len__")
+
+    def test_cf_ul_none_by_default(self):
+        result = self._make_result()
+        assert result.cf_ul is None
+
+    def test_cf_ul_can_be_set(self):
+        fs = _make_fs()
+        result = self._make_result(cf_ul=fs)
+        assert result.cf_ul is not None
+
+    def test_ts_none_by_default(self):
+        result = self._make_result()
+        assert result.ts_witness_bkg is None
+        assert result.ts_target_bkg is None
+
+    def test_fftlength_overlap_stored(self):
+        result = self._make_result(fftlength=1.0, overlap=0.5)
+        assert result.fftlength == 1.0
+        assert result.overlap == 0.5
