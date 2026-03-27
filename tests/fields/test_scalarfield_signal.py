@@ -106,6 +106,111 @@ class TestComputePsd:
             field.compute_psd((0 * u.m, 0 * u.m, 0 * u.m))
 
 
+class TestComputePsdExtra:
+    """Additional compute_psd coverage for uncovered branches."""
+
+    def test_spectrum_scaling_unit(self, sine_field):
+        psd = sine_field.compute_psd((0 * u.m, 0 * u.m, 0 * u.m), scaling="spectrum")
+        # scaling='spectrum' → unit is V^2 (not V^2/Hz)
+        assert psd.unit == u.V**2
+
+    def test_no_unit_field(self):
+        dt = 0.01 * u.s
+        nt = 128
+        times = np.arange(nt) * dt
+        data = np.random.default_rng(0).normal(size=(nt, 1, 1, 1))
+        field = ScalarField(
+            data,
+            unit=None,
+            axis0=times,
+            axis1=np.array([0.0]) * u.m,
+            axis2=np.array([0.0]) * u.m,
+            axis3=np.array([0.0]) * u.m,
+            axis0_domain="time",
+        )
+        psd = field.compute_psd((0 * u.m, 0 * u.m, 0 * u.m))
+        assert psd is not None
+
+    def test_with_fftlength_and_default_overlap(self, sine_field):
+        # fftlength given without overlap → computes default overlap from window
+        psd = sine_field.compute_psd((0 * u.m, 0 * u.m, 0 * u.m), fftlength=0.64)
+        assert psd is not None
+
+    def test_noverlap_samples_path(self, sine_field):
+        # fftlength=None, noverlap given → hits noverlap_calc = noverlap_samples branch
+        psd = sine_field.compute_psd(
+            (0 * u.m, 0 * u.m, 0 * u.m), noverlap=32, nfft=64
+        )
+        assert psd is not None
+
+    def test_region_with_direct_spec_not_quantity(self, sine_field):
+        # Region dict value with a plain slice (not Quantity)
+        psd = sine_field.compute_psd({"x": slice(0, 2)})
+        assert psd is not None
+
+
+class TestSpectralDensity:
+    """Tests for the fields.spectral_density() function."""
+
+    def _make_time_field(self, nt=128, nx=2, seed=0):
+        dt = 0.01 * u.s
+        times = np.arange(nt) * dt
+        rng = np.random.default_rng(seed)
+        data = rng.normal(size=(nt, nx, 1, 1))
+        return ScalarField(
+            data,
+            unit=u.V,
+            axis0=times,
+            axis1=np.arange(nx) * 1.0 * u.m,
+            axis2=np.array([0.0]) * u.m,
+            axis3=np.array([0.0]) * u.m,
+            axis_names=["t", "x", "y", "z"],
+            axis0_domain="time",
+            space_domain="real",
+        )
+
+    def test_welch_method(self):
+        field = self._make_time_field()
+        result = field.spectral_density(axis=0, method="welch")
+        assert result.axis0_domain == "frequency"
+
+    def test_fft_method(self):
+        field = self._make_time_field()
+        result = field.spectral_density(axis=0, method="fft")
+        assert result.axis0_domain == "frequency"
+
+    def test_fft_method_spectrum_scaling(self):
+        field = self._make_time_field()
+        result = field.spectral_density(axis=0, method="fft", scaling="spectrum")
+        assert result.axis0_domain == "frequency"
+
+    def test_spatial_axis(self):
+        field = self._make_time_field(nx=16)
+        result = field.spectral_density(axis=1, method="fft")
+        assert result is not None
+
+    def test_invalid_axis_raises(self):
+        field = self._make_time_field()
+        with pytest.raises(ValueError):
+            field.spectral_density(axis=5)
+
+    def test_no_unit_field(self):
+        dt = 0.01 * u.s
+        nt = 128
+        times = np.arange(nt) * dt
+        data = np.random.default_rng(7).normal(size=(nt, 1, 1, 1))
+        field = ScalarField(
+            data, unit=None,
+            axis0=times,
+            axis1=np.array([0.0]) * u.m,
+            axis2=np.array([0.0]) * u.m,
+            axis3=np.array([0.0]) * u.m,
+            axis0_domain="time",
+        )
+        result = field.spectral_density(axis=0)
+        assert result is not None
+
+
 class TestFreqSpaceMap:
     def test_shape_and_units(self, sine_field):
         fs_map = sine_field.freq_space_map("x", fftlength=0.64)
