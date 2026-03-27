@@ -7,6 +7,9 @@ Tests threshold strategies for coupling function estimation.
 
 from __future__ import annotations
 
+import matplotlib
+matplotlib.use("Agg")
+
 import numpy as np
 import pytest
 from astropy import units as u
@@ -298,3 +301,25 @@ class TestCouplingResult:
         result = self._make_result(fftlength=1.0, overlap=0.5)
         assert result.fftlength == 1.0
         assert result.overlap == 0.5
+
+    def test_plot_cf_returns_plot(self):
+        import matplotlib.pyplot as plt
+        result = self._make_result()
+        p = result.plot_cf()
+        assert p is not None
+        plt.close("all")
+
+    def test_plot_cf_with_cf_ul(self):
+        import matplotlib.pyplot as plt
+        fs = _make_fs()
+        result = self._make_result(cf_ul=fs)
+        p = result.plot_cf()
+        assert p is not None
+        plt.close("all")
+
+    def test_plot_cf_with_xlim(self):
+        import matplotlib.pyplot as plt
+        result = self._make_result()
+        p = result.plot_cf(xlim=(10.0, 80.0))
+        assert p is not None
+        plt.close("all")
