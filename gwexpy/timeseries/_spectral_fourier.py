@@ -377,6 +377,23 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         res = self._super_ts().spectrogram2(*args, **kwargs)
         return res.view(Spectrogram)
 
+    def rayleigh_spectrogram(self, *args: Any, **kwargs: Any) -> Spectrogram:
+        """
+        Compute the Rayleigh statistic spectrogram.
+
+        This method overrides the base gwpy implementation to return
+        gwexpy.spectrogram.Spectrogram instead of gwpy.spectrogram.Spectrogram.
+
+        Returns
+        -------
+        Spectrogram
+            gwexpy.spectrogram.Spectrogram instance
+        """
+        Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
+
+        res = self._super_ts().rayleigh_spectrogram(*args, **kwargs)
+        return res.view(Spectrogram)
+
     def dct(
         self,
         type: int = 2,

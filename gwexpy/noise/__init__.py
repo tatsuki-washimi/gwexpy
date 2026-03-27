@@ -24,6 +24,7 @@ from . import asd, field, wave
 
 # Re-export key functions for convenience
 from .asd import from_obspy, from_pygwinc
+from .non_gaussian import inject_noise, scatter_light_noise, transient_gaussian_noise
 from .wave import from_asd
 
 __all__ = [
@@ -31,9 +32,14 @@ __all__ = [
     "asd",
     "field",
     "wave",
+    "non_gaussian",
     # ASD Functions
     "from_pygwinc",
     "from_obspy",
     # Waveform Functions
     "from_asd",
+    # Simulators
+    "transient_gaussian_noise",
+    "scatter_light_noise",
+    "inject_noise",
 ]
