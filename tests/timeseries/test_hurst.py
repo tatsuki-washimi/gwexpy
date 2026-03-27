@@ -225,3 +225,321 @@ def test_local_hurst_window_float(monkeypatch):
     # window as float should be treated as samples
     out = hurst_module.local_hurst(ts, window=4.0, step=2)
     assert len(out) > 0
+
+
+# ---------------------------------------------------------------------------
+# Backend ImportError paths
+# ---------------------------------------------------------------------------
+
+
+def test_get_hurst_rs_import_error():
+    # Lines 44-50 — ImportError from hurst package
+    import sys
+    sys.modules["hurst"] = None  # type: ignore
+    try:
+        with pytest.raises(ImportError, match="hurst package"):
+            hurst_module._get_hurst_rs(np.arange(10.0), "random_walk", True)
+    finally:
+        del sys.modules["hurst"]
+
+
+def test_get_hurst_exponent_import_error():
+    # Lines 54-57 — ImportError from hurst_exponent package
+    import sys
+    sys.modules["hurst_exponent"] = None  # type: ignore
+    try:
+        with pytest.raises(ImportError, match="hurst-exponent"):
+            hurst_module._get_hurst_exponent(np.arange(10.0), "standard")
+    finally:
+        del sys.modules["hurst_exponent"]
+
+
+def test_get_exp_hurst_import_error():
+    # Lines 87-91 — ImportError from exp_hurst package
+    import sys
+    sys.modules["exp_hurst"] = None  # type: ignore
+    try:
+        with pytest.raises(ImportError, match="exp-hurst"):
+            hurst_module._get_exp_hurst(np.arange(10.0))
+    finally:
+        del sys.modules["exp_hurst"]
+
+
+def test_get_hurst_exponent_standard_tuple(monkeypatch):
+    # Lines 63-73 — standard method, tuple return
+    fake_mod = type("fake", (), {})()
+    fake_mod.standard_hurst = lambda x: (0.6, 1.1, 2.2)
+    monkeypatch.setitem(__import__("sys").modules, "hurst_exponent", fake_mod)
+    H, meth, backend, det = hurst_module._get_hurst_exponent(np.arange(10.0), "standard")
+    assert H == pytest.approx(0.6)
+    assert "fit" in det
+
+
+def test_get_hurst_exponent_standard_scalar(monkeypatch):
+    # Lines 67, 70-72 — standard method, scalar return
+    fake_mod = type("fake", (), {})()
+    fake_mod.standard_hurst = lambda x: 0.55
+    monkeypatch.setitem(__import__("sys").modules, "hurst_exponent", fake_mod)
+    H, meth, backend, det = hurst_module._get_hurst_exponent(np.arange(10.0), "standard")
+    assert H == pytest.approx(0.55)
+    assert det == {}
+
+
+def test_get_hurst_exponent_generalized_tuple(monkeypatch):
+    # Lines 75-83 — generalized method, tuple return
+    fake_mod = type("fake", (), {})()
+    fake_mod.generalized_hurst = lambda x: (0.7, 0.5)
+    monkeypatch.setitem(__import__("sys").modules, "hurst_exponent", fake_mod)
+    H, meth, backend, det = hurst_module._get_hurst_exponent(np.arange(10.0), "generalized")
+    assert H == pytest.approx(0.7)
+
+
+def test_get_hurst_exponent_generalized_scalar(monkeypatch):
+    # Lines 77, 80-82 — generalized method, scalar return
+    fake_mod = type("fake", (), {})()
+    fake_mod.generalized_hurst = lambda x: 0.65
+    monkeypatch.setitem(__import__("sys").modules, "hurst_exponent", fake_mod)
+    H, meth, backend, det = hurst_module._get_hurst_exponent(np.arange(10.0), "generalized")
+    assert H == pytest.approx(0.65)
+    assert det == {}
+
+
+def test_get_exp_hurst_ok(monkeypatch):
+    # Lines 87-94 — exp_hurst available
+    fake_mod = type("fake", (), {})()
+    fake_mod.hurst = lambda x: 0.45
+    monkeypatch.setitem(__import__("sys").modules, "exp_hurst", fake_mod)
+    H, meth, backend, det = hurst_module._get_exp_hurst(np.arange(10.0))
+    assert H == pytest.approx(0.45)
+    assert meth == "exp"
+
+
+# ---------------------------------------------------------------------------
+# local_hurst — additional branch coverage
+# ---------------------------------------------------------------------------
+
+
+def test_local_hurst_window_as_quantity(monkeypatch):
+    # Lines 246-252 — window as Quantity
+    ts = TimeSeries(np.arange(12.0), t0=0, dt=1 * u.s, unit=u.dimensionless_unscaled)
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    out = hurst_module.local_hurst(ts, window=4 * u.s, step=2)
+    assert len(out) > 0
+
+
+def test_local_hurst_step_as_quantity(monkeypatch):
+    # Lines 267-273 — step as Quantity
+    ts = TimeSeries(np.arange(12.0), t0=0, dt=1 * u.s, unit=u.dimensionless_unscaled)
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    out = hurst_module.local_hurst(ts, window=4 * u.s, step=2 * u.s)
+    assert len(out) > 0
+
+
+def test_local_hurst_step_float(monkeypatch):
+    # Lines 276-280 — step as float
+    ts = TimeSeries(np.arange(12.0), t0=0, dt=1 * u.s, unit=u.dimensionless_unscaled)
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    out = hurst_module.local_hurst(ts, window=4, step=2.0)
+    assert len(out) > 0
+
+
+def test_local_hurst_step_else_branch(monkeypatch):
+    # Line 282 — step as other type (fallback int())
+    ts = TimeSeries(np.arange(12.0), t0=0, dt=1, unit=u.dimensionless_unscaled)
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    # Step as numpy int scalar (not int or np.integer — use a custom obj)
+    class FakeStep:
+        def __index__(self):
+            return 2
+        def __int__(self):
+            return 2
+
+    out = hurst_module.local_hurst(ts, window=4, step=FakeStep())
+    assert len(out) > 0
+
+
+def test_local_hurst_step_small_clamp(monkeypatch):
+    # Line 285 — step_samples < 1 → clamp to 1
+    ts = TimeSeries(np.arange(10.0), t0=0, dt=1, unit=u.dimensionless_unscaled)
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    # step=0 → should be clamped to 1
+    out = hurst_module.local_hurst(ts, window=4, step=0)
+    assert len(out) > 0
+
+
+def test_local_hurst_impute_policy(monkeypatch):
+    # Lines 302-307 — nan_policy='impute' calls impute_timeseries
+    data = np.array([1.0, np.nan, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0])
+    ts = TimeSeries(data, t0=0, dt=1, unit=u.dimensionless_unscaled)
+
+    imputed = TimeSeries(np.arange(1.0, 11.0), t0=0, dt=1, unit=u.dimensionless_unscaled)
+    called = {"impute": False}
+
+    def fake_impute(series, **kwargs):
+        called["impute"] = True
+        return imputed
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr("gwexpy.timeseries.preprocess.impute_timeseries", fake_impute)
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    out = hurst_module.local_hurst(ts, window=4, step=2, nan_policy="impute")
+    assert called["impute"] is True
+    assert len(out) > 0
+
+
+def test_local_hurst_dt_not_quantity(monkeypatch):
+    # Line 242 — dt is not Quantity (fallback to float)
+    ts = TimeSeries(np.arange(10.0), t0=0, dt=1, unit=u.dimensionless_unscaled)
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    # Override dt to be a plain float
+    class FakeTS:
+        value = np.arange(10.0)
+        dt = 1.0  # plain float, not Quantity
+
+        class _T0:
+            value = 0.0
+        t0 = _T0()
+
+        class _Times:
+            unit = u.s
+        times = _Times()
+
+    out = hurst_module.local_hurst(FakeTS(), window=4, step=2, center=True)
+    assert len(out) > 0
+
+
+def test_local_hurst_window_float_non_time_dt(monkeypatch):
+    # Lines 259-260 — float window, dt has non-time physical_type
+    ts = TimeSeries(np.arange(10.0), t0=0, dt=1, unit=u.dimensionless_unscaled)
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    # Use plain float dt (not Quantity with time physical_type)
+    class FakeTS:
+        value = np.arange(10.0)
+        dt = 1.0
+
+        class _T0:
+            value = 0.0
+        t0 = _T0()
+
+        class _Times:
+            unit = u.dimensionless_unscaled
+        times = _Times()
+
+    out = hurst_module.local_hurst(FakeTS(), window=4.0, step=2)
+    assert len(out) > 0
+
+
+def test_local_hurst_hurst_raises_valueerror(monkeypatch):
+    # Lines 349-350 — hurst raises ValueError → NaN in output
+    ts = TimeSeries(np.arange(10.0), t0=0, dt=1, unit=u.dimensionless_unscaled)
+
+    def failing_hurst(_ts, **kwargs):
+        raise ValueError("test error")
+
+    monkeypatch.setattr(hurst_module, "hurst", failing_hurst)
+
+    out = hurst_module.local_hurst(ts, window=4, step=2)
+    assert np.all(np.isnan(out.value))
+
+
+def test_local_hurst_window_else_fallback(monkeypatch):
+    # Line 261 — window is not int/float/Quantity → fallback int(window)
+    ts = TimeSeries(np.arange(10.0), t0=0, dt=1, unit=u.dimensionless_unscaled)
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    class FakeWindow:
+        def __int__(self):
+            return 4
+
+    out = hurst_module.local_hurst(ts, window=FakeWindow(), step=2)
+    assert len(out) > 0
+
+
+def test_local_hurst_step_float_with_time_dt(monkeypatch):
+    # Line 278 — step is float AND dt is time Quantity
+    ts = TimeSeries(np.arange(12.0), t0=0, dt=1 * u.s, unit=u.dimensionless_unscaled)
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    out = hurst_module.local_hurst(ts, window=4, step=2.0)
+    assert len(out) > 0
+
+
+def test_local_hurst_step_float_non_time_dt(monkeypatch):
+    # Line 280 — step is float AND dt is NOT time Quantity
+    class FakeTS:
+        value = np.arange(12.0)
+        dt = 1.0  # plain float, not Quantity
+
+        class _T0:
+            value = 0.0
+        t0 = _T0()
+
+        class _Times:
+            unit = u.dimensionless_unscaled
+        times = _Times()
+
+    def fake_hurst(_ts, **kwargs):
+        return 0.5
+
+    monkeypatch.setattr(hurst_module, "hurst", fake_hurst)
+
+    out = hurst_module.local_hurst(FakeTS(), window=4, step=2.0)
+    assert len(out) > 0
+
+
+def test_get_hurst_rs_with_mock_compute(monkeypatch):
+    # Lines 49-50 — compute_Hc called successfully
+    fake_hurst_mod = type("fake_hurst", (), {})()
+    fake_hurst_mod.compute_Hc = lambda x, kind, simplified: (0.55, 1.2, [1, 2, 3])
+    monkeypatch.setitem(__import__("sys").modules, "hurst", fake_hurst_mod)
+    H, meth, backend, det = hurst_module._get_hurst_rs(np.arange(10.0), "random_walk", True)
+    assert H == pytest.approx(0.55)
+    assert meth == "rs"
+    assert backend == "hurst"
+    assert det["c"] == pytest.approx(1.2)
