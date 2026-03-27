@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pickle
 import shelve
+from types import SimpleNamespace
 
 import numpy as np
 from gwpy.frequencyseries import FrequencySeries as GwpyFrequencySeries
@@ -180,3 +181,34 @@ def test_shelve_roundtrip_to_gwpy(tmp_path):
     assert obj_fs.unit == fs.unit
     assert obj_fs.name == "f"
     assert obj_sg.name == "s"
+
+
+def test_timeseries_reduce_args_fallback_t0_dt():
+    """timeseries_reduce_args falls back to t0/dt when times is None."""
+    from gwexpy.io.pickle_compat import timeseries_reduce_args
+    # Create mock with no times attribute but t0/dt
+    obj = SimpleNamespace(
+        value=np.ones(3),
+        unit=None, name=None, channel=None, epoch=None,
+        t0=0.0, dt=1.0,
+        # no times attribute
+    )
+    fn, (data, kwargs) = timeseries_reduce_args(obj)
+    assert "t0" in kwargs
+    assert "dt" in kwargs
+    assert "times" not in kwargs
+
+
+def test_frequencyseries_reduce_args_fallback_f0_df():
+    """frequencyseries_reduce_args falls back to f0/df when frequencies is None."""
+    from gwexpy.io.pickle_compat import frequencyseries_reduce_args
+    obj = SimpleNamespace(
+        value=np.ones(3),
+        unit=None, name=None, channel=None, epoch=None,
+        f0=0.0, df=1.0,
+        # no frequencies attribute
+    )
+    fn, (data, kwargs) = frequencyseries_reduce_args(obj)
+    assert "f0" in kwargs
+    assert "df" in kwargs
+    assert "frequencies" not in kwargs
