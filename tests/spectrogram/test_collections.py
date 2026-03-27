@@ -420,6 +420,174 @@ class TestSpectrogramDictSetitemBase:
         assert isinstance(sd["x"], Spectrogram)
 
 
+# ---------------------------------------------------------------------------
+# SpectrogramList — rebin / interpolate
+# ---------------------------------------------------------------------------
+
+
+class TestSpectrogramListRebin:
+    def test_rebin_copy(self):
+        sg = _make_sg(n_times=10, n_freqs=8, dt=1.0, df=1.0)
+        sl = SpectrogramList([sg])
+        result = sl.rebin(2.0, 2.0)
+        assert isinstance(result, SpectrogramList)
+
+    def test_rebin_inplace(self):
+        sg = _make_sg(n_times=10, n_freqs=8, dt=1.0, df=1.0)
+        sl = SpectrogramList([sg])
+        result = sl.rebin(2.0, 2.0, inplace=True)
+        assert result is sl
+
+    def test_interpolate_not_implemented_raises(self):
+        # Spectrogram has no interpolate method → NotImplementedError
+        sg = _make_sg(n_times=10, n_freqs=8, dt=1.0, df=1.0)
+        sl = SpectrogramList([sg])
+        with pytest.raises(NotImplementedError, match="interpolate"):
+            sl.interpolate(0.5, 0.5)
+
+
+# ---------------------------------------------------------------------------
+# SpectrogramList — read (HDF5)
+# ---------------------------------------------------------------------------
+
+
+class TestSpectrogramListRead:
+    def test_read_hdf5(self, tmp_path):
+        sg = _make_sg()
+        sl = SpectrogramList([sg])
+        path = str(tmp_path / "test_read.hdf5")
+        sl.write(path)
+        sl2 = SpectrogramList()
+        sl2.read(path)
+        assert len(sl2) == 1
+
+    def test_read_hdf5_group_layout(self, tmp_path):
+        sg = _make_sg()
+        sl = SpectrogramList([sg])
+        path = str(tmp_path / "test_read_group.hdf5")
+        sl.write(path, layout="group")
+        sl2 = SpectrogramList()
+        sl2.read(path)
+        assert len(sl2) == 1
+
+    def test_read_unsupported_format_raises(self, tmp_path):
+        sl = SpectrogramList()
+        with pytest.raises(NotImplementedError, match="Format csv"):
+            sl.read(str(tmp_path / "test.csv"), format="csv")
+
+
+# ---------------------------------------------------------------------------
+# SpectrogramDict — rebin / interpolate
+# ---------------------------------------------------------------------------
+
+
+class TestSpectrogramDictRebin:
+    def test_rebin_copy(self):
+        sg = _make_sg(n_times=10, n_freqs=8, dt=1.0, df=1.0)
+        sd = SpectrogramDict({"a": sg})
+        result = sd.rebin(2.0, 2.0)
+        assert isinstance(result, SpectrogramDict)
+
+    def test_rebin_inplace(self):
+        sg = _make_sg(n_times=10, n_freqs=8, dt=1.0, df=1.0)
+        sd = SpectrogramDict({"a": sg})
+        result = sd.rebin(2.0, 2.0, inplace=True)
+        assert result is sd
+
+    def test_interpolate_not_implemented_raises(self):
+        sg = _make_sg(n_times=10, n_freqs=8, dt=1.0, df=1.0)
+        sd = SpectrogramDict({"a": sg})
+        with pytest.raises(NotImplementedError, match="interpolate"):
+            sd.interpolate(0.5, 0.5)
+
+
+# ---------------------------------------------------------------------------
+# SpectrogramDict — to_matrix
+# ---------------------------------------------------------------------------
+
+
+class TestSpectrogramDictToMatrix:
+    def test_to_matrix_basic(self):
+        sg1 = _make_sg(name="a")
+        sg2 = _make_sg(name="b")
+        sd = SpectrogramDict({"a": sg1, "b": sg2})
+        matrix = sd.to_matrix()
+        assert matrix.shape[0] == 2
+
+    def test_to_matrix_empty(self):
+        sd = SpectrogramDict()
+        matrix = sd.to_matrix()
+        assert matrix.shape == (0, 0, 0)
+
+    def test_to_matrix_shape_mismatch_raises(self):
+        sg1 = _make_sg(n_times=10, n_freqs=8)
+        sg2 = _make_sg(n_times=5, n_freqs=8)
+        sd = SpectrogramDict({"a": sg1, "b": sg2})
+        with pytest.raises(ValueError, match="mismatch"):
+            sd.to_matrix()
+
+
+# ---------------------------------------------------------------------------
+# SpectrogramDict — read (HDF5)
+# ---------------------------------------------------------------------------
+
+
+class TestSpectrogramDictRead:
+    def test_read_hdf5(self, tmp_path):
+        sg = _make_sg()
+        sd = SpectrogramDict({"a": sg})
+        path = str(tmp_path / "test_read.hdf5")
+        sd.write(path)
+        sd2 = SpectrogramDict()
+        sd2.read(path)
+        assert len(sd2) == 1
+
+    def test_read_hdf5_group_layout(self, tmp_path):
+        sg = _make_sg()
+        sd = SpectrogramDict({"a": sg})
+        path = str(tmp_path / "test_read_group.hdf5")
+        sd.write(path, layout="group")
+        sd2 = SpectrogramDict()
+        sd2.read(path)
+        assert len(sd2) == 1
+
+    def test_read_unsupported_format_raises(self, tmp_path):
+        sd = SpectrogramDict()
+        with pytest.raises(NotImplementedError, match="Format csv"):
+            sd.read(str(tmp_path / "test.csv"), format="csv")
+
+
+# ---------------------------------------------------------------------------
+# SpectrogramDict — radian / degree
+# ---------------------------------------------------------------------------
+
+
+class TestSpectrogramDictPhase:
+    def test_radian(self):
+        data = np.exp(1j * np.random.randn(10, 8))
+        times = np.arange(10) * u.s
+        freqs = np.arange(8) * u.Hz
+        sg = Spectrogram(data, times=times, frequencies=freqs, unit=u.dimensionless_unscaled)
+        sd = SpectrogramDict({"a": sg})
+        result = sd.radian()
+        assert isinstance(result, SpectrogramDict)
+        assert "a" in result
+
+    def test_degree(self):
+        data = np.exp(1j * np.random.randn(10, 8))
+        times = np.arange(10) * u.s
+        freqs = np.arange(8) * u.Hz
+        sg = Spectrogram(data, times=times, frequencies=freqs, unit=u.dimensionless_unscaled)
+        sd = SpectrogramDict({"a": sg})
+        result = sd.degree()
+        assert isinstance(result, SpectrogramDict)
+
+
+# ---------------------------------------------------------------------------
+# SpectrogramList — phase (radian/degree)
+# ---------------------------------------------------------------------------
+
+
 class TestSpectrogramListPhase:
     def test_radian(self):
         # Line 453-455
