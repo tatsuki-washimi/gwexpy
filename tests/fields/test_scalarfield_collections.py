@@ -306,3 +306,222 @@ class TestFieldDictValidation:
 
         with pytest.raises(TypeError, match="Expected ScalarField"):
             FieldDict(items, validate=True)
+
+
+# ---------------------------------------------------------------------------
+# FieldList — validate error paths and batch methods
+# ---------------------------------------------------------------------------
+
+class TestFieldListValidation:
+    def _make_field(self, unit=u.V, axis0_domain="time"):
+        return ScalarField(
+            np.ones((8, 2, 2, 2)),
+            unit=unit,
+            axis0=np.arange(8) * 0.01 * u.s,
+            axis1=np.arange(2) * 1.0 * u.m,
+            axis2=np.arange(2) * 1.0 * u.m,
+            axis3=np.arange(2) * 1.0 * u.m,
+            axis_names=["t", "x", "y", "z"],
+            axis0_domain=axis0_domain,
+            space_domain="real",
+        )
+
+    def test_validate_empty_list(self):
+        fl = FieldList([], validate=True)
+        assert len(fl) == 0
+
+    def test_validate_non_scalarfield_raises(self):
+        with pytest.raises(TypeError, match="Expected ScalarField"):
+            FieldList(["not_a_field"], validate=True)
+
+    def test_validate_inconsistent_axis_names_raises(self):
+        f1 = self._make_field()
+        f2 = ScalarField(
+            np.ones((8, 2, 2, 2)),
+            unit=u.V,
+            axis0=np.arange(8) * 0.01 * u.s,
+            axis_names=["t", "a", "b", "c"],
+            axis0_domain="time",
+        )
+        with pytest.raises(ValueError, match="axis_names"):
+            FieldList([f1, f2], validate=True)
+
+    def test_validate_space_domains_mismatch_raises(self):
+        f1 = self._make_field()
+        # f2 with k-domain has different axis_names (kx,ky,kz), caught before space_domains check
+        f2 = ScalarField(
+            np.ones((8, 2, 2, 2)),
+            unit=u.V,
+            axis0=np.arange(8) * 0.01 * u.s,
+            axis1=np.arange(2) * 1.0 / u.m,
+            axis2=np.arange(2) * 1.0 / u.m,
+            axis3=np.arange(2) * 1.0 / u.m,
+            axis0_domain="time",
+            space_domain="k",
+        )
+        with pytest.raises(ValueError):
+            FieldList([f1, f2], validate=True)
+
+    def test_validate_axis_shape_mismatch_raises(self):
+        f1 = self._make_field()
+        f2 = ScalarField(
+            np.ones((8, 3, 2, 2)),
+            unit=u.V,
+            axis0=np.arange(8) * 0.01 * u.s,
+            axis1=np.arange(3) * 1.0 * u.m,
+            axis2=np.arange(2) * 1.0 * u.m,
+            axis3=np.arange(2) * 1.0 * u.m,
+            axis0_domain="time",
+        )
+        with pytest.raises(ValueError, match="shape mismatch"):
+            FieldList([f1, f2], validate=True)
+
+    def test_validate_axis_coordinate_mismatch_raises(self):
+        f1 = self._make_field()
+        f2 = ScalarField(
+            np.ones((8, 2, 2, 2)),
+            unit=u.V,
+            axis0=np.arange(8) * 0.02 * u.s,  # different dt
+            axis1=np.arange(2) * 1.0 * u.m,
+            axis2=np.arange(2) * 1.0 * u.m,
+            axis3=np.arange(2) * 1.0 * u.m,
+            axis0_domain="time",
+        )
+        with pytest.raises(ValueError, match="coordinate mismatch"):
+            FieldList([f1, f2], validate=True)
+
+    def test_batch_methods(self):
+        f1 = self._make_field()
+        f2 = self._make_field()
+        fl = FieldList([f1, f2])
+        # fft_time_all
+        result = fl.fft_time_all()
+        assert len(result) == 2
+        # ifft_time_all
+        result2 = result.ifft_time_all()
+        assert len(result2) == 2
+        # fft_space_all
+        result3 = fl.fft_space_all()
+        assert len(result3) == 2
+        # ifft_space_all
+        result4 = result3.ifft_space_all()
+        assert len(result4) == 2
+        # isel_all
+        result5 = fl.isel_all(t=slice(0, 4))
+        assert len(result5) == 2
+        # sel_all
+        result6 = fl.sel_all(x=0.0 * u.m)
+        assert len(result6) == 2
+
+
+# ---------------------------------------------------------------------------
+# FieldDict — arithmetic and validate error paths
+# ---------------------------------------------------------------------------
+
+class TestFieldDictExtra:
+    def _make_fd(self):
+        f = ScalarField(np.ones((8, 2, 2, 2)), unit=u.dimensionless_unscaled, axis0_domain="time")
+        return FieldDict({"a": f, "b": f.copy()})
+
+    def test_mul_scalar(self):
+        fd = self._make_fd()
+        result = fd * 2.0
+        assert isinstance(result, FieldDict)
+
+    def test_rmul_scalar(self):
+        fd = self._make_fd()
+        result = 2.0 * fd
+        assert isinstance(result, FieldDict)
+
+    def test_mul_non_scalar_returns_not_implemented(self):
+        fd = self._make_fd()
+        result = fd.__mul__(object())
+        assert result is NotImplemented
+
+    def test_add_scalar(self):
+        fd = self._make_fd()
+        result = fd.__add__(1.0)
+        assert isinstance(result, FieldDict)
+
+    def test_radd_scalar(self):
+        fd = self._make_fd()
+        result = fd.__radd__(1.0)
+        assert isinstance(result, FieldDict)
+
+    def test_add_non_scalar_returns_not_implemented(self):
+        fd = self._make_fd()
+        result = fd.__add__(object())
+        assert result is NotImplemented
+
+    def test_sub_scalar(self):
+        fd = self._make_fd()
+        result = fd.__sub__(1.0)
+        assert isinstance(result, FieldDict)
+
+    def test_rsub_scalar(self):
+        fd = self._make_fd()
+        result = fd.__rsub__(5.0)
+        assert isinstance(result, FieldDict)
+
+    def test_rsub_non_scalar_returns_not_implemented(self):
+        fd = self._make_fd()
+        result = fd.__rsub__(object())
+        assert result is NotImplemented
+
+    def test_validate_inconsistent_axis_names_raises(self):
+        f1 = ScalarField(np.ones((8, 2, 2, 2)), unit=u.V, axis0_domain="time")
+        f2 = ScalarField(
+            np.ones((8, 2, 2, 2)),
+            unit=u.V,
+            axis_names=["t", "a", "b", "c"],
+            axis0_domain="time",
+        )
+        with pytest.raises(ValueError, match="axis_names"):
+            FieldDict({"a": f1, "b": f2}, validate=True)
+
+    def test_validate_space_domains_mismatch_raises(self):
+        f1 = ScalarField(np.ones((8, 2, 2, 2)), unit=u.V, axis0_domain="time")
+        f2 = ScalarField(
+            np.ones((8, 2, 2, 2)),
+            unit=u.V,
+            axis0=np.arange(8) * 0.01 * u.s,
+            axis1=np.arange(2) * 1.0 / u.m,
+            axis2=np.arange(2) * 1.0 / u.m,
+            axis3=np.arange(2) * 1.0 / u.m,
+            axis0_domain="time",
+            space_domain="k",
+        )
+        # k-domain field has different axis_names (kx,ky,kz), caught before space_domains check
+        with pytest.raises(ValueError):
+            FieldDict({"a": f1, "b": f2}, validate=True)
+
+    def test_validate_axis_shape_mismatch_raises(self):
+        f1 = ScalarField(np.ones((8, 2, 2, 2)), unit=u.V)
+        f2 = ScalarField(np.ones((8, 3, 2, 2)), unit=u.V)
+        with pytest.raises(ValueError, match="shape mismatch"):
+            FieldDict({"a": f1, "b": f2}, validate=True)
+
+    def test_validate_axis_coordinate_mismatch_raises(self):
+        f1 = ScalarField(np.ones((8, 2, 2, 2)), unit=u.V,
+                         axis0=np.arange(8) * 0.01 * u.s)
+        f2 = ScalarField(np.ones((8, 2, 2, 2)), unit=u.V,
+                         axis0=np.arange(8) * 0.02 * u.s)
+        with pytest.raises(ValueError, match="coordinate mismatch"):
+            FieldDict({"a": f1, "b": f2}, validate=True)
+
+    def test_batch_sel_isel(self):
+        f = ScalarField(
+            np.ones((8, 4, 2, 2)),
+            unit=u.V,
+            axis0=np.arange(8) * 0.01 * u.s,
+            axis1=np.arange(4) * 1.0 * u.m,
+            axis2=np.arange(2) * 1.0 * u.m,
+            axis3=np.arange(2) * 1.0 * u.m,
+            axis_names=["t", "x", "y", "z"],
+            axis0_domain="time",
+        )
+        fd = FieldDict({"a": f, "b": f.copy()})
+        result_sel = fd.sel_all(x=0.0 * u.m)
+        assert len(result_sel) == 2
+        result_isel = fd.isel_all(t=slice(0, 4))
+        assert len(result_isel) == 2
