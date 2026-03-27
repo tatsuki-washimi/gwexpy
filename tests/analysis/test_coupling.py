@@ -323,3 +323,25 @@ class TestCouplingResult:
         p = result.plot_cf(xlim=(10.0, 80.0))
         assert p is not None
         plt.close("all")
+
+    def test_plot_returns_plot(self):
+        import matplotlib.pyplot as plt
+        result = self._make_result()
+        p = result.plot()
+        assert p is not None
+        plt.close("all")
+
+    def test_plot_with_xlim(self):
+        import matplotlib.pyplot as plt
+        result = self._make_result()
+        p = result.plot(xlim=(10.0, 80.0))
+        assert p is not None
+        plt.close("all")
+
+    def test_plot_with_cf_ul(self):
+        import matplotlib.pyplot as plt
+        fs = _make_fs()
+        result = self._make_result(cf_ul=fs)
+        p = result.plot()
+        assert p is not None
+        plt.close("all")
