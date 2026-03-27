@@ -65,3 +65,66 @@ class TestFromXarray:
         da = to_xarray(ts, time_coord="gps")
         ts2 = from_xarray(TimeSeries, da)
         assert str(ts2.unit) == "m"
+
+
+# ---------------------------------------------------------------------------
+# Helper function tests
+# ---------------------------------------------------------------------------
+
+from gwexpy.interop.xarray_ import (
+    _detect_dim_role,
+    _detect_dim_roles,
+    _try_parse_unit,
+)
+
+
+class TestDetectDimRole:
+    def test_heuristic_time_dim(self):
+        da = xr.DataArray(np.zeros(5), dims=("time",))
+        role = _detect_dim_role(da, "time")
+        assert role == 0  # time role
+
+    def test_heuristic_frequency_dim(self):
+        da = xr.DataArray(np.zeros(5), dims=("frequency",))
+        role = _detect_dim_role(da, "frequency")
+        assert role is not None
+
+    def test_unknown_dim_returns_none(self):
+        da = xr.DataArray(np.zeros(5), dims=("unknown_dim_xyz",))
+        role = _detect_dim_role(da, "unknown_dim_xyz")
+        assert role is None
+
+    def test_cf_axis_attribute(self):
+        da = xr.DataArray(
+            np.zeros(5),
+            dims=("t",),
+            coords={"t": xr.DataArray(np.arange(5), dims=("t",), attrs={"axis": "T"})},
+        )
+        role = _detect_dim_role(da, "t")
+        assert role == 0  # T → time role
+
+
+class TestDetectDimRoles:
+    def test_basic(self):
+        da = xr.DataArray(np.zeros((5, 3)), dims=("time", "x"))
+        roles = _detect_dim_roles(da, ("time", "x"))
+        assert 0 in roles  # time → role 0
+        assert roles[0] == "time"
+
+    def test_empty_returns_empty(self):
+        da = xr.DataArray(np.zeros(5), dims=("abc_unknown_xyz",))
+        roles = _detect_dim_roles(da, ("abc_unknown_xyz",))
+        assert roles == {}
+
+
+class TestTryParseUnit:
+    def test_valid_unit(self):
+        u = _try_parse_unit("m/s")
+        assert u is not None
+
+    def test_invalid_unit_returns_none_with_warning(self):
+        import warnings
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            result = _try_parse_unit("not_a_real_unit_xyz_abc_123")
+        assert result is None
