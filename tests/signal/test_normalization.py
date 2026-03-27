@@ -1,7 +1,12 @@
 import numpy as np
 import pytest
 
-from gwexpy.signal.normalization import convert_scipy_to_dtt, get_enbw
+from gwexpy.signal.normalization import (
+    convert_scipy_to_dtt,
+    get_enbw,
+    get_psd_normalization_factor,
+    get_window_normalized,
+)
 
 
 def test_get_enbw_standard():
@@ -75,3 +80,76 @@ def test_convert_scipy_to_dtt():
     # Let's check the math again in dtt_normalization_analysis.md
 
     assert (pxx_dtt / pxx)[0] == pytest.approx(expected_ratio)
+
+
+# ---------------------------------------------------------------------------
+# get_enbw — zero window
+# ---------------------------------------------------------------------------
+
+def test_get_enbw_zero_window_standard():
+    window = np.zeros(100)
+    assert get_enbw(window, fs=100.0, mode="standard") == 0.0
+
+
+def test_get_enbw_zero_window_dtt():
+    window = np.zeros(100)
+    assert get_enbw(window, fs=100.0, mode="dtt") == 0.0
+
+
+# ---------------------------------------------------------------------------
+# get_psd_normalization_factor
+# ---------------------------------------------------------------------------
+
+def test_get_psd_normalization_factor_standard():
+    window = np.ones(100)
+    fs = 100.0
+    factor = get_psd_normalization_factor(window, fs, mode="standard")
+    # Standard: 1 / (fs * sum(w^2)) = 1 / (100 * 100) = 1e-4
+    assert factor == pytest.approx(1.0 / (fs * np.sum(window**2)))
+
+
+def test_get_psd_normalization_factor_dtt():
+    window = np.ones(100)
+    fs = 100.0
+    n = len(window)
+    factor = get_psd_normalization_factor(window, fs, mode="dtt")
+    # DTT: (sum_w^2) / (fs * N) = (N^2) / (fs * N) = N / fs
+    assert factor == pytest.approx(n / fs)
+
+
+def test_get_psd_normalization_factor_zero_window():
+    window = np.zeros(50)
+    assert get_psd_normalization_factor(window, fs=100.0) == 0.0
+
+
+def test_get_psd_normalization_factor_hann():
+    from scipy.signal import windows
+    w = windows.hann(256)
+    factor = get_psd_normalization_factor(w, fs=256.0, mode="standard")
+    assert factor > 0
+
+
+# ---------------------------------------------------------------------------
+# convert_scipy_to_dtt — zero window passthrough
+# ---------------------------------------------------------------------------
+
+def test_convert_scipy_to_dtt_zero_window_passthrough():
+    psd = np.array([1.0, 2.0, 3.0])
+    window = np.zeros(10)
+    result = convert_scipy_to_dtt(psd, window)
+    np.testing.assert_array_equal(result, psd)
+
+
+# ---------------------------------------------------------------------------
+# get_window_normalized
+# ---------------------------------------------------------------------------
+
+def test_get_window_normalized_returns_array():
+    w = get_window_normalized("hann", 64)
+    assert isinstance(w, np.ndarray)
+    assert len(w) == 64
+
+
+def test_get_window_normalized_dtt_mode():
+    w = get_window_normalized("hann", 128, mode="dtt")
+    assert len(w) == 128
