@@ -70,6 +70,7 @@ Statistical analysis and advanced transforms.
    ML Preprocessing Pipeline <case_ml_preprocessing>
    Linear Algebra for GW Analysis <advanced_linear_algebra>
    Field × Advanced Analysis Integration <field_advanced_integration>
+   Non-Gaussian Noise Analysis: Rayleigh & GauCh <rayleigh_gauch_tutorial>
 
 V. Specialized Tools
 --------------------

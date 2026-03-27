@@ -247,6 +247,60 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             min_p_value=min_p, best_lag=best_lag, p_values=dict(zip(lags, p_values))
         )
 
+    # ===============================
+    # Non-Gaussianity Statistics
+    # ===============================
+
+    def gauch(self, fftlength, window=40, stride=None, overlap=None, **kwargs):
+        """
+        Compute GauCh (Modified KS test) for non-Gaussianity detection.
+
+        Returns
+        -------
+        GauChResult
+        """
+        from ..statistics.gauch import compute_gauch
+
+        return compute_gauch(
+            self,
+            fftlength=fftlength,
+            window=window,
+            stride=stride,
+            overlap=overlap,
+            **kwargs,
+        )
+
+    def rayleigh_test(self, fftlength, stride, n_samples=39, **kwargs):
+        """
+        Compute Rayleigh statistic p-value spectrogram.
+
+        Returns
+        -------
+        Spectrogram
+        """
+        from ..statistics.rayleigh_test import rayleigh_pvalue
+
+        rs = self.rayleigh_spectrogram(stride=stride, fftlength=fftlength)
+        return rayleigh_pvalue(rs, n_samples=n_samples, **kwargs)
+
+    def student_t_spectrogram(self, fftlength, stride=None, window=40, overlap=None):
+        """
+        Compute Student-t degree of freedom (nu) spectrogram.
+
+        Returns
+        -------
+        Spectrogram
+        """
+        from ..statistics.student_t_indicator import compute_student_t_nu
+
+        return compute_student_t_nu(
+            self,
+            fftlength=fftlength,
+            stride=stride,
+            window=window,
+            overlap=overlap,
+        )
+
     # --- Internal Methods ---
 
     def _prep_stat_data(self, other):
