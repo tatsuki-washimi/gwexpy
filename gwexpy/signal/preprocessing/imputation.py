@@ -207,7 +207,7 @@ def impute(
             val = _ffill_numpy(val, limit=limit)
         else:
             s = Series(val)
-            val = s.ffill(limit=limit).values
+            val = s.ffill(limit=limit).values.copy()
 
     elif method == "bfill":
         try:
@@ -216,7 +216,7 @@ def impute(
             val = _bfill_numpy(val, limit=limit)
         else:
             s = Series(val)
-            val = s.bfill(limit=limit).values
+            val = s.bfill(limit=limit).values.copy()
 
     elif method == "mean":
         val[nans] = np.nanmean(val)

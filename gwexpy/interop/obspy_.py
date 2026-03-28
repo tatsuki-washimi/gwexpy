@@ -289,6 +289,9 @@ def from_obspy(cls, data, **kwargs):
             else:
                 # Default to TimeSeries
                 return _from_obspy_trace_to_ts(cls, data, **kwargs)
+        else:
+            # cls is TimeSeries-like (no frequencies attribute)
+            return _from_obspy_trace_to_ts(cls, data, **kwargs)
 
     if isinstance(data, obspy.Stream):
         if "Spectrogram" in cls.__name__:
