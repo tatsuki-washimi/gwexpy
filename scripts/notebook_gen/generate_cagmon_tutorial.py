@@ -1,5 +1,6 @@
+from pathlib import Path
+
 import nbformat as nbf
-import os
 
 def create_cagmon_tutorial():
     nb = nbf.v4.new_notebook()
@@ -81,11 +82,12 @@ def create_cagmon_tutorial():
     nb.cells.append(nbf.v4.new_markdown_cell("## 7. まとめ\n\nこのチュートリアルでは、以下の GWexpy の機能を活用しました：\n- **物理ベースのノイズ生成**: `gwinc`, `obspy` などから ASD を取得し時系列化。\n- **高度な相関指標**: PCC に加え、非線形カップリングに強い **MIC** を活用。\n- **バッチ解析 & グラフ化**: `TimeSeriesMatrix` と `association_edges` による効率的な多チャネル処理。\n- **因果関係**: `granger_causality` によるノイズ伝搬方向の特定。\n\nこれにより、CAGMon のような高度なノイズ診断ワークフローが、GWexpy を通じて容易に構築できることが分かりました。"))
 
     # --- Save ---
-    tutorial_path = 'docs/tutorials/cagmon_noise_diagnostics.ipynb'
-    os.makedirs(os.path.dirname(tutorial_path), exist_ok=True)
+    repo_root = Path(__file__).parent.parent.parent
+    tutorial_path = repo_root / 'examples' / 'case-studies' / 'case_cagmon_noise_diagnostics.ipynb'
+    tutorial_path.parent.mkdir(parents=True, exist_ok=True)
     with open(tutorial_path, 'w', encoding='utf-8') as f:
         nbf.write(nb, f)
-    
+
     print(f'Successfully created {tutorial_path}')
 
 if __name__ == '__main__':

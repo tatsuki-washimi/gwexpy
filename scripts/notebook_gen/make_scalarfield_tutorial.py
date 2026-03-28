@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Generate intro_ScalarField.ipynb tutorial notebook."""
 
+from pathlib import Path
+
 import nbformat as nbf
+
+REPO_ROOT = Path(__file__).parent.parent.parent
 
 nb = nbf.v4.new_notebook()
 
@@ -416,9 +420,8 @@ nb.cells.append(
 )
 
 # Write notebook
-with open(
-    "/home/washimi/work/gwexpy/examples/basic-new-methods/intro_ScalarField.ipynb", "w"
-) as f:
+out_path = REPO_ROOT / "examples" / "basic-new-methods" / "intro_ScalarField.ipynb"
+with open(out_path, "w") as f:
     nbf.write(nb, f)
 
 print("✓ Created: examples/basic-new-methods/intro_ScalarField.ipynb")

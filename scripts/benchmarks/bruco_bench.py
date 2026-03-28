@@ -10,10 +10,10 @@ gwpy_reference  -- Full argsort per frequency bin (O(M·B·log M)), representati
 naive_baseline  -- Channel-wise Python loop + per-bin insertion sort, most naive
 
 Single-point example (gwexpy_native):
-  python scripts/bruco_bench.py --n-bins 20000 --n-channels 300
+  python scripts/benchmarks/bruco_bench.py --n-bins 20000 --n-channels 300
 
 Parameter sweep (all three implementations, generates CSV + figures):
-  python scripts/bruco_bench.py --sweep --output-dir docs_internal/publications/paper_softwarex
+  python scripts/benchmarks/bruco_bench.py --sweep --output-dir docs_internal/publications/paper_softwarex
 """
 
 from __future__ import annotations
