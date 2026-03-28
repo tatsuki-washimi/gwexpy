@@ -108,6 +108,7 @@ class TestIcaStandardizationRoundtrip:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.usefixtures("mock_sklearn_decomposition")
 class TestCheckSklearn:
     def test_available(self):
         # Should not raise when sklearn is present
@@ -234,6 +235,7 @@ class TestScaler:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.usefixtures("mock_sklearn_decomposition")
 class TestPcaFit:
     def test_basic(self):
         tsm = _make_tsm()
@@ -291,6 +293,7 @@ class TestPcaFit:
             dec.pca_fit(tsm)
 
 
+@pytest.mark.usefixtures("mock_sklearn_decomposition")
 class TestPcaTransform:
     def test_basic(self):
         tsm = _make_tsm()
@@ -312,6 +315,7 @@ class TestPcaTransform:
             dec.pca_transform(res, tsm)
 
 
+@pytest.mark.usefixtures("mock_sklearn_decomposition")
 class TestPcaInverseTransform:
     def test_roundtrip(self):
         tsm = _make_tsm()
@@ -411,6 +415,7 @@ class TestPcaInverseTransform:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.usefixtures("mock_sklearn_decomposition")
 class TestIcaFit:
     def test_basic(self):
         tsm = _make_tsm()
@@ -444,6 +449,7 @@ class TestIcaFit:
             dec.ica_fit(_make_tsm())
 
 
+@pytest.mark.usefixtures("mock_sklearn_decomposition")
 class TestIcaTransform:
     def test_basic(self):
         tsm = _make_tsm()
@@ -465,6 +471,7 @@ class TestIcaTransform:
             dec.ica_transform(res, tsm)
 
 
+@pytest.mark.usefixtures("mock_sklearn_decomposition")
 class TestIcaInverseTransform:
     def test_basic(self):
         tsm = _make_tsm()
