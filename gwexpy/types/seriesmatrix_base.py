@@ -206,6 +206,11 @@ class SeriesMatrix(  # type: ignore[misc]
         self.epoch = getattr(obj, "epoch", 0.0)
         self.attrs = getattr(obj, "attrs", getattr(self, "attrs", {}))
 
+        # Propagate custom _gwex_ attributes
+        for key, val in getattr(obj, "__dict__", {}).items():
+            if key.startswith("_gwex_") and key not in self.__dict__:
+                self.__dict__[key] = val
+
     def __array_ufunc__(
         self, ufunc: Any, method: str, *inputs: Any, **kwargs: Any
     ) -> Any:

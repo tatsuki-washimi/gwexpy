@@ -137,6 +137,14 @@ class TestScalarFieldSliceMap2D:
         assert sliced.shape[0] == 1
         assert sliced.shape[3] == 1
 
+    def test_slice_map2d_preserves_gwex_attrs(self, sample_field):
+        """Test that slice_map2d preserves _gwex_ attributes."""
+        sample_field._gwex_test_attr = "important_metadata"
+        sliced = sample_field.slice_map2d("xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m})
+        
+        assert hasattr(sliced, "_gwex_test_attr")
+        assert sliced._gwex_test_attr == "important_metadata"
+
 
 class TestScalarFieldPlotMap2D:
     """Tests for ScalarField.plot_map2d method."""
@@ -308,6 +316,43 @@ class TestScalarFieldPlotProfile:
         line = ax.lines[0]
         assert len(line.get_xdata()) == 8
         plt.close(fig)
+
+    def test_extract_profile_linear_benchmark_4d(self):
+        """Test extract_profile with a 4D linear field analytical solution."""
+        # Create a 4D linear field: f(t,x,y,z) = t/1s + x/1m + y/1m + z/1m
+        nt, nx, ny, nz = 5, 5, 5, 5
+        t = np.arange(nt) * u.s
+        x = np.arange(nx) * u.m
+        y = np.arange(ny) * u.m
+        z = np.arange(nz) * u.m
+        
+        # Grid values (indexing='ij' for 4D)
+        T, X, Y, Z = np.meshgrid(t.value, x.value, y.value, z.value, indexing='ij')
+        data = T + X + Y + Z
+        
+        field = ScalarField(
+            data,
+            unit=u.dimensionless_unscaled,
+            axis0=t, axis1=x, axis2=y, axis3=z,
+            axis_names=["t", "x", "y", "z"]
+        )
+        
+        # Extract profile along x-axis at non-grid coordinates for t, y, z
+        t_val = 1.5 * u.s
+        y_val = 2.5 * u.m
+        z_val = 0.5 * u.m
+        
+        x_axis, values = field.extract_profile(
+            'x', at={'t': t_val, 'y': y_val, 'z': z_val}
+        )
+        
+        # Analytical solution: f = t + x + y + z
+        expected = t_val.value + x.value + y_val.value + z_val.value
+        
+        assert len(x_axis) == nx
+        # Linear interpolation should be exact for a linear field
+        np.testing.assert_allclose(values.value, expected, atol=1e-10)
+        assert values.unit == u.dimensionless_unscaled
 
 
 # =============================================================================
@@ -487,6 +532,25 @@ class TestScalarFieldTimeStatMap:
         result = sample_field.time_stat_map(stat="mean", t_range=(0.0 * u.s, 0.5 * u.s))
         # Should still work and have valid result
         assert result.shape[0] == 1
+
+    def test_time_stat_map_slice_2d(self, sample_field):
+        """Regression test for plane and at parameters in time_stat_map."""
+        # Mean time is (0.0 + 0.9) / 2 = 0.45
+        t_mean = 0.45 * u.s
+        z0 = 2.0 * u.m
+        
+        # This should fail if line 1658 returns early
+        result = sample_field.time_stat_map(
+            stat="mean", 
+            plane="xy", 
+            at={"t": t_mean, "z": z0}
+        )
+        
+        # Expected shape: (t=1, x=4, y=4, z=1)
+        assert result.shape == (1, 4, 4, 1)
+        assert result.axis_names == ("t", "x", "y", "z")
+        assert result.unit == u.V
+        assert result._axis0_index[0] == t_mean
 
 
 class TestScalarFieldTimeSpaceMap:

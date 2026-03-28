@@ -83,17 +83,10 @@ class FrequencySeries(
         if obj is None:
             return
 
-        # Copy gwexpy internal attributes for FFT round-trip support
-        _gwex_attrs = (
-            "_gwex_fft_mode",
-            "_gwex_target_nfft",
-            "_gwex_pad_left",
-            "_gwex_pad_right",
-            "_gwex_original_n",
-        )
-        for attr in _gwex_attrs:
-            if hasattr(obj, attr):
-                setattr(self, attr, getattr(obj, attr))
+        # Propagate custom _gwex_ attributes
+        for key, val in getattr(obj, "__dict__", {}).items():
+            if key.startswith("_gwex_") and key not in self.__dict__:
+                self.__dict__[key] = val
 
     def __reduce_ex__(self, protocol: SupportsIndex):
         from gwexpy.io.pickle_compat import frequencyseries_reduce_args

@@ -276,6 +276,42 @@ class TestScalarFieldFftIfftSpaceReversibility:
 
         assert_allclose(recovered.value, original.value, rtol=1e-10)
 
+    def test_partial_ifft_space_metadata_invariance(self):
+        """Test metadata invariance for untransformed axes during partial ifft_space."""
+        # 4D data (t, x, y, z)
+        nt, nx, ny, nz = 4, 8, 8, 8
+        field_4d = ScalarField(
+            np.random.randn(nt, nx, ny, nz),
+            axis1=np.arange(nx) * u.m,
+            axis2=np.arange(ny) * u.m,
+            axis3=np.arange(nz) * u.m,
+            axis_names=["t", "x", "y", "z"],
+            space_domain="real",
+        )
+        
+        # FFT all spatial axes
+        k_space = field_4d.fft_space()
+        assert k_space.axis_names == ("t", "kx", "ky", "kz")
+        
+        # IFFT only kx and kz
+        partial_real = k_space.ifft_space(axes=["kx", "kz"])
+        
+        # Check axis names: kx -> x, kz -> z, ky remains ky
+        assert partial_real.axis_names == ("t", "x", "ky", "z")
+        
+        # Check space domains
+        assert partial_real.space_domains["x"] == "real"
+        assert partial_real.space_domains["ky"] == "k"
+        assert partial_real.space_domains["z"] == "real"
+        
+        # Check units
+        assert partial_real._axis1_index.unit == u.m
+        assert partial_real._axis2_index.unit == 1/u.m
+        assert partial_real._axis3_index.unit == u.m
+        
+        # Check values of untransformed ky axis matches k_space
+        assert_allclose(partial_real._axis2_index.value, k_space._axis2_index.value)
+
 
 class TestScalarFieldIfftSpaceErrors:
     """Test ifft_space error conditions."""

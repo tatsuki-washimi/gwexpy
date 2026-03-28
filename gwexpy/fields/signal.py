@@ -380,7 +380,7 @@ def spectral_density(
 
     from gwexpy.fields import ScalarField as SF
 
-    return SF(
+    result = SF(
         psd,
         unit=psd_unit,
         axis0=new_axes[0],
@@ -391,6 +391,8 @@ def spectral_density(
         axis0_domain=new_axis0_domain,
         space_domain=new_space_domains,
     )
+    field._propagate_gwex_attrs(result)
+    return result
 
 
 def _extract_timeseries_1d(
@@ -845,7 +847,7 @@ def freq_space_map(
 
     from gwexpy.fields import ScalarField
 
-    return ScalarField(
+    result = ScalarField(
         psd_4d,
         unit=psd_unit,
         axis0=freq_axis,
@@ -856,6 +858,8 @@ def freq_space_map(
         axis0_domain="frequency",
         space_domain=field._space_domains,
     )
+    field._propagate_gwex_attrs(result)
+    return result
 
 
 # Alias
@@ -1186,7 +1190,7 @@ def time_delay_map(
 
     from gwexpy.fields import ScalarField
 
-    return ScalarField(
+    result = ScalarField(
         delay_4d,
         unit=dt_unit,
         axis0=np.array([0.0]) * u.s,  # Dummy time axis
@@ -1197,6 +1201,8 @@ def time_delay_map(
         axis0_domain="time",
         space_domain=field._space_domains,
     )
+    field._propagate_gwex_attrs(result)
+    return result
 
 
 def coherence_map(
@@ -1386,7 +1392,6 @@ def coherence_map(
 
     # Compute coherence for each point
     # First compute for one point to get frequency axis
-    test_slices = [slice(None), ax1_indices[0], ax2_indices[0], fix_idx]
     test_slices = _build_extraction_slices(
         ax1_int, ax2_int, fix_int, ax1_indices[0], ax2_indices[0], fix_idx
     )
@@ -1423,6 +1428,16 @@ def coherence_map(
     freq_unit = 1 / dt_unit
     freq_axis = freqs * freq_unit
 
+    # Prepare axis outputs
+    ax1_val = getattr(ax1_index, "value", ax1_index)
+    ax1_unit = getattr(ax1_index, "unit", u.dimensionless_unscaled)
+    ax2_val = getattr(ax2_index, "value", ax2_index)
+    ax2_unit = getattr(ax2_index, "unit", u.dimensionless_unscaled)
+
+    ax1_index_out = ax1_val[list(ax1_indices)] * ax1_unit
+    ax2_index_out = ax2_val[list(ax2_indices)] * ax2_unit
+    fix_index_out = fix_index[fix_idx : fix_idx + 1]
+
     # Band averaging if specified
     if band is not None:
         fmin, fmax = band
@@ -1444,73 +1459,43 @@ def coherence_map(
         shape_4d[ax2_int] = n2
         coh_4d = coh_band.reshape(shape_4d)
 
-        ax1_val = getattr(ax1_index, "value", ax1_index)
-        ax1_unit = getattr(ax1_index, "unit", u.dimensionless_unscaled)
-        ax2_val = getattr(ax2_index, "value", ax2_index)
-        ax2_unit = getattr(ax2_index, "unit", u.dimensionless_unscaled)
-
-        ax1_out = ax1_val[list(ax1_indices)] * ax1_unit
-        ax2_out = ax2_val[list(ax2_indices)] * ax2_unit
-
-        axes_out = {
-            1: field._axis1_index[:1],
-            2: field._axis2_index[:1],
-            3: field._axis3_index[:1],
-        }
-        axes_out[ax1_int] = ax1_out
-        axes_out[ax2_int] = ax2_out
-        axes_out[fix_int] = fix_index[fix_idx : fix_idx + 1]
-
         from gwexpy.fields import ScalarField
 
-        return ScalarField(
+        result = ScalarField(
             coh_4d,
             unit=u.dimensionless_unscaled,
             axis0=np.array([0.0]) * u.s,
-            axis1=axes_out[1],
-            axis2=axes_out[2],
-            axis3=axes_out[3],
-            axis_names=["t", field._axis1_name, field._axis2_name, field._axis3_name],
+            axis1=ax1_index_out if ax1_int == 1 else (ax2_index_out if ax2_int == 1 else fix_index_out),
+            axis2=ax1_index_out if ax1_int == 2 else (ax2_index_out if ax2_int == 2 else fix_index_out),
+            axis3=ax1_index_out if ax1_int == 3 else (ax2_index_out if ax2_int == 3 else fix_index_out),
+            axis_names=["t", ax1_name, ax2_name, fix_name],
             axis0_domain="time",
             space_domain=field._space_domains,
         )
+        field._propagate_gwex_attrs(result)
+        return result
     else:
         # Return with frequency axis
         shape_4d = [n_freq, 1, 1, 1]
         shape_4d[ax1_int] = n1
         shape_4d[ax2_int] = n2
-        coh_4d = coh_3d.reshape(shape_4d)
-
-        ax1_val = getattr(ax1_index, "value", ax1_index)
-        ax1_unit = getattr(ax1_index, "unit", u.dimensionless_unscaled)
-        ax2_val = getattr(ax2_index, "value", ax2_index)
-        ax2_unit = getattr(ax2_index, "unit", u.dimensionless_unscaled)
-
-        ax1_out = ax1_val[list(ax1_indices)] * ax1_unit
-        ax2_out = ax2_val[list(ax2_indices)] * ax2_unit
-
-        axes_out = {
-            1: field._axis1_index[:1],
-            2: field._axis2_index[:1],
-            3: field._axis3_index[:1],
-        }
-        axes_out[ax1_int] = ax1_out
-        axes_out[ax2_int] = ax2_out
-        axes_out[fix_int] = fix_index[fix_idx : fix_idx + 1]
+        coh_3d_4d = coh_3d.reshape(shape_4d)
 
         from gwexpy.fields import ScalarField
 
-        return ScalarField(
-            coh_4d,
+        result = ScalarField(
+            coh_3d_4d,
             unit=u.dimensionless_unscaled,
             axis0=freq_axis,
-            axis1=axes_out[1],
-            axis2=axes_out[2],
-            axis3=axes_out[3],
-            axis_names=["f", field._axis1_name, field._axis2_name, field._axis3_name],
+            axis1=ax1_index_out if ax1_int == 1 else (ax2_index_out if ax2_int == 1 else fix_index_out),
+            axis2=ax1_index_out if ax1_int == 2 else (ax2_index_out if ax2_int == 2 else fix_index_out),
+            axis3=ax1_index_out if ax1_int == 3 else (ax2_index_out if ax2_int == 3 else fix_index_out),
+            axis_names=["f", ax1_name, ax2_name, fix_name],
             axis0_domain="frequency",
             space_domain=field._space_domains,
         )
+        field._propagate_gwex_attrs(result)
+        return result
 
 
 def _build_extraction_slices(

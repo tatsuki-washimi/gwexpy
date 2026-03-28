@@ -38,6 +38,11 @@ class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
         else:
             self._axis_names = list(parent_names)
 
+        # Propagate custom _gwex_ attributes
+        for key, val in getattr(obj, "__dict__", {}).items():
+            if key.startswith("_gwex_") and key not in self.__dict__:
+                self.__dict__[key] = val
+
     @property
     def axes(self):
         if len(self._axis_names) != self.ndim:
@@ -66,3 +71,9 @@ class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
         func = np.nanmean if ignore_nan else np.mean
         val = np.sqrt(func(np.square(self.value), axis=axis, keepdims=keepdims))
         return val * self.unit
+
+    def _propagate_gwex_attrs(self, other: Any) -> None:
+        """Propagate _gwex_ prefixed attributes to another object."""
+        for key, val in self.__dict__.items():
+            if key.startswith("_gwex_") and key not in other.__dict__:
+                other.__dict__[key] = val

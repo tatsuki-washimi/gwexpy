@@ -29,6 +29,9 @@ from ._interop import TimeSeriesInteropMixin
 from ._resampling import TimeSeriesResamplingMixin
 from ._signal import TimeSeriesSignalMixin
 
+# Import Core Base
+from ._core import TimeSeriesCore
+
 # Import Mixins
 from ._spectral import TimeSeriesSpectralMixin
 from ._statistics import StatisticsMixin
@@ -53,8 +56,7 @@ class TimeSeries(
     StatisticsMixin,  # Statistical analysis & correlation
     FittingMixin,  # Fitting functionality
     PhaseMethodsMixin,  # Phase/Angle methods (radian, degree, phase, angle)
-    RegularityMixin,  # Regularity checking (is_regular, _check_regular)
-    _LegacyTimeSeries,  # All legacy methods including BaseTimeSeries
+    TimeSeriesCore,  # Core operations (tail, crop, append, find_peaks, RegularityMixin)
 ):
     """
     Extended TimeSeries with all gwexpy functionality.
@@ -163,159 +165,8 @@ class TimeSeries(
 
         return timeseries_reduce_args(self)
 
-    # ===============================
-    # Override methods from _core.py
-    # (These take precedence over _LegacyTimeSeries versions)
-    # ===============================
 
-    def tail(self, n: int | None = 5) -> TimeSeries:
-        """Return the last `n` samples of this series."""
-        if n is None:
-            return self
-        n = int(n)
-        if n <= 0:
-            return self[:0]
-        return self[-n:]
-
-    def crop(
-        self, start: Any | None = None, end: Any | None = None, copy: bool = False
-    ) -> TimeSeries:
-        """
-        Crop this series to the given GPS start and end times.
-        Accepts any time format supported by gwexpy.time.to_gps.
-        """
-        from gwexpy.time import to_gps
-
-        if start is not None:
-            start = to_gps(start)
-            if isinstance(start, (np.ndarray, list)) and np.ndim(start) > 0:
-                start = start[0]
-            start = float(start)
-        if end is not None:
-            end = to_gps(end)
-            if isinstance(end, (np.ndarray, list)) and np.ndim(end) > 0:
-                end = end[0]
-            end = float(end)
-
-        from gwpy.timeseries import TimeSeries as BaseTimeSeries
-
-        return BaseTimeSeries.crop(self, start=start, end=end, copy=copy)
-
-    def append(
-        self,
-        other: ArrayLike | GwpyTimeSeries,
-        inplace: bool = True,
-        pad: Any = None,
-        gap: Any = None,
-        resize: bool = True,
-    ) -> TimeSeries:
-        """
-        Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.
-        """
-        from gwpy.timeseries import TimeSeries as BaseTimeSeries
-
-        res = BaseTimeSeries.append(
-            self, other, inplace=inplace, pad=pad, gap=gap, resize=resize
-        )
-        if inplace:
-            return self
-        if isinstance(res, self.__class__):
-            return res
-        return self.__class__(
-            res.value,
-            times=res.times,
-            unit=res.unit,
-            name=res.name,
-            channel=getattr(res, "channel", None),
-        )
-
-    def find_peaks(  # type: ignore[override]
-        self,
-        height: ArrayLike | u.Quantity | None = None,
-        threshold: ArrayLike | u.Quantity | None = None,
-        distance: float | u.Quantity | None = None,
-        prominence: ArrayLike | u.Quantity | None = None,
-        width: ArrayLike | u.Quantity | None = None,
-        wlen: int | None = None,
-        rel_height: float = 0.5,
-        plateau_size: ArrayLike | None = None,
-    ) -> tuple[TimeSeries, dict[str, Any]]:
-        """
-        Find peaks in the TimeSeries.
-
-        Wraps `scipy.signal.find_peaks`.
-
-        Returns
-        -------
-        peaks : `TimeSeries`
-            A new TimeSeries containing only the peak values, indexed by their times.
-        props : `dict`
-            Dictionary of peak properties returned by `scipy.signal.find_peaks`.
-        """
-        from scipy.signal import find_peaks
-
-        val = self.value
-
-        def _to_val(x, unit=None):
-            if hasattr(x, "value"):
-                if unit and hasattr(x, "to"):
-                    return x.to(unit).value
-                return x.value
-            return x
-
-        h = _to_val(height, self.unit)
-        t = _to_val(threshold, self.unit)
-        p = _to_val(prominence, self.unit)
-
-        dist = distance
-        wid = width
-
-        if self.dt is not None:
-            fs = self.sample_rate.to("Hz").value
-            if dist is not None and hasattr(dist, "to"):
-                dist = int(dist.to("s").value * fs)
-
-            if np.iterable(wid) and not isinstance(wid, (str, bytes)):
-                # help mypy know it is iterable
-                wid_iter = cast(Any, wid)
-                new_wid = []
-                for w in wid_iter:
-                    if hasattr(w, "to"):
-                        new_wid.append(w.to("s").value * fs)
-                    else:
-                        new_wid.append(w)
-                wid = tuple(new_wid) if isinstance(wid, tuple) else new_wid
-            elif wid is not None and hasattr(wid, "to"):
-                wid = wid.to("s").value * fs
-
-        peaks_indices, props = find_peaks(
-            val,
-            height=h,
-            threshold=t,
-            distance=dist,
-            prominence=p,
-            width=wid,
-            wlen=wlen,
-            rel_height=rel_height,
-            plateau_size=plateau_size,
-        )
-
-        if len(peaks_indices) == 0:
-            return self.__class__(
-                [], times=[], unit=self.unit, name=self.name, channel=self.channel
-            ), props
-
-        peak_times = self.times[peaks_indices]
-        peak_vals = val[peaks_indices]
-
-        out = self.__class__(
-            peak_vals,
-            times=peak_times,
-            unit=self.unit,
-            name=f"{self.name}_peaks" if self.name else "peaks",
-            channel=self.channel,
-        )
-        return out, props
+    # Basic operations (tail, crop, append, find_peaks) are inherited from TimeSeriesCore
 
     def to_simpeg(
         self,

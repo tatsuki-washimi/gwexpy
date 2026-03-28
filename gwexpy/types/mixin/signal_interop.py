@@ -150,43 +150,50 @@ class SignalAnalysisMixin:
         return meta
 
     def find_peaks(
-        self, threshold: float | None = None, method: str = "amplitude", **kwargs: Any
+        self,
+        height: Any | None = None,
+        threshold: Any | None = None,
+        distance: Any | None = None,
+        prominence: Any | None = None,
+        width: Any | None = None,
+        method: str = "amplitude",
+        **kwargs: Any,
     ) -> Any:
         """
         Find peaks in the series.
 
-        Wraps `scipy.signal.find_peaks`.
+        Wraps `scipy.signal.find_peaks` with support for unit quantities.
         """
-        import scipy.signal  # noqa: F401 - availability check
+        import scipy.signal
 
-        # Prepare target array
+        # Prepare target array based on method
         if method == "amplitude":
-            target = np.abs(self.value)  # type: ignore[attr-defined]
+            target = np.abs(self.value)
+            current_unit = self.unit
         elif method == "power":
-            target = np.abs(self.value) ** 2  # type: ignore[attr-defined]
+            target = np.abs(self.value) ** 2
+            current_unit = self.unit**2 if self.unit else None
         elif method == "db":
-            target = 20 * np.log10(np.abs(self.value))  # type: ignore[attr-defined]
+            target = 20 * np.log10(np.abs(self.value))
+            current_unit = None  # dB is unitless-ish
         else:
             raise ValueError(f"Unknown method {method}")
 
-        if threshold is not None:
-            if hasattr(threshold, "unit"):  # astropy.units.Quantity
-                current_unit = self.unit  # type: ignore[attr-defined]
-                if method == "power":
-                    current_unit = current_unit**2
-                elif method == "db":
-                    current_unit = None  # db is unitless-ish
+        def _to_val(x: Any, unit: Any = None) -> Any:
+            if hasattr(x, "to") and unit is not None:
+                return x.to(unit).value
+            return getattr(x, "value", x)
 
-                if current_unit and hasattr(threshold, "to"):
-                    threshold = threshold.to(current_unit).value
-                elif hasattr(threshold, "value"):
-                    threshold = threshold.value
-
-            kwargs["height"] = threshold
+        # Handle unit quantities for data-related parameters
+        h = _to_val(height, current_unit)
+        t = _to_val(threshold, current_unit)
+        p = _to_val(prominence, current_unit)
 
         # Unit support for distance and width
         # This requires knowing the 'dx' (dt or df)
-        dx = getattr(self, "dt", None) or getattr(self, "df", None)
+        dx = getattr(self, "dt", None)
+        if dx is None:
+            dx = getattr(self, "df", None)
 
         if dx is not None:
             dx_val = dx.value if hasattr(dx, "value") else dx
@@ -211,31 +218,39 @@ class SignalAnalysisMixin:
 
                     dx_unit = u.Hz
 
-            # Distance (dx -> samples)
-            dist = kwargs.get("distance", None)
-            if dist is not None and hasattr(dist, "to") and dx_unit:
-                # Convert dist to dx_unit then divide by dx_val
-                kwargs["distance"] = int(dist.to(dx_unit).value / dx_val)
+            # Distance (time/frequency -> samples)
+            dist = _to_val(distance)
+            if hasattr(distance, "to") and dx_unit:
+                dist = int(distance.to(dx_unit).value / dx_val)
 
-            # Width (dx -> samples)
-            wid = kwargs.get("width", None)
-            if wid is not None:
-
-                def _convert_width(w):
-                    if hasattr(w, "to") and dx_unit:
-                        return w.to(dx_unit).value / dx_val
-                    return w
-
-                if np.iterable(wid):
-                    kwargs["width"] = (
-                        tuple(_convert_width(w) for w in wid)
-                        if isinstance(wid, tuple)
-                        else [_convert_width(w) for w in wid]
-                    )
+            # Width (time/frequency -> samples)
+            wid = width
+            if width is not None:
+                if np.iterable(width) and not isinstance(width, (str, bytes)):
+                    wid = [
+                        (w.to(dx_unit).value / dx_val if hasattr(w, "to") else _to_val(w))
+                        for w in width
+                    ]
+                    if isinstance(width, tuple):
+                        wid = tuple(wid)
+                elif hasattr(width, "to") and dx_unit:
+                    wid = width.to(dx_unit).value / dx_val
                 else:
-                    kwargs["width"] = _convert_width(wid)
+                    wid = _to_val(width)
+        else:
+            dist = _to_val(distance)
+            wid = _to_val(width)
 
-        peaks_indices, props = scipy.signal.find_peaks(target, **kwargs)
+        # Call scipy
+        peaks_indices, props = scipy.signal.find_peaks(
+            target,
+            height=h,
+            threshold=t,
+            distance=dist,
+            prominence=p,
+            width=wid,
+            **kwargs,
+        )
 
         if len(peaks_indices) == 0:
             # Return empty container of same type

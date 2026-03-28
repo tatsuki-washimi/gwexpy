@@ -155,7 +155,10 @@ class ImputeTransform(Transform):
         if isinstance(x, TimeSeriesDict):
             return x.__class__({k: self.transform(v) for k, v in x.items()})
         if isinstance(x, TimeSeriesList):
-            return x.__class__([self.transform(v) for v in x])
+            out = x.__class__()
+            for v in x:
+                out.append(self.transform(v))
+            return out
         raise TypeError(f"Unsupported type for ImputeTransform: {type(x)}")
 
 

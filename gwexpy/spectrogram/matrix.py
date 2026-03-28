@@ -172,6 +172,12 @@ class SpectrogramMatrix(  # type: ignore[misc]
             return
         super().__array_finalize__(obj)
         self.frequencies = getattr(obj, "frequencies", None)
+        
+        # Propagate custom attributes (similar to TimeSeriesCore)
+        for key in getattr(obj, "__dict__", {}):
+            if key.startswith("_gwex_"):
+                setattr(self, key, getattr(obj, key))
+                
         if not hasattr(self, "_value"):
             self._value = self.view(np.ndarray)
 
@@ -658,6 +664,41 @@ class SpectrogramMatrix(  # type: ignore[misc]
                         pass
                 except (IndexError, TypeError, KeyError):
                     pass
+        # 4D -> 3D reduction (e.g. slice out one Row or one Col)
+        elif self.ndim == 4 and ret.ndim == 3:
+            # Case A: row is scalar, col is slice -> result Batch is Col
+            # Case B: row is slice, col is scalar -> result Batch is Row
+            r_idx = key[0] if isinstance(key, tuple) else key
+            c_idx = key[1] if isinstance(key, tuple) and len(key) > 1 else slice(None)
+            
+            is_row_scalar = isinstance(r_idx, (int, np.integer))
+            is_col_scalar = isinstance(c_idx, (int, np.integer))
+            
+            if is_row_scalar:
+                # Batch = Col
+                if self.cols:
+                    ret.rows = _slice_metadata_dict(self.cols, c_idx, "row")
+            elif is_col_scalar:
+                # Batch = Row
+                if self.rows:
+                    ret.rows = _slice_metadata_dict(self.rows, r_idx, "row")
+            
+            if self.meta is not None:
+                try:
+                    sliced = self.meta[r_idx, c_idx]
+                    if isinstance(sliced, np.ndarray):
+                        # Ensure meta for 3D is (N, 1)
+                        ret.meta = sliced.reshape(-1, 1).view(MetaDataMatrix)
+                    else:
+                        # Scalar meta?
+                        pass
+                except (IndexError, TypeError, KeyError):
+                    pass
+
+        # Propagate custom attributes
+        for k, v in getattr(self, "__dict__", {}).items():
+            if k.startswith("_gwex_"):
+                ret.__dict__[k] = v
 
         return ret
 
