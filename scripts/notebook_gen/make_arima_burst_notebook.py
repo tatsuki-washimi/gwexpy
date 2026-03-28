@@ -1,5 +1,8 @@
+from pathlib import Path
+
 import nbformat as nbf
-import os
+
+REPO_ROOT = Path(__file__).parent.parent.parent
 
 def make_notebook():
     nb = nbf.v4.new_notebook()
@@ -251,8 +254,8 @@ plt.show()
     ]
 
     # Save
-    out_path = '/home/washimi/work/gwexpy/docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb'
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    out_path = REPO_ROOT / 'docs' / 'web' / 'en' / 'user_guide' / 'tutorials' / 'case_arima_burst_search.ipynb'
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, 'w', encoding='utf-8') as f:
         nbf.write(nb, f)
     

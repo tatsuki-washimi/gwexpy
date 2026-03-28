@@ -1,6 +1,9 @@
 import glob
 import os
 import subprocess
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).parent.parent.parent
 
 
 def run_notebooks(directory):
@@ -16,5 +19,5 @@ def run_notebooks(directory):
         ], check=False) # check=False to continue even if one notebook fails
 
 if __name__ == "__main__":
-    docs_dir = os.path.join("/home/washimi/work/gwexpy/docs")
-    run_notebooks(docs_dir)
+    docs_dir = REPO_ROOT / "docs"
+    run_notebooks(str(docs_dir))
