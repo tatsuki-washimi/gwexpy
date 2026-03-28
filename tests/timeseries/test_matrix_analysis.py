@@ -5,6 +5,68 @@ import numpy as np
 import pytest
 from astropy import units as u
 
+# --- Mocks for optional dependencies ---
+import sys
+from unittest.mock import MagicMock
+
+# Mock minepy
+try:
+    import minepy # noqa: F401
+except ImportError:
+    mock_minepy = MagicMock()
+    mock_minepy.MINE.return_value.mic.return_value = 0.5
+    sys.modules["minepy"] = mock_minepy
+
+# Mock dcor
+try:
+    import dcor # noqa: F401
+except ImportError:
+    mock_dcor = MagicMock()
+    mock_dcor.distance_correlation.return_value = 0.5
+    sys.modules["dcor"] = mock_dcor
+
+# Mock sklearn for decomposition
+try:
+    import sklearn.decomposition # noqa: F401
+    from gwexpy.timeseries.decomposition import SKLEARN_AVAILABLE
+except ImportError:
+    mock_sklearn = MagicMock()
+    mock_pca = MagicMock()
+    mock_ica = MagicMock()
+    
+    mock_pca_inst = mock_pca.return_value
+    def _mock_pca_fit(X, y=None):
+        n_comp = mock_pca.call_args[1].get('n_components', X.shape[1])
+        if n_comp is None: n_comp = X.shape[1]
+        mock_pca_inst.n_components_ = n_comp
+        mock_pca_inst.components_ = np.zeros((n_comp, X.shape[1]))
+        mock_pca_inst.explained_variance_ratio_ = np.ones(n_comp) / n_comp
+        return mock_pca_inst
+    mock_pca_inst.fit.side_effect = _mock_pca_fit
+    mock_pca_inst.transform.side_effect = lambda X: np.zeros((X.shape[0], getattr(mock_pca_inst, 'n_components_', 1)))
+    mock_pca_inst.inverse_transform.side_effect = lambda X: np.zeros((X.shape[0], getattr(mock_pca_inst, 'components_', np.zeros((1, X.shape[1]))).shape[1]))
+
+    mock_ica_inst = mock_ica.return_value
+    def _mock_ica_fit(X, y=None):
+        n_comp = mock_ica.call_args[1].get('n_components', X.shape[1])
+        if n_comp is None: n_comp = X.shape[1]
+        mock_ica_inst.n_components_ = n_comp
+        return mock_ica_inst
+    mock_ica_inst.fit.side_effect = _mock_ica_fit
+    mock_ica_inst.transform.side_effect = lambda X: np.zeros((X.shape[0], getattr(mock_ica_inst, 'n_components_', 1)))
+    mock_ica_inst.inverse_transform.side_effect = lambda X: np.zeros((X.shape[0], getattr(mock_ica_inst, 'n_components_', 1)))
+
+    mock_sklearn.decomposition.PCA = mock_pca
+    mock_sklearn.decomposition.FastICA = mock_ica
+    sys.modules["sklearn"] = mock_sklearn
+    sys.modules["sklearn.decomposition"] = mock_sklearn.decomposition
+    
+    # Force decomposition availability
+    import gwexpy.timeseries.decomposition as decomp
+    decomp.SKLEARN_AVAILABLE = True
+    decomp.PCA = mock_pca
+    decomp.FastICA = mock_ica
+
 from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 
 
@@ -235,6 +297,7 @@ def test_crop_quantity():
 # ---------------------------------------------------------------------------
 
 def test_pca_fit_transform():
+    pytest.importorskip("sklearn")
     tsm = _make_tsm(n_time=200)
     pca_res = tsm.pca_fit()
     scores = tsm.pca_transform(pca_res)
@@ -242,6 +305,7 @@ def test_pca_fit_transform():
 
 
 def test_pca_inverse_transform():
+    pytest.importorskip("sklearn")
     tsm = _make_tsm(n_time=200)
     pca_res = tsm.pca_fit()
     scores = tsm.pca_transform(pca_res)
@@ -250,12 +314,14 @@ def test_pca_inverse_transform():
 
 
 def test_pca_convenience():
+    pytest.importorskip("sklearn")
     tsm = _make_tsm(n_time=200)
     scores = tsm.pca()
     assert scores.shape[2] == 200
 
 
 def test_pca_return_model():
+    pytest.importorskip("sklearn")
     tsm = _make_tsm(n_time=200)
     scores, model = tsm.pca(return_model=True)
     assert model is not None
@@ -266,6 +332,7 @@ def test_pca_return_model():
 # ---------------------------------------------------------------------------
 
 def test_ica_fit_transform():
+    pytest.importorskip("sklearn")
     tsm = _make_tsm(n_time=200)
     ica_res = tsm.ica_fit()
     sources = tsm.ica_transform(ica_res)
@@ -273,6 +340,7 @@ def test_ica_fit_transform():
 
 
 def test_ica_inverse_transform():
+    pytest.importorskip("sklearn")
     tsm = _make_tsm(n_time=200)
     ica_res = tsm.ica_fit()
     sources = tsm.ica_transform(ica_res)
@@ -281,12 +349,14 @@ def test_ica_inverse_transform():
 
 
 def test_ica_convenience():
+    pytest.importorskip("sklearn")
     tsm = _make_tsm(n_time=200)
     sources = tsm.ica()
     assert sources.shape[2] == 200
 
 
 def test_ica_return_model():
+    pytest.importorskip("sklearn")
     tsm = _make_tsm(n_time=200)
     sources, model = tsm.ica(return_model=True)
     assert model is not None

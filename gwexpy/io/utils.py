@@ -111,7 +111,7 @@ def apply_unit(series: Any, unit: Any | None) -> Any:
 
         SeriesMatrix = ConverterRegistry.get_constructor("SeriesMatrix")
         series_matrix_types: tuple[type, ...] = (SeriesMatrix,)
-    except ImportError:  # pragma: no cover - optional
+    except (ImportError, KeyError, AttributeError, TypeError):
         series_matrix_types = ()
     if isinstance(series, series_matrix_types):
         series_obj = cast(Any, series)
@@ -179,10 +179,15 @@ def maybe_pad_timeseries(ts, pad_value=np.nan, start=None, end=None, gap="pad"):
     """
     Pad or raise for gaps using gwpy's join semantics.
     """
-    from gwpy.timeseries.io.core import _pad_series
-
     if gap not in ("pad", "raise"):
         return ts
+
+    try:
+        from gwpy.timeseries.io.core import _pad_series
+    except ImportError:
+        # gwpy >= 4.0
+        from gwpy.timeseries.connect import _pad_series
+
     return _pad_series(ts, pad_value, start=start, end=end, error=(gap == "raise"))
 
 

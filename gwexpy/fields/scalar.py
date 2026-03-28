@@ -172,7 +172,7 @@ class ScalarField(FieldBase):
             else:
                 new_space_domains[name] = "real"
 
-        return ScalarField(
+        result = ScalarField(
             value,
             unit=unit,
             axis_names=[n for n, _ in new_axes],
@@ -185,6 +185,8 @@ class ScalarField(FieldBase):
             copy=False,
             **meta,
         )
+        self._propagate_gwex_attrs(result)
+        return result
 
     def _isel_tuple(self, item_tuple: tuple[Any, ...]) -> ScalarField:
         """Internal isel using ScalarField getitem logic."""
@@ -322,6 +324,7 @@ class ScalarField(FieldBase):
         # Store the original time offset in metadata
         result._axis0_offset = t0
         result._validate_domain_units()
+        self._propagate_gwex_attrs(result)
         return result
 
     def ifft_time(self, nout: int | None = None) -> ScalarField:
@@ -408,6 +411,7 @@ class ScalarField(FieldBase):
             space_domain=self._space_domains,
         )
         result._validate_domain_units()
+        self._propagate_gwex_attrs(result)
         return result
 
     # =========================================================================
@@ -596,6 +600,7 @@ class ScalarField(FieldBase):
             space_domain=new_space_domains,
         )
         result._validate_domain_units()
+        self._propagate_gwex_attrs(result)
         return result
 
     def ifft_space(
@@ -728,6 +733,7 @@ class ScalarField(FieldBase):
             space_domain=new_space_domains,
         )
         result._validate_domain_units()
+        self._propagate_gwex_attrs(result)
         return result
 
     def wavelength(self, axis: str | int) -> u.Quantity:
@@ -847,95 +853,74 @@ class ScalarField(FieldBase):
     def extract_points(
         self,
         points: Sequence[Sequence[u.Quantity]] | Sequence[tuple[u.Quantity, ...]],
-        interp: str = "nearest",
+        interp: str = "linear",
     ) -> Any:
         """Extract time series at specified spatial points.
 
         Parameters
         ----------
         points : list of tuple
-            List of (x, y, z) coordinates. Each coordinate should be a
-            `~astropy.units.Quantity` with compatible units to the
-            corresponding axis.
+            List of (x, y, z) coordinates.
         interp : str, optional
-            Interpolation method. Currently only 'nearest' is supported.
-            Default is 'nearest'.
+            Interpolation method ('linear' or 'nearest'). Default is 'linear'.
 
         Returns
         -------
         TimeSeriesList
-            List of time series, one per point. Each series has metadata
-            indicating the extraction coordinates.
-
-        Raises
-        ------
-        ValueError
-            If ``axis0_domain`` is not 'time'.
-        ValueError
-            If interpolation method is not supported.
-        ValueError
-            If point coordinates have incompatible units.
-        IndexError
-            If any point is outside the spatial domain.
-
-        Examples
-        --------
-        >>> from astropy import units as u
-        >>> points = [(1.0 * u.m, 2.0 * u.m, 3.0 * u.m),
-        ...           (4.0 * u.m, 5.0 * u.m, 6.0 * u.m)]
-        >>> ts_list = field.extract_points(points)
+            List of time series, one per point.
         """
         if self._axis0_domain != "time":
-            raise ValueError(
-                f"extract_points requires axis0_domain='time', "
-                f"got '{self._axis0_domain}'"
-            )
-
-        if interp != "nearest":
-            raise ValueError(
-                f"Unsupported interpolation method '{interp}'. "
-                f"Only 'nearest' is available."
-            )
-
-        from gwexpy.plot._coord import nearest_index, slice_from_index
+            raise ValueError("extract_points requires axis0_domain='time'")
 
         TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
         TimeSeriesList = ConverterRegistry.get_constructor("TimeSeriesList")
 
+        from gwexpy.plot._coord import nearest_index, slice_from_index
+
         result_list = []
         for point in points:
             if len(point) != 3:
-                raise ValueError(
-                    f"Each point must have 3 coordinates (x, y, z), got {len(point)}"
-                )
+                raise ValueError("Each point must have 3 coordinates (x, y, z)")
 
             x_val, y_val, z_val = point
 
-            # Find nearest indices for each spatial axis
-            i1 = nearest_index(self._axis1_index, x_val)
-            i2 = nearest_index(self._axis2_index, y_val)
-            i3 = nearest_index(self._axis3_index, z_val)
+            if interp == "nearest":
+                # Find nearest indices for each spatial axis
+                i1 = nearest_index(self._axis1_index, x_val)
+                i2 = nearest_index(self._axis2_index, y_val)
+                i3 = nearest_index(self._axis3_index, z_val)
 
-            # Extract the time series at this point (keeping 4D then squeeze)
-            sliced = self[
-                :,
-                slice_from_index(i1),
-                slice_from_index(i2),
-                slice_from_index(i3),
-            ]
-            # sliced has shape (nt, 1, 1, 1); squeeze to 1D
-            ts_data = sliced.value.squeeze()
+                # Extract the time series at this point
+                sliced = self[:, slice_from_index(i1), slice_from_index(i2), slice_from_index(i3)]
+                ts_data = sliced.value.squeeze()
 
-            # Actual extracted coordinates for the label
-            actual_x = self._axis1_index[i1]
-            actual_y = self._axis2_index[i2]
-            actual_z = self._axis3_index[i3]
-
-            label = (
-                f"({self._axis1_name}={actual_x:.3g}, "
-                f"{self._axis2_name}={actual_y:.3g}, "
-                f"{self._axis3_name}={actual_z:.3g})"
-            )
+                # Label for the series
+                label = f"({self._axis1_name}={self._axis1_index[i1]:.3g}, y={self._axis2_index[i2]:.3g}, z={self._axis3_index[i3]:.3g})"
+            
+            elif interp == "linear":
+                from scipy.interpolate import interpn
+                
+                # Grid for all 4 axes
+                grid = [
+                    self._axis0_index.value,
+                    self._axis1_index.value,
+                    self._axis2_index.value,
+                    self._axis3_index.value
+                ]
+                
+                # Evaluation points: (nt, 4)
+                # t stays on its grid, while x, y, z are fixed
+                nt = len(self._axis0_index)
+                eval_points = np.zeros((nt, 4))
+                eval_points[:, 0] = self._axis0_index.value
+                eval_points[:, 1] = x_val.to(self._axis1_index.unit).value
+                eval_points[:, 2] = y_val.to(self._axis2_index.unit).value
+                eval_points[:, 3] = z_val.to(self._axis3_index.unit).value
+                
+                ts_data = interpn(grid, self.value, eval_points, method="linear")
+                label = f"({self._axis1_name}={x_val.value:.3g}, y={y_val.value:.3g}, z={z_val.value:.3g})"
+            else:
+                raise ValueError(f"Unsupported interpolation method '{interp}'")
 
             ts = TimeSeries(
                 ts_data,
@@ -948,7 +933,11 @@ class ScalarField(FieldBase):
         return TimeSeriesList(*result_list)
 
     def extract_profile(
-        self, axis: str, at: dict[str, u.Quantity], reduce: str | None = None
+        self,
+        axis: str,
+        at: dict[str, u.Quantity],
+        reduce: str | None = None,
+        interp: str = "linear",
     ) -> tuple[IndexLike, Any]:
         """Extract a 1D profile along a specified axis.
 
@@ -962,6 +951,8 @@ class ScalarField(FieldBase):
             Example: ``{'t': 0.5 * u.s, 'y': 2.0 * u.m, 'z': 0.0 * u.m}``
         reduce : None
             Reserved for future averaging support. Currently ignored.
+        interp : str, optional
+            Interpolation method ('linear' or 'nearest'). Default is 'linear'.
 
         Returns
         -------
@@ -969,72 +960,83 @@ class ScalarField(FieldBase):
             (axis_index, values): Both are `~astropy.units.Quantity` arrays.
             axis_index is the coordinate along the extraction axis,
             values is the data values along that axis.
-
-        Raises
-        ------
-        ValueError
-            If axis is not valid.
-        ValueError
-            If ``at`` dictionary is missing required axes.
-
-        Examples
-        --------
-        >>> from astropy import units as u
-        >>> x_axis, values = field.extract_profile(
-        ...     'x', at={'t': 0.5 * u.s, 'y': 2.0 * u.m, 'z': 0.0 * u.m}
-        ... )
         """
         from gwexpy.plot._coord import nearest_index, slice_from_index
 
         # Map axis name to integer index
         axis_int = self._get_axis_index(axis)
 
-        # Determine which axes need to be fixed
-        all_axes = [
+        # Get the axes coordinates
+        all_axes_info = [
             (0, self._axis0_name, self._axis0_index),
             (1, self._axis1_name, self._axis1_index),
             (2, self._axis2_name, self._axis2_index),
             (3, self._axis3_name, self._axis3_index),
         ]
+        
+        extraction_axis_info = all_axes_info[axis_int]
+        axis_index = extraction_axis_info[2]
 
-        # Build the slice tuple
-        slices = [slice(None)] * 4
-        for ax_int, ax_name, ax_index in all_axes:
-            if ax_int == axis_int:
-                # Keep full slice for extraction axis
-                continue
+        if interp == "nearest":
+            # Build the slice tuple
+            slices = [slice(None)] * 4
+            for ax_int, ax_name, ax_index_val in all_axes_info:
+                if ax_int == axis_int:
+                    continue
 
-            if ax_name not in at:
-                raise ValueError(
-                    f"extract_profile requires fixed value for axis '{ax_name}' "
-                    f"in 'at' dictionary"
-                )
+                if ax_name not in at:
+                    raise ValueError(
+                        f"extract_profile requires fixed value for axis '{ax_name}' "
+                        f"in 'at' dictionary"
+                    )
 
-            value = at[ax_name]
-            idx = nearest_index(ax_index, value)
-            slices[ax_int] = slice_from_index(idx)
+                value = at[ax_name]
+                idx = nearest_index(ax_index_val, value)
+                slices[ax_int] = slice_from_index(idx)
 
-        # Extract the data
-        sliced = self[tuple(slices)]
-        # Shape should be (1, ..., n, ..., 1) with n at axis_int
-        data = sliced.value.squeeze()
-
-        # Get the axis coordinates
-        axis_index = [
-            self._axis0_index,
-            self._axis1_index,
-            self._axis2_index,
-            self._axis3_index,
-        ][axis_int]
+            # Extract the data
+            sliced = self[tuple(slices)]
+            data = sliced.value.squeeze()
+        
+        elif interp == "linear":
+            from scipy.interpolate import interpn
+            
+            # Points along the extraction axis
+            coords = []
+            for ax_int, ax_name, ax_index_val in all_axes_info:
+                if ax_int == axis_int:
+                    coords.append(ax_index_val.value)
+                else:
+                    if ax_name not in at:
+                        raise ValueError(
+                            f"extract_profile requires fixed value for axis '{ax_name}' "
+                            f"in 'at' dictionary"
+                        )
+                    coords.append(at[ax_name].to(ax_index_val.unit).value)
+            
+            # Prepare points for interpn: (n_points, 4)
+            # where n_points = len(axis_index)
+            points = np.zeros((len(axis_index), 4))
+            for i in range(4):
+                if i == axis_int:
+                    points[:, i] = axis_index.value
+                else:
+                    points[:, i] = coords[i]
+            
+            # Grid points for interpn
+            grid = [info[2].value for info in all_axes_info]
+            
+            # Perform interpolation
+            data = interpn(grid, self.value, points, method="linear")
+        else:
+            raise ValueError(f"Unsupported interpolation method '{interp}'")
 
         # Return with units
         from astropy import units as u
-
+        values = data
         if hasattr(self, "unit") and self.unit is not None:
-            values = data * self.unit
-        else:
-            values = data * u.dimensionless_unscaled
-
+            values = values * self.unit
+        
         return axis_index, values
 
     def slice_map2d(self, plane="xy", at=None):
@@ -1476,7 +1478,7 @@ class ScalarField(FieldBase):
         else:
             raise ValueError(f"Invalid mode '{mode}'")
 
-        return ScalarField(
+        result = ScalarField(
             result_data,
             unit=result_unit,
             axis0=self._axis0_index,
@@ -1487,6 +1489,8 @@ class ScalarField(FieldBase):
             axis0_domain=self._axis0_domain,
             space_domain=self._space_domains,
         )
+        self._propagate_gwex_attrs(result)
+        return result
 
     def zscore(self, baseline_t=None):
         """Compute z-score normalized field using a baseline period.
@@ -1549,7 +1553,7 @@ class ScalarField(FieldBase):
             zscore_data = (self.value - mean) / std
             zscore_data = np.nan_to_num(zscore_data, nan=0.0, posinf=0.0, neginf=0.0)
 
-        return ScalarField(
+        result = ScalarField(
             zscore_data,
             unit=u.dimensionless_unscaled,
             axis0=self._axis0_index,
@@ -1560,6 +1564,8 @@ class ScalarField(FieldBase):
             axis0_domain=self._axis0_domain,
             space_domain=self._space_domains,
         )
+        self._propagate_gwex_attrs(result)
+        return result
 
     def time_stat_map(self, stat="mean", t_range=None, plane="xy", at=None):
         """Compute a time-aggregated 2D map.
@@ -1644,6 +1650,7 @@ class ScalarField(FieldBase):
             axis0_domain=self._axis0_domain,
             space_domain=self._space_domains,
         )
+        self._propagate_gwex_attrs(result)
 
         # If plane and at are specified, further slice
         if at is not None:
@@ -1951,7 +1958,7 @@ class ScalarField(FieldBase):
 
         # Reshape back
         new_shape = [new_nt] + list(orig_shape[1:])
-        return ScalarField(
+        result = ScalarField(
             new_data_2d.reshape(new_shape),
             unit=self.unit,
             axis0=new_times,
@@ -1962,6 +1969,8 @@ class ScalarField(FieldBase):
             axis0_domain="time",
             space_domain=self._space_domains,
         )
+        self._propagate_gwex_attrs(result)
+        return result
 
     def filter(self, *args, **kwargs) -> ScalarField:
         """Apply a filter along the time axis (axis 0).
@@ -2034,7 +2043,7 @@ class ScalarField(FieldBase):
             )
 
         # Reshape back
-        return ScalarField(
+        result = ScalarField(
             new_data_2d.reshape(orig_shape),
             unit=self.unit,
             axis0=self._axis0_index,
@@ -2045,6 +2054,8 @@ class ScalarField(FieldBase):
             axis0_domain="time",
             space_domain=self._space_domains,
         )
+        self._propagate_gwex_attrs(result)
+        return result
 
     def compute_xcorr(self, point_a, point_b, **kwargs):
         """Compute cross-correlation between two spatial points.

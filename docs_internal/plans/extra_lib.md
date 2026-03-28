@@ -1544,3 +1544,321 @@ gantt
 - 個別テスト: `26/26`, `18/18`, `35/35`, `35/35`
 - 統合: `114/114` passed
 - `ruff check`: clean
+
+---
+
+ **優先度付きアクション 2026-03-28**
+
+# 優先度：高（必須に近い）
+
+これらはまず着手してください。CI 安定化とユーザに影響する I/O の安全性確保を目的とします。
+
+## 1. CI のノートブック実行失敗を解消（`docs/tutorials/cagmon_noise_diagnostics.ipynb`）
+
+**目的**
+
+* ドキュメントビルド（Sphinx / nbsphinx）の CI 故障を解消する。現状 CI でノートブック実行が失敗してドキュメントビルドが止まっている（commit: `91dcd1b...`）。
+
+**対象ファイル**
+
+* `docs/tutorials/cagmon_noise_diagnostics.ipynb`
+* `docs/conf.py`
+
+**修正案（手順）**
+
+1. **短期安定化（CI）** — CI でのドキュメントビルドを成功させるため、問題のノートブックを CI 実行から除外する。`docs/conf.py` に以下を追加（CI 環境でのみ動くように）：
+
+```py
+# docs/conf.py (追加)
+import os
+if os.environ.get("CI", "").lower() in {"1", "true", "yes"}:
+    # ノートブックをドキュメントビルドで実行しない（出力の再実行を避ける）
+    nbsphinx_execute = "never"
+    # あるいは特定ノートブックだけ除外する場合は：
+    exclude_patterns = getattr(globals(), "exclude_patterns", []) + [
+        "tutorials/cagmon_noise_diagnostics.ipynb",
+    ]
+```
+
+2. **根本対応（開発）** — ノートブック自体の 1) 実行依存（外部データ/ネットワーク/大きなファイル）を取り除く、2) heavy cell を `if SKIP:` でガードするか、セル単位で `try/except` を追加して CI 失敗を防ぐ。
+
+   * 推奨: ノートブックに `CI = os.environ.get("CI")` 判定を書き、CI 時は heavy cell をスキップする。
+
+**テスト / 検証**
+
+* ローカルで `CI=true make docs`（または `sphinx-build`）を実行し、ビルドが成功することを確認。
+* その後、ノートブックの出力を将来的に再埋め込みしたい場合は、別 PR でノートブックの依存を整理し `nbsphinx_execute` を戻す。
+
+**補足**
+
+* 目標は「CI でドキュメントが常にビルドできる」ことです。ノートブックの出力を必要とするユーザ向けに、`docs/tutorials/README.md` に「再実行方法」も併せて記載してください。
+
+---
+
+## 2. Zarr のメモリ安全読み込み（`gwexpy/timeseries/io/zarr_.py`）
+
+**目的**
+
+* 大容量 Zarr ストア読み込み時にメモリ不足でプロセスが落ちないように、**チャンク/memmap ベース**の `read_timeseriesdict_zarr` オプションを提供する。現在は `arr[:]` で一括読み込みしているため、メモリに乗らないデータで危険。
+
+**対象ファイル**
+
+* `gwexpy/timeseries/io/zarr_.py`（`read_timeseriesdict_zarr`）
+
+**修正案（コード断片）**
+
+* インターフェース変更（デフォルト互換）：
+
+```py
+def read_timeseriesdict_zarr(source, *, channels=None, unit=None, chunked=False, max_chunk_bytes=1_000_000_000, **kwargs):
+    """... chunked: if True, use a memmap temp file to avoid large memory spikes. """
+```
+
+* 実装ロジック（擬似コード）：
+
+```py
+import tempfile
+# ...
+for key in keys:
+    arr = store[key]
+    # get shape and dtype
+    n = arr.shape[0]
+    # estimate bytes
+    nbytes = n * np.dtype(np.float64).itemsize
+    if chunked or nbytes > max_chunk_bytes:
+        # create temp memmap
+        tmp = tempfile.NamedTemporaryFile(delete=False)
+        mmap = np.memmap(tmp.name, dtype=np.float64, mode="w+", shape=(n,))
+        # read in chunk-sized slices, e.g., chunk_n = min(n, 10_000_000)
+        chunk_n = int(max(1, max_chunk_bytes // (8)))  # approx samples
+        for i in range(0, n, chunk_n):
+            slice_ = slice(i, min(n, i+chunk_n))
+            mmap[slice_] = arr[slice_]
+        mmap.flush()
+        ts_values = mmap   # memmap behaves like ndarray
+    else:
+        ts_values = np.asarray(arr[:], dtype=np.float64)
+
+    ts = TimeSeries(ts_values, t0=..., sample_rate=..., name=key)
+```
+
+* 注意点：`TimeSeries` を `np.memmap`（read-only or read-write）で作ることが可能か事前確認。もし `TimeSeries` が内部で `np.asarray` をコピーしてしまう場合は、memmap の意味が薄れる。最悪は `TimeSeries` のコンストラクタに `value` と `copy=False` オプションを要求するか、`TimeSeries` 側の軽微修正が必要（ただしまずは memmap を渡して効果を確認してください）。
+
+**テスト / 検証**
+
+* 新しいテスト `tests/io/test_zarr_chunked.py` を作成：
+
+  * 大きめ配列（例：長さ 10M）の仮配列を zarr に書き、`read_timeseriesdict_zarr(..., chunked=True, max_chunk_bytes=1_000_000)` で読み込み、値とメタ（t0, sample_rate, unit）を比較する（round-trip）。
+  * small-case: `chunked=False` の既存挙動 （互換）も確認する。
+
+**補足**
+
+* `zarr.open_group(..., mode="r")` はリモート stores もサポート。memmap を使う場合は tmpfile の配置先（ディスク容量）に注意。CI 用のテストでは小さい配列にして高速化。
+
+---
+
+## 3. Multi-port / FrequencySeriesMatrix の I/O 仕様化とテスト
+
+**目的**
+
+* 多ポート（multi-channel）データ、複素周波数データ、伝達関数行列などの **round-trip（write→read）仕様を明文化し、テストで担保**する。現在ドキュメントに言及はあるが、ファイルフォーマット（次元順、複素表現等）の厳密な仕様とテストが不足。
+
+**対象ファイル / ドキュメント**
+
+* `gwexpy/timeseries/io/zarr_.py`（読み書き側）
+* `docs_internal/plans/io_improvements.md`（参照）
+
+**仕様案（短く）**
+
+* **Zarr convention（明文化）**
+
+  * **Channels**: root group に各チャネル名の配列を置く（既存）。マルチポート行列は `group/real` と `group/imag` または `group/complex` のように**複素を表現**するルールを定義するか、`complex` dtype をサポートする。
+  * **Attributes**: per-array attributes: `sample_rate`(Hz), `t0`(GPS seconds), `dt`, `unit`. チャンネル順のメタは `channels` attribute を root group に保存。
+  * **次元順**: 時系列配列は `shape=(N,)`（各チャネル単体）。「行列（TimeSeriesMatrix）」は `writer_dict` で `tsd.to_matrix()` を `np.stack` する場合、 **先にチャネル次元を axis=0 にする（shape=(n_channels, N)）** ことを明確にする。読み戻す際は `to_matrix()` を逆に解釈。
+
+**修正案（テスト実装）**
+
+* 新しいテスト `tests/io/test_multichannel_roundtrip.py`:
+
+```py
+def test_zarr_multichannel_roundtrip(tmp_path):
+    # create two TimeSeries, different units and t0/sample_rate
+    tsd = TimeSeriesDict({
+        "chA": TimeSeries(np.arange(100), t0=1000., sample_rate=10., name="chA"),
+        "chB": TimeSeries(np.arange(100)*2, t0=1000., sample_rate=10., name="chB")
+    })
+    target = tmp_path / "test.zarr"
+    write_timeseriesdict_zarr(tsd, str(target))
+    tsd2 = read_timeseriesdict_zarr(str(target))
+    assert set(tsd.keys()) == set(tsd2.keys())
+    for k in tsd:
+        assert np.allclose(tsd[k].value, tsd2[k].value)
+        assert tsd[k].t0 == tsd2[k].t0
+        # unit checks etc.
+```
+
+* 追加テスト: 複素スペクトル格納（もし FrequencySeriesMatrix 用の writer/reader があれば同様に round-trip テストを追加）。
+
+**検証**
+
+* CI でこれら tests が通ること。必要なら CI Matrix にメモリ重いテストを除外。
+
+---
+
+# 優先度：中（改善推奨）
+
+実装の堅牢性とデバッグ効率を上げるための改善です。
+
+## 4. `apply_unit` のエラーメッセージ詳細化（`gwexpy/io/utils.py`）
+
+**目的**
+
+* `apply_unit` のフォールバック再構築が失敗した場合、**何が足りないか**を示す詳細情報を出すことでデバッグしやすくする。
+
+**修正案（コード断片）**
+
+```py
+# gwexpy/io/utils.py (inside apply_unit)
+    try:
+        return series.__class__(... same args ...)
+    except (TypeError, ValueError) as exc:
+        # collect diagnostics
+        missing = {}
+        for attr in ("times", "dt", "t0", "frequencies", "df", "f0", "channel", "name", "epoch"):
+            missing[attr] = getattr(series, attr, "<MISSING>")
+        raise ValueError(
+            f"Could not apply unit {unit!r} to series of type {series.__class__.__name__}. "
+            f"Attempted fallback constructor and failed: {exc!r}. Diagnostics: {missing}"
+        ) from exc
+```
+
+**テスト**
+
+* `tests/io/test_gwexpy_utils.py` に、モックオブジェクトで再構築エラーを誘発させ、投げられる例外メッセージに `Diagnostics` が含まれることを確認する。
+
+---
+
+## 5. `_import_zarr()` / ensure_dependency のメッセージ一貫化（`zarr_.py`）
+
+**目的**
+
+* `ensure_dependency` が標準化された `ImportError` を投げるので、`_import_zarr()` 側で再度別メッセージを作らず、`ensure_dependency` の例外をそのまま伝播させることでメッセージの一貫化を図る。現状 `_import_zarr()` は `ensure_dependency` を try/except して再メッセージ化している。
+
+**修正案**
+
+```py
+def _import_zarr():
+    # previously: try: zarr = ensure_dependency("zarr") except ImportError: raise ...
+    return ensure_dependency("zarr")
+```
+
+**テスト**
+
+* 依存がない環境を想定したテスト（モンキーパッチ）で `_import_zarr()` が `ImportError` を投げ、そのメッセージが `pip install zarr` を含むことを確認。
+
+---
+
+## 6. GWpy 互換 CI（検証 matrix）
+
+**目的**
+
+* `gwexpy` が複数バージョンの `gwpy` に対して互換性を保つため、CI に互換性検証ジョブを追加する（`COMPATIBILITY_CHECKLIST` / `VERIFICATION_PLAN` にある方針に従う）。
+
+**修正案（ワークフロー）**
+
+* 新規 GitHub Actions ワークフロー `.github/workflows/compat_gwpy.yml`：
+
+```yaml
+name: GWpy compatibility
+on: [push, pull_request]
+jobs:
+  compat:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        gwpy: [ "3.0.12", "4.0.0" ]  # 必要バージョンを調整
+        python: [ "3.10" ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with: {python-version: ${{ matrix.python }}}
+      - name: Install dependencies (gwpy)
+        run: |
+          pip install "gwpy==${{ matrix.gwpy }}"
+          pip install -e .
+      - name: Run compatibility tests
+        run: pytest tests/compat/gwpy_compat_tests.py -q
+```
+
+* `tests/compat/gwpy_compat_tests.py` を作成し、`TimeSeries/FrequencySeries` の round-trip と `to_gps/from_gps`、`apply_unit` 等の互換的 API を検証する簡単なケースを入れる。
+
+**検証**
+
+* 各 GWpy バージョンでテストが通ること。
+
+---
+
+# 優先度：低（将来的に実施推奨）
+
+優先度は低めですが、運用面や利便性の観点で有益です。
+
+## 7. Zarr writer のチャンクパラメータ明示と chunked-write サポート
+
+**目的**
+
+* 書き込み側でチャンクを明示して高速化 / 圧縮 / read-friendly にする。
+* `write_timeseriesdict_zarr` に `chunks` 引数を追加し、`zarr` の `create_array(..., chunks=...)` を使う。
+
+**修正案**
+
+* `write_timeseriesdict_zarr(tsd, target, chunks=None)` を追加。`chunks` を渡して `creator = store.create_array(..., chunks=chunks)`。
+
+**テスト**
+
+* 小さな zarr store を作り、読み出しパフォーマンス差を確認するベンチを作成（CI では軽い smoke test）。
+
+---
+
+## 8. ドキュメント：I/O 仕様（短文）とユーザガイドの拡充
+
+**目的**
+
+* 新仕様（zarr / netcdf の複素・多ポート規約、chunked 読み書きオプション）を `docs/` と `docs_internal/` に明記。ユーザが混乱しないように入出力の例を追加。
+
+**修正案**
+
+* `docs/developers/compatibility/gwpy/COMPATIBILITY_CHECKLIST.md` に簡潔な「I/O 仕様」セクションを追加。
+* `docs/web/en/user_guide/gwexpy_for_gwpy_users_en.md` に I/O の quickstart（zarr の読み書き例）を追加。
+
+---
+
+# 追加：エージェントが実装する際のチェックリスト（PR 作成時）
+
+各 PR で最低限満たすべき項目を列挙します（レビュワーが即テストできるように）。
+
+1. **変更内容の概要（PR タイトル & description）**：なぜ必要か、影響範囲、互換性の破壊があるか。
+2. **単体テスト**：追加/修正した関数の pytest を含める。最小限の round-trip テストを含めること。
+3. **ドキュメント**：API 変更（引数追加など）がある場合は docs に追記（`docs_internal` でも可）。
+4. **CI 実行**：ローカルで `pytest -q` と `make docs`（または `sphinx-build`）を実行し成功を確認。
+5. **安全性**：tmpfile は削除、例外メッセージはユーザ向けに意味があること。
+6. **互換性**：既存ユーザの既存コードパスが破壊されないか（オプションはデフォルトで既存挙動を維持すること）。
+
+---
+
+# 参照（該当ファイル）
+
+* `gwexpy/io/utils.py` — `ensure_dependency`, `apply_unit`, `set_provenance`（実装と改善ポイント）。
+* `gwexpy/interop/_registry.py` — `ConverterRegistry`（循環依存対策）。
+* `gwexpy/timeseries/io/zarr_.py` — Zarr I/O（読み書き、register_timeseries_format）。
+* `gwexpy/time/core.py` — 時刻変換ユーティリティ（GWpy 互換層）。
+* ドキュメント / 互換レポート: `docs_internal/.../VERIFICATION_PLAN.md`, `COMPATIBILITY_CHECKLIST.md`, `gwexpy_for_gwpy_users_en.md`（GWpy 互換方針）。
+
+---
+
+## 最後に（運用上の注意）
+
+* 大きな I/O 変更は **段階的（feature-flag / opt-in）** で導入してください（`chunked=True` は opt-in）。
+* 依存パッケージは `extras_require`（`gwexpy[zarr]` 等）で明示し、ユーザにインストール方法が `ImportError` で出るよう `ensure_dependency` のままにしてください。
+
+---

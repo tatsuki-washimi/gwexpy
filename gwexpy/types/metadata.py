@@ -484,7 +484,9 @@ class MetaDataMatrix(np.ndarray):
                 if isinstance(default, MetaData)
                 else MetaData(**(default or {}))
             )
-            input_array = np.full(shape, default, dtype=object)
+            input_array = np.empty(shape, dtype=object)
+            for idx in np.ndindex(shape):
+                input_array[idx] = MetaData(**dict(default))
 
         obj = np.asarray(input_array, dtype=object).copy().view(cls)
         flat = list(obj.flat)
