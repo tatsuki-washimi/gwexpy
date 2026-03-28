@@ -1,7 +1,17 @@
 
 # gwexpy Examples & Tutorials
 
-This directory contains Jupyter notebooks demonstrating the features and applications of the `gwexpy` library. The files are organized with prefixes to distinguish between basic feature introductions and scenario-based case studies.
+This directory is the **canonical location for all user-runnable examples and tutorials**.
+The files are organized with prefixes to distinguish between basic feature introductions and scenario-based case studies.
+
+## Role of this directory vs. the documentation site
+
+| Location | Purpose | Audience |
+| --- | --- | --- |
+| `examples/` **(here)** | Executable notebooks and scripts. Clone and run locally. | Users who want hands-on practice |
+| `docs/web/*/user_guide/tutorials/` | Static read-only versions embedded in the Sphinx site. | Users reading the online documentation |
+
+The notebooks in `examples/` are the **source of truth**. Selected notebooks are referenced or rendered by the Sphinx documentation, but the runnable originals always live here.
 
 ## 1. Feature Introductions (`basic-new-methods/intro_*.ipynb`)
 These notebooks focus on introducing specific classes and methods within the `gwexpy` library.
@@ -21,7 +31,7 @@ These notebooks focus on introducing specific classes and methods within the `gw
 - **[intro_ScalarField.ipynb](basic-new-methods/intro_ScalarField.ipynb)**: Introduction to `ScalarField` — 4D physical field type added by gwexpy.
 - **[plot_ScalarField.ipynb](basic-new-methods/plot_ScalarField.ipynb)**: Visualization of `ScalarField` data.
 
-## 2. Case Studies & Applications (`case-studies/example_*.ipynb`)
+## 2. Case Studies & Applications (`case-studies/`)
 These notebooks demonstrate how to combine multiple `gwexpy` features to solve practical data analysis problems.
 
 - **[example_signal-extraction.ipynb](case-studies/example_signal-extraction.ipynb)**: Extracting weak signals from noisy backgrounds using whitening and filtering.
@@ -32,6 +42,10 @@ These notebooks demonstrate how to combine multiple `gwexpy` features to solve p
 - **[example_lockin-detection.ipynb](case-studies/example_lockin-detection.ipynb)**: Demodulation and heterodyne analysis of carrier signals.
 - **[example_wiener-filter.ipynb](case-studies/example_wiener-filter.ipynb)**: Multi-component noise reduction using MIMO Wiener filter matrices.
 - **[example_bootstrap-spectral.ipynb](case-studies/example_bootstrap-spectral.ipynb)**: Robust spectral estimation using resampling techniques.
+- **[example_coupling-analysis.ipynb](case-studies/example_coupling-analysis.ipynb)**: Coupling function estimation between sensor channels.
+- **[example_response-analysis.ipynb](case-studies/example_response-analysis.ipynb)**: Frequency-domain response characterization of physical systems.
+- **[cagmon_noise_diagnostics.ipynb](case-studies/cagmon_noise_diagnostics.ipynb)**: CAGMon-based noise diagnostics pipeline for gravitational-wave detectors.
+- **[rayleigh_gauch_tutorial.ipynb](case-studies/rayleigh_gauch_tutorial.ipynb)**: Rayleigh and GauCh statistic tutorial for non-Gaussian noise characterization.
 
 ## 3. Specialized Analysis & Tutorials (`advanced-methods/tutorial_*.ipynb`)
 These notebooks provide in-depth tutorials on specific advanced analysis techniques.
