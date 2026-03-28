@@ -14,6 +14,7 @@ The files are organized with prefixes to distinguish between basic feature intro
 The notebooks in `examples/` are the **source of truth**. Selected notebooks are referenced or rendered by the Sphinx documentation, but the runnable originals always live here.
 
 ## 1. Feature Introductions (`basic-new-methods/intro_*.ipynb`)
+
 These notebooks focus on introducing specific classes and methods within the `gwexpy` library.
 
 - **[intro_TimeSeries.ipynb](basic-new-methods/intro_TimeSeries.ipynb)**: Basic `TimeSeries` operations.
@@ -32,22 +33,24 @@ These notebooks focus on introducing specific classes and methods within the `gw
 - **[plot_ScalarField.ipynb](basic-new-methods/plot_ScalarField.ipynb)**: Visualization of `ScalarField` data.
 
 ## 2. Case Studies & Applications (`case-studies/`)
+
 These notebooks demonstrate how to combine multiple `gwexpy` features to solve practical data analysis problems.
 
-- **[example_signal-extraction.ipynb](case-studies/example_signal-extraction.ipynb)**: Extracting weak signals from noisy backgrounds using whitening and filtering.
-- **[example_calibration.ipynb](case-studies/example_calibration.ipynb)**: Converting raw digital counts to physical units (displacement) using transfer functions.
-- **[example_trend-analysis.ipynb](case-studies/example_trend-analysis.ipynb)**: Monitoring long-term stability and detecting impulsive glitches.
-- **[example_active-damping.ipynb](case-studies/example_active-damping.ipynb)**: Control system analysis and noise suppression verification.
-- **[example_noise-budget.ipynb](case-studies/example_noise-budget.ipynb)**: Multi-channel correlation analysis and noise projection.
-- **[example_lockin-detection.ipynb](case-studies/example_lockin-detection.ipynb)**: Demodulation and heterodyne analysis of carrier signals.
-- **[example_wiener-filter.ipynb](case-studies/example_wiener-filter.ipynb)**: Multi-component noise reduction using MIMO Wiener filter matrices.
-- **[example_bootstrap-spectral.ipynb](case-studies/example_bootstrap-spectral.ipynb)**: Robust spectral estimation using resampling techniques.
-- **[example_coupling-analysis.ipynb](case-studies/example_coupling-analysis.ipynb)**: Coupling function estimation between sensor channels.
-- **[example_response-analysis.ipynb](case-studies/example_response-analysis.ipynb)**: Frequency-domain response characterization of physical systems.
-- **[cagmon_noise_diagnostics.ipynb](case-studies/cagmon_noise_diagnostics.ipynb)**: CAGMon-based noise diagnostics pipeline for gravitational-wave detectors.
-- **[rayleigh_gauch_tutorial.ipynb](case-studies/rayleigh_gauch_tutorial.ipynb)**: Rayleigh and GauCh statistic tutorial for non-Gaussian noise characterization.
+- **[case_signal_extraction.ipynb](case-studies/case_signal_extraction.ipynb)**: Extracting weak signals from noisy backgrounds using whitening and filtering.
+- **[case_trend_analysis.ipynb](case-studies/case_trend_analysis.ipynb)**: Monitoring long-term stability and detecting impulsive glitches.
+- **[case_active_damping.ipynb](case-studies/case_active_damping.ipynb)**: Control system analysis and noise suppression verification.
+- **[case_noise_budget.ipynb](case-studies/case_noise_budget.ipynb)**: Multi-channel correlation analysis and noise projection.
+- **[case_lockin_detection.ipynb](case-studies/case_lockin_detection.ipynb)**: Demodulation and heterodyne analysis of carrier signals.
+- **[case_wiener_filter.ipynb](case-studies/case_wiener_filter.ipynb)**: Multi-component noise reduction using MIMO Wiener filter matrices.
+- **[case_bootstrap_spectral.ipynb](case-studies/case_bootstrap_spectral.ipynb)**: Robust spectral estimation using resampling techniques.
+- **[case_coupling_analysis.ipynb](case-studies/case_coupling_analysis.ipynb)**: Coupling function estimation between sensor channels.
+- **[case_response_analysis.ipynb](case-studies/case_response_analysis.ipynb)**: Frequency-domain response characterization of physical systems.
+- **[case_transfer_function.ipynb](case-studies/case_transfer_function.ipynb)**: Transfer function estimation and Bode analysis.
+- **[case_cagmon_noise_diagnostics.ipynb](case-studies/case_cagmon_noise_diagnostics.ipynb)**: CAGMon-based noise diagnostics pipeline for gravitational-wave detectors.
+- **[case_rayleigh_gauch.ipynb](case-studies/case_rayleigh_gauch.ipynb)**: Rayleigh and GauCh statistic tutorial for non-Gaussian noise characterization.
 
 ## 3. Specialized Analysis & Tutorials (`advanced-methods/tutorial_*.ipynb`)
+
 These notebooks provide in-depth tutorials on specific advanced analysis techniques.
 
 - **[advanced_hht.ipynb](../docs/web/en/user_guide/tutorials/advanced_hht.ipynb)**: Hilbert-Huang Transform (EMD + Hilbert Spectral Analysis) for non-stationary signals (published in User Guide).
@@ -61,6 +64,7 @@ These notebooks provide in-depth tutorials on specific advanced analysis techniq
 - **[tutorial_Control_03_Design.ipynb](advanced-methods/tutorial_Control_03_Design.ipynb)**: Control system design workflow.
 
 ## 4. Paper Figures (`paper-figures/`)
+
 Executable [marimo](https://marimo.io/) scripts that reproduce the figures in the gwexpy paper.
 These serve as both reproducibility artifacts and advanced usage examples.
 
