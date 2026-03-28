@@ -106,8 +106,8 @@ with patch.dict(sys.modules, {"torch": fake_torch_mod}):
 
 | テストファイル | 失敗数 | 原因 |
 |--------------|--------|------|
-| `tests/interop/test_interop_obspy.py::TestFromObspy::test_trace_to_ts` | 1 | `TypeError: Unsupported conversion: Trace -> TimeSeries`（実装バグ） |
-| `tests/signal/test_imputation.py::TestImpute::test_fill_value_ffill_non_nan` | 1 | 実装バグ |
+| `tests/interop/test_interop_obspy.py::TestFromObspy::test_trace_to_ts` | 0 | ✅ **修正済み**（`5ad3726b`） |
+| `tests/signal/test_imputation.py::TestImpute::test_fill_value_ffill_non_nan` | 0 | ✅ **修正済み**（`5ad3726b`） |
 | `tests/timeseries/test_matrix_analysis.py` | ~10 | `sklearn` 未インストールによる `ImportError` |
 | `tests/timeseries/test_pipeline.py::TestImputeTransform::test_transform_list` | 1 | 実装バグ |
 
@@ -117,8 +117,12 @@ with patch.dict(sys.modules, {"torch": fake_torch_mod}):
 
 ### 高優先度（実装バグ修正）
 
-- [ ] `gwexpy/interop/obspy_.py` の `from_obspy` 実装バグ修正（`Trace -> TimeSeries` 変換未実装）
-- [ ] `signal/test_imputation.py` の `ffill` バグ調査・修正
+- [x] `gwexpy/interop/obspy_.py` の `from_obspy` 実装バグ修正（`Trace -> TimeSeries` 変換未実装）
+  - **原因**: `hasattr(TimeSeries, "frequencies")` が `False` のためフォールスルーし `TypeError`
+  - **修正**: `else` ブランチを追加して `_from_obspy_trace_to_ts` を直接呼ぶよう修正（`5ad3726b`）
+- [x] `signal/preprocessing/imputation.py` の `ffill`/`bfill` バグ修正
+  - **原因**: pandas 新バージョンで `Series.ffill().values` が read-only 配列を返し `ValueError`
+  - **修正**: `.values.copy()` に変更して書き込み可能にした（`5ad3726b`）
 
 ### 中優先度（カバレッジ向上）
 
@@ -168,6 +172,6 @@ conda run -n gwexpy python -m pytest tests/ \
 本作業セッションで新規追加したテストファイル数：**30+** ファイル
 追加テスト総数（概算）：**700+** テスト
 テスト収集総数：**5,687** テスト収集（セッション開始時より大幅増加）
-実行結果：**5,394 passed / 45 failed / 257 skipped**（45件は全て pre-existing の失敗）
+実行結果：**5,394 passed / 45 failed / 257 skipped**（45件は全て pre-existing の失敗、うち2件はその後修正済み → 43件残存）
 
 モックを活用することで、外部ライブラリが未インストールの環境でもロジックの正確性を検証できる堅牢なテスト基盤を構築しました。
