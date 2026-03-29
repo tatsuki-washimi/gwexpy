@@ -35,6 +35,9 @@ class SignalAnalysisMixin:
             Smoothed series.
         """
         from astropy import units as u
+        from typing import cast
+
+        h = cast(Any, self)
 
         # Determine value logic based on method
         # This logic is mostly common between Time/Frequency series if we abstract 'value' and 'unit'
@@ -55,13 +58,13 @@ class SignalAnalysisMixin:
                 else:
                     return uniform_filter1d(x, size=width)
 
-            re = _smooth(self.value.real)  # type: ignore[attr-defined]
-            im = _smooth(self.value.imag)  # type: ignore[attr-defined]
+            re = _smooth(h.value.real)
+            im = _smooth(h.value.imag)
             val = re + 1j * im
-            unit = self.unit  # type: ignore[attr-defined]
+            unit = h.unit
 
         elif method == "amplitude":
-            mag = np.abs(self.value)  # type: ignore[attr-defined]
+            mag = np.abs(h.value)
             if ignore_nan:
                 import pandas as pd
 
@@ -75,9 +78,9 @@ class SignalAnalysisMixin:
                 from scipy.ndimage import uniform_filter1d
 
                 val = uniform_filter1d(mag, size=width)
-            unit = self.unit  # type: ignore[attr-defined]
+            unit = h.unit
         elif method == "power":
-            pwr = np.abs(self.value) ** 2  # type: ignore[attr-defined]
+            pwr = np.abs(h.value) ** 2
             if ignore_nan:
                 import pandas as pd
 
@@ -91,10 +94,10 @@ class SignalAnalysisMixin:
                 from scipy.ndimage import uniform_filter1d
 
                 val = uniform_filter1d(pwr, size=width)
-            unit = self.unit**2  # type: ignore[attr-defined]
+            unit = h.unit**2
         elif method == "db":
             # To dB
-            mag = np.abs(self.value)  # type: ignore[attr-defined]
+            mag = np.abs(h.value)
             with np.errstate(divide="ignore"):
                 db = 20 * np.log10(mag)
             if ignore_nan:
@@ -124,21 +127,21 @@ class SignalAnalysisMixin:
         # But we want to return a new object of the same type.
 
         # Try to infer constructor args or copy metadata
-        self.copy()  # type: ignore[attr-defined]
+        h.copy()
         # Update data and unit
         # Note: gwpy series copy() is shallow-ish but creates new object.
         # Setting .value directly might be tricky if it's a property wrapper, but typically ok for bare arrays.
         # But changing unit usually requires creating new Quantity-like object or setting property.
 
         # A cleaner way for gwpy objects:
-        matrix_cls = cast(Any, self.__class__)
+        matrix_cls = cast(Any, h.__class__)
         return matrix_cls(
             val,
             unit=unit,
-            name=self.name,  # type: ignore[attr-defined]
-            channel=self.channel,  # type: ignore[attr-defined]
+            name=h.name,
+            channel=h.channel,
             # Pass through extensive metadata if possible, but minimal set is safe
-            **self._get_meta_for_constructor(),
+            **h._get_meta_for_constructor(),
         )
 
     def _get_meta_for_constructor(self):
@@ -172,15 +175,17 @@ class SignalAnalysisMixin:
         """
         import scipy.signal
 
+        h = cast(Any, self)
+
         # Prepare target array based on method
         if method == "amplitude":
-            target = np.abs(self.value)
-            current_unit = self.unit
+            target = np.abs(h.value)
+            current_unit = h.unit
         elif method == "power":
-            target = np.abs(self.value) ** 2
-            current_unit = self.unit**2 if self.unit else None
+            target = np.abs(h.value) ** 2
+            current_unit = h.unit**2 if h.unit else None
         elif method == "db":
-            target = 20 * np.log10(np.abs(self.value))
+            target = 20 * np.log10(np.abs(h.value))
             current_unit = None  # dB is unitless-ish
         else:
             raise ValueError(f"Unknown method {method}")
@@ -197,16 +202,16 @@ class SignalAnalysisMixin:
 
         # Unit support for distance and width
         # This requires knowing the 'dx' (dt or df)
-        dx = getattr(self, "dt", None)
+        dx = getattr(h, "dt", None)
         if dx is None:
-            dx = getattr(self, "df", None)
+            dx = getattr(h, "df", None)
 
         if dx is not None:
             dx_val = dx.value if hasattr(dx, "value") else dx
             dx_unit = getattr(dx, "unit", None)
 
-            if dx_unit is None and hasattr(self, "xunit"):
-                dx_unit = getattr(self, "xunit", None)
+            if dx_unit is None and hasattr(h, "xunit"):
+                dx_unit = getattr(h, "xunit", None)
 
             if dx_unit is None or (
                 hasattr(dx_unit, "physical_type")
@@ -214,7 +219,7 @@ class SignalAnalysisMixin:
             ):
                 # Fallback based on class type if unit is missing or dimensionless
                 # meticulous heuristic checks
-                cls_name = self.__class__.__name__
+                cls_name = h.__class__.__name__
                 if "Time" in cls_name:
                     from astropy import units as u
 
@@ -268,10 +273,9 @@ class SignalAnalysisMixin:
             return series[[]], props
 
         # Use slicing to return subset (preserves type and metadata)
-        series = cast(Any, self)
-        out = series[peaks_indices]
-        if self.name:  # type: ignore[attr-defined]
-            out.name = f"{self.name}_peaks"  # type: ignore[attr-defined]
+        out = h[peaks_indices]
+        if h.name:
+            out.name = f"{h.name}_peaks"
         return out, props
 
 

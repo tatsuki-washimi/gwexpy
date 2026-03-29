@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
@@ -205,31 +205,31 @@ class MetaData(dict):
         return np.positive(self)
 
     def __add__(self, other):
-        return np.add(self, other)  # type: ignore[call-overload]
+        return np.add(cast(Any, self), other)
 
     def __radd__(self, other):
-        return np.add(other, self)  # type: ignore[call-overload]
+        return np.add(other, cast(Any, self))
 
     def __sub__(self, other):
-        return np.subtract(self, other)  # type: ignore[call-overload]
+        return np.subtract(cast(Any, self), other)
 
     def __rsub__(self, other):
-        return np.subtract(other, self)  # type: ignore[call-overload]
+        return np.subtract(other, cast(Any, self))
 
     def __mul__(self, other):
-        return np.multiply(self, other)  # type: ignore[call-overload]
+        return np.multiply(cast(Any, self), other)
 
     def __rmul__(self, other):
-        return np.multiply(other, self)  # type: ignore[call-overload]
+        return np.multiply(other, cast(Any, self))
 
     def __truediv__(self, other):
-        return np.divide(self, other)  # type: ignore[call-overload]
+        return np.divide(cast(Any, self), other)
 
     def __rtruediv__(self, other):
-        return np.divide(other, self)  # type: ignore[call-overload]
+        return np.divide(other, cast(Any, self))
 
-    def __pow__(self, exponent, modulo: None = None, /):  # type: ignore[override]
-        return np.power(self, exponent)  # type: ignore[call-overload]
+    def __pow__(self, exponent, modulo=None):
+        return np.power(cast(Any, self), exponent)
 
     def __repr__(self):
         keys = ["name", "unit", "channel"]
@@ -661,31 +661,31 @@ class MetaDataMatrix(np.ndarray):
         return MetaDataMatrix(result)
 
     def __mul__(self, other):
-        return np.multiply(self, other)  # type: ignore[call-overload]
+        return np.multiply(cast(Any, self), other)
 
     def __rmul__(self, other):
-        return np.multiply(other, self)  # type: ignore[call-overload]
+        return np.multiply(other, cast(Any, self))
 
     def __add__(self, other):
-        return np.add(self, other)  # type: ignore[call-overload]
+        return np.add(cast(Any, self), other)
 
     def __radd__(self, other):
-        return np.add(other, self)  # type: ignore[call-overload]
+        return np.add(other, cast(Any, self))
 
     def __sub__(self, other):
-        return np.subtract(self, other)  # type: ignore[call-overload]
+        return np.subtract(cast(Any, self), other)
 
     def __rsub__(self, other):
-        return np.subtract(other, self)  # type: ignore[call-overload]
+        return np.subtract(other, cast(Any, self))
 
     def __truediv__(self, other):
-        return np.divide(self, other)  # type: ignore[call-overload]
+        return np.divide(cast(Any, self), other)
 
     def __rtruediv__(self, other):
-        return np.divide(other, self)  # type: ignore[call-overload]
+        return np.divide(other, cast(Any, self))
 
     def __pow__(self, exponent, modulo: None = None, /):
-        return np.power(self, exponent)  # type: ignore[call-overload]
+        return np.power(cast(Any, self), exponent)
 
     def __repr__(self):
         return f"MetaDataMatrix(shape={self.shape})"

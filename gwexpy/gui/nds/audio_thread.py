@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import logging
 import time
+from typing import Any, cast
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,10 @@ except ImportError:
 from qtpy import QtCore
 
 
-class AudioThread(QtCore.QThread):  # type: ignore[name-defined]
+_QThread: Any = getattr(QtCore, "QThread", object)
+
+
+class AudioThread(_QThread):
     # Signal to emit received data: (data_dict, trend_type, is_online)
     dataReceived = QtCore.Signal(object, str, bool)
     finished = QtCore.Signal()

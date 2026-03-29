@@ -1,10 +1,19 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, TypedDict
+from typing import TYPE_CHECKING, Optional, TypedDict
 
 import numpy as np
-from qtpy.QtCore import QObject, QTimer, Signal  # type: ignore[attr-defined]
+import qtpy.QtCore as QtCore
+if TYPE_CHECKING:
+    from typing import Any
+    QObject: Any = object
+    QTimer: Any = object
+    Signal: Any = object
+else:
+    QObject = getattr(QtCore, "QObject", object)
+    QTimer = getattr(QtCore, "QTimer", object)
+    Signal = getattr(QtCore, "Signal", getattr(QtCore, "pyqtSignal", None))
 
 from .nds.buffer import DataBufferDict
 

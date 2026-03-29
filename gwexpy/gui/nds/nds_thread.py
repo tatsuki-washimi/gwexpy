@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any, cast
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,10 @@ def _nds2_missing_message() -> str:
     return f"{base} ({_NDS2_IMPORT_ERROR})"
 
 
-class NDSThread(QtCore.QThread):  # type: ignore[name-defined]
+_QThread: Any = getattr(QtCore, "QThread", object)
+
+
+class NDSThread(_QThread):
     # Signal to emit received data: (data_dict, trend_type, is_online)
     dataReceived = QtCore.Signal(object, str, bool)
     finished = QtCore.Signal()
@@ -90,7 +94,7 @@ class NDSThread(QtCore.QThread):  # type: ignore[name-defined]
                 )
 
 
-class ChannelListWorker(QtCore.QThread):  # type: ignore[name-defined]
+class ChannelListWorker(_QThread):
     finished = QtCore.Signal(list, str)  # results (list of tuples), error
 
     def __init__(self, server, port, pattern="*"):

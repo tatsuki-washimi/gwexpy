@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import copy
 from collections.abc import Callable, Sequence
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, cast
 
 import pandas as pd
 
@@ -141,7 +141,7 @@ class SegmentTable:
         try:
             from gwpy.segments import Segment
         except ImportError:
-            Segment = None  # type: ignore[assignment]
+            Segment = cast(Any, None)
 
         if Segment is not None:
             for i, s in enumerate(meta["span"]):
@@ -358,7 +358,7 @@ class SegmentTable:
                     cells.append(SegmentCell(loader=loader(i)))
             else:
                 # Sequence of callables
-                loader_seq = list(loader)  # type: ignore[arg-type]
+                loader_seq = list(cast(Sequence[Any], loader))
                 if len(loader_seq) != n:
                     raise ValueError(
                         f"Length of loader sequence ({len(loader_seq)}) does not "

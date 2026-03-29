@@ -908,7 +908,7 @@ class TimeSeriesMatrixAnalysisMixin:
 
         from gwexpy.analysis.bruco import Bruco
 
-        flat: dict[str, Any] = self.to_dict_flat()  # type: ignore[attr-defined]
+        flat: dict[str, Any] = cast(Any, self).to_dict_flat()
 
         if target not in flat:
             raise KeyError(

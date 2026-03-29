@@ -731,10 +731,10 @@ def _impute_1d(
             val_1d[:] = pd.Series(val_1d).bfill(limit=limit).values
         apply_limit_mask = False
     elif method == "mean":
-        mean_val = float(np.nanmean(val_1d))  # type: ignore[arg-type]
+        mean_val = float(np.nanmean(cast(Any, val_1d)))
         val_1d[nans_1d] = mean_val
     elif method == "median":
-        median_val = float(np.nanmedian(val_1d))  # type: ignore[arg-type]
+        median_val = float(np.nanmedian(cast(Any, val_1d)))
         val_1d[nans_1d] = median_val
 
     if has_gap_constraint and gap_threshold is not None:

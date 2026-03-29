@@ -8,7 +8,7 @@ top-level QWidget for the tab (or, for the setup helpers, nothing).
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 import pyqtgraph as pg
@@ -38,16 +38,16 @@ COLORS = [
 COLORS_HEX_LIST = [c[1] for c in COLORS]
 
 LINE_STYLES = [
-    ("Solid", Qt.SolidLine),  # type: ignore
-    ("Dash", Qt.DashLine),  # type: ignore
-    ("Dot", Qt.DotLine),  # type: ignore
+    ("Solid", cast(Any, Qt).SolidLine),
+    ("Dash", cast(Any, Qt).DashLine),
+    ("Dot", cast(Any, Qt).DotLine),
 ]
 
 SYMBOLS = [("Circle", "o"), ("Square", "s"), ("Triangle", "t")]
 
 FILL_PATTERNS = [
-    ("Solid", Qt.SolidPattern),  # type: ignore
-    ("Dense", Qt.Dense3Pattern),  # type: ignore
+    ("Solid", cast(Any, Qt).SolidPattern),
+    ("Dense", cast(Any, Qt).Dense3Pattern),
 ]
 
 CHANNEL_NAMES = [
@@ -72,7 +72,7 @@ def _clr_box() -> QtWidgets.QComboBox:
     lc.setFixedWidth(40)
     for j, c in enumerate(COLORS):
         lc.addItem("")
-        lc.setItemData(j, QtGui.QColor(c[1]), QtCore.Qt.BackgroundRole)  # type: ignore
+        lc.setItemData(j, QtGui.QColor(c[1]), cast(Any, QtCore).Qt.BackgroundRole)
     return lc
 
 
@@ -763,7 +763,7 @@ def _build_cursor_tab(panel: GraphPanel) -> QtWidgets.QWidget:
         c_hex = COLORS[c_idx][1]
         pen1 = pg.mkPen(color=c_hex, width=1.5)
         # Second cursor same color (per request)
-        pen2 = pg.mkPen(color=c_hex, width=1.5, style=Qt.DashLine)  # type: ignore
+        pen2 = pg.mkPen(color=c_hex, width=1.5, style=cast(Any, Qt).DashLine)
 
         cursors["c1_v"].setPen(pen1)
         cursors["c1_h"].setPen(pen1)
@@ -850,7 +850,7 @@ def _build_style_tab(panel: GraphPanel) -> QtWidgets.QWidget:
     title_clr = _clr_box()
     title_clr.setFixedWidth(60)
     title_clr.setCurrentIndex(3)  # Default to Black
-    tgl.addWidget(title_clr, 2, 4, Qt.AlignRight)  # type: ignore
+    tgl.addWidget(title_clr, 2, 4, cast(Any, Qt).AlignRight)
 
     sl.addWidget(tg)
 
@@ -1023,7 +1023,7 @@ def _build_axis_tab(panel: GraphPanel, axis: str) -> QtWidgets.QWidget:
     lgl.addWidget(l_off, 0, 3)
     l_clr = _clr_box()
     l_clr.setCurrentIndex(3)
-    lgl.addWidget(l_clr, 0, 5, QtCore.Qt.AlignRight)  # type: ignore
+    lgl.addWidget(l_clr, 0, 5, cast(Any, QtCore).Qt.AlignRight)
     layout.addWidget(lg)
 
     # Font Group
