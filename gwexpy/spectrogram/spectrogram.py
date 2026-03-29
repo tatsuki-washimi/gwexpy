@@ -561,6 +561,189 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         return new
 
+    def normalize(
+        self,
+        method: str = "snr",
+        reference: Any | None = None,
+        *,
+        percentile: float = 50.0,
+    ) -> Spectrogram:
+        """
+        Normalize the spectrogram along the time axis.
+
+        Parameters
+        ----------
+        method : {'snr', 'median', 'mean', 'percentile', 'reference'}
+            Normalization method.
+
+            - ``'snr'``: Divide each time slice by the median PSD along the
+              time axis (equivalent to ``'median'``). If *reference* is given,
+              use it as the denominator instead.
+            - ``'median'``: Divide by the median along the time axis per
+              frequency bin.
+            - ``'mean'``: Divide by the mean along the time axis.
+            - ``'percentile'``: Divide by the given *percentile* along the
+              time axis.
+            - ``'reference'``: Divide by a user-provided reference spectrum.
+              *reference* must be given.
+
+        reference : FrequencySeries or array-like, optional
+            Reference spectrum used as the denominator for ``'snr'`` (if
+            provided) or ``'reference'`` mode.
+
+        percentile : float, optional
+            Percentile value for ``'percentile'`` mode. Default is 50.0
+            (equivalent to median).
+
+        Returns
+        -------
+        Spectrogram
+            Normalized spectrogram. Unit is set to dimensionless for ratio
+            methods.
+        """
+        data = self.value.copy()
+
+        if method in ("snr", "median"):
+            if reference is not None:
+                ref = np.asarray(reference)
+            else:
+                ref = np.median(data, axis=0)
+        elif method == "mean":
+            ref = np.mean(data, axis=0)
+        elif method == "percentile":
+            ref = np.percentile(data, percentile, axis=0)
+        elif method == "reference":
+            if reference is None:
+                raise ValueError("reference must be provided for method='reference'")
+            ref = np.asarray(reference)
+        else:
+            raise ValueError(
+                f"Unknown method: {method!r}. "
+                "Choose from 'snr', 'median', 'mean', 'percentile', 'reference'."
+            )
+
+        # Safe division — replace zeros with NaN to avoid inf
+        ref = np.asarray(ref, dtype=float)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            result = data / ref[np.newaxis, :]
+            result[~np.isfinite(result)] = np.nan
+
+        return self.__class__(
+            result,
+            times=self.times,
+            frequencies=self.frequencies,
+            unit=u.dimensionless_unscaled,
+            name=self.name,
+            channel=self.channel,
+            epoch=self.epoch,
+        )
+
+    def clean(
+        self,
+        method: str = "threshold",
+        *,
+        threshold: float = 5.0,
+        window_size: int | None = None,
+        fill: str = "median",
+        persistence_threshold: float = 0.8,
+        amplitude_threshold: float = 3.0,
+        return_mask: bool = False,
+    ) -> Spectrogram | tuple[Spectrogram, np.ndarray]:
+        """
+        Clean the spectrogram by removing artifacts.
+
+        Parameters
+        ----------
+        method : {'threshold', 'rolling_median', 'line_removal', 'combined'}
+            Cleaning method.
+
+            - ``'threshold'``: Remove outlier pixels using MAD-based
+              detection.
+            - ``'rolling_median'``: Normalize slow trends with a rolling
+              median filter along the time axis.
+            - ``'line_removal'``: Remove persistent narrowband lines.
+            - ``'combined'``: Apply threshold, then rolling_median, then
+              line_removal sequentially.
+
+        threshold : float, optional
+            MAD sigma threshold for outlier detection. Default 5.0.
+        window_size : int, optional
+            Rolling window size in time bins for ``'rolling_median'`` and
+            ``'combined'`` modes. If *None*, defaults to ``shape[0] // 4``
+            (clamped to at least 3).
+        fill : {'median', 'nan', 'zero', 'interpolate'}
+            How to fill masked/outlier values (for threshold method).
+        persistence_threshold : float, optional
+            Fraction threshold for line detection (0.0-1.0). Default 0.8.
+        amplitude_threshold : float, optional
+            Factor above global median for line detection. Default 3.0.
+        return_mask : bool, optional
+            If True, also return a boolean mask of cleaned pixels.
+
+        Returns
+        -------
+        Spectrogram
+            Cleaned spectrogram.
+        mask : ndarray, optional
+            Boolean mask where True = pixel was cleaned. Only returned when
+            *return_mask* is True.
+        """
+        from .cleaning import (
+            line_removal_clean,
+            rolling_median_clean,
+            threshold_clean,
+        )
+
+        data = self.value.copy()
+
+        if window_size is None:
+            window_size = max(3, data.shape[0] // 4)
+
+        if method == "threshold":
+            cleaned, mask = threshold_clean(data, threshold=threshold, fill=fill)
+        elif method == "rolling_median":
+            cleaned = rolling_median_clean(data, window_size=window_size)
+            mask = np.zeros(data.shape, dtype=bool)
+        elif method == "line_removal":
+            cleaned, line_indices = line_removal_clean(
+                data,
+                persistence_threshold=persistence_threshold,
+                amplitude_threshold=amplitude_threshold,
+            )
+            mask = np.zeros(data.shape, dtype=bool)
+            for idx in line_indices:
+                mask[:, idx] = True
+        elif method == "combined":
+            cleaned, mask = threshold_clean(data, threshold=threshold, fill=fill)
+            cleaned = rolling_median_clean(cleaned, window_size=window_size)
+            cleaned_lines, line_indices = line_removal_clean(
+                cleaned,
+                persistence_threshold=persistence_threshold,
+                amplitude_threshold=amplitude_threshold,
+            )
+            cleaned = cleaned_lines
+            for idx in line_indices:
+                mask[:, idx] = True
+        else:
+            raise ValueError(
+                f"Unknown method: {method!r}. "
+                "Choose from 'threshold', 'rolling_median', 'line_removal', 'combined'."
+            )
+
+        result = self.__class__(
+            cleaned,
+            times=self.times,
+            frequencies=self.frequencies,
+            unit=self.unit,
+            name=self.name,
+            channel=self.channel,
+            epoch=self.epoch,
+        )
+
+        if return_mask:
+            return result, mask
+        return result
+
     def to_timeseries_list(self) -> tuple[TimeSeriesList, Quantity]:
         """
         Convert this Spectrogram to a list of TimeSeries, one per frequency bin.
