@@ -43,6 +43,7 @@ def register_all(*, include_io: bool = True) -> None:
     # Force-import subpackages that register constructors.
     # Python caches modules, so repeated imports are no-ops.
     import gwexpy.frequencyseries  # noqa: F811
+    import gwexpy.histogram  # noqa: F811
     import gwexpy.plot  # noqa: F811
     import gwexpy.spectrogram  # noqa: F811
     import gwexpy.timeseries  # noqa: F811

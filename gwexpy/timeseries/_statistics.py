@@ -9,6 +9,7 @@ from __future__ import annotations
 import warnings
 
 import numpy as np
+from astropy import units as u
 from scipy import stats
 
 from gwexpy.types._stats import StatisticalMethodsMixin
@@ -299,6 +300,55 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             stride=stride,
             window=window,
             overlap=overlap,
+        )
+
+    def histogram(self, bins=None, range=None, weights=None, density=False, **kwargs):
+        """
+        Compute a histogram of the values in this TimeSeries.
+
+        Parameters
+        ----------
+        bins : int or sequence or str, optional
+            Binning specification (passed to np.histogram).
+        range : (float, float), optional
+            The lower and upper range of the bins.
+        weights : array_like, optional
+            Weights for each sample.
+        density : bool, optional
+            If True, return a probability density histogram.
+        **kwargs
+            Additional arguments passed to np.histogram.
+
+        Returns
+        -------
+        Histogram
+            A gwexpy.histogram.Histogram object.
+        """
+        from gwexpy.histogram import Histogram
+
+        data = self.value
+        if weights is not None and hasattr(weights, "value"):
+            weights = weights.value
+
+        counts, edges = np.histogram(
+            data, bins=bins, range=range, weights=weights, density=density, **kwargs
+        )
+
+        # Determine y-unit
+        if density:
+            unit = self.unit**-1 if self.unit else u.dimensionless_unscaled
+        else:
+            # For counts, we might want a specific 'ct' unit or dimensionless
+            # If weights are provided, the unit might be different.
+            unit = u.dimensionless_unscaled
+
+        return Histogram(
+            counts,
+            edges,
+            unit=unit,
+            xunit=self.unit,
+            name=self.name,
+            channel=getattr(self, "channel", None),
         )
 
     # --- Internal Methods ---

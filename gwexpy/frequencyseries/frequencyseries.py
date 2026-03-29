@@ -144,6 +144,55 @@ class FrequencySeries(
         """
         return self.phase(unwrap=unwrap)
 
+    def histogram(self, bins=None, range=None, weights=None, density=False, **kwargs):
+        """
+        Compute a histogram of the values in this FrequencySeries.
+
+        Useful for analyzing the distribution of spectral density levels.
+
+        Parameters
+        ----------
+        bins : int or sequence or str, optional
+            Binning specification (passed to np.histogram).
+        range : (float, float), optional
+            The lower and upper range of the bins.
+        weights : array_like, optional
+            Weights for each sample.
+        density : bool, optional
+            If True, return a probability density histogram.
+        **kwargs
+            Additional arguments passed to np.histogram.
+
+        Returns
+        -------
+        Histogram
+            A gwexpy.histogram.Histogram object.
+        """
+        from gwexpy.histogram import Histogram
+
+        data = self.value
+        if weights is not None and hasattr(weights, "value"):
+            weights = weights.value
+
+        counts, edges = np.histogram(
+            data, bins=bins, range=range, weights=weights, density=density, **kwargs
+        )
+
+        # Determine y-unit
+        if density:
+            unit = self.unit**-1 if self.unit else u.dimensionless_unscaled
+        else:
+            unit = u.dimensionless_unscaled
+
+        return Histogram(
+            counts,
+            edges,
+            unit=unit,
+            xunit=self.unit,
+            name=self.name,
+            channel=getattr(self, "channel", None),
+        )
+
     def degree(self, unwrap: bool = False) -> FrequencySeries:
         """
         Calculate the phase of this FrequencySeries in degrees.

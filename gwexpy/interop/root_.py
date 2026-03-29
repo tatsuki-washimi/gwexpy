@@ -93,6 +93,44 @@ def to_th1d(series, error=None):
     """
     ROOT = require_optional("ROOT")
 
+    # Handle Histogram objects (composite, not ndarray-based)
+    if hasattr(series, "edges") and hasattr(series, "values"):
+        # Get edges and values
+        edges = to_plain_array(series.edges).astype(float)
+        y = to_plain_array(series.values).astype(float)
+        n = len(y)
+
+        name = str(getattr(series, "name", None) or "hist")
+        title = name
+        hist = ROOT.TH1D(name, title, n, edges)
+
+        # Fill bins
+        content = np.zeros(n + 2, dtype=np.float64)
+        content[1:-1] = y
+        hist.SetContent(content)
+
+        # Errors: prefer sumw2 if available, otherwise diagonal of cov, otherwise derived from error arg
+        if error is not None:
+            ey = _extract_error_array(series, error).astype(float)
+        elif hasattr(series, "errors") and series.errors is not None:
+            ey = to_plain_array(series.errors).astype(float)
+        else:
+            ey = None
+
+        if ey is not None:
+            err_content = np.zeros(n + 2, dtype=np.float64)
+            err_content[1:-1] = ey
+            hist.SetError(err_content)
+
+        # Labels
+        hist.GetXaxis().SetTitle(
+            _get_label(series.edges, series.xunit, default_name="x")
+        )
+        hist.GetYaxis().SetTitle(_get_label(series, series.unit, default_name="y"))
+
+        return hist
+
+    # Fallback to existing Series logic
     x = to_plain_array(series.xindex).astype(float)
     y = to_plain_array(series.value).astype(float)
     n = len(x)
@@ -227,7 +265,11 @@ def from_root(cls, obj, return_error=False):
     if not is_hist and not is_graph and not is_hist2d:
         raise TypeError(f"Object {obj} is neither TH1, TH2 nor TGraph")
 
+    is_histogram_cls = (cls.__name__ == "Histogram") if hasattr(cls, "__name__") else False
+
     if is_hist2d:
+        if is_histogram_cls:
+            raise TypeError("Histogram class does not support 2D ROOT objects yet. Use Spectrogram.")
         nx = obj.GetNbinsX()
         ny = obj.GetNbinsY()
         x = np.array([obj.GetXaxis().GetBinCenter(i + 1) for i in range(nx)])
@@ -286,22 +328,52 @@ def from_root(cls, obj, return_error=False):
     if is_hist:
         # TH1
         n = obj.GetNbinsX()
-        x = np.array([obj.GetBinCenter(i + 1) for i in range(n)])
+
+        # Edges: length n + 1
+        edges = np.array([obj.GetXaxis().GetBinLowEdge(i + 1) for i in range(n + 1)])
 
         buff_ptr = obj.GetArray()
         # buffer size n+2
         y = np.frombuffer(buff_ptr, dtype=np.float64, count=n + 2)[1:-1].copy()
 
-        if return_error:
+        if return_error or is_histogram_cls:
             if obj.GetSumw2N() > 0:
                 err_ptr = obj.GetSumw2().GetArray()
                 err_raw = np.frombuffer(err_ptr, dtype=np.float64, count=n + 2)[1:-1]
+                # If it's a Histogram class, we often want sumw2 (variance)
+                # But Histogram(sumw2=...) takes Sigma^2
+                # whereas Series(error=...) takes Sigma (RMS).
                 ey = np.sqrt(err_raw).copy()
+                sw2 = err_raw.copy()
             else:
                 ey = np.sqrt(y)
+                sw2 = y.copy()
         else:
             ey = None
+            sw2 = None
+
+        if is_histogram_cls:
+            name = obj.GetName()
+            # Unit extraction
+            y_title = obj.GetYaxis().GetTitle()
+            x_title = obj.GetXaxis().GetTitle()
+            unit = None
+            xunit = None
+            import re
+
+            if "[" in y_title and "]" in y_title:
+                m = re.search(r"\[(.*?)\]", y_title)
+                if m:
+                    unit = m.group(1)
+            if "[" in x_title and "]" in x_title:
+                m = re.search(r"\[(.*?)\]", x_title)
+                if m:
+                    xunit = m.group(1)
+
+            return cls(y, edges, unit=unit, xunit=xunit, sumw2=sw2, name=name)
     else:  # is_graph
+        if is_histogram_cls:
+            raise TypeError("Cannot create Histogram from TGraph. Use TH1 instead.")
         n = obj.GetN()
         # buffer access is faster
         x = np.frombuffer(obj.GetX(), dtype=np.float64, count=n).copy()
@@ -408,7 +480,9 @@ def write_root_file(collection, filename: str, **kwargs: Any) -> None:
         items = enumerate(collection)
 
     for key, series in items:
-        if hasattr(series, "to_th2d"):
+        if hasattr(series, "to_th1d"):
+            obj = series.to_th1d()
+        elif hasattr(series, "to_th2d"):
             obj = series.to_th2d()
         elif hasattr(series, "to_tgraph"):
             obj = series.to_tgraph()
