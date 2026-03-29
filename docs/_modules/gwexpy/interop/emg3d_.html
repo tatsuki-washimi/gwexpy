@@ -1,0 +1,580 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.interop.emg3d_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.interop.emg3d_</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.interop.emg3d_</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">gwexpy.interop.emg3d_</span>
+<span class="sd">---------------------</span>
+
+<span class="sd">Interoperability with emg3d electromagnetic modelling fields.</span>
+
+<span class="sd">``emg3d.fields.Field`` stores electric or magnetic field components on a</span>
+<span class="sd">staggered grid (Yee grid).  Each Cartesian component has a slightly different</span>
+<span class="sd">shape because it lives on edges (E-field) or faces (H-field).</span>
+
+<span class="sd">GWexpy&#39;s ``ScalarField`` requires all spatial components to share the same</span>
+<span class="sd">shape, so this module interpolates each component to the *cell centres* of the</span>
+<span class="sd">``TensorMesh`` before packing them into a ``VectorField``.  The original</span>
+<span class="sd">staggered layout is recorded in the ``ScalarField`` metadata.</span>
+
+<span class="sd">Only the ``emg3d`` Python package is required; no external C dependencies</span>
+<span class="sd">beyond those already installed with emg3d.</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">https://emg3d.emsig.xyz/</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span><span class="p">,</span> <span class="n">VectorField</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._optional</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_optional</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;from_emg3d_field&quot;</span><span class="p">,</span> <span class="s2">&quot;from_emg3d_h5&quot;</span><span class="p">,</span> <span class="s2">&quot;to_emg3d_field&quot;</span><span class="p">]</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Internal helpers — staggered → cell-centre interpolation</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_interp_edge_to_cell</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interpolate edge-centred values to cell centres along *axis*.</span>
+
+<span class="sd">    For the E-field, component *i* lives on edges parallel to axis *i*.  Along</span>
+<span class="sd">    axis *i* the values are at cell centres already (``nC`` dimension), but the</span>
+<span class="sd">    two transverse axes have ``nN = nC + 1`` nodes.  This function averages</span>
+<span class="sd">    adjacent node pairs to produce a cell-centre array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : ndarray</span>
+<span class="sd">        Input array with node spacing along *axis*.  Shape must have</span>
+<span class="sd">        ``arr.shape[axis] == nN``.</span>
+<span class="sd">    axis : int</span>
+<span class="sd">        Axis to interpolate (0, 1, or 2).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        Array with ``nN - 1`` values along *axis*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">slc_lo</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">slc_hi</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">slc_lo</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">slc_hi</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slc_lo</span><span class="p">)]</span> <span class="o">+</span> <span class="n">arr</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slc_hi</span><span class="p">)])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_interp_face_to_cell</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interpolate face-centred values to cell centres along *axis*.</span>
+
+<span class="sd">    For the H-field, component *i* lives on faces perpendicular to axis *i*.</span>
+<span class="sd">    Along axis *i* the component spans ``nN`` faces.  This function averages</span>
+<span class="sd">    adjacent face pairs to give ``nC = nN - 1`` cell-centre values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : ndarray</span>
+<span class="sd">        Face-centred array. Shape has ``arr.shape[axis] == nN``.</span>
+<span class="sd">    axis : int</span>
+<span class="sd">        Axis to interpolate.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray</span>
+<span class="sd">        Array with ``nN - 1`` values along *axis*.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_interp_edge_to_cell</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>  <span class="c1"># same averaging formula</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_cell_center_coords</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return (x, y, z) cell-centre coordinate arrays from a TensorMesh.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mesh : emg3d.meshes.TensorMesh</span>
+<span class="sd">        emg3d mesh object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple of ndarray</span>
+<span class="sd">        ``(cell_centers_x, cell_centers_y, cell_centers_z)``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">cell_centers_x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">cell_centers_y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">cell_centers_z</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_node_coords</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return (x, y, z) node coordinate arrays from a TensorMesh.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nodes_x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nodes_y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">nodes_z</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Public API</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="from_emg3d_field">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_emg3d_field">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_emg3d_field</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">field</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">component</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">interpolate_to_cell_center</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span> <span class="o">|</span> <span class="n">VectorField</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an ``emg3d.fields.Field`` to a GWexpy ``VectorField``.</span>
+
+<span class="sd">    The emg3d ``Field`` stores each Cartesian component (fx, fy, fz) on a</span>
+<span class="sd">    staggered (Yee) grid where component shapes may differ.  When</span>
+<span class="sd">    *interpolate_to_cell_center* is ``True`` (default), each component is</span>
+<span class="sd">    averaged to the common cell-centre grid so that all three ``ScalarField``</span>
+<span class="sd">    objects share the same spatial shape.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        ``VectorField`` (default) or ``ScalarField`` class.</span>
+<span class="sd">    field : emg3d.fields.Field</span>
+<span class="sd">        emg3d field object.  Must have attributes ``fx``, ``fy``, ``fz``,</span>
+<span class="sd">        ``grid``, and ``electric`` (bool).</span>
+<span class="sd">    component : {&quot;x&quot;, &quot;y&quot;, &quot;z&quot;}, optional</span>
+<span class="sd">        Extract a single Cartesian component and return a ``ScalarField``.</span>
+<span class="sd">        ``None`` returns all three components as a ``VectorField``.</span>
+<span class="sd">    interpolate_to_cell_center : bool, default True</span>
+<span class="sd">        Interpolate staggered-grid components to cell centres.  Setting this</span>
+<span class="sd">        to ``False`` raises ``ValueError`` if the shapes differ.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ScalarField</span>
+<span class="sd">        When *component* is specified or *cls* is ``ScalarField``.</span>
+<span class="sd">    VectorField</span>
+<span class="sd">        When *component* is ``None`` and *cls* is ``VectorField``.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``interpolate_to_cell_center=False`` and component shapes differ.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.fields import VectorField</span>
+<span class="sd">    &gt;&gt;&gt; vf = VectorField.from_emg3d_field(field)</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwexpy.fields import ScalarField</span>
+<span class="sd">    &gt;&gt;&gt; sf = ScalarField.from_emg3d_field(field, component=&quot;z&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">grid</span>
+    <span class="n">electric</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">electric</span><span class="p">)</span>
+
+    <span class="c1"># Physical unit</span>
+    <span class="n">unit_str</span> <span class="o">=</span> <span class="s2">&quot;V/m&quot;</span> <span class="k">if</span> <span class="n">electric</span> <span class="k">else</span> <span class="s2">&quot;A/m&quot;</span>
+    <span class="n">interp_label</span> <span class="o">=</span> <span class="s2">&quot;edge&quot;</span> <span class="k">if</span> <span class="n">electric</span> <span class="k">else</span> <span class="s2">&quot;face&quot;</span>
+
+    <span class="c1"># axis0 from frequency (singleton if available, else None)</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">freq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axis0_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">freq</span><span class="p">)])</span>
+        <span class="n">axis0_domain</span> <span class="o">=</span> <span class="s2">&quot;frequency&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis0_vals</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">axis0_domain</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
+
+    <span class="c1"># Raw components: view arrays from the 1-D flat buffer</span>
+    <span class="n">fx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">.</span><span class="n">fx</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">fx</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+    <span class="p">)</span>
+    <span class="n">fy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">.</span><span class="n">fy</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">fy</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+    <span class="p">)</span>
+    <span class="n">fz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+        <span class="n">field</span><span class="o">.</span><span class="n">fz</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">iscomplexobj</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">fz</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">interpolate_to_cell_center</span><span class="p">:</span>
+        <span class="c1"># For E-field (edge): fx is (nCx, nNy, nNz) → interp axes 1,2</span>
+        <span class="c1">#                      fy is (nNx, nCy, nNz) → interp axes 0,2</span>
+        <span class="c1">#                      fz is (nNx, nNy, nCz) → interp axes 0,1</span>
+        <span class="c1"># For H-field (face): fx is (nNx, nCy, nCz) → interp axis 0</span>
+        <span class="c1">#                      fy is (nCx, nNy, nCz) → interp axis 1</span>
+        <span class="c1">#                      fz is (nCx, nCy, nNz) → interp axis 2</span>
+        <span class="k">if</span> <span class="n">electric</span><span class="p">:</span>
+            <span class="c1"># E-field on edges</span>
+            <span class="c1"># fx: (nCx, nNy, nNz) → (nCx, nCy, nCz) interpolate axes 1 and 2</span>
+            <span class="n">fx_c</span> <span class="o">=</span> <span class="n">_interp_edge_to_cell</span><span class="p">(</span><span class="n">_interp_edge_to_cell</span><span class="p">(</span><span class="n">fx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># fy: (nNx, nCy, nNz) → interpolate axes 0 and 2</span>
+            <span class="n">fy_c</span> <span class="o">=</span> <span class="n">_interp_edge_to_cell</span><span class="p">(</span><span class="n">_interp_edge_to_cell</span><span class="p">(</span><span class="n">fy</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># fz: (nNx, nNy, nCz) → interpolate axes 0 and 1</span>
+            <span class="n">fz_c</span> <span class="o">=</span> <span class="n">_interp_edge_to_cell</span><span class="p">(</span><span class="n">_interp_edge_to_cell</span><span class="p">(</span><span class="n">fz</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># H-field on faces</span>
+            <span class="c1"># fx: (nNx, nCy, nCz) → interpolate axis 0</span>
+            <span class="n">fx_c</span> <span class="o">=</span> <span class="n">_interp_face_to_cell</span><span class="p">(</span><span class="n">fx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># fy: (nCx, nNy, nCz) → interpolate axis 1</span>
+            <span class="n">fy_c</span> <span class="o">=</span> <span class="n">_interp_face_to_cell</span><span class="p">(</span><span class="n">fy</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># fz: (nCx, nCy, nNz) → interpolate axis 2</span>
+            <span class="n">fz_c</span> <span class="o">=</span> <span class="n">_interp_face_to_cell</span><span class="p">(</span><span class="n">fz</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">cz</span> <span class="o">=</span> <span class="n">_build_cell_center_coords</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;interpolated_from&quot;</span><span class="p">:</span> <span class="n">interp_label</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># No interpolation — raise if shapes differ</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">fx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">fy</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">fz</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Component shapes differ (</span><span class="si">{</span><span class="n">fx</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">fy</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">fz</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">). &quot;</span>
+                <span class="s2">&quot;Set interpolate_to_cell_center=True to align them.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">fx_c</span><span class="p">,</span> <span class="n">fy_c</span><span class="p">,</span> <span class="n">fz_c</span> <span class="o">=</span> <span class="n">fx</span><span class="p">,</span> <span class="n">fy</span><span class="p">,</span> <span class="n">fz</span>
+        <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">cz</span> <span class="o">=</span> <span class="n">_build_node_coords</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Add singleton axis0 dimension</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_axis0</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">arr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>  <span class="c1"># (1, Nx, Ny, Nz)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_sf</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span><span class="p">:</span>
+        <span class="n">sf</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+            <span class="n">_add_axis0</span><span class="p">(</span><span class="n">arr</span><span class="p">),</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit_str</span><span class="p">,</span>
+            <span class="n">axis0</span><span class="o">=</span><span class="n">axis0_vals</span><span class="p">,</span>
+            <span class="n">axis0_domain</span><span class="o">=</span><span class="n">axis0_domain</span><span class="p">,</span>
+            <span class="n">axis1</span><span class="o">=</span><span class="n">cx</span><span class="p">,</span>
+            <span class="n">axis2</span><span class="o">=</span><span class="n">cy</span><span class="p">,</span>
+            <span class="n">axis3</span><span class="o">=</span><span class="n">cz</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">sf</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="k">return</span> <span class="n">sf</span>
+
+    <span class="n">comp_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">fx_c</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">fy_c</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">fz_c</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">component</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">component</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">comp_map</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid component </span><span class="si">{</span><span class="n">component</span><span class="si">!r}</span><span class="s2">. Expected &#39;x&#39;, &#39;y&#39;, or &#39;z&#39;.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_make_sf</span><span class="p">(</span><span class="n">comp_map</span><span class="p">[</span><span class="n">component</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ScalarField</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">VectorField</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_make_sf</span><span class="p">(</span><span class="n">fx_c</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">VectorField</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">_make_sf</span><span class="p">(</span><span class="n">fx_c</span><span class="p">),</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">_make_sf</span><span class="p">(</span><span class="n">fy_c</span><span class="p">),</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="n">_make_sf</span><span class="p">(</span><span class="n">fz_c</span><span class="p">)})</span></div>
+
+
+
+<div class="viewcode-block" id="to_emg3d_field">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_emg3d_field">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_emg3d_field</span><span class="p">(</span>
+    <span class="n">vf</span><span class="p">:</span> <span class="n">VectorField</span> <span class="o">|</span> <span class="n">ScalarField</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">electric</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a GWexpy VectorField back to an ``emg3d.fields.Field``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vf : VectorField or ScalarField</span>
+<span class="sd">        Source field.  For ``VectorField``, components ``&quot;x&quot;``, ``&quot;y&quot;``,</span>
+<span class="sd">        ``&quot;z&quot;`` are expected.  For ``ScalarField`` the single component is</span>
+<span class="sd">        broadcast as the x-component.</span>
+<span class="sd">    frequency : float, optional</span>
+<span class="sd">        Field frequency in Hz.  Overrides ``vf``&#39;s axis0 value when given.</span>
+<span class="sd">    electric : bool, default True</span>
+<span class="sd">        Whether the field is an E-field (``True``) or H-field (``False``).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    emg3d.fields.Field</span>
+<span class="sd">        Reconstructed field object.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ImportError</span>
+<span class="sd">        If ``emg3d`` is not installed.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the VectorField does not contain exactly 3 components.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">emg3d</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;emg3d&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vf</span><span class="p">,</span> <span class="n">VectorField</span><span class="p">):</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">vf</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VectorField must have exactly 3 components; got </span><span class="si">{</span><span class="n">keys</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">fx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vf</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">fy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vf</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">fz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vf</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">flat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">fx</span><span class="p">,</span> <span class="n">fy</span><span class="p">,</span> <span class="n">fz</span><span class="p">])</span>
+
+        <span class="c1"># Reconstruct a minimal TensorMesh from the ScalarField axes</span>
+        <span class="n">sf_x</span> <span class="o">=</span> <span class="n">vf</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
+        <span class="n">hx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis1_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sf_x</span><span class="o">.</span><span class="n">_axis1_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis1_index</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">hy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis2_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sf_x</span><span class="o">.</span><span class="n">_axis2_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis2_index</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">hz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis3_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sf_x</span><span class="o">.</span><span class="n">_axis3_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis3_index</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">origin_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis1_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sf_x</span><span class="o">.</span><span class="n">_axis1_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis1_index</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">origin_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis2_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sf_x</span><span class="o">.</span><span class="n">_axis2_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis2_index</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">origin_z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis3_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sf_x</span><span class="o">.</span><span class="n">_axis3_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">sf_x</span><span class="o">.</span><span class="n">_axis3_index</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vf</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">flat</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">hx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">vf</span><span class="o">.</span><span class="n">_axis1_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vf</span><span class="o">.</span><span class="n">_axis1_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">vf</span><span class="o">.</span><span class="n">_axis1_index</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">hy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">vf</span><span class="o">.</span><span class="n">_axis2_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vf</span><span class="o">.</span><span class="n">_axis2_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">vf</span><span class="o">.</span><span class="n">_axis2_index</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">hz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">vf</span><span class="o">.</span><span class="n">_axis3_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vf</span><span class="o">.</span><span class="n">_axis3_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">vf</span><span class="o">.</span><span class="n">_axis3_index</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">origin_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">vf</span><span class="o">.</span><span class="n">_axis1_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vf</span><span class="o">.</span><span class="n">_axis1_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">vf</span><span class="o">.</span><span class="n">_axis1_index</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">origin_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">vf</span><span class="o">.</span><span class="n">_axis2_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vf</span><span class="o">.</span><span class="n">_axis2_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">vf</span><span class="o">.</span><span class="n">_axis2_index</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">origin_z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">vf</span><span class="o">.</span><span class="n">_axis3_index</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">vf</span><span class="o">.</span><span class="n">_axis3_index</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">vf</span><span class="o">.</span><span class="n">_axis3_index</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Resolve frequency</span>
+    <span class="k">if</span> <span class="n">frequency</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vf</span><span class="p">,</span> <span class="n">VectorField</span><span class="p">):</span>
+            <span class="n">sf_ref</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">vf</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sf_ref</span> <span class="o">=</span> <span class="n">vf</span>
+        <span class="n">ax0</span> <span class="o">=</span> <span class="n">sf_ref</span><span class="o">.</span><span class="n">_axis0_index</span>
+        <span class="n">ax0_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ax0</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ax0</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">ax0</span><span class="p">)</span>
+        <span class="n">frequency</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ax0_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">ax0_arr</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">emg3d</span><span class="o">.</span><span class="n">TensorMesh</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">hx</span><span class="p">,</span> <span class="n">hy</span><span class="p">,</span> <span class="n">hz</span><span class="p">],</span>
+        <span class="n">origin</span><span class="o">=</span><span class="p">(</span><span class="n">origin_x</span><span class="p">,</span> <span class="n">origin_y</span><span class="p">,</span> <span class="n">origin_z</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">emg3d</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">flat</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="n">frequency</span><span class="p">,</span> <span class="n">electric</span><span class="o">=</span><span class="n">electric</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_emg3d_h5">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_emg3d_h5">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_emg3d_h5</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span>
+    <span class="n">component</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">interpolate_to_cell_center</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScalarField</span> <span class="o">|</span> <span class="n">VectorField</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load an emg3d field saved via ``emg3d.save()`` and convert it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        ``VectorField`` or ``ScalarField``.</span>
+<span class="sd">    filepath : str or Path</span>
+<span class="sd">        Path to the HDF5 / npz / json file written by ``emg3d.save()``.</span>
+<span class="sd">    name : str, default &quot;field&quot;</span>
+<span class="sd">        Key under which the field was saved (kwarg name passed to</span>
+<span class="sd">        ``emg3d.save(**{name: field})``).</span>
+<span class="sd">    component : {&quot;x&quot;, &quot;y&quot;, &quot;z&quot;}, optional</span>
+<span class="sd">        Extract a single component.</span>
+<span class="sd">    interpolate_to_cell_center : bool, default True</span>
+<span class="sd">        See :func:`from_emg3d_field`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ScalarField or VectorField</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">emg3d</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;emg3d&quot;</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">emg3d</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">available</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Key </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> not found in &#39;</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&#39;. Available: </span><span class="si">{</span><span class="n">available</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">from_emg3d_field</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">field</span><span class="p">,</span>
+        <span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span>
+        <span class="n">interpolate_to_cell_center</span><span class="o">=</span><span class="n">interpolate_to_cell_center</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

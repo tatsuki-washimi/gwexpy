@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.interop.gwinc_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.interop.gwinc_</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.interop.gwinc_</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">gwexpy.interop.gwinc_</span>
+<span class="sd">---------------------</span>
+
+<span class="sd">Interoperability with pygwinc (gravitational wave interferometer noise budget).</span>
+
+<span class="sd">Provides conversion from a gwinc ``Budget`` trace hierarchy to GWexpy</span>
+<span class="sd">``FrequencySeries`` (total noise) or ``FrequencySeriesDict`` (all sub-traces).</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">The simpler ``gwexpy.noise.gwinc_.from_pygwinc`` helper (strain/DARM only) is</span>
+<span class="sd">preserved unchanged. This module adds the richer trace-expansion API.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._optional</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_optional</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;from_gwinc_budget&quot;</span><span class="p">]</span>
+
+<span class="n">_DEFAULT_FMIN</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="n">_DEFAULT_FMAX</span> <span class="o">=</span> <span class="mf">4000.0</span>
+<span class="n">_DEFAULT_DF</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_collect_traces</span><span class="p">(</span><span class="n">trace</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recursively collect all named sub-traces from a gwinc BudgetTrace.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    trace : gwinc.BudgetTrace</span>
+<span class="sd">        Root or sub-trace object.</span>
+<span class="sd">    prefix : str</span>
+<span class="sd">        Key prefix for nested traces.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict[str, BudgetTrace]</span>
+<span class="sd">        Flat mapping of trace name → trace object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># gwinc traces expose sub-traces via dict-like access</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sub_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">sub_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sub_names</span><span class="p">:</span>
+        <span class="n">full_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">prefix</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">sub</span> <span class="o">=</span> <span class="n">trace</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">full_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">sub</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_collect_traces</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">full_name</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<div class="viewcode-block" id="from_gwinc_budget">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_gwinc_budget">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_gwinc_budget</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">budget_or_model</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">frequencies</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;asd&quot;</span><span class="p">,</span> <span class="s2">&quot;psd&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;asd&quot;</span><span class="p">,</span>
+    <span class="n">trace_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_DEFAULT_FMIN</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_DEFAULT_FMAX</span><span class="p">,</span>
+    <span class="n">df</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_DEFAULT_DF</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create FrequencySeries or FrequencySeriesDict from a gwinc Budget.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        ``FrequencySeries`` or ``FrequencySeriesDict`` class to instantiate.</span>
+<span class="sd">    budget_or_model : gwinc.Budget or str</span>
+<span class="sd">        Pre-loaded ``Budget`` object, or a model name string (e.g., ``&quot;aLIGO&quot;``,</span>
+<span class="sd">        ``&quot;Aplus&quot;``) which is passed to ``gwinc.load_budget``.</span>
+<span class="sd">    frequencies : array-like, optional</span>
+<span class="sd">        Frequency array in Hz. If *None*, generated from ``fmin``/``fmax``/``df``.</span>
+<span class="sd">    quantity : {&quot;asd&quot;, &quot;psd&quot;}, default &quot;asd&quot;</span>
+<span class="sd">        Whether to return amplitude or power spectral density.</span>
+<span class="sd">    trace_name : str, optional</span>
+<span class="sd">        Name of a specific sub-trace to extract (e.g., ``&quot;Quantum&quot;``).</span>
+<span class="sd">        If *None*:</span>
+
+<span class="sd">        - ``FrequencySeries`` cls → total noise only.</span>
+<span class="sd">        - ``FrequencySeriesDict`` cls → total + all sub-traces.</span>
+<span class="sd">    fmin : float, default 10.0</span>
+<span class="sd">        Minimum frequency [Hz] when *frequencies* is not provided.</span>
+<span class="sd">    fmax : float, default 4000.0</span>
+<span class="sd">        Maximum frequency [Hz] when *frequencies* is not provided.</span>
+<span class="sd">    df : float, default 1.0</span>
+<span class="sd">        Frequency step [Hz] when *frequencies* is not provided.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FrequencySeries</span>
+<span class="sd">        When ``trace_name`` is given, or ``cls`` is ``FrequencySeries``.</span>
+<span class="sd">    FrequencySeriesDict</span>
+<span class="sd">        When ``trace_name`` is *None* and ``cls`` is ``FrequencySeriesDict``.</span>
+<span class="sd">        Keys: ``&quot;Total&quot;``, plus sub-trace names.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``trace_name`` does not exist in the budget trace hierarchy, or if</span>
+<span class="sd">        ``quantity`` is not ``&quot;asd&quot;`` or ``&quot;psd&quot;``.</span>
+<span class="sd">    ImportError</span>
+<span class="sd">        If pygwinc is not installed.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict</span>
+<span class="sd">    &gt;&gt;&gt; asd = FrequencySeries.from_gwinc_budget(&quot;aLIGO&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; noise_budget = FrequencySeriesDict.from_gwinc_budget(&quot;aLIGO&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; quantum = FrequencySeries.from_gwinc_budget(&quot;aLIGO&quot;, trace_name=&quot;Quantum&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gwinc</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;gwinc&quot;</span><span class="p">)</span>
+
+    <span class="n">quantity_lower</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">quantity_lower</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;asd&quot;</span><span class="p">,</span> <span class="s2">&quot;psd&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;quantity must be &#39;asd&#39; or &#39;psd&#39;, got &#39;</span><span class="si">{</span><span class="n">quantity</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Build frequency array</span>
+    <span class="k">if</span> <span class="n">frequencies</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fmin</span> <span class="o">&gt;=</span> <span class="n">fmax</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fmin (</span><span class="si">{</span><span class="n">fmin</span><span class="si">}</span><span class="s2">) must be less than fmax (</span><span class="si">{</span><span class="n">fmax</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span> <span class="o">+</span> <span class="n">df</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="c1"># Load budget if a string was given</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">budget_or_model</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;Aplus&quot;</span> <span class="k">if</span> <span class="n">budget_or_model</span> <span class="o">==</span> <span class="s2">&quot;A+&quot;</span> <span class="k">else</span> <span class="n">budget_or_model</span>
+        <span class="n">budget</span> <span class="o">=</span> <span class="n">gwinc</span><span class="o">.</span><span class="n">load_budget</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">budget</span> <span class="o">=</span> <span class="n">budget_or_model</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">budget</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">budget_or_model</span><span class="p">))</span>
+
+    <span class="c1"># Run the simulation</span>
+    <span class="n">trace</span> <span class="o">=</span> <span class="n">budget</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">freq</span><span class="o">=</span><span class="n">frequencies</span><span class="p">)</span>
+
+    <span class="c1"># Helper: psd → output value</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_to_value</span><span class="p">(</span><span class="n">tr</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">psd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">psd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">psd</span><span class="p">)</span> <span class="k">if</span> <span class="n">quantity_lower</span> <span class="o">==</span> <span class="s2">&quot;asd&quot;</span> <span class="k">else</span> <span class="n">psd</span>
+
+    <span class="n">unit_str</span> <span class="o">=</span> <span class="s2">&quot;1 / Hz(1/2)&quot;</span> <span class="k">if</span> <span class="n">quantity_lower</span> <span class="o">==</span> <span class="s2">&quot;asd&quot;</span> <span class="k">else</span> <span class="s2">&quot;1 / Hz&quot;</span>
+
+    <span class="n">FrequencySeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeries&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_fs</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit_str</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Single trace extraction</span>
+    <span class="k">if</span> <span class="n">trace_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">trace_name</span> <span class="o">==</span> <span class="s2">&quot;Total&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_make_fs</span><span class="p">(</span><span class="n">_to_value</span><span class="p">(</span><span class="n">trace</span><span class="p">),</span> <span class="s2">&quot;Total&quot;</span><span class="p">)</span>
+
+        <span class="n">subtrace_map</span> <span class="o">=</span> <span class="n">_collect_traces</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trace_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subtrace_map</span><span class="p">:</span>
+            <span class="n">available</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Total&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">subtrace_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Trace &#39;</span><span class="si">{</span><span class="n">trace_name</span><span class="si">}</span><span class="s2">&#39; not found. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Available traces: </span><span class="si">{</span><span class="n">available</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_make_fs</span><span class="p">(</span><span class="n">_to_value</span><span class="p">(</span><span class="n">subtrace_map</span><span class="p">[</span><span class="n">trace_name</span><span class="p">]),</span> <span class="n">trace_name</span><span class="p">)</span>
+
+    <span class="c1"># Total-only (FrequencySeries cls without trace_name)</span>
+    <span class="n">FrequencySeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesDict&quot;</span><span class="p">)</span>
+    <span class="n">_is_dict_cls</span> <span class="o">=</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">FrequencySeriesDict</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_dict_cls</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_make_fs</span><span class="p">(</span><span class="n">_to_value</span><span class="p">(</span><span class="n">trace</span><span class="p">),</span> <span class="s2">&quot;Total&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Full dict: Total + all sub-traces</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
+    <span class="n">result</span><span class="p">[</span><span class="s2">&quot;Total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_fs</span><span class="p">(</span><span class="n">_to_value</span><span class="p">(</span><span class="n">trace</span><span class="p">),</span> <span class="s2">&quot;Total&quot;</span><span class="p">)</span>
+    <span class="n">subtrace_map</span> <span class="o">=</span> <span class="n">_collect_traces</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">subtrace</span> <span class="ow">in</span> <span class="n">subtrace_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">_to_value</span><span class="p">(</span><span class="n">subtrace</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">continue</span>  <span class="c1"># Skip traces without a psd attribute</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_make_fs</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

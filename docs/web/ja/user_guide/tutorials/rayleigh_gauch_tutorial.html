@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rayleigh Statistics and GauCh for non-Gaussian Noise Analysis &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="カップリング関数解析チュートリアル" href="advanced_coupling.html" />
+    <link rel="prev" title="Field API × 高度な解析: 統合ワークフロー" href="field_advanced_integration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">視覚的な例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id3">実例ギャラリー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id4">ユーザー別学習パス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id5">主要ドキュメント</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#vi">VI. セグメント解析</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">アーキテクチャと物理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id6">次のステップ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
+      <li class="breadcrumb-item active">Rayleigh Statistics and GauCh for non-Gaussian Noise Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>このページは Jupyter Notebook から生成されました。
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/rayleigh_gauch_tutorial.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+</div>
+<section id="Rayleigh-Statistics-and-GauCh-for-non-Gaussian-Noise-Analysis">
+<h1>Rayleigh Statistics and GauCh for non-Gaussian Noise Analysis<a class="headerlink" href="#Rayleigh-Statistics-and-GauCh-for-non-Gaussian-Noise-Analysis" title="Link to this heading"></a></h1>
+<p>This tutorial demonstrates the implementation of a comprehensive non-Gaussian noise analysis toolkit in GWexpy, based on research by Yamamura (2024) and Yamamoto (2015-2016).</p>
+<section id="Contents">
+<h2>Contents<a class="headerlink" href="#Contents" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Noise Simulation</strong>: Generating non-stationary and scattered light noise.</p></li>
+<li><p><strong>Rayleigh Statistics</strong>: Testing deviations from Rayleigh distribution.</p></li>
+<li><p><strong>GauCh (Modified KS Test)</strong>: Advanced non-Gaussianity detection.</p></li>
+<li><p><strong>Student-t Indicator</strong>: Measuring distribution tail thickness.</p></li>
+<li><p><strong>Data Quality Flags</strong>: Generating veto segments automatically.</p></li>
+<li><p><strong>Evaluation &amp; Visualization</strong>: ROC curves and composite dashboards.</p></li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>import numpy as np
+import matplotlib.pyplot as plt
+from gwexpy.timeseries import TimeSeries
+from gwexpy.noise import transient_gaussian_noise, scatter_light_noise, apply_line_mask
+from gwexpy.statistics import compute_gauch, rayleigh_pvalue, compute_student_t_nu, to_segments
+from gwexpy.plot.gauch_dashboard import plot_gauch_dashboard
+%matplotlib inline
+</pre></div>
+</div>
+</div>
+<section id="1.-Noise-Simulation">
+<h3>1. Noise Simulation<a class="headerlink" href="#1.-Noise-Simulation" title="Link to this heading"></a></h3>
+<p>We simulate two types of non-Gaussian noise models used in KAGRA characterization.</p>
+<ul class="simple">
+<li><p><strong>Model I</strong>: Transient Gaussian noise (glitches).</p></li>
+<li><p><strong>Model II</strong>: Scattered light noise (stationary non-Gaussianity).</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>duration = 64.0
+fs = 1024.0
+
+# Model I: Glitch injection
+ts_glitch = transient_gaussian_noise(duration, fs, A1=20.0, name=&#39;Glitchy Data&#39;)
+
+# Model II: Scattered light
+ts_scatter = scatter_light_noise(duration, fs, A2=1e-12, name=&#39;Scattered Light&#39;)
+
+ts_glitch.plot()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Rayleigh-Spectrogram">
+<h3>2. Rayleigh Spectrogram<a class="headerlink" href="#2.-Rayleigh-Spectrogram" title="Link to this heading"></a></h3>
+<p>The Rayleigh statistic <span class="math notranslate nohighlight">\(R\)</span> measures the consistency of the ASD distribution with a Rayleigh distribution. We use the <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> method to get a p-value map.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>rs_p = ts_glitch.rayleigh_test(fftlength=1.0, stride=0.5, n_samples=20)
+rs_p.plot(yscale=&#39;log&#39;, title=&#39;Rayleigh Test p-value Map&#39;)
+plt.colorbar(label=&#39;p-value&#39;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="3.-GauCh-(Modified-KS-Test)">
+<h3>3. GauCh (Modified KS Test)<a class="headerlink" href="#3.-GauCh-(Modified-KS-Test)" title="Link to this heading"></a></h3>
+<p>GauCh is a more sensitive test for non-Gaussianity using a modified Kolmogorov-Smirnov test.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>gauch_res = ts_glitch.gauch(fftlength=1.0, window=20)
+gauch_res.pvalue_map.plot(yscale=&#39;log&#39;, title=&#39;GauCh p-value Map&#39;)
+plt.colorbar(label=&#39;p-value&#39;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="4.-Student-t-Indicator">
+<h3>4. Student-t Indicator<a class="headerlink" href="#4.-Student-t-Indicator" title="Link to this heading"></a></h3>
+<p>The Student-t indicator fits a Student-t distribution to FFT components and outputs the degree of freedom <span class="math notranslate nohighlight">\(\nu\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>nu_spec = ts_glitch.student_t_spectrogram(fftlength=1.0, window=20)
+nu_spec.plot(yscale=&#39;log&#39;, title=&#39;Student-t nu Map&#39;)
+plt.colorbar(label=&#39;nu&#39;)
+</pre></div>
+</div>
+</div>
+</section>
+<section id="5.-Data-Quality-Flags">
+<h3>5. Data Quality Flags<a class="headerlink" href="#5.-Data-Quality-Flags" title="Link to this heading"></a></h3>
+<p>We can automatically generate veto segments where the p-value is below a threshold.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>dq_flag = to_segments(gauch_res.pvalue_map, alpha=0.001)
+print(dq_flag)
+dq_flag.plot()
+</pre></div>
+</div>
+</div>
+</section>
+<section id="6.-Composite-Dashboard">
+<h3>6. Composite Dashboard<a class="headerlink" href="#6.-Composite-Dashboard" title="Link to this heading"></a></h3>
+<p>Finally, we can visualize everything in a single dashboard.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-none notranslate"><div class="highlight"><pre><span></span>fig = plot_gauch_dashboard(ts_glitch, gauch_res)
+plt.show()
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="field_advanced_integration.html" class="btn btn-neutral float-left" title="Field API × 高度な解析: 統合ワークフロー" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_coupling.html" class="btn btn-neutral float-right" title="カップリング関数解析チュートリアル" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1219 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScalarField クラス入門 &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="VectorField クラス入門" href="field_vector_intro.html" />
+    <link rel="prev" title="SpectrogramMatrix Tutorial" href="matrix_spectrogram.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">視覚的な例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id3">実例ギャラリー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id4">ユーザー別学習パス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id5">主要ドキュメント</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#vi">VI. セグメント解析</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">アーキテクチャと物理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id6">次のステップ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
+      <li class="breadcrumb-item active">ScalarField クラス入門</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/field_scalar_intro.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>このページは Jupyter Notebook から生成されました。
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/field_scalar_intro.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+</div>
+<section id="ScalarField-クラス入門">
+<h1>ScalarField クラス入門<a class="headerlink" href="#ScalarField-クラス入門" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/field_scalar_intro.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>このノートブックでは、<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> の <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> クラスの基本的な使い方を学びます。</p>
+<section id="ScalarField-とは？">
+<h2>ScalarField とは？<a class="headerlink" href="#ScalarField-とは？" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> は、時間と3次元空間の4次元データを扱うための特殊なクラスです。物理場の時空間構造を表現し、以下の機能を提供します：</p>
+<ul class="simple">
+<li><p><strong>軸0（時間軸）</strong>: 時間ドメイン ↔ 周波数ドメインの変換</p></li>
+<li><p><strong>軸1-3（空間軸）</strong>: 実空間 ↔ K空間（波数空間）の変換</p></li>
+<li><p><strong>4D構造の保持</strong>: スライシングしても常に4次元を維持</p></li>
+<li><p><strong>バッチ操作</strong>: <code class="docutils literal notranslate"><span class="pre">FieldList</span></code> と <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> による複数フィールドの一括処理</p></li>
+<li><p><strong>信号処理</strong>: PSD計算、周波数-空間マッピング、相互相関、コヒーレンスマップ</p></li>
+</ul>
+</section>
+<section id="セットアップ">
+<h2>セットアップ<a class="headerlink" href="#セットアップ" title="Link to this heading"></a></h2>
+<p>必要なライブラリをインポートします。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># SWIGLAL</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="s2">&quot;Wswiglal-redir-stdio&quot;</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldDict</span><span class="p">,</span> <span class="n">FieldList</span><span class="p">,</span> <span class="n">ScalarField</span>
+
+<span class="c1"># for Set</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1.-ScalarField-の初期化とメタデータ">
+<h2>1. ScalarField の初期化とメタデータ<a class="headerlink" href="#1.-ScalarField-の初期化とメタデータ" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> オブジェクトを作成し、そのメタデータを確認します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 4DData Create（10 points × 8×8×8 Space ）</span>
+<span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">)</span>
+
+<span class="c1"># AxisCoordinates Define</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nt</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+
+<span class="c1"># ScalarField Create</span>
+<span class="n">field</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unit: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis names: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">axis_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis0 domain: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Space domains: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Shape: (10, 8, 8, 8)
+Unit: V
+Axis names: (&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;)
+Axis0 domain: time
+Space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
+</pre></div></div>
+</div>
+<section id="メタデータの確認">
+<h3>メタデータの確認<a class="headerlink" href="#メタデータの確認" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">axis0_domain</span></code>: 軸0のドメイン（”time” または “frequency”）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">space_domains</span></code>: 各空間軸のドメイン（”real” または “k”）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">axis_names</span></code>: 各軸の名前</p></li>
+</ul>
+<p>これらのメタデータは、FFT変換時に自動的に更新されます。</p>
+</section>
+</section>
+<section id="2.-4D構造を保持するスライシング">
+<h2>2. 4D構造を保持するスライシング<a class="headerlink" href="#2.-4D構造を保持するスライシング" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> の重要な特徴は、<strong>スライシングしても常に4次元を維持する</strong>ことです。 整数インデックスを使っても、自動的に長さ1のスライスに変換されます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Slice（ ndarray 3D ）</span>
+<span class="n">sliced</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original shape: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sliced shape: </span><span class="si">{</span><span class="n">sliced</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># (1, 8, 8, 8) - 4D ！</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sliced</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># ScalarField</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis names preserved: </span><span class="si">{</span><span class="n">sliced</span><span class="o">.</span><span class="n">axis_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original shape: (10, 8, 8, 8)
+Sliced shape: (1, 8, 8, 8)
+Type: &lt;class &#39;gwexpy.fields.scalar.ScalarField&#39;&gt;
+Axis names preserved: (&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Axis</span>
+<span class="n">sliced_multi</span> <span class="o">=</span> <span class="n">field</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multi-sliced shape: </span><span class="si">{</span><span class="n">sliced_multi</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># (1, 1, 1, 1) - 4D</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value: </span><span class="si">{</span><span class="n">sliced_multi</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Multi-sliced shape: (1, 1, 1, 1)
+Value: [[[[-0.51827022]]]]
+</pre></div></div>
+</div>
+<p>この挙動により、ScalarFieldオブジェクトの一貫性が保たれ、メタデータ（軸名やドメイン情報）が失われることがありません。</p>
+</section>
+<section id="3.-時間-周波数変換（軸0のFFT）">
+<h2>3. 時間-周波数変換（軸0のFFT）<a class="headerlink" href="#3.-時間-周波数変換（軸0のFFT）" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fft_time()</span></code> と <code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code> メソッドを使って、時間軸を周波数軸に変換できます。 GWpy の <code class="docutils literal notranslate"><span class="pre">TimeSeries.fft()</span></code> と同じ正規化を採用しています。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># time / duration ScalarField Create（Sine wave）</span>
+<span class="n">t_dense</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">x_small</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">signal_freq</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="c1"># Hz</span>
+
+<span class="c1"># 10 Hz Sine wave Space</span>
+<span class="n">data_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">signal_freq</span> <span class="o">*</span> <span class="n">t_dense</span><span class="o">.</span><span class="n">value</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">data_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">data_signal</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">field_time</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_signal</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t_dense</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">x_small</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">x_small</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">x_small</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># FFTRun</span>
+<span class="n">field_freq</span> <span class="o">=</span> <span class="n">field_time</span><span class="o">.</span><span class="n">fft_time</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time domain shape: </span><span class="si">{</span><span class="n">field_time</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency domain shape: </span><span class="si">{</span><span class="n">field_freq</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis0 domain changed: </span><span class="si">{</span><span class="n">field_time</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">field_freq</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Time domain shape: (128, 4, 4, 4)
+Frequency domain shape: (65, 4, 4, 4)
+Axis0 domain changed: time → frequency
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Frequency Plot（1points x,y,z ）</span>
+<span class="c1"># Note: Slice 4D 、squeeze() Dimension Reduction</span>
+<span class="n">spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field_freq</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">field_freq</span><span class="o">.</span><span class="n">_axis0_index</span><span class="o">.</span><span class="n">value</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">,</span> <span class="s2">&quot;b-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span>
+    <span class="n">signal_freq</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">signal_freq</span><span class="si">}</span><span class="s2"> Hz (Input signal)&quot;</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude [V]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;FFT Spectrum (ScalarField)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># PeakFrequency Verify</span>
+<span class="n">peak_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+<span class="n">peak_freq</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">peak_idx</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peak frequency: </span><span class="si">{</span><span class="n">peak_freq</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz (expected: </span><span class="si">{</span><span class="n">signal_freq</span><span class="si">}</span><span class="s2"> Hz)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_12_0.png" src="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_12_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Peak frequency: 10.16 Hz (expected: 10.0 Hz)
+</pre></div></div>
+</div>
+<section id="逆FFT（周波数-→-時間）">
+<h3>逆FFT（周波数 → 時間）<a class="headerlink" href="#逆FFT（周波数-→-時間）" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ifft_time()</span></code> で元の時間ドメインに戻すことができます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># FFT</span>
+<span class="n">field_reconstructed</span> <span class="o">=</span> <span class="n">field_freq</span><span class="o">.</span><span class="n">ifft_time</span><span class="p">()</span>
+
+<span class="c1"># Signal Ratiocomparison</span>
+<span class="c1"># Note: 4D do 、squeeze() 1Dimension</span>
+<span class="n">original</span> <span class="o">=</span> <span class="n">field_time</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="n">reconstructed</span> <span class="o">=</span> <span class="n">field_reconstructed</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_dense</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">original</span><span class="p">,</span> <span class="s2">&quot;b-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_dense</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">reconstructed</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="s2">&quot;r--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reconstructed&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude [V]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;IFFT: Frequency → Time&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Error Verify</span>
+<span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">original</span> <span class="o">-</span> <span class="n">reconstructed</span><span class="o">.</span><span class="n">real</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max reconstruction error: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> V&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_14_0.png" src="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_14_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Max reconstruction error: 4.44e-16 V
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="4.-実空間-K空間変換（空間軸のFFT）">
+<h2>4. 実空間-K空間変換（空間軸のFFT）<a class="headerlink" href="#4.-実空間-K空間変換（空間軸のFFT）" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fft_space()</span></code> と <code class="docutils literal notranslate"><span class="pre">ifft_space()</span></code> を使って、空間軸を波数空間（K空間）に変換できます。 角波数 k = 2π / λ の符号付きFFTを使用します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Space Period havingData Create</span>
+<span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span>
+<span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+<span class="n">z_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+
+<span class="c1"># XDirection Wavelength 4m Sine wave</span>
+<span class="n">wavelength</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="c1"># m</span>
+<span class="n">k_expected</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">wavelength</span> <span class="c1"># rad/m</span>
+
+<span class="n">data_spatial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">x_grid</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">wavelength</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">data_spatial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">data_spatial</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">))</span>
+
+<span class="n">field_real</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_spatial</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">x_grid</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">y_grid</span><span class="p">,</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">z_grid</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># XAxis FFT</span>
+<span class="n">field_kx</span> <span class="o">=</span> <span class="n">field_real</span><span class="o">.</span><span class="n">fft_space</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original space domains: </span><span class="si">{</span><span class="n">field_real</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;After fft_space: </span><span class="si">{</span><span class="n">field_kx</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis names: </span><span class="si">{</span><span class="n">field_kx</span><span class="o">.</span><span class="n">axis_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Original space domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
+After fft_space: {&#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;}
+Axis names: (&#39;t&#39;, &#39;kx&#39;, &#39;y&#39;, &#39;z&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># KSpace Plot</span>
+<span class="c1"># Note: squeeze() DimensionReduction</span>
+<span class="n">kx_spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field_kx</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="n">kx_values</span> <span class="o">=</span> <span class="n">field_kx</span><span class="o">.</span><span class="n">_axis1_index</span><span class="o">.</span><span class="n">value</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kx_values</span><span class="p">,</span> <span class="n">kx_spectrum</span><span class="p">,</span> <span class="s2">&quot;b-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">k_expected</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;k = </span><span class="si">{</span><span class="n">k_expected</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> rad/m&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="o">-</span><span class="n">k_expected</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Wavenumber kx [rad/m]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Spatial FFT: Real → K space&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># PeakWavenumber Verify</span>
+<span class="n">peak_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">kx_spectrum</span><span class="p">)</span>
+<span class="n">peak_k</span> <span class="o">=</span> <span class="n">kx_values</span><span class="p">[</span><span class="n">peak_idx</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Peak wavenumber: </span><span class="si">{</span><span class="n">peak_k</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> rad/m (expected: ±</span><span class="si">{</span><span class="n">k_expected</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> rad/m)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_17_0.png" src="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_17_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Peak wavenumber: 1.57 rad/m (expected: ±1.57 rad/m)
+</pre></div></div>
+</div>
+<section id="波長の計算">
+<h3>波長の計算<a class="headerlink" href="#波長の計算" title="Link to this heading"></a></h3>
+<p>K空間では、<code class="docutils literal notranslate"><span class="pre">wavelength()</span></code> メソッドで波長を計算できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Wavelength Calculate</span>
+<span class="n">wavelengths</span> <span class="o">=</span> <span class="n">field_kx</span><span class="o">.</span><span class="n">wavelength</span><span class="p">(</span><span class="s2">&quot;kx&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wavelength at k=</span><span class="si">{</span><span class="n">k_expected</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">k_expected</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Calculated wavelengths range: </span><span class="si">{</span><span class="n">wavelengths</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">wavelengths</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">wavelengths</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">wavelengths</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Wavelength at k=1.57: 4.00 m
+Calculated wavelengths range: 1.00 - 8.00 m
+</pre></div></div>
+</div>
+</section>
+<section id="全空間軸のFFT">
+<h3>全空間軸のFFT<a class="headerlink" href="#全空間軸のFFT" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">axes</span></code> パラメータを省略すると、全空間軸をまとめてFFTできます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># SpaceAxis FFT</span>
+<span class="n">field_k_all</span> <span class="o">=</span> <span class="n">field_real</span><span class="o">.</span><span class="n">fft_space</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All spatial axes in K space: </span><span class="si">{</span><span class="n">field_k_all</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># FFT Restore</span>
+<span class="n">field_real_back</span> <span class="o">=</span> <span class="n">field_k_all</span><span class="o">.</span><span class="n">ifft_space</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Back to real space: </span><span class="si">{</span><span class="n">field_real_back</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># ReconstructionError</span>
+<span class="n">reconstruction_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field_real</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">field_real_back</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max reconstruction error: </span><span class="si">{</span><span class="n">reconstruction_error</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+All spatial axes in K space: {&#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;, &#39;kz&#39;: &#39;k&#39;}
+Back to real space: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;}
+Max reconstruction error: 2.29e-16
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="5.-FieldList-と-FieldDict-によるバッチ操作">
+<h2>5. FieldList と FieldDict によるバッチ操作<a class="headerlink" href="#5.-FieldList-と-FieldDict-によるバッチ操作" title="Link to this heading"></a></h2>
+<p>複数の <code class="docutils literal notranslate"><span class="pre">ScalarField</span></code> オブジェクトをまとめて処理するには、<code class="docutils literal notranslate"><span class="pre">FieldList</span></code> または <code class="docutils literal notranslate"><span class="pre">FieldDict</span></code> を使用します。</p>
+<section id="FieldList">
+<h3>FieldList<a class="headerlink" href="#FieldList" title="Link to this heading"></a></h3>
+<p>リスト形式で複数のフィールドを管理し、一括でFFT操作を適用できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3 AmplitudehavingScalarField Create</span>
+<span class="n">amplitudes</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]</span>
+<span class="n">fields</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">amp</span> <span class="ow">in</span> <span class="n">amplitudes</span><span class="p">:</span>
+    <span class="n">data_temp</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">field_temp</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+        <span class="n">data_temp</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+        <span class="n">axis0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+        <span class="n">axis1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+        <span class="n">axis2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+        <span class="n">axis3</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+        <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+        <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+        <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field_temp</span><span class="p">)</span>
+
+<span class="c1"># FieldList Create</span>
+<span class="n">field_list</span> <span class="o">=</span> <span class="n">FieldList</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of fields: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">field_list</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Number of fields: 3
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Batch time / durationFFT Run</span>
+<span class="n">field_list_freq</span> <span class="o">=</span> <span class="n">field_list</span><span class="o">.</span><span class="n">fft_time_all</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All fields transformed to frequency domain:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">field_list_freq</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; Field </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: axis0_domain = </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">axis0_domain</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+All fields transformed to frequency domain:
+ Field 0: axis0_domain = frequency
+ Field 1: axis0_domain = frequency
+ Field 2: axis0_domain = frequency
+</pre></div></div>
+</div>
+</section>
+<section id="FieldDict">
+<h3>FieldDict<a class="headerlink" href="#FieldDict" title="Link to this heading"></a></h3>
+<p>辞書形式で名前付きフィールドを管理します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Named Dictionary Create</span>
+<span class="n">field_dict</span> <span class="o">=</span> <span class="n">FieldDict</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;channel_A&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;channel_B&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;channel_C&quot;</span><span class="p">:</span> <span class="n">fields</span><span class="p">[</span><span class="mi">2</span><span class="p">]},</span>
+    <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field names: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">field_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Field names: [&#39;channel_A&#39;, &#39;channel_B&#39;, &#39;channel_C&#39;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Batch SpaceFFT Run</span>
+<span class="n">field_dict_k</span> <span class="o">=</span> <span class="n">field_dict</span><span class="o">.</span><span class="n">fft_space_all</span><span class="p">(</span><span class="n">axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">])</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">field_dict_k</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">space_domains</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+channel_A: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
+channel_B: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
+channel_C: {&#39;z&#39;: &#39;real&#39;, &#39;kx&#39;: &#39;k&#39;, &#39;ky&#39;: &#39;k&#39;}
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="6.-信号処理と解析">
+<h2>6. 信号処理と解析<a class="headerlink" href="#6.-信号処理と解析" title="Link to this heading"></a></h2>
+<p>物理場の解析において重要な信号処理手法として、以下を実演します：</p>
+<ol class="arabic simple">
+<li><p><strong>PSD計算</strong>: 時間・空間方向のパワースペクトル密度</p></li>
+<li><p><strong>周波数-空間マッピング</strong>: 空間的に周波数がどう変化するか可視化</p></li>
+<li><p><strong>相互相関</strong>: 信号の伝搬遅延の推定</p></li>
+<li><p><strong>コヒーレンスマップ</strong>: 空間的なコヒーレンスの可視化</p></li>
+</ol>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data Generate</span>
+<span class="c1"># Signal: 30 Hz Sine wave x=1m fromPropagation</span>
+<span class="c1"># Noise: GaussianNoise</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">256</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">fs</span> <span class="o">*</span> <span class="n">duration</span><span class="p">)</span><span class="o">.</span><span class="n">to_value</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">dimensionless_unscaled</span><span class="p">)))</span> <span class="o">/</span> <span class="n">fs</span><span class="o">.</span><span class="n">value</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span> <span class="c1"># 5m, 20points</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1"># 2m, 5points</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># z=0</span>
+
+<span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+<span class="n">data_sig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="n">source_freq</span> <span class="o">=</span> <span class="mf">30.0</span>
+<span class="n">source_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">source_freq</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">v_prop</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="c1"># 10 m/s</span>
+<span class="n">source_pos</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xi</span> <span class="o">-</span> <span class="n">source_pos</span><span class="p">)</span>
+    <span class="n">delay</span> <span class="o">=</span> <span class="n">dist</span> <span class="o">/</span> <span class="n">v_prop</span>
+    <span class="n">shift</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">delay</span> <span class="o">*</span> <span class="n">fs</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">sig_delayed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">source_signal</span><span class="p">,</span> <span class="n">shift</span><span class="p">)</span>
+    <span class="n">amp</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">dist</span><span class="p">)</span>
+    <span class="n">data_sig</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">sig_delayed</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+<span class="n">field_sig</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_sig</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">t</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">x</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">y</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">z</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Environmental Field&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">field_sig</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ScalarField([[[[ 0.08684844],
+               [ 0.36739322],
+               [ 0.20264566],
+               [ 0.24368612],
+               [ 0.29709332]],
+
+              [[-0.42828167],
+               [-0.2788319 ],
+               [-0.63601112],
+               [-0.43725569],
+               [-0.45766302]],
+
+              [[-0.50234469],
+               [-0.39848957],
+               [-0.33841909],
+               [-0.30672809],
+               [-0.35290641]],
+
+              ...,
+
+              [[-0.24582327],
+               [-0.36331307],
+               [-0.35576048],
+               [-0.30664571],
+               [-0.29873314]],
+
+              [[-0.25188483],
+               [-0.10460112],
+               [-0.20704192],
+               [-0.17437447],
+               [-0.06699974]],
+
+              [[-0.01857532],
+               [ 0.03160235],
+               [ 0.09463293],
+               [-0.13609984],
+               [-0.18043362]]],
+
+
+             [[[ 0.4965515 ],
+               [ 0.51114119],
+               [ 0.66836178],
+               [ 0.47774925],
+               [ 0.54391374]],
+
+              [[ 0.00870382],
+               [ 0.05797381],
+               [ 0.19497677],
+               [-0.1841482 ],
+               [ 0.06961271]],
+
+              [[-0.44467682],
+               [-0.63003207],
+               [-0.4931782 ],
+               [-0.72115671],
+               [-0.66144024]],
+
+              ...,
+
+              [[-0.26696884],
+               [-0.02335534],
+               [-0.2955512 ],
+               [ 0.03365938],
+               [-0.16675011]],
+
+              [[-0.01148699],
+               [ 0.02693153],
+               [ 0.23230027],
+               [-0.12005181],
+               [-0.1327343 ]],
+
+              [[ 0.0960591 ],
+               [ 0.17476004],
+               [-0.00103139],
+               [ 0.17377965],
+               [ 0.34090044]]],
+
+
+             [[[ 0.48591277],
+               [ 0.44150349],
+               [ 0.40895599],
+               [ 0.5606232 ],
+               [ 0.38818876]],
+
+              [[ 0.59176168],
+               [ 0.60045806],
+               [ 0.43279717],
+               [ 0.40597058],
+               [ 0.51018807]],
+
+              [[-0.48896672],
+               [-0.67904575],
+               [-0.65110209],
+               [-0.73068132],
+               [-0.55754008]],
+
+              ...,
+
+              [[-0.00889405],
+               [ 0.0246277 ],
+               [-0.00934052],
+               [-0.28479022],
+               [ 0.00294349]],
+
+              [[-0.05809312],
+               [ 0.21557047],
+               [ 0.08898029],
+               [ 0.19601207],
+               [-0.00748609]],
+
+              [[ 0.31327382],
+               [ 0.04965958],
+               [ 0.12931156],
+               [ 0.09634759],
+               [ 0.02072857]]],
+
+
+             ...,
+
+
+             [[[-0.47088405],
+               [-0.44093954],
+               [-0.50808846],
+               [-0.53825154],
+               [-0.52270623]],
+
+              [[-0.27016794],
+               [-0.05885403],
+               [-0.03014553],
+               [-0.11945106],
+               [-0.22574645]],
+
+              [[ 0.67186813],
+               [ 0.65758934],
+               [ 0.61808806],
+               [ 0.68006628],
+               [ 0.64916691]],
+
+              ...,
+
+              [[ 0.33427533],
+               [ 0.1238872 ],
+               [ 0.23921193],
+               [ 0.13288922],
+               [ 0.17767688]],
+
+              [[-0.09293398],
+               [ 0.04599217],
+               [-0.04333049],
+               [-0.14249861],
+               [-0.14613857]],
+
+              [[-0.17523055],
+               [-0.08070457],
+               [-0.3736138 ],
+               [-0.21547623],
+               [-0.24905171]]],
+
+
+             [[[-0.33979978],
+               [-0.52516958],
+               [-0.43117016],
+               [-0.55575497],
+               [-0.30922288]],
+
+              [[-0.57172495],
+               [-0.36253384],
+               [-0.47323134],
+               [-0.56822764],
+               [-0.41788518]],
+
+              [[ 0.60000133],
+               [ 0.69520425],
+               [ 0.58067915],
+               [ 0.59044121],
+               [ 0.60903589]],
+
+              ...,
+
+              [[ 0.09738152],
+               [-0.03127321],
+               [ 0.10558964],
+               [ 0.02092155],
+               [ 0.12403775]],
+
+              [[-0.17854237],
+               [-0.15159656],
+               [-0.13889632],
+               [-0.10361625],
+               [-0.07109176]],
+
+              [[-0.30326966],
+               [-0.18659539],
+               [-0.17075845],
+               [ 0.12720352],
+               [-0.09463939]]],
+
+
+             [[[-0.13293935],
+               [-0.26827271],
+               [-0.16340608],
+               [ 0.0859768 ],
+               [-0.29470039]],
+
+              [[-0.59042514],
+               [-0.43746394],
+               [-0.34756977],
+               [-0.58880771],
+               [-0.50722801]],
+
+              [[ 0.19803234],
+               [ 0.1693735 ],
+               [ 0.13092929],
+               [ 0.23941187],
+               [ 0.22039804]],
+
+              ...,
+
+              [[-0.17123032],
+               [-0.04474158],
+               [-0.08665946],
+               [-0.00431457],
+               [-0.00958998]],
+
+              [[-0.12704775],
+               [-0.18034525],
+               [-0.24545939],
+               [-0.26021225],
+               [-0.27972791]],
+
+              [[-0.10539607],
+               [ 0.00241909],
+               [ 0.01135068],
+               [-0.2382848 ],
+               [-0.06614197]]]],
+            unit: V,
+            name: Environmental Field,
+            epoch: None,
+            channel: None,
+            axis_names: [&#39;t&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+            axis0_name: t,
+            axis1_name: x,
+            axis2_name: y,
+            axis3_name: z,
+            axis0_index: [0.00000000e+00 3.90625000e-03 7.81250000e-03 ... 3.98828125e+00
+                           3.99218750e+00 3.99609375e+00] s,
+            axis1_index: [0.         0.26315789 0.52631579 0.78947368 1.05263158
+                           1.31578947 1.57894737 1.84210526 2.10526316 2.36842105
+                           2.63157895 2.89473684 3.15789474 3.42105263 3.68421053
+                           3.94736842 4.21052632 4.47368421 4.73684211 5.        ] m,
+            axis2_index: [0.  0.5 1.  1.5 2. ] m,
+            axis3_index: [0.] m,
+            axis0_domain: time,
+            space_domains: {&#39;x&#39;: &#39;real&#39;, &#39;y&#39;: &#39;real&#39;, &#39;z&#39;: &#39;real&#39;},
+            axis0_offset: None)
+</pre></div></div>
+</div>
+<section id="パワースペクトル密度-(PSD)">
+<h3>パワースペクトル密度 (PSD)<a class="headerlink" href="#パワースペクトル密度-(PSD)" title="Link to this heading"></a></h3>
+<p>特定の位置でのPSDを計算し、周波数成分を確認します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># SourcePosition(x=1m) Far(x=4m) PSD Ratiocomparison</span>
+<span class="n">psd_source</span> <span class="o">=</span> <span class="n">field_sig</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">point_or_region</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">))</span>
+<span class="n">psd_far</span> <span class="o">=</span> <span class="n">field_sig</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">point_or_region</span><span class="o">=</span><span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">psd_source</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Source (x=1m)&quot;</span><span class="p">)</span>
+<span class="n">psd_far</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Far (x=4m)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;PSD at Different Locations&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 1000x600 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_32_1.png" src="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_32_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_32_2.png" src="../../../../_images/web_ja_user_guide_tutorials_field_scalar_intro_32_2.png" />
+</div>
+</div>
+</section>
+<section id="周波数-空間マッピング（近日公開）">
+<h3>周波数-空間マッピング（近日公開）<a class="headerlink" href="#周波数-空間マッピング（近日公開）" title="Link to this heading"></a></h3>
+<p><strong>注意</strong>: <code class="docutils literal notranslate"><span class="pre">plot_freq_space()</span></code> 可視化メソッドは今後のリリースで提供予定です。</p>
+<p>現時点では、標準のmatplotlibを使用して周波数-空間データを手動で抽出・プロット可能です：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 異なる空間位置でのPSDを抽出</span>
+<span class="c1"># （手動可視化例 - v0.2.0で提供）</span>
+</pre></div>
+</div>
+<p>このセクションは、可視化APIが実装され次第更新されます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot_freq_space() Visualizationmethod v0.2.0</span>
+<span class="c1">#</span>
+<span class="c1"># （ ）:</span>
+<span class="c1"># field_sig.plot_freq_space(</span>
+<span class="c1"># space_axis=&quot;x&quot;,</span>
+<span class="c1"># fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},</span>
+<span class="c1"># freq_range=(10, 100),</span>
+<span class="c1"># log_scale=True,</span>
+<span class="c1"># )</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; : Frequency-SpaceVisualization will be added in a future release&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ : Frequency-SpaceVisualization will be added in a future release
+</pre></div></div>
+</div>
+</section>
+<section id="相互相関と遅延推定">
+<h3>相互相関と遅延推定<a class="headerlink" href="#相互相関と遅延推定" title="Link to this heading"></a></h3>
+<p>基準点（ソース位置）と他の位置との相互相関を計算し、信号の伝搬遅延を可視化します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot_cross_correlation() Visualizationmethod v0.2.0</span>
+<span class="c1">#</span>
+<span class="c1"># （ ）:</span>
+<span class="c1"># x=1.0m (Source) pointsas</span>
+<span class="c1"># ref_point = (1.0 * u.m, 0.0 * u.m, 0.0 * u.m)</span>
+<span class="c1">#</span>
+<span class="c1"># # CrossCorrelation Calculate Plot</span>
+<span class="c1"># lags, corrs = field_sig.plot_cross_correlation(</span>
+<span class="c1"># ref_point=ref_point,</span>
+<span class="c1"># scan_axis=&quot;x&quot;,</span>
+<span class="c1"># fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},</span>
+<span class="c1"># max_lag=0.5,</span>
+<span class="c1"># )</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; : CrossCorrelationVisualization will be added in a future release&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ : CrossCorrelationVisualization will be added in a future release
+</pre></div></div>
+</div>
+<p>傾きがV字型になっていることから、信号が x=1.0m から両側に伝搬していることがわかります。</p>
+</section>
+<section id="コヒーレンスマップ">
+<h3>コヒーレンスマップ<a class="headerlink" href="#コヒーレンスマップ" title="Link to this heading"></a></h3>
+<p>特定周波数（ここでは30Hz）における空間的なコヒーレンスを表示します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot_coherence_map() Visualizationmethod v0.2.0</span>
+<span class="c1">#</span>
+<span class="c1"># （ ）:</span>
+<span class="c1"># field_sig.plot_coherence_map(</span>
+<span class="c1"># target_freq=30.0,</span>
+<span class="c1"># ref_point=ref_point,</span>
+<span class="c1"># scan_axis=&quot;x&quot;,</span>
+<span class="c1"># fixed_coords={&quot;y&quot;: 0.0 * u.m, &quot;z&quot;: 0.0 * u.m},</span>
+<span class="c1"># )</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot; : CoherenceMapVisualization will be added in a future release&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ : CoherenceMapVisualization will be added in a future release
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="6.-数値的不変量の検証">
+<h2>6. 数値的不変量の検証<a class="headerlink" href="#6.-数値的不変量の検証" title="Link to this heading"></a></h2>
+<p>FFT変換の正確性を検証するため、往復変換（round-trip）が元のデータを再構成できることを確認します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># time / durationFFT Invariantcheck: ifft_time(fft_time(f)) ≈ f</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">data_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">field_test</span> <span class="o">=</span> <span class="n">ScalarField</span><span class="p">(</span>
+    <span class="n">data_test</span><span class="p">,</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">V</span><span class="p">,</span>
+    <span class="n">axis0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+    <span class="n">axis1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis3</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">,</span>
+    <span class="n">axis_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">],</span>
+    <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Round-trip</span>
+<span class="n">field_roundtrip</span> <span class="o">=</span> <span class="n">field_test</span><span class="o">.</span><span class="n">fft_time</span><span class="p">()</span><span class="o">.</span><span class="n">ifft_time</span><span class="p">()</span>
+
+<span class="c1"># Check</span>
+<span class="n">max_error_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">field_test</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">field_roundtrip</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">real</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;time / durationFFT Round-trip max error: </span><span class="si">{</span><span class="n">max_error_time</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">max_error_time</span> <span class="o">&lt;</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="s2">&quot;Time FFT round-trip failed!&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ time / durationFFTInvariantcheck: PASSED&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+time / durationFFT Round-trip max error: 9.99e-16
+✅ time / durationFFTInvariantcheck: PASSED
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="matrix_spectrogram.html" class="btn btn-neutral float-left" title="SpectrogramMatrix Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="field_vector_intro.html" class="btn btn-neutral float-right" title="VectorField クラス入門" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

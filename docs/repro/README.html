@@ -1,0 +1,176 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reproducibility Guide for the SoftwareX Manuscript &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Reproducibility Guide for the SoftwareX Manuscript</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/repro/README.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="reproducibility-guide-for-the-softwarex-manuscript">
+<h1>Reproducibility Guide for the SoftwareX Manuscript<a class="headerlink" href="#reproducibility-guide-for-the-softwarex-manuscript" title="Link to this heading"></a></h1>
+<p>This document describes how to regenerate the figures and executable examples referenced by <code class="docutils literal notranslate"><span class="pre">docs_internal/publications/paper_softwarex/main.tex</span></code>.</p>
+<section id="environment">
+<h2>Environment<a class="headerlink" href="#environment" title="Link to this heading"></a></h2>
+<p>Install the package with the extras used by the paper examples:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;gwexpy[analysis,gw]&quot;</span>
+pip<span class="w"> </span>install<span class="w"> </span>marimo
+</pre></div>
+</div>
+<p>The repository CI is currently exercised on Linux (Ubuntu) with Python 3.11 and 3.12.</p>
+</section>
+<section id="headless-reproduction-commands">
+<h2>Headless Reproduction Commands<a class="headerlink" href="#headless-reproduction-commands" title="Link to this heading"></a></h2>
+<p>The paper examples are stored as marimo-compatible Python scripts under <code class="docutils literal notranslate"><span class="pre">examples/paper-figures/</span></code>.</p>
+<p>Synthetic workflow covered by default CI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>marimo<span class="w"> </span>run<span class="w"> </span>examples/paper-figures/02_coherence_ranking.py
+</pre></div>
+</div>
+<p>Equivalent direct execution:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/paper-figures/02_coherence_ranking.py
+</pre></div>
+</div>
+<p>Optional public-data workflow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>marimo<span class="w"> </span>run<span class="w"> </span>examples/paper-figures/03_gwosc_case_study.py
+</pre></div>
+</div>
+<p>Equivalent direct execution:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>examples/paper-figures/03_gwosc_case_study.py
+</pre></div>
+</div>
+<p>If you have prepared a local cache artifact, you can force offline reuse with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">GWEXPY_GWOSC_CACHE</span><span class="o">=</span>docs/repro/cache/gwosc_gw150914_h1_1024s.npz<span class="w"> </span><span class="se">\</span>
+python<span class="w"> </span>examples/paper-figures/03_gwosc_case_study.py
+</pre></div>
+</div>
+</section>
+<section id="generated-artifacts">
+<h2>Generated Artifacts<a class="headerlink" href="#generated-artifacts" title="Link to this heading"></a></h2>
+<p>Running the scripts above writes the figure files used by the manuscript to <code class="docutils literal notranslate"><span class="pre">docs_internal/publications/paper_softwarex/</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">figure3_coherence_ranking.pdf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">figure3_coherence_ranking.png</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">figure5_gwosc_case_study.pdf</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">figure5_gwosc_case_study.png</span></code></p></li>
+</ul>
+</section>
+<section id="network-dependent-example-policy">
+<h2>Network-Dependent Example Policy<a class="headerlink" href="#network-dependent-example-policy" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">examples/paper-figures/02_coherence_ranking.py</span></code> is synthetic and suitable for default CI smoke testing.</p>
+<p><code class="docutils literal notranslate"><span class="pre">examples/paper-figures/03_gwosc_case_study.py</span></code> downloads public GWOSC strain data. Because it depends on network access and remote service availability, it is treated as an optional reproduction path rather than a required default CI job. If you want to exercise it in automation, do so in a separate network-enabled job or with prepared local caches.</p>
+</section>
+<section id="suggested-cache-handling">
+<h2>Suggested Cache Handling<a class="headerlink" href="#suggested-cache-handling" title="Link to this heading"></a></h2>
+<p>If you want to make the GWOSC workflow more repeatable locally:</p>
+<ul class="simple">
+<li><p>Keep the downloaded public-data cache under your standard Python/GWOSC cache location.</p></li>
+<li><p>Record the exact GPS interval used by the notebook.</p></li>
+<li><p>If strict offline reproduction is needed later, prepare a small cached artifact derived from the public data and document its provenance alongside the release.</p></li>
+<li><p>The notebook supports <code class="docutils literal notranslate"><span class="pre">GWEXPY_GWOSC_CACHE=/path/to/cache.npz</span></code> for loading a prepared local cache or writing one after a successful download.</p></li>
+</ul>
+</section>
+<section id="manuscript-alignment">
+<h2>Manuscript Alignment<a class="headerlink" href="#manuscript-alignment" title="Link to this heading"></a></h2>
+<p>The SoftwareX manuscript points to:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/paper-figures/02_coherence_ranking.py</span></code> for the synthetic coherence-ranking example</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples/paper-figures/03_gwosc_case_study.py</span></code> for the public GWOSC example</p></li>
+</ul>
+<p>The archived code record for the submitted version is the GitHub repository together with the Zenodo DOI <code class="docutils literal notranslate"><span class="pre">10.5281/zenodo.19059423</span></code>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

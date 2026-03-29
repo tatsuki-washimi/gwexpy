@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARIMAモデルによる突発的信号の検出 &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ARIMAモデルによる突発的信号の検出</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb">Download the notebook (.ipynb)</a></p>
+</div>
+<section id="ARIMAモデルによる突発的信号の検出">
+<h1>ARIMAモデルによる突発的信号の検出<a class="headerlink" href="#ARIMAモデルによる突発的信号の検出" title="Link to this heading"></a></h1>
+</section>
+<section id="—-バースト重力波探索のアイデア-—">
+<h1>— バースト重力波探索のアイデア —<a class="headerlink" href="#—-バースト重力波探索のアイデア-—" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<section id="はじめに">
+<h2>はじめに<a class="headerlink" href="#はじめに" title="Link to this heading"></a></h2>
+<p>重力波検出器のデータは定常的なノイズが支配的であり、バースト重力波（超新星爆発等）はこのノイズの中に埋もれた「短時間の非定常信号」として現れます。</p>
+<p>本ノートブックでは、<strong>自己回帰モデル（ARIMA）</strong>を用いて「定常ノイズを学習し、残差に突発的信号を浮かび上がらせる」というアイデアを体験します。この手法はテンプレートを必要としない「アンモデル（unmodeled）」探索の基礎的なアプローチの一つです。</p>
+<section id="参考文献">
+<h3>参考文献<a class="headerlink" href="#参考文献" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Autoregressive Search of Gravitational Waves: Denoising (ARIMA_DeNoise.pdf)</p></li>
+<li><p>BEACON: Autoregressive Search for Unmodeled transients (BEACON.pdf)</p></li>
+<li><p>Sparkler: Autoregressive Search of Unmodeled GW (Sparkler_1min.pdf)</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">sine</span><span class="p">,</span> <span class="n">from_asd</span><span class="p">,</span> <span class="n">colored</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="1.-検出器ノイズの生成">
+<h2>1. 検出器ノイズの生成<a class="headerlink" href="#1.-検出器ノイズの生成" title="Link to this heading"></a></h2>
+<p>まず、重力波検出器の背景ノイズをシミュレートします。可能であれば LIGO の設計感度（aLIGO）を用い、ライブラリがない場合は一般的な colored noise で代用します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># === パラメータ ===</span>
+<span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">4096</span>  <span class="c1"># Hz</span>
+<span class="n">duration</span>     <span class="o">=</span> <span class="mi">16</span>   <span class="c1"># seconds</span>
+<span class="n">seed</span>         <span class="o">=</span> <span class="mi">42</span>
+
+<span class="c1"># === ノイズ生成 ===</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.gwinc_</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_pygwinc</span>
+    <span class="c1"># aLIGO 感度曲線の取得</span>
+    <span class="n">asd</span> <span class="o">=</span> <span class="n">from_pygwinc</span><span class="p">(</span><span class="s2">&quot;aLIGO&quot;</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="n">sample_rate</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">duration</span><span class="p">)</span>
+    <span class="c1"># ASD から時系列ノイズを生成</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">from_asd</span><span class="p">(</span><span class="n">asd</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+                     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;aLIGO_noise&quot;</span><span class="p">)</span>
+    <span class="n">noise_model_name</span> <span class="o">=</span> <span class="s2">&quot;aLIGO (pygwinc)&quot;</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># pygwinc が無い場合のフォールバック: べき則 colored noise (1/f)</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
+                    <span class="n">exponent</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1e-21</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;colored_noise&quot;</span><span class="p">)</span>
+    <span class="n">noise_model_name</span> <span class="o">=</span> <span class="s2">&quot;Colored noise (f^{-0.5})&quot;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ノイズモデル: </span><span class="si">{</span><span class="n">noise_model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;サンプル数: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span><span class="si">}</span><span class="s2">, dt=</span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">dt</span><span class="si">}</span><span class="s2">s, duration=</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+
+<span class="n">noise</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Simulated Detector Noise: </span><span class="si">{</span><span class="n">noise_model_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ノイズモデル: Colored noise (f^{-0.5})
+サンプル数: 65536, dt=0.000244140625 ss, duration=16s
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_arima_burst_search_3_1.png" src="../../../../_images/web_en_user_guide_tutorials_case_arima_burst_search_3_1.png" />
+</div>
+</div>
+</section>
+<section id="2.-バースト信号の注入">
+<h2>2. バースト信号の注入<a class="headerlink" href="#2.-バースト信号の注入" title="Link to this heading"></a></h2>
+<p>テストデータとして、Sine-Gaussian バースト信号をノイズの後半部分に注入します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_sine_gaussian</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">t_center</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sine-Gaussian パルスを生成する&quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">envelope</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">t</span> <span class="o">-</span> <span class="n">t_center</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">tau</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">envelope</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">freq</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">t_center</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span>
+                      <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;SG_burst_f</span><span class="si">{</span><span class="n">freq</span><span class="si">}</span><span class="s2">_tau</span><span class="si">{</span><span class="n">tau</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># === バースト信号パラメータ ===</span>
+<span class="n">burst_time</span>  <span class="o">=</span> <span class="mf">12.0</span>   <span class="c1"># 注入時刻（後半 8 秒のどこか）</span>
+<span class="n">burst_freq</span>  <span class="o">=</span> <span class="mf">250.0</span>  <span class="c1"># Hz</span>
+<span class="n">burst_tau</span>   <span class="o">=</span> <span class="mf">0.002</span>  <span class="c1"># 秒</span>
+<span class="c1"># SNR がおよそ 5 程度になるように振幅を調整</span>
+<span class="n">std_noise</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+<span class="n">burst_amp</span>   <span class="o">=</span> <span class="mf">5.0</span> <span class="o">*</span> <span class="n">std_noise</span>
+
+<span class="n">burst</span> <span class="o">=</span> <span class="n">make_sine_gaussian</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">burst_time</span><span class="p">,</span>
+                           <span class="n">burst_freq</span><span class="p">,</span> <span class="n">burst_tau</span><span class="p">,</span> <span class="n">burst_amp</span><span class="p">)</span>
+
+<span class="c1"># === 注入 ===</span>
+<span class="n">data_with_signal</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
+    <span class="n">noise</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">burst</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">noise</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data_with_burst&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># === 可視化 ===</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">noise</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Noise only&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">burst</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Burst signal (Sine-Gaussian)&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_with_signal</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Noise + Burst&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Data Preparation: Noise and Signal Injection&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_arima_burst_search_5_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_arima_burst_search_5_0.png" />
+</div>
+</div>
+</section>
+<section id="3.-ARIMAモデルによるノイズ学習">
+<h2>3. ARIMAモデルによるノイズ学習<a class="headerlink" href="#3.-ARIMAモデルによるノイズ学習" title="Link to this heading"></a></h2>
+<p>信号が含まれていない前半の 8 秒間を「バックグラウンド区間」とし、ARIMAモデルをフィットさせてノイズの統計的性質を学習させます。 ※ 計算コストを抑えるため、適度にダウンサンプルを行います。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># === トレーニングデータの準備 ===</span>
+<span class="c1"># 最初の 8 秒をトレーニング区間とする</span>
+<span class="n">train_end_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">8.0</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+
+<span class="c1"># ダウンサンプル (4096 Hz -&gt; 512 Hz)</span>
+<span class="n">downsample_factor</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">train_data</span> <span class="o">=</span> <span class="n">data_with_signal</span><span class="p">[:</span><span class="n">train_end_idx</span><span class="p">:</span><span class="n">downsample_factor</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training data: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_data</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples, Fs=</span><span class="si">{</span><span class="n">train_data</span><span class="o">.</span><span class="n">sample_rate</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+
+<span class="c1"># fit_arima: Auto-ARIMA で最適次数を自動選択 (時間は少々かかります)</span>
+<span class="c1"># ここでは探索範囲を限定して高速化。pmdarima が無い場合は固定次数にフォールバックします。</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">train_data</span><span class="o">.</span><span class="n">fit_arima</span><span class="p">(</span><span class="n">auto</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;max_p&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;max_q&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;seasonal&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ARIMA Fit Summary (Auto-ARIMA):&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">pmdarima not found. Falling back to fixed order (3, 0, 1).&quot;</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">train_data</span><span class="o">.</span><span class="n">fit_arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ARIMA Fit Summary (Fixed Order):&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Training data: 4096 samples, Fs=512.0 Hz Hz
+
+pmdarima not found. Falling back to fixed order (3, 0, 1).
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ImportError</span>                               Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 14</span>
+<span class="ansi-green-fg">     13</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">14</span>     result = <span class="ansi-yellow-bg">train_data</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">fit_arima</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">auto</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">True</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">auto_kwargs</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">{</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">max_p</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg"> </span><span class="ansi-green-fg ansi-yellow-bg">3</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">max_q</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg"> </span><span class="ansi-green-fg ansi-yellow-bg">3</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">seasonal</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">}</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">     15</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">ARIMA Fit Summary (Auto-ARIMA):</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/timeseries/_analysis.py:135</span>, in <span class="ansi-cyan-fg">TimeSeriesAnalysisMixin.fit_arima</span><span class="ansi-blue-fg">(self, order, **kwargs)</span>
+<span class="ansi-green-fg">    133</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">135</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">fit_arima</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">cast</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">TimeSeries</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">order</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">order</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/timeseries/arima.py:333</span>, in <span class="ansi-cyan-fg">fit_arima</span><span class="ansi-blue-fg">(timeseries, order, seasonal_order, trend, auto, auto_kwargs, method, method_kwargs, nan_policy, impute_kwargs, **kwargs)</span>
+<span class="ansi-green-fg">    332</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> STATSMODELS_AVAILABLE:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">333</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ImportError</span>(
+<span class="ansi-green-fg">    334</span>         <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">statsmodels is required for ARIMA. `pip install statsmodels`</span><span class="ansi-yellow-fg">&#34;</span>
+<span class="ansi-green-fg">    335</span>     )
+<span class="ansi-green-fg">    337</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> timeseries.dt <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+
+<span class="ansi-red-fg">ImportError</span>: statsmodels is required for ARIMA. `pip install statsmodels`
+
+During handling of the above exception, another exception occurred:
+
+<span class="ansi-red-fg">ImportError</span>                               Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 18</span>
+<span class="ansi-green-fg">     16</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ImportError</span>:
+<span class="ansi-green-fg">     17</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">pmdarima not found. Falling back to fixed order (3, 0, 1).</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">18</span>     result = <span class="ansi-yellow-bg">train_data</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">fit_arima</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">order</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">(</span><span class="ansi-green-fg ansi-yellow-bg">3</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-green-fg ansi-yellow-bg">0</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-green-fg ansi-yellow-bg">1</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">trend</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">c</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">     19</span>     <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,0)">\n</span><span class="ansi-yellow-fg">ARIMA Fit Summary (Fixed Order):</span><span class="ansi-yellow-fg">&#34;</span>)
+<span class="ansi-green-fg">     21</span> <span style="color: rgb(0,135,0)">print</span>(result.summary())
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/timeseries/_analysis.py:135</span>, in <span class="ansi-cyan-fg">TimeSeriesAnalysisMixin.fit_arima</span><span class="ansi-blue-fg">(self, order, **kwargs)</span>
+<span class="ansi-green-fg">    132</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">arima</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> fit_arima
+<span class="ansi-green-fg">    133</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">gwexpy</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">timeseries</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TimeSeries
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">135</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">fit_arima</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">cast</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">TimeSeries</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">order</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">order</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/gwexpy/gwexpy/timeseries/arima.py:333</span>, in <span class="ansi-cyan-fg">fit_arima</span><span class="ansi-blue-fg">(timeseries, order, seasonal_order, trend, auto, auto_kwargs, method, method_kwargs, nan_policy, impute_kwargs, **kwargs)</span>
+<span class="ansi-green-fg">    309</span> <span class="ansi-yellow-fg">&#34;&#34;&#34;</span>
+<span class="ansi-green-fg">    310</span> <span class="ansi-yellow-fg">Fit an ARIMA or SARIMAX model to a TimeSeries.</span>
+<span class="ansi-green-fg">    311</span>
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    330</span> <span class="ansi-yellow-fg">notebook output clean (e.g., convergence and verbose/disp deprecations).</span>
+<span class="ansi-green-fg">    331</span> <span class="ansi-yellow-fg">&#34;&#34;&#34;</span>
+<span class="ansi-green-fg">    332</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> STATSMODELS_AVAILABLE:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">333</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ImportError</span>(
+<span class="ansi-green-fg">    334</span>         <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">statsmodels is required for ARIMA. `pip install statsmodels`</span><span class="ansi-yellow-fg">&#34;</span>
+<span class="ansi-green-fg">    335</span>     )
+<span class="ansi-green-fg">    337</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> timeseries.dt <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">    338</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">TimeSeries must have a regular sample rate (dt) for ARIMA.</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">ImportError</span>: statsmodels is required for ARIMA. `pip install statsmodels`
+</pre></div></div>
+</div>
+</section>
+<section id="4.-残差の計算と異常検出">
+<h2>4. 残差の計算と異常検出<a class="headerlink" href="#4.-残差の計算と異常検出" title="Link to this heading"></a></h2>
+<p>学習したモデルを残りのデータ（テスト区間）に適用し、予測値と実データの「残差」を計算します。定常ノイズであれば残差は小さくなりますが、モデルに含まれないバースト信号が存在すると、残差が大きく跳ね上がります。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># === テストデータへの適用 ===</span>
+<span class="n">test_data</span> <span class="o">=</span> <span class="n">data_with_signal</span><span class="p">[</span><span class="n">train_end_idx</span><span class="p">::</span><span class="n">downsample_factor</span><span class="p">]</span>
+
+<span class="c1"># 学習モデルの次数を適用して残差を求める</span>
+<span class="n">order</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">res</span><span class="o">.</span><span class="n">model_orders</span>
+<span class="n">test_result</span> <span class="o">=</span> <span class="n">test_data</span><span class="o">.</span><span class="n">fit_arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="n">order</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">order</span><span class="p">[</span><span class="s1">&#39;ma&#39;</span><span class="p">]),</span> <span class="n">trend</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)</span>
+<span class="n">test_resid</span> <span class="o">=</span> <span class="n">test_result</span><span class="o">.</span><span class="n">residuals</span><span class="p">()</span>
+
+<span class="c1"># === 閾値判定 (5-sigma) ===</span>
+<span class="c1"># トレーニング区間の残差の標準偏差から閾値を設定</span>
+<span class="n">train_resid</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">residuals</span><span class="p">()</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">train_resid</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">std</span><span class="p">())</span>
+<span class="n">threshold</span> <span class="o">=</span> <span class="mf">5.0</span> <span class="o">*</span> <span class="n">sigma</span>
+
+<span class="c1"># トリガー検出</span>
+<span class="n">trigger_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">test_resid</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+
+<span class="c1"># === 可視化 ===</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test_resid</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Residuals&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Detection Threshold (5-sigma)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="o">-</span><span class="n">threshold</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">trigger_mask</span><span class="p">):</span>
+    <span class="n">t_test</span> <span class="o">=</span> <span class="n">test_resid</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">t_test</span><span class="p">[</span><span class="n">trigger_mask</span><span class="p">],</span> <span class="n">test_resid</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">trigger_mask</span><span class="p">],</span>
+               <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Trigger Detected&quot;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Search Results: Residuals and Triggers&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="5.-性能評価-(SNR-依存性)">
+<h2>5. 性能評価 (SNR 依存性)<a class="headerlink" href="#5.-性能評価-(SNR-依存性)" title="Link to this heading"></a></h2>
+<p>異なる SNR (Signal-to-Noise Ratio) で注入を行い、本手法の検出感度を確認します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># シンプルなモンテカルロ評価</span>
+<span class="n">snr_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+<span class="n">n_trials</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">detection_rates</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># 前回の次数を使用</span>
+<span class="n">order_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">order</span><span class="p">[</span><span class="s1">&#39;ar&#39;</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">order</span><span class="p">[</span><span class="s1">&#39;ma&#39;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evaluating SNR sensitivity...&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">snr</span> <span class="ow">in</span> <span class="n">snr_values</span><span class="p">:</span>
+    <span class="n">hits</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_trials</span><span class="p">):</span>
+        <span class="c1"># 新しいノイズ実現</span>
+        <span class="n">n_val</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">exponent</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">snr</span><span class="o">*</span><span class="mi">100</span><span class="o">+</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">s_val</span> <span class="o">=</span> <span class="n">make_sine_gaussian</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">burst_freq</span><span class="p">,</span> <span class="n">burst_tau</span><span class="p">,</span> <span class="n">snr</span> <span class="o">*</span> <span class="n">n_val</span><span class="o">.</span><span class="n">std</span><span class="p">())</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">trial_ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">n_val</span> <span class="o">+</span> <span class="n">s_val</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">)[::</span><span class="n">downsample_factor</span><span class="p">]</span>
+
+        <span class="c1"># フィットとチェック</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">trial_ts</span><span class="o">.</span><span class="n">fit_arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order_tuple</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">residuals</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">5.0</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">):</span>
+                <span class="n">hits</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">continue</span>
+    <span class="n">detection_rates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hits</span> <span class="o">/</span> <span class="n">n_trials</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">snr_values</span><span class="p">,</span> <span class="n">detection_rates</span><span class="p">,</span> <span class="s1">&#39;o-&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Injected SNR&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Detection Rate&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Sensitivity Curve (Approximation)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="まとめ">
+<h2>まとめ<a class="headerlink" href="#まとめ" title="Link to this heading"></a></h2>
+<section id="ARIMAモデルによる探索のポイント">
+<h3>ARIMAモデルによる探索のポイント<a class="headerlink" href="#ARIMAモデルによる探索のポイント" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>ノイズの低減</strong>: 定常的なノイズ（背景波）をモデル化して差し引くことで、微弱な過渡信号を見つけやすくします。</p></li>
+<li><p><strong>残差解析</strong>: 期待される統計分布（ガウス分布等）からの逸脱を監視することで、未知の信号を捉えます。</p></li>
+</ol>
+<p>実際の探索パイプライン（BEACON等）では、これを多波長や多チャンネルに拡張し、さらにコヒーレンス解析などを組み合わせることで信頼性を高めています。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

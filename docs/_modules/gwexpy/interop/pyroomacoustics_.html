@@ -1,0 +1,703 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.interop.pyroomacoustics_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.interop.pyroomacoustics_</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.interop.pyroomacoustics_</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">gwexpy.interop.pyroomacoustics_</span>
+<span class="sd">-------------------------------</span>
+
+<span class="sd">Interoperability with pyroomacoustics room acoustics simulation library.</span>
+
+<span class="sd">Provides conversion from pyroomacoustics Room simulation results (RIR,</span>
+<span class="sd">microphone signals, source signals, STFT) and ScalarField grid data</span>
+<span class="sd">to GWexpy TimeSeries, Spectrogram, and ScalarField types.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._optional</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_optional</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;from_pyroomacoustics_rir&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_pyroomacoustics_mic_signals&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_pyroomacoustics_source&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_pyroomacoustics_stft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_pyroomacoustics_field&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_pyroomacoustics_source&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_pyroomacoustics_stft&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># From pyroomacoustics → GWexpy</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="from_pyroomacoustics_rir">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_pyroomacoustics_rir">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_pyroomacoustics_rir</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">room</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mic</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create TimeSeries or TimeSeriesDict from pyroomacoustics room impulse responses.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The TimeSeries (or TimeSeriesDict) class to instantiate.</span>
+<span class="sd">    room : pyroomacoustics.Room</span>
+<span class="sd">        The room object after ``compute_rir()`` or ``simulate()`` has been called.</span>
+<span class="sd">        ``room.rir`` must follow the pyroomacoustics convention</span>
+<span class="sd">        ``rir[mic_index][source_index]`` (outer index = microphone).</span>
+<span class="sd">    source : int, optional</span>
+<span class="sd">        Source index to extract. If *None* and *mic* is also *None*, all</span>
+<span class="sd">        source-mic pairs are returned.</span>
+<span class="sd">    mic : int, optional</span>
+<span class="sd">        Microphone index to extract. If *None* and *source* is also *None*,</span>
+<span class="sd">        all source-mic pairs are returned.</span>
+<span class="sd">    unit : str or astropy.units.Unit, optional</span>
+<span class="sd">        Unit to assign to the result.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        When a single source-mic pair is selected.</span>
+<span class="sd">    TimeSeriesDict</span>
+<span class="sd">        When multiple pairs are returned.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If RIR has not been computed yet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;pyroomacoustics&quot;</span><span class="p">)</span>
+
+    <span class="n">rir</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="n">rir</span>
+    <span class="k">if</span> <span class="n">rir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;RIR not computed. Call room.compute_rir() or room.simulate() first.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">fs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">fs</span>
+
+    <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
+    <span class="n">TimeSeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">)</span>
+    <span class="n">want_dict</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="bp">cls</span> <span class="ow">is</span> <span class="n">TimeSeriesDict</span> <span class="ow">or</span> <span class="n">_is_subclass_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">TimeSeriesDict</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Real pyroomacoustics convention: rir[mic_index][source_index]</span>
+    <span class="n">n_mics</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rir</span><span class="p">)</span>
+    <span class="n">n_sources</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rir</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">n_mics</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="c1"># Single pair</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rir</span><span class="p">[</span><span class="n">mic</span><span class="p">][</span><span class="n">source</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rir_src</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">_mic</span><span class="si">{</span><span class="n">mic</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="c1"># Single source, all mics</span>
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_mics</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rir</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">source</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;mic_</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c1"># Single mic, all sources</span>
+    <span class="k">if</span> <span class="n">mic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sources</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rir</span><span class="p">[</span><span class="n">mic</span><span class="p">][</span><span class="n">s</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;src_</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c1"># All pairs</span>
+    <span class="k">if</span> <span class="n">n_mics</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">n_sources</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">want_dict</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rir</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;rir&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sources</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_mics</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rir</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">s</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;src</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">_mic</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="from_pyroomacoustics_mic_signals">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_pyroomacoustics_mic_signals">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_pyroomacoustics_mic_signals</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">room</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">mic</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create TimeSeries or TimeSeriesDict from pyroomacoustics microphone signals.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The TimeSeries (or TimeSeriesDict) class to instantiate.</span>
+<span class="sd">    room : pyroomacoustics.Room</span>
+<span class="sd">        The room object after ``simulate()`` has been called.</span>
+<span class="sd">    mic : int, optional</span>
+<span class="sd">        Microphone index to extract. If *None*, all microphones are returned.</span>
+<span class="sd">    unit : str or astropy.units.Unit, optional</span>
+<span class="sd">        Unit to assign to the result.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        When a single microphone is selected.</span>
+<span class="sd">    TimeSeriesDict</span>
+<span class="sd">        When multiple microphones are returned.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If signals have not been computed yet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;pyroomacoustics&quot;</span><span class="p">)</span>
+
+    <span class="n">signals</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="n">mic_array</span><span class="o">.</span><span class="n">signals</span>
+    <span class="k">if</span> <span class="n">signals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Signals not computed. Call room.simulate() first.&quot;</span><span class="p">)</span>
+
+    <span class="n">signals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">fs</span>
+
+    <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
+    <span class="n">TimeSeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">)</span>
+    <span class="n">want_dict</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="bp">cls</span> <span class="ow">is</span> <span class="n">TimeSeriesDict</span> <span class="ow">or</span> <span class="n">_is_subclass_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">TimeSeriesDict</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">n_mics</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Single mic selection</span>
+    <span class="k">if</span> <span class="n">mic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">signals</span><span class="p">[</span><span class="n">mic</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;mic_</span><span class="si">{</span><span class="n">mic</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="c1"># Single mic, auto-unwrap</span>
+    <span class="k">if</span> <span class="n">n_mics</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">want_dict</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">signals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mic_0&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="c1"># Multiple mics</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_mics</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;mic_</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">signals</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<div class="viewcode-block" id="from_pyroomacoustics_source">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_pyroomacoustics_source">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_pyroomacoustics_source</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">room</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create TimeSeries from a pyroomacoustics sound source signal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The TimeSeries class to instantiate.</span>
+<span class="sd">    room : pyroomacoustics.Room</span>
+<span class="sd">        The room object with at least one source added.</span>
+<span class="sd">    source : int, default 0</span>
+<span class="sd">        Source index to extract.</span>
+<span class="sd">    unit : str or astropy.units.Unit, optional</span>
+<span class="sd">        Unit to assign to the result.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;pyroomacoustics&quot;</span><span class="p">)</span>
+
+    <span class="n">src</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="n">sources</span><span class="p">[</span><span class="n">source</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">signal</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">fs</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="s2">&quot;delay&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;source_</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_pyroomacoustics_stft">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_pyroomacoustics_stft">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_pyroomacoustics_stft</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">stft_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create Spectrogram or SpectrogramDict from a pyroomacoustics STFT object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The Spectrogram (or SpectrogramDict) class to instantiate.</span>
+<span class="sd">    stft_obj : pyroomacoustics.stft.STFT or similar</span>
+<span class="sd">        Object with ``.X`` (complex STFT data), ``.hop``, and ``.N`` attributes.</span>
+<span class="sd">    channel : int, optional</span>
+<span class="sd">        Channel index to extract from multi-channel STFT. If *None*, all</span>
+<span class="sd">        channels are returned.</span>
+<span class="sd">    fs : float, optional</span>
+<span class="sd">        Sample rate in Hz. Required if ``stft_obj`` does not have an ``fs``</span>
+<span class="sd">        attribute.</span>
+<span class="sd">    unit : str or astropy.units.Unit, optional</span>
+<span class="sd">        Unit to assign to the result.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Spectrogram</span>
+<span class="sd">        When a single channel is selected or the STFT is single-channel.</span>
+<span class="sd">    SpectrogramDict</span>
+<span class="sd">        When multiple channels are present and no channel is selected.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;pyroomacoustics&quot;</span><span class="p">)</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">stft_obj</span><span class="o">.</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">hop</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stft_obj</span><span class="o">.</span><span class="n">hop</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stft_obj</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+
+    <span class="c1"># Resolve sample rate</span>
+    <span class="k">if</span> <span class="n">fs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fs_attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">stft_obj</span><span class="p">,</span> <span class="s2">&quot;fs&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fs_attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_raise_fs_required</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;unreachable&quot;</span><span class="p">)</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">fs_attr</span><span class="p">)</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">hop</span> <span class="o">/</span> <span class="n">fs</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">fs</span> <span class="o">/</span> <span class="n">N</span>
+
+    <span class="n">Spectrogram</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;Spectrogram&quot;</span><span class="p">)</span>
+    <span class="n">SpectrogramDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;SpectrogramDict&quot;</span><span class="p">)</span>
+    <span class="n">want_dict</span> <span class="o">=</span> <span class="n">SpectrogramDict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="bp">cls</span> <span class="ow">is</span> <span class="n">SpectrogramDict</span> <span class="ow">or</span> <span class="n">_is_subclass_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">SpectrogramDict</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Determine dimensionality</span>
+    <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># Single channel: (n_frames, n_freq_bins)</span>
+        <span class="k">return</span> <span class="n">Spectrogram</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;stft&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="c1"># Multi-channel: (n_channels, n_frames, n_freq_bins)</span>
+        <span class="n">n_channels</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ch_</span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">return</span> <span class="n">Spectrogram</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">n_channels</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">want_dict</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Spectrogram</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">dt</span><span class="o">=</span><span class="n">dt</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+                <span class="n">f0</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">df</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ch_0&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">SpectrogramDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ch_</span><span class="si">{</span><span class="n">ch</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">[</span><span class="n">ch</span><span class="p">],</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected STFT.X to be 2D or 3D, got </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">D with shape </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_pyroomacoustics_field">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_pyroomacoustics_field">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_pyroomacoustics_field</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">room</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">grid_shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="n">source</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rir&quot;</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create ScalarField from pyroomacoustics room with grid-placed microphones.</span>
+
+<span class="sd">    When microphones are placed on a regular spatial grid, this function</span>
+<span class="sd">    converts the RIR or microphone signals into a 4D ScalarField with</span>
+<span class="sd">    shape ``(nt, nx, ny, nz)``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The ScalarField class to instantiate.</span>
+<span class="sd">    room : pyroomacoustics.Room</span>
+<span class="sd">        Room object with microphones placed on a regular grid.</span>
+<span class="sd">    grid_shape : tuple of int</span>
+<span class="sd">        Spatial grid shape ``(nx, ny, nz)`` for 3D rooms or ``(nx, ny)``</span>
+<span class="sd">        for 2D rooms. Must satisfy ``prod(grid_shape) == n_mics``.</span>
+<span class="sd">    source : int, default 0</span>
+<span class="sd">        Source index (used only when ``mode=&#39;rir&#39;``).</span>
+<span class="sd">    mode : {&#39;rir&#39;, &#39;signals&#39;}</span>
+<span class="sd">        Which data to extract:</span>
+
+<span class="sd">        - ``&#39;rir&#39;``: Room impulse responses for the given source.</span>
+<span class="sd">        - ``&#39;signals&#39;``: Simulated microphone signals.</span>
+<span class="sd">    unit : str or astropy.units.Unit, optional</span>
+<span class="sd">        Unit to assign to the data.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ScalarField</span>
+<span class="sd">        4D field with shape ``(nt, nx, ny, nz)``.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``prod(grid_shape)`` does not match the number of microphones,</span>
+<span class="sd">        or if the requested data has not been computed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;pyroomacoustics&quot;</span><span class="p">)</span>
+
+    <span class="n">n_mics_expected</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">grid_shape</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">mic_array</span><span class="o">.</span><span class="n">R</span><span class="p">)</span>  <span class="c1"># shape (dim, n_mics)</span>
+    <span class="n">dim</span><span class="p">,</span> <span class="n">n_mics</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">if</span> <span class="n">n_mics_expected</span> <span class="o">!=</span> <span class="n">n_mics</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;grid_shape </span><span class="si">{</span><span class="n">grid_shape</span><span class="si">}</span><span class="s2"> implies </span><span class="si">{</span><span class="n">n_mics_expected</span><span class="si">}</span><span class="s2"> microphones, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but room has </span><span class="si">{</span><span class="n">n_mics</span><span class="si">}</span><span class="s2"> microphones.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">fs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">room</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+
+    <span class="c1"># Collect data: shape (n_mics, n_samples)</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;rir&quot;</span><span class="p">:</span>
+        <span class="n">rir</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="n">rir</span>
+        <span class="k">if</span> <span class="n">rir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;RIR not computed. Call room.compute_rir() or room.simulate() first.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">rir_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">rir</span><span class="p">[</span><span class="n">m</span><span class="p">][</span><span class="n">source</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_mics</span><span class="p">)</span>
+        <span class="p">]</span>  <span class="c1"># gather across mics for one source</span>
+        <span class="c1"># Pad to max length</span>
+        <span class="n">max_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rir_list</span><span class="p">)</span>
+        <span class="n">data_2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_mics</span><span class="p">,</span> <span class="n">max_len</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rir_list</span><span class="p">):</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="n">data_2d</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)]</span> <span class="o">=</span> <span class="n">arr</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;signals&quot;</span><span class="p">:</span>
+        <span class="n">signals</span> <span class="o">=</span> <span class="n">room</span><span class="o">.</span><span class="n">mic_array</span><span class="o">.</span><span class="n">signals</span>
+        <span class="k">if</span> <span class="n">signals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Signals not computed. Call room.simulate() first.&quot;</span><span class="p">)</span>
+        <span class="n">data_2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">signals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mode must be &#39;rir&#39; or &#39;signals&#39;, got &#39;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+    <span class="n">nt</span> <span class="o">=</span> <span class="n">data_2d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Reshape: (n_mics, nt) → (*grid_shape, nt) → (nt, *grid_shape)</span>
+    <span class="c1"># Pad grid_shape to 3D if 2D</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">grid_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">grid_3d</span> <span class="o">=</span> <span class="n">grid_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
+        <span class="c1"># For 2D rooms, add a dummy z-axis position</span>
+        <span class="n">R_3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">R</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_mics</span><span class="p">))])</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">grid_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">grid_3d</span> <span class="o">=</span> <span class="n">grid_shape</span>
+        <span class="n">R_3d</span> <span class="o">=</span> <span class="n">R</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;grid_shape must be 2D or 3D, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">grid_shape</span><span class="p">)</span><span class="si">}</span><span class="s2">D: </span><span class="si">{</span><span class="n">grid_shape</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="n">grid_3d</span>
+    <span class="c1"># (n_mics, nt) → (nx, ny, nz, nt)</span>
+    <span class="n">data_4d</span> <span class="o">=</span> <span class="n">data_2d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">nt</span><span class="p">)</span>
+    <span class="c1"># → (nt, nx, ny, nz)</span>
+    <span class="n">data_4d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">data_4d</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Extract spatial axis coordinates from mic positions</span>
+    <span class="c1"># R_3d shape: (3, n_mics) → reshape to (3, nx, ny, nz)</span>
+    <span class="n">R_grid</span> <span class="o">=</span> <span class="n">R_3d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">)</span>
+    <span class="c1"># x varies along axis 0 of the grid</span>
+    <span class="n">x_coords</span> <span class="o">=</span> <span class="n">R_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># (nx,)</span>
+    <span class="n">y_coords</span> <span class="o">=</span> <span class="n">R_grid</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># (ny,)</span>
+    <span class="n">z_coords</span> <span class="o">=</span> <span class="n">R_grid</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>  <span class="c1"># (nz,)</span>
+
+    <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nt</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>
+    <span class="n">axis1</span> <span class="o">=</span> <span class="n">x_coords</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+    <span class="n">axis2</span> <span class="o">=</span> <span class="n">y_coords</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+    <span class="n">axis3</span> <span class="o">=</span> <span class="n">z_coords</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;rir&quot;</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;rir_field_src</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;signal_field&quot;</span>
+
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+        <span class="n">data_4d</span><span class="p">,</span>
+        <span class="n">axis0</span><span class="o">=</span><span class="n">times</span><span class="p">,</span>
+        <span class="n">axis1</span><span class="o">=</span><span class="n">axis1</span><span class="p">,</span>
+        <span class="n">axis2</span><span class="o">=</span><span class="n">axis2</span><span class="p">,</span>
+        <span class="n">axis3</span><span class="o">=</span><span class="n">axis3</span><span class="p">,</span>
+        <span class="n">axis0_domain</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span>
+        <span class="n">space_domain</span><span class="o">=</span><span class="s2">&quot;real&quot;</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># From GWexpy → pyroomacoustics</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="to_pyroomacoustics_source">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_pyroomacoustics_source">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_pyroomacoustics_source</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Export TimeSeries as a signal and sample rate tuple for pyroomacoustics.</span>
+
+<span class="sd">    The returned tuple can be used to add a source to a pyroomacoustics room::</span>
+
+<span class="sd">        signal, fs = ts.to_pyroomacoustics_source()</span>
+<span class="sd">        room = pra.ShoeBox([5, 4, 3], fs=fs)</span>
+<span class="sd">        room.add_source([1, 2, 1.5], signal=signal)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ts : TimeSeries</span>
+<span class="sd">        The time series to export.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    signal : numpy.ndarray</span>
+<span class="sd">        1D float64 array of the signal samples.</span>
+<span class="sd">    fs : int</span>
+<span class="sd">        Sample rate in Hz.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">signal</span><span class="p">,</span> <span class="n">fs</span></div>
+
+
+
+<div class="viewcode-block" id="to_pyroomacoustics_stft">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_pyroomacoustics_stft">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_pyroomacoustics_stft</span><span class="p">(</span>
+    <span class="n">spec</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">hop</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">analysis_window</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Export Spectrogram as a pyroomacoustics STFT object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spec : Spectrogram</span>
+<span class="sd">        The spectrogram to export. Shape ``(n_frames, n_freq_bins)``.</span>
+<span class="sd">    hop : int, optional</span>
+<span class="sd">        Hop size in samples. If *None*, estimated from the spectrogram&#39;s</span>
+<span class="sd">        time resolution and frequency resolution.</span>
+<span class="sd">    analysis_window : numpy.ndarray, optional</span>
+<span class="sd">        Analysis window to set on the STFT object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pyroomacoustics.stft.STFT</span>
+<span class="sd">        STFT object with ``.X`` set to the spectrogram data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pra</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;pyroomacoustics&quot;</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
+    <span class="n">n_frames</span><span class="p">,</span> <span class="n">n_freq_bins</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_freq_bins</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">hop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Estimate hop from dt and df</span>
+        <span class="n">dt_val</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">df_val</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">df_val</span> <span class="o">*</span> <span class="n">N</span>
+        <span class="n">hop</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">dt_val</span> <span class="o">*</span> <span class="n">fs</span><span class="p">))</span>
+
+    <span class="n">stft_obj</span> <span class="o">=</span> <span class="n">pra</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">stft</span><span class="o">.</span><span class="n">STFT</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">hop</span><span class="o">=</span><span class="n">hop</span><span class="p">,</span> <span class="n">analysis_window</span><span class="o">=</span><span class="n">analysis_window</span><span class="p">)</span>
+    <span class="n">stft_obj</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">return</span> <span class="n">stft_obj</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Internal helpers</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_subclass_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check issubclass without raising on non-class inputs.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_raise_fs_required</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise ValueError when fs is needed but not available.&quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="s2">&quot;Sample rate &#39;fs&#39; must be provided either as an argument or as &quot;</span>
+        <span class="s2">&quot;an attribute of the STFT object.&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

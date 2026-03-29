@@ -1,0 +1,503 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seismic Data Analysis with ObsPy Interoperability &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="GBD Format I/O: GRAPHTEC Data Logger Files" href="case_gbd_format.html" />
+    <link rel="prev" title="PCA / ICA Decomposition Tutorial" href="advanced_decomposition.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#vi-segment-analysis">VI. Segment Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Seismic Data Analysis with ObsPy Interoperability</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_seismic_obspy.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_seismic_obspy.ipynb">Download the notebook (.ipynb)</a></p>
+</div>
+<section id="Seismic-Data-Analysis-with-ObsPy-Interoperability">
+<h1>Seismic Data Analysis with ObsPy Interoperability<a class="headerlink" href="#Seismic-Data-Analysis-with-ObsPy-Interoperability" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_seismic_obspy.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>This tutorial demonstrates how to read seismological data in <strong>MiniSEED / SAC / FDSN</strong> formats and analyze it using gwexpy, with seamless conversion between <code class="docutils literal notranslate"><span class="pre">obspy</span></code> and gwexpy objects.</p>
+<section id="Use-cases-in-GW-detector-science">
+<h2>Use cases in GW detector science<a class="headerlink" href="#Use-cases-in-GW-detector-science" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Reading seismometer data from KAGRA, LIGO, or Virgo environment monitors</p></li>
+<li><p>Seismic noise analysis and coupling to detector sensitivity</p></li>
+<li><p>Cross-correlation of seismic channels with gravitational-wave data</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><strong>Legacy migration note:</strong></div>
+<div class="line">If your code used <code class="docutils literal notranslate"><span class="pre">obspy.read()</span></code> directly followed by manual numpy processing, replace it with <code class="docutils literal notranslate"><span class="pre">TimeSeries.read(format='miniseed')</span></code> and gwexpy’s high-level signal processing methods.</div>
+<div class="line">See <a class="reference external" href="../../../../docs_internal/references/SampleCodes_GWpy/API_MAPPING.md">API_MAPPING.md Category 4</a> for the full interop reference.</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span>
+
+<span class="c1"># ObsPy is an optional dependency</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
+    <span class="n">OBSPY_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ObsPy version: </span><span class="si">{</span><span class="n">obspy</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">OBSPY_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ObsPy not installed. Install with: pip install obspy&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This tutorial will show the API but skip cells requiring obspy.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1.-Route-1:-TimeSeries.read(format='miniseed')">
+<h2>1. Route 1: <code class="docutils literal notranslate"><span class="pre">TimeSeries.read(format='miniseed')</span></code><a class="headerlink" href="#1.-Route-1:-TimeSeries.read(format='miniseed')" title="Link to this heading"></a></h2>
+<p>gwexpy’s I/O layer supports reading MiniSEED files directly, returning a <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> object with correct units and time axis.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Route 1: Read MiniSEED via gwexpy I/O ---</span>
+<span class="c1"># Replace the path below with your actual MiniSEED file</span>
+<span class="c1">#</span>
+<span class="c1"># ts_seismic = TimeSeries.read(</span>
+<span class="c1">#     &quot;path/to/seismic.mseed&quot;,</span>
+<span class="c1">#     format=&#39;miniseed&#39;,</span>
+<span class="c1"># )</span>
+<span class="c1">#</span>
+<span class="c1"># Or read SAC format:</span>
+<span class="c1"># ts_seismic = TimeSeries.read(&quot;path/to/seismic.sac&quot;, format=&#39;sac&#39;)</span>
+<span class="c1">#</span>
+<span class="c1"># For FDSN web service (requires network access):</span>
+<span class="c1"># ts_seismic = TimeSeries.read(</span>
+<span class="c1">#     &quot;IU.ANMO.00.BHZ&quot;,</span>
+<span class="c1">#     format=&#39;miniseed&#39;,</span>
+<span class="c1">#     start=1234567890,</span>
+<span class="c1">#     end=1234568090,</span>
+<span class="c1"># )</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Route 1: TimeSeries.read(format=&#39;miniseed&#39;) or format=&#39;sac&#39;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This returns a TimeSeries with GPS time axis, units, and channel name.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Route-2:-from_obspy_trace()-–-Convert-from-obspy-objects">
+<h2>2. Route 2: <code class="docutils literal notranslate"><span class="pre">from_obspy_trace()</span></code> – Convert from obspy objects<a class="headerlink" href="#2.-Route-2:-from_obspy_trace()-–-Convert-from-obspy-objects" title="Link to this heading"></a></h2>
+<p>If you already have an <code class="docutils literal notranslate"><span class="pre">obspy.Trace</span></code> or <code class="docutils literal notranslate"><span class="pre">obspy.Stream</span></code>, convert it to gwexpy with <code class="docutils literal notranslate"><span class="pre">from_obspy_trace()</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">OBSPY_AVAILABLE</span><span class="p">:</span>
+    <span class="c1"># Simulate obspy workflow</span>
+    <span class="c1"># Normally: st = obspy.read(&quot;seismic.mseed&quot;)</span>
+    <span class="c1"># Here we create a synthetic trace for demonstration</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">fs_seis</span> <span class="o">=</span> <span class="mf">100.0</span>  <span class="c1"># 100 Hz seismometer</span>
+    <span class="n">n_seis</span>  <span class="o">=</span> <span class="mi">6000</span>   <span class="c1"># 60 seconds</span>
+    <span class="n">t_seis</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_seis</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_seis</span>
+
+    <span class="c1"># Simulate seismic noise + Rayleigh wave</span>
+    <span class="n">seis_data</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mf">1e-7</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_seis</span><span class="p">)</span>              <span class="c1"># broadband noise</span>
+        <span class="o">+</span> <span class="mf">5e-7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">0.15</span> <span class="o">*</span> <span class="n">t_seis</span><span class="p">)</span>  <span class="c1"># 0.15 Hz microseism</span>
+        <span class="o">+</span> <span class="mf">2e-7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span>  <span class="o">*</span> <span class="n">t_seis</span><span class="p">)</span>  <span class="c1"># 1 Hz noise</span>
+    <span class="p">)</span>
+
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stats</span><span class="p">()</span>
+    <span class="n">stats</span><span class="o">.</span><span class="n">network</span>  <span class="o">=</span> <span class="s2">&quot;K1&quot;</span>
+    <span class="n">stats</span><span class="o">.</span><span class="n">station</span>  <span class="o">=</span> <span class="s2">&quot;KAGRA&quot;</span>
+    <span class="n">stats</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s2">&quot;00&quot;</span>
+    <span class="n">stats</span><span class="o">.</span><span class="n">channel</span>  <span class="o">=</span> <span class="s2">&quot;BHZ&quot;</span>
+    <span class="n">stats</span><span class="o">.</span><span class="n">sampling_rate</span> <span class="o">=</span> <span class="n">fs_seis</span>
+    <span class="n">stats</span><span class="o">.</span><span class="n">starttime</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="s2">&quot;2023-01-01T00:00:00&quot;</span><span class="p">)</span>
+    <span class="n">stats</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">n_seis</span>
+
+    <span class="n">tr</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">Trace</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">seis_data</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">stats</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;obspy Trace:&quot;</span><span class="p">,</span> <span class="n">tr</span><span class="p">)</span>
+
+    <span class="c1"># Convert to gwexpy TimeSeries</span>
+    <span class="n">ts_seismic</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_obspy_trace</span><span class="p">(</span><span class="n">tr</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">m</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Converted to TimeSeries:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  t0     = </span><span class="si">{</span><span class="n">ts_seismic</span><span class="o">.</span><span class="n">t0</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  dt     = </span><span class="si">{</span><span class="n">ts_seismic</span><span class="o">.</span><span class="n">dt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  N      = </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_seismic</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  unit   = </span><span class="si">{</span><span class="n">ts_seismic</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  name   = </span><span class="si">{</span><span class="n">ts_seismic</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Fallback: create synthetic data without obspy</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">fs_seis</span> <span class="o">=</span> <span class="mf">100.0</span>
+    <span class="n">n_seis</span>  <span class="o">=</span> <span class="mi">6000</span>
+    <span class="n">t_seis</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_seis</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_seis</span>
+    <span class="n">seis_data</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="mf">1e-7</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_seis</span><span class="p">)</span>
+        <span class="o">+</span> <span class="mf">5e-7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">0.15</span> <span class="o">*</span> <span class="n">t_seis</span><span class="p">)</span>
+        <span class="o">+</span> <span class="mf">2e-7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span>  <span class="o">*</span> <span class="n">t_seis</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">ts_seismic</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
+        <span class="n">seis_data</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">fs_seis</span><span class="p">)</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+        <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="o">/</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;K1:KAGRA.BHZ&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Created synthetic TimeSeries (no obspy)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="3.-Signal-Processing-on-Seismic-Data">
+<h2>3. Signal Processing on Seismic Data<a class="headerlink" href="#3.-Signal-Processing-on-Seismic-Data" title="Link to this heading"></a></h2>
+<p>Once converted to <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code>, all gwexpy signal processing methods are available.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Time domain plot</span>
+<span class="n">ts_seismic</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s1">&#39;seconds&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bandpass filter to isolate seismic bands</span>
+<span class="n">ts_lf</span>  <span class="o">=</span> <span class="n">ts_seismic</span><span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>   <span class="c1"># 0.05–0.5 Hz: Earth&#39;s hum + microseism</span>
+<span class="n">ts_hf</span>  <span class="o">=</span> <span class="n">ts_seismic</span><span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span>  <span class="mf">10.0</span><span class="p">)</span>  <span class="c1"># 1–10 Hz: human-induced noise</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_seismic</span><span class="o">.</span><span class="n">value</span><span class="p">))</span> <span class="o">/</span> <span class="n">fs_seis</span><span class="p">,</span> <span class="n">ts_seismic</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Raw&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_lf</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>      <span class="o">/</span> <span class="n">fs_seis</span><span class="p">,</span> <span class="n">ts_lf</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>      <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;0.05–0.5 Hz&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_hf</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>      <span class="o">/</span> <span class="n">fs_seis</span><span class="p">,</span> <span class="n">ts_hf</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>      <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;1–10 Hz&quot;</span><span class="p">,</span>    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">ts_seismic</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Seismic Data: Bandpass Filtering&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Amplitude Spectral Density</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">ts_seismic</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD [</span><span class="si">{</span><span class="n">asd</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Seismic ASD&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="c1"># Annotate microseism peak</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;0.15 Hz microseism&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C2&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;1.0 Hz noise&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Spectrogram: Time-frequency map</span>
+<span class="n">sg</span> <span class="o">=</span> <span class="n">ts_seismic</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">stride</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Seismic Spectrogram&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">add_colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;PSD [</span><span class="si">{</span><span class="n">sg</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">hasattr</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;__getitem__&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="4.-Convert-Back-to-obspy">
+<h2>4. Convert Back to obspy<a class="headerlink" href="#4.-Convert-Back-to-obspy" title="Link to this heading"></a></h2>
+<p>After gwexpy processing, convert the result back to obspy for further seismological analysis (e.g., instrument response removal, FDSN upload).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">OBSPY_AVAILABLE</span><span class="p">:</span>
+    <span class="c1"># Convert processed TimeSeries back to obspy Trace</span>
+    <span class="n">tr_filtered</span> <span class="o">=</span> <span class="n">ts_lf</span><span class="o">.</span><span class="n">to_obspy_trace</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Converted back to obspy Trace:&quot;</span><span class="p">,</span> <span class="n">tr_filtered</span><span class="p">)</span>
+
+    <span class="c1"># Or use the generic to_obspy dispatcher</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_obspy</span>
+    <span class="n">tr_generic</span> <span class="o">=</span> <span class="n">to_obspy</span><span class="p">(</span><span class="n">ts_lf</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;via to_obspy():&quot;</span><span class="p">,</span> <span class="n">tr_generic</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;obspy not available – skipping round-trip conversion&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="5.-Multi-channel-Seismic-Analysis">
+<h2>5. Multi-channel Seismic Analysis<a class="headerlink" href="#5.-Multi-channel-Seismic-Analysis" title="Link to this heading"></a></h2>
+<p>When you have multiple seismic channels (3-component seismometer: X, Y, Z), use <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> for batch processing.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesMatrix</span>
+
+<span class="n">rng2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Three-component seismometer</span>
+<span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BHX&#39;</span><span class="p">,</span> <span class="s1">&#39;BHY&#39;</span><span class="p">,</span> <span class="s1">&#39;BHZ&#39;</span><span class="p">]</span>
+<span class="n">data_3c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span>
+    <span class="n">seis_data</span> <span class="o">+</span> <span class="mf">1e-8</span> <span class="o">*</span> <span class="n">rng2</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_seis</span><span class="p">),</span>
+    <span class="n">seis_data</span> <span class="o">*</span> <span class="mf">0.8</span> <span class="o">+</span> <span class="mf">1e-8</span> <span class="o">*</span> <span class="n">rng2</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_seis</span><span class="p">),</span>
+    <span class="n">seis_data</span> <span class="o">*</span> <span class="mf">1.2</span> <span class="o">+</span> <span class="mf">1e-8</span> <span class="o">*</span> <span class="n">rng2</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_seis</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>  <span class="c1"># (3, 1, n)</span>
+
+<span class="n">tsm_3c</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="p">(</span>
+    <span class="n">data_3c</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">fs_seis</span><span class="p">)</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+    <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span>
+    <span class="n">units</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="o">/</span><span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">tsm_3c</span><span class="o">.</span><span class="n">channel_names</span> <span class="o">=</span> <span class="n">components</span>
+
+<span class="c1"># ASD for all 3 components at once</span>
+<span class="n">asd_3c</span> <span class="o">=</span> <span class="n">tsm_3c</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">comp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">components</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd_3c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_3c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">comp</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;ASD [m/s/√Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;3-Component Seismometer ASD&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="6.-Migration-Guide:-obspy-→-gwexpy">
+<h2>6. Migration Guide: obspy → gwexpy<a class="headerlink" href="#6.-Migration-Guide:-obspy-→-gwexpy" title="Link to this heading"></a></h2>
+<p><strong>Before (obspy + numpy):</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">st</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;seismic.mseed&quot;</span><span class="p">)</span>
+<span class="n">tr</span> <span class="o">=</span> <span class="n">st</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Manual bandpass</span>
+<span class="n">tr_bp</span> <span class="o">=</span> <span class="n">tr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="c1"># Manual ASD with scipy</span>
+<span class="n">f</span><span class="p">,</span> <span class="n">psd</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">welch</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="n">nperseg</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">psd</span><span class="p">)</span>
+
+<span class="c1"># Manual spectrogram</span>
+<span class="n">f</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">Sxx</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">tr</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">tr</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>After (gwexpy):</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;seismic.mseed&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;miniseed&#39;</span><span class="p">)</span>
+<span class="c1"># Or: ts = TimeSeries.from_obspy_trace(obspy.read(&quot;seismic.mseed&quot;)[0])</span>
+
+<span class="n">ts_bp</span>  <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">asd</span>    <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>         <span class="c1"># FrequencySeries with units</span>
+<span class="n">sg</span>     <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">stride</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>  <span class="c1"># Spectrogram with GPS time axis</span>
+
+<span class="n">asd</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># Ready to plot with correct units and axis labels</span>
+</pre></div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>gwexpy API</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Read MiniSEED file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(path,</span> <span class="pre">format='miniseed')</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Read SAC file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(path,</span> <span class="pre">format='sac')</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Convert from obspy Trace</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.from_obspy_trace(tr,</span> <span class="pre">unit=...)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Convert to obspy Trace</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ts.to_obspy_trace()</span></code> or <code class="docutils literal notranslate"><span class="pre">to_obspy(ts)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Bandpass filter</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ts.bandpass(fmin,</span> <span class="pre">fmax)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>ASD</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ts.asd(fftlength=...,</span> <span class="pre">overlap=...)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Spectrogram</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ts.spectrogram(stride=...,</span> <span class="pre">fftlength=...)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Multi-channel</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code> with element-wise operations</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>See also:</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="intro_interop.html"><span class="doc">Intro Interoperability</span></a></p></li>
+<li><p><a class="reference internal" href="advanced_coupling.html"><span class="doc">Coupling Function Analysis</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="advanced_decomposition.html" class="btn btn-neutral float-left" title="PCA / ICA Decomposition Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="case_gbd_format.html" class="btn btn-neutral float-right" title="GBD Format I/O: GRAPHTEC Data Logger Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

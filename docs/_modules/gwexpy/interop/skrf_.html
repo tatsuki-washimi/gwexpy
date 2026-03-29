@@ -1,0 +1,650 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.interop.skrf_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.interop.skrf_</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.interop.skrf_</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">gwexpy.interop.skrf_</span>
+<span class="sd">---------------------</span>
+
+<span class="sd">Interoperability with scikit-rf (skrf) for RF/microwave network analysis.</span>
+
+<span class="sd">Provides bidirectional conversion between scikit-rf ``Network`` objects and</span>
+<span class="sd">GWexpy FrequencySeries types, plus one-way conversion of time-domain</span>
+<span class="sd">impulse/step responses to TimeSeries.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._optional</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_optional</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;from_skrf_network&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_skrf_network&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_skrf_impulse_response&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_skrf_step_response&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Supported network parameter names</span>
+<span class="n">_PARAMETER_ATTRS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="s2">&quot;h&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Default units per parameter type</span>
+<span class="n">_PARAMETER_UNITS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># dimensionless</span>
+    <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="s2">&quot;ohm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span>  <span class="c1"># Siemens</span>
+    <span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># dimensionless (ABCD)</span>
+    <span class="s2">&quot;t&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># dimensionless (scattering transfer)</span>
+    <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># mixed units (hybrid)</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="from_skrf_network">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_skrf_network">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_skrf_network</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">ntwk</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
+    <span class="n">port_pair</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create FrequencySeries, FrequencySeriesDict, or FrequencySeriesMatrix</span>
+<span class="sd">    from a scikit-rf Network.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The FrequencySeries (or FrequencySeriesDict) class to instantiate.</span>
+<span class="sd">    ntwk : skrf.Network</span>
+<span class="sd">        The scikit-rf Network object to convert.</span>
+<span class="sd">    parameter : str, default ``&quot;s&quot;``</span>
+<span class="sd">        Which network parameter to extract. One of ``&quot;s&quot;`` (scattering),</span>
+<span class="sd">        ``&quot;z&quot;`` (impedance), ``&quot;y&quot;`` (admittance), ``&quot;a&quot;`` (ABCD, 2-port</span>
+<span class="sd">        only), ``&quot;t&quot;`` (transfer scattering, 2-port only), or ``&quot;h&quot;``</span>
+<span class="sd">        (hybrid, 2-port only).</span>
+<span class="sd">    port_pair : tuple[int, int], optional</span>
+<span class="sd">        Zero-based ``(row, col)`` port indices to extract a single element of</span>
+<span class="sd">        the parameter matrix, e.g. ``(1, 0)`` for S₂₁.  If *None*:</span>
+
+<span class="sd">        * 1-port networks return a :class:`FrequencySeries` directly.</span>
+<span class="sd">        * Multi-port networks return a :class:`FrequencySeriesMatrix` when</span>
+<span class="sd">          *cls* is ``FrequencySeries``, or a :class:`FrequencySeriesDict`</span>
+<span class="sd">          when *cls* is ``FrequencySeriesDict``.</span>
+<span class="sd">    unit : str or astropy.units.Unit, optional</span>
+<span class="sd">        Unit to assign to the result. If *None*, a default unit is inferred</span>
+<span class="sd">        from *parameter*: ``None`` (dimensionless) for ``&quot;s&quot;``, ``&quot;t&quot;``,</span>
+<span class="sd">        ``&quot;a&quot;``; ``&quot;ohm&quot;`` for ``&quot;z&quot;``; ``&quot;S&quot;`` for ``&quot;y&quot;``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FrequencySeries</span>
+<span class="sd">        For a single port pair or a 1-port network.</span>
+<span class="sd">    FrequencySeriesMatrix</span>
+<span class="sd">        For a multi-port network when *cls* is ``FrequencySeries``.</span>
+<span class="sd">    FrequencySeriesDict</span>
+<span class="sd">        When *cls* is ``FrequencySeriesDict``; keys are ``&quot;P{row+1}{col+1}&quot;``</span>
+<span class="sd">        or ``&quot;S{row+1}{col+1}&quot;`` etc.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.frequencyseries import FrequencySeries</span>
+<span class="sd">    &gt;&gt;&gt; import skrf</span>
+<span class="sd">    &gt;&gt;&gt; ntwk = skrf.Network(&quot;myfilter.s2p&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; fs_s21 = FrequencySeries.from_skrf_network(ntwk, port_pair=(1, 0))</span>
+<span class="sd">    &gt;&gt;&gt; matrix = FrequencySeries.from_skrf_network(ntwk)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;skrf&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">parameter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_PARAMETER_ATTRS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;parameter must be one of </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">_PARAMETER_ATTRS</span><span class="p">)</span><span class="si">}</span><span class="s2">, got &#39;</span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ntwk</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">param_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ntwk</span><span class="p">,</span> <span class="n">_PARAMETER_ATTRS</span><span class="p">[</span><span class="n">parameter</span><span class="p">]))</span>
+    <span class="c1"># param_data shape: (nfreq, nports, nports)</span>
+
+    <span class="c1"># Resolve unit</span>
+    <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">_PARAMETER_UNITS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
+
+    <span class="n">FrequencySeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeries&quot;</span><span class="p">)</span>
+    <span class="n">FrequencySeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesDict&quot;</span><span class="p">)</span>
+    <span class="n">want_dict</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="bp">cls</span> <span class="ow">is</span> <span class="n">FrequencySeriesDict</span> <span class="ow">or</span> <span class="n">_is_subclass_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">FrequencySeriesDict</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">nfreq</span><span class="p">,</span> <span class="n">nports_row</span><span class="p">,</span> <span class="n">nports_col</span> <span class="o">=</span> <span class="n">param_data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">param_upper</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+    <span class="c1"># Port names (for readable keys)</span>
+    <span class="n">port_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ntwk</span><span class="p">,</span> <span class="s2">&quot;port_names&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">network_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ntwk</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Single port pair</span>
+    <span class="k">if</span> <span class="n">port_pair</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">port_pair</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">param_data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">_port_pair_name</span><span class="p">(</span>
+            <span class="n">param_upper</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">port_names</span><span class="o">=</span><span class="n">port_names</span><span class="p">,</span> <span class="n">network_name</span><span class="o">=</span><span class="n">network_name</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="c1"># 1×1 network → single FrequencySeries</span>
+    <span class="k">if</span> <span class="n">nports_row</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">nports_col</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">want_dict</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">param_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">_port_pair_name</span><span class="p">(</span>
+            <span class="n">param_upper</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">port_names</span><span class="o">=</span><span class="n">port_names</span><span class="p">,</span> <span class="n">network_name</span><span class="o">=</span><span class="n">network_name</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="c1"># Multi-port: dict mode</span>
+    <span class="k">if</span> <span class="n">want_dict</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nports_row</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nports_col</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">param_data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">_port_pair_name</span><span class="p">(</span>
+                    <span class="n">param_upper</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">port_names</span><span class="o">=</span><span class="n">port_names</span><span class="p">,</span> <span class="n">network_name</span><span class="o">=</span><span class="n">network_name</span>
+                <span class="p">)</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+                    <span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c1"># Multi-port: matrix mode</span>
+    <span class="n">FrequencySeriesMatrix</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesMatrix&quot;</span><span class="p">)</span>
+    <span class="c1"># param_data shape is (nfreq, nports, nports); matrix expects (nrows, ncols, nfreq)</span>
+    <span class="n">matrix_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">param_data</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># → (nports, nports, nfreq)</span>
+
+    <span class="n">channel_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">nports_row</span><span class="p">,</span> <span class="n">nports_col</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nports_row</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nports_col</span><span class="p">):</span>
+            <span class="n">channel_names</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">_port_pair_name</span><span class="p">(</span>
+                <span class="n">param_upper</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">port_names</span><span class="o">=</span><span class="n">port_names</span><span class="p">,</span> <span class="n">network_name</span><span class="o">=</span><span class="n">network_name</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+        <span class="n">matrix_data</span><span class="p">,</span>
+        <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+        <span class="n">channel_names</span><span class="o">=</span><span class="n">channel_names</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">network_name</span><span class="p">)</span> <span class="k">if</span> <span class="n">network_name</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="to_skrf_network">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_skrf_network">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_skrf_network</span><span class="p">(</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">parameter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span>
+    <span class="n">z0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>
+    <span class="n">port_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a scikit-rf Network from a FrequencySeries or FrequencySeriesMatrix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fs : FrequencySeries or FrequencySeriesMatrix</span>
+<span class="sd">        Source data. A :class:`FrequencySeries` is treated as a 1-port</span>
+<span class="sd">        network (scalar parameter). A :class:`FrequencySeriesMatrix` of</span>
+<span class="sd">        shape ``(N, N, nfreq)`` is treated as an N-port network.</span>
+<span class="sd">    parameter : str, default ``&quot;s&quot;``</span>
+<span class="sd">        Network parameter represented by the data. Currently only ``&quot;s&quot;``</span>
+<span class="sd">        is supported for direct construction; other parameters require</span>
+<span class="sd">        manual conversion.</span>
+<span class="sd">    z0 : float, default 50.0</span>
+<span class="sd">        Reference impedance in Ohms applied to all ports at all frequencies.</span>
+<span class="sd">    port_names : list[str], optional</span>
+<span class="sd">        Names for each port. Defaults to ``[&quot;1&quot;, &quot;2&quot;, ...]``.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Name for the resulting Network. If *None*, uses ``fs.name``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    skrf.Network</span>
+<span class="sd">        The constructed Network object.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.frequencyseries import FrequencySeries</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; fs = FrequencySeries(np.array([0.1+0j, 0.2+0j]), frequencies=[1e9, 2e9])</span>
+<span class="sd">    &gt;&gt;&gt; ntwk = fs.to_skrf_network()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">skrf</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;skrf&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">parameter</span> <span class="o">!=</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;parameter=</span><span class="si">{</span><span class="n">parameter</span><span class="si">!r}</span><span class="s2"> is not supported. &quot;</span>
+            <span class="s2">&quot;Only &#39;s&#39; (S-parameters) can be passed directly to skrf.Network; &quot;</span>
+            <span class="s2">&quot;convert other parameter types manually before calling to_skrf_network().&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fs</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="n">nfreq</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+
+    <span class="c1"># Determine shape of s-matrix</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># 1-port: (nfreq,) → (nfreq, 1, 1)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nfreq</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">nports</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="c1"># FrequencySeriesMatrix: (nrows, ncols, nfreq) → (nfreq, nrows, ncols)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">nports</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot convert data with </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> dimensions to a Network. &quot;</span>
+            <span class="s2">&quot;Expected 1D (FrequencySeries) or 3D (FrequencySeriesMatrix).&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">freq_obj</span> <span class="o">=</span> <span class="n">skrf</span><span class="o">.</span><span class="n">Frequency</span><span class="o">.</span><span class="n">from_f</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;hz&quot;</span><span class="p">)</span>
+
+    <span class="n">net_name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fs</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">p_names</span> <span class="o">=</span> <span class="n">port_names</span> <span class="ow">or</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nports</span><span class="p">)]</span>
+
+    <span class="n">ntwk</span> <span class="o">=</span> <span class="n">skrf</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span>
+        <span class="n">frequency</span><span class="o">=</span><span class="n">freq_obj</span><span class="p">,</span>
+        <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span>
+        <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">net_name</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ntwk</span><span class="o">.</span><span class="n">port_names</span> <span class="o">=</span> <span class="n">p_names</span>
+    <span class="k">return</span> <span class="n">ntwk</span></div>
+
+
+
+<div class="viewcode-block" id="from_skrf_impulse_response">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_skrf_impulse_response">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_skrf_impulse_response</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">ntwk</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">port_pair</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create TimeSeries or TimeSeriesDict from a scikit-rf Network impulse response.</span>
+
+<span class="sd">    Computes the time-domain impulse response via IFFT on the S-parameters</span>
+<span class="sd">    (or the selected port pair) and wraps the result in a :class:`TimeSeries`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The TimeSeries (or TimeSeriesDict) class to instantiate.</span>
+<span class="sd">    ntwk : skrf.Network</span>
+<span class="sd">        The scikit-rf Network object.</span>
+<span class="sd">    port_pair : tuple[int, int], optional</span>
+<span class="sd">        Zero-based ``(row, col)`` port indices to compute the impulse response</span>
+<span class="sd">        for. If *None*:</span>
+
+<span class="sd">        * 1-port networks compute the single impulse response.</span>
+<span class="sd">        * Multi-port networks compute all port pairs and return a</span>
+<span class="sd">          :class:`TimeSeriesDict`.</span>
+<span class="sd">    n : int, optional</span>
+<span class="sd">        Number of points for the IFFT. See ``Network.impulse_response``.</span>
+<span class="sd">    pad : int, default 0</span>
+<span class="sd">        Number of zero-padding points before IFFT.</span>
+<span class="sd">    unit : str or astropy.units.Unit, optional</span>
+<span class="sd">        Unit to assign to the result.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        For a single port pair or a 1-port network.</span>
+<span class="sd">    TimeSeriesDict</span>
+<span class="sd">        For a multi-port network when no *port_pair* is specified.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.timeseries import TimeSeries</span>
+<span class="sd">    &gt;&gt;&gt; import skrf</span>
+<span class="sd">    &gt;&gt;&gt; ntwk = skrf.Network(&quot;myfilter.s2p&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; ts = TimeSeries.from_skrf_impulse_response(ntwk, port_pair=(1, 0))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;skrf&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_from_skrf_time_response</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">ntwk</span><span class="p">,</span>
+        <span class="n">response_type</span><span class="o">=</span><span class="s2">&quot;impulse&quot;</span><span class="p">,</span>
+        <span class="n">port_pair</span><span class="o">=</span><span class="n">port_pair</span><span class="p">,</span>
+        <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+        <span class="n">pad</span><span class="o">=</span><span class="n">pad</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_skrf_step_response">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_skrf_step_response">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_skrf_step_response</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">ntwk</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">port_pair</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create TimeSeries or TimeSeriesDict from a scikit-rf Network step response.</span>
+
+<span class="sd">    Computes the time-domain step response via IFFT on the S-parameters</span>
+<span class="sd">    (or the selected port pair) and wraps the result in a :class:`TimeSeries`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The TimeSeries (or TimeSeriesDict) class to instantiate.</span>
+<span class="sd">    ntwk : skrf.Network</span>
+<span class="sd">        The scikit-rf Network object.</span>
+<span class="sd">    port_pair : tuple[int, int], optional</span>
+<span class="sd">        Zero-based ``(row, col)`` port indices to compute the step response</span>
+<span class="sd">        for. If *None*:</span>
+
+<span class="sd">        * 1-port networks compute the single step response.</span>
+<span class="sd">        * Multi-port networks compute all port pairs and return a</span>
+<span class="sd">          :class:`TimeSeriesDict`.</span>
+<span class="sd">    n : int, optional</span>
+<span class="sd">        Number of points for the IFFT. See ``Network.step_response``.</span>
+<span class="sd">    pad : int, default 0</span>
+<span class="sd">        Number of zero-padding points before IFFT.</span>
+<span class="sd">    unit : str or astropy.units.Unit, optional</span>
+<span class="sd">        Unit to assign to the result.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    TimeSeries</span>
+<span class="sd">        For a single port pair or a 1-port network.</span>
+<span class="sd">    TimeSeriesDict</span>
+<span class="sd">        For a multi-port network when no *port_pair* is specified.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.timeseries import TimeSeries</span>
+<span class="sd">    &gt;&gt;&gt; import skrf</span>
+<span class="sd">    &gt;&gt;&gt; ntwk = skrf.Network(&quot;myfilter.s2p&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; ts = TimeSeries.from_skrf_step_response(ntwk, port_pair=(1, 0))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;skrf&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_from_skrf_time_response</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">ntwk</span><span class="p">,</span>
+        <span class="n">response_type</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">,</span>
+        <span class="n">port_pair</span><span class="o">=</span><span class="n">port_pair</span><span class="p">,</span>
+        <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
+        <span class="n">pad</span><span class="o">=</span><span class="n">pad</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Internal helpers</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_from_skrf_time_response</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">ntwk</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">response_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">port_pair</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">pad</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Shared implementation for impulse/step response conversion.&quot;&quot;&quot;</span>
+    <span class="n">TimeSeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">)</span>
+    <span class="n">TimeSeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;TimeSeriesDict&quot;</span><span class="p">)</span>
+    <span class="n">want_dict</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="bp">cls</span> <span class="ow">is</span> <span class="n">TimeSeriesDict</span> <span class="ow">or</span> <span class="n">_is_subclass_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">TimeSeriesDict</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">nports</span> <span class="o">=</span> <span class="n">ntwk</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">network_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ntwk</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">port_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ntwk</span><span class="p">,</span> <span class="s2">&quot;port_names&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">param_upper</span> <span class="o">=</span> <span class="s2">&quot;S&quot;</span>  <span class="c1"># impulse/step responses always use S-parameters</span>
+
+    <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;n&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
+    <span class="k">if</span> <span class="n">pad</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pad&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pad</span>
+
+    <span class="n">method_name</span> <span class="o">=</span> <span class="s2">&quot;impulse_response&quot;</span> <span class="k">if</span> <span class="n">response_type</span> <span class="o">==</span> <span class="s2">&quot;impulse&quot;</span> <span class="k">else</span> <span class="s2">&quot;step_response&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute</span><span class="p">(</span><span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract single-port sub-network and compute response.&quot;&quot;&quot;</span>
+        <span class="c1"># Build a 1-port sub-network from the selected s-parameter slice</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">skrf</span>  <span class="c1"># noqa: PLC0415</span>
+
+        <span class="n">sub_ntwk</span> <span class="o">=</span> <span class="n">skrf</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span>
+            <span class="n">frequency</span><span class="o">=</span><span class="n">skrf</span><span class="o">.</span><span class="n">Frequency</span><span class="o">.</span><span class="n">from_f</span><span class="p">(</span><span class="n">ntwk</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;hz&quot;</span><span class="p">),</span>
+            <span class="n">s</span><span class="o">=</span><span class="n">ntwk</span><span class="o">.</span><span class="n">s</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">t_arr</span><span class="p">,</span> <span class="n">h_arr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sub_ntwk</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t_arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">h_arr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">port_pair</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">port_pair</span>
+        <span class="n">t_arr</span><span class="p">,</span> <span class="n">h_arr</span> <span class="o">=</span> <span class="n">_compute</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">_port_pair_name</span><span class="p">(</span>
+            <span class="n">param_upper</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">port_names</span><span class="o">=</span><span class="n">port_names</span><span class="p">,</span> <span class="n">network_name</span><span class="o">=</span><span class="n">network_name</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_build_timeseries_from_time_array</span><span class="p">(</span>
+            <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">h_arr</span><span class="p">,</span> <span class="n">t_arr</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span>
+        <span class="p">)</span>
+
+    <span class="c1"># 1-port</span>
+    <span class="k">if</span> <span class="n">nports</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">want_dict</span><span class="p">:</span>
+        <span class="n">t_arr</span><span class="p">,</span> <span class="n">h_arr</span> <span class="o">=</span> <span class="n">_compute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">_port_pair_name</span><span class="p">(</span>
+            <span class="n">param_upper</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">port_names</span><span class="o">=</span><span class="n">port_names</span><span class="p">,</span> <span class="n">network_name</span><span class="o">=</span><span class="n">network_name</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">_build_timeseries_from_time_array</span><span class="p">(</span>
+            <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">h_arr</span><span class="p">,</span> <span class="n">t_arr</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Multi-port → TimeSeriesDict</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nports</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nports</span><span class="p">):</span>
+            <span class="n">t_arr</span><span class="p">,</span> <span class="n">h_arr</span> <span class="o">=</span> <span class="n">_compute</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">_port_pair_name</span><span class="p">(</span>
+                <span class="n">param_upper</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">port_names</span><span class="o">=</span><span class="n">port_names</span><span class="p">,</span> <span class="n">network_name</span><span class="o">=</span><span class="n">network_name</span>
+            <span class="p">)</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_build_timeseries_from_time_array</span><span class="p">(</span>
+                <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">h_arr</span><span class="p">,</span> <span class="n">t_arr</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_timeseries_from_time_array</span><span class="p">(</span>
+    <span class="n">TimeSeries</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Construct a TimeSeries from data and time arrays.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">is_regular</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">diffs</span><span class="p">,</span> <span class="n">diffs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">is_regular</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">is_regular</span><span class="p">:</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">diffs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_port_pair_name</span><span class="p">(</span>
+    <span class="n">param</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">port_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">network_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a readable name for a port-pair element.</span>
+
+<span class="sd">    Uses ``{param}{i+1}{j+1}`` (e.g. ``S21``) when no meaningful port names</span>
+<span class="sd">    are supplied, and ``{param}({port_i},{port_j})`` (e.g. ``S(in,out)``)</span>
+<span class="sd">    when named ports are provided.  The default port names generated by</span>
+<span class="sd">    scikit-rf (``[&quot;1&quot;, &quot;2&quot;, ...]``) are treated as unnamed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">default_port_names</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="n">has_named_ports</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">port_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">port_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">port_names</span><span class="p">[:</span> <span class="nb">max</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">default_port_names</span><span class="p">[:</span> <span class="nb">max</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">has_named_ports</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">port_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">pi</span> <span class="o">=</span> <span class="n">port_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">pj</span> <span class="o">=</span> <span class="n">port_names</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">pi</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">pj</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}{</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">if</span> <span class="n">network_name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">network_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">label</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_subclass_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check issubclass without raising on non-class inputs.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

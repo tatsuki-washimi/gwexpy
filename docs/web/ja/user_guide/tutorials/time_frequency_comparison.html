@@ -1,0 +1,951 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>時間-周波数解析手法: 比較と選択ガイド &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="ARIMAモデルによる時系列予測" href="advanced_arima.html" />
+    <link rel="prev" title="時間-周波数解析比較（インタラクティブ）" href="time_frequency_analysis_comparison.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id1">あなたに合ったガイド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id2">視覚的な例</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id3">実例ギャラリー</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id4">ユーザー別学習パス</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#id5">主要ドキュメント</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">インストール</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">クイックスタート</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">はじめに (Getting Started)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_ja.html">GWexpy 機能一覧 (GWpyユーザー向け)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">ファイル I/O 対応フォーマットガイド</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">チュートリアル</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="index.html#i">I. 基本データ構造</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii">II. 多チャンネル &amp; 行列コンテナ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iii-field-api">III. 高次元フィールド (Field API)</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#iv">IV. 高度な信号処理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v">V. 特殊ツール</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#vi">VI. セグメント解析</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">ケーススタディ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">数値的安定性と精度</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">スカラーフィールドのスライス操作ガイド</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">検証済みアルゴリズム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#id2">前提条件と規約</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">アーキテクチャと物理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">リファレンス</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#id6">次のステップ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">言語 (Language)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+          <li class="breadcrumb-item"><a href="index.html">チュートリアル</a></li>
+      <li class="breadcrumb-item active">時間-周波数解析手法: 比較と選択ガイド</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/time_frequency_comparison.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="id1">
+<h1>時間-周波数解析手法: 比較と選択ガイド<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<div class="tip admonition">
+<p class="admonition-title">インタラクティブ版が利用可能です</p>
+<p><strong>プロットと実行可能なコード付きのバージョンをお探しですか？</strong></p>
+<p>この理論ガイドに対応する、完全に実行可能な Jupyter Notebook 版があります：</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="time_frequency_analysis_comparison.html"><span class="std std-doc">時間-周波数解析比較（インタラクティブ）</span></a></p></li>
+<li><p>8つの完全なプロット、定量評価、ベンチマーク信号</p></li>
+</ul>
+<p><strong>このページ</strong>: 各手法の理論、使い方ガイド、決定マトリックス
+<strong>ノートブック版</strong>: 完全な実装例、出力埋め込み、コピペ可能なコード</p>
+</div>
+<p>このチュートリアルでは、gwexpy のさまざまな時間-周波数解析手法を比較し、解析に適した手法を選択する方法を説明します。</p>
+<section id="id2">
+<h2>概要<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>重力波信号は<strong>時間変化する周波数内容</strong>を持つことが多い。異なる手法は異なる側面を明らかにします:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>手法</p></th>
+<th class="head"><p>最適な用途</p></th>
+<th class="head"><p>時間分解能</p></th>
+<th class="head"><p>周波数分解能</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>スペクトログラム (STFT)</strong></p></td>
+<td><p>汎用</p></td>
+<td><p>良好</p></td>
+<td><p>良好</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Q変換</strong></p></td>
+<td><p>チャープ、過渡現象</p></td>
+<td><p>適応的</p></td>
+<td><p>適応的（定数Q）</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>ウェーブレット (CWT)</strong></p></td>
+<td><p>マルチスケール特徴、チャープ</p></td>
+<td><p>スケール依存</p></td>
+<td><p>スケール依存</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>HHT</strong></p></td>
+<td><p>瞬時周波数</p></td>
+<td><p>優秀</p></td>
+<td><p>データ適応的</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>STLT</strong></p></td>
+<td><p>減衰振動</p></td>
+<td><p>良好</p></td>
+<td><p>良好（+減衰率σ）</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ケプストラム</strong></p></td>
+<td><p>エコー検出、周期性</p></td>
+<td><p>N/A</p></td>
+<td><p>ケフレンシー領域</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>DCT</strong></p></td>
+<td><p>圧縮、平滑特徴</p></td>
+<td><p>N/A</p></td>
+<td><p>N/A（基底係数）</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id3">
+<h2>セットアップ<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">chirp</span><span class="p">,</span> <span class="n">gaussian</span>
+
+<span class="c1"># テスト信号の作成: チャープ + ノイズ</span>
+<span class="n">sample_rate</span> <span class="o">=</span> <span class="mi">1024</span>  <span class="c1"># Hz</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># seconds</span>
+
+<span class="c1"># 20 Hz から 100 Hz へのチャープ</span>
+<span class="n">signal_chirp</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
+    <span class="n">f0</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>  <span class="c1"># 開始周波数</span>
+    <span class="n">f1</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>  <span class="c1"># 終了周波数</span>
+    <span class="n">t1</span><span class="o">=</span><span class="n">duration</span>
+<span class="p">)</span>
+
+<span class="c1"># ガウシアンノイズを追加</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">signal_chirp</span> <span class="o">+</span> <span class="n">noise</span>
+
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;strain&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;データ: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span><span class="si">}</span><span class="s2"> サンプル, </span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">秒&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="stft">
+<h2>手法 1: スペクトログラム（STFT ベース）<a class="headerlink" href="#stft" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>手法の説明<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p><strong>短時間フーリエ変換（STFT）</strong>: 信号を窓に分割し、各窓で FFT を計算</p>
+<p><strong>公式</strong>: <code class="docutils literal notranslate"><span class="pre">S(t,</span> <span class="pre">f)</span> <span class="pre">=</span> <span class="pre">|∫</span> <span class="pre">x(τ)</span> <span class="pre">w(τ-t)</span> <span class="pre">e^(-2πifτ)</span> <span class="pre">dτ|²</span></code></p>
+</section>
+<section id="id5">
+<h3>実装<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 0.5秒窓でスペクトログラムを作成</span>
+<span class="n">spec</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;スペクトログラムの形状: </span><span class="si">{</span><span class="n">spec</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># (time_bins, freq_bins)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;時間分解能: </span><span class="si">{</span><span class="n">spec</span><span class="o">.</span><span class="n">dt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;周波数分解能: </span><span class="si">{</span><span class="n">spec</span><span class="o">.</span><span class="n">df</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3>可視化<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="c1"># スペクトログラム</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+    <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span>
+<span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;周波数 (Hz)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;スペクトログラム（STFT, 窓=0.5秒）&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;パワー&#39;</span><span class="p">)</span>
+
+<span class="c1"># 真のチャープ周波数を重ねてプロット</span>
+<span class="n">t_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">f_true</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">+</span> <span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="n">t_true</span> <span class="o">/</span> <span class="n">duration</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_true</span><span class="p">,</span> <span class="n">f_true</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;真の周波数&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="c1"># 参照用の時系列</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;時間 (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;ひずみ&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;元の信号&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h3>長所と短所<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p>高速計算</p></li>
+<li><p>よく理解された標準手法</p></li>
+<li><p>定常または緩やかに変化する信号に適している</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>固定された時間-周波数分解能（不確定性原理）</p></li>
+<li><p>急速な周波数変化には不向き</p></li>
+<li><p>窓長が時間と周波数の両方の分解能に影響</p></li>
+</ul>
+</section>
+<section id="id8">
+<h3>いつ使用するか<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p>✅ <strong>スペクトログラムを使用する場合:</strong></p>
+<ul class="simple">
+<li><p>信号が準定常的</p></li>
+<li><p>標準的で確立された手法が必要</p></li>
+<li><p>高速計算が重要</p></li>
+<li><p>周波数変化が窓サイズに対して遅い</p></li>
+</ul>
+</section>
+</section>
+<section id="q">
+<h2>手法 2: Q変換<a class="headerlink" href="#q" title="Link to this heading"></a></h2>
+<section id="id9">
+<h3>手法の説明<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<p><strong>定数Q変換</strong>: 定数Q因子を持つ適応的な時間-周波数タイリング</p>
+<p><strong>Q因子</strong>: <code class="docutils literal notranslate"><span class="pre">Q</span> <span class="pre">=</span> <span class="pre">f</span> <span class="pre">/</span> <span class="pre">Δf</span></code>（中心周波数と帯域幅の比）</p>
+</section>
+<section id="id10">
+<h3>実装<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Q=6 のQ変換</span>
+<span class="n">q</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">qgram</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">q_transform</span><span class="p">(</span><span class="n">qrange</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span> <span class="n">frange</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Q変換の形状: </span><span class="si">{</span><span class="n">qgram</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h3>可視化<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="c1"># Q変換</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+    <span class="n">qgram</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">qgram</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qgram</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">qgram</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qgram</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+    <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+    <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+    <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span>
+<span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;周波数 (Hz)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Q変換（定数Q）&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_true</span><span class="p">,</span> <span class="n">f_true</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;真の周波数&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="c1"># 比較用のスペクトログラム</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">spec</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span>
+    <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span>
+<span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;時間 (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;周波数 (Hz)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;スペクトログラム（比較用）&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_true</span><span class="p">,</span> <span class="n">f_true</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;真の周波数&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h3>長所と短所<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p>適応的分解能: 高周波でより良い時間分解能</p></li>
+<li><p>チャープ（連星合体）に自然</p></li>
+<li><p>定数Qは重力波信号にマッチ</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>STFT より遅い</p></li>
+<li><p>より複雑な解釈</p></li>
+<li><p>Q因子の調整が必要</p></li>
+</ul>
+</section>
+<section id="id13">
+<h3>いつ使用するか<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<p>✅ <strong>Q変換を使用する場合:</strong></p>
+<ul class="simple">
+<li><p>チャープを解析（コンパクト連星合体）</p></li>
+<li><p>信号が広い周波数範囲にまたがる</p></li>
+<li><p>高周波過渡現象に良好な時間分解能が必要</p></li>
+<li><p>標準的な重力波過渡現象解析</p></li>
+</ul>
+</section>
+</section>
+<section id="cwt">
+<h2>手法 3: ウェーブレット変換 (CWT)<a class="headerlink" href="#cwt" title="Link to this heading"></a></h2>
+<section id="id14">
+<h3>手法の説明<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p><strong>連続ウェーブレット変換 (CWT)</strong>: 拡張・移動されたウェーブレットを用いたマルチスケール解析</p>
+<p><strong>式</strong>: <code class="docutils literal notranslate"><span class="pre">W(a,</span> <span class="pre">b)</span> <span class="pre">=</span> <span class="pre">∫</span> <span class="pre">x(t)</span> <span class="pre">ψ*((t-b)/a)</span> <span class="pre">dt</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">a</span></code>: スケールパラメータ（周波数に反比例）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code>: 時間シフトパラメータ</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ψ</span></code>: マザーウェーブレット（例：Morlet）</p></li>
+</ul>
+</section>
+<section id="id15">
+<h3>利点と欠点<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p>自然なスケールマッチング（ウェーブレットが信号に追従するように「伸縮」）</p></li>
+<li><p>STFTより優れた時間-周波数局在化</p></li>
+<li><p>チャープとマルチスケール過渡現象に最適</p></li>
+<li><p>リッジ抽出により精密な周波数軌跡を提供</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>STFTより高い計算コスト</p></li>
+<li><p>ウェーブレット選択が必要（Morlet、Mexican hatなど）</p></li>
+<li><p>冗長表現（過完備）</p></li>
+<li><p>信号境界でのエッジ効果</p></li>
+</ul>
+</section>
+<section id="id16">
+<h3>いつ使用するか<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<p>✅ <strong>ウェーブレットを使用する場合:</strong></p>
+<ul class="simple">
+<li><p>複数オクターブにまたがるチャープを解析</p></li>
+<li><p>STFTより良好な周波数追跡が必要</p></li>
+<li><p>信号がマルチスケール構造を持つ</p></li>
+<li><p>時間-周波数分解能のトレードオフが重要</p></li>
+</ul>
+<p>❌ <strong>使用しない場合:</strong></p>
+<ul class="simple">
+<li><p>信号が純粋に定常（STFTで十分）</p></li>
+<li><p>最速の計算が必要（STFTを使用）</p></li>
+<li><p>周波数範囲が狭い（Q変換の方が良い場合がある）</p></li>
+</ul>
+</section>
+<section id="id17">
+<h3>実装<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<p>詳細な実装例、可視化、定量評価は英語版ドキュメントまたは <code class="docutils literal notranslate"><span class="pre">time_frequency_analysis_comparison.ipynb</span></code> を参照してください。</p>
+</section>
+</section>
+<section id="hht">
+<h2>手法 4: ヒルベルト・ファン変換（HHT）<a class="headerlink" href="#hht" title="Link to this heading"></a></h2>
+<section id="id18">
+<h3>手法の説明<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<p><strong>経験的モード分解（EMD）+ ヒルベルト変換</strong>:</p>
+<ol class="arabic simple">
+<li><p>信号を固有モード関数（IMF）に分解</p></li>
+<li><p>ヒルベルト変換により瞬時周波数を計算</p></li>
+</ol>
+</section>
+<section id="id19">
+<h3>実装<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># EMD を実行</span>
+<span class="n">imfs</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">emd</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;emd&#39;</span><span class="p">,</span> <span class="n">max_imf</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">imfs</span><span class="p">)</span><span class="si">}</span><span class="s2"> 個の IMF を抽出&quot;</span><span class="p">)</span>
+
+<span class="c1"># IMF をプロット</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">imfs</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">imf</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">imfs</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">imf</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">imf</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;時間 (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;経験的モード分解（EMD）&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id20">
+<h3>瞬時周波数<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 支配的な IMF の瞬時周波数を計算</span>
+<span class="n">imf_main</span> <span class="o">=</span> <span class="n">imfs</span><span class="p">[</span><span class="s1">&#39;IMF0&#39;</span><span class="p">]</span>
+<span class="n">inst_freq</span> <span class="o">=</span> <span class="n">imf_main</span><span class="o">.</span><span class="n">instantaneous_frequency</span><span class="p">()</span>
+
+<span class="c1"># プロット</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">imf_main</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">imf_main</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;IMF0 振幅&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;支配的固有モード関数&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">inst_freq</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">inst_freq</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_true</span><span class="p">,</span> <span class="n">f_true</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;真の周波数&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;周波数 (Hz)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;時間 (s)&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;瞬時周波数（HHT）&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id21">
+<h3>長所と短所<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p>データ適応的（窓選択不要）</p></li>
+<li><p>優れた時間分解能</p></li>
+<li><p>非線形、非定常信号を処理</p></li>
+<li><p>直接的な瞬時周波数</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>計算コストが高い</p></li>
+<li><p>EMD にモード混合がある可能性</p></li>
+<li><p>STFT/Q変換ほど確立されていない</p></li>
+</ul>
+</section>
+<section id="id22">
+<h3>いつ使用するか<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<p>✅ <strong>HHT を使用する場合:</strong></p>
+<ul class="simple">
+<li><p>信号が高度に非定常</p></li>
+<li><p>精密な瞬時周波数が必要</p></li>
+<li><p>標準手法では特徴を分解できない</p></li>
+<li><p>グリッチや複雑な過渡現象を解析</p></li>
+</ul>
+<p>❌ <strong>使用しない場合:</strong></p>
+<ul class="simple">
+<li><p>信号が定常（過剰）</p></li>
+<li><p>高速計算が必要</p></li>
+<li><p>標準的なスペクトログラムで十分</p></li>
+</ul>
+</section>
+</section>
+<section id="stlt">
+<h2>手法 5: 短時間ラプラス変換 (STLT)<a class="headerlink" href="#stlt" title="Link to this heading"></a></h2>
+<section id="id23">
+<h3>手法の説明<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<p><strong>STLT</strong>: 信号を<strong>周波数ωと減衰率σの両方</strong>の成分に分解</p>
+<p><strong>式</strong>: <code class="docutils literal notranslate"><span class="pre">STLT(t,</span> <span class="pre">σ,</span> <span class="pre">ω)</span> <span class="pre">=</span> <span class="pre">∫</span> <span class="pre">x(τ)</span> <span class="pre">w(τ-t)</span> <span class="pre">e^(-(σ+iω)τ)</span> <span class="pre">dτ</span></code></p>
+<p>周波数のみを示すSTFTとは異なり、STLTは減衰係数を明らかにします。</p>
+</section>
+<section id="id24">
+<h3>利点と欠点<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p><strong>周波数と減衰率の両方</strong>でモードを分離する独自の能力</p></li>
+<li><p>リングダウン品質因子推定に不可欠</p></li>
+<li><p>2D σ-ω表現が減衰構造を明らかにする</p></li>
+<li><p>合体後波形に直接適用可能</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>高い計算コスト（2D変換）</p></li>
+<li><p>慎重なパラメータ選択が必要</p></li>
+<li><p>STFT/Q変換ほど一般的ではない</p></li>
+<li><p>解釈にはσ-ω平面の理解が必要</p></li>
+</ul>
+</section>
+<section id="id25">
+<h3>いつ使用するか<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<p>✅ <strong>STLTを使用する場合:</strong></p>
+<ul class="simple">
+<li><p>リングダウンモードを解析（ブラックホール準固有モード）</p></li>
+<li><p>品質因子や減衰時間を推定する必要がある</p></li>
+<li><p>複数の減衰振動が周波数で重なる</p></li>
+<li><p>減衰率情報が科学的に重要</p></li>
+</ul>
+<p>❌ <strong>使用しない場合:</strong></p>
+<ul class="simple">
+<li><p>信号に減衰がない（代わりにSTFTを使用）</p></li>
+<li><p>周波数情報のみが必要</p></li>
+<li><p>計算リソースが限られている</p></li>
+</ul>
+</section>
+<section id="id26">
+<h3>実装<a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
+<p>詳細な実装例、可視化、定量評価は英語版ドキュメントまたは <code class="docutils literal notranslate"><span class="pre">time_frequency_analysis_comparison.ipynb</span></code> を参照してください。</p>
+</section>
+</section>
+<section id="id27">
+<h2>手法 6: ケプストラム<a class="headerlink" href="#id27" title="Link to this heading"></a></h2>
+<section id="id28">
+<h3>手法の説明<a class="headerlink" href="#id28" title="Link to this heading"></a></h3>
+<p><strong>ケプストラム</strong>: 「ケフレンシー」によるスペクトルの周期性解析</p>
+<p><strong>式</strong>: <code class="docutils literal notranslate"><span class="pre">C(τ)</span> <span class="pre">=</span> <span class="pre">IFFT(log|FFT(x)|)</span></code></p>
+<p>スペクトルの周期性を時間領域の遅延時間のピークに変換します。</p>
+</section>
+<section id="id29">
+<h3>利点と欠点<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p>エコー遅延の直接検出（ケフレンシーピーク）</p></li>
+<li><p>スペクトルの周期構造を明らかにする</p></li>
+<li><p>ピッチ検出と高調波解析に有用</p></li>
+<li><p>計算効率が高い（二重FFT）</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>対数が必要（低振幅に敏感）</p></li>
+<li><p>時間局在化されていない（グローバル解析）</p></li>
+<li><p>時間-周波数手法ほど直感的ではない</p></li>
+<li><p>明確なエコーがある信号に最適</p></li>
+</ul>
+</section>
+<section id="id30">
+<h3>いつ使用するか<a class="headerlink" href="#id30" title="Link to this heading"></a></h3>
+<p>✅ <strong>ケプストラムを使用する場合:</strong></p>
+<ul class="simple">
+<li><p>エコーや反射を検出</p></li>
+<li><p>スペクトルの周期構造を解析</p></li>
+<li><p>残響信号の遅延時間を測定</p></li>
+<li><p>ピッチ検出または高調波解析</p></li>
+</ul>
+<p>❌ <strong>使用しない場合:</strong></p>
+<ul class="simple">
+<li><p>時間局在化解析が必要</p></li>
+<li><p>信号にエコーや周期性がない</p></li>
+<li><p>低SNR（対数演算がノイズを増幅）</p></li>
+</ul>
+</section>
+<section id="id31">
+<h3>実装<a class="headerlink" href="#id31" title="Link to this heading"></a></h3>
+<p>詳細な実装例、可視化、定量評価は英語版ドキュメントまたは <code class="docutils literal notranslate"><span class="pre">time_frequency_analysis_comparison.ipynb</span></code> を参照してください。</p>
+</section>
+</section>
+<section id="dct">
+<h2>手法 7: 離散コサイン変換 (DCT)<a class="headerlink" href="#dct" title="Link to this heading"></a></h2>
+<section id="id32">
+<h3>手法の説明<a class="headerlink" href="#id32" title="Link to this heading"></a></h3>
+<p><strong>DCT</strong>: コサイン基底への変換、平滑信号の圧縮に優れる</p>
+<p><strong>式</strong>: <code class="docutils literal notranslate"><span class="pre">X(k)</span> <span class="pre">=</span> <span class="pre">Σ</span> <span class="pre">x(n)</span> <span class="pre">cos(πk(2n+1)/(2N))</span></code></p>
+<p>平滑信号では低周波係数にエネルギーが集中します。</p>
+</section>
+<section id="id33">
+<h3>利点と欠点<a class="headerlink" href="#id33" title="Link to this heading"></a></h3>
+<p>✅ <strong>利点:</strong></p>
+<ul class="simple">
+<li><p>平滑信号の優れた圧縮</p></li>
+<li><p>スパース表現（少数の係数でエネルギーの大部分をキャプチャ）</p></li>
+<li><p>高速計算（FFT類似）</p></li>
+<li><p>境界アーティファクトなし（Fourierとは異なる）</p></li>
+<li><p>特徴抽出とノイズ除去に理想的</p></li>
+</ul>
+<p>❌ <strong>欠点:</strong></p>
+<ul class="simple">
+<li><p>時間局在化されていない</p></li>
+<li><p>不連続な信号には効果が低い</p></li>
+<li><p>時間-周波数手法ほど直感的ではない</p></li>
+<li><p>グローバル解析のみ</p></li>
+</ul>
+</section>
+<section id="id34">
+<h3>いつ使用するか<a class="headerlink" href="#id34" title="Link to this heading"></a></h3>
+<p>✅ <strong>DCTを使用する場合:</strong></p>
+<ul class="simple">
+<li><p>平滑信号を圧縮</p></li>
+<li><p>特徴抽出（低次係数）</p></li>
+<li><p>平滑背景のノイズ除去</p></li>
+<li><p>機械学習前のデータ削減</p></li>
+<li><p>緩やかなトレンドのモデリング</p></li>
+</ul>
+<p>❌ <strong>使用しない場合:</strong></p>
+<ul class="simple">
+<li><p>時間局在化解析が必要</p></li>
+<li><p>信号に急激な過渡現象がある</p></li>
+<li><p>周波数内容が時間的に急速に変化</p></li>
+</ul>
+</section>
+<section id="id35">
+<h3>実装<a class="headerlink" href="#id35" title="Link to this heading"></a></h3>
+<p>詳細な実装例、可視化、定量評価は英語版ドキュメントまたは <code class="docutils literal notranslate"><span class="pre">time_frequency_analysis_comparison.ipynb</span></code> を参照してください。</p>
+</section>
+</section>
+<section id="id36">
+<h2>比較例: 同じ信号に対するすべての手法<a class="headerlink" href="#id36" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="c1"># 元の信号</span>
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;ひずみ&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;元の信号: チャープ (20→100 Hz) + ノイズ&#39;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># スペクトログラム</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax1</span><span class="p">)</span>
+<span class="n">im2</span> <span class="o">=</span> <span class="n">ax2</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                     <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">shading</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_true</span><span class="p">,</span> <span class="n">f_true</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;周波数 (Hz)&#39;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;スペクトログラム（窓=0.5秒）&#39;</span><span class="p">)</span>
+
+<span class="c1"># Q変換</span>
+<span class="n">ax3</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax1</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">qgram</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+          <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">qgram</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qgram</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                  <span class="n">qgram</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">qgram</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+          <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_true</span><span class="p">,</span> <span class="n">f_true</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;周波数 (Hz)&#39;</span><span class="p">)</span>
+<span class="n">ax3</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Q変換&#39;</span><span class="p">)</span>
+
+<span class="c1"># HHT 瞬時周波数</span>
+<span class="n">ax4</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">ax1</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">inst_freq</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">inst_freq</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;HHT 瞬時周波数&#39;</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_true</span><span class="p">,</span> <span class="n">f_true</span><span class="p">,</span> <span class="s1">&#39;r--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;真の周波数&#39;</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;周波数 (Hz)&#39;</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;時間 (s)&#39;</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;HHT 瞬時周波数&#39;</span><span class="p">)</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax4</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id37">
+<h2>決定木<a class="headerlink" href="#id37" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>どのような情報が必要ですか？
+
+1. 一般的な時間-周波数ビュー？
+   → **スペクトログラム (STFT)** を使用
+
+2. 適応分解能による過渡現象検出？
+   → **Q変換** を使用
+
+3. チャープ周波数追跡（マルチスケール）？
+   → **ウェーブレット (CWT)** を使用
+
+4. 単一値曲線としての瞬時周波数？
+   → **HHT** を使用
+
+5. 減衰率と周波数（リングダウン）？
+   → **STLT** を使用
+
+6. エコー検出またはスペクトル周期性？
+   → **ケプストラム** を使用
+
+7. 信号圧縮または平滑特徴抽出？
+   → **DCT** を使用
+
+クイック決定パス:
+├─ 定常信号？ → スペクトログラム
+├─ 過渡現象/バースト？ → Q変換
+├─ オクターブにまたがるチャープ？ → ウェーブレット
+├─ 瞬時周波数が必要？ → HHT
+├─ 減衰振動？ → STLT
+├─ エコーがある？ → ケプストラム
+└─ 平滑、圧縮が必要？ → DCT
+</pre></div>
+</div>
+</section>
+<section id="id38">
+<h2>性能比較<a class="headerlink" href="#id38" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>手法</p></th>
+<th class="head"><p>計算時間*</p></th>
+<th class="head"><p>メモリ</p></th>
+<th class="head"><p>最適な用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>スペクトログラム (STFT)</p></td>
+<td><p>1×（基準）</p></td>
+<td><p>低</p></td>
+<td><p>汎用</p></td>
+</tr>
+<tr class="row-odd"><td><p>DCT</p></td>
+<td><p>1-2×</p></td>
+<td><p>低</p></td>
+<td><p>圧縮</p></td>
+</tr>
+<tr class="row-even"><td><p>Q変換</p></td>
+<td><p>5-10×</p></td>
+<td><p>中</p></td>
+<td><p>過渡現象</p></td>
+</tr>
+<tr class="row-odd"><td><p>ウェーブレット (CWT)</p></td>
+<td><p>8-15×</p></td>
+<td><p>中-高</p></td>
+<td><p>チャープ</p></td>
+</tr>
+<tr class="row-even"><td><p>ケプストラム</p></td>
+<td><p>3-5×</p></td>
+<td><p>中</p></td>
+<td><p>エコー検出</p></td>
+</tr>
+<tr class="row-odd"><td><p>STLT</p></td>
+<td><p>15-25×</p></td>
+<td><p>高</p></td>
+<td><p>リングダウンモード</p></td>
+</tr>
+<tr class="row-even"><td><p>HHT</p></td>
+<td><p>20-50×</p></td>
+<td><p>高</p></td>
+<td><p>瞬時周波数</p></td>
+</tr>
+</tbody>
+</table>
+<p>*おおよそ、パラメータと信号長に依存</p>
+</section>
+<section id="id39">
+<h2>まとめ表<a class="headerlink" href="#id39" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>特徴</p></th>
+<th class="head"><p>STFT</p></th>
+<th class="head"><p>Q変換</p></th>
+<th class="head"><p>ウェーブレット</p></th>
+<th class="head"><p>HHT</p></th>
+<th class="head"><p>STLT</p></th>
+<th class="head"><p>ケプストラム</p></th>
+<th class="head"><p>DCT</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>分解能</strong></p></td>
+<td><p>固定</p></td>
+<td><p>適応Q</p></td>
+<td><p>スケール適応</p></td>
+<td><p>データ適応</p></td>
+<td><p>固定</p></td>
+<td><p>ケフレンシー</p></td>
+<td><p>N/A</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>最適な信号</strong></p></td>
+<td><p>定常</p></td>
+<td><p>チャープ</p></td>
+<td><p>マルチスケール</p></td>
+<td><p>AM/FM</p></td>
+<td><p>減衰</p></td>
+<td><p>エコー</p></td>
+<td><p>平滑</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>計算コスト</strong></p></td>
+<td><p>低</p></td>
+<td><p>中</p></td>
+<td><p>中-高</p></td>
+<td><p>非常に高</p></td>
+<td><p>高</p></td>
+<td><p>中</p></td>
+<td><p>低</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>出力</strong></p></td>
+<td><p>2D (t,f)</p></td>
+<td><p>2D (t,f)</p></td>
+<td><p>2D (t,f)</p></td>
+<td><p>f(t) 曲線</p></td>
+<td><p>3D (t,σ,ω)</p></td>
+<td><p>τ スペクトル</p></td>
+<td><p>係数</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>時間局在化</strong></p></td>
+<td><p>あり</p></td>
+<td><p>あり</p></td>
+<td><p>あり</p></td>
+<td><p>あり</p></td>
+<td><p>あり</p></td>
+<td><p>なし</p></td>
+<td><p>なし</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>独自情報</strong></p></td>
+<td><p>—</p></td>
+<td><p>適応分解能</p></td>
+<td><p>マルチスケール</p></td>
+<td><p>瞬時周波数</p></td>
+<td><p>減衰率σ</p></td>
+<td><p>遅延</p></td>
+<td><p>圧縮</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>重力波利用</strong></p></td>
+<td><p>汎用</p></td>
+<td><p>過渡現象</p></td>
+<td><p>チャープ</p></td>
+<td><p>グリッチ</p></td>
+<td><p>リングダウン</p></td>
+<td><p>反射</p></td>
+<td><p>特徴</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id40">
+<h2>実践的な推奨事項<a class="headerlink" href="#id40" title="Link to this heading"></a></h2>
+<section id="id41">
+<h3>日常的な解析<a class="headerlink" href="#id41" title="Link to this heading"></a></h3>
+<p><strong>スペクトログラム (STFT)</strong> から始める - 高速でよく理解されており、ほとんどのケースで十分。</p>
+</section>
+<section id="id42">
+<h3>過渡現象検出<a class="headerlink" href="#id42" title="Link to this heading"></a></h3>
+<p><strong>Q変換</strong> を使用 - 重力波バースト探索の標準。</p>
+</section>
+<section id="id43">
+<h3>チャープ解析<a class="headerlink" href="#id43" title="Link to this heading"></a></h3>
+<p><strong>ウェーブレット (CWT)</strong> を使用 - 複数スケールにわたる精密な周波数軌跡追跡。</p>
+</section>
+<section id="id44">
+<h3>瞬時周波数<a class="headerlink" href="#id44" title="Link to this heading"></a></h3>
+<p><strong>HHT</strong> を使用 - 単一値瞬時周波数が必要な場合（時間-周波数不確定性なし）。</p>
+</section>
+<section id="id45">
+<h3>リングダウン解析<a class="headerlink" href="#id45" title="Link to this heading"></a></h3>
+<p><strong>STLT</strong> を使用 - 周波数と減衰率（品質因子）を同時に推定。</p>
+</section>
+<section id="id46">
+<h3>エコー検出<a class="headerlink" href="#id46" title="Link to this heading"></a></h3>
+<p><strong>ケプストラム</strong> を使用 - 遅延時間とスペクトルの周期構造を特定。</p>
+</section>
+<section id="id47">
+<h3>データ削減<a class="headerlink" href="#id47" title="Link to this heading"></a></h3>
+<p><strong>DCT</strong> を使用 - 平滑信号の効率的な圧縮と特徴抽出。</p>
+</section>
+<section id="id48">
+<h3>論文掲載<a class="headerlink" href="#id48" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>スペクトログラム</strong>（読者に馴染みのある基準線）を含める</p></li>
+<li><p>独自の物理を明らかにする専門的手法を追加（チャープにはウェーブレット、瞬時周波数にはHHT、リングダウンにはSTLTなど）</p></li>
+<li><p>ロバスト性を示す：主要な結果が複数の手法で成立することを実証</p></li>
+</ul>
+</section>
+<section id="id49">
+<h3>一般的な戦略<a class="headerlink" href="#id49" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>シンプルから始める</strong>: 常にスペクトログラムから開始</p></li>
+<li><p><strong>限界を特定</strong>: STFTが重要な特徴を示せない場所は？</p></li>
+<li><p><strong>専門的手法を選択</strong>: ニーズに合った「独自情報」を持つ手法を選ぶ（まとめ表参照）</p></li>
+<li><p><strong>検証</strong>: 可能であれば別の手法でクロスチェック</p></li>
+</ol>
+<hr class="docutils" />
+<p><strong>関連項目:</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="intro_spectrogram.html"><span class="std std-doc">スペクトログラムチュートリアル</span></a></p></li>
+<li><p><a class="reference internal" href="advanced_hht.html"><span class="std std-doc">HHT チュートリアル</span></a></p></li>
+<li><p>Q変換 (GWpy)</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="time_frequency_analysis_comparison.html" class="btn btn-neutral float-left" title="時間-周波数解析比較（インタラクティブ）" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_arima.html" class="btn btn-neutral float-right" title="ARIMAモデルによる時系列予測" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

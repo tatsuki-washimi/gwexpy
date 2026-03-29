@@ -1,0 +1,329 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "cell-0",
+   "metadata": {},
+   "source": [
+    "# カップリング関数解析チュートリアル\n",
+    "\n",
+    "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_coupling.ipynb)\n",
+    "\n",
+    "このチュートリアルでは `gwexpy.analysis.CouplingFunctionAnalysis` を使った**カップリング関数（CF）解析**のワークフローを解説します。\n",
+    "\n",
+    "## カップリング関数とは\n",
+    "\n",
+    "カップリング関数は、*ウィットネス*（環境センサー）のノイズが*ターゲット*（感度チャンネル）にどれだけ結合するかを定量化します:\n",
+    "\n",
+    "$$\n",
+    "\\mathrm{CF}(f) = \\sqrt{\\frac{P_{\\rm target,inj}(f) - P_{\\rm target,bkg}(f)}{P_{\\rm witness,inj}(f) - P_{\\rm witness,bkg}(f)}}\n",
+    "$$\n",
+    "\n",
+    "ここで $P_{\\rm inj}$ と $P_{\\rm bkg}$ はそれぞれ注入時・バックグラウンド時のパワースペクトル密度です。\n",
+    "\n",
+    "**典型的な用途:** KAGRA/LIGO/Virgo の PEM（Physical Environment Monitor）インジェクション解析\n",
+    "\n",
+    "**レガシーコード移行メモ:**  \n",
+    "scipy で PSD を手動計算してカスタム閾値処理していた既存コードは、このワークフローに置き換えられます。  \n",
+    "[API_MAPPING.md](../../../../docs_internal/references/SampleCodes_GWpy/API_MAPPING.md) の移行ガイドも参照してください。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "from astropy import units as u\n",
+    "\n",
+    "from gwexpy.timeseries import TimeSeries, TimeSeriesDict\n",
+    "from gwexpy.analysis.coupling import (\n",
+    "    CouplingFunctionAnalysis,\n",
+    "    RatioThreshold,\n",
+    "    SigmaThreshold,\n",
+    "    PercentileThreshold,\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-2",
+   "metadata": {},
+   "source": [
+    "## 1. 合成インジェクション／バックグラウンドデータの準備\n",
+    "\n",
+    "シミュレーション設定:\n",
+    "- **ウィットネスチャンネル**（環境センサー）: 地震計・音響センサー\n",
+    "- **ターゲットチャンネル** 2 本: 結合強度の異なる感度計\n",
+    "\n",
+    "インジェクションではウィットネスにトーン信号を加えます。ターゲットへの応答は結合強度に比例します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "rng = np.random.default_rng(0)\n",
+    "\n",
+    "fs   = 512\n",
+    "T    = 32.0\n",
+    "n    = int(fs * T)\n",
+    "t    = np.arange(n) / fs\n",
+    "dt   = (1 / fs) * u.s\n",
+    "\n",
+    "f_inj1 = 12.5   # Hz\n",
+    "f_inj2 = 25.0   # Hz\n",
+    "noise_level = 0.1\n",
+    "\n",
+    "# バックグラウンドデータ（インジェクションなし）\n",
+    "wit_bkg  = rng.normal(0, noise_level, n)\n",
+    "tgt1_bkg = rng.normal(0, noise_level, n)\n",
+    "tgt2_bkg = rng.normal(0, noise_level, n)\n",
+    "\n",
+    "# インジェクションデータ（ウィットネスにトーンを加える）\n",
+    "inj_signal = 5.0 * np.sin(2 * np.pi * f_inj1 * t) + 3.0 * np.sin(2 * np.pi * f_inj2 * t)\n",
+    "wit_inj  = inj_signal + rng.normal(0, noise_level, n)\n",
+    "\n",
+    "# ターゲット 1: 強結合（CF ≈ 0.4）\n",
+    "cf_true1 = 0.4\n",
+    "tgt1_inj = cf_true1 * inj_signal + rng.normal(0, noise_level, n)\n",
+    "\n",
+    "# ターゲット 2: 弱結合（CF ≈ 0.05）\n",
+    "cf_true2 = 0.05\n",
+    "tgt2_inj = cf_true2 * inj_signal + rng.normal(0, noise_level, n)\n",
+    "\n",
+    "def make_ts(data, name, unit=u.ct):\n",
+    "    return TimeSeries(data, dt=dt, t0=0*u.s, unit=unit, name=name)\n",
+    "\n",
+    "data_bkg = TimeSeriesDict({\n",
+    "    \"ACC:FLOOR_X\": make_ts(wit_bkg,  \"ACC:FLOOR_X\", u.m / u.s**2),\n",
+    "    \"GW:DARM\":     make_ts(tgt1_bkg, \"GW:DARM\",     u.m),\n",
+    "    \"GW:AUX\":      make_ts(tgt2_bkg, \"GW:AUX\",      u.m),\n",
+    "})\n",
+    "\n",
+    "data_inj = TimeSeriesDict({\n",
+    "    \"ACC:FLOOR_X\": make_ts(wit_inj,  \"ACC:FLOOR_X\", u.m / u.s**2),\n",
+    "    \"GW:DARM\":     make_ts(tgt1_inj, \"GW:DARM\",     u.m),\n",
+    "    \"GW:AUX\":      make_ts(tgt2_inj, \"GW:AUX\",      u.m),\n",
+    "})\n",
+    "\n",
+    "print(\"バックグラウンドチャンネル:\", list(data_bkg.keys()))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-4",
+   "metadata": {},
+   "source": [
+    "## 2. カップリング関数解析の実行\n",
+    "\n",
+    "`CouplingFunctionAnalysis.compute()` にインジェクション・バックグラウンドの `TimeSeriesDict` とウィットネスチャンネル名を渡します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "cfa = CouplingFunctionAnalysis()\n",
+    "\n",
+    "results = cfa.compute(\n",
+    "    data_inj=data_inj,\n",
+    "    data_bkg=data_bkg,\n",
+    "    fftlength=4.0,\n",
+    "    overlap=0.5,\n",
+    "    witness=\"ACC:FLOOR_X\",\n",
+    "    threshold_witness=RatioThreshold(ratio=10.0),\n",
+    "    threshold_target=RatioThreshold(ratio=2.0),\n",
+    ")\n",
+    "\n",
+    "print(\"解析済みターゲット:\", list(results.keys()))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-6",
+   "metadata": {},
+   "source": [
+    "## 3. 結果の確認\n",
+    "\n",
+    "`CouplingResult` オブジェクトにカップリング関数・上限・診断 PSD が格納されています。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "res_darm = results[\"GW:DARM\"]\n",
+    "\n",
+    "freqs = res_darm.cf.frequencies.value\n",
+    "idx1 = np.argmin(np.abs(freqs - f_inj1))\n",
+    "idx2 = np.argmin(np.abs(freqs - f_inj2))\n",
+    "\n",
+    "print(f\"有効 CF ビン数: {res_darm.valid_mask.sum()}\")\n",
+    "print(f\"f_inj1={f_inj1} Hz での CF: {res_darm.cf.value[idx1]:.3f}  (期待値 ~{cf_true1})\")\n",
+    "print(f\"f_inj2={f_inj2} Hz での CF: {res_darm.cf.value[idx2]:.3f}  (期待値 ~{cf_true1})\")\n",
+    "\n",
+    "res_darm.plot_cf(xlim=(5, 100));"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 3 パネル診断プロット: ウィットネス ASD | ターゲット ASD | CF\n",
+    "res_darm.plot(xlim=(5, 100));"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-9",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 弱結合チャンネル\n",
+    "res_aux = results[\"GW:AUX\"]\n",
+    "print(\"GW:AUX の有効 CF ビン数:\", res_aux.valid_mask.sum())\n",
+    "res_aux.plot_cf(xlim=(5, 100));"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-10",
+   "metadata": {},
+   "source": [
+    "## 4. 閾値戦略の比較\n",
+    "\n",
+    "gwexpy には 3 種類の組み込み閾値戦略があります:\n",
+    "\n",
+    "| 戦略 | 説明 | 適したデータ |\n",
+    "|------|------|-------------|\n",
+    "| `RatioThreshold(ratio)` | $P_{\\rm inj} > r \\cdot P_{\\rm bkg}$ | 高速スクリーニング・物理的な根拠がある場合 |\n",
+    "| `SigmaThreshold(sigma)` | ガウス統計的有意性検定 | 定常・ガウス背景 |\n",
+    "| `PercentileThreshold(pct, factor)` | 経験的分布 | 非ガウス・グリッチが多い背景 |"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-11",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "strategies = {\n",
+    "    \"Ratio×10/2\": (RatioThreshold(10.0), RatioThreshold(2.0)),\n",
+    "    \"Sigma 3σ\":   (SigmaThreshold(3.0),  SigmaThreshold(2.0)),\n",
+    "}\n",
+    "\n",
+    "fig, ax = plt.subplots(figsize=(8, 4))\n",
+    "\n",
+    "for label, (thr_w, thr_t) in strategies.items():\n",
+    "    res = cfa.compute(\n",
+    "        data_inj=data_inj, data_bkg=data_bkg,\n",
+    "        fftlength=4.0, overlap=0.5,\n",
+    "        witness=\"ACC:FLOOR_X\",\n",
+    "        threshold_witness=thr_w, threshold_target=thr_t,\n",
+    "    )\n",
+    "    cf = res[\"GW:DARM\"].cf\n",
+    "    valid = ~np.isnan(cf.value)\n",
+    "    ax.plot(cf.frequencies.value[valid], cf.value[valid], marker=\".\", label=label)\n",
+    "\n",
+    "ax.axhline(cf_true1, color=\"gray\", linestyle=\"--\", label=f\"真の CF={cf_true1}\")\n",
+    "ax.set_xscale(\"log\")\n",
+    "ax.set_yscale(\"log\")\n",
+    "ax.set_xlim(5, 100)\n",
+    "ax.set_xlabel(\"周波数 [Hz]\")\n",
+    "ax.set_ylabel(\"カップリング関数\")\n",
+    "ax.set_title(\"閾値戦略の比較\")\n",
+    "ax.legend()\n",
+    "plt.tight_layout()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-12",
+   "metadata": {},
+   "source": [
+    "## 5. 上限値（Upper Limit）\n",
+    "\n",
+    "ウィットネスが励起されているがターゲットに有意な過剰が見られない周波数帯では、  \n",
+    "カップリング関数の**上限値**が自動計算されます。  \n",
+    "ノイズフロア以下でも結合強度の制約を与えるために有用です。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-13",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "cf_ul = res_darm.cf_ul\n",
+    "ul_valid = ~np.isnan(cf_ul.value)\n",
+    "print(f\"上限値ビン数: {ul_valid.sum()}\")\n",
+    "\n",
+    "# plot_cf には CF と上限値が両方表示される\n",
+    "res_darm.plot_cf(xlim=(5, 100));"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-14",
+   "metadata": {},
+   "source": [
+    "## まとめ\n",
+    "\n",
+    "```python\n",
+    "from gwexpy.analysis.coupling import CouplingFunctionAnalysis, RatioThreshold\n",
+    "\n",
+    "cfa = CouplingFunctionAnalysis()\n",
+    "results = cfa.compute(\n",
+    "    data_inj=data_inj,        # インジェクション TimeSeriesDict\n",
+    "    data_bkg=data_bkg,        # バックグラウンド TimeSeriesDict\n",
+    "    fftlength=4.0,\n",
+    "    witness=\"ACC:FLOOR_X\",\n",
+    "    threshold_witness=RatioThreshold(25.0),\n",
+    "    threshold_target=RatioThreshold(4.0),\n",
+    ")\n",
+    "\n",
+    "res = results[\"GW:DARM\"]\n",
+    "res.plot()      # 3 パネル診断プロット\n",
+    "res.cf          # FrequencySeries: CF 値\n",
+    "res.cf_ul       # FrequencySeries: 上限値\n",
+    "```\n",
+    "\n",
+    "**関連チュートリアル:**\n",
+    "- [Bruco ノイズハンティング](advanced_bruco.ipynb)\n",
+    "- [相関解析](advanced_correlation.ipynb)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.11.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

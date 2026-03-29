@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.interop.xarray_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.interop.xarray_</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.interop.xarray_</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">LIGOTimeGPS</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._optional</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_optional</span>
+
+
+<div class="viewcode-block" id="to_xarray">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_xarray">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_xarray</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">time_coord</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TimeSeries -&gt; xarray.DataArray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xr</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;xarray&quot;</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span><span class="p">),</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+        <span class="s2">&quot;channel&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">channel</span><span class="p">),</span>
+        <span class="s2">&quot;epoch&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">),</span>
+        <span class="s2">&quot;time_coord&quot;</span><span class="p">:</span> <span class="n">time_coord</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">times_gps</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">if</span> <span class="n">time_coord</span> <span class="o">==</span> <span class="s2">&quot;datetime&quot;</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
+
+        <span class="n">t_vals</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">times_gps</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gps&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">time_coord</span> <span class="o">==</span> <span class="s2">&quot;seconds&quot;</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
+
+        <span class="n">t_vals</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">times_gps</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;gps&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">unix</span>
+    <span class="k">elif</span> <span class="n">time_coord</span> <span class="o">==</span> <span class="s2">&quot;gps&quot;</span><span class="p">:</span>
+        <span class="n">t_vals</span> <span class="o">=</span> <span class="n">times_gps</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;time_coord must be &#39;datetime&#39;|&#39;seconds&#39;|&#39;gps&#39;&quot;</span><span class="p">)</span>
+
+    <span class="n">da</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,),</span>
+        <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">t_vals</span><span class="p">},</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">da</span></div>
+
+
+
+<div class="viewcode-block" id="from_xarray">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_xarray">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_xarray</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">da</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DataArray -&gt; TimeSeries&quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;xarray&quot;</span><span class="p">)</span>
+
+    <span class="n">val</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">t_coord</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="n">time_coord</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time_coord&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">t_coord</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
+
+        <span class="n">t_obj</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">t_coord</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;datetime64&quot;</span><span class="p">)</span>
+        <span class="n">t0_gps</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t_obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">gps</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t_obj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">gps</span> <span class="o">-</span> <span class="n">t0_gps</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_coord</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span>
+    <span class="k">elif</span> <span class="n">time_coord</span> <span class="o">==</span> <span class="s2">&quot;seconds&quot;</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
+
+        <span class="n">t_obj</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="n">t_coord</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;unix&quot;</span><span class="p">)</span>
+        <span class="n">t0_gps</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t_obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">gps</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t_obj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">gps</span> <span class="o">-</span> <span class="n">t0_gps</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_coord</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">t0_gps</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t_coord</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">t_coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t0_gps</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_coord</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span>
+
+    <span class="n">_unit</span> <span class="o">=</span> <span class="n">unit</span> <span class="ow">or</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">LIGOTimeGPS</span><span class="p">(</span><span class="n">t0_gps</span><span class="p">),</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">_unit</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># ScalarField / VectorField  ↔  xarray.DataArray / Dataset</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="c1"># Dimension name → axis role detection (CF Convention &gt; MetPy &gt; heuristic)</span>
+<span class="n">_AXIS0_CANDIDATES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">,</span> <span class="s2">&quot;freq&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">}</span>
+<span class="n">_AXIS1_CANDIDATES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;easting&quot;</span><span class="p">,</span> <span class="s2">&quot;west_east&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">,</span> <span class="s2">&quot;longitude&quot;</span><span class="p">}</span>
+<span class="n">_AXIS2_CANDIDATES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;northing&quot;</span><span class="p">,</span> <span class="s2">&quot;south_north&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;latitude&quot;</span><span class="p">}</span>
+<span class="n">_AXIS3_CANDIDATES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;upward&quot;</span><span class="p">,</span> <span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="s2">&quot;altitude&quot;</span><span class="p">,</span> <span class="s2">&quot;bottom_top&quot;</span><span class="p">,</span> <span class="s2">&quot;level&quot;</span><span class="p">}</span>
+
+<span class="n">_CF_AXIS_TO_ROLE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+<span class="n">_METPY_TO_ROLE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;vertical&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+
+<span class="n">_ROLE_CANDIDATES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">_AXIS0_CANDIDATES</span><span class="p">,</span>
+    <span class="n">_AXIS1_CANDIDATES</span><span class="p">,</span>
+    <span class="n">_AXIS2_CANDIDATES</span><span class="p">,</span>
+    <span class="n">_AXIS3_CANDIDATES</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_detect_dim_role</span><span class="p">(</span><span class="n">da</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the axis role (0-3) for *dim* in *da*, or ``None``.&quot;&quot;&quot;</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">coords</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="s2">&quot;coords&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+    <span class="c1"># 1. CF Convention `axis` attribute on the coordinate variable</span>
+    <span class="k">if</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">coords</span><span class="p">:</span>
+        <span class="n">coord_attrs</span> <span class="o">=</span> <span class="n">coords</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
+        <span class="n">cf_axis</span> <span class="o">=</span> <span class="n">coord_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;axis&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cf_axis</span> <span class="ow">in</span> <span class="n">_CF_AXIS_TO_ROLE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_CF_AXIS_TO_ROLE</span><span class="p">[</span><span class="n">cf_axis</span><span class="p">]</span>
+        <span class="c1"># 2. MetPy `_metpy_axis`</span>
+        <span class="n">metpy_axis</span> <span class="o">=</span> <span class="n">coord_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_metpy_axis&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">metpy_axis</span> <span class="ow">in</span> <span class="n">_METPY_TO_ROLE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_METPY_TO_ROLE</span><span class="p">[</span><span class="n">metpy_axis</span><span class="p">]</span>
+    <span class="c1"># 3. Heuristic name match</span>
+    <span class="n">low</span> <span class="o">=</span> <span class="n">dim</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">role</span><span class="p">,</span> <span class="n">candidates</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_ROLE_CANDIDATES</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">low</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">role</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_detect_dim_roles</span><span class="p">(</span><span class="n">da</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">dims</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map axis roles → dimension names for a DataArray&#39;s dimensions.</span>
+
+<span class="sd">    Returns ``{role: dim_name}`` for roles 0-3.  Unknown dims are ignored.</span>
+<span class="sd">    When multiple dims map to the same role, the first one wins.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">role_to_dim</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">dims</span><span class="p">:</span>
+        <span class="n">role</span> <span class="o">=</span> <span class="n">_detect_dim_role</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">role</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">role</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">role_to_dim</span><span class="p">:</span>
+            <span class="n">role_to_dim</span><span class="p">[</span><span class="n">role</span><span class="p">]</span> <span class="o">=</span> <span class="n">dim</span>
+    <span class="k">return</span> <span class="n">role_to_dim</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_try_parse_unit</span><span class="p">(</span><span class="n">unit_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Try to parse *unit_str* as an astropy Unit; return ``None`` on failure.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>  <span class="c1"># noqa: PLC0415</span>
+
+        <span class="k">return</span> <span class="n">u</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">unit_str</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Could not parse unit string </span><span class="si">{</span><span class="n">unit_str</span><span class="si">!r}</span><span class="s2"> as an astropy Unit. &quot;</span>
+            <span class="s2">&quot;Unit will be set to None.&quot;</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="from_xarray_field">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_xarray_field">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_xarray_field</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">da</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">axis0_dim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">axis0_domain</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="n">space_domain</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;real&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an ``xarray.DataArray`` or ``Dataset`` to a ScalarField / VectorField.</span>
+
+<span class="sd">    Dimension auto-detection priority:</span>
+
+<span class="sd">    1. CF Convention ``axis`` attribute (``T`` / ``X`` / ``Y`` / ``Z``)</span>
+<span class="sd">    2. MetPy ``_metpy_axis`` attribute</span>
+<span class="sd">    3. Heuristic name matching</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        ``ScalarField`` or ``VectorField``.</span>
+<span class="sd">    da : xarray.DataArray or xarray.Dataset</span>
+<span class="sd">        Input array.  A ``Dataset`` is treated as a VectorField where each</span>
+<span class="sd">        data variable becomes one component.</span>
+<span class="sd">    axis0_dim : str, optional</span>
+<span class="sd">        Dimension name to use as axis0.  Auto-detected when ``None``.</span>
+<span class="sd">    spatial_dims : tuple of str, optional</span>
+<span class="sd">        Ordered tuple ``(dim_x, dim_y, dim_z)`` for spatial axes.</span>
+<span class="sd">        Auto-detected when ``None``.  Missing axes are filled with singleton</span>
+<span class="sd">        dimensions.</span>
+<span class="sd">    axis0_domain : {&quot;time&quot;, &quot;frequency&quot;}, default &quot;time&quot;</span>
+<span class="sd">        Physical domain of axis0.</span>
+<span class="sd">    space_domain : {&quot;real&quot;, &quot;k&quot;}, default &quot;real&quot;</span>
+<span class="sd">        Spatial domain label for the resulting ScalarField.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ScalarField</span>
+<span class="sd">        When *da* is a DataArray or *cls* is ScalarField.</span>
+<span class="sd">    VectorField</span>
+<span class="sd">        When *da* is a Dataset or *cls* is VectorField with a DataArray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xr</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;xarray&quot;</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span><span class="p">,</span> <span class="n">VectorField</span>  <span class="c1"># noqa: PLC0415</span>
+
+    <span class="c1"># Dataset → VectorField by converting each variable</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+        <span class="n">components</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
+            <span class="n">sf</span> <span class="o">=</span> <span class="n">from_xarray_field</span><span class="p">(</span>
+                <span class="n">ScalarField</span><span class="p">,</span>
+                <span class="n">da</span><span class="p">[</span><span class="n">var_name</span><span class="p">],</span>
+                <span class="n">axis0_dim</span><span class="o">=</span><span class="n">axis0_dim</span><span class="p">,</span>
+                <span class="n">spatial_dims</span><span class="o">=</span><span class="n">spatial_dims</span><span class="p">,</span>
+                <span class="n">axis0_domain</span><span class="o">=</span><span class="n">axis0_domain</span><span class="p">,</span>
+                <span class="n">space_domain</span><span class="o">=</span><span class="n">space_domain</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">components</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">sf</span>
+        <span class="k">return</span> <span class="n">VectorField</span><span class="p">(</span><span class="n">components</span><span class="p">)</span>
+
+    <span class="c1"># ----- DataArray path -----</span>
+    <span class="n">dims</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">dims</span>  <span class="c1"># tuple of str</span>
+
+    <span class="c1"># Detect roles</span>
+    <span class="n">role_to_dim</span> <span class="o">=</span> <span class="n">_detect_dim_roles</span><span class="p">(</span><span class="n">da</span><span class="p">,</span> <span class="n">dims</span><span class="p">)</span>
+
+    <span class="c1"># Resolve axis0</span>
+    <span class="k">if</span> <span class="n">axis0_dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">role_to_dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis0_dim</span>
+    <span class="n">ax0_dim</span> <span class="o">=</span> <span class="n">role_to_dim</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Resolve spatial dims (1, 2, 3)</span>
+    <span class="k">if</span> <span class="n">spatial_dims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">spdim</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spatial_dims</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">role_to_dim</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">spdim</span>
+
+    <span class="c1"># Collect coordinate arrays</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_coord_arr</span><span class="p">(</span><span class="n">dim</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">da</span><span class="o">.</span><span class="n">coords</span> <span class="ow">and</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">coords</span><span class="p">:</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">arr</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">ax0_vals</span> <span class="o">=</span> <span class="n">_coord_arr</span><span class="p">(</span><span class="n">ax0_dim</span><span class="p">)</span>
+    <span class="n">ax1_vals</span> <span class="o">=</span> <span class="n">_coord_arr</span><span class="p">(</span><span class="n">role_to_dim</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">ax2_vals</span> <span class="o">=</span> <span class="n">_coord_arr</span><span class="p">(</span><span class="n">role_to_dim</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">ax3_vals</span> <span class="o">=</span> <span class="n">_coord_arr</span><span class="p">(</span><span class="n">role_to_dim</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+
+    <span class="c1"># Build the 4-D data array</span>
+    <span class="c1"># Order: move axis0_dim → position 0, then spatial dims → 1,2,3</span>
+    <span class="n">ordered_spatial</span> <span class="o">=</span> <span class="p">[</span><span class="n">role_to_dim</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+    <span class="n">spatial_present</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ordered_spatial</span> <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">remaining_dims</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dims</span> <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="n">ax0_dim</span> <span class="ow">and</span> <span class="n">d</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spatial_present</span><span class="p">]</span>
+    <span class="c1"># remaining_dims should be empty in well-formed input; ignored if extra</span>
+
+    <span class="c1"># Transpose: axis0 first, then spatial, then any extras</span>
+    <span class="n">new_order</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">ax0_dim</span> <span class="ow">and</span> <span class="n">ax0_dim</span> <span class="ow">in</span> <span class="n">dims</span><span class="p">:</span>
+        <span class="n">new_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ax0_dim</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">spatial_present</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dims</span><span class="p">:</span>
+            <span class="n">new_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dims</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_order</span><span class="p">:</span>
+            <span class="n">new_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">*</span><span class="n">new_order</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="c1"># Pad to 4D: prepend singleton axis0 if missing, append singleton spatial axes</span>
+    <span class="c1"># Resulting shape: (n_ax0, n_x, n_y, n_z)</span>
+    <span class="n">n_spatial_found</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">spatial_present</span> <span class="k">if</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dims</span><span class="p">])</span>
+    <span class="n">ax0_present</span> <span class="o">=</span> <span class="n">ax0_dim</span> <span class="ow">and</span> <span class="n">ax0_dim</span> <span class="ow">in</span> <span class="n">dims</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ax0_present</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+    <span class="c1"># Pad to exactly 4D by appending singleton axes</span>
+    <span class="k">while</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+    <span class="c1"># Parse unit</span>
+    <span class="n">unit</span> <span class="o">=</span> <span class="n">_try_parse_unit</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="s2">&quot;units&quot;</span> <span class="ow">in</span> <span class="n">da</span><span class="o">.</span><span class="n">attrs</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">ScalarField</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">axis0</span><span class="o">=</span><span class="n">ax0_vals</span><span class="p">,</span>
+        <span class="n">axis0_domain</span><span class="o">=</span><span class="n">axis0_domain</span><span class="p">,</span>
+        <span class="n">axis1</span><span class="o">=</span><span class="n">ax1_vals</span><span class="p">,</span>
+        <span class="n">axis2</span><span class="o">=</span><span class="n">ax2_vals</span><span class="p">,</span>
+        <span class="n">axis3</span><span class="o">=</span><span class="n">ax3_vals</span><span class="p">,</span>
+        <span class="n">space_domain</span><span class="o">=</span><span class="n">space_domain</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="to_xarray_field">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.to_xarray_field">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_xarray_field</span><span class="p">(</span>
+    <span class="n">field</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">dim_names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a ScalarField or VectorField to an xarray DataArray / Dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    field : ScalarField or VectorField</span>
+<span class="sd">        Source field.</span>
+<span class="sd">    dim_names : tuple of 4 str, optional</span>
+<span class="sd">        Dimension names ``(axis0, axis1, axis2, axis3)``.  Defaults to</span>
+<span class="sd">        ``field.axis_names`` when available, then to ``(&quot;t&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;)``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xarray.DataArray</span>
+<span class="sd">        When *field* is a ScalarField.</span>
+<span class="sd">    xarray.Dataset</span>
+<span class="sd">        When *field* is a VectorField.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xr</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;xarray&quot;</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScalarField</span><span class="p">,</span> <span class="n">VectorField</span>  <span class="c1"># noqa: PLC0415</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">VectorField</span><span class="p">):</span>
+        <span class="n">arrays</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">comp_name</span><span class="p">,</span> <span class="n">sf</span> <span class="ow">in</span> <span class="n">field</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">arrays</span><span class="p">[</span><span class="n">comp_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_xarray_field</span><span class="p">(</span><span class="n">sf</span><span class="p">,</span> <span class="n">dim_names</span><span class="o">=</span><span class="n">dim_names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span>
+
+    <span class="c1"># ScalarField path</span>
+    <span class="n">default_names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dim_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">dim_names</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;axis_names&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">field</span><span class="o">.</span><span class="n">axis_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">axis_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">names</span> <span class="o">+</span> <span class="n">default_names</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">):]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">default_names</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="c1"># Build coordinate dicts</span>
+    <span class="n">coords</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_axis</span><span class="p">(</span><span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">ax</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">arr</span> <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+        <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;_axis0_index&quot;</span><span class="p">,</span> <span class="s2">&quot;_axis1_index&quot;</span><span class="p">,</span> <span class="s2">&quot;_axis2_index&quot;</span><span class="p">,</span> <span class="s2">&quot;_axis3_index&quot;</span><span class="p">))</span>
+    <span class="p">):</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">_get_axis</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vals</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">vals</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="n">coords</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
+
+    <span class="n">attrs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">,</span>
+        <span class="n">dims</span><span class="o">=</span><span class="n">names</span><span class="p">[:</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="p">],</span>
+        <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

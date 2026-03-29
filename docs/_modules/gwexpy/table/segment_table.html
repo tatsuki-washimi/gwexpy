@@ -1,0 +1,1230 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.table.segment_table &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.table.segment_table</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.table.segment_table</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;SegmentTable — segment-keyed analysis container.</span>
+
+<span class="sd">Each row represents one analysis unit defined by a :class:`~gwpy.segments.Segment`</span>
+<span class="sd">(a half-open time interval ``[start, end)``).  Columns may be lightweight *meta*</span>
+<span class="sd">values or heavy *payload* objects such as :class:`~gwpy.timeseries.TimeSeries`.</span>
+<span class="sd">Payload columns are stored as :class:`~gwexpy.table.segment_cell.SegmentCell`</span>
+<span class="sd">instances that support lazy loading and optional caching.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.table.segment_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegmentCell</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;RowProxy&quot;</span><span class="p">,</span> <span class="s2">&quot;SegmentTable&quot;</span><span class="p">]</span>
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Constants</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="c1">#: Column kinds for meta (lightweight) columns.</span>
+<span class="n">_META_KINDS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;segment&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">})</span>
+
+<span class="c1">#: Column kinds for payload (heavy) columns.</span>
+<span class="n">_PAYLOAD_KINDS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;timeseries&quot;</span><span class="p">,</span> <span class="s2">&quot;timeseriesdict&quot;</span><span class="p">,</span> <span class="s2">&quot;frequencyseries&quot;</span><span class="p">,</span> <span class="s2">&quot;frequencyseriesdict&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1">#: All valid kinds.</span>
+<span class="n">_ALL_KINDS</span> <span class="o">=</span> <span class="n">_META_KINDS</span> <span class="o">|</span> <span class="n">_PAYLOAD_KINDS</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># RowProxy</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RowProxy</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dict-like read-only proxy for a single row of a :class:`SegmentTable`.</span>
+
+<span class="sd">    Meta columns return their value directly; payload columns are resolved</span>
+<span class="sd">    through :meth:`SegmentCell.get`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    table:</span>
+<span class="sd">        The parent :class:`SegmentTable`.</span>
+<span class="sd">    index:</span>
+<span class="sd">        0-based row index.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_table&quot;</span><span class="p">,</span> <span class="s2">&quot;_index&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="n">SegmentTable</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_table</span> <span class="o">=</span> <span class="n">table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+
+    <span class="c1"># -- dict-like access ---------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">_schema</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2"> not found in SegmentTable&quot;</span><span class="p">)</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">_META_KINDS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">table</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">,</span> <span class="n">key</span><span class="p">]</span>
+        <span class="c1"># Payload column</span>
+        <span class="k">return</span> <span class="n">table</span><span class="o">.</span><span class="n">_payload</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The 0-based row index within the parent :class:`SegmentTable`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all column names.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">columns</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">span</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">,</span> <span class="s2">&quot;span&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;RowProxy(index=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="si">}</span><span class="s2">, span=</span><span class="si">{</span><span class="n">span</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># SegmentTable</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="SegmentTable">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SegmentTable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Segment-keyed analysis table.</span>
+
+<span class="sd">    Each row holds exactly one ``span`` (:class:`gwpy.segments.Segment`)</span>
+<span class="sd">    plus arbitrary meta columns and optional heavy payload columns.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    meta:</span>
+<span class="sd">        :class:`pandas.DataFrame` with at least a ``span`` column whose</span>
+<span class="sd">        elements are :class:`gwpy.segments.Segment` objects.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``meta`` does not contain a ``span`` column.</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        If any element of the ``span`` column is not a</span>
+<span class="sd">        :class:`gwpy.segments.Segment`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwpy.segments import Segment</span>
+<span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
+<span class="sd">    &gt;&gt;&gt; segs = [Segment(0, 4), Segment(4, 8)]</span>
+<span class="sd">    &gt;&gt;&gt; st = SegmentTable(pd.DataFrame({&quot;span&quot;: segs}))</span>
+<span class="sd">    &gt;&gt;&gt; len(st)</span>
+<span class="sd">    2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Internal storage</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="n">_meta</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+    <span class="n">_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">SegmentCell</span><span class="p">]]</span>
+    <span class="n">_schema</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Construction</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="SegmentTable.__init__">
+<a class="viewcode-back" href="../../../web/ja/reference/api/_autosummary/gwexpy.table.SegmentTable.html#gwexpy.table.SegmentTable.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;span&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">meta</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;meta&#39; DataFrame must contain a &#39;span&#39; column.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate span element types</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.segments</span><span class="w"> </span><span class="kn">import</span> <span class="n">Segment</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">Segment</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">Segment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;span&quot;</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">Segment</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;All elements of &#39;span&#39; must be gwpy.segments.Segment, &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> at index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">SegmentCell</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Build initial schema from meta columns</span>
+        <span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;segment&quot;</span> <span class="k">if</span> <span class="n">col</span> <span class="o">==</span> <span class="s2">&quot;span&quot;</span> <span class="k">else</span> <span class="s2">&quot;meta&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span> <span class="o">=</span> <span class="n">schema</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Factory methods</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="SegmentTable.from_segments">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.from_segments">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_segments</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">segments</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="o">**</span><span class="n">meta_columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a :class:`SegmentTable` from a sequence of segments.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        segments:</span>
+<span class="sd">            Sequence of :class:`gwpy.segments.Segment` objects.</span>
+<span class="sd">        **meta_columns:</span>
+<span class="sd">            Extra meta columns supplied as keyword arguments.</span>
+<span class="sd">            Each value must have the same length as *segments*.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SegmentTable</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If any column length does not match ``len(segments)``.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from gwpy.segments import Segment</span>
+<span class="sd">        &gt;&gt;&gt; segs = [Segment(0, 4), Segment(4, 8)]</span>
+<span class="sd">        &gt;&gt;&gt; st = SegmentTable.from_segments(segs, label=[&quot;a&quot;, &quot;b&quot;])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">meta_columns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Length of &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;number of segments (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;span&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">segments</span><span class="p">),</span> <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">meta_columns</span><span class="o">.</span><span class="n">items</span><span class="p">()}})</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.from_table">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.from_table">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_table</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">table</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">span</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;span&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a :class:`SegmentTable` from an existing table.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        table:</span>
+<span class="sd">            A :class:`pandas.DataFrame` (or compatible object).</span>
+<span class="sd">        span:</span>
+<span class="sd">            Column name to use as the ``span`` column.  If different from</span>
+<span class="sd">            ``&quot;span&quot;``, the column is renamed.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SegmentTable</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If *span* column is not found in *table*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="s2">&quot;to_pandas&quot;</span><span class="p">):</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">span</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Column </span><span class="si">{</span><span class="n">span</span><span class="si">!r}</span><span class="s2"> not found in provided table.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">span</span> <span class="o">!=</span> <span class="s2">&quot;span&quot;</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">span</span><span class="p">:</span> <span class="s2">&quot;span&quot;</span><span class="p">})</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Column management</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="SegmentTable.add_column">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.add_column">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_column</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a lightweight meta column.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name:</span>
+<span class="sd">            Column name.  Must not already exist.</span>
+<span class="sd">        data:</span>
+<span class="sd">            Sequence of values; length must equal ``len(self)``.</span>
+<span class="sd">        kind:</span>
+<span class="sd">            Column kind — ``&quot;meta&quot;`` or ``&quot;object&quot;``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If *name* already exists, length mismatch, or *kind* is not</span>
+<span class="sd">            ``&quot;meta&quot;`` or ``&quot;object&quot;``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;add_column only accepts kind &#39;meta&#39; or &#39;object&#39;, got </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Use add_series_column for payload kinds.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Length of data (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;table row count (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">kind</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.add_series_column">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.add_series_column">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_series_column</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">loader</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a payload column (lazy-loadable).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name:</span>
+<span class="sd">            Column name.  Must not already exist.</span>
+<span class="sd">        data:</span>
+<span class="sd">            Sequence of concrete payload objects, one per row. Exclusive</span>
+<span class="sd">            with *loader* (but one of the two must be provided).</span>
+<span class="sd">        loader:</span>
+<span class="sd">            Either a sequence of zero-argument callables (one per row), or</span>
+<span class="sd">            a single callable that accepts the row index and returns a</span>
+<span class="sd">            zero-argument callable.</span>
+<span class="sd">        kind:</span>
+<span class="sd">            Payload kind.  Must be one of:</span>
+<span class="sd">            ``&quot;timeseries&quot;``, ``&quot;timeseriesdict&quot;``,</span>
+<span class="sd">            ``&quot;frequencyseries&quot;``, ``&quot;frequencyseriesdict&quot;``,</span>
+<span class="sd">            ``&quot;object&quot;``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If both *data* and *loader* are ``None``, or if length mismatches.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If *kind* is not a valid payload kind.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> already exists.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_PAYLOAD_KINDS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid payload kind </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Must be one of: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">_PAYLOAD_KINDS</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">loader</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;At least one of &#39;data&#39; or &#39;loader&#39; must be provided.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">cells</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SegmentCell</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Length of data (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;table row count (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">loader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Both provided: data takes priority; loader as fallback ignored</span>
+                <span class="c1"># (simpler semantics for v0.1)</span>
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SegmentCell</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">val</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SegmentCell</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">val</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># loader only</span>
+            <span class="k">assert</span> <span class="n">loader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="c1"># Detect if loader is a sequence or a factory callable</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">loader</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">_is_sequence</span><span class="p">(</span><span class="n">loader</span><span class="p">):</span>
+                <span class="c1"># Factory: loader(i) -&gt; callable</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                    <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SegmentCell</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">loader</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Sequence of callables</span>
+                <span class="n">loader_seq</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">loader</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">loader_seq</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Length of loader sequence (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">loader_seq</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;match table row count (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">).&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">for</span> <span class="n">ldr</span> <span class="ow">in</span> <span class="n">loader_seq</span><span class="p">:</span>
+                    <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SegmentCell</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">ldr</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cells</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">kind</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Basic access</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the number of rows.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">columns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ordered list of all column names (meta then payload).&quot;&quot;&quot;</span>
+        <span class="n">meta_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="n">payload_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">meta_cols</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">meta_cols</span> <span class="o">+</span> <span class="n">payload_cols</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mapping of column name → kind.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SegmentTable.row">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.row">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RowProxy</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a dict-like proxy for row *i*.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        i:</span>
+<span class="sd">            0-based row index.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        IndexError</span>
+<span class="sd">            If *i* is out of range.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">n</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Row index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> out of range for SegmentTable with </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> rows.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="n">i</span>
+        <span class="k">return</span> <span class="n">RowProxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Row-wise processing</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="SegmentTable.apply">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.apply">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">RowProxy</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+        <span class="n">in_cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">out_cols</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parallel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply *func* to each row and collect the results as new columns.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        func:</span>
+<span class="sd">            Callable that receives a :class:`RowProxy` and returns a</span>
+<span class="sd">            ``dict[str, object]``.</span>
+<span class="sd">        in_cols:</span>
+<span class="sd">            Hint for which columns are read (ignored in v0.1).</span>
+<span class="sd">        out_cols:</span>
+<span class="sd">            Expected keys of ``func``&#39;s return dict.  If given, the actual</span>
+<span class="sd">            keys must match exactly.</span>
+<span class="sd">        parallel:</span>
+<span class="sd">            If ``True``, falls back to sequential execution in v0.1.</span>
+<span class="sd">        inplace:</span>
+<span class="sd">            If ``True``, add columns to *self*; otherwise return a new</span>
+<span class="sd">            :class:`SegmentTable`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SegmentTable</span>
+<span class="sd">            Either *self* (``inplace=True``) or a new table.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If *func* does not return a ``dict``.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If ``out_cols`` is given and the actual keys do not match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># parallel is intentionally ignored (v0.1: sequential fallback)</span>
+        <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">row</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;apply() expects func to return a dict, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">out_cols</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">expected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">out_cols</span><span class="p">)</span>
+                <span class="n">actual</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ret</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">expected</span> <span class="o">!=</span> <span class="n">actual</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;out_cols </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">expected</span><span class="p">)</span><span class="si">}</span><span class="s2"> does not match &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;func return keys </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span><span class="si">}</span><span class="s2"> at row </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+
+        <span class="c1"># Collect per-column lists</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">results</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span> <span class="k">else</span> <span class="bp">self</span>
+
+        <span class="n">all_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">new_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">all_keys</span><span class="p">}</span>
+
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">inplace</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">new_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Infer kind: if values are payload-like wrap in cells, else meta</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="n">_infer_kind</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">kind</span> <span class="ow">in</span> <span class="n">_META_KINDS</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;segment&quot;</span><span class="p">}:</span>
+                <span class="n">target</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">col_name</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cells</span> <span class="o">=</span> <span class="p">[</span><span class="n">SegmentCell</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+                <span class="n">target</span><span class="o">.</span><span class="n">_payload</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cells</span>
+                <span class="n">target</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">kind</span>
+        <span class="k">return</span> <span class="n">target</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.map">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.map">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">map</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">out_col</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply *func* to each value in *column*.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        column:</span>
+<span class="sd">            Source column name.</span>
+<span class="sd">        func:</span>
+<span class="sd">            Callable that receives the cell value and returns a new value.</span>
+<span class="sd">        out_col:</span>
+<span class="sd">            Output column name.  Defaults to ``column + &quot;_mapped&quot;``.</span>
+<span class="sd">        inplace:</span>
+<span class="sd">            Whether to modify *self* in place.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SegmentTable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">column</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column </span><span class="si">{</span><span class="n">column</span><span class="si">!r}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">out_col</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out_col</span> <span class="o">=</span> <span class="n">column</span> <span class="o">+</span> <span class="s2">&quot;_mapped&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_func</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="n">RowProxy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">out_col</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">])}</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">_func</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="n">inplace</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Sugar APIs ----------------------------------------------------------</span>
+
+<div class="viewcode-block" id="SegmentTable.crop">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.crop">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">crop</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">out_col</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">span_col</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;span&quot;</span><span class="p">,</span>
+        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Crop each row&#39;s payload to its :class:`~gwpy.segments.Segment`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        column:</span>
+<span class="sd">            Payload column containing ``TimeSeries`` or ``TimeSeriesDict``.</span>
+<span class="sd">        out_col:</span>
+<span class="sd">            Output column name; defaults to ``column + &quot;_cropped&quot;``.</span>
+<span class="sd">        span_col:</span>
+<span class="sd">            Column name for the span (default ``&quot;span&quot;``).</span>
+<span class="sd">        inplace:</span>
+<span class="sd">            Whether to modify *self* in place.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the payload is not ``TimeSeries`` or ``TimeSeriesDict``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;gwpy is required for crop()&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+        <span class="n">kind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;timeseries&quot;</span><span class="p">,</span> <span class="s2">&quot;timeseriesdict&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;crop() requires a &#39;timeseries&#39; or &#39;timeseriesdict&#39; column, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;got kind=</span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2"> for column </span><span class="si">{</span><span class="n">column</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">out_col</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out_col</span> <span class="o">=</span> <span class="n">column</span> <span class="o">+</span> <span class="s2">&quot;_cropped&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_crop</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="n">RowProxy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+            <span class="n">span</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">span_col</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;crop() expected TimeSeries or TimeSeriesDict, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">out_col</span><span class="p">:</span> <span class="n">payload</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">])}</span>
+
+        <span class="n">out_kind</span> <span class="o">=</span> <span class="n">kind</span>  <span class="c1"># preserve timeseries/timeseriesdict kind</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">inplace</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">row</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_crop</span><span class="p">(</span><span class="n">row</span><span class="p">)[</span><span class="n">out_col</span><span class="p">])</span>
+
+        <span class="n">cells</span> <span class="o">=</span> <span class="p">[</span><span class="n">SegmentCell</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">_payload</span><span class="p">[</span><span class="n">out_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">cells</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">out_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_kind</span>
+        <span class="k">return</span> <span class="n">target</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.asd">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.asd">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">asd</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">out_col</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply ASD to each row&#39;s ``TimeSeries`` or ``TimeSeriesDict``.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        column:</span>
+<span class="sd">            Payload column.</span>
+<span class="sd">        out_col:</span>
+<span class="sd">            Output column name; defaults to ``column + &quot;_asd&quot;``.</span>
+<span class="sd">        **kwargs:</span>
+<span class="sd">            Forwarded to :meth:`~gwpy.timeseries.TimeSeries.asd`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SegmentTable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">out_col</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out_col</span> <span class="o">=</span> <span class="n">column</span> <span class="o">+</span> <span class="s2">&quot;_asd&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_asd</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="n">RowProxy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">out_col</span><span class="p">:</span> <span class="n">payload</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)}</span>
+
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">row</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_asd</span><span class="p">(</span><span class="n">row</span><span class="p">)[</span><span class="n">out_col</span><span class="p">])</span>
+
+        <span class="n">out_kind</span> <span class="o">=</span> <span class="s2">&quot;frequencyseries&quot;</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="s2">&quot;timeseries&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;timeseriesdict&quot;</span><span class="p">:</span>
+            <span class="n">out_kind</span> <span class="o">=</span> <span class="s2">&quot;frequencyseriesdict&quot;</span>
+
+        <span class="n">cells</span> <span class="o">=</span> <span class="p">[</span><span class="n">SegmentCell</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">_payload</span><span class="p">[</span><span class="n">out_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">cells</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">out_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_kind</span>
+        <span class="k">return</span> <span class="n">target</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Selection and conversion</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="SegmentTable.select">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.select">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">conditions</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select rows by boolean mask or column conditions.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mask:</span>
+<span class="sd">            Boolean sequence of length ``len(self)``.</span>
+<span class="sd">        **conditions:</span>
+<span class="sd">            Simple equality conditions, e.g. ``label=&quot;glitch&quot;``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SegmentTable</span>
+<span class="sd">            A new :class:`SegmentTable` with only the selected rows.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If *mask* length is not equal to ``len(self)``.</span>
+<span class="sd">        KeyError</span>
+<span class="sd">            If a condition column does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bool_mask</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;mask length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;table row count (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="p">)</span>
+            <span class="n">bool_mask</span> <span class="o">=</span> <span class="n">bool_mask</span> <span class="o">&amp;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">conditions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column </span><span class="si">{</span><span class="n">col</span><span class="si">!r}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;select() does not support payload column </span><span class="si">{</span><span class="n">col</span><span class="si">!r}</span><span class="s2"> as a condition.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">bool_mask</span> <span class="o">=</span> <span class="n">bool_mask</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="n">val</span><span class="p">)</span>
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">bool_mask</span><span class="p">[</span><span class="n">bool_mask</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">new_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">new_table</span> <span class="o">=</span> <span class="n">SegmentTable</span><span class="p">(</span><span class="n">new_meta</span><span class="p">)</span>
+
+        <span class="c1"># Carry over non-span schema kinds</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">new_meta</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="o">!=</span> <span class="s2">&quot;span&quot;</span><span class="p">:</span>
+                <span class="n">new_table</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Slice payload columns</span>
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">cells</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">new_table</span><span class="o">.</span><span class="n">_payload</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">cells</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span>
+            <span class="n">new_table</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">new_table</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.fetch">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.fetch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Eagerly load all payload cells in *columns* (default: all).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        columns:</span>
+<span class="sd">            List of payload column names to load.  ``None`` loads all.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">columns</span> <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="p">[</span><span class="n">col</span><span class="p">]:</span>
+                <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.materialize">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.materialize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">materialize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SegmentTable</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Materialize lazy payload cells (equivalent to :meth:`fetch` in v0.1).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        columns:</span>
+<span class="sd">            Payload columns to materialize.  ``None`` means all.</span>
+<span class="sd">        inplace:</span>
+<span class="sd">            If ``True`` (default), mutate *self*.  If ``False``, return a</span>
+<span class="sd">            copy with the payload loaded.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SegmentTable or None</span>
+<span class="sd">            *None* if ``inplace=True``; new table if ``inplace=False``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">inplace</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">target</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.to_pandas">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.to_pandas">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a :class:`pandas.DataFrame` representation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        meta_only:</span>
+<span class="sd">            If ``True`` (default), return only the meta columns.  If</span>
+<span class="sd">            ``False``, payload columns are appended as object columns</span>
+<span class="sd">            containing the resolved cell values.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pandas.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">meta_only</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">cells</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">is_loaded</span><span class="p">()</span> <span class="k">else</span> <span class="n">c</span><span class="o">.</span><span class="n">_summary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cells</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.copy">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a copy of this table.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        deep:</span>
+<span class="sd">            If ``False`` (default), meta is copied and payload cells are</span>
+<span class="sd">            referenced (shallow).  If ``True``, payload values are also</span>
+<span class="sd">            deep-copied where possible.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SegmentTable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">new_table</span> <span class="o">=</span> <span class="n">SegmentTable</span><span class="p">(</span><span class="n">new_meta</span><span class="p">)</span>
+        <span class="n">new_table</span><span class="o">.</span><span class="n">_schema</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">new_meta</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="o">!=</span> <span class="s2">&quot;span&quot;</span> <span class="ow">and</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">:</span>
+                <span class="n">new_table</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">cells</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">deep</span><span class="p">:</span>
+                <span class="n">new_cells</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">SegmentCell</span><span class="p">(</span>
+                        <span class="n">value</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">loader</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">loader</span><span class="p">,</span>
+                        <span class="n">cacheable</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">cacheable</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cells</span>
+                <span class="p">]</span>
+                <span class="k">for</span> <span class="n">nc</span><span class="p">,</span> <span class="n">oc</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">new_cells</span><span class="p">,</span> <span class="n">cells</span><span class="p">):</span>
+                    <span class="n">nc</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="n">oc</span><span class="o">.</span><span class="n">_loaded</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_cells</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">SegmentCell</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">loader</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">loader</span><span class="p">,</span> <span class="n">cacheable</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">cacheable</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cells</span>
+                <span class="p">]</span>
+                <span class="k">for</span> <span class="n">nc</span><span class="p">,</span> <span class="n">oc</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">new_cells</span><span class="p">,</span> <span class="n">cells</span><span class="p">):</span>
+                    <span class="n">nc</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="n">oc</span><span class="o">.</span><span class="n">_loaded</span>
+            <span class="n">new_table</span><span class="o">.</span><span class="n">_payload</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_cells</span>
+            <span class="n">new_table</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">new_table</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.clear_cache">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.clear_cache">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Discard all cached payload values, forcing re-load on next access.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">cells</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">cells</span><span class="p">:</span>
+                <span class="n">cell</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Drawing API — thin wrappers around segment_plot</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="SegmentTable.plot">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.plot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">column</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">row</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;General-purpose plot entry.  Requires both *column* and *row*.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.table.segment_plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_segment_table</span>
+
+        <span class="k">return</span> <span class="n">plot_segment_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">column</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.scatter">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.scatter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scatter</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">selection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Scatter plot of two scalar columns.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.table.segment_plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">scatter_segment_table</span>
+
+        <span class="k">return</span> <span class="n">scatter_segment_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.hist">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.hist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hist</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Histogram of a scalar column.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.table.segment_plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">hist_segment_table</span>
+
+        <span class="k">return</span> <span class="n">hist_segment_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.segments">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.segments">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">segments</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">color</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Draw each row&#39;s span as a horizontal bar.</span>
+
+<span class="sd">        This is one of the two *representative* APIs of :class:`SegmentTable`</span>
+<span class="sd">        (alongside :meth:`overlay_spectra`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.table.segment_plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">segments_segment_table</span>
+
+        <span class="k">return</span> <span class="n">segments_segment_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.overlay">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.overlay">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overlay</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">separate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">sharex</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Overlay payload from multiple rows.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.table.segment_plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">overlay_segment_table</span>
+
+        <span class="k">return</span> <span class="n">overlay_segment_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="n">separate</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="n">sharex</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SegmentTable.overlay_spectra">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.overlay_spectra">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overlay_spectra</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">channel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rows</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">color_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sort_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">colorbar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">colorbar_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">xscale</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;log&quot;</span><span class="p">,</span>
+        <span class="n">yscale</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;log&quot;</span><span class="p">,</span>
+        <span class="n">xlim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ylim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Overlay frequency spectra with colour-graded lines.</span>
+
+<span class="sd">        Representative API of :class:`SegmentTable` for frequency-domain</span>
+<span class="sd">        visualisation (alongside :meth:`segments` for time-domain).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.table.segment_plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">overlay_spectra_segment_table</span>
+
+        <span class="k">return</span> <span class="n">overlay_spectra_segment_table</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">column</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">color_by</span><span class="o">=</span><span class="n">color_by</span><span class="p">,</span>
+            <span class="n">sort_by</span><span class="o">=</span><span class="n">sort_by</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">,</span>
+            <span class="n">colorbar</span><span class="o">=</span><span class="n">colorbar</span><span class="p">,</span>
+            <span class="n">colorbar_label</span><span class="o">=</span><span class="n">colorbar_label</span><span class="p">,</span>
+            <span class="n">xscale</span><span class="o">=</span><span class="n">xscale</span><span class="p">,</span>
+            <span class="n">yscale</span><span class="o">=</span><span class="n">yscale</span><span class="p">,</span>
+            <span class="n">xlim</span><span class="o">=</span><span class="n">xlim</span><span class="p">,</span>
+            <span class="n">ylim</span><span class="o">=</span><span class="n">ylim</span><span class="p">,</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Display</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">n_payload</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="p">)</span>
+        <span class="n">all_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">n_cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_cols</span><span class="p">)</span>
+
+        <span class="c1"># Summarise span range</span>
+        <span class="n">spans</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="p">[</span><span class="s2">&quot;span&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">spans</span><span class="p">:</span>
+            <span class="n">span_summary</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">spans</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> ... </span><span class="si">{</span><span class="n">spans</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">span_summary</span> <span class="o">=</span> <span class="s2">&quot;[]&quot;</span>
+
+        <span class="n">col_display</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_cols</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_cols</span> <span class="o">&lt;=</span> <span class="mi">8</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_cols</span><span class="p">[:</span><span class="mi">8</span><span class="p">])[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;, ...]&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;SegmentTable(n_rows=</span><span class="si">{</span><span class="n">n_rows</span><span class="si">}</span><span class="s2">, n_cols=</span><span class="si">{</span><span class="n">n_cols</span><span class="si">}</span><span class="s2">, payload=</span><span class="si">{</span><span class="n">n_payload</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;columns=</span><span class="si">{</span><span class="n">col_display</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;span=</span><span class="si">{</span><span class="n">span_summary</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">MAX_ROWS</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">MAX_COLS</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">shown_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)[:</span><span class="n">MAX_COLS</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">cells</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shown_cols</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">MAX_COLS</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">_summary</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cells</span><span class="p">]</span>
+            <span class="n">shown_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">shown_cols</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">MAX_ROWS</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">MAX_ROWS</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">MAX_COLS</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">shown_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)[:</span><span class="n">MAX_COLS</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">cells</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shown_cols</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">MAX_COLS</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">_summary</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cells</span><span class="p">]</span>
+            <span class="n">shown_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">shown_cols</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">MAX_ROWS</span><span class="p">)</span><span class="o">.</span><span class="n">to_html</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SegmentTable.display">
+<a class="viewcode-back" href="../../../web/ja/reference/api/table.html#gwexpy.table.SegmentTable.display">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">display</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">max_rows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">max_cols</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">meta_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a summary :class:`pandas.DataFrame` for interactive display.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        max_rows:</span>
+<span class="sd">            Maximum rows to include.</span>
+<span class="sd">        max_cols:</span>
+<span class="sd">            Maximum columns to include.</span>
+<span class="sd">        meta_only:</span>
+<span class="sd">            If ``True``, omit payload columns.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pandas.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">meta_only</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">cells</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_payload</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_cols</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">)</span>
+                <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">_summary</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cells</span><span class="p">]</span>
+
+        <span class="n">shown_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)[:</span><span class="n">max_cols</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">shown_cols</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">max_rows</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Helpers</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_sequence</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if *obj* is a non-string sequence (list/tuple/array etc.).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__iter__&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_kind</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Infer column kind from a list of values.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;object&quot;</span>
+
+    <span class="n">sample</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sample</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;object&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">TimeSeriesDict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;timeseriesdict&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;timeseries&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">FrequencySeries</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;frequencyseries&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numbers</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="s2">&quot;meta&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;object&quot;</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

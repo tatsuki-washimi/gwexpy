@@ -1,0 +1,1209 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy TimeSeries New Features Tutorial &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Advanced Features and Operations of FrequencySeries" href="intro_frequencyseries.html" />
+    <link rel="prev" title="Tutorials" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#vi-segment-analysis">VI. Segment Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">gwexpy TimeSeries New Features Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb">Download the notebook (.ipynb)</a></p>
+</div>
+<section id="gwexpy-TimeSeries-New-Features-Tutorial">
+<h1>gwexpy TimeSeries New Features Tutorial<a class="headerlink" href="#gwexpy-TimeSeries-New-Features-Tutorial" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>This notebook introduces the new methods added to the <code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> class in <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>, an extension of <code class="docutils literal notranslate"><span class="pre">gwpy</span></code>, and explains how to use them.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> maintains high compatibility with GWpy while significantly enhancing signal processing, statistical analysis, and interoperability with other libraries.</p>
+<section id="Table-of-Contents">
+<h2>Table of Contents<a class="headerlink" href="#Table-of-Contents" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Environment Setup</p></li>
+<li><p>Signal Processing and Demodulation (Hilbert, Phase, Demodulation)</p></li>
+<li><p>Spectral Analysis and Correlation (FFT, Transfer Function, xcorr)</p></li>
+<li><p>Hilbert-Huang Transform (HHT)</p></li>
+<li><p>Statistics and Preprocessing (Impute, Standardize, ARIMA, Hurst, Rolling)</p></li>
+<li><p>Resampling and Reindexing (asfreq, resample)</p></li>
+<li><p>Function Fitting (fit)</p></li>
+<li><p>Interoperability (Pandas, Xarray, Torch, and more)</p></li>
+</ol>
+</section>
+<section id="1.-Environment-Setup">
+<h2>1. Environment Setup<a class="headerlink" href="#1.-Environment-Setup" title="Link to this heading"></a></h2>
+<p>First, we import the necessary libraries and generate sample data for demonstration.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.noise.wave</span><span class="w"> </span><span class="kn">import</span> <span class="n">chirp</span><span class="p">,</span> <span class="n">exponential</span><span class="p">,</span> <span class="n">gaussian</span><span class="p">,</span> <span class="n">sine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="c1"># Generate sample data (5 seconds of data sampled at 100Hz)</span>
+<span class="n">fs</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">duration</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="c1"># Restore &#39;t&#39; for compatibility with downstream cells if they use it</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)</span>
+
+<span class="c1"># Sensor 1: 10Hz sine wave + noise</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">sine</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="n">gaussian</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">ts1</span> <span class="o">=</span> <span class="n">s1</span> <span class="o">+</span> <span class="n">n1</span>
+<span class="n">ts1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Sensor 1&quot;</span>
+<span class="n">ts1</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+
+<span class="c1"># Sensor 2: Chirp signal (frequency changes over time: 5Hz -&gt; 25Hz) + exponential amplification</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">chirp</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">t1</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">exponential</span><span class="p">(</span>
+    <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">decay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">0.2</span>
+<span class="p">)</span>
+<span class="n">ts2</span> <span class="o">=</span> <span class="n">s2</span> <span class="o">*</span> <span class="n">env</span>
+<span class="n">ts2</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Chirp Signal&quot;</span>
+<span class="n">ts2</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Signal-Processing-and-Demodulation">
+<h2>2. Signal Processing and Demodulation<a class="headerlink" href="#2.-Signal-Processing-and-Demodulation" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> integrates Hilbert transforms, envelope calculations, instantaneous frequency computation, and demodulation functions like lock-in amplifiers.</p>
+<section id="Hilbert-Transform-and-Envelope">
+<h3>Hilbert Transform and Envelope<a class="headerlink" href="#Hilbert-Transform-and-Envelope" title="Link to this heading"></a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">hilbert</span></code> and <code class="docutils literal notranslate"><span class="pre">envelope</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate the analytic signal</span>
+<span class="n">ts_analytic</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">hilbert</span><span class="p">()</span>
+<span class="c1"># Calculate the envelope</span>
+<span class="n">ts_env</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">envelope</span><span class="p">()</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts2</span><span class="p">,</span> <span class="n">ts_env</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Original (Chirp)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Envelope&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Hilbert Transform and Envelope&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_5_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_5_0.png" />
+</div>
+</div>
+</section>
+<section id="Instantaneous-Phase-and-Instantaneous-Frequency">
+<h3>Instantaneous Phase and Instantaneous Frequency<a class="headerlink" href="#Instantaneous-Phase-and-Instantaneous-Frequency" title="Link to this heading"></a></h3>
+<p>Use <code class="docutils literal notranslate"><span class="pre">instantaneous_phase</span></code> and <code class="docutils literal notranslate"><span class="pre">instantaneous_frequency</span></code>. You can specify phase unwrapping (<code class="docutils literal notranslate"><span class="pre">unwrap</span></code>) and degree units (<code class="docutils literal notranslate"><span class="pre">deg</span></code>).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantaneous phase (unwrap=True to remove phase jumps)</span>
+<span class="n">phase_rad</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">instantaneous_phase</span><span class="p">(</span><span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">phase_deg</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">instantaneous_phase</span><span class="p">(</span><span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unwrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Instantaneous frequency</span>
+<span class="n">freq</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">instantaneous_frequency</span><span class="p">()</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">phase_rad</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Phase [rad]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Instantaneous Phase (Unwrapped)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Instantaneous Frequency&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_7_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_7_0.png" />
+</div>
+</div>
+</section>
+<section id="Mixing-and-Demodulation-(Mix-down,-Baseband,-Lock-in)">
+<h3>Mixing and Demodulation (Mix-down, Baseband, Lock-in)<a class="headerlink" href="#Mixing-and-Demodulation-(Mix-down,-Baseband,-Lock-in)" title="Link to this heading"></a></h3>
+<p>Functions for extracting specific frequency components or bringing them down to baseband.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. mix_down: Demodulate at a specific frequency f0 (becomes a complex signal)</span>
+<span class="n">ts_mixed</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">mix_down</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># 2. baseband: Execute demodulation + lowpass + resampling in one step</span>
+<span class="n">ts_base</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">baseband</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">lowpass</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">output_rate</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># 3. lock_in: Lock-in detection (extract amplitude and phase)</span>
+<span class="n">amp</span><span class="p">,</span> <span class="n">ph</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># Output average every 0.1 seconds</span>
+<span class="n">res_complex</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">lock_in</span><span class="p">(</span>
+    <span class="n">f0</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;complex&quot;</span>
+<span class="p">)</span>  <span class="c1"># Output as complex numbers</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">amp</span><span class="p">)</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">amp</span><span class="p">,</span> <span class="n">ph</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Theoretical (Sine amp=1)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Phase [deg]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Phase [deg]&quot;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Lock-in Amplification Result at 10Hz&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+TimeSeries([1.02741597, 1.16552899, 0.93765881, 0.87731236,
+            1.02777865, 0.91539637, 1.01821019, 0.90240575,
+            1.0111066 , 0.9914134 , 1.00146936, 1.12517907,
+            0.91267559, 0.95556561, 1.04049211, 1.00646786,
+            1.14199336, 1.04945363, 1.03907644, 0.96127339,
+            0.92151929, 1.07825152, 0.95047776, 0.97586436,
+            1.0151117 , 1.06991705, 1.02617825, 1.01241226,
+            1.01888422, 1.11207074, 1.07279902, 1.00769159,
+            1.08451442, 0.89048937, 1.16849788, 0.9963111 ,
+            0.9457141 , 0.81001496, 0.94112349, 1.11907093,
+            1.0364996 , 0.9199482 , 1.22395555, 1.1179697 ,
+            0.95298715, 1.12631136, 0.95882988, 0.85918777,
+            1.03224085, 1.17684784],
+           unit: V,
+           t0: 0.0 s,
+           dt: 0.1 s,
+           name: Sensor 1,
+           channel: None)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_9_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_9_1.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="3.-Spectral-Analysis-and-CorrelationWhile-inheriting-GWpy's-functionality,-mode=%22transient%22-FFT-for-transient-signals-and-transfer-function-calculation-via-direct-FFT-ratio-have-been-added.">
+<h2>3. Spectral Analysis and CorrelationWhile inheriting GWpy’s functionality, <code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> FFT for transient signals and transfer function calculation via direct FFT ratio have been added.<a class="headerlink" href="#3.-Spectral-Analysis-and-CorrelationWhile-inheriting-GWpy's-functionality,-mode=%22transient%22-FFT-for-transient-signals-and-transfer-function-calculation-via-direct-FFT-ratio-have-been-added." title="Link to this heading"></a></h2>
+<section id="Extended-FFTUsing-mode=%22transient%22-enables-zero-padding,-adjustment-to-fast-lengths,-and-individual-left/right-padding-specifications.">
+<h3>Extended FFTUsing <code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code> enables zero-padding, adjustment to fast lengths, and individual left/right padding specifications.<a class="headerlink" href="#Extended-FFTUsing-mode=%22transient%22-enables-zero-padding,-adjustment-to-fast-lengths,-and-individual-left/right-padding-specifications." title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Standard FFT (GWpy compatible)</span>
+<span class="n">fs_gwpy</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span>
+
+<span class="c1"># Transient mode:</span>
+<span class="c1"># Specify padding amount with pad_left/right. Use nfft_mode=&quot;next_fast_len&quot; to adjust to computationally efficient length.</span>
+<span class="n">fs_trans</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span>
+    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;transient&quot;</span><span class="p">,</span> <span class="n">pad_left</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">pad_right</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nfft_mode</span><span class="o">=</span><span class="s2">&quot;next_fast_len&quot;</span>
+<span class="p">)</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">fs_gwpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">fs_trans</span><span class="o">.</span><span class="n">abs</span><span class="p">(),</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Standard FFT&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Transient FFT (Padded)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.7</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Comparison of FFT modes&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_12_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_12_0.png" />
+</div>
+</div>
+</section>
+<section id="Transfer-Function-and-Cross-Correlation-(xcorr)With-transfer_function,-you-can-choose-not-only-the-Welch-method-(mode=%22steady%22)-but-also-direct-FFT-ratio-(mode=%22transient%22).">
+<h3>Transfer Function and Cross-Correlation (xcorr)With <code class="docutils literal notranslate"><span class="pre">transfer_function</span></code>, you can choose not only the Welch method (<code class="docutils literal notranslate"><span class="pre">mode=&quot;steady&quot;</span></code>) but also direct FFT ratio (<code class="docutils literal notranslate"><span class="pre">mode=&quot;transient&quot;</span></code>).<a class="headerlink" href="#Transfer-Function-and-Cross-Correlation-(xcorr)With-transfer_function,-you-can-choose-not-only-the-Welch-method-(mode=%22steady%22)-but-also-direct-FFT-ratio-(mode=%22transient%22)." title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate transfer function (transfer function of Chirp Signal with respect to Sensor 1)</span>
+<span class="n">tf_welch</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">tf_fft</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">(</span>
+    <span class="n">ts1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;transient&quot;</span>
+<span class="p">)</span>  <span class="c1"># Full-span FFT ratio (useful for transient response analysis)</span>
+
+<span class="c1"># Cross-correlation (xcorr)</span>
+<span class="n">corr</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">xcorr</span><span class="p">(</span><span class="n">ts2</span><span class="p">,</span> <span class="n">maxlag</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="s2">&quot;coeff&quot;</span><span class="p">)</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax1</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">tf_welch</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tf_welch</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Welch method&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">tf_fft</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tf_fft</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Direct FFT ratio&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Transfer Function Magnitude&quot;</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">lag</span> <span class="o">=</span> <span class="n">corr</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">corr</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lag</span><span class="p">,</span> <span class="n">corr</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Cross-Correlation (normalized)&quot;</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Lag [s]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_14_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_14_0.png" />
+</div>
+</div>
+</section>
+<section id="STLT-(Short-Time-Laplace-Transform)STLT-(Short-Time-Laplace-Transform)-is-a-transform-for-extracting-local-structures-that-change-over-time-in-a-signal.In-gwexpy,-the-STLT-result-is-a-3D-transform-with-axes-(time-×-sigma-×-frequency),-represented-by-TimePlaneTransform-/-LaplaceGram.Below-is-an-example-of-calculating-STLT-using-the-stlt-method-and-extracting-a-slice-(Plane2D)-at-a-specific-time.This-example-also-demonstrates-specifying-frequencies-(Hz)-to-evaluate-STLT-at-arbitrary-frequency-points.">
+<h3>STLT (Short-Time Laplace Transform)STLT (Short-Time Laplace Transform) is a transform for extracting local structures that change over time in a signal.In <code class="docutils literal notranslate"><span class="pre">gwexpy</span></code>, the STLT result is a 3D transform with axes <strong>(time × sigma × frequency)</strong>, represented by <code class="docutils literal notranslate"><span class="pre">TimePlaneTransform</span></code> / <code class="docutils literal notranslate"><span class="pre">LaplaceGram</span></code>.Below is an example of calculating STLT using the <code class="docutils literal notranslate"><span class="pre">stlt</span></code> method and extracting a slice (<code class="docutils literal notranslate"><span class="pre">Plane2D</span></code>) at a specific time.This example also demonstrates specifying <code class="docutils literal notranslate"><span class="pre">frequencies</span></code> (Hz) to evaluate STLT at arbitrary frequency points.<a class="headerlink" href="#STLT-(Short-Time-Laplace-Transform)STLT-(Short-Time-Laplace-Transform)-is-a-transform-for-extracting-local-structures-that-change-over-time-in-a-signal.In-gwexpy,-the-STLT-result-is-a-3D-transform-with-axes-(time-×-sigma-×-frequency),-represented-by-TimePlaneTransform-/-LaplaceGram.Below-is-an-example-of-calculating-STLT-using-the-stlt-method-and-extracting-a-slice-(Plane2D)-at-a-specific-time.This-example-also-demonstrates-specifying-frequencies-(Hz)-to-evaluate-STLT-at-arbitrary-frequency-points." title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data preparation (for demonstration)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">t</span><span class="p">),</span> <span class="n">times</span><span class="o">=</span><span class="n">t</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Demo Data&quot;</span><span class="p">)</span>
+
+<span class="c1"># STLT</span>
+<span class="c1"># stride: time step, window: analysis window length</span>
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>  <span class="c1"># Hz</span>
+<span class="n">stlt_result</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">stlt</span><span class="p">(</span><span class="n">stride</span><span class="o">=</span><span class="s2">&quot;0.5s&quot;</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="s2">&quot;2s&quot;</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Kind: </span><span class="si">{</span><span class="n">stlt_result</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape: </span><span class="si">{</span><span class="n">stlt_result</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> (Time x Sigma x Frequency)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time Axis: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">stlt_result</span><span class="o">.</span><span class="n">times</span><span class="p">)</span><span class="si">}</span><span class="s2"> steps&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sigma Axis: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">stlt_result</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="si">}</span><span class="s2"> bins&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency Axis: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">stlt_result</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="si">}</span><span class="s2"> bins&quot;</span><span class="p">)</span>
+
+<span class="c1"># Extract plane at specific time (t=5.0s)</span>
+<span class="n">plane_at_5s</span> <span class="o">=</span> <span class="n">stlt_result</span><span class="o">.</span><span class="n">at_time</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plane at 5.0s shape: </span><span class="si">{</span><span class="n">plane_at_5s</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plane2D Confirm behavior as Plane2D</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis 1: </span><span class="si">{</span><span class="n">plane_at_5s</span><span class="o">.</span><span class="n">axis1</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis 2: </span><span class="si">{</span><span class="n">plane_at_5s</span><span class="o">.</span><span class="n">axis2</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Kind: stlt
+Shape: (17, 1, 3) (Time x Sigma x Frequency)
+Time Axis: 17 steps
+Sigma Axis: 1 bins
+Frequency Axis: 3 bins
+Plane at 5.0s shape: (1, 3)
+Axis 1: sigma
+Axis 2: frequency
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="4.-Hilbert-Huang-Transform-(HHT)Hilbert-Huang-Transform-(HHT)-functionality-for-nonlinear-and-non-stationary-signal-analysis.Combines-Empirical-Mode-Decomposition-(EMD)-and-Hilbert-spectral-analysis.">
+<h2>4. Hilbert-Huang Transform (HHT)Hilbert-Huang Transform (HHT) functionality for nonlinear and non-stationary signal analysis.Combines Empirical Mode Decomposition (EMD) and Hilbert spectral analysis.<a class="headerlink" href="#4.-Hilbert-Huang-Transform-(HHT)Hilbert-Huang-Transform-(HHT)-functionality-for-nonlinear-and-non-stationary-signal-analysis.Combines-Empirical-Mode-Decomposition-(EMD)-and-Hilbert-spectral-analysis." title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># HHT (Hilbert-Huang Transform)</span>
+<span class="c1"># Execute Empirical Mode Decomposition (EMD) and extract IMFs (Intrinsic Mode Functions)</span>
+<span class="c1"># Note: Requires PyEMD (EMD-signal) : `pip install EMD-signal`</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
+    <span class="c1"># EMDExecute EMD (returns dictionary)</span>
+    <span class="c1"># method=&quot;emd&quot; (standard EMD) or &quot;eemd&quot; (Ensemble EMD)</span>
+    <span class="c1"># Here we use ts2 (example with chirp signal)</span>
+    <span class="n">imfs</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">emd</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;emd&quot;</span><span class="p">,</span> <span class="n">max_imf</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extracted IMFs: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">imfs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Plot IMFs</span>
+    <span class="n">sorted_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">imfs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;IMF&quot;</span><span class="p">)],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;residual&quot;</span> <span class="ow">in</span> <span class="n">imfs</span><span class="p">:</span>
+        <span class="n">sorted_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;residual&quot;</span><span class="p">)</span>
+
+    <span class="c1"># gwexpy.plot.Plot for batch plotting</span>
+    <span class="n">plot_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">ts2</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">imfs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sorted_keys</span><span class="p">]</span>
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="o">*</span><span class="n">plot_data</span><span class="p">,</span> <span class="n">separate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+    <span class="c1"># Original settings</span>
+    <span class="n">ax0</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Empirical Mode Decomposition&quot;</span><span class="p">)</span>
+
+    <span class="c1"># IMF settings</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sorted_keys</span><span class="p">):</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EMD-signal not installed. Skipping HHT demo.&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HHT Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Extracted IMFs: [&#39;IMF1&#39;, &#39;IMF2&#39;, &#39;IMF3&#39;, &#39;residual&#39;]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_18_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_18_1.png" />
+</div>
+</div>
+</section>
+<section id="5.-Statistics-and-PreprocessingMissing-value-imputation,-standardization,-ARIMA-models,-Hurst-exponent,-and-rolling-statistics-are-available-as-TimeSeries-methods.">
+<h2>5. Statistics and PreprocessingMissing value imputation, standardization, ARIMA models, Hurst exponent, and rolling statistics are available as TimeSeries methods.<a class="headerlink" href="#5.-Statistics-and-PreprocessingMissing-value-imputation,-standardization,-ARIMA-models,-Hurst-exponent,-and-rolling-statistics-are-available-as-TimeSeries-methods." title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test data with missing values</span>
+<span class="n">ts_nan</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">ts_nan</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">150</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+<span class="c1"># 1. impute: Missing value imputation (interpolation, etc.)</span>
+<span class="n">ts_imputed</span> <span class="o">=</span> <span class="n">ts_nan</span><span class="o">.</span><span class="n">impute</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;interpolate&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2. standardize: Standardization (z-score, robust, etc.)</span>
+<span class="n">ts_z</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;zscore&quot;</span><span class="p">)</span>
+<span class="n">ts_robust</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;zscore&quot;</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Use Median/IQR</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts_nan</span><span class="p">,</span> <span class="n">ts_imputed</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;with NaNs&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Imputed&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_linestyle</span><span class="p">(</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Missing Value Imputation&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_20_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_20_0.png" />
+</div>
+</div>
+<section id="Peak-Detection-(Find-Peaks)Wraps-scipy.signal.find_peaks-to-detect-peaks-in-time-series-data.">
+<h3>Peak Detection (Find Peaks)Wraps <code class="docutils literal notranslate"><span class="pre">scipy.signal.find_peaks</span></code> to detect peaks in time series data.<a class="headerlink" href="#Peak-Detection-(Find-Peaks)Wraps-scipy.signal.find_peaks-to-detect-peaks-in-time-series-data." title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Peak Detection (Find Peaks)</span>
+<span class="c1"># height, threshold, distance, prominence, width such asCan specify parameters such as</span>
+<span class="c1"># Can also specify thresholds with units</span>
+
+<span class="c1"># ts2 (Chirp + Sine) Find peaks in</span>
+<span class="n">peaks</span><span class="p">,</span> <span class="n">props</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span><span class="si">}</span><span class="s2"> peaks&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;First 5 peaks:&quot;</span><span class="p">,</span> <span class="n">peaks</span><span class="p">[:</span><span class="mi">5</span><span class="p">])</span>
+
+<span class="c1"># Plot</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">ts2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+    <span class="n">peaks</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">peaks</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+    <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Peaks&quot;</span><span class="p">,</span>
+    <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Peak Detection Result&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Found 9 peaks
+First 5 peaks: TimeSeries([0.25680508, 0.32974425, 0.44255219, 0.58570943,
+            0.81881855],
+           unit: V,
+           t0: 0.5 s,
+           dt: 0.5 s,
+           name: Chirp Signal_peaks,
+           channel: None)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_22_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_22_1.png" />
+</div>
+</div>
+</section>
+<section id="ARIMA-Model-and-Hurst-ExponentNote:-These-features-require-libraries-such-as-statsmodels-and-hurst.">
+<h3>ARIMA Model and Hurst ExponentNote: These features require libraries such as <code class="docutils literal notranslate"><span class="pre">statsmodels</span></code> and <code class="docutils literal notranslate"><span class="pre">hurst</span></code>.<a class="headerlink" href="#ARIMA-Model-and-Hurst-ExponentNote:-These-features-require-libraries-such-as-statsmodels-and-hurst." title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
+    <span class="c1"># 3. fit_arima: ARIMA(1,0,0) fitting and forecasting</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">fit_arima</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">resid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">residuals</span><span class="p">()</span>
+    <span class="n">forecast</span><span class="p">,</span> <span class="n">conf</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">forecast</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts1</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">forecast</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Measured&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Forecast&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Fill between</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+        <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;lower&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;lower&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;ARIMA(1,0,0) Fit &amp; Forecast&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ARIMA skipping: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
+    <span class="c1"># 4. hurst / local_hurst: Hurst exponent (indicator of long-range correlation)</span>
+    <span class="n">h_val</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">hurst</span><span class="p">()</span>
+    <span class="n">h_detail</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">hurst</span><span class="p">(</span><span class="n">return_details</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># With detailed information</span>
+    <span class="n">h_local</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">local_hurst</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>  <span class="c1"># Evolution with 1-second window</span>
+
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">h_local</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Local Hurst&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">h_val</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Global H=</span><span class="si">{</span><span class="n">h_val</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Hurst Exponent Analysis&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hurst skipping: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_24_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_24_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_24_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_24_1.png" />
+</div>
+</div>
+</section>
+<section id="Rolling-StatisticsSimilar-to-Pandas,-rolling_mean,-std,-median,-min,-max-are-available.">
+<h3>Rolling StatisticsSimilar to Pandas, <code class="docutils literal notranslate"><span class="pre">rolling_mean</span></code>, <code class="docutils literal notranslate"><span class="pre">std</span></code>, <code class="docutils literal notranslate"><span class="pre">median</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code> are available.<a class="headerlink" href="#Rolling-StatisticsSimilar-to-Pandas,-rolling_mean,-std,-median,-min,-max-are-available." title="Link to this heading"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rw</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span>  <span class="c1"># 0.5 second window</span>
+<span class="n">rmean</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">rolling_mean</span><span class="p">(</span><span class="n">rw</span><span class="p">)</span>
+<span class="n">rstd</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">rolling_std</span><span class="p">(</span><span class="n">rw</span><span class="p">)</span>
+<span class="n">rmed</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">rolling_median</span><span class="p">(</span><span class="n">rw</span><span class="p">)</span>
+<span class="n">rmin</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">rolling_min</span><span class="p">(</span><span class="n">rw</span><span class="p">)</span>
+<span class="n">rmax</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">rolling_max</span><span class="p">(</span><span class="n">rw</span><span class="p">)</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">rmean</span><span class="p">,</span> <span class="n">rmed</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Rolling Mean&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;blue&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Rolling Median&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_linestyle</span><span class="p">(</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+    <span class="n">rmean</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">rmean</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">rstd</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">rmean</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">rstd</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Rolling Statistics (Window=0.5s)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_26_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_26_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="6.-Resampling-and-ReindexingThe-asfreq-method-allows-assignment-to-a-fixed-grid,-and-the-resample-method-enables-%22time-bin-aggregation%22.">
+<h2>6. Resampling and ReindexingThe <code class="docutils literal notranslate"><span class="pre">asfreq</span></code> method allows assignment to a fixed grid, and the <code class="docutils literal notranslate"><span class="pre">resample</span></code> method enables “time bin aggregation”.<a class="headerlink" href="#6.-Resampling-and-ReindexingThe-asfreq-method-allows-assignment-to-a-fixed-grid,-and-the-resample-method-enables-%22time-bin-aggregation%22." title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. asfreq: Reindex with Pandas-like naming conventions (&#39;50ms&#39; など)</span>
+<span class="n">ts_reindexed</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">asfreq</span><span class="p">(</span><span class="s2">&quot;50ms&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;pad&quot;</span><span class="p">)</span>
+<span class="n">Plot</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">ts_reindexed</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">&quot;Original&quot;</span><span class="p">,</span> <span class="s2">&quot;.asfreq(&#39;50ms&#39;, method=&#39;pad&#39;)&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;matplotlib.legend.Legend at 0x7f888ca06210&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_28_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_28_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 2. resample:</span>
+<span class="c1"># If you specify a number (10Hz) , signal processing resampling (GWpy standard)</span>
+<span class="n">ts_sig</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="c1"># If you specify a string (&#39;200ms&#39;) , statistics for each time bin (new feature)</span>
+<span class="n">ts_binned</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s2">&quot;200ms&quot;</span><span class="p">)</span>  <span class="c1"># Default is mean</span>
+
+<span class="c1"># Plot doesn&#39;t have a direct &#39;step&#39; method equivalent in args, so we use ax.step or pass to plot</span>
+<span class="c1"># However, kwarg &#39;drawstyle&#39;=&#39;steps-post&#39; works in plot()? gwpy Plot wraps matplotlib.</span>
+<span class="c1"># Let&#39;s assume we can modify axes after creation or use standard plot for simplicity if appropriate, but step is specific.</span>
+<span class="c1"># Better strategy: Create Plot instance, then use ax.step</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original (100Hz)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">step</span><span class="p">(</span>
+    <span class="n">ts_binned</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
+    <span class="n">ts_binned</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Binned Mean (200ms)&quot;</span><span class="p">,</span>
+    <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Resampling: Signal Resampling vs Time Binning&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_29_0.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_29_0.png" />
+</div>
+</div>
+</section>
+<section id="7.-Function-Fittinggwexpy-provides-powerful-fitting-functionality-based-on-iminuit.-To-avoid-polluting-GWpy's-original-classes,-the-.fit()-method-is-opt-in.">
+<h2>7. Function Fitting<code class="docutils literal notranslate"><span class="pre">gwexpy</span></code> provides powerful fitting functionality based on <code class="docutils literal notranslate"><span class="pre">iminuit</span></code>. To avoid polluting GWpy’s original classes, the <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> method is opt-in.<a class="headerlink" href="#7.-Function-Fittinggwexpy-provides-powerful-fitting-functionality-based-on-iminuit.-To-avoid-polluting-GWpy's-original-classes,-the-.fit()-method-is-opt-in." title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">damped_oscillation</span>
+
+<span class="c1"># Fit with damped oscillation model (pass function directly)</span>
+<span class="c1"># Initial values: A=0.5, tau=0.5, f=15, phi=0</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">damped_oscillation</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Display result (iminuit format)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="c1"># Get best-fit curve</span>
+<span class="c1"># Note: x_data is the time array corresponding to data points</span>
+<span class="n">x_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+<span class="n">best_fit</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x_data</span><span class="p">)</span>
+
+<span class="c1"># Plot</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Noisy Signal&quot;</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">best_fit</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Best Fit&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Damped Oscillation Fit&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                Migrad                                   │
+├──────────────────────────────────┬──────────────────────────────────────┤
+│ FCN = 0.0005703 (χ²/ndof = 0.0)  │              Nfcn = 324              │
+│ EDM = 0.000176 (Goal: 0.0002)    │                                      │
+├──────────────────────────────────┼──────────────────────────────────────┤
+│          Valid Minimum           │   Below EDM threshold (goal x 10)    │
+├──────────────────────────────────┼──────────────────────────────────────┤
+│      No parameters at limit      │           Below call limit           │
+├──────────────────────────────────┼──────────────────────────────────────┤
+│             Hesse ok             │         Covariance accurate          │
+└──────────────────────────────────┴──────────────────────────────────────┘
+┌───┬──────┬───────────┬───────────┬────────────┬────────────┬─────────┬─────────┬───────┐
+│   │ Name │   Value   │ Hesse Err │ Minos Err- │ Minos Err+ │ Limit-  │ Limit+  │ Fixed │
+├───┼──────┼───────────┼───────────┼────────────┼────────────┼─────────┼─────────┼───────┤
+│ 0 │ A    │   1.00    │   0.06    │            │            │         │         │       │
+│ 1 │ tau  │     0     │  0.06e6   │            │            │         │         │       │
+│ 2 │ f    │  1.0000   │  0.0025   │            │            │         │         │       │
+│ 3 │ phi  │   -0.00   │   0.09    │            │            │         │         │       │
+└───┴──────┴───────────┴───────────┴────────────┴────────────┴─────────┴─────────┴───────┘
+┌─────┬─────────────────────────────────────────────────────┐
+│     │            A          tau            f          phi │
+├─────┼─────────────────────────────────────────────────────┤
+│   A │      0.00354 -2.4033831e3         3e-6      -0.0001 │
+│ tau │ -2.4033831e3     3.78e+09    -8.714e-3       38.287 │
+│   f │         3e-6    -8.714e-3     6.05e-06      -190e-6 │
+│ phi │      -0.0001       38.287      -190e-6      0.00796 │
+└─────┴─────────────────────────────────────────────────────┘
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_31_1.png" src="../../../../_images/web_en_user_guide_tutorials_intro_timeseries_31_1.png" />
+</div>
+</div>
+</section>
+<section id="8.-InteroperabilityInterconversion-with-major-data-science-and-machine-learning-libraries-is-very-smooth.">
+<h2>8. InteroperabilityInterconversion with major data science and machine learning libraries is very smooth.<a class="headerlink" href="#8.-InteroperabilityInterconversion-with-major-data-science-and-machine-learning-libraries-is-very-smooth." title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pandas &amp; Xarray</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;datetime&quot;</span><span class="p">)</span>
+    <span class="n">ts_p</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_pandas</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pandas interop OK&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
+    <span class="n">xr</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">()</span>
+    <span class="n">ts_xr</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_xarray</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Xarray interop OK&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Pandas interop OK
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+time_utc
+1980-01-06 00:00:19+00:00           0.046388
+1980-01-06 00:00:19.010000+00:00    0.647492
+1980-01-06 00:00:19.020000+00:00    1.065642
+1980-01-06 00:00:19.030000+00:00    0.965746
+1980-01-06 00:00:19.040000+00:00    0.381562
+                                      ...
+1980-01-06 00:00:23.950000+00:00   -0.044864
+1980-01-06 00:00:23.960000+00:00   -1.078486
+1980-01-06 00:00:23.970000+00:00   -1.070583
+1980-01-06 00:00:23.980000+00:00   -1.417911
+1980-01-06 00:00:23.990000+00:00   -0.814040
+Name: Sensor 1, Length: 500, dtype: float64
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Xarray interop OK
+&lt;xarray.DataArray &#39;Sensor 1&#39; (time: 500)&gt; Size: 4kB
+array([ 0.04638754,  0.64749198,  1.065642  , ..., -1.07058346,
+       -1.41791072, -0.81403963], shape=(500,))
+Coordinates:
+  * time     (time) datetime64[us] 4kB 1980-01-06T00:00:19 ... 1980-01-06T00:...
+Attributes:
+    unit:        V
+    name:        Sensor 1
+    channel:     None
+    epoch:       0.0
+    time_coord:  datetime
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># SQLite (serialized storage)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+
+<span class="k">with</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;:memory:&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+    <span class="n">ts1</span><span class="o">.</span><span class="n">to_sqlite</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">series_id</span><span class="o">=</span><span class="s2">&quot;my_sensor&quot;</span><span class="p">)</span>
+    <span class="n">ts_sql</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_sqlite</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span> <span class="n">series_id</span><span class="o">=</span><span class="s2">&quot;my_sensor&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SQLite interop OK: </span><span class="si">{</span><span class="n">ts_sql</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+SQLite interop OK: my_sensor
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;sqlite3.Connection at 0x7f888c429a80&gt;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Deep Learning (Torch)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+    <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span>
+    <span class="n">t_torch</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_torch</span><span class="p">()</span>
+    <span class="n">ts_f_torch</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_torch</span><span class="p">(</span><span class="n">t_torch</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts1</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts1</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Torch interop OK (Shape: </span><span class="si">{</span><span class="n">t_torch</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">t_torch</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Torch interop OK (Shape: torch.Size([500]))
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+tensor([ 0.0464,  0.6475,  1.0656,  0.9657,  0.3816,  0.0622, -0.6356, -1.0794,
+        -0.7308, -0.8552,  0.0488,  0.8327,  1.0911,  1.1001,  0.7533,  0.3071,
+        -0.6714, -1.0896, -1.1494, -0.4882,  0.0975,  0.5406,  0.7696,  0.9663,
+         0.4898, -0.0777, -0.6696, -1.1976, -0.7228, -0.2931, -0.0028,  0.2829,
+         0.9369,  0.6805,  0.4277,  0.0320, -0.4927, -0.7845, -1.0255, -0.6953,
+        -0.0411,  0.6839,  1.1269,  0.9615,  0.4438, -0.0907, -0.6406, -0.8447,
+        -1.0047, -0.5893, -0.0036,  0.4071,  0.4382,  0.7529,  0.5119, -0.1262,
+        -0.7335, -1.1044, -1.0567, -0.7100, -0.1608,  0.5598,  0.6929,  1.2075,
+         0.3549,  0.2035, -0.3401, -0.7552, -1.3182, -0.8315,  0.0933,  0.6035,
+         0.5282,  0.7698,  0.8536, -0.4679, -0.6726, -0.7438, -1.0586, -0.5111,
+         0.1467,  0.3026,  1.1198,  0.9874,  0.7874,  0.0307, -0.9738, -0.9570,
+        -0.6891, -0.4521, -0.0571,  0.6273,  1.1553,  1.0336,  0.3556, -0.1351,
+        -0.2875, -0.9143, -1.2683, -0.0608,  0.0245,  0.9128,  0.8705,  0.9398,
+         0.4296,  0.0929, -0.6372, -1.0289, -0.9222, -0.4074, -0.0777,  0.8234,
+         1.2523,  1.0361,  0.6642, -0.4549, -0.6332, -0.8189, -1.1706, -0.4758,
+         0.2472,  0.8005,  0.6308,  1.0934,  0.7929, -0.1512, -0.1754, -0.7980,
+        -0.9528, -0.3716, -0.0251,  0.8563,  0.9884,  0.8112,  0.6516, -0.2263,
+        -0.4570, -1.0308, -0.7368, -0.3230,  0.0844,  0.1085,  0.9761,  0.8515,
+         0.6489,  0.1840, -0.4756, -1.2669, -1.0958, -0.7626, -0.2226,  0.7576,
+         0.4219,  0.8982,  0.8639, -0.0034, -0.8159, -1.1682, -0.9241, -0.5962,
+        -0.1423,  0.9597,  1.1992,  0.9319,  0.9600, -0.1788, -0.4176, -0.8910,
+        -1.0888, -0.7202, -0.0083,  0.7785,  1.0403,  0.9340,  0.5111, -0.1721,
+        -0.3285, -1.0769, -1.1836, -0.4435,  0.0806,  0.6707,  0.8159,  1.1654,
+         0.3574,  0.2168, -0.4858, -1.2450, -0.9495, -0.5682, -0.2319,  0.3171,
+         0.9825,  1.0912,  0.6020, -0.3807, -0.2687, -1.0019, -0.9070, -0.5297,
+        -0.4362,  0.6717,  0.4850,  0.7797,  0.6272, -0.1340, -0.3801, -0.9708,
+        -1.1015, -0.6837,  0.3875,  0.4940,  1.4391,  1.0907,  0.3844,  0.0291,
+        -0.5800, -0.9723, -0.9012, -0.5287,  0.1729,  0.6809,  0.7962,  1.0377,
+         0.5088, -0.3007, -0.2109, -0.9188, -1.1525, -0.3426,  0.1059,  0.5113,
+         0.6266,  0.8849,  0.4342, -0.0344, -0.6040, -0.9961, -1.1623, -0.8121,
+        -0.2505,  0.8045,  1.1004,  0.6716,  0.3631, -0.0280, -0.8513, -0.8406,
+        -1.0045, -0.7484,  0.0428,  0.6988,  1.2261,  1.0643,  0.6354,  0.0596,
+        -0.5272, -1.0956, -0.7236, -0.5869,  0.2148,  0.6463,  1.1702,  0.8724,
+         0.4414,  0.0235, -0.5383, -0.7801, -1.1182, -0.7203,  0.2195,  0.8072,
+         0.6978,  1.0616,  0.8328, -0.1168, -0.4378, -0.7956, -1.2464, -0.3815,
+        -0.1001,  0.3811,  0.5560,  0.9901,  0.7981, -0.0188, -0.3356, -1.1124,
+        -1.2726, -0.6649, -0.1109,  0.7850,  1.1996,  0.8740,  0.9379, -0.1293,
+        -0.5823, -1.0590, -0.7796, -0.8226, -0.0406,  0.4633,  1.0267,  0.9550,
+         0.5572, -0.1142, -0.9954, -0.9940, -1.0040, -0.6570,  0.0931,  0.2487,
+         0.8043,  0.9719,  0.5296, -0.3353, -0.9096, -1.2257, -0.9117, -0.4942,
+        -0.0938,  0.7561,  1.0658,  1.1588,  0.5632, -0.1268, -0.4705, -0.8734,
+        -0.8987, -0.9596, -0.1707,  0.3471,  0.8704,  0.7419,  0.6649,  0.3992,
+        -0.4781, -0.8181, -0.8553, -0.6102,  0.0814,  0.7883,  1.2576,  1.0262,
+         0.7470,  0.0896, -0.3859, -1.1007, -1.0906, -0.7712,  0.2559,  1.0653,
+         0.9275,  0.8464,  0.6607,  0.1129, -0.9892, -0.6975, -0.7020, -0.4851,
+        -0.2541,  0.8015,  0.6543,  1.1418,  0.7448,  0.0133, -0.7011, -0.5372,
+        -0.8241, -0.6561,  0.1557,  0.4652,  0.5265,  0.9202,  0.5620, -0.2656,
+        -0.2747, -0.5983, -1.0008, -0.6513, -0.0123,  0.6977,  0.8989,  0.9509,
+         0.4166, -0.0762, -0.5200, -1.0243, -0.6268, -0.6950, -0.0523,  0.5078,
+         0.7747,  1.3156,  0.7636,  0.3180, -0.6924, -0.7782, -1.5194, -0.3771,
+         0.1046,  0.4746,  1.1452,  1.2266,  0.6404,  0.0953, -0.3422, -1.0153,
+        -0.9000, -0.4180,  0.0028,  0.6386,  1.0614,  0.8799,  0.5019,  0.0206,
+        -0.2362, -1.0362, -0.8191, -0.3009, -0.0230,  0.5445,  1.1566,  1.3140,
+         0.8786,  0.2502, -0.4860, -1.1523, -1.1008, -0.7689,  0.2256,  1.1344,
+         1.0777,  0.7569,  0.3501,  0.1471, -0.6135, -1.0268, -1.3333, -0.5307,
+         0.0433,  0.6135,  0.8277,  0.9068,  0.1230,  0.1666, -0.7289, -1.0812,
+        -0.9220, -0.5599,  0.0956,  0.4025,  1.1383,  1.1862,  0.6867,  0.1058,
+        -0.5614, -1.0379, -1.3037, -0.3751,  0.0925,  0.5991,  1.1272,  0.9814,
+         0.4477, -0.2624, -0.5834, -0.7528, -0.6734, -0.7800, -0.1239,  0.5857,
+         0.7691,  0.7799,  0.7076, -0.0904, -0.3474, -0.4404, -1.0781, -0.6404,
+        -0.0728,  0.3693,  0.9677,  1.2791,  0.4837, -0.0032, -0.6991, -0.9540,
+        -0.9075, -0.5778,  0.0288,  0.6943,  1.1160,  0.6975,  0.4226, -0.0449,
+        -1.0785, -1.0706, -1.4179, -0.8140], dtype=torch.float64)
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Deep Learning (TensorFlow)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+        <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;google\.protobuf\..*&quot;</span>
+    <span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+        <span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Protobuf gencode version.*&quot;</span>
+    <span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+
+    <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span>
+    <span class="n">t_tf</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_tensorflow</span><span class="p">()</span>
+    <span class="n">ts_f_tf</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_tensorflow</span><span class="p">(</span><span class="n">t_tf</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">ts1</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">ts1</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TensorFlow interop OK&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">t_tf</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ObsPy (seismic waveform and time series analysis)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;TF_CPP_MIN_LOG_LEVEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;google.protobuf&quot;</span><span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Protobuf gencode version&quot;</span><span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">obspy</span>
+
+    <span class="n">_</span> <span class="o">=</span> <span class="n">obspy</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="n">ts1</span><span class="o">.</span><span class="n">to_obspy</span><span class="p">()</span>
+    <span class="n">ts_f_obspy</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">from_obspy</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ObsPy interop OK: </span><span class="si">{</span><span class="n">tr</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">tr</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ObsPy interop OK: .Sensor 1..
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+.Sensor 1.. | 1980-01-06T00:00:00.000000Z - 1980-01-06T00:00:04.990000Z | 100.0 Hz, 500 samples
+</pre></div></div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<p>In this tutorial, we have covered the key enhancements in <code class="docutils literal notranslate"><span class="pre">gwexpy.TimeSeries</span></code>:</p>
+<ul class="simple">
+<li><p><strong>Signal Processing</strong>: Hilbert transform, demodulation, and extended FFT modes.</p></li>
+<li><p><strong>Statistics</strong>: Advanced correlation methods (MIC, Distance Correlation) and ARIMA modeling.</p></li>
+<li><p><strong>Data Cleaning</strong>: Missing value imputation and standardization.</p></li>
+<li><p><strong>Interoperability</strong>: Seamless conversion to/from Pandas, Xarray, PyTorch, TensorFlow, and ObsPy.</p></li>
+</ul>
+<section id="Next-Steps">
+<h3>Next Steps<a class="headerlink" href="#Next-Steps" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Multichannel Data</strong>: Learn about <a class="reference internal" href="matrix_timeseries.html"><span class="doc">TimeSeriesMatrix</span></a> for handling many channels simultaneously.</p></li>
+<li><p><strong>Spectral Analysis</strong>: Explore <a class="reference internal" href="intro_frequencyseries.html"><span class="doc">FrequencySeries</span></a>.</p></li>
+<li><p><strong>4D Fields</strong>: Check out <a class="reference internal" href="field_scalar_intro.html"><span class="doc">ScalarField</span></a> for spacetime analysis.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intro_frequencyseries.html" class="btn btn-neutral float-right" title="Advanced Features and Operations of FrequencySeries" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,528 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GBD Format I/O: GRAPHTEC Data Logger Files &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Bruco (Brute force coherence) Python Tutorial" href="advanced_bruco.html" />
+    <link rel="prev" title="Seismic Data Analysis with ObsPy Interoperability" href="case_seismic_obspy.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="index.html#i-core-data-structures">I. Core Data Structures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#ii-multi-channel-matrix-containers">II. Multi-channel &amp; Matrix Containers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#iii-high-dimensional-fields">III. High-dimensional Fields</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html#iv-advanced-signal-processing">IV. Advanced Signal Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#v-specialized-tools">V. Specialized Tools</a></li>
+<li class="toctree-l4"><a class="reference internal" href="index.html#vi-segment-analysis">VI. Segment Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/index.html">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">GBD Format I/O: GRAPHTEC Data Logger Files</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_gbd_format.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_gbd_format.ipynb">Download the notebook (.ipynb)</a></p>
+</div>
+<section id="GBD-Format-I/O:-GRAPHTEC-Data-Logger-Files">
+<h1>GBD Format I/O: GRAPHTEC Data Logger Files<a class="headerlink" href="#GBD-Format-I/O:-GRAPHTEC-Data-Logger-Files" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_gbd_format.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>This tutorial demonstrates reading and writing <strong>GBD</strong> files — the native binary format of <strong>GRAPHTEC data loggers</strong> (GL Series) widely used in KAGRA and other experiments for PEM/environmental monitoring.</p>
+<section id="What-is-GBD?">
+<h2>What is GBD?<a class="headerlink" href="#What-is-GBD?" title="Link to this heading"></a></h2>
+<p>GBD (GRAPHTEC Binary Data) is a proprietary format featuring:</p>
+<ul class="simple">
+<li><p>ASCII header with metadata (channel names, sample rate, local timestamp, amplitude ranges)</p></li>
+<li><p>Binary data block (float32/int16 depending on model)</p></li>
+<li><p>Multi-channel recording (up to 32 channels simultaneously)</p></li>
+<li><p>Optional digital (logic) channels</p></li>
+</ul>
+<div class="line-block">
+<div class="line"><strong>Legacy migration note:</strong></div>
+<div class="line">The <code class="docutils literal notranslate"><span class="pre">gbd2gwf.py</span></code> and <code class="docutils literal notranslate"><span class="pre">read_gbd.py</span></code> scripts in legacy KAGRA repositories have been consolidated into <code class="docutils literal notranslate"><span class="pre">gwexpy.timeseries.io.gbd</span></code>.</div>
+<div class="line">See <a class="reference external" href="../../../../docs_internal/references/SampleCodes_GWpy/API_MAPPING.md">API_MAPPING.md Category 1</a> for details.</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span> <span class="k">as</span> <span class="n">u</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span><span class="p">,</span> <span class="n">TimeSeriesMatrix</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1.-Create-a-Synthetic-GBD-File-for-Demonstration">
+<h2>1. Create a Synthetic GBD File for Demonstration<a class="headerlink" href="#1.-Create-a-Synthetic-GBD-File-for-Demonstration" title="Link to this heading"></a></h2>
+<p>We synthesize a minimal valid GBD file so this tutorial runs without requiring real hardware.</p>
+<p>The GBD structure is:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[ASCII Header]  (fixed HeaderSize bytes)
+[Binary Data]   (N_counts × N_channels × itemsize bytes)
+</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_synthetic_gbd</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10000</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a minimal synthetic GBD file (GRAPHTEC GL-series format).&quot;&quot;&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span>
+
+    <span class="n">ch0</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>   <span class="c1"># 10 Hz</span>
+    <span class="n">ch1</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">50.0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>   <span class="c1"># 50 Hz</span>
+    <span class="n">ch2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>   <span class="c1"># digital trigger</span>
+
+    <span class="n">local_start</span> <span class="o">=</span> <span class="s2">&quot;2023-05-20 14:30:00.000&quot;</span>
+    <span class="n">local_stop</span>  <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;2023-05-20 14:30:</span><span class="si">{</span><span class="n">n_samples</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fs</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">header_lines</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;[Header]&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;HeaderSize = 1024&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;Start = </span><span class="si">{</span><span class="n">local_start</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;Stop  = </span><span class="si">{</span><span class="n">local_stop</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;Sample = </span><span class="si">{</span><span class="mf">1000.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">fs</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Type = little,float32&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Order = CH0, CH1, CH2_LOGIC&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;Counts = </span><span class="si">{</span><span class="n">n_samples</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;$AMP&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CH0 = , , 10V&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CH1 = , , 5V&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CH2_LOGIC = , , 1V&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="n">header_str</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header_lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\r\n</span><span class="s2">&quot;</span>
+    <span class="n">header_bytes</span> <span class="o">=</span> <span class="n">header_str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+    <span class="c1"># Pad to 1024 bytes</span>
+    <span class="n">header_bytes</span> <span class="o">=</span> <span class="n">header_bytes</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Data block: interleaved float32 (N_samples × N_channels)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">ch0</span><span class="p">,</span> <span class="n">ch1</span><span class="p">,</span> <span class="n">ch2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>  <span class="c1"># (N, 3)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">header_bytes</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Written: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">  (</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> KB)&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Write to a temporary file</span>
+<span class="n">tmpdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">())</span>
+<span class="n">gbd_path</span> <span class="o">=</span> <span class="n">tmpdir</span> <span class="o">/</span> <span class="s2">&quot;synthetic_pem.gbd&quot;</span>
+<span class="n">make_synthetic_gbd</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">,</span> <span class="n">n_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="2.-Read-GBD-File-into-TimeSeriesDict">
+<h2>2. Read GBD File into TimeSeriesDict<a class="headerlink" href="#2.-Read-GBD-File-into-TimeSeriesDict" title="Link to this heading"></a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read()</span></code> with <code class="docutils literal notranslate"><span class="pre">format='gbd'</span></code>. The <code class="docutils literal notranslate"><span class="pre">timezone</span></code> parameter is required because GBD timestamps are stored in local time.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read all channels</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+    <span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span>
+    <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">,</span>   <span class="c1"># JST (UTC+9) – required for GPS time conversion</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Channels read:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">tsd</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tsd</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">15s</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">:</span><span class="s2">6d</span><span class="si">}</span><span class="s2"> samples, dt=</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">dt</span><span class="si">}</span><span class="s2">, unit=</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read only specific channels</span>
+<span class="n">tsd_subset</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+    <span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span>
+    <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">,</span> <span class="s1">&#39;CH1&#39;</span><span class="p">],</span>   <span class="c1"># only analog channels</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Subset channels:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">tsd_subset</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read a single TimeSeries</span>
+<span class="n">ts_ch0</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+    <span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span>
+    <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CH0: t0=</span><span class="si">{</span><span class="n">ts_ch0</span><span class="o">.</span><span class="n">t0</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, dt=</span><span class="si">{</span><span class="n">ts_ch0</span><span class="o">.</span><span class="n">dt</span><span class="si">}</span><span class="s2">, N=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_ch0</span><span class="o">.</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">ts_ch0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xscale</span><span class="o">=</span><span class="s1">&#39;seconds&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="3.-Signal-Analysis-on-GBD-Data">
+<h2>3. Signal Analysis on GBD Data<a class="headerlink" href="#3.-Signal-Analysis-on-GBD-Data" title="Link to this heading"></a></h2>
+<p>Once loaded, all gwexpy analysis methods are available.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ts_ch0</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">]</span>
+<span class="n">ts_ch1</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s1">&#39;CH1&#39;</span><span class="p">]</span>
+
+<span class="c1"># ASD comparison</span>
+<span class="n">asd_ch0</span> <span class="o">=</span> <span class="n">ts_ch0</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">asd_ch1</span> <span class="o">=</span> <span class="n">ts_ch1</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd_ch0</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_ch0</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;CH0 (10 Hz)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">asd_ch1</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">asd_ch1</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;CH1 (50 Hz)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency [Hz]&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ASD [</span><span class="si">{</span><span class="n">asd_ch0</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;GBD Channel ASD&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Spectrogram of CH0</span>
+<span class="n">sg</span> <span class="o">=</span> <span class="n">ts_ch0</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="n">stride</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="n">plot</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;CH0 Spectrogram&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">add_colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;PSD [V²/Hz]&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Digital channel: use as event trigger</span>
+<span class="n">ts_logic</span> <span class="o">=</span> <span class="n">tsd</span><span class="p">[</span><span class="s1">&#39;CH2_LOGIC&#39;</span><span class="p">]</span>
+
+<span class="c1"># Find trigger-on times (0→1 transitions)</span>
+<span class="n">logic_val</span> <span class="o">=</span> <span class="n">ts_logic</span><span class="o">.</span><span class="n">value</span>
+<span class="n">transitions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">logic_val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># rising edges</span>
+
+<span class="n">t_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">logic_val</span><span class="p">))</span> <span class="o">*</span> <span class="n">ts_logic</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span>
+<span class="n">trigger_times</span> <span class="o">=</span> <span class="n">t_axis</span><span class="p">[</span><span class="n">transitions</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logic trigger ON events: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">trigger_times</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_axis</span><span class="p">,</span> <span class="n">ts_ch0</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;CH0&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">tt</span> <span class="ow">in</span> <span class="n">trigger_times</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude [V]&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">t_axis</span><span class="p">,</span> <span class="n">logic_val</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Logic trigger&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time [s]&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;State&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;CH0 with Logic Trigger Overlay&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="4.-TimeSeriesMatrix-from-GBD">
+<h2>4. TimeSeriesMatrix from GBD<a class="headerlink" href="#4.-TimeSeriesMatrix-from-GBD" title="Link to this heading"></a></h2>
+<p>For batch multi-channel analysis, load directly into a <code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read all analog channels as TimeSeriesMatrix</span>
+<span class="n">tsm</span> <span class="o">=</span> <span class="n">TimeSeriesMatrix</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+    <span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span>
+    <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">,</span>
+    <span class="n">channels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">,</span> <span class="s1">&#39;CH1&#39;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TimeSeriesMatrix shape:&quot;</span><span class="p">,</span> <span class="n">tsm</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (2, 1, N)</span>
+
+<span class="c1"># ASD of all channels at once</span>
+<span class="n">asd_all</span> <span class="o">=</span> <span class="n">tsm</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">asd_all</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="5.-Timezone-Handling">
+<h2>5. Timezone Handling<a class="headerlink" href="#5.-Timezone-Handling" title="Link to this heading"></a></h2>
+<p>GBD files store timestamps in <strong>local time</strong> (the logger’s clock). gwexpy converts these to GPS time automatically using the <code class="docutils literal notranslate"><span class="pre">timezone</span></code> parameter.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Timezone</p></th>
+<th class="head"><p>IANA name</p></th>
+<th class="head"><p>UTC offset</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Japan Standard Time (KAGRA)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'Asia/Tokyo'</span></code></p></td>
+<td><p>+09:00</p></td>
+</tr>
+<tr class="row-odd"><td><p>US Eastern (LIGO Hanford, LLO)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'US/Eastern'</span></code></p></td>
+<td><p>−05:00 / −04:00</p></td>
+</tr>
+<tr class="row-even"><td><p>Europe/Central (Virgo)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'Europe/Rome'</span></code></p></td>
+<td><p>+01:00 / +02:00</p></td>
+</tr>
+<tr class="row-odd"><td><p>UTC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'UTC'</span></code></p></td>
+<td><p>±00:00</p></td>
+</tr>
+</tbody>
+</table>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check GPS start time resulting from timezone conversion</span>
+<span class="n">tsd_jst</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">)</span>
+<span class="n">tsd_utc</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">gbd_path</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span> <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
+
+<span class="n">t0_jst</span> <span class="o">=</span> <span class="n">tsd_jst</span><span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span>
+<span class="n">t0_utc</span> <span class="o">=</span> <span class="n">tsd_utc</span><span class="p">[</span><span class="s1">&#39;CH0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;t0 (JST→GPS): </span><span class="si">{</span><span class="n">t0_jst</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;t0 (UTC→GPS): </span><span class="si">{</span><span class="n">t0_utc</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Difference: </span><span class="si">{</span><span class="p">(</span><span class="n">t0_jst</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t0_utc</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s  (should be 9×3600 = 32400 s)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="6.-Migration-Guide:-Legacy-gbd2gwf.py-→-gwexpy">
+<h2>6. Migration Guide: Legacy gbd2gwf.py → gwexpy<a class="headerlink" href="#6.-Migration-Guide:-Legacy-gbd2gwf.py-→-gwexpy" title="Link to this heading"></a></h2>
+<p><strong>Before (legacy scripts):</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># gbd2gwf.py style</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span>
+
+<span class="c1"># Manual header parsing</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;data.gbd&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+    <span class="c1"># ... parse Start, Sample, Order, Counts by hand ...</span>
+    <span class="n">n_ch</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&lt;f4&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_ch</span><span class="p">)</span>
+
+<span class="c1"># Manual GPS time conversion</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytz</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_gps</span>
+<span class="n">tz</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">)</span>
+<span class="n">t_local</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">start_str</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+<span class="n">t_utc</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">t_local</span><span class="p">)</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">pytz</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="n">gps_start</span> <span class="o">=</span> <span class="n">to_gps</span><span class="p">(</span><span class="n">t_utc</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">))</span>
+
+<span class="c1"># Build dict manually</span>
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">channels</span><span class="p">):</span>
+    <span class="n">tsd</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">scale</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">t0</span><span class="o">=</span><span class="n">gps_start</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>After (gwexpy):</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDict</span>
+
+<span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+    <span class="s1">&#39;data.gbd&#39;</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gbd&#39;</span><span class="p">,</span>
+    <span class="n">timezone</span><span class="o">=</span><span class="s1">&#39;Asia/Tokyo&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>API</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Read all channels</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesDict.read(path,</span> <span class="pre">format='gbd',</span> <span class="pre">timezone='Asia/Tokyo')</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Read subset</p></td>
+<td><p>Add <code class="docutils literal notranslate"><span class="pre">channels=['CH0',</span> <span class="pre">'CH1']</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Read single channel</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries.read(path,</span> <span class="pre">format='gbd',</span> <span class="pre">timezone=...,</span> <span class="pre">channels=['CH0'])</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Read as matrix</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesMatrix.read(path,</span> <span class="pre">format='gbd',</span> <span class="pre">timezone=...,</span> <span class="pre">channels=...)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Auto-detect digital channels</p></td>
+<td><p>Channels named <code class="docutils literal notranslate"><span class="pre">ALARM</span></code>, <code class="docutils literal notranslate"><span class="pre">LOGIC*</span></code>, <code class="docutils literal notranslate"><span class="pre">PULSE*</span></code> are binarized</p></td>
+</tr>
+<tr class="row-odd"><td><p>Override digital channels</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">digital_channels=['CH2_LOGIC',</span> <span class="pre">...]</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Override GPS epoch</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">epoch=1234567890</span></code> (GPS seconds)</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>See also:</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="intro_timeseries.html"><span class="doc">Intro TimeSeries</span></a></p></li>
+<li><p><a class="reference internal" href="intro_interop.html"><span class="doc">Interoperability Basics</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="case_seismic_obspy.html" class="btn btn-neutral float-left" title="Seismic Data Analysis with ObsPy Interoperability" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="advanced_bruco.html" class="btn btn-neutral float-right" title="Bruco (Brute force coherence) Python Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

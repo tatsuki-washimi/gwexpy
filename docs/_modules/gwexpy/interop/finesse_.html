@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.interop.finesse_ &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.interop.finesse_</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.interop.finesse_</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">gwexpy.interop.finesse_</span>
+<span class="sd">------------------------</span>
+
+<span class="sd">Interoperability with Finesse 3 interferometer simulation library.</span>
+
+<span class="sd">Provides conversion from Finesse&#39;s ``FrequencyResponseSolution`` and</span>
+<span class="sd">``NoiseProjectionSolution`` to GWexpy FrequencySeries types.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._optional</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_optional</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;from_finesse_frequency_response&quot;</span><span class="p">,</span> <span class="s2">&quot;from_finesse_noise&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="from_finesse_frequency_response">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_finesse_frequency_response">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_finesse_frequency_response</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">sol</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">input_dof</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create FrequencySeries or FrequencySeriesMatrix from a Finesse 3</span>
+<span class="sd">    ``FrequencyResponseSolution``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The FrequencySeries (or FrequencySeriesDict) class to instantiate.</span>
+<span class="sd">    sol : finesse.analysis.actions.lti.FrequencyResponseSolution</span>
+<span class="sd">        The frequency response solution from a Finesse 3 simulation.</span>
+<span class="sd">    output : str or object, optional</span>
+<span class="sd">        Output DOF name to extract. If *None* and *input_dof* is also *None*,</span>
+<span class="sd">        all output/input pairs are returned.</span>
+<span class="sd">    input_dof : str or object, optional</span>
+<span class="sd">        Input DOF name to extract. Must be combined with *output* to select</span>
+<span class="sd">        a single transfer function.</span>
+<span class="sd">    unit : str or astropy.units.Unit, optional</span>
+<span class="sd">        Unit to assign to the resulting data. Finesse solutions do not carry</span>
+<span class="sd">        astropy units, so this must be supplied by the caller if physical</span>
+<span class="sd">        units are desired.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FrequencySeries</span>
+<span class="sd">        When a single (output, input_dof) pair is selected.</span>
+<span class="sd">    FrequencySeriesMatrix</span>
+<span class="sd">        When multiple output/input pairs exist and no specific pair is</span>
+<span class="sd">        selected, or when only *output* is given (all inputs for that output).</span>
+<span class="sd">    FrequencySeriesDict</span>
+<span class="sd">        When called from ``FrequencySeriesDict.from_finesse_frequency_response``</span>
+<span class="sd">        (cls is a dict type).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.frequencyseries import FrequencySeries</span>
+<span class="sd">    &gt;&gt;&gt; # sol = model.run(...)  # Finesse 3 simulation</span>
+<span class="sd">    &gt;&gt;&gt; fs = FrequencySeries.from_finesse_frequency_response(</span>
+<span class="sd">    ...     sol, output=&quot;DARM&quot;, input_dof=&quot;EX_drive&quot;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;finesse&quot;</span><span class="p">)</span>
+
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="c1"># Determine if caller wants dict-mode</span>
+    <span class="n">FrequencySeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesDict&quot;</span><span class="p">)</span>
+    <span class="n">want_dict</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="bp">cls</span> <span class="ow">is</span> <span class="n">FrequencySeriesDict</span> <span class="ow">or</span> <span class="n">_is_subclass_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">FrequencySeriesDict</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Single transfer function</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">input_dof</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="n">output</span><span class="p">,</span> <span class="n">input_dof</span><span class="p">])</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">input_dof</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">FrequencySeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeries&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
+
+    <span class="c1"># Single output, all inputs</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">output</span><span class="p">,</span> <span class="n">inp</span><span class="p">)</span> <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">_build_frequency_response_collection</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">sol</span><span class="p">,</span>
+            <span class="n">freqs</span><span class="p">,</span>
+            <span class="n">pairs</span><span class="p">,</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="p">)],</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">want_dict</span><span class="o">=</span><span class="n">want_dict</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># All outputs × all inputs</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">out</span><span class="p">,</span> <span class="n">inp</span><span class="p">)</span> <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">outputs</span> <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">sol</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
+
+    <span class="c1"># Single pair → single FrequencySeries</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">want_dict</span><span class="p">:</span>
+        <span class="n">out</span><span class="p">,</span> <span class="n">inp</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="n">out</span><span class="p">,</span> <span class="n">inp</span><span class="p">])</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">out</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">FrequencySeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeries&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_build_frequency_response_collection</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">sol</span><span class="p">,</span>
+        <span class="n">freqs</span><span class="p">,</span>
+        <span class="n">pairs</span><span class="p">,</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">want_dict</span><span class="o">=</span><span class="n">want_dict</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_frequency_response_collection</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">sol</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">pairs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">want_dict</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a FrequencySeriesMatrix or FrequencySeriesDict from DOF pairs.&quot;&quot;&quot;</span>
+    <span class="n">FrequencySeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeries&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">want_dict</span><span class="p">:</span>
+        <span class="n">FrequencySeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesDict&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">out</span><span class="p">,</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="n">out</span><span class="p">,</span> <span class="n">inp</span><span class="p">])</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">out</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">inp</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="c1"># Build as FrequencySeriesMatrix</span>
+    <span class="n">FrequencySeriesMatrix</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesMatrix&quot;</span><span class="p">)</span>
+
+    <span class="n">n_out</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+    <span class="n">n_in</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">n_freq</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+
+    <span class="n">matrix_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_out</span><span class="p">,</span> <span class="n">n_in</span><span class="p">,</span> <span class="n">n_freq</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+    <span class="n">channel_names</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_out</span><span class="p">,</span> <span class="n">n_in</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">out_dof</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">outputs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">in_dof</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inputs</span><span class="p">):</span>
+            <span class="n">matrix_data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sol</span><span class="p">[</span><span class="n">out_dof</span><span class="p">,</span> <span class="n">in_dof</span><span class="p">])</span>
+            <span class="n">channel_names</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">out_dof</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">in_dof</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">sol_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sol</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">FrequencySeriesMatrix</span><span class="p">(</span>
+        <span class="n">matrix_data</span><span class="p">,</span>
+        <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+        <span class="n">channel_names</span><span class="o">=</span><span class="n">channel_names</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">sol_name</span><span class="p">)</span> <span class="k">if</span> <span class="n">sol_name</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="from_finesse_noise">
+<a class="viewcode-back" href="../../../web/ja/reference/api/extra.html#gwexpy.interop.from_finesse_noise">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_finesse_noise</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="n">sol</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">noise</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create FrequencySeries or FrequencySeriesDict from a Finesse 3</span>
+<span class="sd">    ``NoiseProjectionSolution``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cls : type</span>
+<span class="sd">        The FrequencySeries (or FrequencySeriesDict) class to instantiate.</span>
+<span class="sd">    sol : finesse.analysis.actions.noise.NoiseProjectionSolution</span>
+<span class="sd">        The noise projection solution from a Finesse 3 simulation.</span>
+<span class="sd">    output : str or object, optional</span>
+<span class="sd">        Output node name to extract. If *None*, all output nodes are included.</span>
+<span class="sd">    noise : str, optional</span>
+<span class="sd">        Specific noise source name to extract. If *None*, all noise sources</span>
+<span class="sd">        are included.</span>
+<span class="sd">    unit : str or astropy.units.Unit, optional</span>
+<span class="sd">        Unit to assign to the resulting data (e.g., ``&quot;m/sqrt(Hz)&quot;``).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    FrequencySeries</span>
+<span class="sd">        When a single output and noise source are both specified.</span>
+<span class="sd">    FrequencySeriesDict</span>
+<span class="sd">        When multiple outputs or noise sources are present.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwexpy.frequencyseries import FrequencySeries</span>
+<span class="sd">    &gt;&gt;&gt; # sol = model.run(...)  # Finesse 3 noise simulation</span>
+<span class="sd">    &gt;&gt;&gt; fs = FrequencySeries.from_finesse_noise(</span>
+<span class="sd">    ...     sol, output=&quot;nDARMout&quot;, noise=&quot;laser_freq&quot;</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;finesse&quot;</span><span class="p">)</span>
+
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">noises</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">noises</span><span class="p">)</span>
+
+    <span class="c1"># Resolve output nodes</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">output_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">output</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">output_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">output_nodes</span><span class="p">)</span>
+
+    <span class="n">FrequencySeries</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeries&quot;</span><span class="p">)</span>
+    <span class="n">FrequencySeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesDict&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Single output + single noise source → FrequencySeries</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">noise</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out_node</span> <span class="o">=</span> <span class="n">output_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">noise_idx</span> <span class="o">=</span> <span class="n">noises</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">out</span><span class="p">[</span><span class="n">out_node</span><span class="p">][:,</span> <span class="n">noise_idx</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">out_node</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">noise</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+
+    <span class="c1"># Build a FrequencySeriesDict for multiple entries</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">FrequencySeriesDict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">out_node</span> <span class="ow">in</span> <span class="n">output_nodes</span><span class="p">:</span>
+        <span class="n">out_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">out</span><span class="p">[</span><span class="n">out_node</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">noise</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">noise_idx</span> <span class="o">=</span> <span class="n">noises</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">out_data</span><span class="p">[:,</span> <span class="n">noise_idx</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">out_node</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">noise</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n_idx</span><span class="p">,</span> <span class="n">n_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">noises</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">out_data</span><span class="p">[:,</span> <span class="n">n_idx</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">out_node</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">n_name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+                    <span class="n">data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span>
+                <span class="p">)</span>
+
+    <span class="c1"># If only one entry in the dict and cls is FrequencySeries, unwrap</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
+        <span class="bp">cls</span> <span class="ow">is</span> <span class="n">FrequencySeriesDict</span> <span class="ow">or</span> <span class="n">_is_subclass_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">FrequencySeriesDict</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_subclass_safe</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check issubclass without raising on non-class inputs.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

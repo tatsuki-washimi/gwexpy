@@ -1,0 +1,267 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScalarField チュートリアル - 期待される出力 &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ScalarField チュートリアル - 期待される出力</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/field_scalar_intro_outputs.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="scalarfield">
+<h1>ScalarField チュートリアル - 期待される出力<a class="headerlink" href="#scalarfield" title="Link to this heading"></a></h1>
+<p>このドキュメントは、ScalarField チュートリアルノートブック (<code class="docutils literal notranslate"><span class="pre">field_scalar_intro.ipynb</span></code>) から得られる期待される視覚的出力と結果を説明します。</p>
+<section id="id1">
+<h2>実行に関する注意<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>ScalarField チュートリアルノートブックは、実装済みセクションについては出力が埋め込まれています。
+主要プロットはドキュメントページ上でそのまま確認できます。</p>
+<p>再生成やパラメータ変更を行う場合のみ、ローカル実行してください：</p>
+<ol class="arabic">
+<li><p><strong>ノートブックをダウンロード</strong> - ドキュメントページから</p></li>
+<li><p><strong>環境をセットアップ</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>gwexpy<span class="w"> </span>matplotlib<span class="w"> </span>numpy<span class="w"> </span>astropy
+</pre></div>
+</div>
+</li>
+<li><p><strong>Jupyter でノートブックを実行</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jupyter<span class="w"> </span>notebook<span class="w"> </span>field_scalar_intro.ipynb
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="id2">
+<h2>期待される可視化<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id3">
+<h3>セクション 3: 時間-周波数変換<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p><strong>プロット 1: FFT スペクトル</strong></p>
+<ul class="simple">
+<li><p>X軸: 周波数 (Hz)、範囲 0-50 Hz</p></li>
+<li><p>Y軸: 振幅 (V)</p></li>
+<li><p>10 Hz（入力信号の周波数）に明確なピーク</p></li>
+<li><p>赤い破線は期待されるピーク位置を示す</p></li>
+<li><p>ScalarField.fft_time() が時間領域から周波数領域への変換を正しく行うことを実証</p></li>
+</ul>
+<p><strong>出力テキスト</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ピーク周波数</span><span class="p">:</span> <span class="mf">10.00</span> <span class="n">Hz</span> <span class="p">(</span><span class="n">期待値</span><span class="p">:</span> <span class="mf">10.0</span> <span class="n">Hz</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>プロット 2: 逆 FFT 再構成</strong></p>
+<ul class="simple">
+<li><p>X軸: 時間 (s)</p></li>
+<li><p>Y軸: 振幅 (V)</p></li>
+<li><p>青実線: 元の信号</p></li>
+<li><p>赤破線: 再構成された信号（元の信号と完全に重なる）</p></li>
+<li><p>可逆的な往復変換を実証: 時間 → 周波数 → 時間</p></li>
+</ul>
+<p><strong>出力テキスト</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">最大再構成誤差</span><span class="p">:</span> <span class="o">~</span><span class="mf">1e-15</span> <span class="n">V</span>
+</pre></div>
+</div>
+</section>
+<section id="k">
+<h3>セクション 4: 実空間-K空間変換<a class="headerlink" href="#k" title="Link to this heading"></a></h3>
+<p><strong>プロット 3: 空間 FFT スペクトル</strong></p>
+<ul class="simple">
+<li><p>X軸: 波数 kx (rad/m)</p></li>
+<li><p>Y軸: 振幅</p></li>
+<li><p>±1.57 rad/m（4m 波長に対応）に対称ピーク</p></li>
+<li><p>緑の網掛け領域は期待される波数を示す</p></li>
+<li><p>ScalarField.fft_space() が空間次元を正しく変換することを実証</p></li>
+</ul>
+<p><strong>出力テキスト</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ピーク波数: ±1.57 rad/m (期待値: ±1.57 rad/m)
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3>セクション 6: 信号処理<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p><strong>プロット 4: パワースペクトル密度 (PSD)</strong></p>
+<ul class="simple">
+<li><p>X軸: 周波数 (Hz)、対数スケール</p></li>
+<li><p>Y軸: PSD、対数スケール</p></li>
+<li><p>2つの曲線:</p>
+<ul>
+<li><p>ソース位置 (x=1m): 30 Hz で高い PSD</p></li>
+<li><p>遠方場 (x=4m): 30 Hz で低い PSD (1/r² 減衰)</p></li>
+</ul>
+</li>
+<li><p>ScalarField.psd() メソッドによるスペクトル解析を実証</p></li>
+</ul>
+<p><strong>プロット 5: 周波数-空間マッピング</strong></p>
+<ul class="simple">
+<li><p><strong>現状</strong>: 専用可視化APIはまだ未実装です。</p></li>
+<li><p>ノートブックでは <code class="docutils literal notranslate"><span class="pre">plot_freq_space()</span></code> の「近日公開」セクションと将来の使用例を掲載しています。</p></li>
+<li><p>現在確認できる出力は、PSD解析（プロット 4）と関連するテキスト出力です。</p></li>
+</ul>
+<p><strong>プロット 6: 相互相関</strong></p>
+<ul class="simple">
+<li><p><strong>現状</strong>: <code class="docutils literal notranslate"><span class="pre">plot_cross_correlation()</span></code> 可視化は将来リリース予定です。</p></li>
+<li><p>ノートブックではプレースホルダコードと使用メモのみを掲載しています。</p></li>
+</ul>
+<p><strong>プロット 7: コヒーレンスマップ</strong></p>
+<ul class="simple">
+<li><p><strong>現状</strong>: <code class="docutils literal notranslate"><span class="pre">plot_coherence_map()</span></code> 可視化は将来リリース予定です。</p></li>
+<li><p>ノートブックではプレースホルダコードと使用メモのみを掲載しています。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>セクション 7: 数値不変量<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p><strong>出力テキスト</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">時間</span> <span class="n">FFT</span> <span class="n">往復最大誤差</span><span class="p">:</span> <span class="o">~</span><span class="mf">1e-10</span>
+<span class="n">時間</span> <span class="n">FFT</span> <span class="n">不変量チェック</span><span class="p">:</span> <span class="n">合格</span>
+
+<span class="n">空間</span> <span class="n">FFT</span> <span class="n">往復最大誤差</span><span class="p">:</span> <span class="o">~</span><span class="mf">1e-10</span>
+<span class="n">空間</span> <span class="n">FFT</span> <span class="n">不変量チェック</span><span class="p">:</span> <span class="n">合格</span>
+</pre></div>
+</div>
+<p>FFT 実装の数値的安定性と精度を確認。</p>
+</section>
+</section>
+<section id="id6">
+<h2>可視化から得られる重要な知見<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>FFT 精度</strong>: すべての変換は数値的に高精度（誤差 &lt; 1e-10）</p></li>
+<li><p><strong>4D 構造の保持</strong>: スライス操作は常に4次元を維持</p></li>
+<li><p><strong>領域追跡</strong>: メタデータは時間/周波数および実空間/k空間領域を正しく追跡</p></li>
+<li><p><strong>信号処理</strong>: 現時点では PSD ワークフローを埋め込み出力で確認可能</p></li>
+<li><p><strong>APIロードマップ</strong>: 周波数-空間、相互相関、コヒーレンス可視化は今後提供予定として明示済み</p></li>
+<li><p><strong>物理的解釈</strong>: 現在のプロットでも波の伝播と空間依存性を明確に確認できる</p></li>
+</ol>
+</section>
+<section id="id7">
+<h2>プロットの生成<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>すべてのプロットと出力を再生成するには：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs/web/en/user_guide/tutorials
+
+<span class="c1"># ノートブックを実行して出力とともに保存</span>
+jupyter<span class="w"> </span>nbconvert<span class="w"> </span>--to<span class="w"> </span>notebook<span class="w"> </span>--execute<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>field_scalar_intro.ipynb<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>field_scalar_intro.ipynb<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--ExecutePreprocessor.timeout<span class="o">=</span><span class="m">300</span>
+
+<span class="c1"># 日本語版の場合</span>
+<span class="nb">cd</span><span class="w"> </span>../../ja/user_guide/tutorials
+jupyter<span class="w"> </span>nbconvert<span class="w"> </span>--to<span class="w"> </span>notebook<span class="w"> </span>--execute<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>field_scalar_intro.ipynb<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>field_scalar_intro.ipynb<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--ExecutePreprocessor.timeout<span class="o">=</span><span class="m">300</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h2>技術的注記<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>実行時間</strong>: ハードウェアに依存して約30-60秒</p></li>
+<li><p><strong>メモリ使用量</strong>: 完全なノートブック実行で約500 MB</p></li>
+<li><p><strong>依存関係</strong>: numpy, scipy, matplotlib, astropy, gwpy, gwexpy</p></li>
+</ul>
+</section>
+<section id="id9">
+<h2>今後の改善<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>[ ] 主要な特徴を説明するインラインプロット注釈を追加</p></li>
+<li><p>[ ] 空間場の3D表面プロットを含める</p></li>
+<li><p>[ ] 時間発展のアニメーション例を追加</p></li>
+<li><p>[ ] FieldList/FieldDict を使用した複数フィールドのバッチ処理を実証</p></li>
+</ul>
+<hr class="docutils" />
+<p><strong>最終更新</strong>: 2026-02-14
+<strong>状態</strong>: 主要出力は埋め込み済み、3つの可視化メソッドは近日公開
+<strong>優先度</strong>: 高（PyPI リリース前の推奨、必須ではない）</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
