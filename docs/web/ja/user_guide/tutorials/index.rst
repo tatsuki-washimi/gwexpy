@@ -85,6 +85,7 @@ V. 特殊ツール
    :caption: 特殊ツール
 
    advanced_bruco
+   Bruco + ICA エンドツーエンド ノイズ削減 <case_bruco_ica_denoising>
 
 VI. セグメント解析
 -----------------

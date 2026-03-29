@@ -85,6 +85,7 @@ Tools for specific noise hunting and diagnostics tasks.
    :caption: Specialized Tools
 
    Noise Hunting with Bruco <advanced_bruco>
+   Bruco + ICA End-to-End Denoising <case_bruco_ica_denoising>
 
 VI. Segment Analysis
 --------------------
