@@ -71,6 +71,10 @@ Statistical analysis and advanced transforms.
    Linear Algebra for GW Analysis <advanced_linear_algebra>
    Field × Advanced Analysis Integration <field_advanced_integration>
    Non-Gaussian Noise Analysis: Rayleigh & GauCh <rayleigh_gauch_tutorial>
+   Multi-channel Coupling <advanced_coupling>
+   Modal Decomposition <advanced_decomposition>
+   Seismic Analysis (ObsPy) <case_seismic_obspy>
+   GBD Format (GRAPHTEC) <case_gbd_format>
 
 V. Specialized Tools
 --------------------

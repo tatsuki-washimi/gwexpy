@@ -71,6 +71,10 @@ IV. 高度な信号処理
    重力波解析のための線形代数 <advanced_linear_algebra>
    Field API × 高度な解析統合 <field_advanced_integration>
    非ガウス雑音分析: Rayleigh & GauCh <rayleigh_gauch_tutorial>
+   マルチチャンネル結合解析 <advanced_coupling>
+   固有モード・ブラインド信号源分解 <advanced_decomposition>
+   地震波データ解析 (ObsPy 連携) <case_seismic_obspy>
+   GBD 形式の I/O (GRAPHTEC) <case_gbd_format>
 
 V. 特殊ツール
 --------------
