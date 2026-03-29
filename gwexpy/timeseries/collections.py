@@ -544,6 +544,11 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         doc="Compute Q-transform for each TimeSeries. Returns a SpectrogramDict.",
         result_class_path="gwexpy.spectrogram.SpectrogramDict",
     )
+    histogram = _make_dict_map_method(
+        "histogram",
+        doc="Compute Histogram for each TimeSeries. Returns a HistogramDict.",
+        result_class_path="gwexpy.histogram.collections.HistogramDict",
+    )
 
     # ===============================
     # Interoperability Methods (P0)
@@ -1778,6 +1783,12 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     def plot_all(self, *args: Any, **kwargs: Any):
         """Alias for plot(). Plots all series."""
         return self.plot(*args, **kwargs)
+
+    histogram = _make_list_map_method(
+        "histogram",
+        doc="Compute Histogram for each TimeSeries. Returns a HistogramList.",
+        result_class_path="gwexpy.histogram.collections.HistogramList",
+    )
 
     radian = _make_list_map_method(
         "radian", doc="Compute instantaneous phase (in radians) of each item."

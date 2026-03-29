@@ -78,6 +78,7 @@ from . import (
     astro,
     detector,
     frequencyseries,
+    histogram,
     interop,
     io,
     noise,
@@ -114,6 +115,13 @@ from .spectrogram import (
     SpectrogramDict,
     SpectrogramList,
     SpectrogramMatrix,
+)
+
+# Histogram types
+from .histogram import (
+    Histogram,
+    HistogramDict,
+    HistogramList,
 )
 
 # Core data types - explicitly imported for IDE support and clear API
@@ -153,6 +161,10 @@ __all__ = [
     "SpectrogramList",
     "SpectrogramDict",
     "SpectrogramMatrix",
+    # Histogram types
+    "Histogram",
+    "HistogramDict",
+    "HistogramList",
     # Types
     "ScalarField",
     "VectorField",
@@ -173,6 +185,7 @@ __all__ = [
     # Subpackages
     "timeseries",
     "frequencyseries",
+    "histogram",
     "spectrogram",
     "spectral",
     "astro",

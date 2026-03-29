@@ -341,6 +341,11 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
     rebin = _make_dict_map_method(
         "rebin", doc="Rebin each FrequencySeries in the dict."
     )
+    histogram = _make_dict_map_method(
+        "histogram",
+        doc="Compute Histogram for each FrequencySeries. Returns a HistogramDict.",
+        result_class_path="gwexpy.histogram.collections.HistogramDict",
+    )
 
     # ===============================
     # 4. Time Domain Conversion
@@ -822,6 +827,11 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
     smooth = _make_list_map_method("smooth", doc="Smooth each FrequencySeries.")
     rebin = _make_list_map_method(
         "rebin", doc="Rebin each FrequencySeries in the list."
+    )
+    histogram = _make_list_map_method(
+        "histogram",
+        doc="Compute Histogram for each FrequencySeries. Returns a HistogramList.",
+        result_class_path="gwexpy.histogram.collections.HistogramList",
     )
 
     # ===============================
