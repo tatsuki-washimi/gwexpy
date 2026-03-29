@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any
+from typing import Any, cast
 
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
@@ -820,7 +820,7 @@ def create_result_tab(
     list[dict[str, Any]],
 ]:
     tab = QtWidgets.QWidget()
-    hsplit = QtWidgets.QSplitter(QtCore.Qt.Horizontal)  # type: ignore
+    hsplit = QtWidgets.QSplitter(cast(Any, QtCore).Qt.Horizontal)
     left_panel = QtWidgets.QWidget()
     left_vbox = QtWidgets.QVBoxLayout(left_panel)
     scroll = QtWidgets.QScrollArea()
@@ -966,13 +966,13 @@ def create_result_tab(
                 tab._zoomed_pad = tab._active_pad
             elif rb_2x1.isChecked():
                 # Vertical stack (default)
-                rv.setDirection(QtWidgets.QBoxLayout.TopToBottom)  # type: ignore
+                rv.setDirection(cast(Any, QtWidgets).QBoxLayout.TopToBottom)
                 for plot in tab._plots:
                     plot.setVisible(True)
                 tab._zoomed_pad = -1
             elif rb_1x2.isChecked():
                 # Horizontal stack
-                rv.setDirection(QtWidgets.QBoxLayout.LeftToRight)  # type: ignore
+                rv.setDirection(cast(Any, QtWidgets).QBoxLayout.LeftToRight)
                 for plot in tab._plots:
                     plot.setVisible(True)
                 tab._zoomed_pad = -1

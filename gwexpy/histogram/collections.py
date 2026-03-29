@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from collections import OrderedDict
 from collections.abc import Iterable
-from typing import Any, SupportsIndex, TypeVar
+from typing import Any, SupportsIndex, TypeVar, cast
 
 from gwexpy.io.hdf5_collection import (
     LAYOUT_DATASET,
@@ -113,7 +113,7 @@ class HistogramBaseDict(OrderedDict[str, _H]):
         return self.plot(*args, **kwargs)
 
     @classmethod
-    def read(cls, source: Any, *args: Any, **kwargs: Any) -> HistogramDict:
+    def read(cls, source: Any, *args: Any, **kwargs: Any) -> Any:
         """Read data into a HistogramDict."""
         fmt = kwargs.get("format")
         if fmt in ("hdf5", "h5", "hdf"):
@@ -128,30 +128,30 @@ class HistogramBaseDict(OrderedDict[str, _H]):
                 if layout == LAYOUT_DATASET or layout is None:
                     for ds_name in keys:
                         try:
-                            h = Histogram.read(h5f, format="hdf5", path=ds_name)
+                            h = cast(_H, Histogram.read(h5f, format="hdf5", path=ds_name))
                         except (KeyError, ValueError, TypeError, OSError) as e:
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         orig_key = keymap.get(ds_name, ds_name)
-                        out[orig_key] = h  # type: ignore[assignment]
-                    return out  # type: ignore[return-value]
+                        out[orig_key] = h
+                    return out
                 if layout == LAYOUT_GROUP:
                     for grp_name in keys:
                         try:
                             grp = h5f[grp_name]
-                            h = Histogram.read(grp, format="hdf5", path="data")
+                            h = cast(_H, Histogram.read(grp, format="hdf5", path="data"))
                         except (KeyError, ValueError, TypeError, OSError):
                             try:
-                                h = Histogram.read(grp, format="hdf5", path=None)
+                                h = cast(_H, Histogram.read(grp, format="hdf5", path=None))
                             except (KeyError, ValueError, TypeError, OSError) as e2:
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         orig_key = keymap.get(grp_name, grp_name)
-                        out[orig_key] = h  # type: ignore[assignment]
-                    return out  # type: ignore[return-value]
+                        out[orig_key] = h
+                    return out
         from astropy.io import registry
 
-        return registry.read(cls, source, *args, **kwargs)  # type: ignore[no-any-return]
+        return cast(Any, registry.read(cls, source, *args, **kwargs))
 
     def write(self, target: Any, *args: Any, **kwargs: Any) -> Any:
         """Write dict to file (HDF5, ROOT, etc.)."""
@@ -224,10 +224,10 @@ class HistogramBaseList(PlotMixin, list[_H]):
         super().__init__()
         if len(items) == 1 and isinstance(items[0], (list, tuple)):
             for item in items[0]:
-                self.append(item)
+                self.append(cast(_H, item))
         else:
             for item in items:
-                self.append(item)  # type: ignore[arg-type]
+                self.append(cast(_H, item))
 
     def _validate(self, item: Any, *, op: str) -> None:
         if not isinstance(item, self.EntryClass):
@@ -276,7 +276,7 @@ class HistogramBaseList(PlotMixin, list[_H]):
         return self.plot(*args, **kwargs)
 
     @classmethod
-    def read(cls, source: Any, *args: Any, **kwargs: Any) -> HistogramBaseList[_H]:
+    def read(cls, source: Any, *args: Any, **kwargs: Any) -> Any:
         """Read data into a HistogramList."""
         fmt = kwargs.get("format")
         if fmt in ("hdf5", "h5", "hdf"):
@@ -294,7 +294,7 @@ class HistogramBaseList(PlotMixin, list[_H]):
                             logger.debug("Skipping dataset %s: %s", ds_name, e)
                             continue
                         out_items.append(h)
-                    return cls(out_items)  # type: ignore[arg-type]
+                    return cast(Any, cls)(out_items)
                 if layout == LAYOUT_GROUP:
                     for grp_name in order:
                         try:
@@ -307,10 +307,10 @@ class HistogramBaseList(PlotMixin, list[_H]):
                                 logger.debug("Skipping group %s: %s", grp_name, e2)
                                 continue
                         out_items.append(h)
-                    return cls(out_items)  # type: ignore[arg-type]
+                    return cast(Any, cls)(out_items)
         from astropy.io import registry
 
-        return registry.read(cls, source, *args, **kwargs)  # type: ignore[no-any-return]
+        return cast(Any, registry.read(cls, source, *args, **kwargs))
 
     def write(self, target: Any, *args: Any, **kwargs: Any) -> Any:
         fmt = kwargs.get("format")

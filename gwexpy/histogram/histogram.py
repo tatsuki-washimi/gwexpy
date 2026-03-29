@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -191,20 +191,20 @@ class Histogram(
         # Fallback to astropy io registry
         from astropy.io import registry
 
-        return registry.read(cls, source, *args, **kwargs)  # type: ignore[no-any-return]
+        return cast("Histogram", registry.read(cls, source, *args, **kwargs))
 
     @classmethod
     def from_root(cls, obj: Any) -> Histogram:
         """Create a Histogram from a ROOT TH1 object."""
         from gwexpy.interop.root_ import from_root
 
-        return from_root(cls, obj)  # type: ignore[no-any-return, no-untyped-call]
+        return cast("Histogram", from_root(cls, obj))
 
     def to_th1d(self) -> Any:
         """Convert this Histogram to a ROOT TH1D."""
         from gwexpy.interop.root_ import to_th1d
 
-        return to_th1d(self)  # type: ignore[no-untyped-call]
+        return to_th1d(self)
 
     def write(self, target: Any, *args: Any, **kwargs: Any) -> Any:
         """Write Histogram to file."""

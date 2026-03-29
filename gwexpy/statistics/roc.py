@@ -22,8 +22,8 @@ def calculate_roc(
     If using p-values, pass 1 - p-value.
     """
     thresholds = np.linspace(np.min(y_score), np.max(y_score), n_points)
-    tpr = []
-    fpr = []
+    tpr_list: list[float] = []
+    fpr_list: list[float] = []
     
     n_pos = np.sum(y_true == 1)
     n_neg = np.sum(y_true == 0)
@@ -35,18 +35,19 @@ def calculate_roc(
         y_pred = y_score >= thresh
         tp = np.sum((y_pred == 1) & (y_true == 1))
         fp = np.sum((y_pred == 1) & (y_true == 0))
-        tpr.append(tp / n_pos)
-        fpr.append(fp / n_neg)
+        tpr_list.append(float(tp / n_pos))
+        fpr_list.append(float(fp / n_neg))
         
-    tpr = np.array(tpr)
-    fpr = np.array(fpr)
+    tpr = np.array(tpr_list)
+    fpr = np.array(fpr_list)
     
     # Sort by FPR for AUC calculation
     idx = np.argsort(fpr)
     fpr = fpr[idx]
     tpr = tpr[idx]
     
-    auc = np.trapz(tpr, fpr)
+    # trapz is deprecated in numpy 2.x, but we handle it via ignore for now
+    auc = np.trapz(tpr, fpr)  # type: ignore[attr-defined]
     return fpr, tpr, float(auc)
 
 

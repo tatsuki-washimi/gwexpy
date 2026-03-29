@@ -3,13 +3,18 @@ from __future__ import annotations
 import logging
 import time
 
+from typing import Any, cast
+
 import numpy as np
 from qtpy import QtCore
 
 logger = logging.getLogger(__name__)
 
 
-class SimulationThread(QtCore.QThread):  # type: ignore[name-defined]
+_QThread: Any = getattr(QtCore, "QThread", object)
+
+
+class SimulationThread(_QThread):
     dataReceived = QtCore.Signal(object, object, bool)
 
     def __init__(self, channels, fs=16384, chunk_sec=1.0):

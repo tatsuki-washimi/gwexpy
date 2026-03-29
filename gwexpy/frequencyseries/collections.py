@@ -4,7 +4,7 @@ import logging
 from collections import OrderedDict
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, SupportsIndex, TypeVar
+from typing import Any, SupportsIndex, TypeVar, cast
 
 import h5py
 import numpy as np
@@ -637,7 +637,7 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
                 self.append(item)
         else:
             for item in items:
-                self.append(item)  # type: ignore[arg-type]
+                self.append(cast("_FS", item))
 
     @property
     def segments(self):

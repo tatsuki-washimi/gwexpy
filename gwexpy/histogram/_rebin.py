@@ -84,16 +84,19 @@ class HistogramRebinMixin:
             A new rebinned Histogram.
         """
         from astropy import units as u
+        from typing import cast
+
+        h = cast(Any, self)
 
         if hasattr(new_edges, "unit"):
-            new_edges_q = u.Quantity(new_edges).to(self.xunit)  # type: ignore
+            new_edges_q = u.Quantity(new_edges).to(h.xunit)
         elif xunit is not None:
-            new_edges_q = u.Quantity(new_edges, unit=xunit).to(self.xunit)  # type: ignore
+            new_edges_q = u.Quantity(new_edges, unit=xunit).to(h.xunit)
         else:
-            new_edges_q = u.Quantity(new_edges, unit=self.xunit)  # type: ignore
+            new_edges_q = u.Quantity(new_edges, unit=h.xunit)
 
         # Ensure valid arrays
-        old_val = self.edges.value  # type: ignore
+        old_val = h.edges.value
         new_val = new_edges_q.value
 
         if new_val[0] < old_val[0] or new_val[-1] > old_val[-1]:
@@ -105,38 +108,39 @@ class HistogramRebinMixin:
         A = compute_A_matrix(old_val, new_val)
 
         # Propagate total values
-        y_new_value = A @ self.values.value  # type: ignore
+        y_new_value = A @ h.values.value
 
         # Propagate covariance if present
         cov_new = None
-        if getattr(self, "cov", None) is not None:  # type: ignore
-            cov_val = self.cov.value  # type: ignore
+        if getattr(h, "cov", None) is not None:
+            cov_val = h.cov.value
             # Covariance propagation based on linear combination: C_y = A * C_x * A.T
             cov_new_val = A @ cov_val @ A.T
-            cov_new = u.Quantity(cov_new_val, unit=self.cov.unit)  # type: ignore
+            cov_new = u.Quantity(cov_new_val, unit=h.cov.unit)
 
         # Propagate sumw2 if present
         sumw2_new = None
-        if getattr(self, "sumw2", None) is not None:  # type: ignore
+        if getattr(h, "sumw2", None) is not None:
             # For purely independent poisson-like bins, sumw2 propagates similarly to variance.
             # However, sumw2 = diagonal of C_x if uncorrelated.
             # A_ij^2 * sumw2_j -> new sumw2_i
-            sumw2_new_val = (A ** 2) @ self.sumw2.value  # type: ignore
-            sumw2_new = u.Quantity(sumw2_new_val, unit=self.sumw2.unit)  # type: ignore
+            sumw2_new_val = (A**2) @ h.sumw2.value
+            sumw2_new = u.Quantity(sumw2_new_val, unit=h.sumw2.unit)
 
-        return self.__class__(
-            values=u.Quantity(y_new_value, unit=self.unit),  # type: ignore
+        cls_any = cast(Any, h.__class__)
+        return cls_any(
+            values=u.Quantity(y_new_value, unit=h.unit),
             edges=new_edges_q,
             cov=cov_new,
             sumw2=sumw2_new,
-            name=getattr(self, "name", None),
-            channel=getattr(self, "channel", None)
+            name=getattr(h, "name", None),
+            channel=getattr(h, "channel", None),
         )
 
     def integral(
         self,
-        start: float | None = None,
-        end: float | None = None,
+        start: Any | None = None,
+        end: Any | None = None,
         xunit: Any = None,
         return_error: bool = False,
     ) -> Any:
@@ -160,41 +164,44 @@ class HistogramRebinMixin:
             The integral value, and optionally its uncertainty.
         """
         from astropy import units as u
+        from typing import cast
+
+        h = cast(Any, self)
 
         if start is None:
-            start_val = self.edges.value[0]  # type: ignore
+            start_val = h.edges.value[0]
         elif xunit is not None:
-            start_val = u.Quantity(start, unit=xunit).to(self.xunit).value  # type: ignore
+            start_val = u.Quantity(start, unit=xunit).to(h.xunit).value
         elif hasattr(start, "unit"):
-            start_val = start.to(self.xunit).value  # type: ignore
+            start_val = start.to(h.xunit).value
         else:
             start_val = float(start)
 
         if end is None:
-            end_val = self.edges.value[-1]  # type: ignore
+            end_val = h.edges.value[-1]
         elif xunit is not None:
-            end_val = u.Quantity(end, unit=xunit).to(self.xunit).value  # type: ignore
+            end_val = u.Quantity(end, unit=xunit).to(h.xunit).value
         elif hasattr(end, "unit"):
-            end_val = end.to(self.xunit).value  # type: ignore
+            end_val = end.to(h.xunit).value
         else:
             end_val = float(end)
 
         # To integrate, we rebin into a single bin [start, end]
         pseudo_new_edges = np.array([start_val, end_val])
-        A = compute_A_matrix(self.edges.value, pseudo_new_edges)  # type: ignore
+        A = compute_A_matrix(h.edges.value, pseudo_new_edges)
 
         # Propagate values and errors to the single pseudo-bin
-        total_val = (A @ self.values.value)[0]  # type: ignore
+        total_val = (A @ h.values.value)[0]
 
         if not return_error:
-            return u.Quantity(total_val, unit=self.unit)  # type: ignore
+            return u.Quantity(total_val, unit=h.unit)
 
         var_total = 0.0
-        if getattr(self, "cov", None) is not None:  # type: ignore
-            var_total = (A @ self.cov.value @ A.T)[0, 0]  # type: ignore
-        elif getattr(self, "sumw2", None) is not None:  # type: ignore
-            var_total = ((A ** 2) @ self.sumw2.value)[0]  # type: ignore
+        if getattr(h, "cov", None) is not None:
+            var_total = (A @ h.cov.value @ A.T)[0, 0]
+        elif getattr(h, "sumw2", None) is not None:
+            var_total = ((A**2) @ h.sumw2.value)[0]
 
-        return u.Quantity(total_val, unit=self.unit), u.Quantity(  # type: ignore
-            np.sqrt(var_total), unit=self.unit  # type: ignore
+        return u.Quantity(total_val, unit=h.unit), u.Quantity(
+            np.sqrt(var_total), unit=h.unit
         )

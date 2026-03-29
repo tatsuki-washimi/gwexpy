@@ -110,7 +110,7 @@ class SeriesMatrixMathMixin:
         """
         if not isinstance(other, type(self)):
             # If other is not a SeriesMatrix, try to use ndarray matmul
-            return np.matmul(self, other)  # type: ignore[call-overload]
+            return np.matmul(cast(Any, self), other)
 
         if self._value.shape[2] != other._value.shape[2]:
             raise ValueError("Sample axis length mismatch in matrix multiplication")
@@ -460,7 +460,7 @@ class SeriesMatrixMathMixin:
 
     def abs(self):
         """Return the absolute value of the matrix element-wise."""
-        return np.abs(self)  # type: ignore[call-overload]
+        return np.abs(cast(Any, self))
 
     def angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any):
         """

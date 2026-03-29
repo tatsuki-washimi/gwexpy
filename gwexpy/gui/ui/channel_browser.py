@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import fnmatch
-from typing import Any
+from typing import Any, cast
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -9,9 +9,9 @@ from ..nds.cache import ChannelListCache
 from ..nds.nds_thread import ChannelListWorker
 
 try:
-    import sounddevice as sd  # type: ignore[import-untyped]
+    import sounddevice as sd
 except ImportError:
-    sd = None  # type: ignore[assignment]
+    sd = cast(Any, None)
 
 
 class ChannelBrowserDialog(QtWidgets.QDialog):
@@ -60,7 +60,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.lbl_info = QtWidgets.QLabel(
             f"server: <b>{self.server_key}</b> [Checking cache...]"
         )
-        self.lbl_info.setAlignment(QtCore.Qt.AlignCenter)  # type: ignore
+        self.lbl_info.setAlignment(cast(Any, QtCore).Qt.AlignCenter)
         layout.addWidget(self.lbl_info)
 
         # Tabs
@@ -105,7 +105,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         data = cache.get_channels(self.server_key)
 
         if data is not None:
-            self.full_channel_list = data  # type: ignore[assignment]
+            self.full_channel_list = cast("list[tuple[str, float, str]]", data)
             self.lbl_info.setText(
                 f"server: <b>{self.server_key}</b> [{len(data)} channels (cached)]"
             )
@@ -257,7 +257,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             return
 
         # Update Cache (Always)
-        ChannelListCache().set_channels(self.server_key, results)  # type: ignore[arg-type]
+        ChannelListCache().set_channels(self.server_key, cast(Any, results))
 
         # Update UI only if still detecting NDS
         if self.current_source == "NDS":
