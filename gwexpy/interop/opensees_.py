@@ -17,7 +17,7 @@ https://openseespydoc.readthedocs.io/
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 
@@ -64,7 +64,7 @@ def from_opensees_recorder(
     """
     raw = np.loadtxt(filepath)
     if raw.ndim == 1:
-        raw = raw.reshape(1, -1)
+        raw = cast(np.ndarray[Any, np.dtype[np.float64]], raw.reshape(1, -1))
 
     if has_time_column:
         time = raw[:, 0]
@@ -73,7 +73,7 @@ def from_opensees_recorder(
         if dt is None:
             raise ValueError("dt is required when has_time_column=False")
         n_samples = raw.shape[0]
-        time = np.arange(n_samples) * dt
+        time = np.arange(n_samples, dtype=np.float64) * float(dt)
         data = raw
 
     dt_val = float(time[1] - time[0]) if len(time) > 1 else (dt or 1.0)
@@ -121,7 +121,8 @@ def from_opensees_recorder(
     for i, name in enumerate(ch_names):
         channel_names_arr[i, 0] = name
 
-    return cls(
+    cls_any = cast(Any, cls)
+    return cls_any(
         matrix_data,
         dt=dt_val,
         t0=t0,

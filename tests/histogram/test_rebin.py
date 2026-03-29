@@ -18,6 +18,7 @@ def test_rebin_preserves_integral():
     assert np.allclose(rebinned.values.value, [15, 25])
     assert rebinned.unit == u.Unit("count")
 
+
 def test_rebin_handles_units():
     values = [10, 20]
     edges = [0, 1000, 2000]
@@ -31,16 +32,17 @@ def test_rebin_handles_units():
     # 500 to 1000 is half of bin 0 (5). 1000 to 1500 is half of bin 1 (10). -> 15.
     assert np.allclose(rebinned.values.value, [15])
 
+
 def test_integral():
     values = [10, 20, 30, 40]
     edges = [0, 1, 2, 3, 4]
     hist = Histogram(values, edges, unit="count", sumw2=[1, 2, 3, 4])
 
-    val, err = hist.integral(0.5, 2.5)
+    val, err = hist.integral(0.5, 2.5, return_error=True)
     # Value should be 5 + 20 + 15 = 40
     assert val.value == 40.0
 
     # Error variance:
     # A_0 = 0.5, A_1 = 1.0, A_2 = 0.5
     # var = (0.5)^2 * 1 + (1.0)^2 * 2 + (0.5)^2 * 3 = 0.25 + 2 + 0.75 = 3.0
-    assert np.allclose(err, np.sqrt(3.0))
+    assert np.allclose(err.value, np.sqrt(3.0))

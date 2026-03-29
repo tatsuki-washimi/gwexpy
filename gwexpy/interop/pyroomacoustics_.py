@@ -173,9 +173,7 @@ def from_pyroomacoustics_mic_signals(
 
     signals = room.mic_array.signals
     if signals is None:
-        raise ValueError(
-            "Signals not computed. Call room.simulate() first."
-        )
+        raise ValueError("Signals not computed. Call room.simulate() first.")
 
     signals = np.asarray(signals, dtype=np.float64)
     fs = float(room.fs)
@@ -287,7 +285,11 @@ def from_pyroomacoustics_stft(
 
     # Resolve sample rate
     if fs is None:
-        fs = float(getattr(stft_obj, "fs", None) or _raise_fs_required())
+        fs_attr = getattr(stft_obj, "fs", None)
+        if fs_attr is None:
+            _raise_fs_required()
+            raise AssertionError("unreachable")
+        fs = float(fs_attr)
 
     dt = hop / fs
     df = fs / N
@@ -405,7 +407,9 @@ def from_pyroomacoustics_field(
             raise ValueError(
                 "RIR not computed. Call room.compute_rir() or room.simulate() first."
             )
-        rir_list = [rir[m][source] for m in range(n_mics)]  # gather across mics for one source
+        rir_list = [
+            rir[m][source] for m in range(n_mics)
+        ]  # gather across mics for one source
         # Pad to max length
         max_len = max(len(r) for r in rir_list)
         data_2d = np.zeros((n_mics, max_len), dtype=np.float64)
@@ -415,9 +419,7 @@ def from_pyroomacoustics_field(
     elif mode == "signals":
         signals = room.mic_array.signals
         if signals is None:
-            raise ValueError(
-                "Signals not computed. Call room.simulate() first."
-            )
+            raise ValueError("Signals not computed. Call room.simulate() first.")
         data_2d = np.asarray(signals, dtype=np.float64)
     else:
         raise ValueError(f"mode must be 'rir' or 'signals', got '{mode}'")
@@ -540,14 +542,16 @@ def to_pyroomacoustics_stft(
 
     if hop is None:
         # Estimate hop from dt and df
-        dt_val = float(spec.dt.to("s").value) if hasattr(spec.dt, "to") else float(spec.dt)
-        df_val = float(spec.df.to("Hz").value) if hasattr(spec.df, "to") else float(spec.df)
+        dt_val = (
+            float(spec.dt.to("s").value) if hasattr(spec.dt, "to") else float(spec.dt)
+        )
+        df_val = (
+            float(spec.df.to("Hz").value) if hasattr(spec.df, "to") else float(spec.df)
+        )
         fs = df_val * N
         hop = int(round(dt_val * fs))
 
-    stft_obj = pra.transform.stft.STFT(
-        N, hop=hop, analysis_window=analysis_window
-    )
+    stft_obj = pra.transform.stft.STFT(N, hop=hop, analysis_window=analysis_window)
     stft_obj.X = data
 
     return stft_obj

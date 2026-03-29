@@ -16,10 +16,7 @@ https://unidata.github.io/MetPy/latest/
 
 from __future__ import annotations
 
-import warnings
 from typing import Any, Literal
-
-import numpy as np
 
 from gwexpy.fields import ScalarField
 
@@ -65,7 +62,7 @@ def from_metpy_dataarray(
     works with plain xarray DataArrays that have ``"units"`` and
     ``"_metpy_axis"`` attributes.
     """
-    xr = require_optional("xarray")
+    require_optional("xarray")
 
     # Dequantify: strip Pint wrapper if present
     if dequantify and hasattr(da, "metpy"):
@@ -78,11 +75,11 @@ def from_metpy_dataarray(
     unit_str = da.attrs.get("units")
     if unit_str is not None:
         try:
-            from gwexpy.utils.units import pint_unit_to_astropy_unit  # noqa: PLC0415
-
             import pint  # noqa: PLC0415
 
-            ureg = pint.UnitRegistry()
+            from gwexpy.utils.units import pint_unit_to_astropy_unit  # noqa: PLC0415
+
+            ureg: pint.UnitRegistry = pint.UnitRegistry()
             astropy_unit = pint_unit_to_astropy_unit(ureg.Unit(unit_str))
             # Replace attrs so from_xarray_field can parse it
             da = da.assign_attrs(units=str(astropy_unit))

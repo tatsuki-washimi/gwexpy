@@ -178,20 +178,26 @@ class FrequencySeries(
             data, bins=bins, range=range, weights=weights, density=density, **kwargs
         )
 
-        # Determine y-unit
         if density:
             unit = self.unit**-1 if self.unit else u.dimensionless_unscaled
+            return Histogram.from_density(
+                counts,
+                edges,
+                unit=unit,
+                xunit=self.unit,
+                name=self.name,
+                channel=getattr(self, "channel", None),
+            )
         else:
             unit = u.dimensionless_unscaled
-
-        return Histogram(
-            counts,
-            edges,
-            unit=unit,
-            xunit=self.unit,
-            name=self.name,
-            channel=getattr(self, "channel", None),
-        )
+            return Histogram(
+                counts,
+                edges,
+                unit=unit,
+                xunit=self.unit,
+                name=self.name,
+                channel=getattr(self, "channel", None),
+            )
 
     def degree(self, unwrap: bool = False) -> FrequencySeries:
         """

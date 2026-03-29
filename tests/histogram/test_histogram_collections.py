@@ -22,6 +22,7 @@ def test_histogram_dict_basics():
     assert hd_rebinned["b"].values.value[0] == 10
     assert type(hd_rebinned) is HistogramDict
 
+
 def test_histogram_list_basics():
     h1 = Histogram([10, 20], [0, 1, 2], unit="count")
     h2 = Histogram([5, 15], [0, 1, 2], unit="count")
@@ -37,12 +38,13 @@ def test_histogram_list_basics():
     assert hl_rebinned[1].values.value[0] == 10
     assert type(hl_rebinned) is HistogramList
 
+
 def test_histogram_dict_integral():
     h1 = Histogram([10, 20], [0, 1, 2], unit="count")
     h2 = Histogram([30, 40], [0, 1, 2], unit="count")
     hd = HistogramDict({"a": h1, "b": h2})
 
-    res = hd.integral(0.5, 1.5)
+    res = hd.integral(0.5, 1.5, return_error=True)
 
     # Dictionary plain method mapping
     assert type(res) is dict
@@ -55,6 +57,7 @@ def test_histogram_dict_integral():
 
     assert val_a.value == 15
     assert val_b.value == 35
+
 
 def test_histogram_collections_hdf5(tmp_path):
     h1 = Histogram([10, 20], [0, 1, 2], unit="count", xunit="Hz", name="a")
@@ -79,4 +82,3 @@ def test_histogram_collections_hdf5(tmp_path):
     hl2 = HistogramList.read(fpath2, format="hdf5")
     assert len(hl2) == 2
     assert hl2[0].values.value[0] == 10
-

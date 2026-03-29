@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 from astropy.units import dimensionless_unscaled
 from gwpy.types.array import Array as GwpyArray

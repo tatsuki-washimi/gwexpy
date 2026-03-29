@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -47,8 +47,8 @@ class HistogramCoreMixin:
             # cov trace provides errors
             v = np.sqrt(np.diag(self._cov.value))
             return v * self.unit
-        if getattr(self, "_sumw2", None) is not None:
-            return np.sqrt(self._sumw2)
+        if self._sumw2 is not None:
+            return cast(u.Quantity, np.sqrt(self._sumw2))
         return None  # No statistical uncertainties available
 
     @property
@@ -103,15 +103,14 @@ class HistogramCoreMixin:
         kwargs["name"] = getattr(self, "name", None)
         kwargs["channel"] = getattr(self, "channel", None)
 
-        from typing import cast
         cls_any = cast(Any, self.__class__)
         return cls_any(**kwargs)
 
     def crop(self, start: Any | None = None, end: Any | None = None) -> Any:
         """
         Crop the histogram to a specific range [start, end].
-        
-        Returns a new Histogram containing only the bins that fall entirely 
+
+        Returns a new Histogram containing only the bins that fall entirely
         within the specified range.
 
         Parameters
@@ -127,37 +126,39 @@ class HistogramCoreMixin:
             A new Histogram object containing the subset of bins.
         """
         from astropy import units as u
-        
+
         edges = self.edges.value
-        
-        q_start = u.Quantity(start, unit=self.xunit).value if start is not None else -np.inf
+
+        q_start = (
+            u.Quantity(start, unit=self.xunit).value if start is not None else -np.inf
+        )
         q_end = u.Quantity(end, unit=self.xunit).value if end is not None else np.inf
-        
+
         # Mask for bins that are completely within [q_start, q_end]
         mask = (edges[:-1] >= q_start) & (edges[1:] <= q_end)
-        
+
         if not np.any(mask):
             raise ValueError(f"No bins found in range [{start}, {end}]")
-            
+
         # Get start and end indices of the contiguous block
         indices = np.where(mask)[0]
         i0, i1 = indices[0], indices[-1]
-        
+
         new_values = self.values[i0 : i1 + 1]
         new_edges = self.edges[i0 : i1 + 2]
-        
+
         kwargs = {
             "values": new_values,
             "edges": new_edges,
             "name": getattr(self, "name", None),
             "channel": getattr(self, "channel", None),
         }
-        
+
         if self.cov is not None:
             kwargs["cov"] = self.cov[i0 : i1 + 1, i0 : i1 + 1]
         if self.sumw2 is not None:
             kwargs["sumw2"] = self.sumw2[i0 : i1 + 1]
-            
+
         return self.__class__(**kwargs)
 
     def to_density(self) -> u.Quantity:
@@ -236,17 +237,17 @@ class HistogramCoreMixin:
         """
         if not (0 <= q <= 1):
             raise ValueError("q must be between 0 and 1.")
-        
+
         w = self.values.value
         w_sum = np.sum(w)
         if w_sum == 0:
             return np.nan * self.xunit
-            
+
         cdf = np.cumsum(w) / w_sum
         # Prepend 0 to CDF for the low edge of the first bin
         cdf_full = np.concatenate(([0.0], cdf))
         edges = self.edges.value
-        
+
         # Linearly interpolate
         return np.interp(q, cdf_full, edges) * self.xunit
 
@@ -295,7 +296,7 @@ class HistogramCoreMixin:
         edges: Any,
         unit: Any = None,
         xunit: Any = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Any:
         """Create a Histogram from density values."""
         density_q = u.Quantity(density, unit=unit)
@@ -303,7 +304,8 @@ class HistogramCoreMixin:
         bin_widths = np.diff(edges_q)
 
         values = density_q * bin_widths
-        return cls(values=values, edges=edges_q, **kwargs)
+        cls_any = cast(Any, cls)
+        return cls_any(values=values, edges=edges_q, **kwargs)
 
     def __len__(self) -> int:
         return self.nbins
