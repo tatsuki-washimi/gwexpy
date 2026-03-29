@@ -4,6 +4,7 @@ from inspect import Parameter, signature
 from typing import Any
 
 import numpy as np
+from scipy.special import wofz
 
 
 class Model:
@@ -86,6 +87,78 @@ def landau(x, A, mu, sigma):
     return A * np.exp(-0.5 * (lam + np.exp(-lam)))
 
 
+def lorentzian(x, A, x0, gamma):
+    """
+    Lorentzian (Cauchy) distribution.
+
+    f(x) = A * gamma^2 / ((x - x0)^2 + gamma^2)
+
+    Peak value is A at x = x0.
+
+    Parameters
+    ----------
+    x : array-like
+        Independent variable.
+    A : float
+        Peak amplitude.
+    x0 : float
+        Center position.
+    gamma : float
+        Half-width at half-maximum (HWHM).
+    """
+    return A * gamma**2 / ((x - x0) ** 2 + gamma**2)
+
+
+def lorentzian_q(x, A, x0, Q):
+    """
+    Lorentzian with Q-factor parameterization.
+
+    gamma = x0 / (2 * Q), then:
+    f(x) = A * gamma^2 / ((x - x0)^2 + gamma^2)
+
+    Parameters
+    ----------
+    x : array-like
+        Independent variable (typically frequency).
+    A : float
+        Peak amplitude.
+    x0 : float
+        Center frequency.
+    Q : float
+        Quality factor (Q = x0 / (2 * gamma)).
+    """
+    gamma = x0 / (2 * Q)
+    return A * gamma**2 / ((x - x0) ** 2 + gamma**2)
+
+
+def voigt(x, A, x0, sigma, gamma):
+    """
+    Voigt profile (convolution of Gaussian and Lorentzian).
+
+    Uses the Faddeeva function for efficient computation.
+    Normalized so that the peak value equals A.
+
+    Parameters
+    ----------
+    x : array-like
+        Independent variable.
+    A : float
+        Peak amplitude.
+    x0 : float
+        Center position.
+    sigma : float
+        Gaussian standard deviation.
+    gamma : float
+        Lorentzian HWHM.
+    """
+    z = ((x - x0) + 1j * gamma) / (sigma * np.sqrt(2))
+    profile = np.real(wofz(z))
+    # Normalize so that peak = A
+    z0 = 1j * gamma / (sigma * np.sqrt(2))
+    peak = np.real(wofz(z0))
+    return A * profile / peak
+
+
 def make_pol_func(n):
     """
     Create a polynomial function of degree n with signature (x, p0, p1, ..., pn).
@@ -129,6 +202,10 @@ MODELS: dict[str, Any] = {
     "landau": landau,
     "power_law": power_law,
     "damped_oscillation": damped_oscillation,
+    "lorentzian": lorentzian,
+    "lorentz": lorentzian,
+    "lorentzian_q": lorentzian_q,
+    "voigt": voigt,
 }
 
 # Add pol0 to pol9 as Polynomial instances

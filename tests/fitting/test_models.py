@@ -23,8 +23,11 @@ from gwexpy.fitting.models import (
     gaussian,
     get_model,
     landau,
+    lorentzian,
+    lorentzian_q,
     make_pol_func,
     power_law,
+    voigt,
 )
 
 
@@ -377,3 +380,120 @@ class TestGetModel:
     def test_models_dict_contains_pol0_to_pol9(self):
         for i in range(10):
             assert f"pol{i}" in MODELS
+
+    def test_models_dict_contains_lorentzian_keys(self):
+        for key in ("lorentzian", "lorentz", "lorentzian_q", "voigt"):
+            assert key in MODELS
+
+
+# ---------------------------------------------------------------------------
+# Lorentzian
+# ---------------------------------------------------------------------------
+
+
+class TestLorentzian:
+    """Tests for the lorentzian function."""
+
+    def test_peak_at_x0(self):
+        """Lorentzian peaks at x=x0 with value A."""
+        assert lorentzian(5.0, A=3.0, x0=5.0, gamma=1.0) == pytest.approx(3.0)
+
+    def test_symmetry(self):
+        """Lorentzian is symmetric around x0."""
+        assert lorentzian(1.0, 1.0, 0.0, 1.0) == pytest.approx(
+            lorentzian(-1.0, 1.0, 0.0, 1.0)
+        )
+
+    def test_hwhm(self):
+        """At x = x0 +/- gamma, value should be A/2."""
+        A, x0, gamma = 4.0, 10.0, 2.0
+        assert lorentzian(x0 + gamma, A, x0, gamma) == pytest.approx(A / 2)
+        assert lorentzian(x0 - gamma, A, x0, gamma) == pytest.approx(A / 2)
+
+    def test_amplitude_scaling(self):
+        """Doubling A doubles the output."""
+        r1 = lorentzian(1.0, A=1.0, x0=0.0, gamma=1.0)
+        r2 = lorentzian(1.0, A=2.0, x0=0.0, gamma=1.0)
+        assert r2 == pytest.approx(2 * r1)
+
+    def test_numpy_array(self):
+        x = np.linspace(-5, 5, 100)
+        result = lorentzian(x, 1.0, 0.0, 1.0)
+        assert result.shape == x.shape
+        assert np.all(np.isfinite(result))
+
+    def test_narrow_gamma(self):
+        """Smaller gamma produces narrower peak."""
+        wide = lorentzian(1.0, 1.0, 0.0, 2.0)
+        narrow = lorentzian(1.0, 1.0, 0.0, 0.5)
+        assert narrow < wide
+
+
+class TestLorentzianQ:
+    """Tests for the lorentzian_q function."""
+
+    def test_peak_at_x0(self):
+        """Lorentzian Q peaks at x=x0 with value A."""
+        assert lorentzian_q(100.0, A=2.0, x0=100.0, Q=10.0) == pytest.approx(2.0)
+
+    def test_equivalence_with_lorentzian(self):
+        """lorentzian_q(Q) == lorentzian(gamma) when gamma = x0/(2*Q)."""
+        x0, Q = 100.0, 50.0
+        gamma = x0 / (2 * Q)
+        x = np.linspace(90, 110, 50)
+        np.testing.assert_allclose(
+            lorentzian_q(x, 1.0, x0, Q),
+            lorentzian(x, 1.0, x0, gamma),
+            rtol=1e-12,
+        )
+
+    def test_high_q_is_narrower(self):
+        """Higher Q means narrower peak."""
+        x_off = 101.0
+        high_q = lorentzian_q(x_off, 1.0, 100.0, Q=100.0)
+        low_q = lorentzian_q(x_off, 1.0, 100.0, Q=10.0)
+        assert high_q < low_q
+
+    def test_numpy_array(self):
+        x = np.linspace(90, 110, 100)
+        result = lorentzian_q(x, 1.0, 100.0, 50.0)
+        assert result.shape == x.shape
+
+
+class TestVoigt:
+    """Tests for the voigt function."""
+
+    def test_peak_at_x0(self):
+        """Voigt peaks at x=x0 with value A."""
+        assert voigt(0.0, A=3.0, x0=0.0, sigma=1.0, gamma=1.0) == pytest.approx(3.0)
+
+    def test_reduces_to_gaussian_when_gamma_zero(self):
+        """When gamma -> 0, Voigt approaches Gaussian shape."""
+        x = np.linspace(-5, 5, 200)
+        gamma_small = 1e-10
+        sigma = 1.0
+        v = voigt(x, 1.0, 0.0, sigma, gamma_small)
+        from gwexpy.fitting.models import gaussian as gaus
+        g = gaus(x, 1.0, 0.0, sigma)
+        np.testing.assert_allclose(v, g, atol=1e-6)
+
+    def test_reduces_to_lorentzian_when_sigma_zero(self):
+        """When sigma -> 0, Voigt approaches Lorentzian shape."""
+        x = np.linspace(-5, 5, 200)
+        sigma_small = 1e-10
+        gamma = 1.0
+        v = voigt(x, 1.0, 0.0, sigma_small, gamma)
+        l_ref = lorentzian(x, 1.0, 0.0, gamma)
+        np.testing.assert_allclose(v, l_ref, atol=1e-4)
+
+    def test_symmetry(self):
+        """Voigt is symmetric around x0."""
+        assert voigt(1.0, 1.0, 0.0, 1.0, 1.0) == pytest.approx(
+            voigt(-1.0, 1.0, 0.0, 1.0, 1.0)
+        )
+
+    def test_numpy_array(self):
+        x = np.linspace(-5, 5, 100)
+        result = voigt(x, 1.0, 0.0, 1.0, 1.0)
+        assert result.shape == x.shape
+        assert np.all(np.isfinite(result))

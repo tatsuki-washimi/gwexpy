@@ -11,6 +11,7 @@ from __future__ import annotations
 from . import (
     ats,  # noqa: F401
     audio,  # noqa: F401
+    csv_enhanced,  # noqa: F401
     dttxml,  # noqa: F401
     gbd,  # noqa: F401
     ndscope_hdf5,  # noqa: F401
