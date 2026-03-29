@@ -8,6 +8,12 @@ import numpy as np
 class SignalAnalysisMixin:
     """Mixin providing signal analysis methods like smoothing and peak finding."""
 
+    value: Any
+    unit: Any
+    xunit: Any
+    dt: Any
+    df: Any
+
     def smooth(
         self, width: Any, method: str = "amplitude", ignore_nan: bool = True
     ) -> Any:
@@ -220,7 +226,7 @@ class SignalAnalysisMixin:
 
             # Distance (time/frequency -> samples)
             dist = _to_val(distance)
-            if hasattr(distance, "to") and dx_unit:
+            if distance is not None and hasattr(distance, "to") and dx_unit:
                 dist = int(distance.to(dx_unit).value / dx_val)
 
             # Width (time/frequency -> samples)
@@ -228,7 +234,11 @@ class SignalAnalysisMixin:
             if width is not None:
                 if np.iterable(width) and not isinstance(width, (str, bytes)):
                     wid = [
-                        (w.to(dx_unit).value / dx_val if hasattr(w, "to") else _to_val(w))
+                        (
+                            w.to(dx_unit).value / dx_val
+                            if hasattr(w, "to")
+                            else _to_val(w)
+                        )
                         for w in width
                     ]
                     if isinstance(width, tuple):

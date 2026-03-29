@@ -7,6 +7,7 @@ and classic correlations (Pearson, Kendall, MIC).
 from __future__ import annotations
 
 import warnings
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -263,7 +264,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         from ..statistics.gauch import compute_gauch
 
         return compute_gauch(
-            self,
+            cast(Any, self),
             fftlength=fftlength,
             window=window,
             stride=stride,
@@ -295,7 +296,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         from ..statistics.student_t_indicator import compute_student_t_nu
 
         return compute_student_t_nu(
-            self,
+            cast(Any, self),
             fftlength=fftlength,
             stride=stride,
             window=window,
@@ -334,22 +335,28 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             data, bins=bins, range=range, weights=weights, density=density, **kwargs
         )
 
-        # Determine y-unit
         if density:
             unit = self.unit**-1 if self.unit else u.dimensionless_unscaled
+            return Histogram.from_density(
+                counts,
+                edges,
+                unit=unit,
+                xunit=self.unit,
+                name=self.name,
+                channel=getattr(self, "channel", None),
+            )
         else:
             # For counts, we might want a specific 'ct' unit or dimensionless
             # If weights are provided, the unit might be different.
             unit = u.dimensionless_unscaled
-
-        return Histogram(
-            counts,
-            edges,
-            unit=unit,
-            xunit=self.unit,
-            name=self.name,
-            channel=getattr(self, "channel", None),
-        )
+            return Histogram(
+                counts,
+                edges,
+                unit=unit,
+                xunit=self.unit,
+                name=self.name,
+                channel=getattr(self, "channel", None),
+            )
 
     # --- Internal Methods ---
 

@@ -23,6 +23,7 @@ from gwexpy.types.mixin._collection_mixin import (
     _make_dict_map_method,
     _make_dict_plain_method,
     _make_list_map_method,
+    _make_list_plain_method,
 )
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
@@ -202,8 +203,8 @@ class HistogramDict(DictMapMixin, HistogramBaseDict[Histogram]):
     integral = _make_dict_plain_method(
         "integral", doc="Compute integral of each Histogram in the dict. Returns a dict of Quantities."
     )
-    to_density = _make_dict_map_method(
-        "to_density", doc="Convert each Histogram to density representation. Returns a HistogramDict."
+    to_density = _make_dict_plain_method(
+        "to_density", doc="Convert each Histogram to density representation. Returns a dict of Quantities."
     )
     mean = _make_dict_plain_method("mean", doc="Compute weighted mean of each Histogram. Returns a dict of Quantities.")
     var = _make_dict_plain_method("var", doc="Compute weighted variance of each Histogram. Returns a dict of Quantities.")
@@ -357,8 +358,8 @@ class HistogramList(ListMapMixin, HistogramBaseList[Histogram]):
 
     rebin = _make_list_map_method("rebin", doc="Rebin each Histogram in the list. Returns a HistogramList.")
     fill = _make_list_map_method("fill", doc="Fill each Histogram in the list with new data.")
-    to_density = _make_list_map_method(
-        "to_density", doc="Convert each Histogram to density representation. Returns a HistogramList."
+    to_density = _make_list_plain_method(
+        "to_density", doc="Convert each Histogram to density representation. Returns a list of Quantities."
     )
     mean = _make_list_map_method("mean", doc="Compute weighted mean of each Histogram. Returns a list of Quantities.")
     var = _make_list_map_method("var", doc="Compute weighted variance of each Histogram. Returns a list of Quantities.")

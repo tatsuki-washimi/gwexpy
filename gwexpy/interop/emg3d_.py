@@ -194,9 +194,15 @@ def from_emg3d_field(
         axis0_domain = "time"
 
     # Raw components: view arrays from the 1-D flat buffer
-    fx = np.asarray(field.fx, dtype=np.complex128 if np.iscomplexobj(field.fx) else np.float64)
-    fy = np.asarray(field.fy, dtype=np.complex128 if np.iscomplexobj(field.fy) else np.float64)
-    fz = np.asarray(field.fz, dtype=np.complex128 if np.iscomplexobj(field.fz) else np.float64)
+    fx = np.asarray(
+        field.fx, dtype=np.complex128 if np.iscomplexobj(field.fx) else np.float64
+    )
+    fy = np.asarray(
+        field.fy, dtype=np.complex128 if np.iscomplexobj(field.fy) else np.float64
+    )
+    fz = np.asarray(
+        field.fz, dtype=np.complex128 if np.iscomplexobj(field.fz) else np.float64
+    )
 
     if interpolate_to_cell_center:
         # For E-field (edge): fx is (nCx, nNy, nNz) → interp axes 1,2
@@ -233,7 +239,7 @@ def from_emg3d_field(
             )
         fx_c, fy_c, fz_c = fx, fy, fz
         cx, cy, cz = _build_node_coords(mesh)
-        metadata = {"interpolated_from": None}
+        metadata = {}
 
     # Add singleton axis0 dimension
     def _add_axis0(arr: np.ndarray) -> np.ndarray:
@@ -303,9 +309,7 @@ def to_emg3d_field(
     if isinstance(vf, VectorField):
         keys = list(vf.keys())
         if len(keys) != 3:
-            raise ValueError(
-                f"VectorField must have exactly 3 components; got {keys}."
-            )
+            raise ValueError(f"VectorField must have exactly 3 components; got {keys}.")
         fx = np.asarray(vf["x"].value).ravel()
         fy = np.asarray(vf["y"].value).ravel()
         fz = np.asarray(vf["z"].value).ravel()
@@ -313,21 +317,93 @@ def to_emg3d_field(
 
         # Reconstruct a minimal TensorMesh from the ScalarField axes
         sf_x = vf["x"]
-        hx = np.diff(np.asarray(sf_x._axis1_index.value if hasattr(sf_x._axis1_index, "value") else sf_x._axis1_index))
-        hy = np.diff(np.asarray(sf_x._axis2_index.value if hasattr(sf_x._axis2_index, "value") else sf_x._axis2_index))
-        hz = np.diff(np.asarray(sf_x._axis3_index.value if hasattr(sf_x._axis3_index, "value") else sf_x._axis3_index))
-        origin_x = float(np.asarray(sf_x._axis1_index.value if hasattr(sf_x._axis1_index, "value") else sf_x._axis1_index)[0])
-        origin_y = float(np.asarray(sf_x._axis2_index.value if hasattr(sf_x._axis2_index, "value") else sf_x._axis2_index)[0])
-        origin_z = float(np.asarray(sf_x._axis3_index.value if hasattr(sf_x._axis3_index, "value") else sf_x._axis3_index)[0])
+        hx = np.diff(
+            np.asarray(
+                sf_x._axis1_index.value
+                if hasattr(sf_x._axis1_index, "value")
+                else sf_x._axis1_index
+            )
+        )
+        hy = np.diff(
+            np.asarray(
+                sf_x._axis2_index.value
+                if hasattr(sf_x._axis2_index, "value")
+                else sf_x._axis2_index
+            )
+        )
+        hz = np.diff(
+            np.asarray(
+                sf_x._axis3_index.value
+                if hasattr(sf_x._axis3_index, "value")
+                else sf_x._axis3_index
+            )
+        )
+        origin_x = float(
+            np.asarray(
+                sf_x._axis1_index.value
+                if hasattr(sf_x._axis1_index, "value")
+                else sf_x._axis1_index
+            )[0]
+        )
+        origin_y = float(
+            np.asarray(
+                sf_x._axis2_index.value
+                if hasattr(sf_x._axis2_index, "value")
+                else sf_x._axis2_index
+            )[0]
+        )
+        origin_z = float(
+            np.asarray(
+                sf_x._axis3_index.value
+                if hasattr(sf_x._axis3_index, "value")
+                else sf_x._axis3_index
+            )[0]
+        )
     else:
         arr = np.asarray(vf.value)
         flat = arr.ravel()
-        hx = np.diff(np.asarray(vf._axis1_index.value if hasattr(vf._axis1_index, "value") else vf._axis1_index))
-        hy = np.diff(np.asarray(vf._axis2_index.value if hasattr(vf._axis2_index, "value") else vf._axis2_index))
-        hz = np.diff(np.asarray(vf._axis3_index.value if hasattr(vf._axis3_index, "value") else vf._axis3_index))
-        origin_x = float(np.asarray(vf._axis1_index.value if hasattr(vf._axis1_index, "value") else vf._axis1_index)[0])
-        origin_y = float(np.asarray(vf._axis2_index.value if hasattr(vf._axis2_index, "value") else vf._axis2_index)[0])
-        origin_z = float(np.asarray(vf._axis3_index.value if hasattr(vf._axis3_index, "value") else vf._axis3_index)[0])
+        hx = np.diff(
+            np.asarray(
+                vf._axis1_index.value
+                if hasattr(vf._axis1_index, "value")
+                else vf._axis1_index
+            )
+        )
+        hy = np.diff(
+            np.asarray(
+                vf._axis2_index.value
+                if hasattr(vf._axis2_index, "value")
+                else vf._axis2_index
+            )
+        )
+        hz = np.diff(
+            np.asarray(
+                vf._axis3_index.value
+                if hasattr(vf._axis3_index, "value")
+                else vf._axis3_index
+            )
+        )
+        origin_x = float(
+            np.asarray(
+                vf._axis1_index.value
+                if hasattr(vf._axis1_index, "value")
+                else vf._axis1_index
+            )[0]
+        )
+        origin_y = float(
+            np.asarray(
+                vf._axis2_index.value
+                if hasattr(vf._axis2_index, "value")
+                else vf._axis2_index
+            )[0]
+        )
+        origin_z = float(
+            np.asarray(
+                vf._axis3_index.value
+                if hasattr(vf._axis3_index, "value")
+                else vf._axis3_index
+            )[0]
+        )
 
     # Resolve frequency
     if frequency is None:

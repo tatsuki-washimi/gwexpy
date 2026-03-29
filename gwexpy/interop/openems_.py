@@ -141,10 +141,11 @@ def _read_openems_td(
         key = str(timestep)
         if key not in td:
             raise ValueError(
-                f"Timestep {timestep!r} not found in /FieldData/TD. "
-                f"Available: {keys}"
+                f"Timestep {timestep!r} not found in /FieldData/TD. Available: {keys}"
             )
-        arr = np.asarray(td[key], dtype=np.float64)[np.newaxis, ...]  # (1, Nx, Ny, Nz, 3)
+        arr = np.asarray(td[key], dtype=np.float64)[
+            np.newaxis, ...
+        ]  # (1, Nx, Ny, Nz, 3)
         t_attr = td[key].attrs.get("Time", None)
         times = np.array(
             [float(t_attr) if t_attr is not None else timestep], dtype=np.float64
@@ -187,7 +188,14 @@ def _read_openems_fd(
     fd = h5file["FieldData/FD"]
     # Collect frequency indices from dataset names like "f0_real", "f1_real"
     real_keys = {k for k in fd.keys() if re.match(r"f\d+_real$", k)}
-    indices = sorted({int(re.search(r"f(\d+)_real", k).group(1)) for k in real_keys})
+    indices = sorted(
+        {
+            int(match.group(1))
+            for k in real_keys
+            for match in [re.search(r"f(\d+)_real", k)]
+            if match is not None
+        }
+    )
 
     if not indices:
         raise ValueError("No frequency datasets found in /FieldData/FD.")

@@ -50,7 +50,7 @@ _VECTOR_COMPONENTS = {
 }
 
 
-def _parse_meep_datasets(h5file: Any) -> dict[str, dict[str, str]]:
+def _parse_meep_datasets(h5file: Any) -> dict[str, dict[str, str | None]]:
     """Parse HDF5 dataset names into field component groups.
 
     Parameters
@@ -73,7 +73,7 @@ def _parse_meep_datasets(h5file: Any) -> dict[str, dict[str, str]]:
     ``{"ez": {"real": "ez", "imag": None}}``
     """
     keys = list(h5file.keys())
-    result: dict[str, dict[str, str]] = {}
+    result: dict[str, dict[str, str | None]] = {}
 
     real_keys = {k for k in keys if k.endswith(".r")}
     imag_keys = {k for k in keys if k.endswith(".i")}
@@ -96,7 +96,9 @@ def _parse_meep_datasets(h5file: Any) -> dict[str, dict[str, str]]:
     return result
 
 
-def _build_complex_array(h5file: Any, real_key: str, imag_key: str | None) -> np.ndarray:
+def _build_complex_array(
+    h5file: Any, real_key: str, imag_key: str | None
+) -> np.ndarray:
     """Load datasets and return a complex (or real) numpy array.
 
     Parameters
@@ -273,7 +275,10 @@ def from_meep_hdf5(
         # Load all targeted arrays
         arrays: dict[str, np.ndarray] = {}
         for name, keys in targets.items():
-            arrays[name] = _build_complex_array(f, keys["real"], keys["imag"])
+            real_key = keys["real"]
+            if real_key is None:
+                continue
+            arrays[name] = _build_complex_array(f, real_key, keys["imag"])
 
     if not arrays:
         raise ValueError(f"No data could be loaded from '{filepath}'.")

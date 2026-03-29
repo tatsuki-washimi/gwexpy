@@ -16,7 +16,7 @@ https://github.com/sandialabs/sdynpy
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 
@@ -25,7 +25,6 @@ from ._modal_helpers import (
     build_mode_dataframe,
     infer_unit_from_response_type,
 )
-from ._optional import require_optional
 from ._registry import ConverterRegistry
 
 __all__ = [
@@ -233,7 +232,8 @@ def from_sdynpy_timehistory(
         for i in range(n_ch):
             channel_names[i, 0] = str(coords[i]) if i < len(coords) else f"ch_{i}"
 
-    return cls(
+    cls_any = cast(Any, cls)
+    return cls_any(
         ordinate,
         dt=dt,
         t0=t0,

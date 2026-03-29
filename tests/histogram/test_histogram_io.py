@@ -13,7 +13,7 @@ def test_hdf5_roundtrip(tmp_path):
         unit="V",
         xunit="Hz",
         sumw2=[1, 2],
-        name="test_h"
+        name="test_h",
     )
     fpath = tmp_path / "test.h5"
 

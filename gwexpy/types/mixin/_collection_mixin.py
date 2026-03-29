@@ -130,3 +130,18 @@ def _make_list_map_method(
     method.__qualname__ = method_name
     method.__doc__ = doc or f"Apply ``{method_name}`` to each element."
     return method
+
+
+def _make_list_plain_method(method_name: str, *, doc: str = "") -> Any:
+    """Create a delegation method returning a plain list (not a collection)."""
+
+    def method(self, *args, **kwargs):
+        return [
+            getattr(val, method_name)(*args, **kwargs)
+            for val in self
+        ]
+
+    method.__name__ = method_name
+    method.__qualname__ = method_name
+    method.__doc__ = doc or f"Apply ``{method_name}`` to each element."
+    return method

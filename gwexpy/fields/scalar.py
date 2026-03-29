@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -896,27 +896,32 @@ class ScalarField(FieldBase):
 
                 # Label for the series
                 label = f"({self._axis1_name}={self._axis1_index[i1]:.3g}, y={self._axis2_index[i2]:.3g}, z={self._axis3_index[i3]:.3g})"
-            
+
             elif interp == "linear":
                 from scipy.interpolate import interpn
-                
+
+                axis0_index = cast(Any, self._axis0_index)
+                axis1_index = cast(Any, self._axis1_index)
+                axis2_index = cast(Any, self._axis2_index)
+                axis3_index = cast(Any, self._axis3_index)
+
                 # Grid for all 4 axes
                 grid = [
-                    self._axis0_index.value,
-                    self._axis1_index.value,
-                    self._axis2_index.value,
-                    self._axis3_index.value
+                    axis0_index.value,
+                    axis1_index.value,
+                    axis2_index.value,
+                    axis3_index.value,
                 ]
-                
+
                 # Evaluation points: (nt, 4)
                 # t stays on its grid, while x, y, z are fixed
-                nt = len(self._axis0_index)
+                nt = len(axis0_index)
                 eval_points = np.zeros((nt, 4))
-                eval_points[:, 0] = self._axis0_index.value
-                eval_points[:, 1] = x_val.to(self._axis1_index.unit).value
-                eval_points[:, 2] = y_val.to(self._axis2_index.unit).value
-                eval_points[:, 3] = z_val.to(self._axis3_index.unit).value
-                
+                eval_points[:, 0] = axis0_index.value
+                eval_points[:, 1] = x_val.to(axis1_index.unit).value
+                eval_points[:, 2] = y_val.to(axis2_index.unit).value
+                eval_points[:, 3] = z_val.to(axis3_index.unit).value
+
                 ts_data = interpn(grid, self.value, eval_points, method="linear")
                 label = f"({self._axis1_name}={x_val.value:.3g}, y={y_val.value:.3g}, z={z_val.value:.3g})"
             else:
@@ -967,13 +972,13 @@ class ScalarField(FieldBase):
         axis_int = self._get_axis_index(axis)
 
         # Get the axes coordinates
-        all_axes_info = [
+        all_axes_info: list[tuple[int, str, Any]] = [
             (0, self._axis0_name, self._axis0_index),
             (1, self._axis1_name, self._axis1_index),
             (2, self._axis2_name, self._axis2_index),
             (3, self._axis3_name, self._axis3_index),
         ]
-        
+
         extraction_axis_info = all_axes_info[axis_int]
         axis_index = extraction_axis_info[2]
 
@@ -997,10 +1002,10 @@ class ScalarField(FieldBase):
             # Extract the data
             sliced = self[tuple(slices)]
             data = sliced.value.squeeze()
-        
+
         elif interp == "linear":
             from scipy.interpolate import interpn
-            
+
             # Points along the extraction axis
             coords = []
             for ax_int, ax_name, ax_index_val in all_axes_info:
@@ -1013,7 +1018,7 @@ class ScalarField(FieldBase):
                             f"in 'at' dictionary"
                         )
                     coords.append(at[ax_name].to(ax_index_val.unit).value)
-            
+
             # Prepare points for interpn: (n_points, 4)
             # where n_points = len(axis_index)
             points = np.zeros((len(axis_index), 4))
@@ -1022,21 +1027,20 @@ class ScalarField(FieldBase):
                     points[:, i] = axis_index.value
                 else:
                     points[:, i] = coords[i]
-            
+
             # Grid points for interpn
             grid = [info[2].value for info in all_axes_info]
-            
+
             # Perform interpolation
             data = interpn(grid, self.value, points, method="linear")
         else:
             raise ValueError(f"Unsupported interpolation method '{interp}'")
 
         # Return with units
-        from astropy import units as u
         values = data
         if hasattr(self, "unit") and self.unit is not None:
             values = values * self.unit
-        
+
         return axis_index, values
 
     def slice_map2d(self, plane="xy", at=None):

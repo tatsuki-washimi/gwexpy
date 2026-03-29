@@ -17,6 +17,7 @@ def test_histogram_init():
     assert hist.values.unit == u.Unit("count")
     assert hist.edges.unit == u.Unit("Hz")
 
+
 def test_histogram_validation():
     # Edges length mapping
     with pytest.raises(ValueError):
@@ -26,6 +27,7 @@ def test_histogram_validation():
     with pytest.raises(ValueError):
         Histogram([10, 20], [0, 2, 1])
 
+
 def test_histogram_errors():
     values = [10, 20, 30]
     edges = [0, 1, 2, 3]
@@ -34,12 +36,14 @@ def test_histogram_errors():
     assert hist.errors is not None
     assert np.allclose(hist.errors.value, np.sqrt(sumw2))
 
+
 def test_histogram_fill():
     hist = Histogram([0, 0], [0.0, 1.0, 2.0], unit="count")
     data = [0.1, 0.5, 1.2, 1.9, 0.5]
     h2 = hist.fill(data)
     assert np.allclose(h2.values.value, [3, 2])
     assert h2.unit == u.Unit("count")
+
 
 def test_histogram_fill_sumw2():
     hist = Histogram([0, 0], [0.0, 1.0, 2.0], unit="count", sumw2=[0, 0])
