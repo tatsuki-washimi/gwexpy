@@ -86,6 +86,7 @@ Tools for specific noise hunting and diagnostics tasks.
 
    Noise Hunting with Bruco <advanced_bruco>
    Bruco + ICA End-to-End Denoising <case_bruco_ica_denoising>
+   Schumann Resonance Analysis <case_schumann_resonance>
 
 VI. Segment Analysis
 --------------------
