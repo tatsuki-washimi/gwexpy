@@ -62,6 +62,7 @@ IV. 高度な信号処理
    スペクトログラム処理：正規化とクリーニング <advanced_spectrogram_processing>
    Bootstrap PSD & GLS フィッティング <case_bootstrap_gls_fitting>
    advanced_peak_detection
+   ピーク/スペクトル線の時間追跡 <advanced_peak_tracking>
    advanced_hht
    時間-周波数解析: インタラクティブ例 <time_frequency_analysis_comparison>
    時間-周波数手法: 理論ガイド <time_frequency_comparison>
@@ -88,6 +89,7 @@ V. 特殊ツール
    advanced_bruco
    Bruco + ICA エンドツーエンド ノイズ削減 <case_bruco_ica_denoising>
    Bruco 応用編：バイリニアカップリングと AM/FM 復調 <case_bruco_advanced>
+   バイオリンモード解析 <case_violin_mode>
    シューマン共鳴解析 <case_schumann_resonance>
 
 VI. セグメント解析
