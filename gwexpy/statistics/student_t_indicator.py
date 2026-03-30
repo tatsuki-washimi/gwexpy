@@ -5,7 +5,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
-from scipy import stats
+try:
+    from scipy import stats
+except ImportError as _exc:
+    raise ImportError(
+        "scipy is required for gwexpy.statistics. Install with: pip install scipy"
+    ) from _exc
 
 from ..spectrogram import Spectrogram
 

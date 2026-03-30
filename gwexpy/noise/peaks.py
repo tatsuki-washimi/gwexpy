@@ -6,7 +6,12 @@ from typing import Any
 
 import numpy as np
 from astropy import units as u
-from scipy.special import wofz
+try:
+    from scipy.special import wofz
+except ImportError as _exc:
+    raise ImportError(
+        "scipy is required for gwexpy.noise.peaks. Install with: pip install scipy"
+    ) from _exc
 
 from ..frequencyseries import FrequencySeries
 

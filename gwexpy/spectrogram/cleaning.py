@@ -3,7 +3,12 @@
 from __future__ import annotations
 
 import numpy as np
-from scipy.ndimage import median_filter
+try:
+    from scipy.ndimage import median_filter
+except ImportError as _exc:
+    raise ImportError(
+        "scipy is required for gwexpy.spectrogram.cleaning. Install with: pip install scipy"
+    ) from _exc
 
 
 def threshold_clean(

@@ -19,7 +19,12 @@ import warnings
 from typing import Any, cast
 
 import numpy as np
-from scipy.signal import get_window
+try:
+    from scipy.signal import get_window
+except ImportError as _exc:
+    raise ImportError(
+        "scipy is required for gwexpy.spectral. Install with: pip install scipy"
+    ) from _exc
 
 from gwexpy.interop._registry import ConverterRegistry
 

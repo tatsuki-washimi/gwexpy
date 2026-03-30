@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 import numpy as np
-from scipy import stats as scipy_stats
+try:
+    from scipy import stats as scipy_stats
+except ImportError as _exc:
+    raise ImportError(
+        "scipy is required for gwexpy. Install with: pip install scipy"
+    ) from _exc
 
 
 class StatisticalMethodsMixin:
