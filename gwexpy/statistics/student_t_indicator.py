@@ -58,8 +58,6 @@ def compute_student_t_nu(
     
     # Simple STFT to get complex values
     # shape (n_freqs, n_times)
-    freqs, times, Zxx = stats.sigtools._segment_axis(ts.value, nfft, nfft - nstep, axis=-1)
-    # Wait, sigtools is internal. Use scipy.signal.stft or manual rolling.
     from scipy.signal import stft
     f, t, Zxx = stft(ts.value, fs=fs, nperseg=nfft, noverlap=nfft-nstep, return_onesided=True)
     # Zxx shape: (n_freqs, n_times)

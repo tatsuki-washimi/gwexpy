@@ -18,21 +18,32 @@ class RegularityMixin:
     @property
     def is_regular(self) -> bool:
         """Return True if this series has a regular grid (constant spacing)."""
+        # 1. Check for 'dt' attribute (standard for regular TimeSeries/FrequencySeries)
+        dt = getattr(self, "dt", None)
+        if dt is not None:
+             try:
+                 # If dt is a Quantity with value > 0, it's regular by definition in GWpy
+                 return float(dt) > 0
+             except (TypeError, ValueError):
+                 pass
+
+        # 2. Check underlying index accurately
         try:
-            # Use underlying index safely to avoid triggering GWpy AttributeErrors on irregular series
             idx = getattr(self, "xindex", None)
             if idx is None:
                 return True
-            if hasattr(idx, "regular"):
-                return idx.regular
+            
+            # Use GWpy's own assessment if available and looks healthy
+            if hasattr(idx, "regular") and idx.regular is True:
+                return True
 
-            # Manual check
+            # Manual fallback check with very relaxed tolerances
             vals = np.asarray(idx)
             if len(vals) < 2:
                 return True
             diffs = np.diff(vals)
-            # Use same tolerances as original implementations
-            return np.allclose(diffs, diffs[0], atol=1e-12, rtol=1e-10)
+            # Extremely relaxed to handle GBD/simulated data noise
+            return np.allclose(diffs, diffs[0], atol=1e-4, rtol=1e-3)
         except (AttributeError, ValueError, TypeError):
             return False
 

@@ -342,6 +342,12 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
 
         return to_obspy_trace(self, stats_extra=stats_extra, dtype=dtype)
 
+    def to_obspy_trace(
+        self, *, stats_extra: dict[str, Any] | None = None, dtype: Any = None
+    ) -> Any:
+        """Alias for to_obspy()."""
+        return self.to_obspy(stats_extra=stats_extra, dtype=dtype)
+
     @classmethod
     def from_obspy(
         cls,
@@ -369,6 +375,17 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         from gwexpy.interop import from_obspy_trace
 
         return from_obspy_trace(cls, tr, unit=unit, name_policy=name_policy)
+
+    @classmethod
+    def from_obspy_trace(
+        cls,
+        tr: Any,
+        *,
+        unit: Any | None = None,
+        name_policy: str = "id",
+    ) -> Any:
+        """Alias for from_obspy()."""
+        return cls.from_obspy(tr, unit=unit, name_policy=name_policy)
 
     # ===============================
     # sqlite
