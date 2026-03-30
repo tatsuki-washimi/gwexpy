@@ -603,9 +603,20 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         """
         data = self.value.copy()
 
+        n_freqs = data.shape[1]
+
+        def _validate_reference(arr: Any) -> np.ndarray:
+            r = np.asarray(arr, dtype=float).ravel()
+            if r.shape[0] != n_freqs:
+                raise ValueError(
+                    f"reference length ({r.shape[0]}) must equal the number of "
+                    f"frequency bins ({n_freqs})"
+                )
+            return r
+
         if method in ("snr", "median"):
             if reference is not None:
-                ref = np.asarray(reference)
+                ref = _validate_reference(reference)
             else:
                 ref = np.median(data, axis=0)
         elif method == "mean":
@@ -615,7 +626,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         elif method == "reference":
             if reference is None:
                 raise ValueError("reference must be provided for method='reference'")
-            ref = np.asarray(reference)
+            ref = _validate_reference(reference)
         else:
             raise ValueError(
                 f"Unknown method: {method!r}. "

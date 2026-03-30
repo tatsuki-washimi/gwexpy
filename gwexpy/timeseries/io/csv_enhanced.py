@@ -92,11 +92,40 @@ def _reconstruct_timestamps(
         microsecs = np.zeros(nrows, dtype=int)
 
     for i in range(nrows):
-        dt = _dt.datetime(
-            years[i], months[i], days[i],
-            hours[i], minutes[i], secs[i], microsecs[i],
-            tzinfo=timezone,
-        )
+        # Validate component ranges before constructing datetime
+        if not (1 <= months[i] <= 12):
+            raise ValueError(
+                f"Row {i}: month value {months[i]} is out of range [1, 12]"
+            )
+        if not (1 <= days[i] <= 31):
+            raise ValueError(
+                f"Row {i}: day value {days[i]} is out of range [1, 31]"
+            )
+        if not (0 <= hours[i] <= 23):
+            raise ValueError(
+                f"Row {i}: hour value {hours[i]} is out of range [0, 23]"
+            )
+        if not (0 <= minutes[i] <= 59):
+            raise ValueError(
+                f"Row {i}: minute value {minutes[i]} is out of range [0, 59]"
+            )
+        if not (0 <= secs[i] <= 59):
+            raise ValueError(
+                f"Row {i}: second value {secs[i]} is out of range [0, 59]"
+            )
+        try:
+            tz = timezone if timezone is not None else _dt.timezone.utc
+            dt = _dt.datetime(
+                years[i], months[i], days[i],
+                hours[i], minutes[i], secs[i], microsecs[i],
+                tzinfo=tz,
+            )
+        except ValueError as exc:
+            raise ValueError(
+                f"Row {i}: invalid datetime components "
+                f"({years[i]}-{months[i]:02d}-{days[i]:02d} "
+                f"{hours[i]:02d}:{minutes[i]:02d}:{secs[i]:02d})"
+            ) from exc
         gps[i] = datetime_to_gps(dt)
 
     return gps
@@ -129,12 +158,13 @@ def _resample_uniform(
     dt = 1.0 / sample_rate
     t_start = times[0]
     t_end = times[-1]
-    new_times = np.arange(t_start, t_end, dt)
+    n_samples = max(1, round((t_end - t_start) / dt) + 1)
+    new_times = np.linspace(t_start, t_end, n_samples)
 
     if method == "interpolate":
         from scipy.interpolate import interp1d
 
-        f = interp1d(times, values, kind="linear", fill_value="extrapolate")
+        f = interp1d(times, values, kind="linear", bounds_error=False, fill_value=np.nan)
         new_values = f(new_times)
     elif method == "asfreq":
         # Nearest-neighbor resampling
@@ -305,7 +335,7 @@ def read_timeseriesdict_csv(
             # Check if data is already uniform
             dt_diff = np.diff(gps_times)
             expected_dt = 1.0 / target_rate
-            is_uniform = np.allclose(dt_diff, expected_dt, rtol=0.01)
+            is_uniform = np.allclose(dt_diff, expected_dt, rtol=0.05, atol=1e-6)
 
             if not is_uniform and len(gps_times) > 1:
                 ts_times, values = _resample_uniform(
@@ -338,10 +368,15 @@ def read_timeseriesdict_csv(
 
 
 # --- Format registration ---
-from ._registration import register_timeseries_format  # noqa: E402
+# Wrapped in try/except so importing this module in isolation (e.g. tests)
+# does not fail if the registration infrastructure is unavailable.
+try:
+    from ._registration import register_timeseries_format  # noqa: E402
 
-register_timeseries_format(
-    "csv",
-    reader_dict=read_timeseriesdict_csv,
-    extension="csv",
-)
+    register_timeseries_format(
+        "csv",
+        reader_dict=read_timeseriesdict_csv,
+        extension="csv",
+    )
+except Exception:  # pragma: no cover
+    pass
