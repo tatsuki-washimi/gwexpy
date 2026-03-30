@@ -58,7 +58,8 @@ IV. 高度な信号処理
    :maxdepth: 1
    :caption: 高度な解析
 
-   advanced_fitting
+   フィッティング & スペクトル線解析 <advanced_fitting>
+   スペクトログラム処理：正規化とクリーニング <advanced_spectrogram_processing>
    Bootstrap PSD & GLS フィッティング <case_bootstrap_gls_fitting>
    advanced_peak_detection
    advanced_hht
