@@ -62,6 +62,7 @@ Statistical analysis and advanced transforms.
    Spectrogram Processing: Normalization & Cleaning <advanced_spectrogram_processing>
    Bootstrap PSD & GLS Fitting <case_bootstrap_gls_fitting>
    Peak Detection <advanced_peak_detection>
+   Peak / Line Time Tracking <advanced_peak_tracking>
    HHT Analysis <advanced_hht>
    Time-Frequency Analysis: Interactive Examples <time_frequency_analysis_comparison>
    Time-Frequency Methods: Theory Guide <time_frequency_comparison>
@@ -88,6 +89,7 @@ Tools for specific noise hunting and diagnostics tasks.
    Noise Hunting with Bruco <advanced_bruco>
    Bruco + ICA End-to-End Denoising <case_bruco_ica_denoising>
    Advanced Bruco: Bilinear Coupling & AM/FM Demodulation <case_bruco_advanced>
+   Violin Mode Analysis <case_violin_mode>
    Schumann Resonance Analysis <case_schumann_resonance>
 
 VI. Segment Analysis
