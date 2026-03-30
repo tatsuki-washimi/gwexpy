@@ -39,8 +39,8 @@ class ParameterValue(float):
         return super().__new__(cls, value)
 
     def __init__(self, value, error=None):
-        self.value = value
-        self.error = error
+        self.value = float(value)
+        self.error = float(error) if error is not None else None
 
 
 class Fitter:
@@ -206,7 +206,11 @@ class FitResult:
 
             # Unit propagation: apply the Y-unit stored in FitResult
             if self.unit and not hasattr(res, "unit"):
-                return res * u.Unit(self.unit)
+                try:
+                    return res * u.Unit(self.unit)
+                except (ValueError, TypeError):
+                    # Fallback for unrecognized units (e.g., 'rtHz')
+                    return res
             return res
 
         return bound_model
@@ -372,7 +376,7 @@ class FitResult:
         else:
             x_plot = np.linspace(min(self.x), max(self.x), num_points)
         y_plot = self.model(x_plot, **self.params)
-        ax.plot(x_plot, y_plot, label="Fit", **kwargs)
+        ax.plot(x_plot, y_plot, label=kwargs.pop("label", "Fit"), **kwargs)
 
         # If we're using a GWpy GPS scale, let GWpy format the X label
         # during draw() (it uses the epoch + unit). Do not override here.
@@ -1125,7 +1129,10 @@ def fit_series(
         cov_inv = None
 
         # Check if cov is a BifrequencyMap (duck typing to avoid import issues)
-        if hasattr(cov, "inverse") and hasattr(cov, "value"):
+        if hasattr(cov, "inverse") and hasattr(cov, "crop") and hasattr(cov, "value"):
+            # BifrequencyMap: Crop if x_range is provided
+            if x_range:
+                cov = cov.crop(*x_range)
             # BifrequencyMap: get inverse and extract value
             inv_map = cov.inverse()
             cov_inv = np.asarray(inv_map.value)

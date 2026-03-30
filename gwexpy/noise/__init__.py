@@ -20,10 +20,11 @@ from __future__ import annotations
 
 # Import submodules for direct access
 # Import submodules for direct access
-from . import asd, field, wave
+from . import asd, field, line_mask, wave
 
 # Re-export key functions for convenience
 from .asd import from_obspy, from_pygwinc
+from .line_mask import apply_line_mask, create_line_mask
 from .non_gaussian import inject_noise, scatter_light_noise, transient_gaussian_noise
 from .wave import from_asd
 
@@ -42,4 +43,6 @@ __all__ = [
     "transient_gaussian_noise",
     "scatter_light_noise",
     "inject_noise",
+    "apply_line_mask",
+    "create_line_mask",
 ]

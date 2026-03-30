@@ -161,6 +161,60 @@ class BifrequencyMap(Array2D):
             name=f"Inverse of {self.name}" if self.name else "Inverse",
         )
 
+    def crop(self, low=None, high=None, low2=None, high2=None) -> BifrequencyMap:
+        """
+        Crop this BifrequencyMap to a specific frequency range.
+
+        Parameters
+        ----------
+        low : float, u.Quantity, optional
+            Lower bound for frequency1 (X/cols).
+        high : float, u.Quantity, optional
+            Upper bound for frequency1 (X/cols).
+        low2 : float, u.Quantity, optional
+            Lower bound for frequency2 (Y/rows). If None, uses `low`.
+        high2 : float, u.Quantity, optional
+            Upper bound for frequency2 (Y/rows). If None, uses `high`.
+
+        Returns
+        -------
+        cropped : BifrequencyMap
+            The cropped map.
+        """
+        if low2 is None:
+            low2 = low
+        if high2 is None:
+            high2 = high
+
+        # Select indices for f1 (cols/yindex)
+        f1 = self.frequency1.value
+        idx1 = np.ones(len(f1), dtype=bool)
+        if low is not None:
+            idx1 &= f1 >= float(low)
+        if high is not None:
+            idx1 &= f1 <= float(high)
+
+        # Select indices for f2 (rows/xindex)
+        f2 = self.frequency2.value
+        idx2 = np.ones(len(f2), dtype=bool)
+        if low2 is not None:
+            idx2 &= f2 >= float(low2)
+        if high2 is not None:
+            idx2 &= f2 <= float(high2)
+
+        # Extract data and axes
+        new_data = self.value[np.ix_(idx2, idx1)]
+        new_f1 = self.frequency1[idx1]
+        new_f2 = self.frequency2[idx2]
+
+        return self.__class__.from_points(
+            new_data,
+            f2=new_f2,
+            f1=new_f1,
+            unit=self.unit,
+            name=self.name,
+        )
+
     def __repr__(self):
         prefix = super().__repr__()
         return (

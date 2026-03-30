@@ -85,6 +85,7 @@ def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetim
         formats = [
             "%Y/%m/%d %H:%M:%S.%f",
             "%Y/%m/%d %H:%M:%S",
+            "%Y-%m-%d %H:%M:%S.%f",
             "%Y-%m-%d %H:%M:%S",
             "%Y-%m-%dT%H:%M:%S",
             "%Y-%m-%d,%H:%M:%S",

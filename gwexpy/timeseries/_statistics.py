@@ -282,7 +282,9 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         """
         from ..statistics.rayleigh_test import rayleigh_pvalue
 
-        rs = self.rayleigh_spectrogram(stride=stride, fftlength=fftlength)
+        # overlap is used for rayleigh_spectrogram, not rayleigh_pvalue
+        overlap = kwargs.pop("overlap", None)
+        rs = self.rayleigh_spectrogram(stride=stride, fftlength=fftlength, overlap=overlap)
         return rayleigh_pvalue(rs, n_samples=n_samples, **kwargs)
 
     def student_t_spectrogram(self, fftlength, stride=None, window=40, overlap=None):
@@ -370,12 +372,14 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             )
 
         # Check sample rate match (approximate check)
-        if self.sample_rate != other.sample_rate:
+        sr_self = getattr(self, "sample_rate", None)
+        sr_other = getattr(other, "sample_rate", None)
+        if sr_self is not None and sr_other is not None and sr_self != sr_other:
             warnings.warn(
                 "Sample rates do not match. Resampling 'other' to match 'self'."
             )
             # Resample 'other' to match 'self'
-            other = other.resample(self.sample_rate)
+            other = other.resample(sr_self)
 
         # Align length (crop to shorter)
         min_len = min(len(self), len(other))
