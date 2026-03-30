@@ -86,6 +86,7 @@ V. 特殊ツール
 
    advanced_bruco
    Bruco + ICA エンドツーエンド ノイズ削減 <case_bruco_ica_denoising>
+   Bruco 応用編：バイリニアカップリングと AM/FM 復調 <case_bruco_advanced>
    シューマン共鳴解析 <case_schumann_resonance>
 
 VI. セグメント解析
