@@ -17,7 +17,12 @@ import numpy as np
 import pandas as pd
 from astropy import units as u
 from gwpy.timeseries import TimeSeries, TimeSeriesDict
-from scipy.interpolate import interp1d
+try:
+    from scipy.interpolate import interp1d
+except ImportError as _exc:
+    raise ImportError(
+        "scipy is required for gwexpy.analysis.bruco. Install with: pip install scipy"
+    ) from _exc
 
 # ロガーの設定
 logger = logging.getLogger(__name__)

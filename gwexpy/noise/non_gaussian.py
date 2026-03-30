@@ -6,7 +6,12 @@ from typing import Any
 
 import numpy as np
 from astropy import units as u
-from scipy import signal
+try:
+    from scipy import signal
+except ImportError as _exc:
+    raise ImportError(
+        "scipy is required for gwexpy.noise. Install with: pip install scipy"
+    ) from _exc
 
 from ..timeseries import TimeSeries
 

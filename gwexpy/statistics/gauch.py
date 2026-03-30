@@ -5,8 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
-from scipy import stats
-
 from ..spectrogram import Spectrogram
 
 if TYPE_CHECKING:

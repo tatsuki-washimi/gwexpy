@@ -14,7 +14,12 @@ from typing import Any
 import numpy as np
 from iminuit import Minuit
 from iminuit.util import describe
-from scipy.linalg import solve_triangular
+try:
+    from scipy.linalg import solve_triangular
+except ImportError as _exc:
+    raise ImportError(
+        "scipy is required for gwexpy.fitting. Install with: pip install scipy"
+    ) from _exc
 
 __all__ = ["GeneralizedLeastSquares", "GLS"]
 

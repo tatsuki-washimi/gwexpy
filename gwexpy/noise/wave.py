@@ -24,7 +24,12 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from astropy import units as u
-from scipy import signal as scipy_signal
+try:
+    from scipy import signal as scipy_signal
+except ImportError as _exc:
+    raise ImportError(
+        "scipy is required for gwexpy.noise. Install with: pip install scipy"
+    ) from _exc
 
 if TYPE_CHECKING:
     from numpy.random import Generator
