@@ -4,7 +4,14 @@ from inspect import Parameter, signature
 from typing import Any
 
 import numpy as np
-from scipy.special import wofz
+
+try:
+    from scipy.special import wofz as _wofz
+
+    _SCIPY_AVAILABLE = True
+except ImportError:  # pragma: no cover
+    _wofz = None  # type: ignore[assignment]
+    _SCIPY_AVAILABLE = False
 
 
 class Model:
@@ -135,8 +142,8 @@ def voigt(x, A, x0, sigma, gamma):
     """
     Voigt profile (convolution of Gaussian and Lorentzian).
 
-    Uses the Faddeeva function for efficient computation.
-    Normalized so that the peak value equals A.
+    Uses the Faddeeva function (``scipy.special.wofz``) for efficient
+    computation.  Normalized so that the peak value equals *A*.
 
     Parameters
     ----------
@@ -150,12 +157,27 @@ def voigt(x, A, x0, sigma, gamma):
         Gaussian standard deviation.
     gamma : float
         Lorentzian HWHM.
+
+    Raises
+    ------
+    ImportError
+        If ``scipy`` is not installed.
     """
+    if not _SCIPY_AVAILABLE:
+        raise ImportError(
+            "scipy is required to use the voigt model. "
+            "Install it with: pip install scipy"
+        )
     z = ((x - x0) + 1j * gamma) / (sigma * np.sqrt(2))
-    profile = np.real(wofz(z))
+    profile = np.real(_wofz(z))
     # Normalize so that peak = A
     z0 = 1j * gamma / (sigma * np.sqrt(2))
-    peak = np.real(wofz(z0))
+    peak = np.real(_wofz(z0))
+    # Guard against near-zero peak (sigma → 0 or gamma → 0 limit)
+    if abs(peak) < 1e-12:
+        # Fall back: evaluate at x0 directly
+        peak_fallback = float(np.real(_wofz(np.complex128(1j * gamma / max(sigma, 1e-30) / np.sqrt(2)))))
+        peak = peak_fallback if abs(peak_fallback) >= 1e-12 else 1.0
     return A * profile / peak
 
 

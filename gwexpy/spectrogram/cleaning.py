@@ -47,9 +47,8 @@ def threshold_clean(
     mask = deviation > threshold
 
     if fill == "median":
-        # Replace outliers with column median
-        for j in range(data.shape[1]):
-            cleaned[mask[:, j], j] = med[j]
+        # Replace outliers with column median (vectorized)
+        cleaned = np.where(mask, med[np.newaxis, :], cleaned)
     elif fill == "nan":
         cleaned[mask] = np.nan
     elif fill == "zero":
