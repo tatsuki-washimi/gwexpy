@@ -58,7 +58,8 @@ Statistical analysis and advanced transforms.
    :maxdepth: 1
    :caption: Advanced Analysis
 
-   Advanced Fitting <advanced_fitting>
+   Advanced Fitting & Spectral Lines <advanced_fitting>
+   Spectrogram Processing: Normalization & Cleaning <advanced_spectrogram_processing>
    Bootstrap PSD & GLS Fitting <case_bootstrap_gls_fitting>
    Peak Detection <advanced_peak_detection>
    HHT Analysis <advanced_hht>
