@@ -149,18 +149,19 @@ def _handle_nan_policy(matrix, policy, impute_kwargs=None):
             method = impute_kwargs.get("method", "interpolate")
             impute_kwargs.get("limit", None)
 
-            for i in range(val.shape[1]):
-                col = val[:, i]
-                nans = np.isnan(col)
-                if np.any(nans):
-                    if method == "interpolate":
-                        valid = ~nans
-                        if not np.any(valid):
-                            continue
-                        x = np.arange(len(col))
-                        col[nans] = np.interp(x[nans], x[valid], col[valid])
-                    elif method == "mean":
-                        col[nans] = np.nanmean(col)
+            for i in range(val.shape[0]):  # channels
+                for j in range(val.shape[1]):  # columns
+                    series = val[i, j, :]
+                    nans = np.isnan(series)
+                    if np.any(nans):
+                        if method == "interpolate":
+                            valid = ~nans
+                            if not np.any(valid):
+                                continue
+                            x = np.arange(len(series))
+                            series[nans] = np.interp(x[nans], x[valid], series[valid])
+                        elif method == "mean":
+                            series[nans] = np.nanmean(series)
                     # For simplicity, minimal implementation of others
 
             matrix = mat_copy
@@ -254,7 +255,13 @@ def pca_fit(
 
     matrix = _handle_nan_policy(matrix, nan_policy, impute_kwargs)
 
-    preprocessing = {"center": center, "scale": scale, "whiten_param": whiten}
+    preprocessing = {
+        "center": center,
+        "scale": scale,
+        "whiten_param": whiten,
+        "nan_policy": nan_policy,
+        "impute_kwargs": impute_kwargs,
+    }
 
     X_proc = matrix
 
@@ -313,6 +320,11 @@ def pca_transform(pca_res, matrix, n_components=None):
     _check_sklearn()
 
     # Preprocessing
+    matrix = _handle_nan_policy(
+        matrix,
+        pca_res.preprocessing.get("nan_policy", "raise"),
+        pca_res.preprocessing.get("impute_kwargs"),
+    )
     matrix = _apply_scaler(matrix, pca_res.preprocessing)
 
     X_features = matrix.value.reshape(-1, matrix.shape[-1])
@@ -474,7 +486,13 @@ def ica_fit(
 
     matrix = _handle_nan_policy(matrix, nan_policy, impute_kwargs)
 
-    preprocessing = {"center": center, "scale": scale, "prewhiten": prewhiten}
+    preprocessing = {
+        "center": center,
+        "scale": scale,
+        "prewhiten": prewhiten,
+        "nan_policy": nan_policy,
+        "impute_kwargs": impute_kwargs,
+    }
 
     X_proc = matrix
 
@@ -552,6 +570,11 @@ def ica_transform(ica_res, matrix):
     """
     _check_sklearn()
 
+    matrix = _handle_nan_policy(
+        matrix,
+        ica_res.preprocessing.get("nan_policy", "raise"),
+        ica_res.preprocessing.get("impute_kwargs"),
+    )
     X_proc = _apply_scaler(matrix, ica_res.preprocessing)
 
     if ica_res.preprocessing.get("prewhiten"):
