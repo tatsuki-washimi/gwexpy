@@ -210,6 +210,7 @@ class HistogramRebinMixin:
 
         h = cast(Any, self)
 
+        # Resolve start_val and end_val in histogram xunit
         if start is None:
             start_val = h.edges.value[0]
         elif xunit is not None:
@@ -228,17 +229,15 @@ class HistogramRebinMixin:
         else:
             end_val = float(end)
 
-        # Validation
-        if start_val > end_val:
-            raise ValueError(
-                f"Integration start ({start_val}) cannot be greater than end ({end_val})."
-            )
-
-        if start_val == end_val:
-            val = u.Quantity(0.0, unit=h.unit)
+        # Validate interval
+        # Consider numerical tolerance: treat nearly-equal values as equal
+        if np.isclose(start_val, end_val):
+            zero_q = u.Quantity(0.0, unit=h.unit)
             if return_error:
-                return val, val
-            return val
+                return zero_q, zero_q
+            return zero_q
+        if start_val > end_val:
+            raise ValueError(f"integral: start ({start}) must be <= end ({end})")
 
         # To integrate, we rebin into a single bin [start, end]
         pseudo_new_edges = np.array([start_val, end_val])
