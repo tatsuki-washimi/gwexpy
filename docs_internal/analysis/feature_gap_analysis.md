@@ -174,7 +174,7 @@ This note validates the "gwexpy プロジェクト監査・分析統合レポー
 
 **目的**: 強力だが発見不能な機能をユーザーに公開する
 
-### Task 1-1: ヒストグラムチュートリアルの作成 [L]
+### Task 1-1: ヒストグラムチュートリアルの作成 [DONE] (2026-04-01)
 - **問題**: `gwexpy/histogram/` は95%以上のテストカバレッジを持つが、チュートリアルゼロ
 - **対応**:
   1. `docs/web/en/user_guide/tutorials/intro_histogram.ipynb` を作成
@@ -217,10 +217,10 @@ This note validates the "gwexpy プロジェクト監査・分析統合レポー
 - **対応**: `docs/web/en/user_guide/gui_guide.md` を作成
   - インストール (`pip install gwexpy[gui]`)、起動方法、基本操作、NDS接続
 
-### Task 2-5: Interop 型定義の強化 [L]
+### Task 2-5: Interop 型定義の強化 [DONE] (2026-04-01)
 - **問題**: interop 関数の多くで型アノテーションが欠落
-- **対応**: 高使用頻度の interop モジュール（pandas, xarray, torch, hdf5, zarr）から順に型追加
-- **検証**: `mypy gwexpy/interop/` のエラー削減を確認
+- **対応**: 主要な interop モジュール（pandas, xarray, torch, hdf5, zarr, control, frequency, finesse, lal, root, base）に型定義を追加
+- **結果**: 11モジュールの型定義を完了。`mypy --disallow-untyped-defs` のエラー数を 108件から78件へ削減。
 
 ### Task 2-6: CLI ドキュメントの作成 [S]
 

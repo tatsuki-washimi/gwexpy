@@ -1,14 +1,23 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Literal, Optional, Type, TypeVar, Union
 
 import numpy as np
 
 from ._optional import require_optional
 from .base import to_plain_array
 
+if TYPE_CHECKING:
+    import ROOT
 
-def _get_label(obj, unit, default_name="x"):
+    from gwexpy.frequencyseries import FrequencySeries
+    from gwexpy.spectrogram import Spectrogram
+    from gwexpy.timeseries import TimeSeries
+
+T_s = TypeVar("T_s", bound=Union["TimeSeries", "FrequencySeries", "Spectrogram"])
+
+
+def _get_label(obj: Any, unit: Any, default_name: str = "x") -> str:
     name = getattr(obj, "name", None) or default_name
     unit_str = str(unit) if unit else ""
     if unit_str:
@@ -56,7 +65,7 @@ def _extract_error_array(series, error):
     return err_arr
 
 
-def to_tgraph(series, error=None):
+def to_tgraph(series: Any, error: Optional[Any] = None) -> ROOT.TGraph:
     """
     Convert 1D Series to ROOT TGraph or TGraphErrors.
     """
@@ -87,7 +96,7 @@ def to_tgraph(series, error=None):
     return graph
 
 
-def to_th1d(series, error=None):
+def to_th1d(series: Any, error: Optional[Any] = None) -> ROOT.TH1D:
     """
     Convert 1D Series to ROOT TH1D.
     """
@@ -196,7 +205,7 @@ def to_th1d(series, error=None):
     return hist
 
 
-def to_th2d(spec, error=None):
+def to_th2d(spec: Spectrogram, error: Optional[Any] = None) -> ROOT.TH2D:
     """
     Convert Spectrogram to ROOT TH2D.
     """
@@ -262,7 +271,9 @@ def to_th2d(spec, error=None):
     return hist
 
 
-def from_root(cls, obj, return_error=False):
+def from_root(
+    cls: Type[T_s], obj: Union[ROOT.TGraph, ROOT.TH1], return_error: bool = False
+) -> Union[T_s, tuple[T_s, T_s]]:
     """
     Create Series (TimeSeries or FrequencySeries) from ROOT TGraph or TH1.
     """

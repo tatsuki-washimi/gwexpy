@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from typing import Any, Type, TypeVar
+
 import numpy as np
 from astropy.units import Quantity
 
+T = TypeVar("T")
 
-def to_plain_array(data, copy=False):
+
+def to_plain_array(data: Any, copy: bool = False) -> np.ndarray:
     """
     Extract a plain numpy array from various wrappers (TimeSeries, Quantity, etc).
     """
@@ -17,7 +21,9 @@ def to_plain_array(data, copy=False):
     return np.array(data, copy=copy)
 
 
-def from_plain_array(cls, array, t0, dt, unit=None, **kwargs):
+def from_plain_array(
+    cls: Type[T], array: Any, t0: Any, dt: Any, unit: Any = None, **kwargs: Any
+) -> T:
     """
     Reconstruct a gwexpy object from a plain array.
     """

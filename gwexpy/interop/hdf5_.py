@@ -1,9 +1,25 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar
+
 from ._optional import require_optional
 
+if TYPE_CHECKING:
+    import h5py
 
-def to_hdf5(ts, group, path, overwrite=False, compression=None, compression_opts=None):
+    from gwexpy.timeseries import TimeSeries
+
+T = TypeVar("T", bound="TimeSeries")
+
+
+def to_hdf5(
+    ts: TimeSeries,
+    group: h5py.Group,
+    path: str,
+    overwrite: bool = False,
+    compression: Optional[str] = None,
+    compression_opts: Any = None,
+) -> None:
     """
     Write TimeSeries to HDF5 group.
     wrapper for ts.write(..., format='hdf5') usually, but here we implement direct
@@ -37,7 +53,7 @@ def to_hdf5(ts, group, path, overwrite=False, compression=None, compression_opts
         dset.attrs["channel"] = str(ts.channel)
 
 
-def from_hdf5(cls, group, path):
+def from_hdf5(cls: Type[T], group: h5py.Group, path: str) -> T:
     """Read TimeSeries from HDF5 group."""
     require_optional("h5py")
 

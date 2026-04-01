@@ -1,9 +1,25 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, Type, TypeVar
+
 from ._optional import require_optional
 
+if TYPE_CHECKING:
+    import zarr
 
-def to_zarr(ts, store, path, chunks=None, compressor=None, overwrite=False):
+    from gwexpy.timeseries import TimeSeries
+
+T = TypeVar("T", bound="TimeSeries")
+
+
+def to_zarr(
+    ts: TimeSeries,
+    store: Any,
+    path: str,
+    chunks: Any = None,
+    compressor: Any = None,
+    overwrite: bool = False,
+) -> None:
     """
     Write to Zarr array.
     """
@@ -46,7 +62,7 @@ def to_zarr(ts, store, path, chunks=None, compressor=None, overwrite=False):
         arr.attrs["name"] = str(ts.name)
 
 
-def from_zarr(cls, store, path):
+def from_zarr(cls: Type[T], store: Any, path: str) -> T:
     """
     Read from Zarr array.
     """
