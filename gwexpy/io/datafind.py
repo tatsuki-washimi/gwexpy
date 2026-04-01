@@ -1,4 +1,19 @@
 from __future__ import annotations
 
-from gwpy.io.datafind import *  # noqa: F403
-from gwpy.io.datafind import __all__
+from gwpy.io.datafind import (
+    find_best_frametype,
+    find_frametype,
+    find_latest,
+    find_types,
+    find_urls,
+    on_tape,
+)
+
+__all__ = [
+    "find_best_frametype",
+    "find_frametype",
+    "find_latest",
+    "find_types",
+    "find_urls",
+    "on_tape",
+]

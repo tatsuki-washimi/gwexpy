@@ -158,18 +158,10 @@ This note validates the "gwexpy プロジェクト監査・分析統合レポー
 - **対応**: `pyproject.toml` に `dynamic = ["version"]` を導入し、`_version.py` を単一ソース化した。
 - **結果**: 正常に `gwexpy.__version__` が `0.1.0` を参照することを確認した。
 
-### Task 0-2: ワイルドカードインポートの排除 [M]
-- **問題**: `gwexpy/io/` 内の7ファイルで `from gwpy.io.* import *` を使用
-- **対象ファイル**:
-  - `gwexpy/io/gwf.py`
-  - `gwexpy/io/hdf5.py`
-  - `gwexpy/io/registry.py`
-  - `gwexpy/io/datafind.py`
-  - `gwexpy/io/kerberos.py`
-  - `gwexpy/io/ligolw.py`
-  - `gwexpy/io/_framecpp.py`
-- **対応**: 各ファイルで必要なシンボルを明示的にインポート。`__all__` を維持して後方互換性を確保
-- **検証**: `ruff check gwexpy/io/` がクリーン、既存テスト `tests/io/` が全パス
+### Task 0-2: ワイルドカードインポートの排除 [DONE] (2026-04-01)
+- **現状**: `gwexpy/io/` 内の 7 ファイルで `from gwpy.io.* import *` が使用されていた。
+- **対応**: 各ファイルにおいて re-export するシンボルを明示的なインポートに置き換えた（`gwf.py`, `hdf5.py`, `registry.py`, `datafind.py`, `kerberos.py`, `ligolw.py`, `_framecpp.py`）。
+- **結果**: 名前空間の汚染が解消され、静的解析ツールへの適合性が向上した。
 
 ### Task 0-3: 広範な例外捕捉の具体化 [M]
 - **問題**: `except Exception:` が15箇所に存在
