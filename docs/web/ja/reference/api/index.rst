@@ -15,4 +15,7 @@ API リファレンス
    fitting
    types
    table
+   histogram
+   time
+   interop
    extra
