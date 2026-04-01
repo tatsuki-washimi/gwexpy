@@ -45,6 +45,10 @@ class Histogram(
         xunit: Any = None,
         cov: Any = None,
         sumw2: Any = None,
+        underflow: Any = None,
+        overflow: Any = None,
+        underflow_sumw2: Any = None,
+        overflow_sumw2: Any = None,
         name: str | None = None,
         channel: Any | None = None,
     ):
@@ -63,6 +67,14 @@ class Histogram(
             Covariance matrix (n_bins, n_bins) denoting uncertainties and correlations.
         sumw2 : array-like or Quantity, optional
             Sum of squares of weights for each bin (n_bins) for uncorrelated errors.
+        underflow : float or Quantity, optional
+            Total value below the first bin edge.
+        overflow : float or Quantity, optional
+            Total value above the last bin edge.
+        underflow_sumw2 : float or Quantity, optional
+            Sum of squared weights for the underflow region.
+        overflow_sumw2 : float or Quantity, optional
+            Sum of squared weights for the overflow region.
         name : str, optional
             Name of this histogram.
         channel : any, optional
@@ -120,6 +132,24 @@ class Histogram(
         else:
             self._sumw2 = None
 
+        # Validation for underflow/overflow
+        self._underflow = u.Quantity(underflow or 0.0, unit=values_q.unit)
+        self._overflow = u.Quantity(overflow or 0.0, unit=values_q.unit)
+
+        if underflow_sumw2 is not None:
+            self._underflow_sumw2 = u.Quantity(underflow_sumw2, unit=values_q.unit**2)
+        else:
+            self._underflow_sumw2 = (
+                None if sumw2 is None else u.Quantity(0.0, unit=values_q.unit**2)
+            )
+
+        if overflow_sumw2 is not None:
+            self._overflow_sumw2 = u.Quantity(overflow_sumw2, unit=values_q.unit**2)
+        else:
+            self._overflow_sumw2 = (
+                None if sumw2 is None else u.Quantity(0.0, unit=values_q.unit**2)
+            )
+
         self.name = name
         self.channel = channel
 
@@ -164,12 +194,33 @@ class Histogram(
         hist, _ = np.histogram(data_arr, bins=self.edges.value, weights=w_arr)
         new_values = self.values.value + hist
 
+        # 2b. Calculate underflow/overflow increment
+        # Data below first edge or above last edge
+        first_edge = self.edges.value[0]
+        last_edge = self.edges.value[-1]
+        under_mask = data_arr < first_edge
+        over_mask = data_arr > last_edge
+
+        under_inc = (
+            np.sum(w_arr[under_mask]) if w_arr is not None else np.sum(under_mask)
+        )
+        over_inc = np.sum(w_arr[over_mask]) if w_arr is not None else np.sum(over_mask)
+
+        new_underflow = self.underflow.value + under_inc
+        new_overflow = self.overflow.value + over_inc
+
         # 3. Calculate variance increment (sum of squared weights)
         w_eff = np.ones_like(data_arr) if w_arr is None else w_arr
         hist_sw2, _ = np.histogram(data_arr, bins=self.edges.value, weights=w_eff**2)
 
+        under_sw2_inc = np.sum(w_eff[under_mask] ** 2)
+        over_sw2_inc = np.sum(w_eff[over_mask] ** 2)
+
         # 4. Update sumw2 (uncorrelated statistical variance)
         new_sw2 = None
+        new_under_sw2 = None
+        new_over_sw2 = None
+
         if self.sumw2 is not None or weights is not None:
             old_sw2_val = (
                 self.sumw2.value
@@ -177,6 +228,19 @@ class Histogram(
                 else np.zeros_like(hist_sw2)
             )
             new_sw2 = old_sw2_val + hist_sw2
+
+            old_under_sw2 = (
+                self.underflow_sumw2.value
+                if self.underflow_sumw2 is not None
+                else 0.0
+            )
+            old_over_sw2 = (
+                self.overflow_sumw2.value
+                if self.overflow_sumw2 is not None
+                else 0.0
+            )
+            new_under_sw2 = old_under_sw2 + under_sw2_inc
+            new_over_sw2 = old_over_sw2 + over_sw2_inc
 
         # 5. Update cov (include new statistical variance in diagonal)
         new_cov = self.cov
@@ -191,12 +255,16 @@ class Histogram(
         kwargs: dict[str, Any] = {}
         if new_sw2 is not None:
             kwargs["sumw2"] = new_sw2
-        if new_cov is not None:
-            kwargs["cov"] = new_cov
+        if new_under_sw2 is not None:
+            kwargs["underflow_sumw2"] = new_under_sw2
+        if new_over_sw2 is not None:
+            kwargs["overflow_sumw2"] = new_over_sw2
 
         return self.__class__(
             values=new_values,
             edges=self.edges,
+            underflow=new_underflow,
+            overflow=new_overflow,
             unit=self.unit,
             name=self.name,
             channel=self.channel,
