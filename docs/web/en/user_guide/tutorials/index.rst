@@ -20,6 +20,7 @@ Fundamental data containers and basic operations.
    TimeSeries Basics <intro_timeseries>
    FrequencySeries Basics <intro_frequencyseries>
    Spectrogram Basics <intro_spectrogram>
+   Noise Generation Basics <intro_noise>
    Plotting Basics <intro_plotting>
    Map Plotting Basics <intro_mapplotting>
    Interoperability Basics <intro_interop>
@@ -59,6 +60,7 @@ Statistical analysis and advanced transforms.
    :maxdepth: 1
    :caption: Advanced Analysis
 
+   Spectral Fitting Basics <intro_fitting>
    Advanced Fitting & Spectral Lines <advanced_fitting>
    Spectrogram Processing: Normalization & Cleaning <advanced_spectrogram_processing>
    Bootstrap PSD & GLS Fitting <case_bootstrap_gls_fitting>
@@ -101,7 +103,8 @@ Table-based analysis for time segments.
    :maxdepth: 1
    :caption: Segment Analysis
 
-   SegmentTable Basics <intro_segment_table>
+   Segment Basics <intro_segment_table>
+   Segment Analysis Pipeline (Advanced) <intro_table>
    ASD Analysis Pipeline <segment_asd_pipeline>
    Visualization Deep Dive <segment_visualization>
    Event Matching Case Study <case_segment_analysis>

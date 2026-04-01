@@ -1,30 +1,33 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.1] - 2026-04-01
+
+### Added
+
+- **SegmentTable**: New factory methods `read()` and `read_csv()` for initializing from external files.
+- **SegmentTable**: Support for the iterable protocol (`__iter__`) and `RowProxy` for direct row-wise processing.
+- **Tutorials**: Comprehensive new notebooks for `SegmentTable`, `Noise Generation`, and `Spectral Fitting`.
+- **Infrastructure**: Automated tutorial execution testing via `pytest --nbmake` and GitHub Actions.
+
+### Changed
+
+- **SegmentTable**: `add_series_column()` now accepts a simple `loader(segment)` callable for intuitive lazy loading.
+- **noise/peaks**: Renamed `lorentzian_line()` parameter `fwhm` to `gamma` for consistency with implementation.
 
 ### Fixed
 
+- **fitting/highlevel**: Resolved frequency bin alignment between PSD and covariance matrix in `fit_bootstrap_spectrum`.
+- **fitting/highlevel**: Removed unsupported `stride` parameter from `fit_bootstrap_spectrum`.
+- **table/segment_plot**: Fixed `TypeError` when an existing `Axes` object is provided to `segments()`.
+
+### Previously Unreleased (merged into 0.1.1)
+
 - **interop/multitaper**: `from_mtspec` / `from_mtspec_array` が `cls` パラメータを
   無視して CI 付き入力でも常に `FrequencySeriesDict` を返していた問題を修正。
-  `cls=FrequencySeries` を渡した場合は常に `FrequencySeries` が返る。
-  (commit `63a0fb31`)
-
-- **interop/meshio**: `cell_data` のみを持つ `meshio.Mesh` を `from_meshio` に渡した場合、
-  セル値をノード座標へ無言で流し込んで `griddata` に渡す誤った補間経路を廃止。
-  `cell_data` のみの場合は明確な `ValueError` を送出する。
-  (commit `3af0e143`)
-
-- **interop/pyroomacoustics**: `from_pyroomacoustics_rir` / `from_pyroomacoustics_field` が
-  `room.rir` を `rir[source][mic]` として扱っていたが、実ライブラリの規約は
-  `rir[mic][source]`（外側=マイク）であるため修正。
-  マルチソース・マルチマイク構成での選択に影響する。
-  (commit `4b039498`)
-
-- **interop/openems**: `from_openems_hdf5` の内部関数 `_read_openems_td` /
-  `_read_openems_fd` が axis0 に合成整数インデックスを使っていた問題を修正。
-  HDF5 データセットの `"Time"` / `"frequency"` 属性が存在する場合は物理値を使用し、
-  属性がない場合は従来の整数インデックスにフォールバックする。
-  (commit `7f96e805`)
+- **interop/meshio**: `cell_data` のみを持つ `meshio.Mesh` を `from_meshio` に渡した場合の
+  誤った補間経路を廃止し、明確な `ValueError` を送出。
+- **interop/pyroomacoustics**: `room.rir` のインデックス順序（マイク ↔ ソース）を修正。
+- **interop/openems**: HDF5 データセットの `"Time"` / `"frequency"` 属性の優先使用を修正。
 
 ## [0.1.0] - 2026-03-15
 

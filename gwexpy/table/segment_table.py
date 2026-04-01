@@ -66,11 +66,13 @@ class RowProxy:
         table = self._table
         if key not in table._schema:
             raise KeyError(f"Column {key!r} not found in SegmentTable")
-        kind = table._schema[key]
-        if kind in _META_KINDS:
-            return table._meta.at[self._index, key]
-        # Payload column
-        return table._payload[key][self._index].get()
+        
+        if key in table._payload:
+            # Payload column
+            return table._payload[key][self._index].get()
+        
+        # Meta column
+        return table._meta.at[self._index, key]
 
     @property
     def index(self) -> int:
@@ -393,8 +395,8 @@ class SegmentTable:
                 for i in range(n):
                     seg = self._meta.at[i, "span"]
                     # Capture current segment in a closure
-                    def _wrap_loader(s=seg, l=loader):
-                        return l(s)
+                    def _wrap_loader(s=seg, ldr=loader):
+                        return ldr(s)
                     cells.append(SegmentCell(loader=_wrap_loader))
             else:
                 # Sequence of callables
