@@ -148,11 +148,15 @@ class HistogramRebinMixin:
         Integrate the histogram over the interval [start, end].
 
         If start or end is None, the boundaries of the histogram are used.
+        The result is calculated by identifying the fraction of each bin that
+        overlaps with the specified range. Regions outside the existing bin
+        edges are assumed to have zero content.
 
         Parameters
         ----------
         start, end : float or Quantity, optional
-            Integration limits.
+            Integration limits. If start > end, ValueError is raised.
+            If start == end, the result is 0.
         xunit : str or astropy.units.Unit, optional
             Unit for start/end if they are not Quantities.
         return_error : bool, optional
@@ -185,6 +189,18 @@ class HistogramRebinMixin:
             end_val = end.to(h.xunit).value
         else:
             end_val = float(end)
+
+        # Validation
+        if start_val > end_val:
+            raise ValueError(
+                f"Integration start ({start_val}) cannot be greater than end ({end_val})."
+            )
+
+        if start_val == end_val:
+            val = u.Quantity(0.0, unit=h.unit)
+            if return_error:
+                return val, val
+            return val
 
         # To integrate, we rebin into a single bin [start, end]
         pseudo_new_edges = np.array([start_val, end_val])
