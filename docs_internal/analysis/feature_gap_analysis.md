@@ -163,11 +163,10 @@ This note validates the "gwexpy プロジェクト監査・分析統合レポー
 - **対応**: 各ファイルにおいて re-export するシンボルを明示的なインポートに置き換えた（`gwf.py`, `hdf5.py`, `registry.py`, `datafind.py`, `kerberos.py`, `ligolw.py`, `_framecpp.py`）。
 - **結果**: 名前空間の汚染が解消され、静的解析ツールへの適合性が向上した。
 
-### Task 0-3: 広範な例外捕捉の具体化 [M]
-- **問題**: `except Exception:` が15箇所に存在
-- **対応**: `gwexpy/io/utils.py` を中心に、`OSError`, `ValueError`, `TypeError` 等の具体的例外に置換
-- **注意**: GUI 層の例外捕捉は Phase 4 に延期（影響範囲が大きいため）
-- **検証**: `grep -r "except Exception" gwexpy/` でI/O層の残存がゼロ、テストパス
+### Task 0-3: 広範な例外捕捉の具体化 [DONE] (2026-04-01)
+- **現状**: I/O 層（特に `extract_audio_metadata` や識別子・登録処理）において `except Exception:` による広範な例外捕捉が残っていた。
+- **対応**: `gwexpy/io/utils.py`, `ndscope_hdf5.py`, `csv_enhanced.py`, `_registration.py` において、想定される具体的な例外（`OSError`, `ValueError`, `AttributeError`, `TypeError` 等）に置換した。
+- **結果**: 予期せぬランタイムエラーが隠蔽されるリスクが低減された。
 
 ---
 
