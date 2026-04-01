@@ -243,6 +243,42 @@ class SegmentTable:
             df = df.rename(columns={span: "span"})
         return cls(df)
 
+    @classmethod
+    def read_csv(
+        cls,
+        filepath: str,
+        span_cols: tuple[str, str] = ("start", "end"),
+        **kwargs: Any,
+    ) -> SegmentTable:
+        """Read a :class:`SegmentTable` from a CSV file.
+
+        Parameters
+        ----------
+        filepath:
+            Path to the CSV file.
+        span_cols:
+            The two column names to use as the ``span`` start and end values.
+            Ignored if a column named ``"span"`` already exists (containing
+            Segment objects or compatible).
+        **kwargs:
+            Forwarded to :func:`pandas.read_csv`.
+
+        Returns
+        -------
+        SegmentTable
+        """
+        import pandas as pd
+        from gwpy.segments import Segment
+
+        df = pd.read_csv(filepath, **kwargs)
+        if "span" not in df.columns:
+            s1, s2 = span_cols
+            df["span"] = [Segment(float(s), float(e)) for s, e in zip(df[s1], df[s2])]
+        return cls(df)
+
+    # Alias for backward compatibility or ease of use
+    read = read_csv
+
     # ------------------------------------------------------------------
     # Column management
     # ------------------------------------------------------------------
@@ -353,9 +389,13 @@ class SegmentTable:
             assert loader is not None
             # Detect if loader is a sequence or a factory callable
             if callable(loader) and not _is_sequence(loader):
-                # Factory: loader(i) -> callable
+                # Standard pattern: loader(segment) -> payload
                 for i in range(n):
-                    cells.append(SegmentCell(loader=loader(i)))
+                    seg = self._meta.at[i, "span"]
+                    # Capture current segment in a closure
+                    def _wrap_loader(s=seg, l=loader):
+                        return l(s)
+                    cells.append(SegmentCell(loader=_wrap_loader))
             else:
                 # Sequence of callables
                 loader_seq = list(cast(Sequence[Any], loader))
@@ -377,6 +417,11 @@ class SegmentTable:
     def __len__(self) -> int:
         """Return the number of rows."""
         return len(self._meta)
+
+    def __iter__(self):
+        """Yield a RowProxy for each row."""
+        for i in range(len(self)):
+            yield self.row(i)
 
     @property
     def columns(self) -> list[str]:

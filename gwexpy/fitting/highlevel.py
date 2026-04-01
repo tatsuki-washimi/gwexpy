@@ -189,8 +189,6 @@ def fit_bootstrap_spectrum(
         spec_kw: dict[str, Any] = dict(window=window)
         if fftlength_sec is not None:
             spec_kw["fftlength"] = fftlength_sec
-            stride_sec = fftlength_sec - (overlap_sec or 0.0)
-            spec_kw["stride"] = stride_sec
         if overlap_sec is not None:
             spec_kw["overlap"] = overlap_sec
 
@@ -222,17 +220,13 @@ def fit_bootstrap_spectrum(
     # 3. Frequency range cropping
     if freq_range is not None:
         fmin, fmax = freq_range
-        psd = psd.crop(fmin, fmax)
+        # Apply mask to frequencies to ensure consistency between psd and cov_map
+        freqs = psd.frequencies.value
+        mask = (freqs >= fmin) & (freqs <= fmax)
 
-        # Crop covariance map to match
-        frequencies = psd.frequencies.value
-
-        # Get full frequency array from cov_map
-        cov_freqs = cov_map.frequency1.value
-
-        # Find indices in covariance matrix
-        mask = (cov_freqs >= fmin) & (cov_freqs <= fmax)
+        psd = psd[mask]
         cov_cropped = cov_map.value[np.ix_(mask, mask)]
+        frequencies = psd.frequencies.value
 
         # Recreate BifrequencyMap
         from astropy import units as u
