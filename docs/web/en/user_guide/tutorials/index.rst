@@ -23,6 +23,7 @@ Fundamental data containers and basic operations.
    Plotting Basics <intro_plotting>
    Map Plotting Basics <intro_mapplotting>
    Interoperability Basics <intro_interop>
+   Histogram Basics <intro_histogram>
 
 II. Multi-channel & Matrix Containers
 -------------------------------------

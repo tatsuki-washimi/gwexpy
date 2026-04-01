@@ -23,6 +23,7 @@ I. 基本データ構造
    intro_plotting
    intro_mapplotting
    intro_interop
+   intro_histogram
 
 II. 多チャンネル & 行列コンテナ
 ----------------------------------------
