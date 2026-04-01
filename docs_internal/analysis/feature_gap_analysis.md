@@ -197,19 +197,17 @@ This note validates the "gwexpy プロジェクト監査・分析統合レポー
 
 **目的**: コア機能のドキュメント化とユーザビリティ改善
 
-### Task 2-1: Table / Segment ユーザーガイドの拡充 [M]
-- **現状**: `intro_segment_table.ipynb` 等のセグメント系チュートリアルは存在するが、`Table`, `GravitySpyTable` の汎用的な使い方ガイドが不足
-- **対応**: 既存チュートリアルの拡充、または新規 `intro_table.ipynb` の作成
+### Task 2-1: Table / Segment ユーザーガイドの拡充 [DONE] (2026-04-01)
+- **現状**: `intro_segment_table.ipynb` 等のセグメント系チュートリアルは存在したが、`Table`, `SegmentTable` の詳細なガイドが不足していた。
+- **対応**: 包括的なガイド `intro_table.ipynb` を作成し、`read_csv` や `__iter__` などの新 API も含めてドキュメント化した。
 
-### Task 2-2: Noise モデルガイドの作成 [L]
+### Task 2-2: Noise モデルガイドの作成 [DONE] (2026-04-01)
+- **問題**: `gwexpy/noise/` のモジュール群の利用ガイドが不在だった。
+- **対応**: `docs/web/en/user_guide/tutorials/intro_noise.ipynb` を作成し、ASDからのノイズ生成、カラードノイズ、ラインマスク等の実例を提示した。
 
-- **問題**: `gwexpy/noise/` の11モジュール（ASD, colored, magnetic, field, non_gaussian等）の利用ガイドが不在
-- **対応**: `docs/web/en/user_guide/tutorials/intro_noise.ipynb` を作成
-  - ASDからのノイズ生成、カラードノイズ、ラインマスク、非ガウスノイズシミュレーション
-
-### Task 2-3: Analysis / Fitting ガイドの補強 [M]
-- **現状**: `advanced_fitting.ipynb`, `advanced_coupling.ipynb` は存在
-- **対応**: `Coupling`, `Response`, `StatInfo`, `GLSFitter` などの露出が不十分な機能について、既存チュートリアルの拡充または専用ガイドの追加
+### Task 2-3: Analysis / Fitting ガイドの補強 [DONE] (2026-04-01)
+- **現状**: `advanced_fitting.ipynb` 等は存在したが、基礎的なフィッティングの導線が弱かった。
+- **対応**: `intro_fitting.ipynb` を作成。`fit_series` や `fit_bootstrap_spectrum` の基本的な使い方、周波数アライメントの重要性について解説を追加した。
 
 ### Task 2-4: GUI (PyAgGUI) セットアップガイドの作成 [M]
 
