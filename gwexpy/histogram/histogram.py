@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 import numpy as np
 from astropy import units as u
@@ -34,7 +34,7 @@ class Histogram(
     2. `cov`: The full covariance matrix. Its diagonal elements SHOULD include the
        statistical variance tracked by `sumw2`.
     When filling the histogram, both are updated to ensure consistency.
-    
+
     """
 
     def __init__(

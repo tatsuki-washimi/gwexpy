@@ -176,7 +176,7 @@ class HistogramBaseDict(OrderedDict[str, _H]):
                     if layout == LAYOUT_DATASET:
                         h.write(h5f, format="hdf5", path=name)
                     else:
-                        grp = h5f.create_group(name)
+                        grp = h5f.require_group(name)
                         h.write(grp, format="hdf5", path="data")
                     keymap[name] = str(key)
                     order.append(name)
@@ -334,7 +334,7 @@ class HistogramBaseList(PlotMixin, list[_H]):
                     if layout == LAYOUT_DATASET:
                         h.write(h5f, format="hdf5", path=name)
                     else:
-                        grp = h5f.create_group(name)
+                        grp = h5f.require_group(name)
                         h.write(grp, format="hdf5", path="data")
                     keymap[name] = str(i)
                     order.append(name)
