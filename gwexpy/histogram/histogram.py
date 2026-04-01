@@ -24,6 +24,17 @@ class Histogram(
     Unlike TimeSeries/FrequencySeries, Histogram is not an instance of ndarray,
     but instead a composite holding `values`, `edges`, `cov`, and `sumw2` attributes.
     All properties expose proper astropy Quantities to maintain physical consistency.
+
+    Notes
+    -----
+    **Statistical Error Tracking (Double Management Rule):**
+    `Histogram` maintains two attributes for error tracking:
+    1. `sumw2`: The sum of squared weights per bin. This tracks the uncorrelated
+       statistical variance (e.g., from counting statistics).
+    2. `cov`: The full covariance matrix. Its diagonal elements SHOULD include the
+       statistical variance tracked by `sumw2`.
+    When filling the histogram, both are updated to ensure consistency.
+    
     """
 
     def __init__(
@@ -118,43 +129,66 @@ class Histogram(
 
         This method calculates the occurrence counts for the given data
         within the existing bin edges and adds them to the current values.
-        It also updates sumw2 if statistical error tracking is enabled.
+
+        Statistical Error Tracking (Double Management Rule):
+        It updates both `sumw2` and the diagonal of `cov` if they are present.
+        The diagonal of `cov` is updated with the new statistical variance
+        derived from weights (or counts if weights are None).
 
         Parameters
         ----------
         data : array-like or Quantity
             Data points to be added to the histogram.
-        weights : array-like, optional
-            Weights for each data point.
+        weights : array-like or Quantity, optional
+            Weights for each data point. If a Quantity, it is converted to
+            the histogram's unit (`self.unit`).
 
         Returns
         -------
         Histogram
             A new Histogram object with updated values and uncertainties.
         """
-        import numpy as np
-
+        # 1. Prepare data and weights in the correct units
         data_arr = np.asarray(data)
         if hasattr(data, "unit"):
             data_arr = u.Quantity(data).to(self.xunit).value
 
-        # Calculate hist inside existing bin edges
-        hist, _ = np.histogram(data_arr, bins=self.edges.value, weights=weights)
+        w_arr = weights
+        if weights is not None:
+            if hasattr(weights, "unit"):
+                w_arr = u.Quantity(weights).to(self.unit).value
+            else:
+                w_arr = np.asarray(weights)
 
+        # 2. Calculate values increment
+        hist, _ = np.histogram(data_arr, bins=self.edges.value, weights=w_arr)
         new_values = self.values.value + hist
 
-        # update sumw2 for error tracking
+        # 3. Calculate variance increment (sum of squared weights)
+        w_eff = np.ones_like(data_arr) if w_arr is None else w_arr
+        hist_sw2, _ = np.histogram(data_arr, bins=self.edges.value, weights=w_eff**2)
+
+        # 4. Update sumw2 (uncorrelated statistical variance)
         new_sw2 = None
         if self.sumw2 is not None or weights is not None:
-            w_arr = np.ones_like(data_arr) if weights is None else np.asarray(weights)
-            hist_sw2, _ = np.histogram(data_arr, bins=self.edges.value, weights=w_arr**2)
-            old_sw2 = self.sumw2.value if self.sumw2 is not None else np.zeros_like(hist_sw2)
-            new_sw2 = old_sw2 + hist_sw2
+            old_sw2_val = (
+                self.sumw2.value
+                if self.sumw2 is not None
+                else np.zeros_like(hist_sw2)
+            )
+            new_sw2 = old_sw2_val + hist_sw2
 
-        # covariance tracking - for independent items, we only update diagonal (sumw2 covers this)
+        # 5. Update cov (include new statistical variance in diagonal)
         new_cov = self.cov
+        if self.cov is not None:
+            # Consistent with Double Management Rule:
+            # Diagonal components of cov must track the statistical variance in sumw2.
+            new_cov_val = self.cov.value.copy()
+            new_diag = np.diag(new_cov_val) + hist_sw2
+            np.fill_diagonal(new_cov_val, new_diag)
+            new_cov = u.Quantity(new_cov_val, unit=self.unit**2)
 
-        kwargs = {}
+        kwargs: dict[str, Any] = {}
         if new_sw2 is not None:
             kwargs["sumw2"] = new_sw2
         if new_cov is not None:
@@ -166,7 +200,7 @@ class Histogram(
             unit=self.unit,
             name=self.name,
             channel=self.channel,
-            **kwargs
+            **kwargs,
         )
 
     @classmethod
