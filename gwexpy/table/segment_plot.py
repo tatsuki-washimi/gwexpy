@@ -220,6 +220,7 @@ def segments_segment_table(
     *,
     y: Optional[str] = None,
     color: Optional[str] = None,
+    ax: Optional[Any] = None,
     **kwargs: Any,
 ) -> Any:
     """Draw each row's ``span`` as a horizontal bar.
@@ -232,6 +233,8 @@ def segments_segment_table(
         Optional meta column; used to group rows on the y-axis.
     color:
         Optional meta column for bar colour.
+    ax:
+        Existing :class:`matplotlib.axes.Axes` to draw into.
     **kwargs:
         Forwarded to :func:`matplotlib.patches.Rectangle` / broken_barh.
 
@@ -241,8 +244,12 @@ def segments_segment_table(
     """
 
     df = st.to_pandas(meta_only=True)
-    plot = _get_plot()
-    ax = plot.add_subplot(111)
+    if ax is not None:
+        _ax = ax
+        plot = ax.figure
+    else:
+        plot = _get_plot()
+        _ax = plot.add_subplot(111)
 
     # Resolve y values
     if y is not None:
@@ -266,12 +273,12 @@ def segments_segment_table(
 
     for i, (span, yv, c) in enumerate(zip(df["span"], y_vals, colors)):
         start, end = float(span[0]), float(span[1])
-        bar_kwargs = {k: v for k, v in kwargs.items()}
+        bar_kwargs = {k: v for k, v in kwargs.items() if k != "ax"}
         bar_kwargs.setdefault("edgecolor", "none")
-        ax.broken_barh([(start, end - start)], (float(yv) - 0.4, 0.8), facecolors=[c], **bar_kwargs)
+        _ax.broken_barh([(start, end - start)], (float(yv) - 0.4, 0.8), facecolors=[c], **bar_kwargs)
 
-    ax.set_xlabel("time")
-    ax.set_ylabel(y if y else "row index")
+    _ax.set_xlabel("time")
+    _ax.set_ylabel(y if y else "row index")
     return plot
 
 

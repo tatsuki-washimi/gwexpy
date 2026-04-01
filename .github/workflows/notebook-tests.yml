@@ -1,0 +1,40 @@
+name: Notebook Tests
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'docs/web/en/user_guide/tutorials/**'
+      - 'gwexpy/table/**'
+      - 'gwexpy/noise/**'
+      - 'gwexpy/fitting/**'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'docs/web/en/user_guide/tutorials/**'
+      - 'gwexpy/table/**'
+      - 'gwexpy/noise/**'
+      - 'gwexpy/fitting/**'
+
+jobs:
+  notebook-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0"
+          pip install iminuit
+          pip install nbformat nbclient nbconvert pytest
+          pip install . --no-deps
+
+      - name: Run notebook tests
+        run: |
+          pytest -v tests/docs/test_docs_notebooks.py
