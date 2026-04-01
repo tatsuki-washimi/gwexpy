@@ -378,5 +378,5 @@ try:
         reader_dict=read_timeseriesdict_csv,
         extension="csv",
     )
-except Exception:  # pragma: no cover
+except (ImportError, AttributeError):  # pragma: no cover
     pass

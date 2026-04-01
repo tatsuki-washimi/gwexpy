@@ -216,7 +216,7 @@ def register_timeseries_format(
                     try:
                         if magic_identifier(origin, filepath, fileobj, *args, **kwargs):
                             return True
-                    except Exception:
+                    except (AttributeError, TypeError, ValueError, OSError):
                         pass  # Fall through to extension check
 
                 # 2. Fall back to extension check

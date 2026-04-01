@@ -69,7 +69,7 @@ def identify_ndscope_hdf5(
                     continue
                 if any(ds_name in item for ds_name in _NDSCOPE_DATA_KEYS):
                     return True
-    except Exception:
+    except (OSError, KeyError, AttributeError, TypeError):
         return False
     return False
 
