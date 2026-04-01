@@ -1,37 +1,19 @@
 from __future__ import annotations
 
+import functools
 from typing import Any
 
 import numpy as np
+from astropy import units as u
 
 
-def compute_A_matrix(old_edges: np.ndarray, new_edges: np.ndarray) -> np.ndarray:
-    """
-    Compute intersection fraction matrix A for rebinning.
-
-    A[i, j] represents the fraction of old bin `j` that falls into new bin `i`.
-    Assuming `values` represents the *total amount* in each bin (not density),
-    the new values are given by: y_new = A @ y_old
-
-    Parameters
-    ----------
-    old_edges : np.ndarray
-        Array of old bin boundaries of shape (N + 1,).
-    new_edges : np.ndarray
-        Array of new bin boundaries of shape (M + 1,).
-
-    Returns
-    -------
-    np.ndarray
-        Matrix A of shape (M, N).
-    """
-    old_edges = np.asarray(old_edges)
-    new_edges = np.asarray(new_edges)
-
-    if not np.all(np.diff(old_edges) > 0):
-        raise ValueError("old_edges must be strictly monotonically increasing.")
-    if not np.all(np.diff(new_edges) > 0):
-        raise ValueError("new_edges must be strictly monotonically increasing.")
+@functools.lru_cache(maxsize=128)
+def _compute_A_matrix_cached(
+    old_edges_tuple: tuple[float, ...], new_edges_tuple: tuple[float, ...]
+) -> np.ndarray:
+    """Internal cached implementation of compute_A_matrix using tuples as keys."""
+    old_edges = np.array(old_edges_tuple)
+    new_edges = np.array(new_edges_tuple)
 
     n_old = len(old_edges) - 1
     n_new = len(new_edges) - 1
@@ -39,7 +21,6 @@ def compute_A_matrix(old_edges: np.ndarray, new_edges: np.ndarray) -> np.ndarray
 
     A = np.zeros((n_new, n_old), dtype=float)
 
-    # For each new bin, figure out overlap with all old bins
     for i in range(n_new):
         low_new = new_edges[i]
         high_new = new_edges[i + 1]
@@ -49,16 +30,61 @@ def compute_A_matrix(old_edges: np.ndarray, new_edges: np.ndarray) -> np.ndarray
         high_overlap = np.minimum(high_new, old_edges[1:])
 
         # Size of the overlap
-        overlap = np.maximum(0.0, high_overlap - low_overlap)
+        overlap = high_overlap - low_overlap
+        # Robust check: if high_overlap is slightly smaller due to float error, set to 0
+        overlap = np.maximum(0.0, overlap)
 
         with np.errstate(divide="ignore", invalid="ignore"):
             frac = overlap / old_widths
-            # If old_width is 0 (should not happen for strictly increasing), frac is 0.
+
+            # If frac is very close to 1.0 or 0.0, snap it to prevent dispersion
+            frac[np.isclose(frac, 1.0, atol=1e-14, rtol=0)] = 1.0
+            frac[np.isclose(frac, 0.0, atol=1e-14, rtol=0)] = 0.0
+
+            # Clamp to [0, 1] to stay within physical bounds
+            np.clip(frac, 0.0, 1.0, out=frac)
             np.nan_to_num(frac, copy=False, nan=0.0, posinf=0.0, neginf=0.0)
 
         A[i, :] = frac
 
     return A
+
+
+def compute_A_matrix(old_edges: Any, new_edges: Any) -> np.ndarray:
+    """
+    Compute intersection fraction matrix A for rebinning.
+
+    A[i, j] represents the fraction of old bin `j` that falls into new bin `i`.
+    Assuming `values` represents the *total amount* in each bin (not density),
+    the new values are given by: y_new = A @ y_old
+
+    This function caches results to improve performance in repetitive rebinning tasks.
+
+    Parameters
+    ----------
+    old_edges : array-like or Quantity
+        Array of old bin boundaries of shape (N + 1,).
+    new_edges : array-like or Quantity
+        Array of new bin boundaries of shape (M + 1,).
+
+    Returns
+    -------
+    np.ndarray
+        Matrix A of shape (M, N).
+    """
+    # Convert to plain array and then to tuple for hashing
+    old_arr = np.asarray(old_edges, dtype=float)
+    new_arr = np.asarray(new_edges, dtype=float)
+
+    if not np.all(np.diff(old_arr) > 0):
+        # We need this check here too or in the cached part?
+        # Better here to fail early and keep clean cache.
+        raise ValueError("old_edges must be strictly monotonically increasing.")
+    if not np.all(np.diff(new_arr) > 0):
+        raise ValueError("new_edges must be strictly monotonically increasing.")
+
+    # Call cached version
+    return _compute_A_matrix_cached(tuple(old_arr), tuple(new_arr))
 
 
 class HistogramRebinMixin:
