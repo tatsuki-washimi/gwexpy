@@ -105,8 +105,11 @@ def to_th1d(series, error=None):
         hist = ROOT.TH1D(name, title, n, edges)
 
         # Fill bins
+        # ROOT bins: 0 = underflow, 1..n = content, n+1 = overflow
         content = np.zeros(n + 2, dtype=np.float64)
         content[1:-1] = y
+        content[0] = to_plain_array(getattr(series, "underflow", 0.0)).astype(float)
+        content[-1] = to_plain_array(getattr(series, "overflow", 0.0)).astype(float)
         hist.SetContent(content)
 
         # Errors: prefer sumw2 if available, otherwise diagonal of cov, otherwise derived from error arg
@@ -120,6 +123,14 @@ def to_th1d(series, error=None):
         if ey is not None:
             err_content = np.zeros(n + 2, dtype=np.float64)
             err_content[1:-1] = ey
+            # Underflow/overflow errors from sumw2 if available
+            sw2_under = getattr(series, "underflow_sumw2", None)
+            if sw2_under is not None:
+                err_content[0] = np.sqrt(to_plain_array(sw2_under).astype(float))
+            sw2_over = getattr(series, "overflow_sumw2", None)
+            if sw2_over is not None:
+                err_content[-1] = np.sqrt(to_plain_array(sw2_over).astype(float))
+
             hist.SetError(err_content)
 
         # Labels
@@ -333,13 +344,21 @@ def from_root(cls, obj, return_error=False):
         edges = np.array([obj.GetXaxis().GetBinLowEdge(i + 1) for i in range(n + 1)])
 
         buff_ptr = obj.GetArray()
-        # buffer size n+2
-        y = np.frombuffer(buff_ptr, dtype=np.float64, count=n + 2)[1:-1].copy()
+        # buffer size n+2. ROOT bins: 0=underflow, 1..n=data, n+1=overflow
+        full_y = np.frombuffer(buff_ptr, dtype=np.float64, count=n + 2).copy()
+        y = full_y[1:-1]
+        underflow = full_y[0]
+        overflow = full_y[-1]
 
         if return_error or is_histogram_cls:
             if obj.GetSumw2N() > 0:
                 err_ptr = obj.GetSumw2().GetArray()
-                err_raw = np.frombuffer(err_ptr, dtype=np.float64, count=n + 2)[1:-1]
+                err_raw_full = np.frombuffer(
+                    err_ptr, dtype=np.float64, count=n + 2
+                ).copy()
+                err_raw = err_raw_full[1:-1]
+                underflow_sw2 = err_raw_full[0]
+                overflow_sw2 = err_raw_full[-1]
                 # If it's a Histogram class, we often want sumw2 (variance)
                 # But Histogram(sumw2=...) takes Sigma^2
                 # whereas Series(error=...) takes Sigma (RMS).
@@ -348,9 +367,13 @@ def from_root(cls, obj, return_error=False):
             else:
                 ey = np.sqrt(y)
                 sw2 = y.copy()
+                underflow_sw2 = underflow
+                overflow_sw2 = overflow
         else:
             ey = None
             sw2 = None
+            underflow_sw2 = None
+            overflow_sw2 = None
 
         if is_histogram_cls:
             name = obj.GetName()
@@ -370,7 +393,18 @@ def from_root(cls, obj, return_error=False):
                 if m:
                     xunit = m.group(1)
 
-            return cls(y, edges, unit=unit, xunit=xunit, sumw2=sw2, name=name)
+            return cls(
+                y,
+                edges,
+                unit=unit,
+                xunit=xunit,
+                sumw2=sw2,
+                underflow=underflow,
+                overflow=overflow,
+                underflow_sumw2=underflow_sw2,
+                overflow_sumw2=overflow_sw2,
+                name=name,
+            )
     else:  # is_graph
         if is_histogram_cls:
             raise TypeError("Cannot create Histogram from TGraph. Use TH1 instead.")

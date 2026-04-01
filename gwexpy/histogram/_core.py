@@ -19,6 +19,10 @@ class HistogramCoreMixin:
     _edges: u.Quantity
     _cov: u.Quantity | None
     _sumw2: u.Quantity | None
+    _underflow: u.Quantity
+    _overflow: u.Quantity
+    _underflow_sumw2: u.Quantity | None
+    _overflow_sumw2: u.Quantity | None
 
     @property
     def values(self) -> u.Quantity:
@@ -34,6 +38,26 @@ class HistogramCoreMixin:
     def edges(self) -> u.Quantity:
         """The bin edges of the histogram (length: n_bins + 1)."""
         return self._edges
+
+    @property
+    def underflow(self) -> u.Quantity:
+        """The underflow value (sum of weights for data below the first edge)."""
+        return self._underflow
+
+    @property
+    def overflow(self) -> u.Quantity:
+        """The overflow value (sum of weights for data above the last edge)."""
+        return self._overflow
+
+    @property
+    def underflow_sumw2(self) -> u.Quantity | None:
+        """Sum of squares of weights for the underflow region."""
+        return getattr(self, "_underflow_sumw2", None)
+
+    @property
+    def overflow_sumw2(self) -> u.Quantity | None:
+        """Sum of squares of weights for the overflow region."""
+        return getattr(self, "_overflow_sumw2", None)
 
     @property
     def xindex(self) -> u.Quantity:
@@ -94,11 +118,17 @@ class HistogramCoreMixin:
         kwargs = {
             "values": self.values.copy(),
             "edges": self.edges.copy(),
+            "underflow": self.underflow.copy(),
+            "overflow": self.overflow.copy(),
         }
         if self.cov is not None:
             kwargs["cov"] = self.cov.copy()
         if self.sumw2 is not None:
             kwargs["sumw2"] = self.sumw2.copy()
+        if self.underflow_sumw2 is not None:
+            kwargs["underflow_sumw2"] = self.underflow_sumw2.copy()
+        if self.overflow_sumw2 is not None:
+            kwargs["overflow_sumw2"] = self.overflow_sumw2.copy()
 
         kwargs["name"] = getattr(self, "name", None)
         kwargs["channel"] = getattr(self, "channel", None)
@@ -153,6 +183,12 @@ class HistogramCoreMixin:
             "name": getattr(self, "name", None),
             "channel": getattr(self, "channel", None),
         }
+
+        # For crop, underflow and overflow are reset or accumulated?
+        # Usually crop means we discard what's outside.
+        # But we could also add the discarded bins to underflow/overflow.
+        # However, Histogram class traditionally treats them as "below first edge" and "above last edge".
+        # So we initialize them to 0 in the new cropped histogram.
 
         if self.cov is not None:
             kwargs["cov"] = self.cov[i0 : i1 + 1, i0 : i1 + 1]
@@ -219,37 +255,71 @@ class HistogramCoreMixin:
         """
         return np.sqrt(self.var(ddof=ddof))
 
-    def quantile(self, q: float) -> u.Quantity:
+    def quantile(self, q: Any) -> u.Quantity:
         """Compute the q-th quantile of the distribution.
 
-        Uses linear interpolation on the cumulative distribution function (CDF)
-        calculated from the bin contents.
+        Calculated from the cumulative distribution function (CDF) derived
+        from bin contents. If q falls on a plateau (one or more consecutive
+        bins with zero counts), the midpoint of that plateau is returned.
+        Otherwise, linear interpolation is performed within the bin.
 
         Parameters
         ----------
-        q : float
-            Quantile level, between 0 and 1.
+        q : float or array-like
+            Quantile level(s), between 0 and 1.
 
         Returns
         -------
         Quantity
-            The quantile value with xunit.
+            The quantile value(s) with xunit.
         """
-        if not (0 <= q <= 1):
+        q_arr = np.atleast_1d(q)
+        if np.any((q_arr < 0) | (q_arr > 1)):
             raise ValueError("q must be between 0 and 1.")
 
         w = self.values.value
         w_sum = np.sum(w)
         if w_sum == 0:
-            return np.nan * self.xunit
+            res = np.full_like(q_arr, np.nan, dtype=float)
+            if np.isscalar(q):
+                return res[0] * self.xunit
+            return res * self.xunit
 
-        cdf = np.cumsum(w) / w_sum
         # Prepend 0 to CDF for the low edge of the first bin
-        cdf_full = np.concatenate(([0.0], cdf))
+        cdf_full = np.concatenate(([0.0], np.cumsum(w) / w_sum))
         edges = self.edges.value
 
-        # Linearly interpolate
-        return np.interp(q, cdf_full, edges) * self.xunit
+        # Determine the range [i_left, i_right] where cdf_full[i] == q
+        i_left = np.searchsorted(cdf_full, q_arr, side="left")
+        i_right = np.searchsorted(cdf_full, q_arr, side="right")
+
+        # Result array for values
+        values = np.zeros_like(q_arr, dtype=float)
+        is_plateau = i_left != i_right
+
+        # Case 1: q falls on a plateau (one or more bins with zero weight)
+        # Return the midpoint of the edges corresponding to this plateau
+        if np.any(is_plateau):
+            values[is_plateau] = 0.5 * (
+                edges[i_left[is_plateau]] + edges[i_right[is_plateau] - 1]
+            )
+
+        # Case 2: q is strictly between two CDF values
+        # Perform linear interpolation within the bin
+        is_interp = ~is_plateau
+        if np.any(is_interp):
+            idx = i_left[is_interp] - 1
+            low_cdf = cdf_full[idx]
+            high_cdf = cdf_full[idx + 1]
+            low_edge = edges[idx]
+            high_edge = edges[idx + 1]
+
+            fraction = (q_arr[is_interp] - low_cdf) / (high_cdf - low_cdf)
+            values[is_interp] = low_edge + fraction * (high_edge - low_edge)
+
+        if np.isscalar(q):
+            return values[0] * self.xunit
+        return values * self.xunit
 
     def median(self) -> u.Quantity:
         """Compute the median of the histogram.
