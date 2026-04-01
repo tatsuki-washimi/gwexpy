@@ -197,9 +197,29 @@ class HistogramCoreMixin:
 
         return self.__class__(**kwargs)
 
-    def to_density(self) -> u.Quantity:
-        """Return the physical density (values / bin_widths)."""
-        return self.values / self.bin_widths
+    def to_density(self, as_histogram: bool = False) -> u.Quantity | Any:
+        """Return the physical density (values / bin_widths).
+
+        Parameters
+        ----------
+        as_histogram : bool, optional
+            If True, return a new Histogram object where the values represent
+            the density. If False (default), return an astropy Quantity.
+
+        Returns
+        -------
+        Quantity or Histogram
+            The density values or a new Histogram object.
+        """
+        density = self.values / self.bin_widths
+        if as_histogram:
+            return self.__class__(
+                values=density,
+                edges=self.edges,
+                name=getattr(self, "name", None),
+                channel=getattr(self, "channel", None),
+            )
+        return density
 
     def mean(self) -> u.Quantity:
         """Compute the weighted mean of the histogram.
