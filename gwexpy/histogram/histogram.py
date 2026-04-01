@@ -178,20 +178,36 @@ class Histogram(
         Histogram
             A new Histogram object with updated values and uncertainties.
         """
-        # 1. Prepare data and weights in the correct units
+        import numpy as np
+
         data_arr = np.asarray(data)
         if hasattr(data, "unit"):
             data_arr = u.Quantity(data).to(self.xunit).value
 
-        w_arr = weights
+        # Prepare weights: accept Quantity or array-like or scalar
+        weights_arr = None
         if weights is not None:
+            # If weights is a Quantity, convert to histogram value unit
             if hasattr(weights, "unit"):
-                w_arr = u.Quantity(weights).to(self.unit).value
+                try:
+                    weights_arr = u.Quantity(weights).to(self.unit).value
+                except Exception as e:
+                    raise ValueError(
+                        f"weights unit {getattr(weights, 'unit', None)} is not convertible to histogram unit {self.unit}"
+                    ) from e
             else:
-                w_arr = np.asarray(weights)
+                weights_arr = np.asarray(weights)
+
+            # If scalar weight, broadcast to data length
+            if np.ndim(weights_arr) == 0:
+                weights_arr = np.full_like(data_arr, float(weights_arr))
+            elif weights_arr.shape != data_arr.shape:
+                raise ValueError(
+                    f"weights shape {weights_arr.shape} does not match data shape {data_arr.shape}"
+                )
 
         # 2. Calculate values increment
-        hist, _ = np.histogram(data_arr, bins=self.edges.value, weights=w_arr)
+        hist, _ = np.histogram(data_arr, bins=self.edges.value, weights=weights_arr)
         new_values = self.values.value + hist
 
         # 2b. Calculate underflow/overflow increment
@@ -202,15 +218,21 @@ class Histogram(
         over_mask = data_arr > last_edge
 
         under_inc = (
-            np.sum(w_arr[under_mask]) if w_arr is not None else np.sum(under_mask)
+            np.sum(weights_arr[under_mask])
+            if weights_arr is not None
+            else np.sum(under_mask)
         )
-        over_inc = np.sum(w_arr[over_mask]) if w_arr is not None else np.sum(over_mask)
+        over_inc = (
+            np.sum(weights_arr[over_mask])
+            if weights_arr is not None
+            else np.sum(over_mask)
+        )
 
         new_underflow = self.underflow.value + under_inc
         new_overflow = self.overflow.value + over_inc
 
         # 3. Calculate variance increment (sum of squared weights)
-        w_eff = np.ones_like(data_arr) if w_arr is None else w_arr
+        w_eff = np.ones_like(data_arr) if weights_arr is None else weights_arr
         hist_sw2, _ = np.histogram(data_arr, bins=self.edges.value, weights=w_eff**2)
 
         under_sw2_inc = np.sum(w_eff[under_mask] ** 2)
@@ -248,17 +270,19 @@ class Histogram(
             # Consistent with Double Management Rule:
             # Diagonal components of cov must track the statistical variance in sumw2.
             new_cov_val = self.cov.value.copy()
-            new_diag = np.diag(new_cov_val) + hist_sw2
-            np.fill_diagonal(new_cov_val, new_diag)
+            if hist_sw2 is not None:
+                new_cov_val[np.diag_indices_from(new_cov_val)] += hist_sw2
             new_cov = u.Quantity(new_cov_val, unit=self.unit**2)
 
         kwargs: dict[str, Any] = {}
         if new_sw2 is not None:
-            kwargs["sumw2"] = new_sw2
+            kwargs["sumw2"] = u.Quantity(new_sw2, unit=self.unit**2)
         if new_under_sw2 is not None:
-            kwargs["underflow_sumw2"] = new_under_sw2
+            kwargs["underflow_sumw2"] = u.Quantity(new_under_sw2, unit=self.unit**2)
         if new_over_sw2 is not None:
-            kwargs["overflow_sumw2"] = new_over_sw2
+            kwargs["overflow_sumw2"] = u.Quantity(new_over_sw2, unit=self.unit**2)
+        if new_cov is not None:
+            kwargs["cov"] = new_cov
 
         return self.__class__(
             values=new_values,
