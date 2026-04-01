@@ -213,7 +213,8 @@ class HistogramCoreMixin:
         """
         density = self.values / self.bin_widths
         if as_histogram:
-            return self.__class__(
+            cls_any = cast(Any, self.__class__)
+            return cls_any(
                 values=density,
                 edges=self.edges,
                 name=getattr(self, "name", None),

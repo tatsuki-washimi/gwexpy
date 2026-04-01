@@ -22,7 +22,7 @@ def write_hdf5_dataset(hist: Histogram, f: h5py.Group | h5py.File, path: str | N
         The path within the HDF5 file to store the data. If None, write directly to f.
     """
     # Create the internal group to store the arrays and attributes
-    group = f.create_group(path) if path else f
+    group = f.require_group(path) if path else f
 
     # Store essential arrays
     group.create_dataset("values", data=hist.values.value)

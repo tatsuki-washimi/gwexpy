@@ -116,7 +116,6 @@ class HistogramRebinMixin:
         If `new_edges` extend beyond the current histogram range, the regions
         outside are assumed to have zero content and a warning is issued.
         """
-        from astropy import units as u
         from typing import cast
 
         h = cast(Any, self)
@@ -205,7 +204,6 @@ class HistogramRebinMixin:
         Quantity or (Quantity, Quantity)
             The integral value, and optionally its uncertainty.
         """
-        from astropy import units as u
         from typing import cast
 
         h = cast(Any, self)
