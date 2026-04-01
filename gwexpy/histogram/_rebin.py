@@ -1,10 +1,12 @@
-from __future__ import annotations
-
 import functools
 from typing import Any
 
 import numpy as np
 from astropy import units as u
+
+from gwexpy.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 @functools.lru_cache(maxsize=128)
@@ -108,6 +110,11 @@ class HistogramRebinMixin:
         -------
         Histogram
             A new rebinned Histogram.
+
+        Notes
+        -----
+        If `new_edges` extend beyond the current histogram range, the regions
+        outside are assumed to have zero content and a warning is issued.
         """
         from astropy import units as u
         from typing import cast
@@ -126,9 +133,14 @@ class HistogramRebinMixin:
         new_val = new_edges_q.value
 
         if new_val[0] < old_val[0] or new_val[-1] > old_val[-1]:
-            # Extrapolation region will just sum 0 overlap, which is mathematically
-            # correct (assuming 0 counts outside range), but we should warn or be aware.
-            pass
+            logger.warning(
+                "New bin edges [%.3g, %.3g] extend beyond original range [%.3g, %.3g]. "
+                "Regions outside the original range will have zero content.",
+                new_val[0],
+                new_val[-1],
+                old_val[0],
+                old_val[-1],
+            )
 
         # Calculate Transform Matrix
         A = compute_A_matrix(old_val, new_val)
