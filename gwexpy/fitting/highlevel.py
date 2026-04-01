@@ -163,6 +163,12 @@ def fit_bootstrap_spectrum(
     gwexpy.fitting.fit_series : Lower-level fitting function
     gwexpy.fitting.GeneralizedLeastSquares : GLS cost function
     """
+    if "stride" in kwargs:
+        raise TypeError(
+            "fit_bootstrap_spectrum() got an unexpected keyword argument 'stride'. "
+            "Please use 'fftlength' and 'overlap' instead."
+        )
+
     from gwexpy.fitting import fit_series
     from gwexpy.spectral import bootstrap_spectrogram
     from gwexpy.utils.fft_args import (
