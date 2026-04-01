@@ -10,7 +10,7 @@ Provides conversion from Finesse's ``FrequencyResponseSolution`` and
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar, Union
 
 import numpy as np
 
@@ -18,17 +18,26 @@ from gwexpy.interop._registry import ConverterRegistry
 
 from ._optional import require_optional
 
+if TYPE_CHECKING:
+    from gwexpy.frequencyseries import (
+        FrequencySeries,
+        FrequencySeriesDict,
+        FrequencySeriesMatrix,
+    )
+
+T_fs = TypeVar("T_fs", bound="FrequencySeries")
+
 __all__ = ["from_finesse_frequency_response", "from_finesse_noise"]
 
 
 def from_finesse_frequency_response(
-    cls: type,
+    cls: Type[Union[T_fs, FrequencySeriesDict]],
     sol: Any,
     *,
     output: Any | None = None,
     input_dof: Any | None = None,
     unit: Any | None = None,
-) -> Any:
+) -> Union[T_fs, FrequencySeriesMatrix, FrequencySeriesDict]:
     """
     Create FrequencySeries or FrequencySeriesMatrix from a Finesse 3
     ``FrequencyResponseSolution``.
@@ -176,13 +185,13 @@ def _build_frequency_response_collection(
 
 
 def from_finesse_noise(
-    cls: type,
+    cls: Type[Union[T_fs, FrequencySeriesDict]],
     sol: Any,
     *,
     output: Any | None = None,
-    noise: str | None = None,
+    noise: Optional[str] = None,
     unit: Any | None = None,
-) -> Any:
+) -> Union[T_fs, FrequencySeriesDict]:
     """
     Create FrequencySeries or FrequencySeriesDict from a Finesse 3
     ``NoiseProjectionSolution``.

@@ -9,16 +9,29 @@ Provides conversion between FrequencySeries and control.FRD (Frequency Response 
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, Literal, Type, TypeVar
+
 import numpy as np
 
 from gwexpy.interop._registry import ConverterRegistry
 
 from ._optional import require_optional
 
+if TYPE_CHECKING:
+    import control
+
+    from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesMatrix
+    from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
 __all__ = ["to_control_frd", "from_control_frd", "from_control_response"]
 
+T_fs = TypeVar("T_fs", bound="FrequencySeries")
+T_ts = TypeVar("T_ts", bound="TimeSeries")
 
-def to_control_frd(fs, frequency_unit: str = "rad/s"):
+
+def to_control_frd(
+    fs: FrequencySeries, frequency_unit: Literal["rad/s", "Hz"] = "rad/s"
+) -> control.FRD:
     """
     Convert FrequencySeries to control.FRD.
 
@@ -69,7 +82,9 @@ def to_control_frd(fs, frequency_unit: str = "rad/s"):
     return frd
 
 
-def from_control_frd(cls, frd, frequency_unit: str = "Hz"):
+def from_control_frd(
+    cls: Type[T_fs], frd: control.FRD, frequency_unit: Literal["Hz", "rad/s"] = "Hz"
+) -> Union[T_fs, FrequencySeriesMatrix]:
     """
     Create FrequencySeries from control.FRD.
 
@@ -149,7 +164,11 @@ def from_control_frd(cls, frd, frequency_unit: str = "Hz"):
     return cls(np.asarray(data).flatten(), frequencies=freqs)
 
 
-def from_control_response(cls, response, **kwargs):
+def from_control_response(
+    cls: Type[Union[TimeSeries, TimeSeriesDict]],
+    response: control.TimeResponseData,
+    **kwargs: Any,
+) -> Union[TimeSeries, TimeSeriesDict]:
     """
     Create TimeSeries or TimeSeriesDict from control.TimeResponseData.
 

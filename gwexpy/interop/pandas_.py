@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Type, TypeVar, Union
 
 import numpy as np
 from gwpy.time import LIGOTimeGPS
@@ -8,8 +9,20 @@ from gwpy.time import LIGOTimeGPS
 from ._optional import require_optional
 from ._time import datetime_utc_to_gps
 
+if TYPE_CHECKING:
+    import pandas as pd
 
-def to_pandas_series(ts, index="datetime", name=None, copy=False):
+    from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+
+T = TypeVar("T", bound="TimeSeries")
+
+
+def to_pandas_series(
+    ts: TimeSeries,
+    index: Literal["datetime", "seconds", "gps"] = "datetime",
+    name: Optional[str] = None,
+    copy: bool = False,
+) -> pd.Series:
     """
     Convert TimeSeries to pandas.Series.
 
@@ -65,7 +78,14 @@ def to_pandas_series(ts, index="datetime", name=None, copy=False):
     return pd.Series(data, index=idx, name=name or ts.name)
 
 
-def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
+def from_pandas_series(
+    cls: Type[T],
+    series: pd.Series,
+    *,
+    unit: Optional[str] = None,
+    t0: Optional[float] = None,
+    dt: Optional[float] = None,
+) -> T:
     """
     Create TimeSeries from pandas.Series.
     """
@@ -152,7 +172,11 @@ def from_pandas_series(cls, series, *, unit=None, t0=None, dt=None):
     return cls(values, t0=final_t0, dt=final_dt, unit=unit, name=series.name)
 
 
-def to_pandas_dataframe(tsd, index="datetime", copy=False):
+def to_pandas_dataframe(
+    tsd: TimeSeriesDict,
+    index: Literal["datetime", "seconds", "gps"] = "datetime",
+    copy: bool = False,
+) -> pd.DataFrame:
     """TimeSeriesDict -> DataFrame"""
     pd = require_optional("pandas")
 
@@ -181,7 +205,14 @@ def to_pandas_dataframe(tsd, index="datetime", copy=False):
     return df
 
 
-def from_pandas_dataframe(cls, df, *, unit_map=None, t0=None, dt=None):
+def from_pandas_dataframe(
+    cls: Type[TimeSeriesDict],
+    df: pd.DataFrame,
+    *,
+    unit_map: Optional[Dict[str, str]] = None,
+    t0: Optional[float] = None,
+    dt: Optional[float] = None,
+) -> TimeSeriesDict:
     """DataFrame -> TimeSeriesDict"""
     tsd = cls()
     for col in df.columns:

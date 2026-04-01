@@ -1,11 +1,27 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, Literal, Optional, Type, TypeVar, Union
+
 import numpy as np
 
 from ._optional import require_optional
 
+if TYPE_CHECKING:
+    import h5py
+    import pandas as pd
+    import xarray as xr
 
-def to_pandas_frequencyseries(fs, index="frequency", name=None, copy=False):
+    from gwexpy.frequencyseries import FrequencySeries
+
+T = TypeVar("T", bound="FrequencySeries")
+
+
+def to_pandas_frequencyseries(
+    fs: FrequencySeries,
+    index: Literal["frequency"] = "frequency",
+    name: Optional[str] = None,
+    copy: bool = False,
+) -> pd.Series:
     pd = require_optional("pandas")
     data = fs.value.copy() if copy else fs.value
     freqs = fs.frequencies
@@ -17,8 +33,15 @@ def to_pandas_frequencyseries(fs, index="frequency", name=None, copy=False):
 
 
 def from_pandas_frequencyseries(
-    cls, series, *, unit=None, frequencies=None, df=None, f0=None, epoch=None
-):
+    cls: Type[T],
+    series: pd.Series,
+    *,
+    unit: Optional[str] = None,
+    frequencies: Optional[Any] = None,
+    df: Optional[float] = None,
+    f0: Optional[float] = None,
+    epoch: Optional[Any] = None,
+) -> T:
     vals = series.values
     idx = series.index
     freq_axis = None
@@ -26,7 +49,7 @@ def from_pandas_frequencyseries(
         freq_axis = frequencies
     elif df is not None or f0 is not None:
         df_val = float(df)
-        f0_val = float(f0 or idx[0])
+        f0_val = float(f0 if f0 is not None else idx[0])
         freq_axis = f0_val + np.arange(len(vals)) * df_val
     else:
         freq_axis = idx.values
@@ -39,7 +62,9 @@ def from_pandas_frequencyseries(
     )
 
 
-def to_xarray_frequencyseries(fs, freq_coord="Hz"):
+def to_xarray_frequencyseries(
+    fs: FrequencySeries, freq_coord: Literal["Hz"] = "Hz"
+) -> xr.DataArray:
     xr = require_optional("xarray")
     freqs = fs.frequencies
     coord = freqs.value if freq_coord == "Hz" else np.arange(len(freqs))
@@ -60,8 +85,13 @@ def to_xarray_frequencyseries(fs, freq_coord="Hz"):
 
 
 def from_xarray_frequencyseries(
-    cls, da, *, unit=None, freq_coord="frequency", epoch=None
-):
+    cls: Type[T],
+    da: xr.DataArray,
+    *,
+    unit: Optional[str] = None,
+    freq_coord: str = "frequency",
+    epoch: Optional[Any] = None,
+) -> T:
     vals = da.values
     freqs = da.coords[freq_coord].values
     u = unit or da.attrs.get("unit")
@@ -77,8 +107,13 @@ def from_xarray_frequencyseries(
 
 
 def to_hdf5_frequencyseries(
-    fs, group, path, overwrite=False, compression=None, compression_opts=None
-):
+    fs: FrequencySeries,
+    group: h5py.Group,
+    path: str,
+    overwrite: bool = False,
+    compression: Optional[str] = None,
+    compression_opts: Any = None,
+) -> None:
     require_optional("h5py")
     if path in group:
         if overwrite:
@@ -115,7 +150,7 @@ def to_hdf5_frequencyseries(
     dset.attrs["frequency_unit"] = str(getattr(fs.frequencies, "unit", ""))
 
 
-def from_hdf5_frequencyseries(cls, group, path):
+def from_hdf5_frequencyseries(cls: Type[T], group: h5py.Group, path: str) -> T:
     require_optional("h5py")
     dset = group[path]
     data = dset[()]
@@ -130,7 +165,6 @@ def from_hdf5_frequencyseries(cls, group, path):
         freqs = np.array(freqs) * 1.0
         try:
             import astropy.units as u
-
             freqs = freqs * u.Unit(freq_unit) if freq_unit else freqs
         except (ImportError, ValueError):
             pass

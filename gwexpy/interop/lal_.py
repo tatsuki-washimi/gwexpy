@@ -16,13 +16,20 @@ that ensures GWexpy types are returned and adds ``to_lal`` for FrequencySeries.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, Type, TypeVar
 
 import numpy as np
 
 from gwexpy.interop._registry import ConverterRegistry
 
 from ._optional import require_optional
+
+if TYPE_CHECKING:
+    from gwexpy.frequencyseries import FrequencySeries
+    from gwexpy.timeseries import TimeSeries
+
+T_ts = TypeVar("T_ts", bound="TimeSeries")
+T_fs = TypeVar("T_fs", bound="FrequencySeries")
 
 __all__ = [
     "from_lal_timeseries",
@@ -33,11 +40,11 @@ __all__ = [
 
 
 def from_lal_timeseries(
-    cls: type,
+    cls: Type[T_ts],
     lalts: Any,
     *,
     copy: bool = True,
-) -> Any:
+) -> T_ts:
     """Create a GWexpy TimeSeries from a LAL TimeSeries struct.
 
     Parameters
@@ -76,7 +83,7 @@ def from_lal_timeseries(
 
 
 def to_lal_timeseries(
-    ts: Any,
+    ts: TimeSeries,
     *,
     dtype: str | None = None,
 ) -> Any:
@@ -128,11 +135,11 @@ def to_lal_timeseries(
 
 
 def from_lal_frequencyseries(
-    cls: type,
+    cls: Type[T_fs],
     lalfs: Any,
     *,
     copy: bool = True,
-) -> Any:
+) -> T_fs:
     """Create a GWexpy FrequencySeries from a LAL FrequencySeries struct.
 
     Parameters
@@ -168,7 +175,7 @@ def from_lal_frequencyseries(
 
 
 def to_lal_frequencyseries(
-    fs: Any,
+    fs: FrequencySeries,
 ) -> Any:
     """Convert a GWexpy FrequencySeries to a LAL FrequencySeries struct.
 

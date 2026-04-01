@@ -7,12 +7,27 @@ Interoperability with PyTorch tensors.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar, Union
+
 from ._optional import require_optional
+
+if TYPE_CHECKING:
+    import torch
+
+    from gwexpy.timeseries import TimeSeries
+
+T = TypeVar("T", bound="TimeSeries")
 
 __all__ = ["to_torch", "from_torch"]
 
 
-def to_torch(series, device=None, dtype=None, requires_grad=False, copy=False):
+def to_torch(
+    series: Union[TimeSeries, Any],
+    device: Optional[Union[str, torch.device]] = None,
+    dtype: Optional[torch.dtype] = None,
+    requires_grad: bool = False,
+    copy: bool = False,
+) -> torch.Tensor:
     """
     Convert a series to a PyTorch tensor.
 
@@ -52,7 +67,13 @@ def to_torch(series, device=None, dtype=None, requires_grad=False, copy=False):
     return tensor
 
 
-def from_torch(cls, tensor, t0, dt, unit=None):
+def from_torch(
+    cls: Type[T],
+    tensor: torch.Tensor,
+    t0: Any,
+    dt: Any,
+    unit: Optional[str] = None,
+) -> T:
     """
     Create a TimeSeries from a PyTorch tensor.
 

@@ -1,15 +1,24 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Type, TypeVar, Union
 
 import numpy as np
 from gwpy.time import LIGOTimeGPS
 
 from ._optional import require_optional
 
+if TYPE_CHECKING:
+    import xarray as xr
 
-def to_xarray(ts, time_coord="datetime"):
+    from gwexpy.timeseries import TimeSeries
+
+T = TypeVar("T", bound="TimeSeries")
+
+
+def to_xarray(
+    ts: TimeSeries, time_coord: Literal["datetime", "seconds", "gps"] = "datetime"
+) -> xr.DataArray:
     """
     TimeSeries -> xarray.DataArray
     """
@@ -48,7 +57,7 @@ def to_xarray(ts, time_coord="datetime"):
     return da
 
 
-def from_xarray(cls, da, unit=None):
+def from_xarray(cls: Type[T], da: xr.DataArray, unit: Optional[str] = None) -> T:
     """DataArray -> TimeSeries"""
     require_optional("xarray")
 
