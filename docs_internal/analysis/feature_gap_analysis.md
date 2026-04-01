@@ -184,16 +184,12 @@ This note validates the "gwexpy プロジェクト監査・分析統合レポー
 - **参考**: 既存の `intro_timeseries.ipynb` のスタイルに合わせる
 - **検証**: `nbmake` でノートブックが実行可能、Sphinx ビルドが成功
 
-### Task 1-2: API Reference の拡充 [M]
-- **問題**: `docs/web/en/reference/api/index.rst` に `histogram`, `time`, `interop` が欠落
+### Task 1-2: API Reference の拡充 [DONE] (2026-04-01)
+- **現状**: `histogram`, `time`, `interop` が API リファレンスのインデックスから漏れており、可視性が低かった。
 - **対応**:
-  1. `docs/web/en/reference/api/histogram.rst` を新規作成 (automodule/autosummary)
-  2. `docs/web/en/reference/api/time.rst` を新規作成
-  3. `docs/web/en/reference/api/interop.rst` を新規作成 (extra.rst から分離・拡充)
-  4. `index.rst` に上記3つを追加
-  5. 日本語版の対応する index.rst も更新
-- **ファイル**: `docs/web/en/reference/api/index.rst`, 新規 .rst ファイル x3
-- **検証**: `cd docs && make html` がエラーなし、各APIページが正しくレンダリング
+  1. `histogram.rst`, `time.rst`, `interop.rst` を EN/JA 両方で新規作成（または整理）。
+  2. `docs/web/en/reference/api/index.rst` および `docs/web/ja/reference/api/index.rst` に登録した。
+- **結果**: 重要なコア機能および外部連携機能への導線が確保された。
 
 ---
 
