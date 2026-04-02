@@ -26,6 +26,7 @@
 - **[DONE] コミュニティ基盤の整備 (P1)**: `CODE_OF_CONDUCT.md` (English), Issue/PR テンプレート, `.pre-commit-config.yaml` を追加しました。
 - **[DONE] マルチOS Smoke Test (P1)**: Windows/macOS 上での `TimeSeries`, `FrequencySeries`, `Spectrogram` の動作確認を CI に追加しました。
 - **[DONE] mypy の CI 可視化 (P1)**: `mypy` ジョブを CI に統合。現在は `continue-on-error` による可視化フェーズです。
+- **[DONE] テスト再現性の完全確保 (P3)**: 75種類以上のフォーマットを網羅する自動フィクスチャ生成基盤 (`generate_fixtures.py`) を導入し、バイナリ依存のない 100% 網羅テストを構築しました。
 
 ---
 
@@ -42,7 +43,7 @@
 | **コミュニティ** | **[DONE]** `CODE_OF_CONDUCT.md`, Issue/PR テンプレート, `pre-commit` を整備。 | 外部協力の"入口摩擦"が増え、貢献の品質が安定しない。 | 導入済み（外部貢献への準備完了）。 |
 | **GOVERNANCE** | `MAINTAINERS.md`, `Support policy`, 公開 `ROADMAP.md` が未整備。 | 外部貢献者が責務や期待値を把握しにくい。長期保守への信用低下。 | 各ドキュメントを作成し、Issue→Milestone を紐付ける。 |
 | **メタデータ同期** | `_version.py` は 0.1.1 だが `CITATION.cff`/`.zenodo.json` が 0.1.0 のまま。CI での自動チェックがない。 | DOI/CITATION と PyPI リリースが一致せず、引用者が混乱する。 | `release.yml` にバージョン一致確認ジョブを追加。 |
-| **再現性/配布** | テスト用 fixture が git 外にあり、新規参加者がローカルでテストを再現しづらい。 | 外部コントリビュータがデバッグ・PR 作成を断念する。 | 小さな fixture を `tests/fixtures/` に同梱（checksum 付き）。 |
+| **再現性/配布** | **[DONE]** 75+ フォーマットを網羅する動的生成基盤 (`generate_fixtures.py`) を導入。 | 外部コントリビュータがデバッグ・PR 作成を断念する。 | 導入済み（100% 網羅達成）。 |
 | **依存 lock** | `pyproject.toml` は整備済みだが、lockfile による CI 再現性の担保が薄い。 | 将来の依存更新で CI やユーザー環境が壊れる。 | `pip-compile` 等による `requirements-dev.lock` を導入。 |
 | **ドキュメントビルド** | `autodoc_mock_imports` と `nitpick_ignore` が肥大。`nbsphinx` 実行の非決定性あり。 | API 自動抽出の欠落、リンク切れの見逃し。 | mock 精査、ノートブック実行を CI 限定化。 |
 | **副作用設計** | `import gwexpy` 時に副作用（`enable_series_fit()` 等）が発生する設計の opt-out が弱い。 | ユーザーが予期しない挙動に遭遇する。 | opt-in/out の API 規約を `CONTRIBUTING.md` に明示し、テストでカバー。 |
@@ -72,7 +73,7 @@
 ### 📌 P3: 再現性と開発環境の堅牢化
 
 1. **依存 lock の導入**: `pip-compile` 等で `requirements-dev.lock` を整備し、CI の再現性を担保。
-2. **テスト fixture の同梱**: 小さなサンプルデータを `tests/fixtures/` に同梱（checksum 付き）。
+2. **[DONE]** テスト fixture の同期と自動生成基盤の導入。
 3. **mypy の fail-on-error 化**: 現在の 23 件のエラーを解消し、`continue-on-error` を除去して強制化。
 
 ### 📌 P4: ドキュメントと設計の精緻化
@@ -90,7 +91,7 @@
 | `release.yml` に `_version.py` と `CITATION.cff`/`.zenodo.json`/`CHANGELOG.md` の一致確認ジョブがあるか | ⬜ 未対応 |
 | `MAINTAINERS.md` と簡易 `Support policy` がリポジトリルートにあるか | ⬜ 未対応 |
 | `requirements-dev.lock` または `constraints/` を使って CI の再現性を担保しているか | ⬜ 未対応 |
-| テストが小さな fixture でローカル再現可能か（CI 上でノートブック実行が決定性を持つか） | ⬜ 未対応 |
+| テストが 75+ フォーマットの自動生成によりローカル再現可能か | ✅ 対応済み |
 | `mypy` の fail-on-error 化計画がスケジュールされているか（段階的適用） | ⬜ 計画中（現在 23 件のエラーを許容中） |
 | `dependabot.yml` と脆弱性対応フローが `SECURITY.md`/運用ドキュメントに記載されているか | ⬜ 未対応 |
 | PyPI 上の公開版バージョン（0.1.1）が実際に公開済みか（リモート確認要） | ❓ 要確認 |

@@ -100,6 +100,8 @@ Beyond standard GWpy formats (`.gwf`, `.hdf5`), gwexpy natively supports:
 - **General**: ROOT (.root), WAV (extended), Parquet, Feather, Pickle
 - **Meteorology**: SDB (Davis weather station)
 
+For the complete list of 75+ supported formats and their test status, see [SUPPORTED_IO_MATRIX.md](SUPPORTED_IO_MATRIX.md).
+
 > [!WARNING]
 > Never unpickle data from untrusted sources. `pickle`/`shelve` can execute arbitrary code on load.
 
@@ -247,12 +249,14 @@ See [`docs/repro/README.md`](docs/repro/README.md) for figure-generation command
 ## Testing
 
 ```bash
+# Generate test fixtures (requires optional dependencies for some formats)
+python tests/fixtures/generate_fixtures.py
+
+# Run all tests
 python -m pytest
 ```
 
-Note: GUI/IO sample fixtures are stored under `tests/sample-data/` and are not
-versioned in git. If you need to run the data-dependent tests locally, place the
-sample files under `tests/sample-data/gui/` (see the test paths for exact names).
+Note: `gwexpy` uses an automated fixture generation system to ensure 100% I/O coverage without storing large binary files in git. For details on supported formats and their corresponding tests, see [SUPPORTED_IO_MATRIX.md](SUPPORTED_IO_MATRIX.md).
 
 ## Repository layout
 
