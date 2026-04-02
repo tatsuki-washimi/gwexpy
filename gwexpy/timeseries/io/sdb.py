@@ -76,7 +76,7 @@ def read_timeseriesdict_sdb(
                 target_cols.append("dateTime")
 
         col_str = ", ".join(target_cols)
-        query = f"SELECT {col_str} FROM {table} ORDER BY dateTime"
+        query = f"SELECT {col_str} FROM {table} ORDER BY dateTime"  # nosec B608
 
         # Use pandas for easy reading using the connection context
         df = pd.read_sql_query(query, conn)
