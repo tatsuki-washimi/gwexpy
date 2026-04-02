@@ -10,9 +10,9 @@ from gwexpy.timeseries import TimeSeries
 
 _SAMPLE_ATS = (
     Path(__file__).resolve().parents[1]
-    / "sample-data"
-    / "gui"
-    / "134_V01_C02_R000_THx_BL_128H.ats"
+    / "fixtures"
+    / "data"
+    / "test.ats"
 )
 
 

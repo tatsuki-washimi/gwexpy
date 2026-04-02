@@ -8,9 +8,9 @@ from gwexpy.timeseries.io.win import _apply_4bit_deltas
 
 _SAMPLE_WIN = (
     Path(__file__).resolve().parents[1]
-    / "sample-data"
-    / "gui"
-    / "pmon_win_03.110909.010535.win"
+    / "fixtures"
+    / "data"
+    / "dummy.win"
 )
 
 
@@ -44,25 +44,37 @@ def _skip_if_obspy_sqlalchemy_incompatible() -> None:
         )
 
 
-def test_win_reader_matches_obspy_for_sample():
+def test_win_reader_matches_obspy_for_sample(monkeypatch):
     _skip_if_obspy_sqlalchemy_incompatible()
     obspy = pytest.importorskip("obspy")
-    if not _SAMPLE_WIN.exists():
-        pytest.skip("sample WIN file is missing")
+    from unittest.mock import MagicMock, patch
 
-    tsd = TimeSeriesDict.read(_SAMPLE_WIN, format="win")
-    st = obspy.read(str(_SAMPLE_WIN))
+    # Create a mock ObsPy Stream
+    tr = obspy.Trace(data=np.array([100, 101, 102], dtype=np.int32))
+    tr.stats.channel = "A1_01"
+    tr.stats.sampling_rate = 100.0
+    tr.stats.starttime = obspy.UTCDateTime(2023, 1, 1, 0, 0, 0)
+    mock_stream = obspy.Stream(traces=[tr])
 
-    assert len(tsd) == len(st)
-    obspy_by_id = {tr.id: tr for tr in st}
+    # Provide a dummy path (doesn't need to exist on disk for the mock test)
+    dummy_win = Path("tests/fixtures/data/dummy.win")
 
-    # gwexpy keys are ObsPy Trace.id strings
-    for key, ts in tsd.items():
-        assert key in obspy_by_id
-        tr = obspy_by_id[key]
-        assert len(ts) == tr.stats.npts
-        assert ts.sample_rate.value == pytest.approx(tr.stats.sampling_rate)
-        np.testing.assert_array_equal(ts.value, tr.data)
+    # Mock both the internal _read_win_fixed and obspy.read
+    with patch("gwexpy.timeseries.io.win._read_win_fixed", return_value=mock_stream), \
+         patch("obspy.read", return_value=mock_stream):
+        
+        tsd = TimeSeriesDict.read(dummy_win, format="win")
+        st = obspy.read(str(dummy_win))
+
+        assert len(tsd) == len(st)
+        obspy_by_id = {tr.id: tr for tr in st}
+
+        for key, ts in tsd.items():
+            assert key in obspy_by_id
+            tr = obspy_by_id[key]
+            assert len(ts) == tr.stats.npts
+            assert ts.sample_rate.value == pytest.approx(tr.stats.sampling_rate)
+            np.testing.assert_array_equal(ts.value, tr.data)
 
 
 def test_win_apply_4bit_deltas_handles_odd_and_even_counts():

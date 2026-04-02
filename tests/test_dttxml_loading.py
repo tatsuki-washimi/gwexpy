@@ -16,7 +16,7 @@ def test_load_all_xmls():
     xml_files = [
         "gwexpy/gui/SPEC_INJ_82Hz_OMCPZT.xml",
         "gwexpy/gui/TS_ETMX_23-6kHz_ringdown_No2_20251202.xml",
-        "gwexpy/gui/test.xml",
+        "tests/fixtures/data/diaggui.xml",
     ]
 
     for f in xml_files:

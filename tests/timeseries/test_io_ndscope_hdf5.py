@@ -14,7 +14,7 @@ from gwexpy.timeseries.io.ndscope_hdf5 import (
     read_timeseriesdict_ndscope_hdf5,
 )
 
-SAMPLE_HDF5 = Path(__file__).parent.parent / "sample-data" / "ndscope.hdf5"
+SAMPLE_HDF5 = Path(__file__).parent.parent / "fixtures" / "data" / "ndscope.h5"
 
 # ---------------------------------------------------------------------------
 # Helpers to create synthetic ndscope HDF5 files

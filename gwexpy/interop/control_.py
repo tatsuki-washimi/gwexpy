@@ -9,7 +9,7 @@ Provides conversion between FrequencySeries and control.FRD (Frequency Response 
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Literal, Type, TypeVar, Union
 
 import numpy as np
 
@@ -147,8 +147,8 @@ def from_control_frd(
     is_matrix = data.ndim == 3 and (data.shape[0] > 1 or data.shape[1] > 1)
 
     if is_regular:
-        df = diffs[0] if len(diffs) > 0 else 1.0
-        f0 = freqs[0] if len(freqs) > 0 else 0.0
+        df = float(diffs[0]) if len(diffs) > 0 else 1.0
+        f0 = float(freqs[0]) if len(freqs) > 0 else 0.0
 
         if is_matrix:
             FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")

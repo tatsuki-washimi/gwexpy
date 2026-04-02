@@ -10,7 +10,7 @@ This module provides interoperability with other libraries as a mixin class:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
@@ -35,7 +35,11 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
     # ===============================
 
     def to_pandas(
-        self, index: str = "datetime", *, name: str | None = None, copy: bool = False
+        self,
+        index: Literal["datetime", "seconds", "gps"] = "datetime",
+        *,
+        name: str | None = None,
+        copy: bool = False,
     ) -> Any:
         """
         Convert TimeSeries to pandas.Series.
@@ -55,7 +59,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import to_pandas_series
 
-        return to_pandas_series(self, index=index, name=name, copy=copy)
+        return to_pandas_series(cast(Any, self), index=index, name=name, copy=copy)
 
     @classmethod
     def from_pandas(
@@ -86,7 +90,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_pandas_series
 
-        return from_pandas_series(cls, series, unit=unit, t0=t0, dt=dt)
+        return from_pandas_series(cast(Any, cls), series, unit=unit, t0=t0, dt=dt)
 
     # ===============================
     # polars
@@ -220,7 +224,9 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
     # xarray
     # ===============================
 
-    def to_xarray(self, time_coord: str = "datetime") -> Any:
+    def to_xarray(
+        self, time_coord: Literal["datetime", "seconds", "gps"] = "datetime"
+    ) -> Any:
         """
         Convert to xarray.DataArray.
 
@@ -235,7 +241,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import to_xarray
 
-        return to_xarray(self, time_coord=time_coord)
+        return to_xarray(cast(Any, self), time_coord=time_coord)
 
     @classmethod
     def from_xarray(cls, da: Any, *, unit: Any | None = None) -> Any:
@@ -255,7 +261,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_xarray
 
-        return from_xarray(cls, da, unit=unit)
+        return from_xarray(cast(Any, cls), da, unit=unit)
 
     # ===============================
     # HDF5
@@ -289,7 +295,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         from gwexpy.interop import to_hdf5
 
         to_hdf5(
-            self,
+            cast(Any, self),
             group,
             path,
             overwrite=overwrite,
@@ -315,7 +321,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_hdf5
 
-        return from_hdf5(cls, group, path)
+        return from_hdf5(cast(Any, cls), group, path)
 
     # ===============================
     # obspy
@@ -340,7 +346,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import to_obspy_trace
 
-        return to_obspy_trace(self, stats_extra=stats_extra, dtype=dtype)
+        return to_obspy_trace(cast(Any, self), stats_extra=stats_extra, dtype=dtype)
 
     def to_obspy_trace(
         self, *, stats_extra: dict[str, Any] | None = None, dtype: Any = None
@@ -413,7 +419,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import to_sqlite
 
-        return to_sqlite(self, conn, series_id=series_id, overwrite=overwrite)
+        return to_sqlite(cast(Any, self), conn, series_id=series_id, overwrite=overwrite)
 
     @classmethod
     def from_sqlite(cls, conn: Any, series_id: Any) -> Any:
@@ -472,7 +478,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
 
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required when converting from raw tensor")
-        return from_torch(cls, tensor, t0=t0, dt=dt, unit=unit)
+        return from_torch(cast(Any, cls), tensor, t0=t0, dt=dt, unit=unit)
 
     # ===============================
     # TensorFlow
@@ -575,7 +581,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_zarr
 
-        return from_zarr(cls, store, path)
+        return from_zarr(cast(Any, cls), store, path)
 
     # ===============================
     # netCDF4
@@ -596,7 +602,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import to_netcdf4
 
-        to_netcdf4(self, ds, var_name, **kwargs)
+        to_netcdf4(cast(Any, self), ds, var_name, **kwargs)
 
     @classmethod
     def from_netcdf4(cls, ds: Any, var_name: str) -> Any:
@@ -616,7 +622,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
         """
         from gwexpy.interop import from_netcdf4
 
-        return from_netcdf4(cls, ds, var_name)
+        return from_netcdf4(cast(Any, cls), ds, var_name)
 
     # ===============================
     # JAX
@@ -657,7 +663,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
 
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required")
-        return from_jax(cls, array, t0=t0, dt=dt, unit=unit)
+        return from_jax(cast(Any, cls), array, t0=t0, dt=dt, unit=unit)
 
     # ===============================
     # CuPy
@@ -694,7 +700,7 @@ class TimeSeriesInteropMixin(TimeSeriesAttrs, InteropMixin):
 
         if t0 is None or dt is None:
             raise ValueError("t0 and dt are required")
-        return from_cupy(cls, array, t0=t0, dt=dt, unit=unit)
+        return from_cupy(cast(Any, cls), array, t0=t0, dt=dt, unit=unit)
 
     # ===============================
     # librosa

@@ -477,9 +477,10 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
         unit : str or astropy.units.Unit, optional
             Unit to assign to the data.
         """
+        from typing import cast
         from gwexpy.interop import from_finesse_frequency_response
 
-        return from_finesse_frequency_response(cls, sol, unit=unit)
+        return cast(FrequencySeriesDict, from_finesse_frequency_response(cls, sol, unit=unit))
 
     @classmethod
     def from_finesse_noise(
@@ -498,9 +499,10 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
         unit : str or astropy.units.Unit, optional
             Unit to assign to the data (e.g., ``"m/sqrt(Hz)"``).
         """
+        from typing import cast
         from gwexpy.interop import from_finesse_noise
 
-        return from_finesse_noise(cls, sol, output=output, unit=unit)
+        return cast(FrequencySeriesDict, from_finesse_noise(cls, sol, output=output, unit=unit))
 
     # ===============================
     # 8. PySpice Interop
@@ -521,9 +523,10 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
         unit : str or astropy.units.Unit, optional
             Unit to assign to the data.
         """
+        from typing import cast
         from gwexpy.interop import from_pyspice_ac
 
-        return from_pyspice_ac(cls, analysis, unit=unit)
+        return cast(FrequencySeriesDict, from_pyspice_ac(cls, analysis, unit=unit))
 
     @classmethod
     def from_pyspice_noise(
@@ -540,9 +543,10 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
         unit : str or astropy.units.Unit, optional
             Unit to assign to the data.
         """
+        from typing import cast
         from gwexpy.interop import from_pyspice_noise
 
-        return from_pyspice_noise(cls, analysis, unit=unit)
+        return cast(FrequencySeriesDict, from_pyspice_noise(cls, analysis, unit=unit))
 
     # ===============================
     # 9. scikit-rf Interop
@@ -570,9 +574,10 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
         unit : str or astropy.units.Unit, optional
             Unit to assign to the data.
         """
+        from typing import cast
         from gwexpy.interop import from_skrf_network
 
-        return from_skrf_network(cls, ntwk, parameter=parameter, unit=unit)
+        return cast(FrequencySeriesDict, from_skrf_network(cls, ntwk, parameter=parameter, unit=unit))
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
         """Write dict to file (HDF5, ROOT, etc.)."""

@@ -47,9 +47,9 @@ def from_pandas_frequencyseries(
     freq_axis = None
     if frequencies is not None:
         freq_axis = frequencies
-    elif df is not None or f0 is not None:
+    elif df is not None:
         df_val = float(df)
-        f0_val = float(f0 if f0 is not None else idx[0])
+        f0_val = float(f0) if f0 is not None else float(idx[0])
         freq_axis = f0_val + np.arange(len(vals)) * df_val
     else:
         freq_axis = idx.values

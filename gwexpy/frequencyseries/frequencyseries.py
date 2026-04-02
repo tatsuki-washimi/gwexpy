@@ -8,7 +8,7 @@ Extends gwpy.frequencyseries with matrix support and future extensibility.
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any, SupportsIndex, TypeVar
+from typing import TYPE_CHECKING, Any, Literal, SupportsIndex, TypeVar, cast
 
 import numpy as np
 from astropy import units as u
@@ -388,7 +388,11 @@ class FrequencySeries(
         return super().filterba(*args, **kwargs)
 
     def to_pandas(
-        self, index: str = "frequency", *, name: str | None = None, copy: bool = False
+        self,
+        index: Literal["frequency"] = "frequency",
+        *,
+        name: str | None = None,
+        copy: bool = False,
     ) -> Any:
         """Convert to pandas.Series."""
         from gwexpy.interop import to_pandas_frequencyseries
@@ -500,7 +504,7 @@ class FrequencySeries(
 
         return from_root(cls, obj, return_error=return_error, **kwargs)
 
-    def to_xarray(self, freq_coord: str = "Hz") -> Any:
+    def to_xarray(self, freq_coord: Literal["Hz"] = "Hz") -> Any:
         """Convert to xarray.DataArray."""
         from gwexpy.interop import to_xarray_frequencyseries
 
@@ -526,7 +530,7 @@ class FrequencySeries(
         from gwexpy.interop import to_hdf5_frequencyseries
 
         return to_hdf5_frequencyseries(
-            self,
+            cast(Any, self),
             group,
             path,
             overwrite=overwrite,
@@ -908,7 +912,9 @@ class FrequencySeries(
             epoch=self.epoch,
         )
 
-    def to_control_frd(self, frequency_unit: str = "Hz") -> Any:
+    def to_control_frd(
+        self, frequency_unit: Literal["rad/s", "Hz"] = "Hz"
+    ) -> Any:
         """Convert to control.FRD."""
         from gwexpy.interop import to_control_frd
 
@@ -916,7 +922,10 @@ class FrequencySeries(
 
     @classmethod
     def from_control_frd(
-        cls: type[FrequencySeries], frd: Any, *, frequency_unit: str = "Hz"
+        cls: type[FrequencySeries],
+        frd: Any,
+        *,
+        frequency_unit: Literal["Hz", "rad/s"] = "Hz",
     ) -> Any:
         """Create from control.FRD."""
         from gwexpy.interop import from_control_frd
