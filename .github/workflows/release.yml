@@ -6,8 +6,21 @@ on:
       - "v*"
 
 jobs:
+  verify-metadata:
+    name: Verify version metadata consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check version consistency
+        run: python scripts/check_release_metadata.py
+
   build-n-publish:
     name: Build and publish to PyPI
+    needs: verify-metadata
     runs-on: ubuntu-latest
     environment:
       name: pypi
