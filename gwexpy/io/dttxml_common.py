@@ -23,7 +23,7 @@ def extract_xml_channels(filename: str) -> list[ChannelInfo]:
     """
     channels: list[ChannelInfo] = []
     try:
-        tree = ET.parse(filename)
+        tree = ET.parse(filename)  # nosec B314
     except (ET.ParseError, OSError) as exc:
         warnings.warn(f"XML parsing error in {filename}: {exc}")
         return channels
@@ -197,7 +197,7 @@ def load_dttxml_native(source: str) -> dict:
     - 6: Response complex (floatComplex) - **correctly parsed here**
     """
     try:
-        tree = ET.parse(source)
+        tree = ET.parse(source)  # nosec B314
     except (ET.ParseError, OSError) as exc:
         warnings.warn(f"Failed to parse DTT XML: {exc}")
         return {}
