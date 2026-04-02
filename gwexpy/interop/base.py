@@ -22,8 +22,8 @@ def to_plain_array(data: Any, copy: bool = False) -> np.ndarray:
 
 
 def from_plain_array(
-    cls: Type[T], array: Any, t0: Any, dt: Any, unit: Any = None, **kwargs: Any
-) -> T:
+    cls: Type[Any], array: Any, t0: Any, dt: Any, unit: Any = None, **kwargs: Any
+) -> Any:
     """
     Reconstruct a gwexpy object from a plain array.
     """

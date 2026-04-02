@@ -343,7 +343,8 @@ def from_root(
 
         res = cls(z, times=x, frequencies=y, unit=unit, name=name)
         if return_error:
-            err_res = cls(ez, times=x, frequencies=y, unit=unit, name=f"{name}_error")
+            from typing import cast
+            err_res = cls(cast(Any, ez), times=x, frequencies=y, unit=unit, name=f"{name}_error")
             return res, err_res
         return res
 
@@ -444,27 +445,33 @@ def from_root(
             unit = match.group(1)
 
     # Regularity check
-    if n > 1:
-        dx_vals = np.diff(x)
-        if np.allclose(dx_vals, dx_vals[0]):
-            res = cls(y, x0=float(x[0]), dx=float(dx_vals[0]), unit=unit, name=name)
-        else:
-            if "Frequency" in cls.__name__:
-                res = cls(y, frequencies=x, unit=unit, name=name)
+    if is_graph:
+        if n > 1:
+            dx_vals = np.diff(x)
+            if np.allclose(dx_vals, dx_vals[0]):
+                res = cls(y, x0=float(x[0]), dx=float(dx_vals[0]), unit=unit, name=name)
             else:
-                res = cls(y, times=x, unit=unit, name=name)
-    else:
-        res = cls(y, x0=float(x[0]) if n == 1 else 0, unit=unit, name=name)
-
-    if return_error:
-        # Create a matching series for error
-        if "Frequency" in cls.__name__:
-            err_res = cls(ey, frequencies=x, unit=unit, name=f"{name}_error")
+                if "Frequency" in cls.__name__:
+                    res = cls(y, frequencies=x, unit=unit, name=name)
+                else:
+                    res = cls(y, times=x, unit=unit, name=name)
         else:
-            err_res = cls(ey, times=x, unit=unit, name=f"{name}_error")
-        return res, err_res
+            res = cls(y, x0=float(x[0]) if n == 1 else 0, unit=unit, name=name)
 
-    return res
+        if return_error:
+            from typing import cast
+            # Create a matching series for error
+            if "Frequency" in cls.__name__:
+                err_res = cls(cast(Any, ey), frequencies=x, unit=unit, name=f"{name}_error")
+            else:
+                err_res = cls(cast(Any, ey), times=x, unit=unit, name=f"{name}_error")
+            return res, err_res
+        return res
+    else:
+        # is_hist: Already returned above for Histogram class, 
+        # but for other classes we need a fallback or error.
+        # Currently the logic was mixed. Let's make it consistent.
+        raise NotImplementedError("TH1 to non-Histogram class conversion not fully implemented yet.")
 
 
 def to_tmultigraph(collection, name: Optional[str] = None) -> Any:

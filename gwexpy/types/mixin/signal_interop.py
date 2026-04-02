@@ -324,4 +324,4 @@ class InteropMixin:
         """Save to Zarr storage."""
         from gwexpy.interop.zarr_ import to_zarr
 
-        return to_zarr(self, store, path=path, **kwargs)
+        return to_zarr(cast(Any, self), store, path=path, **kwargs)

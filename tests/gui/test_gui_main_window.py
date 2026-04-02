@@ -27,11 +27,11 @@ def _make_window(qtbot):
 def _data_path(name):
     root = Path(__file__).resolve().parents[2]
     candidates = [
-        root / "tests" / "sample-data" / "gui" / name,
+        root / "tests" / "fixtures" / "data" / name,
         root / "gwexpy" / "gui" / "test-data" / name,
     ]
-    if name == "diaggui_TS.xml":
-        candidates.append(root / "gwexpy" / "gui" / "test-data" / "duaggui_TS.xml")
+    if name == "diaggui.xml":
+        candidates.append(root / "gwexpy" / "gui" / "test-data" / "diaggui_TS.xml")
     for path in candidates:
         if path.exists():
             return path
@@ -84,10 +84,10 @@ def test_open_file_xml_populates_channels(qtbot):
     pytest.importorskip("dttxml")
     window = _make_window(qtbot)
 
-    xml_path = _data_path("diaggui_TS.xml")
+    xml_path = _data_path("diaggui.xml")
     if not xml_path.exists():
         pytest.skip(
-            "sample GUI XML is missing: tests/sample-data/gui/diaggui_TS.xml"
+            "sample GUI XML is missing: tests/fixtures/data/diaggui.xml"
         )
     window.open_file(str(xml_path))
     qtbot.wait(50)

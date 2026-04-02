@@ -87,7 +87,7 @@ class TimeSeriesWindowDataset:
                 arr.reshape(-1, arr.shape[-1]) if arr.ndim > 1 else arr[None, :]
             )
         else:
-            self.label_array = None
+            self.label_array = cast(Any, None)
 
         max_start = self.data.shape[-1] - self.window - self.horizon + 1
         if max_start <= 0:

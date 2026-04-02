@@ -198,6 +198,20 @@ def pytest_configure(config):
     )
 
 
+def pytest_sessionstart(session):
+    """
+    Called after the Session object has been created and
+    before selection and entering the run test loop.
+    """
+    import subprocess
+    import sys
+
+    # Generate synthetic fixtures
+    fixture_script = Path(__file__).parent / "fixtures" / "generate_fixtures.py"
+    if fixture_script.exists():
+        subprocess.check_call([sys.executable, str(fixture_script)])
+
+
 def pytest_collection_modifyitems(config, items):
     if _MP_AVAILABLE:
         skip_mp = None

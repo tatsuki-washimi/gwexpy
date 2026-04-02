@@ -215,8 +215,6 @@ def read_timeseriesdict_csv(
     """
     from .. import TimeSeriesDict
 
-    source = Path(source)
-
     # --- Resolve config ---
     if config is None:
         cfg = CSVFormatConfig()
@@ -239,7 +237,15 @@ def read_timeseriesdict_csv(
     resample_meth = resample_method or cfg.resample_method or "interpolate"
 
     # --- Read raw file ---
-    text = source.read_text(encoding=cfg.encoding)
+    if hasattr(source, "read"):
+        # Handle file-like objects (strings, buffers, etc.)
+        text = source.read()
+        if isinstance(text, bytes):
+            text = text.decode(cfg.encoding or "utf-8")
+    else:
+        # Handle paths
+        source = Path(source)
+        text = source.read_text(encoding=cfg.encoding)
     lines = text.splitlines()
 
     # Auto-detect delimiter if config is default
