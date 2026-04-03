@@ -220,14 +220,6 @@ def __dir__() -> list[str]:
     return sorted(set(__all__) | set(globals().keys()))
 
 
-# Enable fitting monkeypatch by default for user convenience
-try:
-    from .fitting import enable_series_fit
-
-    enable_series_fit()
-except ImportError:
-    pass
-
 # Mark bootstrap as complete — all subpackages have been imported above,
 # so the registry is fully populated.
 register_all()
