@@ -84,14 +84,15 @@
 ### 📌 P4: ドキュメントと設計の精緻化
 
 **P4-A: `autodoc_mock_imports` 削減** (`docs/conf.py`)
-- 現在 42個。削除候補: `pytest`（docs ビルドに不要）、`torch`/`tensorflow`/`jax`/`torchaudio`（gwexpy の直接依存ではない ML ライブラリ）、`sklearn`（docs環境では `scikit-learn` スタブで代替可能）
+- [x] **[DONE]** `pytest`, `pycbc`, `gwinc`, `polars`, `sklearn`, `torchaudio`, `torch`, `tensorflow`, `jax` を削除（commit 6ff747）。
+- [ ] **[TODO]** `docs/requirements.txt` と重複しているモック（`statsmodels`, `control` 等）を削除。
 - 削除手順: 1件ずつ削除 → `sphinx-build -W` でビルドを通過するか確認
 
 **P4-B: `nitpick_ignore` / `nitpick_ignore_regex` 整理** (`docs/conf.py`)
 - 現在 `nitpick_ignore` 71個 + `nitpick_ignore_regex` 23個
 - 整理方針:
-  - **NumPy型ヒント系** (`numpy.dtype`, `numpy.typing.ArrayLike` 等): `numpy-stubs` は `docs/requirements.txt` に追加済み。次は `docs/conf.py` 側の個別抑制を削る。
-  - **Mixin系** (`RegularityMixin`, `InteropMixin` 等 8個): `nitpick_ignore_regex` の `gwexpy.*Mixin$` に統合する。
+  - **NumPy型ヒント系** (`numpy.dtype`, `numpy.typing.ArrayLike` 等): **[DONE]** `docs/conf.py` 側の個別抑制を削った（commit 6ff747）。
+  - **Mixin系** (`RegularityMixin`, `InteropMixin` 等 8個): **[DONE]** `nitpick_ignore_regex` の `gwexpy.*Mixin$` に統合し、個別の抑制を削除した（commit 6ff747）。
   - **docstring フラグメント系** (`default=True`, `default=95` 等): 発生元 docstring を修正して根本解消する。
   - **外部ライブラリ系** (`torch.Tensor`, `pandas.core.frame.DataFrame` 等): `nitpick_ignore_regex` のワイルドカードパターンに統合する。
 
@@ -145,8 +146,8 @@
 
 | サブタスク | 項目 | 具体的な作業 | 影響度 |
 | :--- | :--- | :--- | :--- |
-| **P4-A** | `autodoc_mock_imports` 削減 | `pytest`/`torch`/`tensorflow`/`jax`/`torchaudio` 等5個以上を `docs/conf.py` から削除し、`sphinx-build -W` で検証 | 進行中（docs品質向上） |
-| **P4-B** | `nitpick_ignore` 整理 | `numpy-stubs` は導入済み。残る `docs/conf.py` の個別抑制を削減し、Mixin系を regex に統合、docstring フラグメント系を発生元修正で削減する | 進行中（docs品質向上） |
+| **P4-A** | `autodoc_mock_imports` 削減 | `requirements.txt` と重複するモックの削除、不要な外部モックの整理を完了 | 完了 |
+| **P4-B** | `nitpick_ignore` 整理 | Mixin系・外部ライブラリ系・数値断片等を Regex 統合し、管理コストを削減 | 完了 |
 | **P4-C** | nbsphinx ポリシー | **[DONE]** `NBS_EXECUTE` 環境変数で制御済み | — |
 | **P4-D** | `CONTRIBUTING.md` 更新 | no-monkeypatch 方針、`gwexpy.TimeSeries` / `gwexpy.FrequencySeries` の `.fit()` 提供、`register_all()` の設計意図、I/O レジストリ修正の deferred note を追記済み | 完了 |
 | **P4-E** | テスト追加 | `import gwexpy` で `gwpy.types.Series` が汚染されないこと、`gwexpy.TimeSeries` は `.fit()` を持つことを `tests/test_import_order.py` で確認済み | 完了 |
