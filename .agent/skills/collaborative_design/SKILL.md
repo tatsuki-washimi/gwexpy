@@ -1,11 +1,11 @@
 ---
 name: collaborative_design
-description: 実装方針・作業内容の吟味・修正を、ユーザーとAIの会話で行う。ユーザーからの指示があるまでは、勝手にコーディング作業に取りかからない
+description: API設計、大規模リファクタリング、物理ロジックの選択など、実装前に方針そのものをユーザーと対話で詰める時に使う。計画書作成の標準入口はsetup_plan
 ---
 
 # Collaborative Design & Planning
 
-This skill serves as a guideline for ensuring the AI does not proceed with implementation unilaterally, but instead determines the optimal design and policy through dialogue with the user.
+This skill is a narrow guardrail for design-first conversations. Use it when the primary task is to align on policy, API shape, or scientific assumptions before any implementation plan is finalized.
 
 ## Core Principle: Conversation First
 
@@ -18,7 +18,7 @@ When high-level design decisions (API design, selection of complex physical logi
 
 ### 2. Trigger for Starting Work (Explicit Approval)
 - While discussing plans or designs, **do not modify the project's source code**, no matter how confident you are.
-- Update and share the implementation plan using `setup_plan` or `archive_work --plan`, and explicitly ask the user, "May I proceed with this plan?"
+- Hand off to `setup_plan` once the discussion has converged enough to write an implementation plan.
 - Only use coding tools (e.g., `write_to_file`) after receiving affirmative instructions from the user, such as "Proceed," "Go," or "Approved."
 
 ### 3. Permitted "Pre-work"
@@ -31,4 +31,4 @@ Non-destructive tasks to enhance the accuracy of discussion and analysis can be 
 1.  **Listen**: Deeply understand the user's requirements and the underlying intent.
 2.  **Propose**: Present plan or design proposals in Markdown format.
 3.  **Refine**: Receive user feedback and revise/improve the proposal until satisfied.
-4.  **Commitment**: After obtaining approval, complete the implementation in one go.
+4.  **Hand Off**: Once the direction is accepted, move to `setup_plan` for the written implementation plan.

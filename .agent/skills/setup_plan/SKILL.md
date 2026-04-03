@@ -1,17 +1,18 @@
 ---
 name: setup_plan
-description: ユーザーの要求から具体的な作業計画を作成し、モデル・スキル・工数を提案して計画書を保存・更新する
+description: 新しい作業を始める時に使う標準の計画作成入口。要求を分解し、必要ならcollaborative_designを前段に挟みつつ、モデル・スキル・工数込みの実装計画書を保存・更新する
 ---
 
 # Setup Plan Workflow
 
-This skill initiates a workflow that consistently handles understanding requirements, model selection, and creating/updating plans at the start of a new task.
+This is the default entry point for turning a request into a written implementation plan.
 
 ## Instructions
 
 1. **Requirement Understanding and Decomposition**:
     * Read and interpret chat requests or provided plans (Markdown), decomposing them into specific work steps.
     * Identify classes, methods, and test items that require implementation.
+    * If the task is still at the policy-discussion stage, call `collaborative_design` first and return here after alignment.
 
 2. **AI Assistant Strategy Formulation**:
     * Call the following skills in order to analyze task characteristics:
