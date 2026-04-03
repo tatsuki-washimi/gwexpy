@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from typing import TYPE_CHECKING, Any
 
 from gwpy.types import Series
@@ -40,8 +39,6 @@ def enable_series_fit() -> None:
         Series.fit = _lazy_series_fit
 
 
-if os.environ.get("GWEXPY_ENABLE_SERIES_FIT") == "1":
-    enable_series_fit()
 
 
 # Backward compatibility alias (used in README.md)

@@ -36,6 +36,13 @@ python scripts/install_minepy.py
 - Add or update tests for behavior changes.
 - Run `ruff check .` before submitting.
 
+## Design Principles: No Monkeypatching
+
+- `import gwexpy` must not modify `gwpy.types.Series` or other external GWpy classes.
+- `.fit()` is available on `gwexpy.TimeSeries` and `gwexpy.FrequencySeries` through inheritance.
+- If you need `Series.fit()` on a base GWpy object, call `gwexpy.fitting.enable_series_fit()` explicitly in application code. Do not rely on import side effects.
+- Keep import-time behavior predictable and document any remaining compatibility shims when they are unavoidable.
+
 ## Documentation
 
 To build docs locally:

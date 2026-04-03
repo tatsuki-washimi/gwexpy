@@ -101,7 +101,6 @@ class TestImportOrderIsolated:
             assert not missing, f"Missing constructors: {{missing}}"
         """)
         assert result.returncode == 0, result.stderr
-
     def test_register_all_without_io(self):
         """include_io=False registers constructors but skips IO formats."""
         result = _run_isolated("""\
@@ -110,6 +109,38 @@ class TestImportOrderIsolated:
             from gwexpy.interop._registry import ConverterRegistry
             assert ConverterRegistry.has_constructor("TimeSeries")
             assert ConverterRegistry.has_constructor("FrequencySeries")
+        """)
+        assert result.returncode == 0, result.stderr
+
+    def test_no_implicit_monkeypatch_on_gwpy(self):
+        """Verify that importing gwexpy does NOT add .fit() to gwpy.types.Series."""
+        result = _run_isolated("""\
+            import gwexpy
+            from gwpy.types import Series
+            assert not hasattr(Series, "fit"), (
+                "gwpy.types.Series should not be monkeypatched with .fit() by default"
+            )
+        """)
+        assert result.returncode == 0, result.stderr
+
+    def test_explicit_gwexpy_fit_available(self):
+        """Verify that gwexpy.TimeSeries still has .fit() via inheritance."""
+        result = _run_isolated("""\
+            from gwexpy import TimeSeries
+            import numpy as np
+            ts = TimeSeries(np.zeros(10), dt=1)
+            assert hasattr(ts, "fit"), "gwexpy.TimeSeries should have .fit() method"
+        """)
+        assert result.returncode == 0, result.stderr
+
+    def test_manual_opt_in_still_works(self):
+        """Verify that enable_series_fit() still works when called manually."""
+        result = _run_isolated("""\
+            import gwexpy.fitting
+            from gwpy.types import Series
+            assert not hasattr(Series, "fit")
+            gwexpy.fitting.enable_series_fit()
+            assert hasattr(Series, "fit"), "Manual opt-in should still work"
         """)
         assert result.returncode == 0, result.stderr
 

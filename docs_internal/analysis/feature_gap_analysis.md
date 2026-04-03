@@ -1,13 +1,13 @@
 # gwexpy プロジェクト監査・分析統合レポート
 
 最終更新日: 2026-04-03
-ステータス: **P3・P4段階へ移行（再現性・ドキュメント精緻化）**
+ステータス: **P3・P4段階へ移行（再現性・ドキュメント精緻化, no-monkeypatch）**
 
 ## 1. エグゼクティブサマリー
 
 `gwexpy` は、研究用ソフトウェアとしては非常に高い完成度（ドキュメント・CI・再現性の骨格）を備えていますが、外部コントリビュータや第三者ユーザーが安心して関与するための「OSS運用の標準インフラ」が依然として薄い状態にあります。
 
-2026-04-03 時点の追跡監査により、P0（セキュリティ）・P1（外部貢献・マルチ環境）・P2（透明性と同期の自動化）の施策が全て完了しました。引き続き **「再現性・ドキュメント精緻化（P3・P4）」** に関して実装が必要な項目が残っています。
+2026-04-03 時点の追跡監査により、P0（セキュリティ）・P1（外部貢献・マルチ環境）・P2（透明性と同期の自動化）の施策が全て完了しました。引き続き **「再現性・ドキュメント精緻化（P3・P4）」** では、`docs/conf.py` の整理と nitpick 削減が残っています。
 
 本レポートは、監査から得られた確証をもとにした、ライブなロードマップです。
 
@@ -20,6 +20,7 @@
 - **[DONE] バージョン情報の単一ソース化**: `pyproject.toml` に `dynamic = ["version"]` を導入し、`_version.py` を唯一の正解としました。
 - **[DONE] ワイルドカードインポートの排除**: `gwexpy/io/` 内での `from gwpy.io.* import *` を、明示的な import に置き換えました。
 - **[DONE] 広範な例外捕捉の具体化**: I/O 層を中心に、`except Exception:` を具体的な例外（`OSError`, `ValueError` 等）へ修正しました。
+- **[DONE] no-monkeypatch 方針の適用**: `import gwexpy` 時に `gwpy.types.Series` を書き換えないようにし、`.fit()` は `gwexpy.TimeSeries` / `gwexpy.FrequencySeries` の継承経路で提供する方針へ統一しました。
 - **[DONE] 欠落していたチュートリアル作成**: `Histogram`, `Table`, `Noise`, `Fitting` 等の主要チュートリアルを `docs/` に追加しました。
 - **[DONE] セキュリティポリシーの設定 (P0)**: `SECURITY.md` を作成し、脆弱性報告手順と pickle に関する警告を明記しました。
 - **[DONE] セキュリティスキャンの自動化 (P0)**: `.github/workflows/security.yml` を導入し、`pip-audit`, `bandit`, `CodeQL` による自動スキャン（PR毎/週次）を構築しました。
@@ -49,8 +50,8 @@
 | **メタデータ同期** | **[DONE]** `_version.py` (0.1.1)、`CITATION.cff` (0.1.1)、`.zenodo.json` (0.1.1) がバージョン統一済み。 | DOI/CITATION と PyPI リリースが一致せず、引用者が混乱する。 | 解決済み（CI での自動チェック検討中）。 |
 | **再現性/配布** | **[DONE]** 75+ フォーマットを網羅する動的生成基盤 (`generate_fixtures.py`) を導入。 | 外部コントリビュータがデバッグ・PR 作成を断念する。 | 導入済み（100% 網羅達成）。 |
 | **依存 lock** | **[DONE]** `requirements-dev.txt` を `pip-compile --extra=dev` で生成済み（296行、全バージョン固定）。`ci.yml` も lock ファイル参照に統一済み。 | 将来の依存更新で CI やユーザー環境が壊れる。 | 導入済み（`requirements-dev.txt` で CI 再現性を担保）。 |
-| **ドキュメントビルド** | `autodoc_mock_imports` (37件)、`nitpick_ignore` (~130件) が肥大。`nbsphinx` 実行の非決定性あり。 | API 自動抽出の欠落、リンク切れの見逃し。 | mock 精査・削減、ノートブック実行を CI 限定化（**P4**）。 |
-| **副作用設計** | `import gwexpy` 時に副作用（`enable_series_fit()`, `register_all()` 等）が発生する設計の opt-out が弱い。 | ユーザーが予期しない挙動に遭遇する。 | opt-in/out の API 規約を `CONTRIBUTING.md` に明示し、テストでカバー（**P4**）。 |
+| **ドキュメントビルド** | `docs/requirements.txt` に `numpy-stubs` は追加済みだが、`docs/conf.py` 側では `autodoc_mock_imports` (42個)、`nitpick_ignore` (71個) + `nitpick_ignore_regex` (23個) がまだ肥大。削減候補: `pytest`/`torch`/`tensorflow`/`jax`/`torchaudio`（gwexpy直接依存でない）。`nbsphinx_execute` は `NBS_EXECUTE` 環境変数制御で実質対応済み。 | API 自動抽出の欠落、リンク切れの見逃し。`numpy-stubs` の導入だけでは不十分で、nitpick の誤魔化しが残ると実際のドキュメント欠落を見逃す。 | (1) `pytest`/ML系5個以上を `autodoc_mock_imports` から削除。(2) `nitpick_ignore` から NumPy 型ヒント系を削減し、Mixin系を `nitpick_ignore_regex` の `gwexpy.*Mixin$` に統合する。 |
+| **副作用設計** | `.fit()` の monkeypatch は廃止済み。残る副作用は `register_all()` (`__init__.py`、常時実行・idempotent)、警告フィルター登録 (11個・opt-out 不可)、gwpy互換性の `gwpy.io.registry` フォールバック。`CONTRIBUTING.md` に no-monkeypatch 方針を明記した。 | 外部クラスの暗黙改変はなくなったが、I/O レジストリ互換パッチはまだ残っており、将来の gwpy 更新で差分原因になりうる。 | (1) no-monkeypatch 方針を維持する。(2) `gwpy.io.registry` の互換性パッチは後続フェーズで明示的な I/O 登録ガードへ移行する。 |
 
 ---
 
@@ -82,9 +83,31 @@
 
 ### 📌 P4: ドキュメントと設計の精緻化
 
-1. **Sphinx の mock/nitpick 整理**: `autodoc_mock_imports` と `nitpick_ignore` を精査・削減。
-2. **`nbsphinx` 実行ポリシー見直し**: CIでの限定実行化（非決定性の排除）。
-3. **import 副作用の opt-out 整備**: opt-in/out API 規約のドキュメント化とテストカバレッジの追加。
+**P4-A: `autodoc_mock_imports` 削減** (`docs/conf.py`)
+- 現在 42個。削除候補: `pytest`（docs ビルドに不要）、`torch`/`tensorflow`/`jax`/`torchaudio`（gwexpy の直接依存ではない ML ライブラリ）、`sklearn`（docs環境では `scikit-learn` スタブで代替可能）
+- 削除手順: 1件ずつ削除 → `sphinx-build -W` でビルドを通過するか確認
+
+**P4-B: `nitpick_ignore` / `nitpick_ignore_regex` 整理** (`docs/conf.py`)
+- 現在 `nitpick_ignore` 71個 + `nitpick_ignore_regex` 23個
+- 整理方針:
+  - **NumPy型ヒント系** (`numpy.dtype`, `numpy.typing.ArrayLike` 等): `numpy-stubs` は `docs/requirements.txt` に追加済み。次は `docs/conf.py` 側の個別抑制を削る。
+  - **Mixin系** (`RegularityMixin`, `InteropMixin` 等 8個): `nitpick_ignore_regex` の `gwexpy.*Mixin$` に統合する。
+  - **docstring フラグメント系** (`default=True`, `default=95` 等): 発生元 docstring を修正して根本解消する。
+  - **外部ライブラリ系** (`torch.Tensor`, `pandas.core.frame.DataFrame` 等): `nitpick_ignore_regex` のワイルドカードパターンに統合する。
+
+**P4-C: `nbsphinx` 実行ポリシー — [DONE]**
+- `NBS_EXECUTE` 環境変数で制御済み（ローカル: `never`, CI: `always`）。追加対応不要。
+
+**P4-D: `CONTRIBUTING.md` への no-monkeypatch 方針記述追加** (`CONTRIBUTING.md`) — **完了**
+- `.fit()` は `gwexpy.TimeSeries` / `gwexpy.FrequencySeries` で継承提供されることを明記した。
+- `enable_series_fit()`: base `gwpy.types.Series` に手動で `.fit()` を足したい場合のみ使う補助関数として説明した。
+- `register_all()`: import 時に自動実行される理由（constructor 登録の必要性・idempotent 設計）を説明した。
+- 警告フィルター: `__init__.py` 冒頭で登録される 11個の `warnings.filterwarnings` の一覧を記載した。
+- gwpy互換性パッチ: `gwpy.io.registry` の no-op フォールバックは暫定措置であり、将来の I/O レジストリ修正で整理することを明記した。
+
+**P4-E: テストカバレッジ追加** (`tests/test_import_order.py` 等) — **完了**
+- `import gwexpy` で `gwpy.types.Series` が汚染されないことを subprocess で確認するテストを追加した。
+- `gwexpy.TimeSeries` が `.fit()` を持つこと、`enable_series_fit()` を手動で呼ぶと base `Series` に `.fit()` が生えることも確認している。
 
 ---
 
@@ -120,10 +143,13 @@
 
 ## 6. 次フェーズ（P4）の優先度目安
 
-| 優先度 | 項目 | 影響度 |
-| :--- | :--- | :--- |
-| **P4** | Sphinx の mock/nitpick 削減 | 低（ドキュメント品質向上） |
-| **P4** | import 副作用の opt-out 整備 | 低（ユーザー体験向上） |
+| サブタスク | 項目 | 具体的な作業 | 影響度 |
+| :--- | :--- | :--- | :--- |
+| **P4-A** | `autodoc_mock_imports` 削減 | `pytest`/`torch`/`tensorflow`/`jax`/`torchaudio` 等5個以上を `docs/conf.py` から削除し、`sphinx-build -W` で検証 | 進行中（docs品質向上） |
+| **P4-B** | `nitpick_ignore` 整理 | `numpy-stubs` は導入済み。残る `docs/conf.py` の個別抑制を削減し、Mixin系を regex に統合、docstring フラグメント系を発生元修正で削減する | 進行中（docs品質向上） |
+| **P4-C** | nbsphinx ポリシー | **[DONE]** `NBS_EXECUTE` 環境変数で制御済み | — |
+| **P4-D** | `CONTRIBUTING.md` 更新 | no-monkeypatch 方針、`gwexpy.TimeSeries` / `gwexpy.FrequencySeries` の `.fit()` 提供、`register_all()` の設計意図、I/O レジストリ修正の deferred note を追記済み | 完了 |
+| **P4-E** | テスト追加 | `import gwexpy` で `gwpy.types.Series` が汚染されないこと、`gwexpy.TimeSeries` は `.fit()` を持つことを `tests/test_import_order.py` で確認済み | 完了 |
 
 ---
 
