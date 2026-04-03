@@ -37,6 +37,54 @@
           }
         ],
         "description": "tests/physics/ または tests/fields/ を対象とした pytest 後に物理検証リマインダーを表示"
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); file=$(printf \"%s\" \"$input\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get(\\\"tool_input\\\",{}).get(\\\"file_path\\\") or d.get(\\\"tool_input\\\",{}).get(\\\"path\\\",\\\"\\\"))\" 2>/dev/null); [[ \"$file\" == *.py ]] || exit 0; [[ \"$file\" == tests/* ]] && exit 0; [[ \"$file\" == gwexpy/gui/reference-dtt/* ]] && exit 0; [[ \"$file\" == gwexpy/gui/reference_ndscope/* ]] && exit 0; result=$(conda run -n gwexpy mypy \"$file\" 2>&1); if echo \"$result\" | grep -q \"error:\"; then printf \"\\n[gwexpy/mypy] %s\\n%s\\n\" \"$file\" \"$result\" >&2; fi; exit 0'",
+            "async": true,
+            "timeout": 60
+          }
+        ],
+        "description": "Python ファイル編集後に mypy をファイル単位で非同期実行（gwexpy conda 環境）"
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); file=$(printf \"%s\" \"$input\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get(\\\"tool_input\\\",{}).get(\\\"file_path\\\") or d.get(\\\"tool_input\\\",{}).get(\\\"path\\\",\\\"\\\"))\" 2>/dev/null); [[ \"$file\" == *.py ]] || exit 0; result=$(grep -nE \"^[[:space:]]*(except[[:space:]]+Exception([[:space:]]+as[[:space:]]+[A-Za-z_][A-Za-z0-9_]*)?[[:space:]]*[:(]|except[[:space:]]*:)\" \"$file\" 2>/dev/null); if [ -n \"$result\" ]; then printf \"\\n[gwexpy/except-check] サイレント失敗の可能性 (%s):\\n%s\\n  → 具体的な例外型を指定し、logger.exception() でログを記録してください。\\n  参考: docs_internal/analysis/phase0_exception_analysis.md\\n\" \"$file\" \"$result\" >&2; fi; exit 0'",
+            "async": true,
+            "timeout": 10
+          }
+        ],
+        "description": "Python ファイル編集後に except Exception / 裸の except を検出して警告"
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); file=$(printf \"%s\" \"$input\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get(\\\"tool_input\\\",{}).get(\\\"file_path\\\") or d.get(\\\"tool_input\\\",{}).get(\\\"path\\\",\\\"\\\"))\" 2>/dev/null); [[ \"$file\" == *.py ]] || exit 0; result=$(grep -nE \"(eps|tol|atol|rtol)\\\\s*=\\\\s*1e-[0-9]+\" \"$file\" 2>/dev/null | grep -v \"^[[:space:]]*#\" | grep -v \"gwexpy\\\\.numerics\"); if [ -n \"$result\" ]; then printf \"\\n[gwexpy/death-floats] Death Floats 候補 (%s):\\n%s\\n  GW strain スケール (~1e-21) に対して不適切な定数の可能性があります。\\n  → gwexpy.numerics の定数を使用するか、スケールを明示したコメントを追加してください。\\n  参考: docs_internal/analysis/phase1_dangerous_defaults.md\\n\" \"$file\" \"$result\" >&2; fi; exit 0'",
+            "async": true,
+            "timeout": 10
+          }
+        ],
+        "description": "Python ファイル編集後に eps/tol 等のハードコード数値定数（Death Floats）を検出して警告"
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'input=$(cat); file=$(printf \"%s\" \"$input\" | python3 -c \"import sys,json; d=json.load(sys.stdin); print(d.get(\\\"tool_input\\\",{}).get(\\\"file_path\\\") or d.get(\\\"tool_input\\\",{}).get(\\\"path\\\",\\\"\\\"))\" 2>/dev/null); [[ \"$file\" == *.py ]] || exit 0; result=$(grep -nE \"(nproc\\\\s*=|gwpy\\\\.io\\\\.mp|gwpy\\\\.utils\\\\.gprint|from gwpy\\\\.utils import.*gprint|\\\\.fetch\\\\(.*nproc)\" \"$file\" 2>/dev/null | grep -v \"^[[:space:]]*#\"); if [ -n \"$result\" ]; then printf \"\\n[gwexpy/gwpy4-compat] GWpy 4.0 廃止 API 候補 (%s):\\n%s\\n  → docs_internal/tech_notes/research/GWpy4_deep-research-report.md を参照して移行してください。\\n\" \"$file\" \"$result\" >&2; fi; exit 0'",
+            "async": true,
+            "timeout": 10
+          }
+        ],
+        "description": "Python ファイル編集後に GWpy 4.0 廃止 API（nproc=, gwpy.io.mp 等）を検出して移行を促す"
       }
     ],
     "Stop": [
@@ -51,6 +99,18 @@
           }
         ],
         "description": "gwexpy/fields/ 配下に変更があれば needs-physics-review 警告を Stop 時に表示"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'repo=\"/home/washimi/work/gwexpy\"; [ -d \"$repo/.git\" ] || exit 0; changed=$(git -C \"$repo\" diff --name-only HEAD 2>/dev/null; git -C \"$repo\" diff --name-only 2>/dev/null; git -C \"$repo\" ls-files --others --exclude-standard 2>/dev/null); py_changed=$(echo \"$changed\" | grep -E \"\\.py$\" | sort -u | head -1); changelog_changed=$(echo \"$changed\" | grep -E \"^CHANGELOG\"); if [ -n \"$py_changed\" ] && [ -z \"$changelog_changed\" ]; then printf \"\\n[gwexpy/changelog-reminder]\\n  Python ファイルが変更されましたが CHANGELOG.md が更新されていません。\\n  リリースに向けて変更内容を記録することを検討してください。\\n  ヒント: /changelog-generator スキルが使えます。\\n\" >&2; fi; exit 0'",
+            "async": false,
+            "timeout": 15
+          }
+        ],
+        "description": "Python ファイル変更時に CHANGELOG.md 更新を Stop 時に促す"
       }
     ]
   }
