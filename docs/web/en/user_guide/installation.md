@@ -4,18 +4,18 @@ GWexpy requires Python 3.9+ and depends on GWpy, NumPy, SciPy, and Astropy.
 
 ## Basic install
 
-```bash
-pip install gwexpy
-```
-
-:::{note}
-**Development version from GitHub (latest features):**
+GitHub is the recommended method for installation until the package is officially released on PyPI.
 
 ```bash
 pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 ```
 
-:::
+**Coming soon (PyPI & Conda):**
+
+```bash
+# pip install gwexpy
+# conda install -c conda-forge gwexpy
+```
 
 :::{important}
 **For Gravitational Wave Data Analysis (LIGO/Virgo/KAGRA, etc.)**

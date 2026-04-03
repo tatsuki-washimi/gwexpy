@@ -264,7 +264,8 @@ def extract_audio_metadata(source: str | Path) -> dict[str, Any]:
 
     Or install with the ``audio`` extra::
 
-        pip install gwexpy[audio]
+        pip install git+https://github.com/tatsuki-washimi/gwexpy.git[audio]
+        (Note: ``pip install gwexpy[audio]`` is coming soon.)
 
     Examples
     --------

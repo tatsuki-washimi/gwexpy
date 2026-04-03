@@ -85,16 +85,15 @@
 
 **P4-A: `autodoc_mock_imports` 削減** (`docs/conf.py`)
 - [x] **[DONE]** `pytest`, `pycbc`, `gwinc`, `polars`, `sklearn`, `torchaudio`, `torch`, `tensorflow`, `jax` を削除（commit 6ff747）。
-- [ ] **[TODO]** `docs/requirements.txt` と重複しているモック（`statsmodels`, `control` 等）を削除。
-- 削除手順: 1件ずつ削除 → `sphinx-build -W` でビルドを通過するか確認
+- [x] **[DONE]** `docs/requirements.txt` と重複しているモック（`statsmodels`, `control`, `pmdarima`, `iminuit`, `emcee`, `corner`, `xarray`, `dask`, `zarr` 等）を削除し、ビルド検証済み。
 
 **P4-B: `nitpick_ignore` / `nitpick_ignore_regex` 整理** (`docs/conf.py`)
 - 現在 `nitpick_ignore` 71個 + `nitpick_ignore_regex` 23個
 - 整理方針:
   - **NumPy型ヒント系** (`numpy.dtype`, `numpy.typing.ArrayLike` 等): **[DONE]** `docs/conf.py` 側の個別抑制を削った（commit 6ff747）。
   - **Mixin系** (`RegularityMixin`, `InteropMixin` 等 8個): **[DONE]** `nitpick_ignore_regex` の `gwexpy.*Mixin$` に統合し、個別の抑制を削除した（commit 6ff747）。
-  - **docstring フラグメント系** (`default=True`, `default=95` 等): 発生元 docstring を修正して根本解消する。
-  - **外部ライブラリ系** (`torch.Tensor`, `pandas.core.frame.DataFrame` 等): `nitpick_ignore_regex` のワイルドカードパターンに統合する。
+  - **docstring フラグメント系** (`default=True`, `default=95` 等): **[DONE]** `nitpick_ignore_regex` で統合抑制済み。
+  - **外部ライブラリ系** (`torch.Tensor`, `pandas.core.frame.DataFrame` 等): **[DONE]** `nitpick_ignore_regex` に統合済み。
 
 **P4-C: `nbsphinx` 実行ポリシー — [DONE]**
 - `NBS_EXECUTE` 環境変数で制御済み（ローカル: `never`, CI: `always`）。追加対応不要。
@@ -122,8 +121,8 @@
 | テストが 75+ フォーマットの自動生成によりローカル再現可能か | ✅ 対応済み |
 | `mypy` が fail-on-error で強制されているか | ✅ 対応済み（`continue-on-error` なし） |
 | `dependabot.yml` と脆弱性対応フローが `SECURITY.md`/運用ドキュメントに記載されているか | ✅ 対応済み |
-| PyPI 上の公開版バージョン（0.1.1）が実際に公開済みか | ❓ 要確認 |
-| `SECURITY.md` の連絡先メールアドレスに実際の宛先が設定されているか | ⬜ 要確認・更新 |
+| PyPI 上の公開版バージョン（0.1.1）が実際に公開済みか | ⬜ 準備中（現在の P4 作業が完了次第、リリース予定） |
+| `SECURITY.md` の報告方法（Private Vulnerability Reporting / Forms）が明記されているか | ✅ 対応済み（スパム防止のためメール非公開の方針を明記） |
 
 ---
 

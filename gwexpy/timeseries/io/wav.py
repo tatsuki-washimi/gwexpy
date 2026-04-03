@@ -50,7 +50,8 @@ def read_timeseriesdict_wav(
     extract_metadata : bool, optional
         If True, attempt to extract audio metadata (title, artist, album, etc.)
         using tinytag. Metadata is stored in the provenance. Requires the
-        optional ``tinytag`` package (``pip install gwexpy[audio]``).
+        optional ``tinytag`` package (``pip install tinytag``).
+        (Note: ``pip install gwexpy[audio]`` is coming soon. For now, use GitHub version.)
         Default: False (for backward compatibility).
     **kwargs
         Additional arguments passed to scipy.io.wavfile.read.
