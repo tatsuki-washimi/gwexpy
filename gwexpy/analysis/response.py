@@ -7,6 +7,8 @@ by calculating averaged ASDs for each stable frequency step.
 """
 
 from __future__ import annotations
+from gwpy.segments import Segment
+from ..table.segment_table import SegmentTable, RowProxy
 
 import warnings
 from dataclasses import dataclass
@@ -20,6 +22,10 @@ from ..timeseries import TimeSeries
 
 if TYPE_CHECKING:
     from matplotlib.axes import Axes
+
+
+def _freq_values(series: Any) -> np.ndarray:
+    return np.asarray(getattr(series.xindex, "value", series.xindex), dtype=float)
 
 
 @dataclass
@@ -41,6 +47,7 @@ class ResponseFunctionResult:
 
     witness_name: str
     target_name: str
+    table: SegmentTable | None = None
 
     def plot(self, ax: Axes | None = None, **kwargs: Any) -> Axes:
         """
@@ -335,145 +342,137 @@ class ResponseFunctionAnalysis:
         if not segments:
             raise ValueError("No injection steps detected.")
 
-        # --- 2. Computation Loop ---
-        # Pre-calculate background ASDs if provided (assuming stationary background)
-        # If not, we might crop background dynamically.
-        # For efficiency, let's calculate one master background if provided.
+        # --- 2. SegmentTable Flow ---
+        # Filter segments with duration >= fftlength
+        valid_segments = [s for s in segments if (s[1] - s[0]) >= fftlength]
+        if not valid_segments:
+            raise ValueError(f"No segments found with duration >= fftlength ({fftlength}s).")
+
+        seg_objs = [Segment(s, e) for s, e, f in valid_segments]
+        injected_freqs_list = [f for s, e, f in valid_segments]
+
+        st = SegmentTable.from_segments(seg_objs, injected_freq=injected_freqs_list)
+
+        # 2.1 Load injection data (Lazy Load)
+        st.add_series_column("wit_inj", loader=lambda s: witness.crop(s[0], s[1]), kind="timeseries")
+        st.add_series_column("tgt_inj", loader=lambda s: target.crop(s[0], s[1]), kind="timeseries")
+
+        # 2.2 Injection ASDs
+        st = st.asd("wit_inj", out_col="wit_asd_inj", fftlength=fftlength, overlap=overlap, **kwargs)
+        st = st.asd("tgt_inj", out_col="tgt_asd_inj", fftlength=fftlength, overlap=overlap, **kwargs)
+
+        # 2.3 Pre-calculate master backgrounds if possible
         master_asd_tgt_bkg = None
         master_asd_wit_bkg = None
-
         if target_bkg is not None:
-            master_asd_tgt_bkg = target_bkg.asd(
-                fftlength=fftlength, overlap=overlap, **kwargs
-            )
+            master_asd_tgt_bkg = target_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
         if witness_bkg is not None:
-            master_asd_wit_bkg = witness_bkg.asd(
-                fftlength=fftlength, overlap=overlap, **kwargs
-            )
+            master_asd_wit_bkg = witness_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
 
-        # Pre-allocate containers
-        # Find first segment long enough for FFT to determine frequency axis size
-        n_freqs = None
-        freq_axis = None
-        for t_s, t_e, _ in segments:
-            if (t_e - t_s) >= fftlength:
-                dummy_res = target.crop(t_s, t_s + fftlength).asd(
-                    fftlength=fftlength, **kwargs
-                )
-                freq_axis = dummy_res.frequencies
-                n_freqs = len(freq_axis)
-                break
+        # 2.4 Background ASD Loaders
+        if master_asd_wit_bkg is not None:
+            st.add_series_column("wit_asd_bkg", [master_asd_wit_bkg] * len(st), kind="frequencyseries")
+        else:
+            def _wit_bkg_loader(seg: Segment) -> Any:
+                t_s, t_e = seg[0], seg[1]
+                seg_len = t_e - t_s
+                t_b_s = max(t_s - seg_len - 0.5, witness.span[0])
+                t_b_e = min(t_b_s + max(seg_len, fftlength), witness.span[1])
+                if (t_b_e - t_b_s) < fftlength:
+                    t_b_s = max(witness.span[0], t_b_e - fftlength)
+                    t_b_e = min(witness.span[1], t_b_s + fftlength)
+                return witness.crop(t_b_s, t_b_e).asd(fftlength=fftlength, overlap=overlap, **kwargs)
+            st.add_series_column("wit_asd_bkg", loader=_wit_bkg_loader, kind="frequencyseries")
 
-        if n_freqs is None:
-            raise ValueError(
-                f"No segments found with duration >= fftlength ({fftlength}s)."
-            )
+        if master_asd_tgt_bkg is not None:
+            st.add_series_column("tgt_asd_bkg", [master_asd_tgt_bkg] * len(st), kind="frequencyseries")
+        else:
+            def _tgt_bkg_loader(seg: Segment) -> Any:
+                t_s, t_e = seg[0], seg[1]
+                seg_len = t_e - t_s
+                t_b_s = max(t_s - seg_len - 0.5, target.span[0])
+                t_b_e = min(t_b_s + max(seg_len, fftlength), target.span[1])
+                if (t_b_e - t_b_s) < fftlength:
+                    t_b_s = max(target.span[0], t_b_e - fftlength)
+                    t_b_e = min(target.span[1], t_b_s + fftlength)
+                return target.crop(t_b_s, t_b_e).asd(fftlength=fftlength, overlap=overlap, **kwargs)
+            st.add_series_column("tgt_asd_bkg", loader=_tgt_bkg_loader, kind="frequencyseries")
 
-        n_steps = len(segments)
+        # 2.5 CF Computation Logic
+        def _compute_cf(row: RowProxy) -> dict[str, Any]:
+            f_inj = row["injected_freq"]
+            asd_wit_inj = row["wit_asd_inj"]
+            asd_tgt_inj = row["tgt_asd_inj"]
+            asd_wit_bkg = row["wit_asd_bkg"]
+            asd_tgt_bkg = row["tgt_asd_bkg"]
 
-        spec_inj = np.zeros((n_steps, n_freqs))
-        spec_bkg = np.zeros((n_steps, n_freqs))
-        inj_freqs = np.zeros(n_steps)
-        step_times = np.zeros(n_steps)
-        cf_vals = np.zeros(n_steps)
+            f_idx = np.argmin(np.abs(asd_wit_inj.xindex.value - f_inj))
+            p_wit_net = asd_wit_inj.value[f_idx]**2 - asd_wit_bkg.value[f_idx]**2
+            p_tgt_net = asd_tgt_inj.value[f_idx]**2 - asd_tgt_bkg.value[f_idx]**2
 
-        for i, (t_s, t_e, f_inj) in enumerate(segments):
-            # Crop Injection Data
-            if (t_e - t_s) < fftlength:
-                continue  # Safe check
-
-            ts_wit_seg = witness.crop(t_s, t_e)
-            ts_tgt_seg = target.crop(t_s, t_e)
-
-            # Calculate Injection ASDs
-            # Dynamic overlap adjustment to maximize averages
-            seg_len = t_e - t_s
-            seg_ovlp = overlap if overlap > 0 else (fftlength / 2)
-            if seg_len < fftlength:
-                seg_ovlp = 0  # Should be skipped anyway
-
-            asd_tgt_inj = ts_tgt_seg.asd(
-                fftlength=fftlength, overlap=seg_ovlp, **kwargs
-            )
-            asd_wit_inj = ts_wit_seg.asd(
-                fftlength=fftlength, overlap=seg_ovlp, **kwargs
-            )
-
-            # Get Background ASDs
-            if master_asd_tgt_bkg is not None:
-                val_tgt_bkg = master_asd_tgt_bkg.value
+            if p_wit_net > 0 and p_tgt_net > 0:
+                cf = np.sqrt(p_tgt_net / p_wit_net)
             else:
-                # Fallback: estimate from nearby quiet data
-                # Try before injection step
-                t_b_s_eff = t_s - seg_len - 0.5
-                if t_b_s_eff < target.span[0]:
-                    # Try after injection step
-                    t_b_s_eff = t_e + 0.5
+                cf = np.nan
+            return {"cf": cf}
 
-                # Constrain to available data and ensure minimum duration
-                t_b_s_eff = max(t_b_s_eff, target.span[0])
-                t_b_e_eff = min(t_b_s_eff + max(seg_len, fftlength), target.span[1])
+        st = st.apply(_compute_cf, out_cols=["cf"])
 
-                # Check if we need to shift left if we hit the right boundary
-                if (t_b_e_eff - t_b_s_eff) < fftlength:
-                    t_b_s_eff = max(target.span[0], t_b_e_eff - fftlength)
-                    t_b_e_eff = min(target.span[1], t_b_s_eff + fftlength)
+        # --- 3. Wrap in Containers ---
+        st_data = st.to_pandas(meta_only=False)
+        valid_indices: list[int] = []
+        ref_freqs: np.ndarray | None = None
 
-                val_tgt_bkg = (
-                    target.crop(t_b_s_eff, t_b_e_eff)
-                    .asd(fftlength=fftlength, overlap=seg_ovlp, **kwargs)
-                    .value
+        for idx, row in st_data.iterrows():
+            row_series = [
+                row["wit_asd_inj"],
+                row["tgt_asd_inj"],
+                row["wit_asd_bkg"],
+                row["tgt_asd_bkg"],
+            ]
+            base_freqs = _freq_values(row_series[0])
+            compatible_within_row = all(
+                len(series.value) == len(row_series[0].value)
+                and np.array_equal(_freq_values(series), base_freqs)
+                for series in row_series[1:]
+            )
+            if not compatible_within_row:
+                warnings.warn(
+                    f"Skipping response row {idx} due to incompatible ASD frequency grids.",
+                    UserWarning,
+                    stacklevel=2,
                 )
+                continue
 
-            if master_asd_wit_bkg is not None:
-                val_wit_bkg = master_asd_wit_bkg.value
-            else:
-                # Same for witness
-                t_b_s_eff = t_s - seg_len - 0.5
-                if t_b_s_eff < witness.span[0]:
-                    t_b_s_eff = t_e + 0.5
-
-                t_b_s_eff = max(t_b_s_eff, witness.span[0])
-                t_b_e_eff = min(t_b_s_eff + max(seg_len, fftlength), witness.span[1])
-
-                if (t_b_e_eff - t_b_s_eff) < fftlength:
-                    t_b_s_eff = max(witness.span[0], t_b_e_eff - fftlength)
-                    t_b_e_eff = min(witness.span[1], t_b_s_eff + fftlength)
-
-                val_wit_bkg = (
-                    witness.crop(t_b_s_eff, t_b_e_eff)
-                    .asd(fftlength=fftlength, overlap=seg_ovlp, **kwargs)
-                    .value
+            if ref_freqs is None:
+                ref_freqs = base_freqs
+            elif not np.array_equal(base_freqs, ref_freqs):
+                warnings.warn(
+                    f"Skipping response row {idx} due to incompatible ASD frequency grids.",
+                    UserWarning,
+                    stacklevel=2,
                 )
+                continue
 
-            # Store in arrays
-            spec_inj[i, :] = asd_tgt_inj.value
-            spec_bkg[i, :] = val_tgt_bkg
-            inj_freqs[i] = f_inj
-            step_times[i] = t_s
+            valid_indices.append(idx)
 
-            # Calculate Coupling Factor at f_inj
-            # CF = sqrt( (P_tgt_inj - P_tgt_bkg) / (P_wit_inj - P_wit_bkg) )
-            assert freq_axis is not None
-            f_idx = np.argmin(np.abs(freq_axis.value - f_inj))
+        if not valid_indices:
+            raise ValueError("No compatible response rows remain after frequency alignment.")
 
-            p_tgt_net = asd_tgt_inj.value[f_idx] ** 2 - val_tgt_bkg[f_idx] ** 2
-            p_wit_net = asd_wit_inj.value[f_idx] ** 2 - val_wit_bkg[f_idx] ** 2
+        row_mask = [i in set(valid_indices) for i in range(len(st))]
+        st = st.select(mask=row_mask)
+        st_data = st_data.iloc[valid_indices].reset_index(drop=True)
 
-            if p_tgt_net > 0 and p_wit_net > 0:
-                cf_vals[i] = np.sqrt(p_tgt_net / p_wit_net)
-            else:
-                cf_vals[i] = np.nan  # Upper limit condition
+        spec_inj_data = np.stack([v.value for v in st_data["tgt_asd_inj"]])
+        spec_bkg_data = np.stack([v.value for v in st_data["tgt_asd_bkg"]])
+        freq_axis = st_data["tgt_asd_inj"][0].xindex
+        step_times = np.array([s[0] for s in st_data["span"]])
+        cf_vals = st_data["cf"].values
+        inj_freqs = st_data["injected_freq"].values
 
-        # Wrap in Containers
         unit = getattr(target, "unit", None) or "dimensionless"
-
-        sg_inj = Spectrogram(
-            spec_inj, times=step_times, frequencies=freq_axis, unit=unit, name="Inj"
-        )
-        sg_bkg = Spectrogram(
-            spec_bkg, times=step_times, frequencies=freq_axis, unit=unit, name="Bkg"
-        )
+        sg_inj = Spectrogram(spec_inj_data, times=step_times, frequencies=freq_axis, unit=unit, name="Inj")
+        sg_bkg = Spectrogram(spec_bkg_data, times=step_times, frequencies=freq_axis, unit=unit, name="Bkg")
 
         return ResponseFunctionResult(
             spectrogram_inj=sg_inj,
@@ -483,6 +482,7 @@ class ResponseFunctionAnalysis:
             coupling_factors=cf_vals,
             witness_name=str(witness.name) if witness.name else "Witness",
             target_name=str(target.name) if target.name else "Target",
+            table=st,
         )
 
 

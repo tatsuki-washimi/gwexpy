@@ -115,16 +115,42 @@ class TestPercentileThreshold:
     """Tests for PercentileThreshold strategy."""
 
     def test_init(self):
-        """Test PercentileThreshold initialization."""
-        strategy = PercentileThreshold(percentile=95.0)
+        """Test PercentileThreshold initialization with Appendix B.1 defaults."""
+        strategy = PercentileThreshold()
+        assert strategy.percentile == 99.7
+        assert strategy.factor == 2.6
+
+    def test_init_custom(self):
+        """Test custom PercentileThreshold initialization."""
+        strategy = PercentileThreshold(percentile=95.0, factor=1.5)
         assert strategy.percentile == 95.0
+        assert strategy.factor == 1.5
 
     def test_requires_raw_bkg(self, sample_psd_inj, sample_psd_bkg):
-        """Test that check() requires raw_bkg and fftlength."""
+        """Test that check() requires raw_bkg and fftlength or bkg_table."""
         strategy = PercentileThreshold(percentile=95.0)
-        # Should raise ValueError without raw_bkg
-        with pytest.raises(ValueError, match="requires 'raw_bkg'"):
+        # Should raise ValueError without raw_bkg or bkg_table
+        with pytest.raises(ValueError, match="requires 'bkg_table', or 'raw_bkg'"):
             strategy.check(sample_psd_inj, sample_psd_bkg, raw_bkg=None)
+
+    def test_with_segment_table(self, sample_psd_inj, sample_psd_bkg):
+        """Test PercentileThreshold with SegmentTable input."""
+        from gwexpy.table.segment_table import SegmentTable
+        from gwpy.segments import Segment
+
+        # Create a SegmentTable with 3 rows of identical background PSDs
+        # Note: units must match in PercentileThreshold
+        st = SegmentTable.from_segments(
+            [Segment(0, 1), Segment(1, 2), Segment(2, 3)],
+            psd=[sample_psd_bkg, sample_psd_bkg, sample_psd_bkg]
+        )
+
+        # Default factor 2.6
+        strategy = PercentileThreshold()
+        thresh = strategy.threshold(sample_psd_inj, sample_psd_bkg, bkg_table=st)
+
+        # Threshold should be sample_psd_bkg * 2.6
+        np.testing.assert_array_almost_equal(thresh, sample_psd_bkg.value * 2.6)
 
 
 class TestEdgeCases:
@@ -245,6 +271,27 @@ class TestPercentileThresholdExtra:
         ts = TimeSeries(np.ones(1000), t0=0, dt=0.01)
         with pytest.raises(TypeError):
             strategy.threshold(sample_psd_inj, sample_psd_bkg, raw_bkg=ts, fftlength=1.0, overlap="x")
+
+    def test_threshold_skips_non_overlapping_segment_table_rows(
+        self, sample_psd_inj, sample_psd_bkg
+    ):
+        from gwexpy.table.segment_table import SegmentTable
+        from gwpy.segments import Segment
+
+        shifted_freqs = (np.linspace(200, 300, 100) * u.Hz)
+        shifted_psd = FrequencySeries(
+            np.full(100, 10.0), frequencies=shifted_freqs, unit=u.Unit("1/Hz")
+        )
+        st = SegmentTable.from_segments(
+            [Segment(0, 1), Segment(1, 2)],
+            psd=[sample_psd_bkg, shifted_psd],
+        )
+
+        strategy = PercentileThreshold(percentile=50, factor=1.0)
+        with pytest.warns(UserWarning, match="Skipping background PSD row"):
+            thresh = strategy.threshold(sample_psd_inj, sample_psd_bkg, bkg_table=st)
+
+        np.testing.assert_array_almost_equal(thresh, sample_psd_bkg.value)
 
 
 # ---------------------------------------------------------------------------
