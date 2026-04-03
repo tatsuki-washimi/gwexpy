@@ -111,6 +111,30 @@
           }
         ],
         "description": "Python ファイル変更時に CHANGELOG.md 更新を Stop 時に促す"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'repo=\"/home/washimi/work/gwexpy\"; [ -d \"$repo/.git\" ] || exit 0; changed=$(git -C \"$repo\" diff --name-only HEAD 2>/dev/null; git -C \"$repo\" diff --name-only 2>/dev/null; git -C \"$repo\" ls-files --others --exclude-standard 2>/dev/null); api_or_docs_sensitive=$(echo \"$changed\" | grep -E \"^(pyproject\\.toml|gwexpy/_version\\.py|gwexpy/(fields|signal|spectrogram|timeseries|frequencyseries)/)\"); docs_changed=$(echo \"$changed\" | grep -E \"^(docs/|README\\.md$)\"); if [ -n \"$api_or_docs_sensitive\" ] && [ -z \"$docs_changed\" ]; then printf \"\\n[gwexpy/docs-drift-reminder]\\n  API や利用者向け挙動に影響しうる変更がありますが、README.md や docs/ の更新が見当たりません。\\n  ドキュメント更新が不要なら理由を evidence-pack や PR コメントへ記録し、必要なら /docs-sync ワークフローを確認してください。\\n\" >&2; fi; exit 0'",
+            "async": false,
+            "timeout": 15
+          }
+        ],
+        "description": "コード変更時にドキュメント更新がない場合に警告を表示（docs-drift 抑制）"
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'repo=\"/home/washimi/work/gwexpy\"; [ -d \"$repo/.git\" ] || exit 0; changed=$(git -C \"$repo\" diff --name-only HEAD 2>/dev/null; git -C \"$repo\" diff --name-only 2>/dev/null; git -C \"$repo\" ls-files --others --exclude-standard 2>/dev/null); labels=\"\"; echo \"$changed\" | grep -qE \"^gwexpy/(fields|signal|spectrogram)/\" && labels=\"$labels needs-physics-review\"; echo \"$changed\" | grep -qE \"^(pyproject\\.toml|CITATION\\.cff|gwexpy/_version\\.py|CHANGELOG\\.md)$\" && labels=\"$labels needs-release-check\"; echo \"$changed\" | grep -qE \"^(pyproject\\.toml|gwexpy/interop/|gwexpy/gui/)\" && labels=\"$labels needs-optional-deps-check\"; echo \"$changed\" | grep -qE \"^(README\\.md|docs/|pyproject\\.toml|gwexpy/(fields|signal|spectrogram|timeseries|frequencyseries)/)\" && labels=\"$labels needs-docs-sync\"; if [ -n \"$labels\" ]; then printf \"\\n[gwexpy/risk-label-suggestion]\\n  推奨される PR ラベル候補:\\n\"; for l in $(printf \"%s\\n\" \"$labels\" | xargs -n1 | sort -u); do printf \"    - %s\\n\" \"$l\"; done; printf \"  詳細は /risk-labeler エージェントを実行してください。\\n\" >&2; fi; exit 0'",
+            "async": false,
+            "timeout": 15
+          }
+        ],
+        "description": "変更内容から推奨される PR ラベル（needs-physics-review 等）を提案"
       }
     ]
   }

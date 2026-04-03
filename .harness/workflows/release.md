@@ -54,6 +54,11 @@ conda run -n gwexpy mypy gwexpy/
 - `codemeta.json` — `"version":`
 
 差異がある場合はタグ作成前に必ず同期し、CHANGELOG の対象バージョン見出しとも整合させる。
+`metadata-checker` エージェントを実行し、不整合がないか確認してください。
+
+```
+/metadata-checker
+```
 
 ## ステップ 3: タグ付けと GitHub Release
 
