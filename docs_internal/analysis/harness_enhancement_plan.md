@@ -1063,12 +1063,336 @@
 
 ---
 
+## フェーズF: 運用ガードレール拡張
+
+> **実装方針**: フェーズFでは、A-E で整備する hooks / rules / agents / workflows / skills を「日常運用で確実に使わせる仕組み」に拡張する。  
+> 単なる知識追加ではなく、セッション開始・作業中・完了前・リリース前の各時点で抜け漏れを減らすガードレールを実装対象にする。  
+> 追加先は `.harness/hooks/`, `.harness/workflows/`, `.harness/agents/`, `.harness/skills/README.md` を基本とし、必要な補助ロジックだけ `.harness/scripts/` に分離する。
+
+### フェーズF の作業前チェック
+
+- 既存 `.harness/` の実ファイル構成を再確認し、hooks / workflows / agents / skills README のどこに追加するかを先に固定する。
+- `.agent/AGENTS.md` の pre-execution checklist と audit 要件をフェーズFの主要要件として扱い、既存計画との重複ではなく運用自動化へ変換する。
+- フェーズFの各項目は「警告だけで十分か」「workflow 化すべきか」「専用 agent が必要か」を先に切り分け、責務を重ねない。
+- 自動判定系は false positive を避けることを優先し、最初からブロッキングにせず warning / report ベースで導入する。
+- スクリプトを追加する場合は `.harness/scripts/` 配下に置き、hook や workflow から薄く呼び出す構成にする。
+
+### フェーズF の完了条件
+
+- F-1 から F-7 までの追加候補について、作成ファイル・責務・検証方法・導入順が明記されている。
+- セッション開始時の環境確認、作業完了時の監査証跡、optional dependency 影響確認、docs/metadata 整合、導線案内、レビューラベル付与が、それぞれ独立した実装単位に分解されている。
+- どの項目も「なぜ必要か」が `.agent/AGENTS.md` や既存分析資料と結びついて説明されている。
+- フェーズFの項目が、A-E の既存成果を前提にしていても、段階的に独立導入できる順序になっている。
+- 優先度サマリーにフェーズFが追加され、A-E との相対優先度が更新されている。
+
+### F-1. `session-start doctor`
+
+**概要**: セッション開始時に、環境・ブランチ状態・依存コマンド・レジストリ初期化前提を確認する workflow / skill を追加する。  
+**目的**: `.agent/AGENTS.md` の pre-execution checklist を人力依存にせず、作業前の事故を減らす。  
+**参考**:
+- `.agent/AGENTS.md`
+- `.harness/workflows/feature-development.md`
+- `.harness/scripts/setup_symlinks.sh`
+
+#### 実装詳細
+
+**作成候補**:
+- `.harness/workflows/session-start.md`
+- 必要に応じて `.harness/scripts/session_start_doctor.sh`
+
+**責務**:
+- `conda` / `python` / `ruff` / `mypy` / `pytest` の存在確認
+- 推奨環境名 `gwexpy` または `gwex-env` の案内
+- `git status --short` による dirty worktree 検出
+- `gwexpy.register_all()` または `import gwexpy` 前提の注意喚起
+- 変更対象が `gwexpy/fields/` を含む場合の human review reminder
+
+**必須セクション**:
+- `When to Use`
+- `Preflight Checks`
+- `Common Failures`
+- `Escalation`
+- `Expected Output`
+
+**記載ルール**:
+- ブロッキングではなく「不足項目を並べて次アクションを返す doctor」にする
+- AGENTS の原文を転載せず、実行順へ変換する
+- セッション冒頭に毎回使える軽さを保つ
+
+---
+
+### F-2. `evidence-pack / audit manifest`
+
+**概要**: 作業完了時に、使用 skill / commands / tests / review / changed files を JSON または YAML へまとめる workflow / skill を追加する。  
+**目的**: `.agent/AGENTS.md` Section 6 の audit log 要件をハーネスで半自動化し、完了宣言の根拠を残す。  
+**参考**:
+- `.agent/AGENTS.md`
+- `.harness/workflows/release.md`
+- `.harness/agents/gwexpy-tester.md`
+- `.harness/agents/physics-reviewer.md`
+
+#### 実装詳細
+
+**作成候補**:
+- `.harness/workflows/evidence-pack.md`
+- 必要に応じて `.harness/scripts/generate_audit_manifest.py`
+
+**責務**:
+- 変更ファイル一覧の収集
+- 実行した確認項目の記録テンプレート生成
+- `check_physics` 相当の要否フラグ
+- `needs-physics-review` / `needs-release-check` 等のラベル候補出力
+- PR へ貼れる短い summary と manifest 本文の分離
+
+**出力形式**:
+- `docs_internal/work_logs/` などの保存先候補を計画時点で定義
+- 最低限 `skills`, `commands`, `tests`, `reviews`, `files_changed`, `known_gaps` を含む
+
+**記載ルール**:
+- 監査ログの記入負担を減らすことを主目的にする
+- すべて自動収集にせず、人間が補足すべき欄を残す
+- release workflow と重複しないよう、こちらは「作業証跡」、release は「出荷判定」に分ける
+
+---
+
+### F-3. `optional-dependency impact checker`
+
+**概要**: optional dependency や extras に影響する差分を検出し、フォールバック・docs・テストの確認を促す hook / agent / rule を追加する。  
+**目的**: 依存が揃った環境だけで成立する変更を早期に検出し、 import fallback や install 導線の崩れを防ぐ。  
+**参考**:
+- `docs_internal/tech_notes/research/extra_lib.md`
+- `pyproject.toml`
+- `.harness/agents/gwexpy-linter.md`
+
+#### 実装詳細
+
+**作成候補**:
+- `.harness/agents/optional-deps-reviewer.md`
+- `.harness/rules/common/optional-dependencies.md`
+- 必要に応じて `.harness/hooks/hooks.json` への warning hook 追加
+
+**責務**:
+- `import` 追加や extras 変更を差分から検出
+- fallback path / error message / install docs 更新要否を確認
+- 「optional を required 扱いしていないか」をレビューする
+- GUI / notebook / docs 側の導線更新を促す
+
+**必須観点**:
+- import guard
+- lazy import の是非
+- missing dependency 時のメッセージ
+- extras 名と docs 記載の整合
+- 影響テストの有無
+
+**記載ルール**:
+- dependency 追加そのものを禁止しない
+- 「optional と言いながら実質必須」状態を最優先で検出する
+- 科学計算系 / GUI 系 extras の両方を対象に含める
+
+---
+
+### F-4. `docs / notebook drift detector`
+
+**概要**: 公開 API・install 手順・主要挙動の変更時に、README・docs・notebook の追従漏れを検知する workflow / hook を追加する。  
+**目的**: コードだけ更新され、チュートリアルや運用文書が古いまま残る状態を防ぐ。  
+**参考**:
+- `README.md`
+- `docs/`
+- `.harness/workflows/feature-development.md`
+
+#### 実装詳細
+
+**作成候補**:
+- `.harness/workflows/docs-sync.md`
+- 必要に応じて `.harness/hooks/hooks.json` の Stop reminder
+
+**責務**:
+- `gwexpy/` の public API 変更時に docs 追従要否を判定
+- install / usage / notebook サンプルの更新候補を列挙
+- 「変更不要」の場合も理由を残す運用にする
+- 実装完了前チェックとして feature workflow から参照できるようにする
+
+**必須セクション**:
+- `Change Types That Require Docs Review`
+- `Docs Targets`
+- `Notebook/Tutorial Checks`
+- `When No Docs Change Is Acceptable`
+
+**記載ルール**:
+- 全変更で docs 更新を強制しない
+- 「public API / install / tutorial semantics」の変更に集中させる
+- drift 検出結果は evidence-pack に流用できるようにする
+
+---
+
+### F-5. `metadata consistency checker`
+
+**概要**: バージョン、配布 metadata、引用情報、CHANGELOG の整合を確認する release 補助 agent / workflow を追加する。  
+**目的**: リリース前に `pyproject.toml`, `CITATION.cff`, `codemeta.json`, `CHANGELOG.md` などのズレを検出する。  
+**参考**:
+- `pyproject.toml`
+- `CHANGELOG.md`
+- `docs_internal/analysis/roadmap_20260403.md`
+- `.harness/workflows/release.md`
+
+#### 実装詳細
+
+**作成候補**:
+- `.harness/agents/metadata-checker.md`
+- `.harness/workflows/release.md` への参照追加
+
+**責務**:
+- バージョン番号、日付、配布名、主要メタデータの整合確認
+- `CHANGELOG.md` エントリの有無確認
+- build / twine / docs install path の確認観点を補助
+- release go/no-go に必要な欠落項目を一覧化
+
+**必須観点**:
+- version sync
+- citation metadata
+- package metadata
+- release notes / changelog
+- user-facing install instructions
+
+**記載ルール**:
+- F-5 は release workflow の一部としても単独 agent としても使える構成にする
+- metadata の「存在確認」だけでなく「相互整合」を見る
+- packaging の詳細手順は D-2 に寄せ、F-5 は整合チェックに集中させる
+
+---
+
+### F-6. `task router`
+
+**概要**: 依頼内容から、使うべき workflow / agent / skill / rule を最初に案内する軽量 workflow を追加する。  
+**目的**: `.harness/` が増えた後の「何を使えばよいか分からない」を減らし、整備した資産の利用率を上げる。  
+**参考**:
+- `.harness/skills/README.md`
+- `.harness/workflows/feature-development.md`
+- `.harness/agents/*.md`
+
+#### 実装詳細
+
+**作成候補**:
+- `.harness/workflows/task-routing.md`
+- `.harness/skills/README.md` への quick routing 追記
+
+**責務**:
+- 依頼を `feature`, `physics`, `testing`, `release`, `technical debt`, `docs`, `optional deps` などへ分類
+- 各分類に対して推奨 workflow / agent / rule を返す
+- 複数候補がある場合は、優先順と使い分けの違いを短く示す
+
+**必須セクション**:
+- `Routing Table`
+- `Primary Entry Points`
+- `Escalate to Human`
+- `Examples`
+
+**記載ルール**:
+- 単なる一覧表ではなく、「最初の1本」を返す router にする
+- README と workflow で責務分担し、README は索引、workflow は判断手順に寄せる
+- フェーズF以降の追加資産も追記しやすい拡張余地を残す
+
+---
+
+### F-7. `risk labeler`
+
+**概要**: 変更ファイルや diff から、必要なレビューラベルや確認フローを提案する hook / agent を追加する。  
+**目的**: physics review, release check, optional deps check, docs sync などの抜け漏れを、変更内容から先回りで可視化する。  
+**参考**:
+- `.agent/AGENTS.md`
+- `.harness/agents/physics-reviewer.md`
+- `docs_internal/analysis/phase1_dangerous_defaults.md`
+
+#### 実装詳細
+
+**作成候補**:
+- `.harness/agents/risk-labeler.md`
+- 必要に応じて `.harness/hooks/hooks.json` の Stop warning
+
+**初期ラベル案**:
+- `needs-physics-review`
+- `needs-release-check`
+- `needs-optional-deps-check`
+- `needs-docs-sync`
+- `needs-scale-invariance-check`
+
+**判定ルール例**:
+- `gwexpy/fields/` 変更 → `needs-physics-review`
+- `pyproject.toml` / packaging 系変更 → `needs-release-check`
+- import / extras 変更 → `needs-optional-deps-check`
+- public API / README 影響 → `needs-docs-sync`
+- 数値アルゴリズム変更 → `needs-scale-invariance-check`
+
+**記載ルール**:
+- 自動付与よりも「候補として提案」に留めて誤検知耐性を優先する
+- 判定根拠を出力する
+- evidence-pack と接続できる設計にする
+
+---
+
+### フェーズF 具体的な作業計画
+
+| Task | 対応 | 編集対象 | 実施内容 | 検証 | 完了条件 |
+|------|------|----------|----------|------|----------|
+| 0 | 事前確認 | `.agent/AGENTS.md`, `.harness/`, 既存計画 | フェーズF各項目の責務境界と追加先を確定する | hooks / workflows / agents / skills README への割当が重複していないことを確認 | 実装単位が曖昧でない |
+| 1 | F-1 | `.harness/workflows/session-start.md`, 必要なら `.harness/scripts/` | session-start doctor の preflight 手順を定義する | 環境・registry・dirty worktree・human review reminder が入っていることを確認 | セッション開始時の標準導線として使える |
+| 2 | F-2 | `.harness/workflows/evidence-pack.md`, 必要なら `.harness/scripts/` | evidence-pack / audit manifest 生成手順を定義する | manifest 項目と human 補足欄が揃っていることを確認 | 作業証跡を残す標準手順になる |
+| 3 | F-3 / F-7 | `.harness/agents/`, `.harness/rules/common/`, `.harness/hooks/hooks.json` | optional dependency checker と risk labeler の責務を分担して定義する | dependency / label 判定の根拠が明示されていることを確認 | 差分ベースのレビュー導線が作れる |
+| 4 | F-4 / F-5 | `.harness/workflows/docs-sync.md`, `.harness/agents/metadata-checker.md`, `release.md` | docs drift と metadata consistency の確認導線を追加する | docs targets と metadata sync 観点が具体的であることを確認 | docs / release 前の抜け漏れを点検できる |
+| 5 | F-6 | `.harness/workflows/task-routing.md`, `.harness/skills/README.md` | task router と quick routing 案内を追加する | 代表的な依頼から導線が一意に引けることを確認 | `.harness/` の入口が明確になる |
+| 6 | 仕上げ | `docs_internal/analysis/harness_enhancement_plan.md` と各候補先 | 導入順、依存関係、README / workflow 参照関係を見直す | フェーズF全体が段階導入可能であることを確認 | 実装に移せる具体計画になる |
+
+### フェーズF 実施チェックリスト
+
+- [ ] Task 0: フェーズF各項目を `session start`, `in-progress warnings`, `pre-finish evidence`, `pre-release checks`, `routing` に分類し、責務を重ねない。
+- [ ] Task 1: `session-start doctor` の workflow を作成し、環境・registry・dirty worktree・human review reminder を含める。
+- [ ] Task 1-Verify: AGENTS の preflight をそのまま写すのではなく、実行順の checklist へ変換できていることを確認する。
+- [ ] Task 2: `evidence-pack` の workflow / script を定義し、最低限の manifest schema を決める。
+- [ ] Task 2-Verify: `skills`, `commands`, `tests`, `reviews`, `files_changed`, `known_gaps` を欠かさず記録できることを確認する。
+- [ ] Task 3: optional dependency checker と risk labeler を agent / rule / hook のどこに置くか決め、判定根拠を明記する。
+- [ ] Task 3-Verify: `import` 追加、`pyproject.toml` 変更、`gwexpy/fields/` 変更などの代表差分で期待ラベルが想定できることを確認する。
+- [ ] Task 4: `docs-sync` と `metadata-checker` を定義し、release workflow との責務境界を調整する。
+- [ ] Task 4-Verify: docs 更新不要ケースと metadata blocking issue が区別して書かれていることを確認する。
+- [ ] Task 5: `task router` と skills README の quick routing を追加する。
+- [ ] Task 5-Verify: 新規参加者が「何から使うか」を README だけで判断できることを確認する。
+- [ ] Task 6: フェーズFの推奨導入順を見直し、A-E 実装後に段階追加できる形へ整理する。
+- [ ] Task 6-Verify: すべてを一度に作らなくても、高優先度の F-2 / F-1 / F-7 から先行導入できることを確認する。
+
+### 推奨実装順と理由
+
+1. F-2 を最初に入れる。監査証跡は全フェーズ共通で効き、後続の workflow / agent の出力先にもなる。
+2. F-1 を次に入れる。セッション開始時の事故を減らし、A-E の実装運用そのものを安定させる。
+3. F-7 を先行導入する。レビューラベル候補があるだけで、人手レビューの見落としが減る。
+4. F-3 を続ける。optional dependency は判定観点が広いので、risk labeler の骨格ができてから詳細化する。
+5. F-4 と F-5 を整備する。docs / metadata 系は release workflow との境界調整が必要なため中盤で扱う。
+6. F-6 を最後に入れる。router は他資産が揃ってから作る方が導線設計がぶれにくい。
+
+### 想定所要時間
+
+- 事前確認と責務分割: 15〜20 分
+- F-1 / F-2 の計画化: 20〜30 分
+- F-3 / F-7 の計画化: 20〜30 分
+- F-4 / F-5 / F-6 の計画化: 25〜40 分
+- 全体整合確認: 10〜15 分
+- 合計目安: 90〜135 分
+
+### リスクと切り戻し方針
+
+- フェーズFは複数カテゴリを横断するため、1項目1責務を崩すと維持不能になる。workflow と agent の責務分離を先に固定する。
+- 自動判定系は誤検知が増えると使われなくなるため、初期導入は warning / suggestion ベースに留める。
+- `evidence-pack` を重く作りすぎると記録コストが上がるので、最初は最小 schema で導入し、後から項目を増やす。
+- `task router` は情報の重複元になりやすいため、README を索引、workflow を判断手順、agents/skills を実体とする役割を崩さない。
+- docs / metadata 系は release workflow と競合しやすいので、F-4 は docs drift、F-5 は metadata sync に責務を固定する。
+
+---
+
 ## 実装優先度サマリー
 
 | フェーズ | 優先度 | 理由 |
 |---------|--------|------|
 | A: Hooks 強化 | ★★★ | 毎回恩恵あり・設定変更のみ |
 | B: Rules 整備 | ★★★ | AI の判断基準を即座に改善 |
+| F: 運用ガードレール拡張 | ★★★ | セッション開始・完了・レビュー導線の抜け漏れを直接減らす |
 | C: Agents 追加 | ★★  | 専門作業時に大きく貢献 |
 | D: Workflows   | ★★  | リリース・負債消化に貢献 |
 | E: Skills 移植 | ★   | 既存 skill が充実しているため後回し可 |
@@ -1079,5 +1403,6 @@
 
 - 各フェーズの詳細計画は実施時に改めて立てる
 - フェーズ A・B は独立して実施可能
+- フェーズ F は A-E と独立ではなく、A-D の成果を日常運用に定着させる横断フェーズとして後追い導入すると効果が高い
 - フェーズ C の各エージェントも互いに独立して追加可能
 - フェーズ E の skill 移植は、対応する phase0/phase1 作業を再実施する場合に合わせて行うのが効率的
