@@ -208,8 +208,8 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             from statsmodels.tsa.stattools import grangercausalitytests
         except ImportError:
             raise ImportError(
-                "The 'statsmodels' package is required for Granger Causality. "
-                "Please install it via `pip install statsmodels` or `pip install gwexpy[stat]`."
+                "Please install it via `pip install statsmodels`. "
+                "(Note: `pip install gwexpy[stat]` is coming soon. For now, use GitHub version.)"
             )
 
         # Align data
@@ -410,10 +410,8 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
                 from minepy import MINE
             except ImportError:
                 raise ImportError(
-                    "The 'minepy' package is required for MIC calculation. "
-                    "On Python 3.11+, please install it using 'python scripts/install_minepy.py' "
-                    "from the gwexpy source directory. "
-                    "Alternatively, try `pip install mictools` or `pip install gwexpy[stat]`."
+                    "Alternatively, try `pip install mictools`. "
+                    "(Note: `pip install gwexpy[stat]` is coming soon. For now, use GitHub version.)"
                 )
 
         # MINE calculation
@@ -426,8 +424,8 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             import dcor
         except ImportError as exc:
             raise ImportError(
-                "The 'dcor' package is required for distance correlation. "
-                "Please install it via `pip install dcor` or `pip install gwexpy[stat]`."
+                "Please install it via `pip install dcor`. "
+                "(Note: `pip install gwexpy[stat]` is coming soon. For now, use GitHub version.)"
             ) from exc
         try:
             return dcor.distance_correlation(x, y)

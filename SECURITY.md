@@ -17,12 +17,15 @@
 
 1. GitHub リポジトリの **Security** タブに移動します。
 2. **Advisories** を選択します。
-3. **Report a vulnerability** ボタンをクリックして、詳細を送信してください。
+3. **Report a vulnerability** ボタンをクリックして、詳細を送信してください。 (GitHub の Private Vulnerability Reporting)
 
 報告を受けた後、5 営業日を目安に初期対応の回答を行います。
 
-> [!NOTE]
-> 現在、専用の報告フォームなどは準備中ですが、GitHub の Private Vulnerability Reporting を通じた報告を推奨します。
+> [!IMPORTANT]
+> スパム防止のため、開発者のメールアドレスは非公開としています。
+> セキュリティ上の重大な問題については、上記の GitHub Private Vulnerability Reporting を通じて報告してください。
+>
+> また、GitHub のアカウントをお持ちでない方や、より詳細な情報の提供を希望される方向けに、現在 **Google Forms / Microsoft Forms** の準備を進めています。準備が整い次第、こちらを正式な窓口として追加いたします。
 
 ## セキュリティ上の注意事項
 

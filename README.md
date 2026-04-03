@@ -1,6 +1,5 @@
 # gwexpy: GWpy Expansions for Experiments
 
-[![PyPI version](https://badge.fury.io/py/gwexpy.svg)](https://badge.fury.io/py/gwexpy)
 [![CI Status](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml/badge.svg)](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy/branch/main/graph/badge.svg)](https://codecov.io/gh/tatsuki-washimi/gwexpy)
 [![Documentation](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs.yml/badge.svg)](https://tatsuki-washimi.github.io/gwexpy/)
@@ -120,11 +119,14 @@ See the [Features](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/) page f
 ## Installation
 
 ```bash
-# From PyPI (recommended)
-pip install gwexpy
-
-# From GitHub (development version)
+# From GitHub (recommended for now)
 pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+
+# From PyPI (coming soon)
+# pip install gwexpy
+
+# From Conda (coming soon)
+# conda install -c conda-forge gwexpy
 
 # From a local checkout
 pip install .
@@ -162,7 +164,7 @@ pip install "gwexpy[analysis,seismic,control]"
 
 ### Optional Dependencies Summary
 
-The default installation (`pip install gwexpy`) includes core dependencies for time-series analysis, basic signal processing, and standard I/O. Optional extras enable specialized workflows:
+The default installation (`pip install git+https://github.com/tatsuki-washimi/gwexpy.git`) includes core dependencies for time-series analysis, basic signal processing, and standard I/O. Optional extras enable specialized workflows:
 
 | Extra         | Description                  | Key Packages                          |
 |---------------|------------------------------|---------------------------------------|
