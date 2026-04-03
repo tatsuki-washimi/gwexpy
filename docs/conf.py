@@ -89,6 +89,7 @@ suppress_warnings = [
     "toc.not_included",
     "toc.not_readable",
     "docutils",
+    "nbsphinx.localfile",
 ]
 
 language = "en"
@@ -113,16 +114,11 @@ html_context = {
 }
 
 autodoc_mock_imports = [
-    # Core external deps (CI/docs environment may lack them)
-    "statsmodels",
-    "pmdarima",
+    # Core external deps (those NOT in docs/requirements.txt or CI/docs environment)
     "mictools",
     "dcor",
     "hurst",
     "bottleneck",
-    "iminuit",
-    "emcee",
-    "corner",
     "specutils",
     "pyspeckit",
     "obspy",
@@ -133,17 +129,8 @@ autodoc_mock_imports = [
     "mne",
     "neo",
     "elephant",
-    "dask",
-    "zarr",
     "cupy",
-    "xarray",
-    "control",
-    "PyQt5",
-    "pyqtgraph",
-    "qtpy",
     "pygmt",
-    "PyEMD",
-    "pywt",
 ]
 
 source_suffix = {
@@ -183,26 +170,8 @@ nitpick_ignore = [
     ("py:class", "copy"),
     ("py:class", "self"),
     # Mixins are handled by nitpick_ignore_regex below
-    ("py:class", "StatisticalMethodsMixin"),
-    # External not mapped
-    ("py:class", "pandas.core.frame.DataFrame"),
-    ("py:class", "torch.Tensor"),
-    ("py:class", "torch.dtype"),
+    # External not mapped (most handled by regex)
     # Docstring fragments that Sphinx misinterprets as cross-references
-    ("py:class", "array_like"),
-    ("py:class", "array"),
-    ("py:class", "ndarray"),
-    ("py:class", "np.ndarray"),
-    ("py:class", "2D ndarray"),
-    ("py:class", "callable"),
-    ("py:class", "scalar"),
-    ("py:class", "tuples"),
-    ("py:class", "dicts"),
-    ("py:class", "class"),
-    ("py:class", "instance"),
-    ("py:class", "cls"),
-    ("py:class", "Object"),
-    ("py:class", "module"),
     ("py:class", "fmin"),
     ("py:class", "fmax"),
     ("py:class", "Series"),
@@ -212,11 +181,6 @@ nitpick_ignore = [
     ("py:class", "Plot"),
     ("py:class", "Array4D"),
     ("py:class", "AverageTFR"),
-    # Default value fragments
-    ("py:class", "default=True"),
-    ("py:class", "default=95"),
-    ("py:class", "default=2.0"),
-    ("py:class", "0"),
     # GWPy internal (some not in intersphinx)
     ("py:class", "gwpy.plot.Plot"),
     ("py:class", "gwpy.types.array2d.Array2D"),
@@ -231,7 +195,6 @@ nitpick_ignore = [
     ("py:class", "BrucoResult"),
     ("py:class", "mne_object"),
     ("py:class", "data"),
-    ("py:class", "1"),
     # gwexpy internal classes
     ("py:class", "gwexpy.timeseries._timeseries_legacy.TimeSeries"),
     ("py:class", "gwexpy.analysis.bruco.BrucoResult"),
@@ -285,20 +248,22 @@ nitpick_ignore_regex = [
     (r"py:class", r"specutils\..*"),
     (r"py:class", r"torch\..*"),
     # ----------------------------------------------------------------
-    # Docstring fragments with curly braces (Napoleon parses as refs)
-    # e.g. {'Hz', 'rad/s'} -> {'Hz' and 'rad/s'} become refs
+    # Docstring fragments with curly braces or standard types
     # ----------------------------------------------------------------
     (r"py:class", r"\{.*"),  # starts with {
     (r"py:class", r".*\}$"),  # ends with }
     (r"py:class", r"'[a-zA-Z_/]+'\}?$"),  # e.g. 'Hz'}, 'rad/s'}
+    (r"py:class", r"(array_like|ndarray|np\.ndarray|2D ndarray)"),
+    (r"py:class", r"(callable|scalar|tuples?|dicts?|class|instance|cls|Object|module)"),
     # ----------------------------------------------------------------
     # default / description fragments
     # ----------------------------------------------------------------
     (r"py:class", r"default .*"),  # e.g. default "datetime"
     (r"py:class", r"default=.*"),
+    (r"py:class", r"[0-9]+"),  # Any standalone number fragment
     # misc fragments
-    (r"py:class", r"mne object"),
-    (r"py:class", r"gwexpy object"),
+    (r"py:class", r"mne[ -]object"),
+    (r"py:class", r"gwexpy[ -]object"),
     (r"py:class", r"type cls\."),
     # Double-quoted strings in docstrings (e.g. "gwpy", "velocity")
     (r"py:class", r'"[a-zA-Z0-9_/]+"'),

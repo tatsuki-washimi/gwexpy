@@ -35,7 +35,6 @@
       ~TimeSeries.baseband
       ~TimeSeries.byteswap
       ~TimeSeries.cepstrum
-      ~TimeSeries.check_compatible
       ~TimeSeries.choose
       ~TimeSeries.clip
       ~TimeSeries.coherence
@@ -80,7 +79,6 @@
       ~TimeSeries.fit
       ~TimeSeries.fit_arima
       ~TimeSeries.flatten
-      ~TimeSeries.from_arrakis
       ~TimeSeries.from_astropy_timeseries
       ~TimeSeries.from_control
       ~TimeSeries.from_cupy
@@ -94,18 +92,27 @@
       ~TimeSeries.from_nds2_buffer
       ~TimeSeries.from_netcdf4
       ~TimeSeries.from_obspy
+      ~TimeSeries.from_obspy_trace
       ~TimeSeries.from_pandas
       ~TimeSeries.from_polars
       ~TimeSeries.from_pycbc
       ~TimeSeries.from_pydub
+      ~TimeSeries.from_pyroomacoustics_mic_signals
+      ~TimeSeries.from_pyroomacoustics_rir
+      ~TimeSeries.from_pyroomacoustics_source
+      ~TimeSeries.from_pyspice_transient
       ~TimeSeries.from_root
       ~TimeSeries.from_simpeg
+      ~TimeSeries.from_skrf_impulse_response
+      ~TimeSeries.from_skrf_step_response
       ~TimeSeries.from_sqlite
       ~TimeSeries.from_tensorflow
       ~TimeSeries.from_torch
       ~TimeSeries.from_xarray
       ~TimeSeries.from_zarr
       ~TimeSeries.gate
+      ~TimeSeries.gauch
+      ~TimeSeries.get
       ~TimeSeries.getfield
       ~TimeSeries.granger_causality
       ~TimeSeries.heterodyne
@@ -113,6 +120,7 @@
       ~TimeSeries.highpass
       ~TimeSeries.hilbert
       ~TimeSeries.hilbert_analysis
+      ~TimeSeries.histogram
       ~TimeSeries.hurst
       ~TimeSeries.impute
       ~TimeSeries.inject
@@ -155,6 +163,8 @@
       ~TimeSeries.ravel
       ~TimeSeries.rayleigh_spectrogram
       ~TimeSeries.rayleigh_spectrum
+      ~TimeSeries.rayleigh_test
+      ~TimeSeries.read
       ~TimeSeries.repeat
       ~TimeSeries.resample
       ~TimeSeries.reshape
@@ -182,6 +192,7 @@
       ~TimeSeries.std
       ~TimeSeries.step
       ~TimeSeries.stlt
+      ~TimeSeries.student_t_spectrogram
       ~TimeSeries.sum
       ~TimeSeries.swapaxes
       ~TimeSeries.tail
@@ -202,10 +213,12 @@
       ~TimeSeries.to_neo
       ~TimeSeries.to_netcdf4
       ~TimeSeries.to_obspy
+      ~TimeSeries.to_obspy_trace
       ~TimeSeries.to_pandas
       ~TimeSeries.to_polars
       ~TimeSeries.to_pycbc
       ~TimeSeries.to_pydub
+      ~TimeSeries.to_pyroomacoustics_source
       ~TimeSeries.to_simpeg
       ~TimeSeries.to_sqlite
       ~TimeSeries.to_string
@@ -229,6 +242,7 @@
       ~TimeSeries.var
       ~TimeSeries.view
       ~TimeSeries.whiten
+      ~TimeSeries.write
       ~TimeSeries.xcorr
       ~TimeSeries.zip
       ~TimeSeries.zpk
@@ -256,7 +270,6 @@
       ~TimeSeries.equivalencies
       ~TimeSeries.flags
       ~TimeSeries.flat
-      ~TimeSeries.get
       ~TimeSeries.imag
       ~TimeSeries.info
       ~TimeSeries.is_regular
@@ -266,7 +279,6 @@
       ~TimeSeries.name
       ~TimeSeries.nbytes
       ~TimeSeries.ndim
-      ~TimeSeries.read
       ~TimeSeries.real
       ~TimeSeries.sample_rate
       ~TimeSeries.shape
@@ -278,10 +290,10 @@
       ~TimeSeries.times
       ~TimeSeries.unit
       ~TimeSeries.value
-      ~TimeSeries.write
       ~TimeSeries.x0
       ~TimeSeries.xindex
       ~TimeSeries.xspan
       ~TimeSeries.xunit
+      ~TimeSeries.df
    
    
