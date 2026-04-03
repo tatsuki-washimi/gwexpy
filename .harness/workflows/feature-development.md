@@ -6,6 +6,15 @@ trigger: manual
 
 # GWexpy 機能開発ワークフロー
 
+## ステップ 0: セッション開始（session-start ワークフロー）
+
+```
+/session-start
+```
+
+- Conda 環境、依存ツール、Git ステータスの確認
+- レジストリ、シンボリックリンクの整合性チェック
+
 ## ステップ 1: 計画（setup_plan スキル）
 
 ```

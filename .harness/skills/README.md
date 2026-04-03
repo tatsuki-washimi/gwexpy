@@ -16,6 +16,15 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `lint_check`    | Ruff, MyPy, 依存関係チェック                    | 品質チェック時     |
 | `gwexpy_conda_jobs` | conda gwexpy環境 + tmux で検証ジョブ実行     | pytest/ruff/mypy 実行前 |
 | `maintain_skills` | project内skillの統廃合とdescription整理        | skillライブラリ保守時 |
+## Quick Routing
+
+タスクに応じた推奨入口（`.harness/workflows/`）の案内です。詳細は `/task-routing` ワークフローを確認してください。
+
+- **新規開発・バグ修正**: `/feature-development`
+- **数値アルゴリズム**: `/numerical-audit`
+- **技術的負債解消**: `/technical-debt`
+- **ドキュメント追従**: `/docs-sync`
+- **リリース準備**: `/release`
 
 ---
 
