@@ -27,8 +27,8 @@
       ~Spectrogram.bootstrap
       ~Spectrogram.bootstrap_asd
       ~Spectrogram.byteswap
-      ~Spectrogram.check_compatible
       ~Spectrogram.choose
+      ~Spectrogram.clean
       ~Spectrogram.clip
       ~Spectrogram.compress
       ~Spectrogram.conj
@@ -48,10 +48,10 @@
       ~Spectrogram.ediff1d
       ~Spectrogram.fill
       ~Spectrogram.filter
-      ~Spectrogram.fit
       ~Spectrogram.flatten
       ~Spectrogram.from_mne
       ~Spectrogram.from_obspy
+      ~Spectrogram.from_pyroomacoustics_stft
       ~Spectrogram.from_quantities
       ~Spectrogram.from_root
       ~Spectrogram.from_spectra
@@ -67,6 +67,7 @@
       ~Spectrogram.median
       ~Spectrogram.min
       ~Spectrogram.nonzero
+      ~Spectrogram.normalize
       ~Spectrogram.override_unit
       ~Spectrogram.pad
       ~Spectrogram.partition
@@ -80,6 +81,7 @@
       ~Spectrogram.radian
       ~Spectrogram.ratio
       ~Spectrogram.ravel
+      ~Spectrogram.read
       ~Spectrogram.rebin
       ~Spectrogram.repeat
       ~Spectrogram.reshape
@@ -104,6 +106,7 @@
       ~Spectrogram.to_jax
       ~Spectrogram.to_mne
       ~Spectrogram.to_obspy
+      ~Spectrogram.to_pyroomacoustics_stft
       ~Spectrogram.to_quantities
       ~Spectrogram.to_string
       ~Spectrogram.to_tensorflow
@@ -123,6 +126,7 @@
       ~Spectrogram.var
       ~Spectrogram.variance
       ~Spectrogram.view
+      ~Spectrogram.write
       ~Spectrogram.zip
       ~Spectrogram.zpk
    
@@ -161,7 +165,6 @@
       ~Spectrogram.name
       ~Spectrogram.nbytes
       ~Spectrogram.ndim
-      ~Spectrogram.read
       ~Spectrogram.real
       ~Spectrogram.shape
       ~Spectrogram.si
@@ -172,7 +175,6 @@
       ~Spectrogram.times
       ~Spectrogram.unit
       ~Spectrogram.value
-      ~Spectrogram.write
       ~Spectrogram.x0
       ~Spectrogram.xindex
       ~Spectrogram.xspan

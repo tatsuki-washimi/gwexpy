@@ -25,7 +25,6 @@
       ~FrequencySeries.argsort
       ~FrequencySeries.astype
       ~FrequencySeries.byteswap
-      ~FrequencySeries.check_compatible
       ~FrequencySeries.choose
       ~FrequencySeries.clip
       ~FrequencySeries.compress
@@ -53,6 +52,8 @@
       ~FrequencySeries.flatten
       ~FrequencySeries.from_control_frd
       ~FrequencySeries.from_cupy
+      ~FrequencySeries.from_finesse_frequency_response
+      ~FrequencySeries.from_finesse_noise
       ~FrequencySeries.from_hdf5_dataset
       ~FrequencySeries.from_jax
       ~FrequencySeries.from_lal
@@ -62,15 +63,20 @@
       ~FrequencySeries.from_polars
       ~FrequencySeries.from_pycbc
       ~FrequencySeries.from_pyspeckit
+      ~FrequencySeries.from_pyspice_ac
+      ~FrequencySeries.from_pyspice_distortion
+      ~FrequencySeries.from_pyspice_noise
       ~FrequencySeries.from_quantities
       ~FrequencySeries.from_root
       ~FrequencySeries.from_simpeg
+      ~FrequencySeries.from_skrf_network
       ~FrequencySeries.from_specutils
       ~FrequencySeries.from_tensorflow
       ~FrequencySeries.from_torch
       ~FrequencySeries.from_xarray
       ~FrequencySeries.getfield
       ~FrequencySeries.group_delay
+      ~FrequencySeries.histogram
       ~FrequencySeries.idct
       ~FrequencySeries.ifft
       ~FrequencySeries.inject
@@ -97,6 +103,7 @@
       ~FrequencySeries.put
       ~FrequencySeries.quadrature_sum
       ~FrequencySeries.ravel
+      ~FrequencySeries.read
       ~FrequencySeries.rebin
       ~FrequencySeries.repeat
       ~FrequencySeries.reshape
@@ -132,6 +139,7 @@
       ~FrequencySeries.to_pyspeckit
       ~FrequencySeries.to_quantities
       ~FrequencySeries.to_simpeg
+      ~FrequencySeries.to_skrf_network
       ~FrequencySeries.to_specutils
       ~FrequencySeries.to_string
       ~FrequencySeries.to_tensorflow
@@ -150,6 +158,7 @@
       ~FrequencySeries.value_at
       ~FrequencySeries.var
       ~FrequencySeries.view
+      ~FrequencySeries.write
       ~FrequencySeries.zip
       ~FrequencySeries.zpk
    
@@ -186,7 +195,6 @@
       ~FrequencySeries.name
       ~FrequencySeries.nbytes
       ~FrequencySeries.ndim
-      ~FrequencySeries.read
       ~FrequencySeries.real
       ~FrequencySeries.shape
       ~FrequencySeries.si
@@ -194,10 +202,10 @@
       ~FrequencySeries.strides
       ~FrequencySeries.unit
       ~FrequencySeries.value
-      ~FrequencySeries.write
       ~FrequencySeries.x0
       ~FrequencySeries.xindex
       ~FrequencySeries.xspan
       ~FrequencySeries.xunit
+      ~FrequencySeries.dt
    
    
