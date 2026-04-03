@@ -13,6 +13,7 @@ from gwexpy.analysis.response import (
     ResponseFunctionAnalysis,
     detect_step_segments,
 )
+from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.spectrogram import Spectrogram
 
 
@@ -241,3 +242,35 @@ class TestResponseFunctionAnalysisErrors:
                 segments=[],
                 auto_detect=False,
             )
+
+    def test_incompatible_asd_rows_are_skipped(self, monkeypatch):
+        ts_wit = TimeSeries(np.ones(512), t0=0.0, dt=1.0 / 256, name="W")
+        ts_tgt = TimeSeries(np.ones(512), t0=0.0, dt=1.0 / 256, name="T")
+
+        original_asd = TimeSeries.asd
+
+        def fake_asd(self, *args, **kwargs):
+            start = float(self.t0.value)
+            if start >= 1.0:
+                freqs = np.array([1.0, 2.0, 3.0])
+                values = np.array([2.0, 2.0, 2.0])
+            else:
+                freqs = np.array([1.0, 2.0, 3.0, 4.0])
+                values = np.array([1.0, 1.0, 1.0, 1.0])
+            return FrequencySeries(values, frequencies=freqs, unit="Hz^-0.5")
+
+        monkeypatch.setattr(TimeSeries, "asd", fake_asd)
+        try:
+            with pytest.warns(UserWarning, match="Skipping response row"):
+                result = ResponseFunctionAnalysis().compute(
+                    witness=ts_wit,
+                    target=ts_tgt,
+                    segments=[(0.0, 1.0, 10.0), (1.0, 2.0, 20.0)],
+                    auto_detect=False,
+                    fftlength=1.0,
+                )
+        finally:
+            monkeypatch.setattr(TimeSeries, "asd", original_asd)
+
+        assert len(result.coupling_factors) == 1
+        assert len(result.injected_freqs) == 1

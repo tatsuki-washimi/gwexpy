@@ -18,6 +18,8 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 logger = logging.getLogger(__name__)
+if TYPE_CHECKING:
+    from ..table.segment_table import SegmentTable
 
 from ..frequencyseries import FrequencySeries
 from ..timeseries import TimeSeries, TimeSeriesDict
@@ -30,6 +32,30 @@ if TYPE_CHECKING:
 def _index_values(index: object) -> np.ndarray:
     values = getattr(index, "value", index)
     return np.asarray(values, dtype=float)
+
+
+def _align_psd_values_to_reference(
+    values: np.ndarray,
+    freqs: np.ndarray,
+    ref_freqs: np.ndarray,
+) -> np.ndarray | None:
+    """Align PSD values to a reference frequency grid.
+
+    Returns ``None`` when the source PSD does not span the full reference range
+    and therefore cannot be safely interpolated without clipping.
+    """
+    if np.array_equal(freqs, ref_freqs):
+        return np.asarray(values, dtype=float)
+
+    if freqs.ndim != 1 or ref_freqs.ndim != 1 or freqs.size == 0 or ref_freqs.size == 0:
+        return None
+
+    freq_min = np.min(freqs)
+    freq_max = np.max(freqs)
+    if ref_freqs[0] < freq_min or ref_freqs[-1] > freq_max:
+        return None
+
+    return np.interp(ref_freqs, freqs, values)
 
 
 # --- Threshold Strategies ---
@@ -205,26 +231,23 @@ class SigmaThreshold(ThresholdStrategy):
 
 class PercentileThreshold(ThresholdStrategy):
     """
-    Checks if P_inj > factor * Percentile(P_bkg_segments).
+    Threshold strategy based on empirical percentile of background distribution.
 
-    Statistical Assumptions:
-        - Uses the **Empirical Distribution** of the background PSDs.
-        - Does not assume Gaussianity; robust against outliers and non-stationary glitches.
-
-    Usage:
-        - Requires `raw_bkg` (time series) to compute the distribution across time segments.
-        - Higher computational cost than `SigmaThreshold` but more reliable for real-world non-Gaussian data.
+    This strategy follows Appendix B of the PEM injection paper, using the
+    99.7th percentile of background segments and a correction factor
+    to account for finite-averaging and χ² distribution scaling.
 
     Parameters
     ----------
-    percentile : float, default=95
+    percentile : float, default=99.7
         The percentile of the background distribution (0-100).
-    factor : float, default=2.0
-        Multiplier for the percentile value.
-        Threshold = factor * P_bkg_percentile
+        99.7% equivalent to 3-sigma for Gaussian noise.
+    factor : float, default=2.6
+        Correction factor (multiplier) for the percentile value.
+        The value 2.6 is recommended in Appendix B.1 to set reduced χ² ≈ 1.
     """
 
-    def __init__(self, percentile: float = 95, factor: float = 1.0) -> None:
+    def __init__(self, percentile: float = 99.7, factor: float = 2.6) -> None:
         self.percentile = percentile
         self.factor = factor
 
@@ -248,38 +271,91 @@ class PercentileThreshold(ThresholdStrategy):
         psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
         raw_bkg: TimeSeries | None = None,
-        **kwargs: object,
+        **kwargs: Any,
     ) -> np.ndarray:
         fftlength = kwargs.get("fftlength")
         overlap = kwargs.get("overlap")
-        if raw_bkg is None or fftlength is None:
-            raise ValueError(
-                "PercentileThreshold requires 'raw_bkg' time series and 'fftlength' to calculate distributions."
+        bkg_table = kwargs.get("bkg_table")
+
+        percentile = kwargs.get("percentile", self.percentile)
+        factor = kwargs.get("factor", self.factor)
+
+        if bkg_table is not None:
+            # --- SegmentTable Mode ---
+            if "psd" not in bkg_table.columns:
+                raise ValueError("SegmentTable provided to PercentileThreshold has no 'psd' column.")
+
+            # Extract PSDs (handles both meta values and lazy payload cells)
+            psds = [bkg_table.row(i)["psd"] for i in range(len(bkg_table))]
+
+            target_unit = psd_inj.unit
+            ref_freqs = _index_values(psd_inj.xindex)
+
+            psd_values = []
+            for row_idx, p in enumerate(psds):
+                p_val = p.value
+                p_freqs = _index_values(p.xindex)
+
+                # Frequency Alignment Check
+                if not np.array_equal(p_freqs, ref_freqs):
+                    aligned = _align_psd_values_to_reference(p_val, p_freqs, ref_freqs)
+                    if aligned is None:
+                        warnings.warn(
+                            "Skipping background PSD row "
+                            f"{row_idx} because its frequency grid does not cover the "
+                            "injection PSD grid.",
+                            UserWarning,
+                            stacklevel=3,
+                        )
+                        continue
+                    p_val = aligned
+
+                if p.unit != target_unit:
+                    try:
+                        # Convert units if needed (Quantity support)
+                        from astropy.units import Quantity
+                        p_q = Quantity(p_val, p.unit)
+                        p_val = p_q.to(target_unit).value
+                    except Exception:
+                        warnings.warn(
+                            f"Unit conversion failed for bkg_table row: {p.unit} -> {target_unit}. "
+                            f"Using numeric values.",
+                            UserWarning,
+                            stacklevel=3,
+                        )
+
+                psd_values.append(p_val)
+
+            if not psd_values:
+                raise ValueError(
+                    "No compatible background PSD rows remain after frequency alignment."
+                )
+
+            data_matrix = np.stack(psd_values)
+            p_bkg_values = np.percentile(data_matrix, percentile, axis=0)
+        else:
+            # --- Legacy / Raw TimeSeries Mode ---
+            if raw_bkg is None or fftlength is None:
+                raise ValueError(
+                    "PercentileThreshold requires 'bkg_table', or 'raw_bkg' + 'fftlength'."
+                )
+
+            if not isinstance(fftlength, (int, float)):
+                raise TypeError("PercentileThreshold expects numeric fftlength.")
+            if overlap is not None and not isinstance(overlap, (int, float)):
+                raise TypeError("PercentileThreshold expects numeric overlap.")
+
+            # Calculate Spectrogram (Time-Frequency map) of background
+            spec = raw_bkg.spectrogram(
+                stride=fftlength,
+                fftlength=fftlength,
+                overlap=overlap if overlap else 0,
+                method="welch",
+                window="hann",
             )
+            p_bkg_values = spec.percentile(percentile).value
 
-        if not isinstance(fftlength, (int, float)):
-            raise TypeError("PercentileThreshold expects numeric fftlength.")
-        if overlap is not None and not isinstance(overlap, (int, float)):
-            raise TypeError("PercentileThreshold expects numeric overlap.")
-
-        # Calculate Spectrogram (Time-Frequency map) of background
-        # We need the variation over time segments
-        spec = raw_bkg.spectrogram(
-            stride=fftlength,
-            fftlength=fftlength,
-            overlap=overlap if overlap else 0,
-            method="welch",
-            window="hann",
-        )
-
-        # Calculate the percentile along the time axis (axis=0)
-        # Result is a FrequencySeries-like array of the Xth percentile background
-        p_bkg_values = spec.percentile(self.percentile)
-
-        # Apply factor
-        threshold = p_bkg_values.value * self.factor
-
-        return threshold
+        return p_bkg_values * factor
 
 
 # --- Result Class ---
@@ -603,6 +679,80 @@ class CouplingResult:
 
 # --- Analysis Class ---
 
+def _build_bkg_segment_table(
+    ts_bkg: TimeSeries,
+    fftlength: float,
+    overlap: float = 0,
+    stride: float | None = None,
+    memory_limit: float = 2.0 * 1024**3,  # Default 2GB
+    **kwargs: Any,
+) -> SegmentTable:
+    """Helper to convert a background TimeSeries into a SegmentTable of PSDs.
+
+    Parameters
+    ----------
+    ts_bkg : TimeSeries
+        Baseline background data.
+    fftlength : float
+        FFT length in seconds.
+    overlap : float, default=0
+        Overlap between FFT segments within each row.
+    stride : float, optional
+        Stride between rows in seconds. Defaults to *fftlength*.
+    """
+    from gwpy.segments import Segment
+    from ..table.segment_table import SegmentTable
+
+    if stride is None:
+        stride = fftlength
+
+    duration = ts_bkg.span[1] - ts_bkg.span[0]
+    n_rows = int(np.floor((duration - fftlength) / stride) + 1)
+
+    if n_rows <= 0:
+        raise ValueError(
+            f"Background duration ({duration}s) too short for fftlength ({fftlength}s)."
+        )
+
+    # Memory estimation (float64 = 8 bytes per bin)
+    fs = ts_bkg.sample_rate.value
+    n_freqs = int(fftlength * fs / 2) + 1
+    mem_size = n_rows * n_freqs * 8
+    logger.debug(
+        "Building bkg SegmentTable: %d rows, estimated %.2f MB.",
+        n_rows, mem_size / 1e6
+    )
+
+    if mem_size > memory_limit:
+        raise ValueError(
+            f"SegmentTable memory estimate ({mem_size/1e6:.2f} MB) exceeds "
+            f"limit ({memory_limit/1e6:.2f} MB). Increase 'memory_limit' if necessary."
+        )
+    elif mem_size > 0.5 * memory_limit:
+        warnings.warn(
+            f"Large background SegmentTable requested ({mem_size/1e6:.2f} MB). "
+            f"This may lead to memory exhaustion during parallel processing.",
+            UserWarning,
+            stacklevel=2,
+        )
+
+    segments = []
+    t0 = ts_bkg.span[0]
+    for i in range(n_rows):
+        t_s = t0 + i * stride
+        t_e = t_s + fftlength
+        segments.append(Segment(t_s, t_e))
+
+    st = SegmentTable.from_segments(segments)
+
+    # Add PSD payload column
+    def _psd_loader(seg: Segment) -> Any:
+        return ts_bkg.crop(seg[0], seg[1]).psd(fftlength=fftlength, overlap=overlap, **kwargs)
+
+    st.add_series_column("psd", loader=_psd_loader, kind="frequencyseries")
+    return st
+
+
 # --- Helper for Parallel Processing ---
 
 
@@ -623,6 +773,7 @@ def _process_single_target(
     fftlength: float,
     overlap: float,
     freq_mask: np.ndarray | None,
+    bkg_table: SegmentTable | None = None,
 ) -> tuple[str, CouplingResult] | None:
     """
     Process a single target channel.
@@ -641,7 +792,7 @@ def _process_single_target(
 
     # Check Target Excess
     mask_tgt = threshold_target.check(
-        psd_tgt_inj, psd_tgt_bkg, raw_bkg=ts_tgt_bkg, **check_kwargs
+        psd_tgt_inj, psd_tgt_bkg, raw_bkg=ts_tgt_bkg, bkg_table=bkg_table, **check_kwargs
     )
 
     delta_tgt = psd_tgt_inj.value - psd_tgt_bkg.value
@@ -684,7 +835,7 @@ def _process_single_target(
 
     try:
         psd_tgt_threshold = threshold_target.threshold(
-            psd_tgt_inj, psd_tgt_bkg, raw_bkg=ts_tgt_bkg, **check_kwargs
+            psd_tgt_inj, psd_tgt_bkg, raw_bkg=ts_tgt_bkg, bkg_table=bkg_table, **check_kwargs
         )
     except AttributeError:
         psd_tgt_threshold = psd_tgt_bkg.value
@@ -745,6 +896,7 @@ class CouplingFunctionAnalysis:
         threshold_witness: ThresholdStrategy = RatioThreshold(25.0),
         threshold_target: ThresholdStrategy = RatioThreshold(4.0),
         n_jobs: int | None = None,
+        memory_limit: float = 2.0 * 1024**3,
         **kwargs: object,
     ) -> CouplingResult | dict[str, CouplingResult]:
         """
@@ -837,6 +989,9 @@ class CouplingFunctionAnalysis:
         psd_wit_inj = ts_wit_inj.psd(**psd_kwargs)
         psd_wit_bkg = ts_wit_bkg.psd(**psd_kwargs)
 
+        import time
+        t_start = time.perf_counter()
+
         # Frequency mask for CF evaluation
         freq_mask = None
         if frange is not None:
@@ -864,10 +1019,44 @@ class CouplingFunctionAnalysis:
             freqs = _index_values(psd_wit_inj.xindex)
             freq_mask = (freqs >= fmin_val) & (freqs <= fmax_val)
 
+        # --- 4. Parallel Setup ---
+        Parallel = None
+        delayed = None
+        n_jobs_eff = n_jobs if n_jobs is not None else 1
+
+        if n_jobs_eff != 1:
+            from gwexpy.interop._optional import require_optional
+            joblib = require_optional("joblib")
+            Parallel, delayed = joblib.Parallel, joblib.delayed
+
+        # --- 3.5 Prepare Background SegmentTables for PercentileThreshold ---
+        st_wit_bkg = None
+        if isinstance(threshold_witness, PercentileThreshold):
+            st_wit_bkg = _build_bkg_segment_table(
+                ts_wit_bkg, fftlength, overlap, memory_limit=memory_limit, **kwargs
+            )
+            if Parallel is not None:
+                st_wit_bkg.materialize()
+
+        target_bkg_tables: dict[str, SegmentTable] = {}
+        if isinstance(threshold_target, PercentileThreshold):
+            for tgt_key in target_keys:
+                if tgt_key not in data_bkg:
+                    continue
+                st_tgt_bkg = _build_bkg_segment_table(
+                    data_bkg[tgt_key],
+                    fftlength,
+                    overlap,
+                    memory_limit=memory_limit,
+                    **kwargs,
+                )
+                if Parallel is not None:
+                    st_tgt_bkg.materialize()
+                target_bkg_tables[tgt_key] = st_tgt_bkg
+
         # Check Witness Excess
-        # Note: We pass raw_bkg in case PercentileThreshold is used
         mask_wit = threshold_witness.check(
-            psd_wit_inj, psd_wit_bkg, raw_bkg=ts_wit_bkg, **check_kwargs
+            psd_wit_inj, psd_wit_bkg, raw_bkg=ts_wit_bkg, bkg_table=st_wit_bkg, **check_kwargs
         )
 
         delta_wit = psd_wit_inj.value - psd_wit_bkg.value
@@ -876,30 +1065,6 @@ class CouplingFunctionAnalysis:
 
         # --- 4. Parallel Loop over Targets ---
 
-        # Determine joblib usage
-        from gwexpy.interop._optional import require_optional
-
-        try:
-            joblib = require_optional("joblib")
-            Parallel, delayed = joblib.Parallel, joblib.delayed
-        except ImportError:
-            # Fallback for when joblib is strictly not installed even though we tried
-            # Or if user opted out? No, if require_optional fails it raises ImportError.
-            # But here we want smooth fallback if user doesn't have it?
-            # Actually require_optional raises informative error.
-            # If n_jobs is 1 or None, we can just run sequential loop and avoid import error if joblib missing?
-            # But the user might want parallel.
-            # Let's say: if n_jobs is explicit (not None/1), we require logic.
-            # But to keep code clean, let's use joblib if available, else standard loop?
-            # We updated _optional.py, so `require_optional` will tell user to install it.
-            # But if n_jobs=1 (default-ish), we shouldn't crash if joblib missing.
-            n_jobs_eff = n_jobs if n_jobs is not None else 1
-            if n_jobs_eff == 1:
-                # Sequential Fallback (no joblib needed)
-                Parallel = None
-            else:
-                joblib = require_optional("joblib")
-                Parallel, delayed = joblib.Parallel, joblib.delayed
 
         if Parallel is None:
             # Sequential execution
@@ -924,6 +1089,7 @@ class CouplingFunctionAnalysis:
                     fftlength,
                     overlap,
                     freq_mask,
+                    bkg_table=target_bkg_tables.get(tgt_key),
                 )
                 if res:
                     results[res[0]] = res[1]
@@ -948,6 +1114,7 @@ class CouplingFunctionAnalysis:
                     fftlength,
                     overlap,
                     freq_mask,
+                    bkg_table=target_bkg_tables.get(tgt_key),
                 )
                 for tgt_key in target_keys
                 if tgt_key in data_bkg
@@ -956,6 +1123,15 @@ class CouplingFunctionAnalysis:
             for res in par_results:
                 if res:
                     results[res[0]] = res[1]
+
+        t_end = time.perf_counter()
+        dur = t_end - t_start
+        n_ok = len(results)
+        n_total = len(target_keys)
+        logger.info(
+            "Coupling Analysis Complete: %d/%d channels estimated in %.2fs.",
+            n_ok, n_total, dur
+        )
 
         if len(results) == 1:
             return list(results.values())[0]
