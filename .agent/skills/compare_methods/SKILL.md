@@ -1,11 +1,11 @@
 ---
 name: compare_methods
-description: ライブラリ内の類似した信号処理手法の技術的・物理的な違いを分析し、比較解説付きのノートブックセクションを作成する
+description: make_notebookの specialized mode。ライブラリ内の類似手法の技術的・物理的差分を notebook 用の比較セクションへ落とし込む時に使う
 ---
 
 # Document Method Comparison
 
-This skill provides a procedure for creating educational sections in Jupyter Notebooks that compare two or more methods (e.g., `gwpy` vs `gwexpy`).
+This skill is kept as a compatibility entry point, but the canonical notebook workflow now lives in `make_notebook`.
 
 ## Instructions
 
@@ -33,3 +33,8 @@ This skill provides a procedure for creating educational sections in Jupyter Not
 
 5.  **Integration**:
     *   Use Python scripts to inject these cells (Markdown and Code) into the target `.ipynb` file, typically appending to the end or inserting into a relevant section.
+
+## Routing Note
+
+- 新しく notebook を作る場合は `make_notebook` を優先する。
+- この skill は既存の比較タスク名との互換性維持用に残す。

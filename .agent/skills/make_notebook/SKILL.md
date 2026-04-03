@@ -1,6 +1,6 @@
 ---
 name: make_notebook
-description: 機能やテーマについて解説付きのJupyter Notebook (.ipynb) を生成する
+description: 機能やテーマについて解説付きのJupyter Notebook (.ipynb) を生成する。手法比較セクションの追加もこのskillの一部として扱う
 ---
 
 # Create Notebook
@@ -24,3 +24,8 @@ This skill generates a Jupyter Notebook to demonstrate a feature or explain a co
     *   Use Markdown cells to explain *why* and *how*.
     *   Comment the code cells extensively.
     *   Ensure the code is runnable without external local files (or create them on the fly).
+
+## Specialized Mode: Method Comparison
+
+類似手法の比較解説を notebook に入れたい場合は、比較ロジックをこの skill の specialized mode として扱う。
+詳細手順は `reference/compare_methods.md` を参照する。

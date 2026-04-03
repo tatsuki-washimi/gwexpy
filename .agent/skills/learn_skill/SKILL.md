@@ -1,6 +1,6 @@
 ---
 name: learn_skill
-description: 会話履歴や作業内容から、再利用可能なエージェントスキルを生成または追記する
+description: 会話履歴や作業内容から、新しい再利用可能スキルを生成する。既存スキル群の統廃合やdescription整理はmaintain_skillsを使う
 ---
 
 # Meta Skill (Skill Generator)

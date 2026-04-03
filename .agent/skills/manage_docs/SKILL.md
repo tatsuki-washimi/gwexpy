@@ -1,6 +1,6 @@
 ---
 name: manage_docs
-description: ドキュメントのビルド、同期、検証を一括管理する（Sphinx対応）
+description: ドキュメントのビルド、同期、検証を一括管理する（Sphinx対応）。build後の生成物差分やautosummaryの扱いもここで管理する
 ---
 
 # Manage Documentation
@@ -78,6 +78,17 @@ sphinx-build -W -b html docs/web/en/ docs/_build/html/en/
 - `docs/_build/html/en/index.html` を確認
 - リンク切れがないか確認
 - nitpick 警告は `conf.py` の `nitpick_ignore` で管理
+
+### 5. 生成物の扱い
+
+docs build 後は必ず `git status --short` を確認し、生成物を分類する。
+
+- `docs/_build/`: 原則コミットしない
+- `docs/web/**/_autosummary/*.rst`: API 追加や autosummary 再生成が意図通りならコミット候補
+- `docs/web/**/*.ipynb`: source notebook を明示的に更新した時だけコミット候補
+- 英語版・日本語版で対応する差分が揃っているか確認する
+
+大量差分が出た時は、build の副作用なのか source 変更の反映なのかを分けて確認する。
 
 ## Bilingual Support
 

@@ -1,6 +1,6 @@
 # gwexpy Agent Skills
 
-**総スキル数**: 31
+**総スキル数**: 33
 
 Agent Skills は AI エージェントに専門知識と実行能力を提供するオープンスタンダード形式のパッケージです。
 
@@ -15,18 +15,20 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `fix_errors`    | MyPy, Python 3.9 互換性, ノートブックエラー修正 | エラー発生時       |
 | `lint_check`    | Ruff, MyPy, 依存関係チェック                    | 品質チェック時     |
 | `gwexpy_conda_jobs` | conda gwexpy環境 + tmux で検証ジョブ実行     | pytest/ruff/mypy 実行前 |
+| `maintain_skills` | project内skillの統廃合とdescription整理        | skillライブラリ保守時 |
 
 ---
 
 ## Categories
 
-### ワークフロー管理 (4)
+### ワークフロー管理 (5)
 
 | スキル             | 説明                                                                               |
 | ------------------ | ---------------------------------------------------------------------------------- |
 | `finalize_work`    | 作業完了時の検証・整理・コミットを一括実行する（quick/full モード対応）            |
 | `gwexpy_conda_jobs` | conda の `gwexpy` 環境と `tmux` を使って `ruff` / `mypy` / `pytest` を標準実行する |
 | `handover_session` | AIモデル間や作業セッション間での円滑な引継ぎドキュメントを作成する                |
+| `maintain_skills`  | project内skillの統廃合、分割、description改善、README同期を行う                   |
 | `prep_release`     | バージョン更新、CHANGELOG整備、パッケージビルド・公開など、リリース準備を行う     |
 
 ### 開発・コーディング (5)
@@ -83,7 +85,7 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | ------------------------- | -------------------------------------------------------------------------- |
 | `organize_project`        | プロジェクト構造の整理と .gitignore の管理を行う                          |
 | `analyze_external`        | 外部コード、ドキュメント、メディア、Web情報を分析する                     |
-| `refactor_code`           | Notebook内コードの一括リファクタリング、スキルの整理・統廃合を行う        |
+| `refactor_code`           | Notebook内コードやプロジェクトコードの一括リファクタリングを行う          |
 | `presentation_management` | PowerPointの自動生成・編集、Google Slidesとの連携を行う                    |
 
 ---
