@@ -470,3 +470,82 @@ conda run -n gwexpy python -m pytest \
 - **69 passed, 3 skipped**
 
 この再検証により、今回の追加レビューで発見された不具合は解消済みであり、hardening 追記後の実装とドキュメントは概ね整合していることを確認しました。
+
+---
+
+## 12. ResponseFunctionAnalysis の `n_jobs` / `memory_limit` 実装（2026-04-04）
+
+`## 11. 追加レビュー結果とデバッグ対応` で残課題としていた `ResponseFunctionAnalysis.compute()` の `n_jobs` / `memory_limit` について、方針 2（row worker + batch collector）で実装を完了しました。
+
+### A. 実装方針
+
+- **並列化単位**:
+    - 各 injection step（1 row）を独立した計算単位として扱い、`wit/tgt` の injection ASD、background ASD、代表 CF を 1 つの worker で計算する構成へ分解しました。
+- **メモリ制御単位**:
+    - `memory_limit` を「1回に同時処理する row 群（batch）」の上限として扱うようにし、全 row を一度に materialize しない実行モデルへ変更しました。
+- **収集方式**:
+    - batch ごとの worker 結果を Python dict として収集し、最後に `SegmentTable` を再構築することで、既存の `ResponseFunctionResult.table` 互換性を維持しています。
+
+### B. 追加した内部 helper
+
+- `_estimate_response_row_bytes(...)`
+    - `sample_rate`, `segment_duration`, `fftlength` から 1 row あたりの概算メモリ使用量を見積もる helper を追加。
+- `_compute_response_row(...)`
+    - 1 row 分の crop / ASD / background ASD / CF 計算を担当するトップレベル helper を追加。
+    - `joblib` 並列化時にも picklable になるよう、クロージャではなくモジュールトップレベル関数として実装しました。
+
+### C. `memory_limit` の意味づけ
+
+- **動作**:
+    - まず代表 row サイズを見積もり、`batch_size = floor(memory_limit / row_bytes)` を算出します。
+    - `batch_size < 1` となる場合は、`memory_limit` が 1 row すら収められないため、明示的に `ValueError` を送出します。
+    - それ以外は、segment 群を batch 単位に分割して順次処理します。
+- **利点**:
+    - 既存 API を崩さずに、`ResponseFunctionAnalysis` 側でも「実際に効く」メモリ制御を導入できました。
+    - `CouplingFunctionAnalysis` 側の memory-aware hardening と思想を揃えつつ、`response.py` 内に閉じた実装に留めています。
+
+### D. `n_jobs` の意味づけ
+
+- `n_jobs is None` または `n_jobs == 1`:
+    - 従来どおり逐次実行。
+- `n_jobs != 1`:
+    - `joblib.Parallel` を使用し、batch 内の row を並列に処理。
+    - `joblib` 未導入環境では既存の optional dependency 経由で明示的に失敗させる設計です。
+
+### E. ログ出力の更新
+
+- 解析完了ログを以下のように拡張しました。
+    - 処理 step 数
+    - 実行時間
+    - batch 数
+    - 実際の `n_jobs`
+
+これにより、`ResponseFunctionAnalysis` 側でも hardening 後の実行モードが追跡しやすくなりました。
+
+### F. 追加検証
+
+`tests/analysis/test_response.py` に以下を追加しました。
+
+- `test_memory_limit_rejects_single_row_that_cannot_fit`
+    - `memory_limit` が 1 row 未満のとき明示的に失敗することを確認。
+- `test_n_jobs_uses_parallel_backend`
+    - `n_jobs=2` 指定時に並列経路へ入ることを確認。
+
+### G. 再検証結果
+
+以下のコマンドで、解析関連テストを再実行しました。
+
+```bash
+conda run -n gwexpy python -m pytest \
+  tests/analysis/test_response.py \
+  tests/analysis/test_response_compat.py \
+  tests/analysis/test_coupling.py \
+  tests/analysis/test_coupling_analysis.py \
+  tests/analysis/test_hardening.py \
+  tests/analysis/test_regression_refactor.py -q
+```
+
+実行結果:
+- **71 passed, 3 skipped**
+
+この更新により、`ResponseFunctionAnalysis` に追加されていた `n_jobs` / `memory_limit` は、インターフェース上だけでなく実際の実行制御としても有効になりました。
