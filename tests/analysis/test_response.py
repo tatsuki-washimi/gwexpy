@@ -274,3 +274,38 @@ class TestResponseFunctionAnalysisErrors:
 
         assert len(result.coupling_factors) == 1
         assert len(result.injected_freqs) == 1
+
+    def test_memory_limit_rejects_single_row_that_cannot_fit(self):
+        ts_wit = TimeSeries(np.ones(4096), t0=0.0, dt=1.0 / 256, name="W")
+        ts_tgt = TimeSeries(np.ones(4096), t0=0.0, dt=1.0 / 256, name="T")
+
+        with pytest.raises(ValueError, match="memory_limit"):
+            ResponseFunctionAnalysis().compute(
+                witness=ts_wit,
+                target=ts_tgt,
+                segments=[(0.0, 8.0, 10.0)],
+                auto_detect=False,
+                fftlength=1.0,
+                memory_limit=1,
+            )
+
+    def test_n_jobs_uses_parallel_backend(self, monkeypatch):
+        ts_wit = TimeSeries(np.ones(4096), t0=0.0, dt=1.0 / 256, name="W")
+        ts_tgt = TimeSeries(np.ones(4096), t0=0.0, dt=1.0 / 256, name="T")
+
+        def fake_require_optional(name):
+            raise RuntimeError(f"parallel requested via {name}")
+
+        import gwexpy.interop._optional as optional_mod
+
+        monkeypatch.setattr(optional_mod, "require_optional", fake_require_optional)
+
+        with pytest.raises(RuntimeError, match="parallel requested via joblib"):
+            ResponseFunctionAnalysis().compute(
+                witness=ts_wit,
+                target=ts_tgt,
+                segments=[(0.0, 2.0, 10.0), (2.0, 4.0, 20.0)],
+                auto_detect=False,
+                fftlength=1.0,
+                n_jobs=2,
+            )

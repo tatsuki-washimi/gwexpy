@@ -7,15 +7,20 @@ by calculating averaged ASDs for each stable frequency step.
 """
 
 from __future__ import annotations
-from gwpy.segments import Segment
-from ..table.segment_table import SegmentTable, RowProxy
 
+import logging
+import time
 import warnings
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 import matplotlib.pyplot as plt
 import numpy as np
+from gwpy.segments import Segment
+
+from ..table.segment_table import SegmentTable, RowProxy
+
+logger = logging.getLogger(__name__)
 
 from ..spectrogram import Spectrogram
 from ..timeseries import TimeSeries
@@ -26,6 +31,79 @@ if TYPE_CHECKING:
 
 def _freq_values(series: Any) -> np.ndarray:
     return np.asarray(getattr(series.xindex, "value", series.xindex), dtype=float)
+
+
+def _estimate_response_row_bytes(
+    witness: TimeSeries,
+    target: TimeSeries,
+    fftlength: float,
+    segment_duration: float,
+) -> int:
+    sample_rate = max(witness.sample_rate.value, target.sample_rate.value)
+    n_samples = max(1, int(np.ceil(sample_rate * segment_duration)))
+    n_freqs = int(fftlength * sample_rate / 2) + 1
+    bytes_est = (2 * n_samples + 4 * n_freqs) * 8
+    return int(bytes_est * 1.5)
+
+
+def _compute_response_row(
+    witness: TimeSeries,
+    target: TimeSeries,
+    segment: Segment,
+    injected_freq: float,
+    fftlength: float,
+    overlap: float,
+    kwargs: dict[str, Any],
+    master_asd_wit_bkg: Any = None,
+    master_asd_tgt_bkg: Any = None,
+) -> dict[str, Any]:
+    wit_inj = witness.crop(segment[0], segment[1])
+    tgt_inj = target.crop(segment[0], segment[1])
+    wit_asd_inj = wit_inj.asd(fftlength=fftlength, overlap=overlap, **kwargs)
+    tgt_asd_inj = tgt_inj.asd(fftlength=fftlength, overlap=overlap, **kwargs)
+
+    if master_asd_wit_bkg is not None:
+        wit_asd_bkg = master_asd_wit_bkg
+    else:
+        seg_len = segment[1] - segment[0]
+        t_b_s = max(segment[0] - seg_len - 0.5, witness.span[0])
+        t_b_e = min(t_b_s + max(seg_len, fftlength), witness.span[1])
+        if (t_b_e - t_b_s) < fftlength:
+            t_b_s = max(witness.span[0], t_b_e - fftlength)
+            t_b_e = min(witness.span[1], t_b_s + fftlength)
+        wit_asd_bkg = witness.crop(t_b_s, t_b_e).asd(
+            fftlength=fftlength, overlap=overlap, **kwargs
+        )
+
+    if master_asd_tgt_bkg is not None:
+        tgt_asd_bkg = master_asd_tgt_bkg
+    else:
+        seg_len = segment[1] - segment[0]
+        t_b_s = max(segment[0] - seg_len - 0.5, target.span[0])
+        t_b_e = min(t_b_s + max(seg_len, fftlength), target.span[1])
+        if (t_b_e - t_b_s) < fftlength:
+            t_b_s = max(target.span[0], t_b_e - fftlength)
+            t_b_e = min(target.span[1], t_b_s + fftlength)
+        tgt_asd_bkg = target.crop(t_b_s, t_b_e).asd(
+            fftlength=fftlength, overlap=overlap, **kwargs
+        )
+
+    f_idx = np.argmin(np.abs(wit_asd_inj.xindex.value - injected_freq))
+    p_wit_net = wit_asd_inj.value[f_idx] ** 2 - wit_asd_bkg.value[f_idx] ** 2
+    p_tgt_net = tgt_asd_inj.value[f_idx] ** 2 - tgt_asd_bkg.value[f_idx] ** 2
+    cf = np.sqrt(p_tgt_net / p_wit_net) if p_wit_net > 0 and p_tgt_net > 0 else np.nan
+
+    return {
+        "span": segment,
+        "injected_freq": injected_freq,
+        "wit_inj": wit_inj,
+        "tgt_inj": tgt_inj,
+        "wit_asd_inj": wit_asd_inj,
+        "tgt_asd_inj": tgt_asd_inj,
+        "wit_asd_bkg": wit_asd_bkg,
+        "tgt_asd_bkg": tgt_asd_bkg,
+        "cf": cf,
+    }
 
 
 @dataclass
@@ -320,6 +398,9 @@ class ResponseFunctionAnalysis:
         # Background
         witness_bkg: TimeSeries | None = None,
         target_bkg: TimeSeries | None = None,
+        # Execution
+        n_jobs: int | None = None,
+        memory_limit: int = 2 * 1024**3,
         **kwargs: object,
     ) -> ResponseFunctionResult:
         """
@@ -351,16 +432,6 @@ class ResponseFunctionAnalysis:
         seg_objs = [Segment(s, e) for s, e, f in valid_segments]
         injected_freqs_list = [f for s, e, f in valid_segments]
 
-        st = SegmentTable.from_segments(seg_objs, injected_freq=injected_freqs_list)
-
-        # 2.1 Load injection data (Lazy Load)
-        st.add_series_column("wit_inj", loader=lambda s: witness.crop(s[0], s[1]), kind="timeseries")
-        st.add_series_column("tgt_inj", loader=lambda s: target.crop(s[0], s[1]), kind="timeseries")
-
-        # 2.2 Injection ASDs
-        st = st.asd("wit_inj", out_col="wit_asd_inj", fftlength=fftlength, overlap=overlap, **kwargs)
-        st = st.asd("tgt_inj", out_col="tgt_asd_inj", fftlength=fftlength, overlap=overlap, **kwargs)
-
         # 2.3 Pre-calculate master backgrounds if possible
         master_asd_tgt_bkg = None
         master_asd_wit_bkg = None
@@ -369,54 +440,80 @@ class ResponseFunctionAnalysis:
         if witness_bkg is not None:
             master_asd_wit_bkg = witness_bkg.asd(fftlength=fftlength, overlap=overlap, **kwargs)
 
-        # 2.4 Background ASD Loaders
-        if master_asd_wit_bkg is not None:
-            st.add_series_column("wit_asd_bkg", [master_asd_wit_bkg] * len(st), kind="frequencyseries")
-        else:
-            def _wit_bkg_loader(seg: Segment) -> Any:
-                t_s, t_e = seg[0], seg[1]
-                seg_len = t_e - t_s
-                t_b_s = max(t_s - seg_len - 0.5, witness.span[0])
-                t_b_e = min(t_b_s + max(seg_len, fftlength), witness.span[1])
-                if (t_b_e - t_b_s) < fftlength:
-                    t_b_s = max(witness.span[0], t_b_e - fftlength)
-                    t_b_e = min(witness.span[1], t_b_s + fftlength)
-                return witness.crop(t_b_s, t_b_e).asd(fftlength=fftlength, overlap=overlap, **kwargs)
-            st.add_series_column("wit_asd_bkg", loader=_wit_bkg_loader, kind="frequencyseries")
+        row_bytes = _estimate_response_row_bytes(
+            witness,
+            target,
+            fftlength=fftlength,
+            segment_duration=max(s[1] - s[0] for s in valid_segments),
+        )
+        if row_bytes > memory_limit:
+            raise ValueError(
+                f"memory_limit ({memory_limit} bytes) is too small for one response row "
+                f"(estimated {row_bytes} bytes)."
+            )
+        batch_size = max(1, memory_limit // row_bytes)
+        batches = [
+            list(zip(seg_objs[i : i + batch_size], injected_freqs_list[i : i + batch_size]))
+            for i in range(0, len(seg_objs), batch_size)
+        ]
 
-        if master_asd_tgt_bkg is not None:
-            st.add_series_column("tgt_asd_bkg", [master_asd_tgt_bkg] * len(st), kind="frequencyseries")
-        else:
-            def _tgt_bkg_loader(seg: Segment) -> Any:
-                t_s, t_e = seg[0], seg[1]
-                seg_len = t_e - t_s
-                t_b_s = max(t_s - seg_len - 0.5, target.span[0])
-                t_b_e = min(t_b_s + max(seg_len, fftlength), target.span[1])
-                if (t_b_e - t_b_s) < fftlength:
-                    t_b_s = max(target.span[0], t_b_e - fftlength)
-                    t_b_e = min(target.span[1], t_b_s + fftlength)
-                return target.crop(t_b_s, t_b_e).asd(fftlength=fftlength, overlap=overlap, **kwargs)
-            st.add_series_column("tgt_asd_bkg", loader=_tgt_bkg_loader, kind="frequencyseries")
+        Parallel = None
+        delayed = None
+        n_jobs_eff = 1 if n_jobs is None else n_jobs
+        if n_jobs_eff != 1:
+            from gwexpy.interop._optional import require_optional
 
-        # 2.5 CF Computation Logic
-        def _compute_cf(row: RowProxy) -> dict[str, Any]:
-            f_inj = row["injected_freq"]
-            asd_wit_inj = row["wit_asd_inj"]
-            asd_tgt_inj = row["tgt_asd_inj"]
-            asd_wit_bkg = row["wit_asd_bkg"]
-            asd_tgt_bkg = row["tgt_asd_bkg"]
+            joblib = require_optional("joblib")
+            Parallel, delayed = joblib.Parallel, joblib.delayed
 
-            f_idx = np.argmin(np.abs(asd_wit_inj.xindex.value - f_inj))
-            p_wit_net = asd_wit_inj.value[f_idx]**2 - asd_wit_bkg.value[f_idx]**2
-            p_tgt_net = asd_tgt_inj.value[f_idx]**2 - asd_tgt_bkg.value[f_idx]**2
+        t_start = time.perf_counter()
+        row_results: list[dict[str, Any]] = []
+        compute_kwargs = dict(kwargs)
 
-            if p_wit_net > 0 and p_tgt_net > 0:
-                cf = np.sqrt(p_tgt_net / p_wit_net)
+        for batch in batches:
+            if Parallel is None:
+                batch_results = [
+                    _compute_response_row(
+                        witness=witness,
+                        target=target,
+                        segment=segment,
+                        injected_freq=injected_freq,
+                        fftlength=fftlength,
+                        overlap=overlap,
+                        kwargs=compute_kwargs,
+                        master_asd_wit_bkg=master_asd_wit_bkg,
+                        master_asd_tgt_bkg=master_asd_tgt_bkg,
+                    )
+                    for segment, injected_freq in batch
+                ]
             else:
-                cf = np.nan
-            return {"cf": cf}
+                batch_results = Parallel(n_jobs=n_jobs_eff)(
+                    delayed(_compute_response_row)(
+                        witness=witness,
+                        target=target,
+                        segment=segment,
+                        injected_freq=injected_freq,
+                        fftlength=fftlength,
+                        overlap=overlap,
+                        kwargs=compute_kwargs,
+                        master_asd_wit_bkg=master_asd_wit_bkg,
+                        master_asd_tgt_bkg=master_asd_tgt_bkg,
+                    )
+                    for segment, injected_freq in batch
+                )
+            row_results.extend(batch_results)
 
-        st = st.apply(_compute_cf, out_cols=["cf"])
+        st = SegmentTable.from_segments(
+            [row["span"] for row in row_results],
+            injected_freq=[row["injected_freq"] for row in row_results],
+        )
+        st.add_series_column("wit_inj", data=[row["wit_inj"] for row in row_results], kind="timeseries")
+        st.add_series_column("tgt_inj", data=[row["tgt_inj"] for row in row_results], kind="timeseries")
+        st.add_series_column("wit_asd_inj", data=[row["wit_asd_inj"] for row in row_results], kind="frequencyseries")
+        st.add_series_column("tgt_asd_inj", data=[row["tgt_asd_inj"] for row in row_results], kind="frequencyseries")
+        st.add_series_column("wit_asd_bkg", data=[row["wit_asd_bkg"] for row in row_results], kind="frequencyseries")
+        st.add_series_column("tgt_asd_bkg", data=[row["tgt_asd_bkg"] for row in row_results], kind="frequencyseries")
+        st.add_column("cf", [row["cf"] for row in row_results], kind="meta")
 
         # --- 3. Wrap in Containers ---
         st_data = st.to_pandas(meta_only=False)
@@ -474,7 +571,7 @@ class ResponseFunctionAnalysis:
         sg_inj = Spectrogram(spec_inj_data, times=step_times, frequencies=freq_axis, unit=unit, name="Inj")
         sg_bkg = Spectrogram(spec_bkg_data, times=step_times, frequencies=freq_axis, unit=unit, name="Bkg")
 
-        return ResponseFunctionResult(
+        res = ResponseFunctionResult(
             spectrogram_inj=sg_inj,
             spectrogram_bkg=sg_bkg,
             injected_freqs=inj_freqs,
@@ -484,6 +581,15 @@ class ResponseFunctionAnalysis:
             target_name=str(target.name) if target.name else "Target",
             table=st,
         )
+
+        t_end = time.perf_counter()
+        dur = t_end - t_start
+        logger.info(
+            "Response Function Analysis Complete: %d steps processed in %.2fs "
+            "(batches=%d, n_jobs=%s).",
+            len(st), dur, len(batches), n_jobs_eff,
+        )
+        return res
 
 
 def estimate_response_function(
