@@ -1,0 +1,18 @@
+match:
+  extensions: [".py", ".pyi"]
+
+commands:
+  lint:
+    any:
+      - ["conda", "run", "-n", "gwexpy", "ruff", "check", "FILES"]
+      - ["ruff", "check", "FILES"]
+
+  format:
+    any:
+      - ["conda", "run", "-n", "gwexpy", "ruff", "format", "--check", "FILES"]
+      - ["ruff", "format", "--check", "FILES"]
+
+  typecheck:
+    any:
+      - ["conda", "run", "-n", "gwexpy", "mypy", "FILES"]
+      - ["mypy", "FILES"]

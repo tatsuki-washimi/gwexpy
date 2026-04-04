@@ -1,0 +1,23 @@
+# GWexpy quality-gate manifest
+#
+# Used by ai-harness bin/verify-changed-files as a project-local override.
+#
+# Usage (from repo root):
+#   AI_HARNESS_REPO_ROOT=$(pwd) \
+#   AI_HARNESS_QUALITY_GATES_MANIFEST=$(pwd)/.harness/config/quality-gates/manifest.yaml \
+#     python3 /home/washimi/ai-harness/bin/verify-changed-files --changed
+#
+# Checks run per profile:
+#   python: lint (ruff check), format (ruff format --check), typecheck (mypy)
+#           — all via conda run -n gwexpy, falling back to bare binaries.
+#
+# To run only specific checks:
+#   ... verify-changed-files --changed --check lint
+#   ... verify-changed-files --changed --check lint --check typecheck
+#
+# To dry-run (print commands without executing):
+#   ... verify-changed-files --changed --dry-run
+
+profiles:
+  python:
+    file: profiles/python.yaml
