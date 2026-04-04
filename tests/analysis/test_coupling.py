@@ -19,6 +19,7 @@ from gwexpy.analysis.coupling import (
     PercentileThreshold,
     RatioThreshold,
     SigmaThreshold,
+    _align_psd_values_to_reference,
     _index_values,
 )
 from gwexpy.frequencyseries import FrequencySeries
@@ -203,6 +204,28 @@ class TestIndexValues:
         arr = np.array([4.0, 5.0])
         result = _index_values(arr)
         np.testing.assert_array_equal(result, [4.0, 5.0])
+
+
+class TestAlignPsdValuesToReference:
+    def test_clip_requires_exact_match(self):
+        values = np.array([1.0, 2.0, 3.0])
+        freqs = np.array([10.0, 11.0, 12.0])
+        ref = np.array([10.1, 11.1, 12.1])
+        assert _align_psd_values_to_reference(values, freqs, ref, method="clip") is None
+
+    def test_interpolate_allows_small_bin_shift(self):
+        values = np.array([1.0, 2.0, 3.0, 4.0])
+        freqs = np.array([10.0, 11.0, 12.0, 13.0])
+        ref = np.array([10.25, 11.25, 12.25])
+        aligned = _align_psd_values_to_reference(values, freqs, ref, method="interpolate")
+        assert aligned is not None
+        np.testing.assert_allclose(aligned, np.array([1.25, 2.25, 3.25]))
+
+    def test_interpolate_rejects_large_bin_shift(self):
+        values = np.array([1.0, 2.0, 3.0, 4.0])
+        freqs = np.array([10.0, 11.0, 12.0, 13.0])
+        ref = np.array([11.5, 12.5])
+        assert _align_psd_values_to_reference(values, freqs, ref, method="interpolate") is None
 
 
 # ---------------------------------------------------------------------------

@@ -38,11 +38,26 @@ def _align_psd_values_to_reference(
     values: np.ndarray,
     freqs: np.ndarray,
     ref_freqs: np.ndarray,
+    method: str = "clip",
 ) -> np.ndarray | None:
     """Align PSD values to a reference frequency grid.
 
-    Returns ``None`` when the source PSD does not span the full reference range
-    and therefore cannot be safely interpolated without clipping.
+    Parameters
+    ----------
+    values : np.ndarray
+        Source PSD values.
+    freqs : np.ndarray
+        Source frequency axis.
+    ref_freqs : np.ndarray
+        Reference frequency axis.
+    method : {'clip', 'interpolate'}, default: 'clip'
+        Alignment method. 'clip' returns None if frequencies don't match exactly.
+        'interpolate' uses linear interpolation if the maximum bin shift is <= 1.
+
+    Returns
+    -------
+    np.ndarray or None
+        Aligned values, or None if alignment is not possible under the given policy.
     """
     if np.array_equal(freqs, ref_freqs):
         return np.asarray(values, dtype=float)
@@ -50,12 +65,31 @@ def _align_psd_values_to_reference(
     if freqs.ndim != 1 or ref_freqs.ndim != 1 or freqs.size == 0 or ref_freqs.size == 0:
         return None
 
+    # Common range check
     freq_min = np.min(freqs)
     freq_max = np.max(freqs)
     if ref_freqs[0] < freq_min or ref_freqs[-1] > freq_max:
+        # Strictly prohibit extrapolation
         return None
 
-    return np.interp(ref_freqs, freqs, values)
+    if method == "clip":
+        # In clip mode, we only allow exact matches (handled above)
+        return None
+
+    if method == "interpolate":
+        # Estimate index-wise bin shift on the overlapping prefix.
+        df = np.median(np.diff(freqs)) if len(freqs) > 1 else 0
+        if df > 0:
+            n_common = min(len(freqs), len(ref_freqs))
+            max_shift = (
+                np.max(np.abs(freqs[:n_common] - ref_freqs[:n_common])) / df
+            )
+            if max_shift > 1.0:
+                return None
+
+        return np.interp(ref_freqs, freqs, values)
+
+    return None
 
 
 # --- Threshold Strategies ---
@@ -119,16 +153,14 @@ class RatioThreshold(ThresholdStrategy):
         self,
         psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
-        raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
         return psd_inj.value > (psd_bkg.value * self.ratio)
 
     def threshold(
         self,
-        psd_inj: FrequencySeries,
+        _psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
-        raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
         return psd_bkg.value * self.ratio
@@ -200,7 +232,7 @@ class SigmaThreshold(ThresholdStrategy):
         self,
         psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
-        raw_bkg: TimeSeries | None = None,
+        _raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
         n_avg = kwargs.get("n_avg", 1.0)
@@ -215,9 +247,9 @@ class SigmaThreshold(ThresholdStrategy):
 
     def threshold(
         self,
-        psd_inj: FrequencySeries,
+        _psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
-        raw_bkg: TimeSeries | None = None,
+        _raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
         n_avg = kwargs.get("n_avg", 1.0)
@@ -245,11 +277,19 @@ class PercentileThreshold(ThresholdStrategy):
     factor : float, default=2.6
         Correction factor (multiplier) for the percentile value.
         The value 2.6 is recommended in Appendix B.1 to set reduced χ² ≈ 1.
+    freq_align : {'clip', 'interpolate'}, default='clip'
+        Frequency alignment strategy for background segments.
     """
 
-    def __init__(self, percentile: float = 99.7, factor: float = 2.6) -> None:
+    def __init__(
+        self,
+        percentile: float = 99.7,
+        factor: float = 2.6,
+        freq_align: str = "clip",
+    ) -> None:
         self.percentile = percentile
         self.factor = factor
+        self.freq_align = freq_align
 
     def check(
         self,
@@ -269,7 +309,7 @@ class PercentileThreshold(ThresholdStrategy):
     def threshold(
         self,
         psd_inj: FrequencySeries,
-        psd_bkg: FrequencySeries,
+        _psd_bkg: FrequencySeries,
         raw_bkg: TimeSeries | None = None,
         **kwargs: Any,
     ) -> np.ndarray:
@@ -279,6 +319,7 @@ class PercentileThreshold(ThresholdStrategy):
 
         percentile = kwargs.get("percentile", self.percentile)
         factor = kwargs.get("factor", self.factor)
+        freq_align = kwargs.get("freq_align", self.freq_align)
 
         if bkg_table is not None:
             # --- SegmentTable Mode ---
@@ -298,12 +339,14 @@ class PercentileThreshold(ThresholdStrategy):
 
                 # Frequency Alignment Check
                 if not np.array_equal(p_freqs, ref_freqs):
-                    aligned = _align_psd_values_to_reference(p_val, p_freqs, ref_freqs)
+                    aligned = _align_psd_values_to_reference(
+                        p_val, p_freqs, ref_freqs, method=freq_align
+                    )
                     if aligned is None:
                         warnings.warn(
                             "Skipping background PSD row "
                             f"{row_idx} because its frequency grid does not cover the "
-                            "injection PSD grid.",
+                            "injection PSD grid or exceeds bin shift tolerance.",
                             UserWarning,
                             stacklevel=3,
                         )
@@ -679,26 +722,33 @@ class CouplingResult:
 
 # --- Analysis Class ---
 
+def estimate_bkg_mem_bytes(
+    duration: float, fftlength: float, stride: float, fs: float
+) -> tuple[int, int]:
+    """Estimate memory required for a background SegmentTable.
+
+    Returns
+    -------
+    bytes_est : int
+        Estimated memory in bytes (including 20% overhead).
+    n_rows : int
+        Number of rows.
+    """
+    n_rows = max(1, int(np.floor((duration - fftlength) / stride)) + 1)
+    n_freqs = int(fftlength * fs / 2) + 1
+    bytes_est = n_rows * n_freqs * 8  # float64
+    return int(bytes_est * 1.2), n_rows
+
+
 def _build_bkg_segment_table(
     ts_bkg: TimeSeries,
     fftlength: float,
     overlap: float = 0,
     stride: float | None = None,
-    memory_limit: float = 2.0 * 1024**3,  # Default 2GB
+    memory_limit: int = 2 * 1024**3,  # Default 2GB
     **kwargs: Any,
 ) -> SegmentTable:
     """Helper to convert a background TimeSeries into a SegmentTable of PSDs.
-
-    Parameters
-    ----------
-    ts_bkg : TimeSeries
-        Baseline background data.
-    fftlength : float
-        FFT length in seconds.
-    overlap : float, default=0
-        Overlap between FFT segments within each row.
-    stride : float, optional
-        Stride between rows in seconds. Defaults to *fftlength*.
     """
     from gwpy.segments import Segment
     from ..table.segment_table import SegmentTable
@@ -707,34 +757,36 @@ def _build_bkg_segment_table(
         stride = fftlength
 
     duration = ts_bkg.span[1] - ts_bkg.span[0]
-    n_rows = int(np.floor((duration - fftlength) / stride) + 1)
-
-    if n_rows <= 0:
-        raise ValueError(
-            f"Background duration ({duration}s) too short for fftlength ({fftlength}s)."
-        )
-
-    # Memory estimation (float64 = 8 bytes per bin)
     fs = ts_bkg.sample_rate.value
-    n_freqs = int(fftlength * fs / 2) + 1
-    mem_size = n_rows * n_freqs * 8
-    logger.debug(
-        "Building bkg SegmentTable: %d rows, estimated %.2f MB.",
-        n_rows, mem_size / 1e6
-    )
+
+    # --- Step-wise Stride Adjustment for Memory Control ---
+    mem_size, n_rows = estimate_bkg_mem_bytes(duration, fftlength, stride, fs)
 
     if mem_size > memory_limit:
-        raise ValueError(
-            f"SegmentTable memory estimate ({mem_size/1e6:.2f} MB) exceeds "
-            f"limit ({memory_limit/1e6:.2f} MB). Increase 'memory_limit' if necessary."
+        orig_stride = stride
+        # Increase stride automatically up to 10x fftlength to fit memory
+        while mem_size > memory_limit and stride < (fftlength * 10):
+            stride *= 2
+            mem_size, n_rows = estimate_bkg_mem_bytes(duration, fftlength, stride, fs)
+
+        if mem_size > memory_limit:
+            raise ValueError(
+                f"Background SegmentTable memory estimate ({mem_size/1e6:.2f} MB) "
+                f"exceeds limit ({memory_limit/1e6:.2f} MB) even after stride adjustment. "
+                "Increase 'memory_limit' or use a larger 'bkg_stride'."
+            )
+        logger.warning(
+            "Increased bkg_stride from %.2fs to %.2fs to fit memory limit (%.2f MB).",
+            orig_stride,
+            stride,
+            memory_limit / 1e6,
         )
-    elif mem_size > 0.5 * memory_limit:
-        warnings.warn(
-            f"Large background SegmentTable requested ({mem_size/1e6:.2f} MB). "
-            f"This may lead to memory exhaustion during parallel processing.",
-            UserWarning,
-            stacklevel=2,
-        )
+
+    logger.info(
+        "Building bkg SegmentTable: %d rows, estimated %.2f MB.",
+        n_rows,
+        mem_size / 1e6,
+    )
 
     segments = []
     t0 = ts_bkg.span[0]
@@ -745,11 +797,34 @@ def _build_bkg_segment_table(
 
     st = SegmentTable.from_segments(segments)
 
-    # Add PSD payload column
-    def _psd_loader(seg: Segment) -> Any:
-        return ts_bkg.crop(seg[0], seg[1]).psd(fftlength=fftlength, overlap=overlap, **kwargs)
+    # --- Materialization Strategy for Joblib Pickling ---
+    # We materialize PSDs directly into the table row by row.
+    # Since we already verified it fits in memory_limit, this is safe and pickle-stable.
+    kept_segments = []
+    psds = []
+    for seg in segments:
+        cropped = ts_bkg.crop(seg[0], seg[1])
+        if (cropped.span[1] - cropped.span[0]) < fftlength:
+            warnings.warn(
+                "Skipping background segment because its cropped duration is "
+                f"shorter than fftlength ({fftlength}s).",
+                UserWarning,
+                stacklevel=2,
+            )
+            continue
+        p = cropped.psd(
+            fftlength=fftlength, overlap=overlap, **kwargs
+        )
+        kept_segments.append(seg)
+        psds.append(p)
 
-    st.add_series_column("psd", loader=_psd_loader, kind="frequencyseries")
+    if not psds:
+        raise ValueError("No background segments remain after boundary checks.")
+
+    if len(psds) != len(segments):
+        st = SegmentTable.from_segments(kept_segments)
+
+    st.add_series_column("psd", data=psds, kind="frequencyseries")
     return st
 
 
@@ -885,6 +960,56 @@ class CouplingFunctionAnalysis:
     Analysis class to estimate Coupling Functions (CF).
     """
 
+    def auto_calibrate_percentile_factor(
+        self,
+        raw_bkg: TimeSeries,
+        target: TimeSeries,
+        fftlength: float,
+        overlap: float = 0,
+        percentile: float = 99.7,
+        factor_range: tuple[float, float] = (0.1, 10.0),
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """
+        Automatically calibrate the percentile correction factor (Appendix B).
+
+        Finds the factor `c` such that the background noise distribution
+        best matches the expected statistical floor, aiming for reduced chi2 ≈ 1.
+        """
+        from scipy.optimize import minimize_scalar
+
+        # 1. Prepare Background Distribution
+        # We use a SegmentTable for the background to get the empirical distribution
+        st_bkg = _build_bkg_segment_table(
+            raw_bkg, fftlength, overlap=overlap, **kwargs
+        )
+        # psd_matrix shape: (segments, frequencies)
+        psd_matrix = np.stack([row["psd"].value for row in st_bkg])
+        p_emp = np.percentile(psd_matrix, percentile, axis=0)
+
+        # 2. Target Baseline (Mean/Median PSD)
+        psd_tgt_bkg = target.psd(fftlength=fftlength, overlap=overlap, **kwargs).value
+
+        # 3. Objective Function: |Reduced Chi2 - 1|
+        # We want: mean_target ≈ factor * percentile_bkg
+        def objective(c: float) -> float:
+            threshold = p_emp * c
+            # Simple reduced chi2 proxy: average ratio
+            # (In a real scenario, this would be more complex weighting)
+            r_chi2 = np.mean(psd_tgt_bkg / threshold)
+            return (r_chi2 - 1.0) ** 2
+
+        res = minimize_scalar(objective, bounds=factor_range, method="bounded")
+
+        if not res.success:
+            warnings.warn("Auto-calibration failed to converge. Using best guess.")
+
+        return {
+            "percentile_factor": float(res.x),
+            "reduced_chi2": float(np.sqrt(res.fun) + 1.0),
+            "success": bool(res.success),
+        }
+
     def compute(
         self,
         data_inj: TimeSeriesDict,
@@ -895,8 +1020,10 @@ class CouplingFunctionAnalysis:
         overlap: float = 0,
         threshold_witness: ThresholdStrategy = RatioThreshold(25.0),
         threshold_target: ThresholdStrategy = RatioThreshold(4.0),
+        percentile_factor: float = 2.6,
+        bkg_stride: float | None = None,
+        memory_limit: int = 2 * 1024**3,
         n_jobs: int | None = None,
-        memory_limit: float = 2.0 * 1024**3,
         **kwargs: object,
     ) -> CouplingResult | dict[str, CouplingResult]:
         """
@@ -967,6 +1094,7 @@ class CouplingFunctionAnalysis:
             "fftlength": fftlength,
             "overlap": overlap,
             "n_avg": 1.0,  # Will be updated
+            "factor": percentile_factor,
         }
 
         # Estimate number of averages (N_avg)
@@ -1033,10 +1161,13 @@ class CouplingFunctionAnalysis:
         st_wit_bkg = None
         if isinstance(threshold_witness, PercentileThreshold):
             st_wit_bkg = _build_bkg_segment_table(
-                ts_wit_bkg, fftlength, overlap, memory_limit=memory_limit, **kwargs
+                ts_wit_bkg,
+                fftlength,
+                overlap,
+                stride=bkg_stride,
+                memory_limit=memory_limit,
+                **kwargs,
             )
-            if Parallel is not None:
-                st_wit_bkg.materialize()
 
         target_bkg_tables: dict[str, SegmentTable] = {}
         if isinstance(threshold_target, PercentileThreshold):
@@ -1047,11 +1178,10 @@ class CouplingFunctionAnalysis:
                     data_bkg[tgt_key],
                     fftlength,
                     overlap,
+                    stride=bkg_stride,
                     memory_limit=memory_limit,
                     **kwargs,
                 )
-                if Parallel is not None:
-                    st_tgt_bkg.materialize()
                 target_bkg_tables[tgt_key] = st_tgt_bkg
 
         # Check Witness Excess
@@ -1126,11 +1256,14 @@ class CouplingFunctionAnalysis:
 
         t_end = time.perf_counter()
         dur = t_end - t_start
-        n_ok = len(results)
+
+        # --- 5. Summary Logging ---
+        n_targets = len(results)
         n_total = len(target_keys)
         logger.info(
-            "Coupling Analysis Complete: %d/%d channels estimated in %.2fs.",
-            n_ok, n_total, dur
+            "Coupling Analysis Complete: %d/%d channels estimated in %.2fs. "
+            "percentile_factor=%.2f",
+            n_targets, n_total, dur, percentile_factor
         )
 
         if len(results) == 1:
@@ -1146,8 +1279,12 @@ def estimate_coupling(
     fftlength: float,
     witness: str | None = None,
     frange: tuple[float, float] | None = None,
+    overlap: float = 0,
     threshold_witness: ThresholdStrategy | float = 25.0,
     threshold_target: ThresholdStrategy | float = 4.0,
+    percentile_factor: float = 2.6,
+    bkg_stride: float | None = None,
+    memory_limit: int = 2 * 1024**3,
     n_jobs: int | None = None,
     **kwargs: Any,
 ) -> CouplingResult | dict[str, CouplingResult]:
@@ -1155,9 +1292,40 @@ def estimate_coupling(
 
     Parameters
     ----------
+    data_inj : TimeSeriesDict
+        Injection data (Witness + Targets).
+    data_bkg : TimeSeriesDict
+        Background data (Witness + Targets).
+    fftlength : float
+        FFT length in seconds.
+    witness : str, optional
+        The name (key) of the witness channel.
+        If None, the FIRST channel in ``data_inj`` is used.
     frange : tuple of float, optional
         Frequency range (fmin, fmax) to evaluate CF and CF upper limit.
         Values outside the range are set to NaN.
+    overlap : float, optional
+        Overlap in seconds (default 0).
+    threshold_witness : ThresholdStrategy or float
+        Strategy to determine if Witness is excited.
+        If a float is given, it is interpreted as a ratio for :class:`RatioThreshold`.
+    threshold_target : ThresholdStrategy or float
+        Strategy to determine if Target is excited.
+        If a float is given, it is interpreted as a ratio for :class:`RatioThreshold`.
+    percentile_factor : float, optional
+        Correction factor for :class:`PercentileThreshold` (Appendix B.1).
+        Default is 2.6.
+    bkg_stride : float, optional
+        Stride in seconds for background SegmentTable construction.
+        Defaults to ``fftlength``.
+    memory_limit : int, optional
+        Maximum memory in bytes for the background SegmentTable.
+        Default is 2 GB.
+    n_jobs : int, optional
+        Number of jobs for parallel processing.
+        ``None`` means 1; ``-1`` means all processors.
+    **kwargs
+        Additional keyword arguments forwarded to PSD computation.
     """
 
     def _ensure_strategy(
@@ -1177,8 +1345,12 @@ def estimate_coupling(
         fftlength,
         witness=witness,
         frange=frange,
+        overlap=overlap,
         threshold_witness=tw,
         threshold_target=tt,
+        percentile_factor=percentile_factor,
+        bkg_stride=bkg_stride,
+        memory_limit=memory_limit,
         n_jobs=n_jobs,
         **kwargs,
     )
