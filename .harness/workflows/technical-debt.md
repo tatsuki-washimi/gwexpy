@@ -24,7 +24,7 @@ Use this workflow to systematically address items in `docs_internal/archive/plan
 
 ## Step 4: Role Assignment
 - Choose the expert agent for the task (e.g., `exception-auditor` for broad catches).
-- Assign a "Physic Judge" model for final validation of any physical logic.
+- Assign a "Physics Judge" model for final validation of any physical logic.
 
 ## Step 5: Implement and Verify
 1. Run `ruff`, `mypy`, and `pytest`.

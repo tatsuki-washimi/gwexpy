@@ -32,7 +32,7 @@ conda run -n gwexpy mypy gwexpy/
 ```
 
 内部で以下を実施:
-- バージョン文字列の同期確認（`pyproject.toml`, `__version__`, `CITATION.cff`, `codemeta.json`）
+- バージョン文字列の同期確認（`pyproject.toml`, `__version__`, `CITATION.cff`、`codemeta.json` が存在する場合はそれも含む）
 - CHANGELOG 更新（リリース日とタグの整合）
 - TestPyPI への試験ビルド
 
@@ -51,7 +51,7 @@ conda run -n gwexpy mypy gwexpy/
 - `pyproject.toml` — `version = "X.Y.Z"`
 - `gwexpy/_version.py` — `__version__`
 - `CITATION.cff` — `version:` と `date-released:`
-- `codemeta.json` — `"version":`
+- `codemeta.json` — `"version":"`（存在する場合のみ）
 
 差異がある場合はタグ作成前に必ず同期し、CHANGELOG の対象バージョン見出しとも整合させる。
 `metadata-checker` エージェントを実行し、不整合がないか確認してください。

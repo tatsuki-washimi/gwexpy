@@ -10,15 +10,15 @@ To maximize reasoning quality and minimize tokens/quota, use the right LLM model
 
 ## Preferred Assignment Patterns
 
-- **Physics Review**: Use the most capable model (e.g., Claude 3.5 Opus/Sonnet or Gemini 3 Flash / 1.5 Pro).
-- **Core Implementation**: Sonnet or Gemini 1.5/3 Pro/Flash.
-- **Routine Fixes**: Haiku or Gemini 1.5 Flash.
+- **Physics Review**: Use the highest-reasoning model available (Opus tier or equivalent).
+- **Core Implementation**: Use a balanced coding-specialist model (Sonnet tier or equivalent).
+- **Routine Fixes**: Use a lightweight, fast model (Haiku tier or equivalent).
 
 ## Historical Examples
 
-- **Roadmap Planning (@v0.1.0b1)**: Used Opus/Sonnet for decomposition.
-- **HHT Debugging**: Used Sonnet for loop logic and Opus for physics validation.
-- **Unit Test Generation**: Used Flash/Haiku for boilerplate.
+- **Roadmap Planning (@v0.1.0b1)**: Used high-reasoning (Opus tier) for decomposition.
+- **HHT Debugging**: Used coding-specialist (Sonnet tier) for loop logic and high-reasoning (Opus tier) for physics validation.
+- **Unit Test Generation**: Used lightweight (Haiku tier) for boilerplate.
 
 ## Escalation Rules
 
