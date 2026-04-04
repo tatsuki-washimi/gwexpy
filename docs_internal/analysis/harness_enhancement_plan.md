@@ -1406,3 +1406,35 @@
 - フェーズ F は A-E と独立ではなく、A-D の成果を日常運用に定着させる横断フェーズとして後追い導入すると効果が高い
 - フェーズ C の各エージェントも互いに独立して追加可能
 - フェーズ E の skill 移植は、対応する phase0/phase1 作業を再実施する場合に合わせて行うのが効率的
+
+---
+
+## 作業報告
+
+**更新日**: 2026-04-04  
+**ステータス**: フェーズ A-F 実装完了、レビュー指摘反映済み
+
+### 実施結果サマリー
+
+- フェーズA: `.harness/hooks/hooks.json` に mypy / broad exception / Death Floats / GWpy 4.0 互換 / CHANGELOG reminder を実装した。
+- フェーズB: `.harness/rules/common/` に exception-handling, numerical-scales, model-assignment, gwpy-compatibility を追加した。
+- フェーズC: `.harness/agents/` に exception-auditor, numeric-scale-checker, gwexpy-compatibility-checker を追加した。
+- フェーズD: `.harness/workflows/` に numerical-audit, technical-debt を追加し、release workflow を強化した。
+- フェーズE: `.harness/skills/` に phase0_exception_sweep, phase1_scale_invariance を追加し、`README.md` を同期した。
+- フェーズF: session-start, evidence-pack, docs-sync, task-routing, metadata-checker, optional-deps-reviewer, risk-labeler, optional-dependencies rule, docs/risk 系 hook を追加した。
+
+### レビューで見つかった主な修正点
+
+- Phase A 実装後のレビューで、mypy hook の `tests/` 誤発火、`except Exception as exc:` の検出漏れ、release workflow の重複見出し、technical-debt workflow の誤パス、skills README の件数不整合を修正した。
+- Phase F 実装後のレビューで、risk-label hook のファイル名/差分本文混同、存在しない `codemeta.json` / `docs/install.rst` 前提、`.agent` symlink 前提、docs-drift hook の過剰警告を修正した。
+- `hooks.json` は都度 `python3 -m json.tool` で構文確認した。
+
+### 実装コミット
+
+- `611ad2a7` `feat(harness): implement phases A-E enhancements`
+- `d21f4373` `feat(harness): implement phase F guardrails`
+
+### 現時点の残件
+
+- hook の実イベント発火を使った手動運用確認は未実施であり、現状は構文確認と内容レビュー中心である。
+- 未追跡ファイル `docs_internal/PEMinjection-with-SegmentTable.md` は本計画の実装コミットには含めていない。
