@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
@@ -663,6 +664,141 @@ class CouplingResult:
         fig.tight_layout()
         return fig
 
+    def plot_rms(
+        self,
+        fmin: float | None = None,
+        fmax: float | None = None,
+        fftlength: float | None = None,
+        overlap: float | None = None,
+        channels: str = "both",
+        show_windows: bool = True,
+        figsize: tuple[float, float] = (12, 4),
+        **kwargs: Any,
+    ) -> Any:
+        """
+        RMS 時系列プロット（帯域制限付き）。
+
+        Witness / Target チャンネルのローリング RMS を時間軸に表示する。
+        `show_windows=True` の場合、背景区間（グレー）と注入区間（赤）を
+        `axvspan` で色分けして重ねる。
+
+        RMS の定義（PSD を周波数積分してルート）::
+
+            RMS(t) = sqrt( trapz(PSD(t, f), f) )  for f in [fmin, fmax]
+
+        Parameters
+        ----------
+        fmin : float, optional
+            RMS を計算する下限周波数 [Hz]。None の場合は 0 Hz。
+        fmax : float, optional
+            RMS を計算する上限周波数 [Hz]。None の場合は Nyquist 周波数。
+        fftlength : float, optional
+            Spectrogram の FFT 長 [s]。None の場合は self.fftlength を使用。
+        overlap : float, optional
+            Spectrogram のオーバーラップ割合 [0, 1)。None の場合は self.overlap を使用。
+        channels : {"witness", "target", "both"}
+            プロットするチャンネル。"both" の場合は 2 パネル構成。
+        show_windows : bool
+            背景・注入区間を axvspan で色分けする場合 True（デフォルト）。
+        figsize : tuple
+            Figure サイズ。
+        **kwargs
+            matplotlib の plot() に渡す追加キーワード引数。
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+
+        Raises
+        ------
+        ValueError
+            `channels` に応じた TimeSeries が None の場合。
+            `channels` の値が不正な場合。
+        """
+        import matplotlib.pyplot as plt
+
+        if channels not in ("witness", "target", "both"):
+            raise ValueError(
+                f"channels must be 'witness', 'target', or 'both', got {channels!r}"
+            )
+
+        _fftlength = fftlength if fftlength is not None else self.fftlength
+        _overlap = overlap if overlap is not None else (self.overlap if self.overlap is not None else 0.0)
+
+        if _fftlength is None:
+            raise ValueError(
+                "fftlength is required for plot_rms(). "
+                "Pass fftlength= or set it when constructing CouplingResult."
+            )
+
+        # チャンネル選択と検証
+        ts_pairs: list[tuple[str, Any, Any]] = []  # (label, ts_bkg, ts_inj)
+        if channels in ("witness", "both"):
+            if self.ts_witness_bkg is None or self.ts_witness_inj is None:
+                raise ValueError(
+                    "ts_witness_bkg and ts_witness_inj are required for plot_rms(). "
+                    "Set them when constructing CouplingResult."
+                )
+            ts_pairs.append((self.witness_name, self.ts_witness_bkg, self.ts_witness_inj))
+        if channels in ("target", "both"):
+            if self.ts_target_bkg is None or self.ts_target_inj is None:
+                raise ValueError(
+                    "ts_target_bkg and ts_target_inj are required for plot_rms(). "
+                    "Set them when constructing CouplingResult."
+                )
+            ts_pairs.append((self.target_name, self.ts_target_bkg, self.ts_target_inj))
+
+        n_panels = len(ts_pairs)
+        fig, axes = plt.subplots(n_panels, 1, figsize=figsize, squeeze=False)
+
+        for (label, ts_bkg, ts_inj), ax in zip(ts_pairs, axes[:, 0]):
+            rms_bkg = _compute_rms_timeseries(ts_bkg, _fftlength, _overlap, fmin, fmax)
+            rms_inj = _compute_rms_timeseries(ts_inj, _fftlength, _overlap, fmin, fmax)
+
+            unit_str = str(getattr(ts_bkg, "unit", ""))
+
+            # RMS カーブの描画
+            ax.plot(
+                rms_bkg.times.value,
+                rms_bkg.value,
+                color="black",
+                linewidth=1.0,
+                label="Background",
+                **kwargs,
+            )
+            ax.plot(
+                rms_inj.times.value,
+                rms_inj.value,
+                color="tab:red",
+                linewidth=1.0,
+                label="Injection",
+                **kwargs,
+            )
+
+            # 期間色分け (axvspan)
+            if show_windows:
+                t0_bkg = float(rms_bkg.t0.value)
+                t1_bkg = t0_bkg + float(rms_bkg.duration.value)
+                t0_inj = float(rms_inj.t0.value)
+                t1_inj = t0_inj + float(rms_inj.duration.value)
+                ax.axvspan(t0_bkg, t1_bkg, color="gray", alpha=0.15, label="Bkg window")
+                ax.axvspan(t0_inj, t1_inj, color="red", alpha=0.10, label="Inj window")
+
+            freq_label = ""
+            if fmin is not None or fmax is not None:
+                lo = fmin if fmin is not None else 0
+                hi = fmax if fmax is not None else "Nyq"
+                freq_label = f" [{lo}–{hi} Hz]"
+
+            ax.set_xlabel("Time [s]")
+            ax.set_ylabel(f"RMS [{unit_str}]")
+            ax.set_title(f"RMS{freq_label}: {label}")
+            ax.legend(fontsize=8)
+            ax.grid(True, linestyle=":")
+
+        fig.tight_layout()
+        return fig
+
     def plot_snrgram(
         self,
         freq_min: float | None = None,
@@ -897,3 +1033,76 @@ class CouplingResultCollection(dict):
             ax.set_xlim(*xlim)
 
         return fig
+
+
+# ------------------------------------------------------------------
+# Module-level helpers
+# ------------------------------------------------------------------
+
+
+def _compute_rms_timeseries(
+    ts: Any,
+    fftlength: float,
+    overlap: float,
+    fmin: float | None,
+    fmax: float | None,
+) -> Any:
+    """
+    TimeSeries から帯域制限 RMS 時系列を計算して返す。
+
+    Spectrogram（PSD: unit^2/Hz）を `stride=fftlength` で作成し、
+    各時間ビンの PSD を [fmin, fmax] の範囲で台形則積分してルートを取る::
+
+        RMS(t) = sqrt( trapz(PSD(t, f), f) )  for f in [fmin, fmax]
+
+    Parameters
+    ----------
+    ts : gwpy.timeseries.TimeSeries
+        入力 TimeSeries。
+    fftlength : float
+        Spectrogram の FFT 長 [s]（= 時間ビン幅）。
+    overlap : float
+        Spectrogram のオーバーラップ割合 [0, 1)。
+    fmin, fmax : float or None
+        積分する周波数帯域 [Hz]。None の場合は全帯域。
+
+    Returns
+    -------
+    gwpy.timeseries.TimeSeries
+        RMS 時系列（入力 ts と同じ単位）。
+    """
+    from gwpy.timeseries import TimeSeries as GWpyTimeSeries
+
+    spec = ts.spectrogram(
+        stride=fftlength,
+        fftlength=fftlength,
+        overlap=overlap,
+        method="welch",
+        window="hann",
+    )
+
+    if fmin is not None or fmax is not None:
+        lo = fmin if fmin is not None else 0.0
+        hi = fmax if fmax is not None else np.inf
+        spec = spec.crop_frequencies(lo, hi)
+
+    freqs = spec.frequencies.value  # ndarray [Hz]
+    psd_matrix = spec.value          # ndarray (n_times, n_freqs) [unit^2/Hz]
+
+    eps = np.finfo(float).tiny
+    # 各時間ビンで周波数方向に台形則積分 → band_power [unit^2]
+    # np.trapezoid は NumPy 2.0+、np.trapz は NumPy 1.x 互換
+    _trapz = getattr(np, "trapezoid", None) or getattr(np, "trapz")
+    band_power = _trapz(psd_matrix, freqs, axis=1)
+    # ゼロ除算防護（PSD が全ゼロの場合）
+    band_power = np.where(band_power > 0, band_power, eps)
+    rms_values = np.sqrt(band_power)
+
+    ts_unit = getattr(ts, "unit", None)
+    return GWpyTimeSeries(
+        rms_values,
+        t0=spec.t0,
+        dt=spec.dt,
+        unit=ts_unit,
+        name=f"RMS({ts.name})",
+    )
