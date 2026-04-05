@@ -1,6 +1,6 @@
 # Installation
 
-GWexpy requires Python 3.9+ and depends on GWpy, NumPy, SciPy, and Astropy.
+GWexpy requires Python 3.11+ and depends on GWpy, NumPy, SciPy, and Astropy.
 
 ## Basic install
 
@@ -44,23 +44,20 @@ pip install -e ".[dev]"
 GWexpy exposes optional extras for domain-specific features:
 
 - `.[gw]` for GW data analysis (nds2, frames, noise models)
-- `.[stats]` for stats & signal analysis (polars, ARIMA, ICA/PCA)
+- `.[analysis]` for transforms and time-frequency tools (scikit-learn, statsmodels, ARIMA)
 - `.[fitting]` for advanced fitting (iminuit, emcee, corner)
-- `.[astro]` for astroparticle physics tools (specutils, pyspeckit)
-- `.[geophysics]` for obspy, mth5, etc.
-- `.[audio]` for librosa/pydub helpers
-- `.[bio]` for mne/neo/elephant integrations
-- `.[interop]` for high-level interoperability (torch, jax, dask, etc.)
-- `.[control]` for python-control integration
-- `.[plot]` for plotting & mapping (pygmt)
-- `.[analysis]` for transforms and time-frequency tools
-- `.[gui]` for the experimental Qt GUI
+- `.[seismic]` for seismological analysis (obspy, mth5, mtpy)
+- `.[audio]` for audio processing (pydub, tinytag)
+- `.[control]` for control engineering (python-control)
+- `.[plotting]` for advanced plotting & mapping (pygmt)
+- `.[io]` for additional I/O formats (nptdms)
+- `.[gui]` for the experimental Qt GUI (PyQt5, pyqtgraph)
 - `.[all]` to install all optional dependencies
 
 Combine extras as needed, for example:
 
 ```bash
-pip install ".[gw,stats,plot]"
+pip install ".[gw,analysis,plotting]"
 ```
 
 You can also install extras directly from GitHub:

@@ -146,8 +146,11 @@ tsl.write("out.h5", format="hdf5")               # GWpy互換（既定）
 tsl.write("out.h5", format="hdf5", layout="group")  # 旧形式（group-per-entry）
 ```
 
-> [!WARNING]
-> 信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+:::{admonition} warning
+:class: warning
+
+信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+:::
 
 pickle 可搬性メモ: gwexpy の `TimeSeriesList` は unpickle 時に **GWpy の `TimeSeriesList`** を返します
 （読み込み側に gwexpy は不要です）。

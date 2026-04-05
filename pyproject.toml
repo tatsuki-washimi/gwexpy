@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "A comprehensive Python package for Gravitational Wave experimental data analysis, extending GWpy with strict unit handling and advanced spectral methods."
 readme = "README.md"
 requires-python = ">=3.11"
-license = "MIT"
+license = {text = "MIT"}
 authors = [
     {name = "Tatsuki Washimi"}
 ]
@@ -33,12 +33,12 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-  # Core & Computation
-  "numpy>=1.21.0,<2.0.0",
-  "scipy>=1.7.0",
+  # Core & Computation (lower bounds aligned with Python 3.11 support)
+  "numpy>=1.23.2,<2.0.0",
+  "scipy>=1.10.0",
   "astropy>=5.0",
   "gwpy>=4.0.0,<5.0.0",
-  "pandas>=1.3.0",
+  "pandas>=1.5.0",
   "matplotlib>=3.5.0",
   "typing_extensions",
   "bottleneck",
@@ -141,16 +141,44 @@ dev = [
   "types-PyYAML",
 ]
 
-# Convenience: install all optional features
+# Convenience: install all optional features (flattened to avoid self-referential extras)
 all = [
-  "gwexpy[analysis]",
-  "gwexpy[fitting]",
-  "gwexpy[control]",
-  "gwexpy[seismic]",
-  "gwexpy[gw]",
-  "gwexpy[io]",
-  "gwexpy[plotting]",
-  "gwexpy[audio]",
+  # analysis
+  "scikit-learn",
+  "statsmodels",
+  "pmdarima",
+  "dcor",
+  "hurst",
+  "hurst-exponent",
+  "exp-hurst",
+  "EMD-signal",
+  "PyWavelets",
+  # fitting
+  "iminuit",
+  "emcee",
+  "corner",
+  # control
+  "control",
+  # seismic
+  "obspy",
+  "mth5",
+  "mtpy",
+  "mt_metadata",
+  # gw
+  "lalsuite",
+  "gwdatafind",
+  "gwosc",
+  "dqsegdb2",
+  "dttxml",
+  "gwinc",
+  "ligo.skymap",
+  # io
+  "nptdms",
+  # plotting
+  "pygmt",
+  # audio
+  "pydub",
+  "tinytag>=1.10",
 ]
 
 [tool.setuptools.package-data]

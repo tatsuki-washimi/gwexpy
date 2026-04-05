@@ -1,6 +1,6 @@
 # インストール
 
-GWexpy は Python 3.9+ を必要とし、GWpy, NumPy, SciPy, および Astropy に依存します。
+GWexpy は Python 3.11+ を必要とし、GWpy, NumPy, SciPy, および Astropy に依存します。
 
 ## 基本インストール
 
@@ -44,23 +44,20 @@ pip install -e ".[dev]"
 GWexpy はドメイン固有の機能のためにオプションの依存関係を提供しています:
 
 - `.[gw]` : 重力波データ解析 (nds2, frames, noise models)
-- `.[stats]` : 統計解析 (polars, ARIMA, ICA/PCA)
+- `.[analysis]` : 変換・時間周波数ツール (scikit-learn, statsmodels, ARIMA)
 - `.[fitting]` : 高度なフィッティング (iminuit, emcee, corner)
-- `.[astro]` : 天体物理ツール (specutils, pyspeckit)
-- `.[geophysics]` : 地球物理 (obspy, mth5, etc.)
-- `.[audio]` : 音響解析 (librosa/pydub helpers)
-- `.[bio]` : 生体信号 (mne/neo/elephant integrations)
-- `.[interop]` : 高度な相互運用性 (torch, jax, dask, etc.)
-- `.[control]` : 制御工学 (python-control integration)
-- `.[plot]` : プロット・マッピング (pygmt)
-- `.[analysis]` : 変換および時間周波数ツール
-- `.[gui]` : 実験的 Qt GUI
+- `.[seismic]` : 地震学解析 (obspy, mth5, mtpy)
+- `.[audio]` : 音響処理 (pydub, tinytag)
+- `.[control]` : 制御工学 (python-control)
+- `.[plotting]` : 高度なプロット・地図描画 (pygmt)
+- `.[io]` : 追加 I/O フォーマット (nptdms)
+- `.[gui]` : 実験的 Qt GUI (PyQt5, pyqtgraph)
 - `.[all]` : 全ての依存関係をインストール
 
 必要に応じて組み合わせてください:
 
 ```bash
-pip install ".[gw,stats,plot]"
+pip install ".[gw,analysis,plotting]"
 ```
 
 GitHub から直接エクストラを指定してインストールすることもできます:

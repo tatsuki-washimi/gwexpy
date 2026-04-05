@@ -74,8 +74,9 @@ nitpick_ignore_regex = []
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "developers/**"]
 
-# Silence cross-reference warnings from external docstrings and unlinked pages
-# while keeping other warnings visible.
+# Silence cross-reference warnings from external docstrings (e.g. GWpy upstream).
+# Avoid suppressing broad categories like "autodoc" or "docutils" so that
+# broken internal references remain visible during build.
 suppress_warnings = [
     "ref.ref",
     "ref.obj",
@@ -84,11 +85,8 @@ suppress_warnings = [
     "ref.class",
     "ref.doc",
     "ref.footnote",
-    "autodoc",
-    "autosummary",
     "toc.not_included",
     "toc.not_readable",
-    "docutils",
     "nbsphinx.localfile",
 ]
 

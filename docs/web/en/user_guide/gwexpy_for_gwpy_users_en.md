@@ -212,8 +212,11 @@ In addition to the formats natively supported by GWpy, the following are support
 
 ## Notes on Pickle / shelve
 
-> [!WARNING]
-> Do not load untrusted data using `pickle` / `shelve`. Arbitrary code execution can occur during loading.
+:::{admonition} warning
+:class: warning
+
+Do not load untrusted data using `pickle` / `shelve`. Arbitrary code execution can occur during loading.
+:::
 
 To prioritize portability, gwexpy's pickle implementation is designed to **return GWpy types when unpickled**
 (meaning data can be restored if gwpy is present, even without gwexpy on the reading side).

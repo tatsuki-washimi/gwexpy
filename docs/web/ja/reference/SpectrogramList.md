@@ -120,8 +120,11 @@ sgl.write("out.h5", format="hdf5")               # GWpy互換（既定）
 sgl.write("out.h5", format="hdf5", layout="group")  # 旧形式（group-per-entry）
 ```
 
-> [!WARNING]
-> 信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+:::{admonition} warning
+:class: warning
+
+信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+:::
 
 pickle 可搬性メモ: gwexpy の `SpectrogramList` は unpickle 時に builtins の `list` を返します
 （中身は GWpy の `Spectrogram`、読み込み側に gwexpy は不要です）。
