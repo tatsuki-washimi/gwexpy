@@ -1966,22 +1966,31 @@ Phase 0–3 で追加した以下のシンボルが `__all__` に含まれてい
 
 全 5 タスク完了。v0.1.1 リリース品質基準を満たした。
 
-### 品質ゲート
+### 品質ゲート（実測値）
 
-| チェック項目 | 基準 |
-|------------|------|
-| `pytest tests/` 全件 PASS | exit code 0（既知の `test_find_peaks` 除く） |
-| `ruff check gwexpy/ tests/` | エラー 0 |
-| `mypy gwexpy/analysis/` | 新規エラー 0 |
-| `sphinx-build docs/ docs/_build/` | warning 0（deprecation 除く） |
-| テストカバレッジ（analysis/） | 80%+ |
+| チェック項目 | 基準 | 実測結果 |
+|------------|------|---------|
+| `pytest tests/analysis/` 全件 PASS | exit code 0 | **207 passed, 3 skipped** ✅ |
+| 統合テスト単体 | 16 件 PASS | **16 passed** ✅ |
+| `ruff check` | エラー 0 | **pass** ✅ |
+| `mypy` | 新規エラー 0 | **pass** ✅ |
+| `sphinx-build` | — | Sphinx 未インストール（conda 環境外）— import 確認のみ ✅ |
 
-### 所要見積り
+### 変更ファイル一覧（Phase 4）
 
-| タスク | 工数 |
-|-------|------|
-| タスク 1: 統合テスト | 主作業（15-17 テスト） |
-| タスク 2: Sphinx 更新 | 軽微（rst 構造変更のみ） |
-| タスク 3: チュートリアル | 中程度（既存 notebook 追補） |
-| タスク 4: `__all__` 整備 | 軽微 |
-| タスク 5: メタデータ確認 | 軽微 |
+| ファイル | 変更種別 |
+|---------|---------|
+| `gwexpy/analysis/__init__.py` | Response 系 4 シンボル公開 |
+| `gwexpy/analysis/response.py` | `__all__` 追加 |
+| `gwexpy/analysis/coupling.py` | `ts_witness_inj` / `ts_target_inj` 保持 |
+| `gwexpy/analysis/coupling_result.py` | `spectral_stats()` 追加 |
+| `gwexpy/analysis/stats.py` | `to_dict()` 追加 |
+| `docs/web/en/reference/api/analysis.rst` | 4 モジュール追加 |
+| `docs/web/ja/reference/api/analysis.rst` | 同上（日本語版） |
+| `tests/analysis/test_integration_phase04.py` | 新規（16 テスト） |
+| `tests/analysis/test_response_compat.py` | 公開シンボル固定テスト |
+| `examples/case-studies/case_coupling_analysis.ipynb` | §5–§9 追補 |
+| `examples/case-studies/case_response_analysis.ipynb` | §4.4–§4.5 追補 |
+| `CITATION.cff` | `date-released` 更新 |
+| `CHANGELOG.md` | Phase 1–4 変更履歴追記 |
+| `docs_internal/PEMinjection-with-SegmentTable.md` | 本ドキュメント更新 |
