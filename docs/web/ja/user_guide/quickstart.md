@@ -22,25 +22,29 @@ from gwexpy.frequencyseries import FrequencySeriesMatrix
 
 ## 複数チャンネル時系列データの生成とプロット
 
-実験的なノイズモデルから複数チャンネルの時系列データを生成します：
+複数チャンネルの時系列データを生成します：
 
 ```python
 import numpy as np
-from gwexpy.timeseries import TimeSeriesDict
-from gwexpy.signal.noise import PowerLawNoise
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
-# ノイズモデルの設定 (1/f ノイズ: beta=1)
-noise_model = PowerLawNoise(beta=1, dt=1/1024)
+sample_rate = 1024
+duration = 64
 
-# 複数チャンネル時系列データの生成
-tsd = TimeSeriesDict()
-tsd["H1:STRAIN"] = noise_model.generate(duration=64)  # Hanford
-tsd["L1:STRAIN"] = noise_model.generate(duration=64)  # Livingston
+# 白色ガウスノイズの時系列を生成
+tsd = TimeSeriesDict({
+    "H1:STRAIN": TimeSeries(np.random.randn(sample_rate * duration), dt=1/sample_rate, t0=0),
+    "L1:STRAIN": TimeSeries(np.random.randn(sample_rate * duration), dt=1/sample_rate, t0=0),
+})
 
 # プロット
 plot = tsd.plot()
 plot.show()
 ```
+
+:::{note}
+ピンクノイズや赤色ノイズなどのカラードノイズについては、[ノイズモデルガイド](tutorials/intro_noise) を参照してください。
+:::
 
 ## TimeSeriesMatrixから周波数行列への一括変換
 
