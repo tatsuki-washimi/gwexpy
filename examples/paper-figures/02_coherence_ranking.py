@@ -23,7 +23,7 @@ from pathlib import Path
 # Ensure the development version of gwexpy is preferred over any installed release.
 # When running as `python examples/paper-figures/02_coherence_ranking.py` from the project root,
 # Python sets sys.path[0] to the examples/paper-figures/ directory, not the project root.
-_repo_root = Path(__file__).resolve().parent.parent
+_repo_root = Path(__file__).resolve().parent.parent.parent
 if str(_repo_root) not in sys.path:
     sys.path.insert(0, str(_repo_root))
 

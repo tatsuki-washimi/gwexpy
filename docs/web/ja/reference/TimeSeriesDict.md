@@ -166,8 +166,11 @@ HDF5 のデータセット名（GWpy の `path=` 用）:
 - サニタイズ後の名前が衝突する場合、`__1` のようなサフィックスが付与されます。
 - 元のキーはファイル属性に保存され、gwexpy の `read()` は元キーを復元します。
 
-> [!WARNING]
-> 信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+:::{admonition} warning
+:class: warning
+
+信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
+:::
 
 pickle 可搬性メモ: gwexpy の `TimeSeriesDict` は unpickle 時に **GWpy の `TimeSeriesDict`** を返します
 （読み込み側に gwexpy は不要です）。

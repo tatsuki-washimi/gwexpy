@@ -36,12 +36,22 @@ python scripts/install_minepy.py
 - Add or update tests for behavior changes.
 - Run `ruff check .` before submitting.
 
-## Design Principles: No Monkeypatching
+## Design Principles: Controlled Extension, No Silent Monkeypatching
 
-- `import gwexpy` must not modify `gwpy.types.Series` or other external GWpy classes.
-- `.fit()` is available on `gwexpy.TimeSeries` and `gwexpy.FrequencySeries` through inheritance.
-- If you need `Series.fit()` on a base GWpy object, call `gwexpy.fitting.enable_series_fit()` explicitly in application code. Do not rely on import side effects.
-- Keep import-time behavior predictable and document any remaining compatibility shims when they are unavoidable.
+GWexpy extends GWpy through two sanctioned mechanisms:
+
+1. **Subclassing**: `gwexpy.TimeSeries`, `gwexpy.FrequencySeries`, etc. inherit from GWpy base classes.
+   New methods (e.g. `.fit()`) are added via inheritance, not by modifying the upstream class directly.
+2. **I/O registry injection**: On `import gwexpy`, `register_all()` is called to register GWexpy's
+   format readers/writers into the GWpy I/O registry. This is the standard GWpy extension pattern
+   and is limited to the I/O layer.
+
+**What is prohibited:**
+
+- Modifying `gwpy.types.Series` or other upstream classes at import time (beyond I/O registry entries).
+- Adding attributes or methods to external objects in global scope.
+- Relying on import side effects for non-I/O functionality — such behavior must be opt-in (e.g. `enable_series_fit()`).
+- Keep import-time behavior predictable and document any compatibility shims when they are unavoidable.
 
 ## Documentation
 

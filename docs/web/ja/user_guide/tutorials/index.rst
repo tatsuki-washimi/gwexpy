@@ -20,6 +20,7 @@ I. 基本データ構造
    intro_timeseries
    intro_frequencyseries
    intro_spectrogram
+   ノイズ生成の基礎 <intro_noise>
    intro_plotting
    intro_mapplotting
    intro_interop
@@ -59,6 +60,7 @@ IV. 高度な信号処理
    :maxdepth: 1
    :caption: 高度な解析
 
+   スペクトルフィッティングの基礎 <intro_fitting>
    フィッティング & スペクトル線解析 <advanced_fitting>
    スペクトログラム処理：正規化とクリーニング <advanced_spectrogram_processing>
    Bootstrap PSD & GLS フィッティング <case_bootstrap_gls_fitting>
@@ -102,6 +104,7 @@ VI. セグメント解析
    :caption: セグメント解析
 
    SegmentTable の基本 <intro_segment_table>
+   セグメント解析パイプライン（応用） <intro_table>
    ASD 解析パイプライン <segment_asd_pipeline>
    可視化テクニック <segment_visualization>
    イベント同期ケーススタディ <case_segment_analysis>

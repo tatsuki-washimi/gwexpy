@@ -25,7 +25,7 @@ from pathlib import Path
 # When running as `python examples/paper-figures/03_gwosc_case_study.py` from the project root,
 # Python sets sys.path[0] to the examples/paper-figures/ directory, not the project root.
 # This line restores the project root so the local source tree takes priority.
-_repo_root = Path(__file__).resolve().parent.parent
+_repo_root = Path(__file__).resolve().parent.parent.parent
 if str(_repo_root) not in sys.path:
     sys.path.insert(0, str(_repo_root))
 
