@@ -2,11 +2,14 @@
 CouplingResult.plot_rms() および _compute_rms_timeseries() のテスト。
 
 テストケース:
-1. test_plot_rms_both_channels          — 基本動作: 2パネル, axvspan, グリッド
-2. test_plot_rms_frange                 — fmin/fmax 帯域制限でエラーなし
-3. test_plot_rms_missing_timeseries     — TimeSeries なしで ValueError
+1. test_plot_rms_both_channels           — 基本動作: 2パネル, axvspan, グリッド
+2. test_plot_rms_frange                  — fmin/fmax 帯域制限でエラーなし
+3. test_plot_rms_missing_timeseries      — TimeSeries なしで ValueError
 4. test_compute_rms_matches_manual_trapz — trapz 手計算との一致確認
-5. test_plot_rms_channels_param         — channels="witness"/"target" の1パネル動作
+5. test_plot_rms_channels_param          — channels="witness"/"target" の1パネル動作
+6. test_compute_rms_overlap_is_seconds   — overlap が秒単位で扱われることを確認
+7. test_compute_rms_preserves_nan        — NaN が極小値に潰れず伝播することを確認
+8. test_plot_rms_ignores_reserved_kwargs — 予約済み plot kwargs を安全に無視
 """
 
 from __future__ import annotations
@@ -174,6 +177,78 @@ def test_compute_rms_matches_manual_trapz():
     expected = np.sqrt(_trapz(psd_matrix, freqs, axis=1))
 
     np.testing.assert_allclose(rms_ts.value, expected, rtol=1e-6)
+
+
+def test_compute_rms_overlap_is_seconds():
+    """overlap は割合ではなく秒単位で spectrogram() に渡される。"""
+    rng = np.random.default_rng(11)
+    ts = _make_ts(rng)
+
+    overlap_seconds = 0.5
+    rms_ts = _compute_rms_timeseries(ts, FFTLENGTH, overlap_seconds, None, None)
+
+    spec = ts.spectrogram(
+        stride=FFTLENGTH,
+        fftlength=FFTLENGTH,
+        overlap=overlap_seconds,
+        method="welch",
+        window="hann",
+    )
+    expected = np.sqrt((getattr(np, "trapezoid", None) or getattr(np, "trapz"))(
+        spec.value,
+        spec.frequencies.value,
+        axis=1,
+    ))
+
+    np.testing.assert_allclose(rms_ts.value, expected, rtol=1e-6)
+
+
+def test_compute_rms_preserves_nan(monkeypatch: pytest.MonkeyPatch):
+    """積分結果が NaN の時間ビンは RMS でも NaN のまま残る。"""
+    rng = np.random.default_rng(12)
+    ts = _make_ts(rng)
+    spec = ts.spectrogram(
+        stride=FFTLENGTH,
+        fftlength=FFTLENGTH,
+        overlap=0.0,
+        method="welch",
+        window="hann",
+    )
+    spec.value[0, :] = np.nan
+
+    def _fake_spectrogram(*args, **kwargs):
+        return spec
+
+    monkeypatch.setattr(ts, "spectrogram", _fake_spectrogram)
+    rms_ts = _compute_rms_timeseries(ts, FFTLENGTH, 0.0, None, None)
+
+    assert np.isnan(rms_ts.value[0])
+
+
+def test_plot_rms_ignores_reserved_kwargs():
+    """color/label/linewidth を渡しても内部スタイルと衝突せず描画できる。"""
+    rng = np.random.default_rng(13)
+    result = _make_coupling_result(rng)
+
+    fig = result.plot_rms(
+        fftlength=FFTLENGTH,
+        color="tab:green",
+        label="user-label",
+        linewidth=5.0,
+        alpha=0.4,
+    )
+
+    try:
+        lines = fig.axes[0].lines
+        assert len(lines) == 2
+        assert lines[0].get_color() == "black"
+        assert lines[1].get_color() == "tab:red"
+        assert lines[0].get_label() == "Background"
+        assert lines[1].get_label() == "Injection"
+        assert lines[0].get_alpha() == pytest.approx(0.4)
+        assert lines[1].get_alpha() == pytest.approx(0.4)
+    finally:
+        plt.close(fig)
 
 
 # ------------------------------------------------------------------

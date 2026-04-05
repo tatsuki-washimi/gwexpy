@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
