@@ -25,6 +25,4 @@ API Reference
    detector
    plot
    io
-   cli
-   gui
    extra
