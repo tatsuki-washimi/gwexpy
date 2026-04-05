@@ -11,6 +11,8 @@ from __future__ import annotations
 import warnings
 from typing import TYPE_CHECKING, Any
 
+from . import _warnings  # noqa: F401 – registers package-level warning filters
+
 from astropy.utils.exceptions import AstropyWarning
 
 # Keep docs/tutorial output readable by suppressing known noisy warnings.

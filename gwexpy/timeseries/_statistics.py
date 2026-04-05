@@ -376,7 +376,8 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         sr_other = getattr(other, "sample_rate", None)
         if sr_self is not None and sr_other is not None and sr_self != sr_other:
             warnings.warn(
-                "Sample rates do not match. Resampling 'other' to match 'self'."
+                "Sample rates do not match. Resampling 'other' to match 'self'.",
+                stacklevel=2,
             )
             # Resample 'other' to match 'self'
             other = other.resample(sr_self)
@@ -710,7 +711,8 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             if hasattr(ctrl, "sample_rate"):
                 if self.sample_rate != ctrl.sample_rate:
                     warnings.warn(
-                        "Sample rates do not match. Resampling 'controls' to match 'self'."
+                        "Sample rates do not match. Resampling 'controls' to match 'self'.",
+                        stacklevel=2,
                     )
                     ctrl = ctrl.resample(self.sample_rate)
                 ctrl_values = ctrl.value

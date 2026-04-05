@@ -224,7 +224,7 @@ class SigmaThreshold(ThresholdStrategy):
                 f"Gaussian approximation may be inaccurate for χ²(2K) with K < 10. "
                 f"Consider using PercentileThreshold for more robust results.",
                 UserWarning,
-                stacklevel=3,
+                stacklevel=4,
             )
 
     def check(
