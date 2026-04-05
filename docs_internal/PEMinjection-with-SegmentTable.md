@@ -1994,3 +1994,318 @@ Phase 0–3 で追加した以下のシンボルが `__all__` に含まれてい
 | `CITATION.cff` | `date-released` 更新 |
 | `CHANGELOG.md` | Phase 1–4 変更履歴追記 |
 | `docs_internal/PEMinjection-with-SegmentTable.md` | 本ドキュメント更新 |
+
+---
+
+## Section 10.A 詳細設計: RMS 時系列可視化 API
+
+> 作成日: 2026-04-05
+> ステータス: 設計完了・未実装
+> 前提: Phase 0–4 完了済み
+
+### 1. 背景と動機
+
+#### 1.1 レガシーでの利用パターン
+
+`NInjA.py` L88–105 の `plot_RMS()` は、PEM インジェクション解析において以下の情報を
+1 枚のプロットで提供する:
+
+1. **RMS 時系列**: Witness / Target チャンネルの振幅変動を時間軸で追跡
+2. **期間色分け**: 背景（グレー）・注入（赤）の `axvspan` による視覚的区別
+3. **ロック状態バー**: `add_segments_bar(GRD)` でロック区間を付記
+
+```python
+# NInjA.py L88-105 (レガシー)
+ax.axvspan(bkg_start, bkg_end, color="gray", alpha=0.3, label="Background")
+ax.axvspan(inj_start, inj_end, color="red",  alpha=0.3, label="Injection")
+plot.add_segments_bar(GRD)
+```
+
+このプロットは Spectrogram ベースの ASDgram/SNRgram と相補的に機能する:
+- **RMS 時系列**: 帯域全体のパワー変動を時間ドメインで俯瞰
+- **ASDgram/SNRgram**: 周波数分解された時間変動を確認
+
+#### 1.2 現在の API における欠落
+
+Phase 3 で `plot_significance()`, `plot_asdgram()`, `plot_snrgram()` を実装したが、
+RMS 時系列プロットは実装されていない（Section 10, C-2 の差分表参照）。
+
+`CouplingResult` は Phase 1 で `ts_witness_inj`, `ts_target_inj`, `ts_witness_bkg`,
+`ts_target_bkg` を保持するようになったため、RMS 時系列計算に必要なデータは既に揃っている。
+
+### 2. 設計方針
+
+#### 2.1 ローリング RMS の実現方法
+
+gwexpy の `TimeSeries.rms()` はスカラー値を返すため、時系列としての RMS を得るには
+**Spectrogram 経由のバンドパワー集計** を使用する:
+
+```python
+# ローリング RMS の計算原理
+spec = ts.spectrogram(fftlength, overlap=overlap)  # → Spectrogram (time × freq)
+band_power = spec.crop_frequencies(fmin, fmax)      # 帯域制限
+rms_ts = np.sqrt(band_power.mean(axis=1))           # 周波数方向に平均 → TimeSeries
+```
+
+この方式はレガシーの `spectrogram2()` → 帯域積分パターンと等価であり、
+既存の `spectrogram()` メソッドをそのまま活用できる。
+
+#### 2.2 代替案の検討
+
+| 方式 | 利点 | 欠点 | 採否 |
+|------|------|------|------|
+| Spectrogram → band mean | 既存 API で完結、周波数帯域を柔軟に指定可能 | fftlength による時間分解能の制約 | **採用** |
+| scipy.signal ローリングウィンドウ | 任意の窓幅で高時間分解能 | gwexpy の Spectrogram/ASD パイプラインと整合しない、新規依存 | 不採用 |
+| TimeSeries に `rms_timeseries()` メソッド追加 | 汎用性が高い | coupling_result 固有の要件（期間色分け等）に合わない、スコープ過大 | 不採用 |
+
+### 3. API 設計
+
+#### 3.1 `CouplingResult.plot_rms()` メソッド
+
+```python
+class CouplingResult:
+    def plot_rms(
+        self,
+        fmin: float | None = None,
+        fmax: float | None = None,
+        fftlength: float | None = None,
+        overlap: float | None = None,
+        channels: Literal["witness", "target", "both"] = "both",
+        show_windows: bool = True,
+        segment_flag: SegmentList | None = None,
+        figsize: tuple[float, float] = (12, 4),
+        **kwargs: Any,
+    ) -> matplotlib.figure.Figure:
+        """
+        RMS 時系列プロット（帯域制限付き）。
+
+        Witness / Target チャンネルのローリング RMS を時間軸に表示する。
+        背景区間と注入区間を色分けで示し、オプションでロック状態バーを追加する。
+
+        Parameters
+        ----------
+        fmin : float, optional
+            RMS を計算する下限周波数 [Hz]。None の場合は DC（0 Hz）。
+        fmax : float, optional
+            RMS を計算する上限周波数 [Hz]。None の場合はナイキスト周波数。
+        fftlength : float, optional
+            Spectrogram 計算の FFT 長 [秒]。
+            None の場合は ``self.fftlength`` を使用。
+        overlap : float, optional
+            Spectrogram 計算のオーバーラップ [秒]。
+            None の場合は ``fftlength / 2``。
+        channels : {"witness", "target", "both"}
+            プロットするチャンネル。"both" の場合は 2 パネル構成。
+        show_windows : bool
+            True の場合、背景区間（グレー）・注入区間（赤）を axvspan で色分け表示。
+            背景/注入の時間範囲は ``ts_*_bkg.t0`` / ``ts_*_inj.t0`` と duration から推定。
+        segment_flag : SegmentList, optional
+            ロック状態等のセグメントリスト。指定時はバー表示を追加。
+        figsize : tuple of float
+            Figure サイズ (width, height)。
+        **kwargs
+            ``matplotlib.axes.Axes.plot()`` に渡す追加キーワード引数。
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+
+        Raises
+        ------
+        ValueError
+            ``ts_witness_inj`` / ``ts_witness_bkg`` (channels="witness" or "both") または
+            ``ts_target_inj`` / ``ts_target_bkg`` (channels="target" or "both") が None の場合。
+
+        Notes
+        -----
+        ローリング RMS は ``TimeSeries.spectrogram(fftlength, overlap)`` →
+        ``crop_frequencies(fmin, fmax)`` → ``sqrt(mean(axis=freq))`` で計算する。
+        これはレガシーの ``spectrogram2()`` → 帯域積分パターンと数値的に等価である。
+
+        Examples
+        --------
+        >>> fig = result.plot_rms(fmin=20, fmax=500)
+        >>> plt.show()
+
+        >>> # Target のみ、ロック状態バー付き
+        >>> fig = result.plot_rms(
+        ...     channels="target",
+        ...     segment_flag=grd_segments,
+        ...     fmin=10, fmax=1000,
+        ... )
+        """
+```
+
+#### 3.2 内部ヘルパー: `_compute_rms_timeseries()`
+
+メソッド内部のプライベート関数として、RMS 時系列を計算するロジックを分離する。
+独立したモジュール関数やユーティリティクラスは作成しない（単一用途のため）。
+
+```python
+def _compute_rms_timeseries(
+    ts: TimeSeries,
+    fftlength: float,
+    overlap: float,
+    fmin: float | None,
+    fmax: float | None,
+) -> TimeSeries:
+    """Spectrogram 経由でローリング RMS を計算する。
+
+    Returns
+    -------
+    TimeSeries
+        各時間ビンにおける帯域制限 RMS 値の時系列。
+        unit は入力 TimeSeries の unit と同一。
+    """
+    spec = ts.spectrogram(fftlength, overlap)
+    if fmin is not None or fmax is not None:
+        spec = spec.crop_frequencies(
+            fmin if fmin is not None else 0,
+            fmax if fmax is not None else np.inf,
+        )
+    # PSD → 帯域平均 → RMS
+    rms_values = np.sqrt(spec.mean(axis=1).value)
+    return TimeSeries(
+        rms_values,
+        t0=spec.t0,
+        dt=spec.dt,
+        unit=ts.unit,
+        name=f"RMS({ts.name})",
+    )
+```
+
+#### 3.3 プロットレイアウト
+
+**`channels="both"` の場合（デフォルト）**:
+```
+┌──────────────────────────────────┐
+│  Witness RMS [V]                 │  ← ax0
+│  ■ bkg(gray) ■ inj(red)         │
+│  ──── bkg_rms  ──── inj_rms     │
+├──────────────────────────────────┤
+│  Target RMS [1/√Hz]             │  ← ax1
+│  ■ bkg(gray) ■ inj(red)         │
+│  ──── bkg_rms  ──── inj_rms     │
+├──────────────────────────────────┤
+│  [SegmentBar] (optional)         │  ← ax_seg (show only if segment_flag)
+└──────────────────────────────────┘
+          Time [s] from t0
+```
+
+- x 軸: GPS 時刻。`ts_*_bkg.t0` を原点として相対時刻で表示。
+- y 軸: RMS 値（チャンネルの物理単位を保持）。
+- `show_windows=True`: `axvspan` で背景期間（gray, alpha=0.3）と注入期間（red, alpha=0.2）を着色。
+- `segment_flag`: `gwexpy.plot.add_segments_bar()` または等価な実装でバー表示。
+
+**`channels="witness"` / `channels="target"` の場合**:
+- 1 パネル構成（対応するチャンネルのみ）。
+
+### 4. 時間範囲推定ロジック
+
+背景・注入区間の時間範囲は `CouplingResult` に明示的に保存されていないため、
+保持している `TimeSeries` オブジェクトから推定する:
+
+```python
+# 背景区間
+bkg_start = float(self.ts_witness_bkg.t0.value)
+bkg_end   = bkg_start + float(self.ts_witness_bkg.duration.value)
+
+# 注入区間
+inj_start = float(self.ts_witness_inj.t0.value)
+inj_end   = inj_start + float(self.ts_witness_inj.duration.value)
+```
+
+**将来の改善候補**: `CouplingResult` に `bkg_window` / `inj_window` tuple を明示的に保存し、
+`from_time_windows()` から伝播させる。ただし後方互換性を考慮し、本設計では
+TimeSeries メタデータからの推定をデフォルトとする。
+
+### 5. テスト計画
+
+#### 5.1 新規テスト（3 件）
+
+```python
+# tests/analysis/test_coupling_result_rms.py
+
+class TestPlotRms:
+    """CouplingResult.plot_rms() のテスト。"""
+
+    def test_plot_rms_both_channels(self, coupling_result_with_ts):
+        """channels='both' で 2 パネル構成になること。"""
+        fig = coupling_result_with_ts.plot_rms()
+        axes = fig.get_axes()
+        assert len(axes) >= 2  # Witness + Target (+ optional segment bar)
+        plt.close(fig)
+
+    def test_plot_rms_with_frange(self, coupling_result_with_ts):
+        """fmin/fmax 指定時にエラーなく描画されること。"""
+        fig = coupling_result_with_ts.plot_rms(fmin=20, fmax=500)
+        assert fig is not None
+        plt.close(fig)
+
+    def test_plot_rms_missing_timeseries(self, coupling_result_no_ts):
+        """TimeSeries が None の場合 ValueError を送出すること。"""
+        with pytest.raises(ValueError, match="ts_witness"):
+            coupling_result_no_ts.plot_rms()
+```
+
+#### 5.2 既存テストへの影響
+
+- 既存テストへの変更なし（新規メソッド追加のみ）
+- `test_integration_phase04.py` への追加は不要（独立した機能）
+
+### 6. 変更ファイル一覧
+
+| ファイル | 変更内容 |
+|---------|---------|
+| `gwexpy/analysis/coupling_result.py` | `plot_rms()` メソッド + `_compute_rms_timeseries()` 追加 |
+| `tests/analysis/test_coupling_result_rms.py` | 新規テストファイル（3 テスト） |
+| `examples/case-studies/case_coupling_analysis.ipynb` | §10「RMS 時系列プロット」セル追加 |
+| `docs/web/{en,ja}/reference/api/analysis.rst` | 変更不要（`automodule` で自動取得） |
+| `CHANGELOG.md` | リリース時に追記 |
+
+### 7. チュートリアル追加セル（案）
+
+`case_coupling_analysis.ipynb` に以下の § を追加:
+
+**§10. RMS 時系列プロット**
+
+```python
+## 10. RMS 時系列プロット
+
+# 帯域制限 RMS の時間発展を確認する。
+# 背景区間（グレー）と注入区間（赤）を色分けで表示。
+fig = result.plot_rms(fmin=20, fmax=600)
+plt.show()
+```
+
+**説明文**:
+> `plot_rms()` は、Witness / Target チャンネルのローリング RMS（帯域制限付き）を
+> 時間軸にプロットします。`axvspan` による期間色分けにより、
+> 注入開始・終了のタイミングと RMS 応答の時間的な対応関係を視覚的に確認できます。
+
+### 8. 実装上の注意点
+
+1. **TimeSeries が None の場合のハンドリング**:
+   `from_time_windows()` 経由で生成された `CouplingResult` には TimeSeries が
+   保持されるが、`estimate_coupling()` の直接呼び出しでは保持されない場合がある。
+   `ValueError` で明確にエラーメッセージを返す（`plot_asdgram()` / `plot_snrgram()` と同一パターン）。
+
+2. **Spectrogram の時間分解能**:
+   `fftlength` が短いほど時間分解能は高くなるが、周波数分解能が下がる。
+   デフォルトは `self.fftlength` を使用し、ユーザーが `fftlength` 引数で上書き可能とする。
+
+3. **x 軸の時刻表示**:
+   背景 RMS と注入 RMS は時間的に連続していない可能性がある（別の GPS 時刻帯）。
+   同一 axes に描画する際は、絶対 GPS 時刻を x 軸とし、matplotlib の `DateFormatter`
+   ではなく秒単位の数値軸を使用する（gwexpy の標準的なプロットスタイルに従う）。
+
+4. **メモリ効率**:
+   Spectrogram 計算は一時的にメモリを消費する。長時間データの場合は
+   `fftlength` を適切に設定するようドキュメントで注記する。
+
+### 9. 優先度と依存関係
+
+- **優先度**: 低（Phase 3 の可視化は網羅済み。RMS は補助的な俯瞰ビュー）
+- **依存関係**: なし（Phase 0–4 の API で完結）
+- **推定規模**: `coupling_result.py` に約 80–100 行追加、テスト 30–40 行
+- **並行可能性**: mypy エラー解消（残タスク #1）と並行実施可能
