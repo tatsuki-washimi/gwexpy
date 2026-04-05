@@ -1,0 +1,115 @@
+# GWexpy ドキュメント・リポジトリ品質統合レポート
+
+## 1. エグゼクティブサマリー
+
+本レポートは、GWexpy のリリース準備にあたり、リポジトリ基盤、パッケージング、ドキュメントの網羅性、および実装機能とチュートリアルの対応状況を多角的に評価した結果を統合したものです。
+
+現状の GWexpy は、**CI（テスト・互換性・セキュリティ・リリース）導線が高度に整備されており、基本的なリリース可能性は非常に高い**状態にあります。一方で、**ユーザーが直接目にする情報の正確性と再現性において、リリースブロッカー級の課題**がいくつか残存しています。
+
+主要な指摘事項は以下の通りです。
+
+- **（Critical）インストール要件の記載不整合**: ドキュメントの Python 要件（3.9+）と実装（3.11+）が食い違っており、また `[stats]` 等の extras 名も実装（`pyproject.toml`）と乖離しています。
+- **（Critical）再現性スクリプトの動作不備**: 論文用図版生成（paper-figures）において、リポジトリルートの検出ロジックや出力先ディレクトリの指定に誤りがあり、そのままでの実行が困難です。
+- **（High）日本語チュートリアルの欠落**: 英語側には存在する「ノイズ生成」「スペクトルフィッティング」「高度セグメント解析」の入門チュートリアルが日本語版で欠落しており、学習導線に段差が生じています。
+- **（High）`gwexpy.time`・CLI・GUI への導線不足**: 実装は存在するものの、ドキュメント上での解説や実行例が極めて限定的です。
+
+本レポートでは、これらの課題を整理し、リリースに向けた 4 週間の改善ロードマップとチェックリストを提示します。
+
+## 2. 調査の範囲と方法
+
+本調査は、以下の一次情報を組み合わせて実施されました。
+
+- **リポジトリ基盤**: `pyproject.toml`、GitHub Actions ワークフロー（`.github/workflows/*`）、セキュリティ設定。
+- **パッケージメタデータ**: PEP 621 準拠状況、依存関係の下限指定（NumPy, SciPy 等）。
+- **ドキュメントサイト**: Sphinx 設定（`docs/conf.py`）、日英のユーザーガイド、チュートリアル索引、API リファレンス。
+- **機能カバレッジ**: 公開 API（`gwexpy/__init__.py`）と提供されている Notebook 由来のチュートリアルの突合。
+- **再現性検証**: `examples/paper-figures/` のスクリプトおよび `docs/repro/` のガイド。
+
+## 3. 現状のアーキテクチャと品質評価
+
+### 3.1 パッケージングと要件の整合性
+
+`pyproject.toml` は最新の PEP 621 形式を採用していますが、Python 3.11 を必須（`requires-python=">=3.11"`）としている一方で、NumPy 等の下限指定が Python 3.11 サポート以前のもの（1.21.0 等）になっており、実効的な互換性に不安が残ります。また、ドキュメントの「Python 3.9+」という記述は、実装側の制約（3.11+）を反映していません。
+
+### 3.2 ドキュメント基盤（Sphinx・多言語構成）
+
+日英別ツリー（`docs/web/en/`、`docs/web/ja/`）での運用は良好ですが、Sphinx の `language` 設定が `en` 固定であるため、日本語ページでも UI 文字列（検索ボックス等）が英語になるリスクがあります。また、MyST 記法の警告抑止が広すぎるため、参照切れ等の破損が見逃されやすい設定となっています。
+
+### 3.3 チュートリアルとサンプルのカバレッジ
+
+英語版チュートリアルは、主要データ構造から高度な信号処理、セグメント解析まで網羅的にカバーされています。
+しかし、日本語版では以下の入門項目が索引から欠落していることが確認されました。
+
+- `Noise Generation Basics` (intro_noise.ipynb)
+- `Spectral Fitting Basics` (intro_fitting.ipynb)
+- `Segment Analysis Pipeline (Advanced)` (intro_table.ipynb)
+
+これにより、日本語ユーザーは「基礎を飛ばして応用に触れる」という不自然な学習を強いられる状態です。
+
+### 3.4 Sphinx API リファレンスの欠落状況
+公開 API（`gwexpy/__init__.py`）と Sphinx ドキュメントの API Reference（`api/index.rst`）を照合した結果、多数のパッケージやクラスがリファレンスから漏れていることが判明しました。
+
+- **完全に欠落しているパッケージ (P0)**: `gwexpy.time`, `gwexpy.interop`, `gwexpy.cli`, `gwexpy.gui`, `gwexpy.histogram`, `gwexpy.segments` など計 13 パッケージ。
+- **主要クラスの未掲載 (P1)**: `TimeSeriesMatrix`, `FrequencySeriesMatrix`, `VectorField`, `TensorField` など。
+- **重要メソッドの未掲載 (P1)**: `TimeSeries.hilbert`, `TimeSeries.mix_down`, `TimeSeries.fit_arima` 等、波形解析・統計・予測に関する多くのメソッドが `rubric:: Methods` から漏れています。
+
+詳細は、旧 `undocumented_api_list.md`（アーカイブ済み）に記録されていますが、これらは **「機能は存在するが、API リファレンスから辿れない」** という可用性上の重大な欠陥となっています。
+
+## 4. 指摘事項ログ（優先度別）
+
+リリースまでに対応が必要な事項を重要度順にまとめます。
+
+| # | 項目 | 重大度 | 説明と修正案 | 工数目安 |
+|---|---|---|---|---|
+| 1 | インストール要件の不整合 | **Critical** | ドキュメントを `Python 3.11+` に統一し、extras 名を `pyproject.toml` と完全一致させる。 | Small |
+| 2 | paper-figures のパス不備 | **Critical** | `_repo_root` の検出を `parents[2]` に修正し、出力先を `docs_internal/publications/` へ統一する。 | Small |
+| 3 | 日本語チュートリアルの欠落 | **High** | `intro_noise`, `intro_fitting`, `intro_table` の日本語版を追加（または翻訳リンクを整備）。 | Large |
+| 4 | "No Monkeypatching" 方針の矛盾 | **High** | `CONTRIBUTING.md` の記述を実態（I/O registry への注入）と整合させる。 | Medium |
+| 5 | MyST admonition 記法 | **High** | GitHub Callout 形式をやめ、`:::{warning}` 形式へ統一。CI で警告をエラー化する。 | Medium |
+| 6 | `gwexpy.time` 入門の欠如 | **Medium** | 独自エクスポートされた `to_gps`, `from_gps` 等の短い活用例を追加。 | Medium |
+| 7 | CLI/GUI のガイド不足 | **Medium** | CLI がプレースホルダである旨の明記、および `pyaggui` の最小限の起動ガイドを作成。 | Medium |
+| 8 | 依存関係下限の調整 | **Medium** | Python 3.11 を前提とした NumPy 1.23.2+ / SciPy 1.10.0+ へ下限を引き上げる。 | Small |
+| 9 | `license` メタデータの仕様準拠 | **Medium** | `license = "MIT"`（文字列）から PEP 621 準拠の辞書形式へ修正。 | Small |
+| 10 | `all` extra の自己参照 | **Medium** | 自己参照を避け、依存リストをフラットに列挙するように改善。 | Medium |
+| 11 | API リファレンスの大量欠落 | **High** | `api/index.rst` および各クラスの `Methods` への追記（自動ドキュメント生成の構成見直し）。 | Large |
+
+## 5. 改善ロードマップ
+
+リリースまでの 4 週間を想定したタイムラインです。
+
+```mermaid
+gantt
+  title GWexpy リリース前品質改善ロードマップ
+  dateFormat  YYYY-MM-DD
+  axisFormat  %m/%d
+
+  section リリースブロッカー解消
+  インストール要件（Python/extra名）の修正 :a1, 2026-04-06, 2d
+  paper-figures のパス修正と出力先統一     :a2, 2026-04-06, 3d
+  再現性ガイドの脚注とリンク整合           :a3, 2026-04-08, 2d
+
+  section メタデータと信頼性の向上
+  PEP 621 準拠（license 等）と依存下限調整 :b1, 2026-04-13, 2d
+  all extra 自己参照解消と CI 動作確認     :b2, 2026-04-14, 2d
+  Monkeypatching 方針文の整備              :b3, 2026-04-15, 2d
+
+  section ドキュメント品質強化
+  MyST 記法統一と警告の可視化 (-W)         :c1, 2026-04-20, 3d
+  日本語チュートリアルの不足分追加         :c2, 2026-04-21, 5d
+
+  section 仕上げとコミュニティ準備
+  CLI/GUI ガイド作成                       :d1, 2026-04-27, 2d
+  Code of Conduct 連絡先と SEO 設定        :d2, 2026-04-28, 2d
+  リリース候補タグでの Dry-run             :d3, 2026-04-30, 2d
+```
+
+## 6. リリース直前チェックリスト
+
+タグを発行する直前に、以下の 5 項目を最終確認してください。
+
+- [ ] **インストールガイド**: Python 要件が `3.11+` か？ extras 名は正しいか？
+- [ ] **再現性**: `paper-figures` がクリーンな環境で実行でき、指定通りのパスに図が出力されるか？
+- [ ] **メタデータ**: `pyproject.toml` の `license` と `requires-python` が仕様通りか？
+- [ ] **チュートリアル**: 日本語索引に「基礎」項目が含まれ、リンク切れがないか？
+- [ ] **API リファレンス**: `gwexpy.time` や主要 Matrix クラスが Reference 索引に含まれているか？
+- [ ] **窓口**: `CODE_OF_CONDUCT.md` と `SECURITY.md` の連絡先がプレースホルダのままになっていないか？
