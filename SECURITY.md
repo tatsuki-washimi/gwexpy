@@ -25,8 +25,7 @@
 > スパム防止のため、開発者のメールアドレスは非公開としています。
 > セキュリティ上の重大な問題については、上記の GitHub Private Vulnerability Reporting を通じて報告してください。
 >
-> GitHub のアカウントをお持ちでない方や、より詳細な情報の提供を希望される方は、[こちらのお問い合わせフォーム](https://forms.gle/REPLACE_WITH_ACTUAL_FORM) からご報告ください。
-> <!-- TODO: Replace the URL above with the actual Google Forms link before release -->
+> GitHub のアカウントをお持ちでない方や、より詳細な情報の提供を希望される方は、[GitHub Discussions](https://github.com/tatsuki-washimi/gwexpy/discussions) からご連絡ください。
 
 ## セキュリティ上の注意事項
 

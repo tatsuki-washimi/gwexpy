@@ -268,5 +268,12 @@ nitpick_ignore_regex = [
 ]
 
 
+def html_page_context(app, pagename, templatename, context, doctree):
+    """Set lang="ja" for Japanese pages so <html lang="ja"> is rendered correctly."""
+    if "/ja/" in pagename or pagename.startswith("web/ja"):
+        context["language"] = "ja"
+
+
 def setup(app):
+    app.connect("html-page-context", html_page_context)
     app.add_lexer("ipython3", PythonLexer)

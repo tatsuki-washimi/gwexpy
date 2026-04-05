@@ -22,25 +22,29 @@ from gwexpy.frequencyseries import FrequencySeriesMatrix
 
 ## Generate and Plot Multi-channel Time Series
 
-Generate multiple channels of time series data from an experimental noise model:
+Generate multiple channels of time series data:
 
 ```python
 import numpy as np
-from gwexpy.timeseries import TimeSeriesDict
-from gwexpy.signal.noise import PowerLawNoise
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
-# Setup noise model (1/f noise: beta=1)
-noise_model = PowerLawNoise(beta=1, dt=1/1024)
+sample_rate = 1024
+duration = 64
 
-# Generate multi-channel time series
-tsd = TimeSeriesDict()
-tsd["H1:STRAIN"] = noise_model.generate(duration=64)  # Hanford
-tsd["L1:STRAIN"] = noise_model.generate(duration=64)  # Livingston
+# Generate white Gaussian noise time series
+tsd = TimeSeriesDict({
+    "H1:STRAIN": TimeSeries(np.random.randn(sample_rate * duration), dt=1/sample_rate, t0=0),
+    "L1:STRAIN": TimeSeries(np.random.randn(sample_rate * duration), dt=1/sample_rate, t0=0),
+})
 
 # Plot
 plot = tsd.plot()
 plot.show()
 ```
+
+:::{note}
+For colored noise (pink, red, etc.), see [Noise Model Guide](tutorials/intro_noise).
+:::
 
 ## Batch CSD Conversion: Time Series to Frequency Matrix
 
