@@ -1478,3 +1478,91 @@ class ResponseFunctionResult:
 - **ドキュメント同期**: 実装と同時にこのドキュメントを更新
 
 段階 1（Phase 0）から着手し、各フェーズの検証完了後に次フェーズへ進むことを推奨します。
+
+---
+
+## Phase 3 実装計画（詳細設計書）
+
+> 作成日: 2026-04-05  
+> 前提: Phase 0, 1, 2 完了済み
+
+### 設計概要
+
+Phase 3 では `CouplingResult` に 3 つ、`ResponseFunctionResult` に 2 つの plot メソッドを追加し、テスト 5 件を新規作成する。
+
+### タスク一覧
+
+#### タスク 1: `CouplingResult.plot_significance()`
+**ファイル**: `gwexpy/analysis/coupling_result.py`
+
+- 横軸: 周波数（log）、縦軸: 有意度 `(ASD_inj - ASD_bkg) / ASD_bkg`
+- 既存の `_significance_array()` を再利用
+- `threshold` パラメータで閾値水平線を描画（デフォルト 3.0）
+- `freq_min` / `freq_max` で表示範囲を制限
+- 戻り値: `matplotlib.figure.Figure`
+
+#### タスク 2: `CouplingResult.plot_asdgram()`
+**ファイル**: `gwexpy/analysis/coupling_result.py`
+
+- 2 列レイアウト（左: 注入時 ASD spectrogram, 右: 背景時 ASD spectrogram）
+- 両パネルに 50%, 90%, 99% パーセンタイルをオーバーレイ
+- `vmin` / `vmax` でカラースケール制御
+- **前提**: `ts_witness_inj` / `ts_witness_bkg` を使用
+- `ts_witness_inj` が None の場合は `ValueError` を送出
+
+#### タスク 3: `CouplingResult.plot_snrgram()`
+**ファイル**: `gwexpy/analysis/coupling_result.py`
+
+- SNR スペクトログラム: `(ASD_inj - ASD_bkg_median) / ASD_bkg_median`
+- `snrmax` でカラーバーの上限を clamp
+- `freq_min` / `freq_max` で周波数範囲制限
+- `ts_witness_inj` / `ts_witness_bkg` が None の場合は `ValueError` を送出
+
+#### タスク 4: `ResponseFunctionResult.plot_projection_summary()`
+**ファイル**: `gwexpy/analysis/response.py`
+
+- 全注入ステップの ASD スペクトルを重ねたプロット
+- `spectrogram_inj` の各行を異なる色で描画
+- Legend に step index と注入周波数 [Hz] を記載
+- `freq_min` / `freq_max` で表示範囲を制限
+
+#### タスク 5: `ResponseFunctionResult.plot_response_matrix()`
+**ファイル**: `gwexpy/analysis/response.py`
+
+- `gridspec` を使用した 3 パネルレイアウト
+  - メインパネル: 時刻 vs 周波数の 2D pcolormesh（色 = ASD amplitude）
+  - サイドパネル（右）: 選定周波数ビンでの時間進化
+  - トップパネル: 選定時刻ステップでの周波数プロファイル
+- 既存の `plot_map()` との整合: X=時刻, Y=周波数（`plot_map()` は X=注入周波数）
+
+#### タスク 6: テスト 5 件
+**ファイル**: `tests/analysis/test_phase3_visualization.py`（新規）
+
+| テスト名 | 検証内容 |
+|---------|---------|
+| `test_coupling_result_plot_significance_has_threshold_line` | 閾値水平線が Figure 上に存在 |
+| `test_coupling_result_plot_asdgram_layout` | `fig.axes` が 2 つ（左右パネル）であること |
+| `test_coupling_result_plot_snrgram_normalization` | SNR 値が `snrmax` 以下に clamp されていること |
+| `test_response_function_plot_projection_overlay_count` | ステップ数分の Line2D が axes 上に存在 |
+| `test_response_function_plot_matrix_shape` | pcolormesh のデータ形状が `(n_steps, n_freqs)` |
+
+### CouplingResult フィールド追加
+
+`plot_asdgram()` / `plot_snrgram()` のために以下を追加:
+
+```python
+ts_witness_inj: TimeSeries | None = None   # 注入時 Witness TimeSeries
+ts_target_inj: TimeSeries | None = None    # 注入時 Target TimeSeries
+```
+
+`CouplingFunctionAnalysis` の `compute()` で自動設定される。
+
+### 実装順序
+
+1. `CouplingResult.__init__` に `ts_witness_inj` / `ts_target_inj` フィールドを追加
+2. `plot_significance()` — `_significance_array()` 再利用で最もシンプル
+3. `plot_projection_summary()` — spectrogram データを既に保持
+4. `plot_response_matrix()` — gridspec レイアウトが複雑だが self-contained
+5. `plot_asdgram()` — TimeSeries → Spectrogram 生成が必要
+6. `plot_snrgram()` — asdgram と同様の前提、正規化ロジック追加
+7. テスト 5 件（全メソッド実装後にまとめて作成）
