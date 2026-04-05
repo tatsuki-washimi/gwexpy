@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.1.1] - 2026-04-01
+## [0.1.1] - 2026-04-05
 
 ### Added
 
@@ -8,6 +8,15 @@
 - **SegmentTable**: Support for the iterable protocol (`__iter__`) and `RowProxy` for direct row-wise processing.
 - **Tutorials**: Comprehensive new notebooks for `SegmentTable`, `Noise Generation`, and `Spectral Fitting`.
 - **Infrastructure**: Automated tutorial execution testing via `pytest --nbmake` and GitHub Actions.
+- **analysis/coupling**: `CouplingFunctionAnalysis` — `from_time_windows()`, `from_time_windows_batch()`, `bkg_window` パラメータ追加 (Phase 1).
+- **analysis/coupling_result**: `CouplingResult` — `to_csv()`, `from_csv()`, `to_txt()`, `from_txt()`, `to_summary_csv()` によるファイルエクスポート (Phase 2).
+- **analysis/coupling_result**: `CouplingResult` — `plot_significance()`, `plot_asdgram()`, `plot_snrgram()` 可視化メソッド追加 (Phase 3).
+- **analysis/coupling_result**: `CouplingResultCollection` — 複数結果の集約コンテナ (Phase 2).
+- **analysis/stats**: `SpectralStats` — スペクトル統計コンテナ（`spectral_stats()` より取得） (Phase 2).
+- **analysis/response**: `ResponseFunctionResult` — `plot_projection_summary()`, `plot_response_matrix()` 可視化メソッド追加 (Phase 3).
+- **analysis**: `ResponseFunctionResult`, `ResponseFunctionAnalysis`, `estimate_response_function`, `detect_step_segments` を `gwexpy.analysis` から公開 (Phase 4).
+- **docs**: Sphinx API リファレンスに `coupling_result`, `response`, `threshold`, `stats` モジュール追加 (Phase 4).
+- **tutorials**: `case_coupling_analysis.ipynb` / `case_response_analysis.ipynb` に Phase 1–3 の利用例を追補 (Phase 4).
 
 ### Changed
 

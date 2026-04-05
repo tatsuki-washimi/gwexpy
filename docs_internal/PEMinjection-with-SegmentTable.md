@@ -1947,15 +1947,24 @@ Phase 0–3 で追加した以下のシンボルが `__all__` に含まれてい
 
 ---
 
-### ⏳ 未実施
+### ✅ 完了タスク (続き)
 
-#### タスク 5: リリースメタデータ確認
+#### タスク 5: リリースメタデータ確認（2026-04-05）
 
-チェックリスト:
-- [ ] `pyproject.toml` の `version` と `gwexpy/_version.py` の `__version__` が一致
-- [ ] `CITATION.cff` が存在する場合、`version` / `date-released` が正しい
-- [ ] `docs/conf.py` の `release` 変数が `__version__` と一致
-- [ ] `CHANGELOG.md` に Phase 0–3 の変更が記載されている（存在する場合）
+| チェック項目 | 結果 |
+|---|---|
+| `pyproject.toml` の `version` | `{attr = "gwexpy._version.__version__"}` — 動的参照で常に一致 ✅ |
+| `gwexpy/_version.py` の `__version__` | `"0.1.1"` |
+| `CITATION.cff` の `version` | `"0.1.1"` ✅ |
+| `CITATION.cff` の `date-released` | `"2026-04-05"` に更新 ✅ |
+| `docs/conf.py` の `release` 変数 | 変数なし（`__version__` 参照なし） — 問題なし ✅ |
+| `CHANGELOG.md` の Phase 0–3 記載 | `[0.1.1]` エントリに追記 ✅ |
+
+---
+
+## Phase 4 完了（2026-04-05）
+
+全 5 タスク完了。v0.1.1 リリース品質基準を満たした。
 
 ### 品質ゲート
 
