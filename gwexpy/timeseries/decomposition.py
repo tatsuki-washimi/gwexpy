@@ -149,20 +149,23 @@ def _handle_nan_policy(matrix, policy, impute_kwargs=None):
             method = impute_kwargs.get("method", "interpolate")
             impute_kwargs.get("limit", None)
 
-            for i in range(val.shape[0]):  # channels
-                for j in range(val.shape[1]):  # columns
-                    series = val[i, j, :]
-                    nans = np.isnan(series)
-                    if np.any(nans):
-                        if method == "interpolate":
-                            valid = ~nans
-                            if not np.any(valid):
-                                continue
-                            x = np.arange(len(series))
-                            series[nans] = np.interp(x[nans], x[valid], series[valid])
-                        elif method == "mean":
-                            series[nans] = np.nanmean(series)
-                    # For simplicity, minimal implementation of others
+            if val.ndim == 1:
+                series_views = (val,)
+            else:
+                series_views = val.reshape(-1, val.shape[-1])
+
+            for series in series_views:
+                nans = np.isnan(series)
+                if np.any(nans):
+                    if method == "interpolate":
+                        valid = ~nans
+                        if not np.any(valid):
+                            continue
+                        x = np.arange(len(series))
+                        series[nans] = np.interp(x[nans], x[valid], series[valid])
+                    elif method == "mean":
+                        series[nans] = np.nanmean(series)
+                # For simplicity, minimal implementation of others
 
             matrix = mat_copy
 
