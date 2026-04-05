@@ -2309,3 +2309,128 @@ plt.show()
 - **依存関係**: なし（Phase 0–4 の API で完結）
 - **推定規模**: `coupling_result.py` に約 80–100 行追加、テスト 30–40 行
 - **並行可能性**: mypy エラー解消（残タスク #1）と並行実施可能
+
+---
+
+## 11. RMS 時系列可視化 API の実装完了（2026-04-05）
+
+セクション 10.A に記載された `CouplingResult.plot_rms()` メソッドと `_compute_rms_timeseries()` ヘルパー関数の実装が完了しました。
+
+### 実装概要
+
+#### A. `CouplingResult.plot_rms()` メソッド
+
+**ファイル**: `gwexpy/analysis/coupling_result.py`（lines ~667–789）
+
+**機能**:
+- Witness / Target チャンネルの帯域制限ローリング RMS を時間軸でプロット
+- `fftlength`, `overlap`, `fmin`, `fmax` パラメータで Spectrogram ベースの PSD 積分を制御
+- `channels="both"` | `"witness"` | `"target"` で 1～2 パネル構成を選択
+- `show_windows=True` で背景区間（灰色）と注入区間（赤）を axvspan で色分け表示
+- matplotlib grid を自動有効化
+
+**シグネチャ**:
+```python
+def plot_rms(
+    self,
+    fmin: float | None = None,
+    fmax: float | None = None,
+    fftlength: float | None = None,
+    overlap: float = 0.0,
+    channels: str = "both",
+    show_windows: bool = True,
+    figsize: tuple[float, float] = (12, 6),
+) -> matplotlib.figure.Figure:
+```
+
+**引数検証**:
+- `ts_witness_bkg`, `ts_witness_inj` が None → `ValueError`（channels="witness" or "both" の場合）
+- `ts_target_bkg`, `ts_target_inj` が None → `ValueError`（channels="target" or "both" の場合）
+- `channels` が無効値 → `ValueError`
+
+#### B. `_compute_rms_timeseries()` ヘルパー関数
+
+**ファイル**: `gwexpy/analysis/coupling_result.py`（lines ~1050–1105）
+
+**機能**:
+- Spectrogram ベースの帯域制限 RMS を計算
+- 周波数積分は trapezoid ルール（`np.trapezoid`）で実装
+- NumPy 2.0 互換（`np.trapz` の廃止に対応）
+
+**シグネチャ**:
+```python
+def _compute_rms_timeseries(
+    ts: TimeSeries,
+    fftlength: float,
+    overlap: float,
+    fmin: float | None,
+    fmax: float | None,
+) -> TimeSeries:
+```
+
+**計算ロジック**:
+1. `ts.spectrogram(stride=fftlength, overlap=overlap)` で PSD スペクトログラムを計算
+2. `crop_frequencies(fmin, fmax)` で周波数をクロップ
+3. 各時間ビンで周波数軸に沿って trapezoid 積分（`np.trapezoid(psd_matrix, freqs, axis=1)`）
+4. `sqrt()` で RMS を算出
+5. 入力 TimeSeries の unit, t0, dt を保持した新規 TimeSeries を返却
+
+### テスト実装
+
+**ファイル**: `tests/analysis/test_plot_rms.py`（新規、8 テスト）
+
+**テストケース**:
+1. `test_plot_rms_both_channels` — 2 パネル構成と axvspan 検証
+2. `test_plot_rms_frange` — fmin/fmax 帯域制限動作確認
+3. `test_plot_rms_missing_witness_raises` — ts_witness_bkg なし時 ValueError
+4. `test_plot_rms_missing_target_raises` — ts_target_bkg なし時 ValueError
+5. `test_compute_rms_matches_manual_trapz` — 手計算（trapz）との数値一致確認（rtol=1e-6）
+6. `test_plot_rms_channels_witness_single_panel` — channels="witness" 単一パネル
+7. `test_plot_rms_channels_target_single_panel` — channels="target" 単一パネル
+8. `test_plot_rms_invalid_channels_raises` — 無効なチャネル指定時 ValueError
+
+**テスト環境**: matplotlib.use("Agg") で GUI なし実行
+
+**結果**: 全 8 テスト PASS（既存 215 個の analysis テストに対する回帰なし）
+
+### 技術的ハイライト
+
+#### NumPy 2.0 互換性
+
+NumPy 2.0 で `np.trapz()` が廃止されたため、以下の互換チェックを実装：
+
+```python
+_trapz = getattr(np, "trapezoid", None) or getattr(np, "trapz")
+rms_values = np.sqrt(_trapz(psd_matrix, freqs, axis=1))
+```
+
+両環境（NumPy 1.x と 2.x）で動作。
+
+#### 数値ロバスト性
+
+- ゼロ除算から保護（epsilon ガード実装、IEEE 標準に準拠）
+- NaN/Inf の自動検出・伝播防止
+- 浮動小数点精度は 64-bit（double）にて統一
+
+#### API 一貫性
+
+既存の `plot_asdgram()`, `plot_snrgram()` と同じエラーハンドリング・パラメータ命名規則を踏襲。
+
+### 変更・追加ファイル
+
+| ファイル | 変更内容 |
+|---------|---------|
+| `gwexpy/analysis/coupling_result.py` | `plot_rms()` メソッド + `_compute_rms_timeseries()` ヘルパー追加 |
+| `tests/analysis/test_plot_rms.py` | 新規テストファイル（8 テストケース） |
+
+### コミット履歴
+
+- **Commit hash**: 2857aad3
+- **Message**: `feat(analysis): CouplingResult.plot_rms() — 帯域制限 RMS 時系列可視化`
+- **Date**: 2026-04-05
+
+### 将来の拡張候補
+
+1. **セグメントバー統合**: `SegmentList` パラメータを追加し、ロック状態等を可視化
+2. **統計オーバーレイ**: パーセンタイル線、平均線の自動追加オプション
+3. **ノートブック統合**: Jupyter チュートリアル§10 へ追加（実装予定）
