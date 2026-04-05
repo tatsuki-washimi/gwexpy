@@ -45,3 +45,11 @@ class SpectralStats:
             (μ_inj - μ_bkg) / σ_bkg の周波数スペクトラム
         """
         return (mu_inj - self.mean) / self.sigma
+
+    def to_dict(self) -> dict[str, object]:
+        """統計情報を辞書として返す。"""
+        return {
+            "mean": self.mean,
+            "sigma": self.sigma,
+            "n_avg": self.n_avg,
+        }

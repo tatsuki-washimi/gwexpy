@@ -1566,3 +1566,413 @@ ts_target_inj: TimeSeries | None = None    # 注入時 Target TimeSeries
 5. `plot_asdgram()` — TimeSeries → Spectrogram 生成が必要
 6. `plot_snrgram()` — asdgram と同様の前提、正規化ロジック追加
 7. テスト 5 件（全メソッド実装後にまとめて作成）
+
+---
+
+## Phase 4 実装計画: 統合テスト + ドキュメント（詳細設計書）
+
+**作成日**: 2026-04-05
+> 前提: Phase 0, 1, 2, 3 完了済み
+
+### 目的
+
+Phase 0–3 で追加した全機能が**組み合わせて正しく動作する**ことを統合テストで保証し、
+ユーザー向けドキュメント（API リファレンス・チュートリアル・ユースケース実装例）を整備して
+v0.1.0 リリースに必要な品質基準を満たす。
+
+### スコープ
+
+| カテゴリ | 成果物 | 主対象ファイル |
+|---------|--------|------------|
+| **統合テスト** | `tests/analysis/test_integration_phase04.py` (新規) | `coupling.py`, `coupling_result.py`, `response.py`, `stats.py`, `threshold.py` |
+| **Sphinx API ドキュメント** | `docs/web/{en,ja}/reference/api/analysis.rst` 更新 | response モジュール・Phase 1-3 新規クラス/メソッド |
+| **チュートリアル更新** | `examples/case-studies/case_coupling_analysis.ipynb` 追補 | Phase 1-3 の新メソッド利用例 |
+| **チュートリアル更新** | `examples/case-studies/case_response_analysis.ipynb` 追補 | `plot_projection_summary()`, `plot_response_matrix()` |
+| **`__all__` 整備** | `gwexpy/analysis/__init__.py` | `ResponseFunctionResult`, `ResponseFunctionAnalysis` の公開 |
+| **リリースメタデータ** | `CITATION.cff`, `pyproject.toml` バージョン整合確認 | — |
+
+---
+
+### タスク 1: 統合テスト
+
+**ファイル**: `tests/analysis/test_integration_phase04.py` (新規)
+
+Phase 0–3 で追加された機能を**横断的に組み合わせ**て使用するシナリオを検証する。
+個別メソッドの単体テストは既存テストファイルで網羅済みのため、ここでは
+**「ユーザーが実際に行う一連の操作フロー」** を再現する。
+
+#### 1.1 E2E フロー: Coupling Function Analysis
+
+```
+合成データ生成
+  → estimate_coupling(data_inj, data_bkg, fftlength=..., threshold_witness=PercentileThreshold(...))
+  → CouplingResult
+  → result.to_csv() → CouplingResult.from_csv() の round-trip 検証
+  → result.to_txt() → CouplingResult.from_txt() の round-trip 検証
+  → result.spectral_stats() で SpectralStats 取得（Phase 2）
+  → result.plot_cf() / result.plot_significance() / result.plot_asdgram() / result.plot_snrgram()
+  → plt.close() で全 Figure リーク防止
+```
+
+**検証ポイント**:
+- CSV/TXT round-trip 後の `cf.value` が元と一致 (`np.allclose`)
+- `SpectralStats` の `median`, `mean`, `std` が非 NaN
+- 全 plot メソッドが `matplotlib.figure.Figure` を返す
+- `valid_mask` が `bool` 型 `ndarray` であること
+
+#### 1.2 E2E フロー: Response Function Analysis
+
+```
+合成 Stepped Sine データ生成（detect_step_segments → segments）
+  → estimate_response_function(witness, target, segments, fftlength=...)
+  → ResponseFunctionResult
+  → result.plot() / result.plot_map() / result.plot_snapshot()          (既存)
+  → result.plot_projection_summary() / result.plot_response_matrix()    (Phase 3)
+  → plt.close() で全 Figure リーク防止
+```
+
+**検証ポイント**:
+- `result.coupling_factors` の長さが `len(segments)` と一致
+- 全 plot メソッドが例外なく完了
+- `spectrogram_inj.shape == spectrogram_bkg.shape`
+
+#### 1.3 E2E フロー: 時間ウィンドウ API (Phase 1)
+
+```
+from_time_windows(witness_ts, target_ts, time_windows=[...], fftlength=...)
+  → CouplingResult
+  → result.plot_significance(threshold=5.0)
+from_time_windows_batch(witness_ts, target_ts, batch_windows=[...], ...)
+  → CouplingResultCollection
+  → collection の長さ・キーの検証
+```
+
+**検証ポイント**:
+- `from_time_windows()` → `from_time_windows_batch()` の結果が1要素コレクション時に一致
+- `CouplingResultCollection` のイテレーションと `__len__` の整合
+
+#### 1.4 CouplingResultCollection 集約テスト (Phase 2)
+
+```
+複数の CouplingResult を CouplingResultCollection に格納
+  → collection.to_summary_csv() で集約 CSV エクスポート
+  → 各 result の spectral_stats() → SpectralStats 比較
+```
+
+**検証ポイント**:
+- 集約 CSV の行数 == コレクション要素数
+- `SpectralStats.to_dict()` のキーが仕様通り
+
+#### 1.5 wrapper parameter forwarding テスト（Section 12 未対応分）
+
+Section 12 §3 で推奨されていた以下のテストをこのフェーズで実装する:
+
+- `estimate_coupling()` の `overlap`, `percentile_factor`, `bkg_stride`, `memory_limit` が
+  `CouplingFunctionAnalysis.compute()` に転送されることを `unittest.mock.patch` で検証
+- `estimate_response_function()` の `bkg_window`, `n_jobs`, `memory_limit` が
+  `ResponseFunctionAnalysis.compute()` に転送されることを `unittest.mock.patch` で検証
+
+#### 1.6 テスト構成
+
+```
+tests/analysis/test_integration_phase04.py
+├── class TestCouplingE2E
+│   ├── test_estimate_to_csv_roundtrip
+│   ├── test_estimate_to_txt_roundtrip
+│   ├── test_estimate_with_percentile_threshold
+│   ├── test_spectral_stats_not_nan
+│   ├── test_all_plot_methods_return_figure
+│   └── test_valid_mask_dtype
+├── class TestResponseE2E
+│   ├── test_detect_and_estimate_full_flow
+│   ├── test_all_plot_methods_return_figure
+│   └── test_spectrogram_shape_consistency
+├── class TestTimeWindowsE2E
+│   ├── test_from_time_windows_single
+│   ├── test_from_time_windows_batch_consistency
+│   └── test_collection_iteration
+├── class TestCollectionAggregation
+│   ├── test_summary_csv_row_count
+│   └── test_spectral_stats_keys
+└── class TestWrapperForwarding
+    ├── test_estimate_coupling_forwards_params
+    └── test_estimate_response_forwards_params
+```
+
+想定テスト数: **15–17 件**
+
+#### テスト実行環境
+
+- `conda run -n gwexpy pytest tests/analysis/test_integration_phase04.py -v`
+- `matplotlib.use("Agg")` で GUI 回避
+- 合成データは `np.random.default_rng(seed)` で再現性確保
+- 各テストクラスに `@pytest.fixture(autouse=True)` で `plt.close("all")` の cleanup
+
+---
+
+### タスク 2: Sphinx API ドキュメント更新
+
+#### 2.1 `docs/web/en/reference/api/analysis.rst`
+
+現状 `coupling` と `stat_info` のみ記載。以下を追加:
+
+```rst
+Analysis
+========
+
+.. automodule:: gwexpy.analysis.coupling
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: gwexpy.analysis.coupling_result
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: gwexpy.analysis.response
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: gwexpy.analysis.threshold
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: gwexpy.analysis.stats
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: gwexpy.analysis.stat_info
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```
+
+#### 2.2 `docs/web/ja/reference/api/analysis.rst`
+
+英語版と同一構成で更新（`automodule` は docstring の言語に依存するため構造は同じ）。
+
+#### 2.3 `__all__` の整備
+
+`gwexpy/analysis/__init__.py` に以下を追加:
+
+```python
+from .response import ResponseFunctionAnalysis, ResponseFunctionResult
+
+__all__ += [
+    "ResponseFunctionAnalysis",
+    "ResponseFunctionResult",
+]
+```
+
+Phase 0–3 で追加した公開 API が全て `__all__` に列挙されていることを確認する。
+
+---
+
+### タスク 3: チュートリアル更新
+
+#### 3.1 `examples/case-studies/case_coupling_analysis.ipynb`
+
+末尾に以下のセクションを追加:
+
+**§5. 有意度プロット (Phase 3)**
+```python
+fig = result.plot_significance(threshold=5.0)
+plt.show()
+```
+
+**§6. ASD スペクトログラム (Phase 3)**
+```python
+# ts_witness_inj / ts_witness_bkg を保持する CouplingResult が必要
+result_with_ts = estimate_coupling(
+    data_inj, data_bkg, fftlength=2.0,
+    witness=wit_name,
+    keep_timeseries=True,  # ← この引数が compute() 側で対応済みか要確認
+)
+fig = result_with_ts.plot_asdgram()
+plt.show()
+```
+
+**§7. SNR スペクトログラム (Phase 3)**
+```python
+fig = result_with_ts.plot_snrgram(snrmax=10.0)
+plt.show()
+```
+
+**§8. 統計レポート (Phase 2)**
+```python
+stats = result.spectral_stats()
+print(stats)
+```
+
+**§9. CSV / TXT エクスポート (Phase 2)**
+```python
+result.to_csv("coupling_result.csv")
+result.to_txt("coupling_result.txt")
+```
+
+#### 3.2 `examples/case-studies/case_response_analysis.ipynb`
+
+末尾に以下のセクションを追加:
+
+**§5. Projection Summary (Phase 3)**
+```python
+fig = result.plot_projection_summary()
+plt.show()
+```
+- 全注入ステップの ASD オーバーレイ。どのステップでピークが立っているかを一望できる。
+
+**§6. Response Matrix (Phase 3)**
+```python
+fig = result.plot_response_matrix()
+plt.show()
+```
+- 3 パネル構成（メイン + 周波数断面 + 時間断面）。非線形応答の有無を 2D で確認。
+
+---
+
+### タスク 4: `__all__` + import 整備
+
+#### 4.1 `gwexpy/analysis/__init__.py`
+
+Phase 0–3 で追加した以下のシンボルが `__all__` に含まれていることを確認し、不足があれば追加:
+
+| シンボル | 由来 Phase | 現状 |
+|---------|-----------|------|
+| `CouplingResult` | Phase 0 | ✅ 済 |
+| `CouplingResultCollection` | Phase 2 | ✅ 済 |
+| `SpectralStats` | Phase 2 | ✅ 済 |
+| `ThresholdStrategy` | Phase 0 | ✅ 済 |
+| `RatioThreshold` | Phase 0 | ✅ 済 |
+| `SigmaThreshold` | Phase 0 | ✅ 済 |
+| `PercentileThreshold` | Phase 0 | ✅ 済 |
+| `ResponseFunctionResult` | — | ❌ **未公開** |
+| `ResponseFunctionAnalysis` | — | ❌ **未公開** |
+| `estimate_response_function` | — | ❌ **未公開** |
+| `detect_step_segments` | — | ❌ **未公開** |
+
+→ `ResponseFunctionResult`, `ResponseFunctionAnalysis`, `estimate_response_function`, `detect_step_segments` を追加。
+
+---
+
+### タスク 5: リリースメタデータ確認
+
+以下の整合性を検証（自動化は CI に任せ、ここでは手動チェックリスト）:
+
+- [ ] `pyproject.toml` の `version` と `gwexpy/_version.py` の `__version__` が一致
+- [ ] `CITATION.cff` が存在する場合、`version` / `date-released` が正しい
+- [ ] `docs/conf.py` の `release` 変数が `__version__` と一致
+- [ ] `CHANGELOG.md` に Phase 0–3 の変更が記載されている（存在する場合）
+
+---
+
+### 実装順序
+
+1. **タスク 4**: `__all__` + import 整備（最小変更、他タスクの前提）
+2. **タスク 2**: Sphinx API ドキュメント更新（`automodule` 対象が import 可能であること）
+3. **タスク 1**: 統合テスト作成 + 全テスト通過確認
+4. **タスク 3**: チュートリアル更新（統合テストで確認した API を使用）
+5. **タスク 5**: リリースメタデータ確認
+
+---
+
+## Phase 4 実装進捗（2026-04-05 開始）
+
+### ✅ 完了タスク
+
+#### タスク 4: `__all__` + import 整備
+
+- [gwexpy/analysis/__init__.py](/home/washimi/work/gwexpy/gwexpy/analysis/__init__.py)
+  - `ResponseFunctionResult`, `ResponseFunctionAnalysis`, `estimate_response_function`, `detect_step_segments` を import・`__all__` に追加
+  
+- [gwexpy/analysis/response.py](/home/washimi/work/gwexpy/gwexpy/analysis/response.py)
+  - モジュール `__all__` を定義
+
+- [tests/analysis/test_response_compat.py](/home/washimi/work/gwexpy/tests/analysis/test_response_compat.py) (新規)
+  - 4 シンボルの公開を固定するテスト → 3 passed
+
+**検証**: `ruff check`, `mypy` 通過
+
+---
+
+#### タスク 2: Sphinx API ドキュメント更新
+
+- [docs/web/en/reference/api/analysis.rst](/home/washimi/work/gwexpy/docs/web/en/reference/api/analysis.rst)
+  - `coupling_result`, `response`, `threshold`, `stats` モジュール追加（既存の `coupling`, `stat_info` に加えて）
+
+- [docs/web/ja/reference/api/analysis.rst](/home/washimi/work/gwexpy/docs/web/ja/reference/api/analysis.rst)
+  - 日本語版も同一構成に更新
+
+**検証**: 全モジュールのインポート確認済み
+
+---
+
+#### タスク 1: 統合テスト
+
+- [tests/analysis/test_integration_phase04.py](/home/washimi/work/gwexpy/tests/analysis/test_integration_phase04.py) (新規)
+  - 16 テスト
+  - Coupling E2E（CSV/TXT round-trip, plot メソッド群, `valid_mask` 型確認）
+  - Response E2E（detect → estimate → plot 全メソッド）
+  - Time-window API (`from_time_windows()`, `from_time_windows_batch()`)
+  - Collection aggregation (`to_summary_csv()`, `SpectralStats.to_dict()`)
+  - Wrapper parameter forwarding (mock による検証)
+
+**検証**: `pytest tests/analysis/test_integration_phase04.py -q` → 16 passed, `ruff check`, `mypy` 通過
+
+**付帯実装**:
+  - [gwexpy/analysis/coupling.py](/home/washimi/work/gwexpy/gwexpy/analysis/coupling.py): `CouplingResult` に `ts_witness_inj` / `ts_target_inj` を保持
+  - [gwexpy/analysis/coupling_result.py](/home/washimi/work/gwexpy/gwexpy/analysis/coupling_result.py): `spectral_stats()` メソッド追加
+  - [gwexpy/analysis/stats.py](/home/washimi/work/gwexpy/gwexpy/analysis/stats.py): `to_dict()` メソッド追加
+
+---
+
+#### タスク 3: チュートリアル更新
+
+- [examples/case-studies/case_coupling_analysis.ipynb](/home/washimi/work/gwexpy/examples/case-studies/case_coupling_analysis.ipynb)
+  - §5 `plot_significance(threshold=5.0)` — 有意度プロット
+  - §6 `plot_asdgram()` — ASD スペクトログラム
+  - §7 `plot_snrgram(snrmax=10.0)` — SNR スペクトログラム
+  - §8 `spectral_stats()` — 統計レポート
+  - §9 `to_csv()` / `to_txt()` — CSV/TXT エクスポート
+  - **修正**: §5・§8 の説明を実装と一致させた
+
+- [examples/case-studies/case_response_analysis.ipynb](/home/washimi/work/gwexpy/examples/case-studies/case_response_analysis.ipynb)
+  - §4.4 `plot_projection_summary()` — 全ステップ ASD オーバーレイ
+  - §4.5 `plot_response_matrix()` — 3 パネル応答マトリクス
+
+**構文検証**: 両ノートブックの JSON 構造確認済み
+
+---
+
+### ⏳ 未実施
+
+#### タスク 5: リリースメタデータ確認
+
+チェックリスト:
+- [ ] `pyproject.toml` の `version` と `gwexpy/_version.py` の `__version__` が一致
+- [ ] `CITATION.cff` が存在する場合、`version` / `date-released` が正しい
+- [ ] `docs/conf.py` の `release` 変数が `__version__` と一致
+- [ ] `CHANGELOG.md` に Phase 0–3 の変更が記載されている（存在する場合）
+
+### 品質ゲート
+
+| チェック項目 | 基準 |
+|------------|------|
+| `pytest tests/` 全件 PASS | exit code 0（既知の `test_find_peaks` 除く） |
+| `ruff check gwexpy/ tests/` | エラー 0 |
+| `mypy gwexpy/analysis/` | 新規エラー 0 |
+| `sphinx-build docs/ docs/_build/` | warning 0（deprecation 除く） |
+| テストカバレッジ（analysis/） | 80%+ |
+
+### 所要見積り
+
+| タスク | 工数 |
+|-------|------|
+| タスク 1: 統合テスト | 主作業（15-17 テスト） |
+| タスク 2: Sphinx 更新 | 軽微（rst 構造変更のみ） |
+| タスク 3: チュートリアル | 中程度（既存 notebook 追補） |
+| タスク 4: `__all__` 整備 | 軽微 |
+| タスク 5: メタデータ確認 | 軽微 |
