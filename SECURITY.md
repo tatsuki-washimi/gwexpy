@@ -25,7 +25,8 @@
 > スパム防止のため、開発者のメールアドレスは非公開としています。
 > セキュリティ上の重大な問題については、上記の GitHub Private Vulnerability Reporting を通じて報告してください。
 >
-> また、GitHub のアカウントをお持ちでない方や、より詳細な情報の提供を希望される方向けに、現在 **Google Forms / Microsoft Forms** の準備を進めています。準備が整い次第、こちらを正式な窓口として追加いたします。
+> GitHub のアカウントをお持ちでない方や、より詳細な情報の提供を希望される方は、[こちらのお問い合わせフォーム](https://forms.gle/REPLACE_WITH_ACTUAL_FORM) からご報告ください。
+> <!-- TODO: Replace the URL above with the actual Google Forms link before release -->
 
 ## セキュリティ上の注意事項
 
