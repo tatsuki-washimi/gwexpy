@@ -29,6 +29,13 @@ from ..timeseries import TimeSeries
 if TYPE_CHECKING:
     from matplotlib.axes import Axes
 
+__all__ = [
+    "ResponseFunctionResult",
+    "ResponseFunctionAnalysis",
+    "detect_step_segments",
+    "estimate_response_function",
+]
+
 
 def _freq_values(series: Any) -> np.ndarray:
     return np.asarray(getattr(series.xindex, "value", series.xindex), dtype=float)

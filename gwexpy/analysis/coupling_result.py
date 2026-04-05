@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from ..frequencyseries import FrequencySeries
     from ..timeseries import TimeSeries
     from ..types.typing import IndexLike
+    from .stats import SpectralStats
 
 
 class CouplingResult:
@@ -354,6 +355,35 @@ class CouplingResult:
         asd_bkg = np.sqrt(np.abs(self.psd_witness_bkg.value))
         eps = np.finfo(float).tiny
         return (asd_inj - asd_bkg) / np.where(asd_bkg > 0, asd_bkg, eps)
+
+    def spectral_stats(self) -> SpectralStats:
+        """
+        背景 ASD の簡易統計情報を返す。
+
+        現時点では CouplingResult が保持する背景/注入 PSD から、
+        背景 ASD を mean、注入との差分絶対値を sigma として構成する。
+        sigma はゼロ除算を避けるため epsilon で下限を設ける。
+        """
+        from ..frequencyseries import FrequencySeries
+        from .stats import SpectralStats
+
+        mean_vals = np.sqrt(np.abs(self.psd_witness_bkg.value))
+        sigma_vals = np.abs(np.sqrt(np.abs(self.psd_witness_inj.value)) - mean_vals)
+        sigma_vals = np.where(sigma_vals > 0, sigma_vals, np.finfo(float).eps)
+        mean = FrequencySeries(
+            mean_vals,
+            xindex=self.psd_witness_bkg.xindex,
+            unit=self.psd_witness_bkg.unit**0.5,
+            name="Background Mean ASD",
+        )
+        sigma = FrequencySeries(
+            sigma_vals,
+            xindex=self.psd_witness_bkg.xindex,
+            unit=mean.unit,
+            name="Background Sigma ASD",
+        )
+        n_avg = max(1, int(np.count_nonzero(self.valid_mask)))
+        return SpectralStats(mean=mean, sigma=sigma, n_avg=n_avg)
 
     def to_csv(self, filepath: str | os.PathLike) -> None:
         """
