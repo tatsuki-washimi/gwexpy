@@ -116,7 +116,7 @@ class TestFromMneRaw:
             np.ones((1, 50)),
             mne.create_info(["ch0"], 100.0, ["misc"]),
         )
-        dt_utc = datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc)
+        dt_utc = datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC)
         raw.set_meas_date(dt_utc)
         tsd = from_mne_raw(TimeSeriesDict, raw)
         assert tsd["ch0"].t0.value != 0

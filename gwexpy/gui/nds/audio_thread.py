@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any, cast
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,6 @@ except ImportError:
     sd = None
 
 from qtpy import QtCore
-
 
 _QThread: Any = getattr(QtCore, "QThread", object)
 

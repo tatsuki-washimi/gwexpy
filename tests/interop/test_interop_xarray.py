@@ -124,7 +124,7 @@ class TestTryParseUnit:
 
     def test_invalid_unit_returns_none_with_warning(self):
         import warnings
-        with warnings.catch_warnings(record=True) as w:
+        with warnings.catch_warnings(record=True):
             warnings.simplefilter("always")
             result = _try_parse_unit("not_a_real_unit_xyz_abc_123")
         assert result is None

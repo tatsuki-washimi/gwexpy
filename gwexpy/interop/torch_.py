@@ -7,7 +7,7 @@ Interoperability with PyTorch tensors.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
 
 from ._optional import require_optional
 
@@ -68,7 +68,7 @@ def to_torch(
 
 
 def from_torch(
-    cls: Type[T],
+    cls: type[T],
     tensor: torch.Tensor,
     t0: Any,
     dt: Any,

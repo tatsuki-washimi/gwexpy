@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
 
 import numpy as np
 
@@ -272,7 +272,7 @@ def to_th2d(spec: Spectrogram, error: Optional[Any] = None) -> ROOT.TH2D:
 
 
 def from_root(
-    cls: Type[T_s], obj: Union[ROOT.TGraph, ROOT.TH1], return_error: bool = False
+    cls: type[T_s], obj: Union[ROOT.TGraph, ROOT.TH1], return_error: bool = False
 ) -> Union[T_s, tuple[T_s, T_s]]:
     """
     Create Series (TimeSeries or FrequencySeries) from ROOT TGraph or TH1.
@@ -468,7 +468,7 @@ def from_root(
             return res, err_res
         return res
     else:
-        # is_hist: Already returned above for Histogram class, 
+        # is_hist: Already returned above for Histogram class,
         # but for other classes we need a fallback or error.
         # Currently the logic was mixed. Let's make it consistent.
         raise NotImplementedError("TH1 to non-Histogram class conversion not fully implemented yet.")

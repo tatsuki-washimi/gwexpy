@@ -9,8 +9,8 @@ import numpy as np
 import pytest
 
 from gwexpy.frequencyseries import FrequencySeries
-from gwexpy.timeseries import TimeSeries
 from gwexpy.interop.sdypy_ import from_uff_dataset55, from_uff_dataset58
+from gwexpy.timeseries import TimeSeries
 
 N_SAMPLES = 256
 

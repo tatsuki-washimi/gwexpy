@@ -102,6 +102,13 @@ from .frequencyseries import (
     FrequencySeriesMatrix,
 )
 
+# Histogram types
+from .histogram import (
+    Histogram,
+    HistogramDict,
+    HistogramList,
+)
+
 # Signal processing utilities
 from .signal.preprocessing import (
     StandardizationModel,
@@ -115,13 +122,6 @@ from .spectrogram import (
     SpectrogramDict,
     SpectrogramList,
     SpectrogramMatrix,
-)
-
-# Histogram types
-from .histogram import (
-    Histogram,
-    HistogramDict,
-    HistogramList,
 )
 
 # Core data types - explicitly imported for IDE support and clear API

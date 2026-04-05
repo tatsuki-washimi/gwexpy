@@ -16,7 +16,7 @@ that ensures GWexpy types are returned and adds ``to_lal`` for FrequencySeries.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Type, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import numpy as np
 
@@ -40,7 +40,7 @@ __all__ = [
 
 
 def from_lal_timeseries(
-    cls: Type[T_ts],
+    cls: type[T_ts],
     lalts: Any,
     *,
     copy: bool = True,
@@ -135,7 +135,7 @@ def to_lal_timeseries(
 
 
 def from_lal_frequencyseries(
-    cls: Type[T_fs],
+    cls: type[T_fs],
     lalfs: Any,
     *,
     copy: bool = True,

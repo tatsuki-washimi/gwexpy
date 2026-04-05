@@ -24,7 +24,7 @@ class TestSgmGetitemStringList:
         # Indexing with ['A', 'C'] on 3D (Batch, Time, Freq)
         data = np.random.rand(3, 10, 5)
         sgm = SpectrogramMatrix(data, rows=["A", "B", "C"], times=np.arange(10), frequencies=np.arange(5))
-        
+
         subset = sgm[["A", "C"]]
         assert subset.shape == (2, 10, 5)
         assert list(subset.rows.keys()) == ["A", "C"]
@@ -34,13 +34,13 @@ class TestSgmGetitemStringList:
     def test_invalid_label_keyerror(self):
         data = np.random.rand(2, 5, 5)
         sgm = SpectrogramMatrix(data, rows=["R1", "R2"], cols=["C1"], times=np.arange(5))
-        
+
         # Unknown row
         with pytest.raises(KeyError, match="Invalid row key: Unknown"):
             _ = sgm["Unknown"]
-        
-        # Unknown col on 3D matrix. 
-        # Current implementation passes the string through if not ndim==4, 
+
+        # Unknown col on 3D matrix.
+        # Current implementation passes the string through if not ndim==4,
         # leading to IndexError in numpy.
         with pytest.raises((KeyError, IndexError)):
             _ = sgm[0, "UnknownCol"]
@@ -57,25 +57,25 @@ class TestSgm4dToLowerDim:
             for j in range(3):
                 meta_arr[i, j] = MetaData(unit=u.m, name=f"R{i}C{j}")
         meta = MetaDataMatrix(meta_arr)
-        
+
         sgm = SpectrogramMatrix(
-            data, 
-            rows=["R0", "R1"], 
-            cols=["C0", "C1", "C2"], 
+            data,
+            rows=["R0", "R1"],
+            cols=["C0", "C1", "C2"],
             meta=meta,
             times=np.arange(10),
             frequencies=np.arange(5)
         )
-        
+
         # Slice: all Rows, Col 1
         subset = sgm[:, 1]
-        
+
         # Verify 3D shape (N_row, T, F)
         assert subset.ndim == 3
         # In Case B, Batch axis should inherited from Row
         assert list(subset.rows.keys()) == ["R0", "R1"]
         assert subset.shape == (2, 10, 5)
-        
+
         # Verify metadata (N_row, 1)
         assert subset.meta.shape == (2, 1)
         assert subset.meta[0, 0].name == "R0C1"
@@ -89,7 +89,7 @@ class TestSgmToSeries1DList:
         sgm = SpectrogramMatrix(data, rows=["A", "B"], times=np.arange(5))
         # Sync meta names with rows to ensure __getitem__ picks them up
         sgm.meta.names = ["A", "B"]
-        
+
         lst = sgm.to_series_1Dlist()
         assert len(lst) == 2
         assert isinstance(lst[0], Spectrogram)
@@ -98,9 +98,9 @@ class TestSgmToSeries1DList:
     def test_4d_to_list(self):
         data = np.random.rand(2, 2, 5, 5)
         sgm = SpectrogramMatrix(
-            data, 
-            rows=["R1", "R2"], 
-            cols=["C1", "C2"], 
+            data,
+            rows=["R1", "R2"],
+            cols=["C1", "C2"],
             times=np.arange(5)
         )
         lst = sgm.to_series_1Dlist()
@@ -144,13 +144,13 @@ class TestSgmAllElementUnits:
         m2 = MetaData()
         # Bypassing setter to force None
         m2["unit"] = None
-        
+
         meta = MetaDataMatrix([[m1], [m2]])
         sgm = SpectrogramMatrix(data, meta=meta, times=np.arange(5))
-        
+
         # Verify m2.unit is indeed None
         assert sgm.meta[1, 0].unit is None
-        
+
         eq, unit = sgm._all_element_units_equivalent()
         assert eq is True
         assert unit == u.m

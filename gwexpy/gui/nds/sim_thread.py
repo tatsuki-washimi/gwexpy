@@ -2,8 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
-
-from typing import Any, cast
+from typing import Any
 
 import numpy as np
 from qtpy import QtCore

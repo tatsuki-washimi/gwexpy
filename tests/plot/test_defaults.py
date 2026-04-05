@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")
 
 import numpy as np
@@ -16,12 +17,11 @@ from gwexpy.plot.defaults import (
     determine_geometry_and_separate,
     determine_norm,
     determine_xlabel,
+    determine_xscale,
     determine_ylabel,
     determine_ylim,
     determine_yscale,
-    determine_xscale,
 )
-
 
 # ---------------------------------------------------------------------------
 # calculate_default_figsize

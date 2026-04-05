@@ -6,7 +6,6 @@ import pytest
 
 from gwexpy.fitting.gls import GLS, GeneralizedLeastSquares
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -83,7 +82,6 @@ class TestGLSSolve:
         np.testing.assert_allclose(beta[1], b_true, atol=1e-10)
 
     def test_correlated_data(self):
-        rng = np.random.default_rng(0)
         n = 6
         x = np.linspace(1, 6, n)
         a_true, b_true = 3.0, 0.5

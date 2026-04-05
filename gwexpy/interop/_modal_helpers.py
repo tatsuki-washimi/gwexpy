@@ -17,8 +17,6 @@ from typing import Any
 
 import numpy as np
 
-from ._registry import ConverterRegistry
-
 __all__ = [
     "build_mode_dataframe",
     "build_frf_matrix",

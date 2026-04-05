@@ -30,14 +30,14 @@ def test_field_4d():
     x = np.arange(2) * 1.0 * u.m
     y = np.arange(2) * 1.0 * u.m
     z = np.arange(2) * 1.0 * u.m
-    
+
     # Simple spatial gradient + time oscillation
     data = np.zeros((nt, 2, 2, 2))
     for i in range(2):
         for j in range(2):
             for k in range(2):
                 data[:, i, j, k] = i + j + k + np.sin(2 * np.pi * 5 * times.to_value(u.s))
-    
+
     return ScalarField(
         data,
         unit=u.m,
@@ -55,12 +55,12 @@ class TestScalarFieldFilter:
     def test_filter_zpk_sos_path(self, test_field_4d):
         # 10 Hz lowpass
         zpk = scipy_signal.butter(4, 10, btype="low", fs=100, output="zpk")
-        
+
         # Default filtfilt=True (zero-phase)
         f_zpk = test_field_4d.filter(zpk)
         assert f_zpk.shape == test_field_4d.shape
         assert f_zpk.unit == test_field_4d.unit
-        
+
         # filtfilt=False (causal, sosfilt path because zpk is converted to sos)
         f_sos = test_field_4d.filter(zpk, filtfilt=False)
         assert f_sos.shape == test_field_4d.shape
@@ -72,7 +72,7 @@ class TestScalarFieldFilter:
     def test_filter_ba_path(self, test_field_4d):
         # b/a path
         b, a = scipy_signal.butter(4, 0.2) # lowpass
-        
+
         # filtfilt=False (lfilter path)
         f_ba = test_field_4d.filter((b, a), filtfilt=False)
         assert f_ba.shape == test_field_4d.shape
@@ -94,7 +94,7 @@ class TestScalarFieldExtractNearest:
         # Profile along X at t=0, y=1, z=1
         # Use value within range to avoid IndexError in nearest_index
         ax_idx, values = test_field_4d.extract_profile(
-            axis="x", 
+            axis="x",
             at={"t": 0 * u.s, "y": 1.0 * u.m, "z": 1.0 * u.m},
             interp="nearest"
         )
@@ -157,7 +157,7 @@ class TestTimeDelayMapPlanes:
     def test_time_delay_map_xz_yz(self, test_field_4d):
         from gwexpy.fields.signal import time_delay_map
         ref = (0, 0, 0) * u.m
-        
+
         # plane='xz' -> scan x, z; fix y
         map_xz = time_delay_map(test_field_4d, ref, plane="xz", at={"y": 0 * u.m})
         # Result maintains 4D structure (T, X, Y, Z)
@@ -168,7 +168,7 @@ class TestTimeDelayMapPlanes:
         assert map_xz.shape[1] == len(test_field_4d._axis1_index)
         assert map_xz.shape[2] == 1  # Fixed axis
         assert map_xz.shape[3] == len(test_field_4d._axis3_index)
-        
+
         # plane='yz' -> scan y, z; fix x
         map_yz = time_delay_map(test_field_4d, ref, plane="yz", at={"x": 0 * u.m})
         assert map_yz._axis1_name == "x" # Original name preserved at index 1

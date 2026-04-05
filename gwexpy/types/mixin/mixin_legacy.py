@@ -32,7 +32,7 @@ class RegularityMixin:
             idx = getattr(self, "xindex", None)
             if idx is None:
                 return True
-            
+
             # Use GWpy's own assessment if available and looks healthy
             if hasattr(idx, "regular") and idx.regular is True:
                 return True

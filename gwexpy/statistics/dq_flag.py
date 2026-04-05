@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 from gwpy.segments import DataQualityFlag, Segment, SegmentList
@@ -44,14 +44,14 @@ def to_segments(
     # 2. Identify "bad" time steps (where p < alpha in ANY frequency bin)
     # p_value_map.value is (n_times, n_freqs)
     is_bad = np.any(p_value_map.value < alpha, axis=1)
-    
+
     # 3. Form segments
     times = p_value_map.times.value
     dt = times[1] - times[0] if len(times) > 1 else 1.0
-    
+
     segments = SegmentList()
     active_seg_start = None
-    
+
     for i, bad in enumerate(is_bad):
         if bad:
             if active_seg_start is None:
@@ -62,20 +62,20 @@ def to_segments(
                 if seg_end - active_seg_start >= min_duration:
                     segments.append(Segment(active_seg_start, seg_end))
                 active_seg_start = None
-                
+
     # Close last segment if active
     if active_seg_start is not None:
         seg_end = times[-1] + dt/2.0
         if seg_end - active_seg_start >= min_duration:
             segments.append(Segment(active_seg_start, seg_end))
-            
+
     # Use the name of the map as flag name
     name = f"{p_value_map.name}_veto" if p_value_map.name else "non_gaussian_veto"
-    
+
     flag = DataQualityFlag(
         name=name,
         active=segments,
         known=SegmentList([Segment(times[0]-dt/2.0, times[-1]+dt/2.0)])
     )
-    
+
     return flag

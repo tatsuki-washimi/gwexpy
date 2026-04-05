@@ -5,8 +5,7 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-from gwexpy.types.mixin.mixin_legacy import RegularityMixin, PhaseMethodsMixin
-
+from gwexpy.types.mixin.mixin_legacy import PhaseMethodsMixin, RegularityMixin
 
 # ---------------------------------------------------------------------------
 # RegularityMixin

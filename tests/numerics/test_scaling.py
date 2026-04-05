@@ -4,8 +4,12 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from gwexpy.numerics.scaling import AutoScaler, get_safe_epsilon, safe_epsilon, safe_log_scale
-
+from gwexpy.numerics.scaling import (
+    AutoScaler,
+    get_safe_epsilon,
+    safe_epsilon,
+    safe_log_scale,
+)
 
 # ---------------------------------------------------------------------------
 # safe_epsilon
@@ -182,7 +186,6 @@ def test_safe_log_scale_tiny_values():
 
 def test_safe_log_scale_custom_dynamic_range():
     data = np.array([1.0, 0.001])
-    result_default = safe_log_scale(data)
     result_narrow = safe_log_scale(data, dynamic_range_db=20.0)
     # narrower dynamic range clips low values more
     assert np.all(np.isfinite(result_narrow))

@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pytest
+
 from gwexpy.timeseries import TimeSeries
 
 FIXTURE_DATA = Path(__file__).parent.parent.parent / "fixtures" / "data" / "test.gwf"
@@ -20,7 +21,7 @@ def has_framel():
 def test_read_gwf_framel():
     # Force the use of framel backend
     ts = TimeSeries.read(FIXTURE_DATA, CHANNEL, format="gwf.framel")
-    
+
     assert isinstance(ts, TimeSeries)
     assert ts.name == CHANNEL
     assert len(ts) > 0

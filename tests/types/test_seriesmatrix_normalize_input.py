@@ -6,6 +6,7 @@ import pytest
 from astropy import units as u
 from gwpy.types.series import Series
 
+from gwexpy.types.metadata import MetaData, MetaDataDict
 from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.types.seriesmatrix_validation import (
     _broadcast_attr,
@@ -18,8 +19,6 @@ from gwexpy.types.seriesmatrix_validation import (
     check_labels_unique,
     to_series,
 )
-from gwexpy.types.metadata import MetaData, MetaDataDict
-
 
 # ---------------------------------------------------------------------------
 # _detect_input_type

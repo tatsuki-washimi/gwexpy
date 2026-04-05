@@ -6,15 +6,14 @@ import pytest
 from astropy import units as u
 
 from gwexpy.types.series_creator import (
-    _is_time_unit,
-    _is_freq_unit,
     _is_angular_frequency,
-    _to_quantity_1d,
-    _to_hz,
+    _is_freq_unit,
+    _is_time_unit,
     _to_angular_frequency,
+    _to_hz,
+    _to_quantity_1d,
     as_series,
 )
-
 
 # ---------------------------------------------------------------------------
 # _is_time_unit

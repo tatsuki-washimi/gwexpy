@@ -11,7 +11,6 @@ from gwexpy.interop.base import from_plain_array, to_plain_array
 from gwexpy.interop.json_ import from_dict, from_json, to_dict, to_json
 from gwexpy.timeseries import TimeSeries
 
-
 # ---------------------------------------------------------------------------
 # to_plain_array
 # ---------------------------------------------------------------------------

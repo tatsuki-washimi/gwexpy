@@ -339,7 +339,7 @@ class TestPcaInverseTransform:
         res = dec.pca_fit(tsm, n_components=2)
         scores = dec.pca_transform(res, tsm, n_components=2)
         # original_shape has 4 channels, but scores only have 2 components
-        with warnings.catch_warnings(record=True) as w:
+        with warnings.catch_warnings(record=True):
             warnings.simplefilter("always")
             rec = dec.pca_inverse_transform(res, scores)
             # May or may not warn depending on shape matching
@@ -368,7 +368,7 @@ class TestPcaInverseTransform:
         scores = dec.pca_transform(res, tsm, n_components=2)
         # Force mismatch: claim more channels than features
         res.input_meta["original_shape"] = (10, 1, tsm.shape[-1])
-        with warnings.catch_warnings(record=True) as w:
+        with warnings.catch_warnings(record=True):
             warnings.simplefilter("always")
             rec = dec.pca_inverse_transform(res, scores)
         assert rec is not None
@@ -378,8 +378,6 @@ class TestPcaInverseTransform:
         tsm = _make_tsm()
         res = dec.pca_fit(tsm)
         scores_tsm = dec.pca_transform(res, tsm)
-        scores_val = scores_tsm.value  # plain ndarray
-
         # Wrap in a mock object that has no .value but has required attrs
         class FakeScores:
             def __init__(self, v, t0, dt, cls):
@@ -405,7 +403,7 @@ class TestPcaInverseTransform:
         # This will try to call obj.__class__ constructor which may fail;
         # just verify line 366 is hit
         try:
-            rec = dec.pca_inverse_transform(res, obj)
+            dec.pca_inverse_transform(res, obj)
         except Exception:
             pass
 
@@ -538,6 +536,6 @@ class TestIcaInverseTransform:
 
         obj = NoValueSources(sources.value, sources.t0, sources.dt)
         try:
-            rec = dec.ica_inverse_transform(res, obj)
+            dec.ica_inverse_transform(res, obj)
         except Exception:
             pass  # just verify line 613 is hit

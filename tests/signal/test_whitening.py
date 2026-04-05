@@ -6,8 +6,7 @@ import warnings
 import numpy as np
 import pytest
 
-from gwexpy.signal.preprocessing.whitening import WhiteningModel, whiten, _resolve_eps
-
+from gwexpy.signal.preprocessing.whitening import WhiteningModel, _resolve_eps, whiten
 
 # ---------------------------------------------------------------------------
 # _resolve_eps

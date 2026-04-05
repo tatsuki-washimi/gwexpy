@@ -14,7 +14,6 @@ xr = pytest.importorskip("xarray")
 from gwexpy.fields import ScalarField
 from gwexpy.interop.metpy_ import from_metpy_dataarray
 
-
 NT, NX, NY, NZ = 3, 4, 5, 6
 
 

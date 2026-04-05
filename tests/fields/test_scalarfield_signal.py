@@ -421,15 +421,15 @@ class TestScalarFieldResampleFilter:
         x = np.arange(nx) * 1.0 * u.m
         y = np.arange(ny) * 1.0 * u.m
         z = np.arange(nz) * 1.0 * u.m
-        
+
         # Gaussian pulse centered at t=1.0s (index 100)
         t0 = 1.0
         sigma = 0.1
         pulse = np.exp(-((times.value - t0)**2) / (2 * sigma**2))
-        
+
         # Broadcast pulse to 4D
         data = pulse[:, np.newaxis, np.newaxis, np.newaxis] * np.ones((1, nx, ny, nz))
-        
+
         field = ScalarField(
             data,
             unit=u.V,
@@ -448,19 +448,19 @@ class TestScalarFieldResampleFilter:
         # Resample from 100Hz to 50Hz
         new_rate = 50 * u.Hz
         resampled = pulse_field.resample(new_rate)
-        
+
         # Check shape
         assert resampled.shape[0] == 100
         assert resampled.shape[1:] == pulse_field.shape[1:]
-        
+
         # Check dt via axis0[1] - axis0[0]
         expected_dt = 1.0 / 50.0
         actual_dt = (resampled._axis0_index[1] - resampled._axis0_index[0]).to(u.s).value
         assert_allclose(actual_dt, expected_dt, atol=1e-10)
-        
+
         # Check axis0[0] invariance
         assert resampled._axis0_index[0] == pulse_field._axis0_index[0]
-        
+
         # Check metadata propagation
         assert hasattr(resampled, "_gwex_test_attr")
         assert resampled._gwex_test_attr == "metadata_to_preserve"
@@ -471,20 +471,20 @@ class TestScalarFieldResampleFilter:
         from scipy import signal
         fs = 1.0 / (pulse_field._axis0_index[1] - pulse_field._axis0_index[0]).to(u.s).value
         zpk = signal.butter(4, 10, 'low', fs=fs, output='zpk')
-        
+
         # Apply the filter (filtfilt=True is default)
         filtered = pulse_field.filter(zpk)
-        
+
         # Find peak position in time for a sample point
         orig_data = pulse_field.value[:, 0, 0, 0]
         filt_data = filtered.value[:, 0, 0, 0]
-        
+
         orig_peak_idx = np.argmax(orig_data)
         filt_peak_idx = np.argmax(filt_data)
-        
+
         # For zero-phase filter (filtfilt), peak should not shift
         assert orig_peak_idx == filt_peak_idx
-        
+
         # Check shape and metadata
         assert filtered.shape == pulse_field.shape
         assert hasattr(filtered, "_gwex_test_attr")

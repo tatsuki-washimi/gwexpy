@@ -92,7 +92,8 @@ class TestIsCompatibleExact:
         tsm2 = tsm1.copy()
         # Manually change row keys
         import collections
-        from gwexpy.types.metadata import MetaDataDict, MetaData
+
+        from gwexpy.types.metadata import MetaData, MetaDataDict
         old_items = list(tsm2.rows.items())
         new_dict = collections.OrderedDict()
         new_dict["newrow0"] = old_items[0][1]

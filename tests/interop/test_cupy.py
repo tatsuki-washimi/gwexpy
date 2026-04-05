@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
-from gwexpy.interop.cupy_ import is_cupy_available, to_cupy, from_cupy
+from gwexpy.interop.cupy_ import from_cupy, is_cupy_available, to_cupy
 from gwexpy.timeseries import TimeSeries
 
 

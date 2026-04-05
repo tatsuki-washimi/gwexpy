@@ -1,18 +1,18 @@
-import os
-import struct
-import sqlite3
 import base64
 import json
+import os
+import sqlite3
+import struct
 import warnings
 from pathlib import Path
+from xml.etree import ElementTree as ET
 
 import numpy as np
-from scipy.io import wavfile
-from scipy import signal
-from xml.etree import ElementTree as ET
 
 # Official tools / KAGRA-standard libraries
 from gwpy.timeseries import TimeSeries, TimeSeriesDict
+from scipy import signal
+from scipy.io import wavfile
 
 # Optional dependencies
 try:
@@ -110,12 +110,12 @@ def generate_gbd(filename, size=100):
         if header_lines[0] == new_line:
             break
         header_lines[0] = new_line
-    
+
     data = np.zeros((size, len(channels)), dtype=np.int16)
     data[:, 0] = (np.sin(np.linspace(0, 10, size)) * 1000).astype(np.int16)
-    data[:, 1] = (np.random.rand(size) > 0.5).astype(np.int16) 
-    data[:, 2] = (np.random.rand(size) > 0.8).astype(np.int16) 
-    
+    data[:, 1] = (np.random.rand(size) > 0.5).astype(np.int16)
+    data[:, 2] = (np.random.rand(size) > 0.8).astype(np.int16)
+
     with open(filename, 'wb') as f:
         f.write(header.encode("ascii"))
         f.write(data.tobytes())
@@ -153,7 +153,7 @@ def generate_gwf(filename):
         data = np.random.randn(n_samples)
         ts = TimeSeries(data, sample_rate=rate_hz, t0=gps_start, channel=ch, name=ch)
         tsd[ch] = ts
-    
+
     tsd.write(filename, format='gwf')
 
 def _to_base64_stream(data):
@@ -169,19 +169,14 @@ def generate_diaggui_xml(filename):
     fs = 2048.0
     duration = 2.0
     t = np.arange(0, duration, 1/fs)
-    gps_start = 1457936560.0
     chA_data = np.sin(2 * np.pi * 60 * t) + 0.5 * np.random.randn(len(t))
     chB_data = 2.0 * np.sin(2 * np.pi * 60 * t + 0.1) + 0.5 * np.random.randn(len(t))
     chA_name = "K1:TST-CH_A"
-    chB_name = "K1:TST-CH_B"
     nperseg = int(fs)
     f, pA = signal.welch(chA_data, fs=fs, nperseg=nperseg)
     f, pB = signal.welch(chB_data, fs=fs, nperseg=nperseg)
     f, pAB = signal.csd(chA_data, chB_data, fs=fs, nperseg=nperseg)
     asd_A = np.sqrt(pA)
-    coh = np.abs(pAB) / np.sqrt(pA * pB)
-    tf = pAB / pA
-    
     root = ET.Element("LIGO_LW")
     tp = ET.SubElement(root, "LIGO_LW", Name="TestParameters")
     params = {"MeasChn[0]": chA_name, "MeasActive[0]": "true", "MeasActive[1]": "true"}
@@ -214,7 +209,7 @@ def generate_davis_db(filename):
     conn = sqlite3.connect(filename)
     cursor = conn.cursor()
     cursor.execute("CREATE TABLE archive (dateTime INTEGER PRIMARY KEY, barometer REAL, outTemp REAL)")
-    gps_start_unix = 1457936560 
+    gps_start_unix = 1457936560
     for i in range(10):
         t = gps_start_unix + i * 60
         cursor.execute("INSERT INTO archive VALUES (?, ?, ?)", (t, 1013.25, 20.0 + i))
@@ -257,7 +252,7 @@ def generate_netcdf4(filename):
 
 def generate_tdms(filename):
     if nptdms is None: return
-    from nptdms import TdmsWriter, ChannelObject
+    from nptdms import ChannelObject, TdmsWriter
     with TdmsWriter(filename) as tdms_writer:
         channel = ChannelObject('Group', 'ch1', np.random.randn(100))
         tdms_writer.write_segment([channel])

@@ -2,13 +2,15 @@
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")
+
+from unittest.mock import patch
 
 import numpy as np
 import pytest
-from unittest.mock import patch
-
 from gwpy.frequencyseries import FrequencySeries
+
 from gwexpy.fitting import fit_series
 from gwexpy.fitting.highlevel import _plot_bootstrap_fit
 
@@ -23,7 +25,6 @@ def _make_fit_result():
     a_true, b_true = 2.0, 1.0
     rng = np.random.default_rng(0)
     y = a_true * x + b_true + rng.normal(0, 0.1, len(x))
-    dy = np.full_like(y, 0.1)
     fs = FrequencySeries(y, frequencies=x, unit="1/Hz")
     result = fit_series(fs, _linear)
     return result

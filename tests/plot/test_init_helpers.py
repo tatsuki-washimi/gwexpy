@@ -1,27 +1,26 @@
 """Tests for gwexpy.plot._init_helpers."""
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-
 import numpy as np
 import pytest
 
 from gwexpy.plot._init_helpers import (
-    _filter_monitor_args,
-    _expand_args,
-    _flatten_scan,
-    _extract_layout_and_fig_params,
-    _apply_list_labels,
-    _apply_ylabel,
-    _apply_xlabel,
-    _apply_layout_polish,
-    _force_scales,
     _add_spectrogram_colorbars,
-    _manage_sharex_labels,
     _apply_individual_axis_labels,
+    _apply_layout_polish,
+    _apply_list_labels,
+    _apply_xlabel,
+    _apply_ylabel,
     _determine_scales_and_labels,
+    _expand_args,
+    _extract_layout_and_fig_params,
+    _filter_monitor_args,
+    _flatten_scan,
+    _force_scales,
+    _manage_sharex_labels,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mock types
@@ -980,7 +979,7 @@ class TestApplyXlabel:
 
     def test_no_sharex_sets_on_all_axes(self):
         fig, axes = plt.subplots(1, 2)
-        result = _apply_xlabel(fig, "X", {})
+        _apply_xlabel(fig, "X", {})
         assert all(ax.get_xlabel() == "X" for ax in axes)
         plt.close(fig)
 
@@ -1113,7 +1112,8 @@ class TestAddSpectrogramColorbars:
 
     def test_colorbar_exception_silently_caught(self):
         """fig.colorbar raising hits the except branch (lines 478-479)."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         import numpy as np
 
         fig, ax = plt.subplots()

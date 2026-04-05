@@ -55,7 +55,7 @@ def to_polars_frequencyseries(fs, index_column="frequency", index_unit="Hz"):
     from .base import to_plain_array
 
     data = to_plain_array(fs)
-    
+
     # Convert frequencies to target unit if provided
     freqs_q = fs.frequencies
     if index_unit is not None:

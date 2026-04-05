@@ -40,9 +40,9 @@ def test_fs_matrix_channel_names_reshaping():
 def test_fs_matrix_metadata_init():
     data = np.random.rand(2, 3, 10)
     fsm = FrequencySeriesMatrix(
-        data, 
-        df=1, 
-        rows=["R1", "R2"], 
+        data,
+        df=1,
+        rows=["R1", "R2"],
         cols=["C1", "C2", "C3"],
         name="TestMatrix"
     )
@@ -56,11 +56,11 @@ def test_fs_matrix_attribute_propagation():
     data = np.random.rand(2, 5)
     fsm = FrequencySeriesMatrix(data, df=1)
     fsm._gwex_custom = "propagate_me"
-    
+
     # Slicing
     sub = fsm[0:1, :]
     assert sub._gwex_custom == "propagate_me"
-    
+
     # View casting
     view = fsm.view(FrequencySeriesMatrix)
     assert view._gwex_custom == "propagate_me"

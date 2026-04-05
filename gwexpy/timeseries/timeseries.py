@@ -14,33 +14,30 @@ This module integrates all Mixins into a single TimeSeries class.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, SupportsIndex, cast
+from typing import TYPE_CHECKING, Any, SupportsIndex
 
-import numpy as np
 from astropy import units as u
 from numpy.typing import ArrayLike
 
 from gwexpy.fitting.mixin import FittingMixin
-from gwexpy.types.mixin import PhaseMethodsMixin, RegularityMixin, SignalAnalysisMixin
+from gwexpy.types.mixin import PhaseMethodsMixin, SignalAnalysisMixin
 from gwexpy.types.mixin._plot_mixin import PlotMixin
 
 from ._analysis import TimeSeriesAnalysisMixin
-from ._interop import TimeSeriesInteropMixin
-from ._resampling import TimeSeriesResamplingMixin
-from ._signal import TimeSeriesSignalMixin
 
 # Import Core Base
 from ._core import TimeSeriesCore
+from ._interop import TimeSeriesInteropMixin
+from ._resampling import TimeSeriesResamplingMixin
+from ._signal import TimeSeriesSignalMixin
 
 # Import Mixins
 from ._spectral import TimeSeriesSpectralMixin
 from ._statistics import StatisticsMixin
 
 # Import legacy for remaining methods
-from ._timeseries_legacy import TimeSeries as _LegacyTimeSeries
 
 if TYPE_CHECKING:
-    from gwpy.timeseries import TimeSeries as GwpyTimeSeries
 
     from gwexpy.timeseries import TimeSeriesDict
 

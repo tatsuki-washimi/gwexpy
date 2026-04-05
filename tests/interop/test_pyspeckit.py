@@ -27,8 +27,9 @@ class TestToPyspeckit:
         fake_pyspeckit = SimpleNamespace(Spectrum=lambda **kw: kw)
         obj = SimpleNamespace(value=np.ones(5), unit=u.m)  # no .frequencies
         with patch.dict(sys.modules, {"pyspeckit": fake_pyspeckit}):
-            from gwexpy.interop import pyspeckit_
             import importlib
+
+            from gwexpy.interop import pyspeckit_
             importlib.reload(pyspeckit_)
             with pytest.raises(ValueError, match="frequencies"):
                 pyspeckit_.to_pyspeckit(obj)
@@ -42,11 +43,12 @@ class TestToPyspeckit:
 
         fake_pyspeckit = SimpleNamespace(Spectrum=fake_spectrum)
         with patch.dict(sys.modules, {"pyspeckit": fake_pyspeckit}):
-            from gwexpy.interop import pyspeckit_
             import importlib
+
+            from gwexpy.interop import pyspeckit_
             importlib.reload(pyspeckit_)
             fs = _make_fs(n=6)
-            result = pyspeckit_.to_pyspeckit(fs)
+            pyspeckit_.to_pyspeckit(fs)
         assert calls["data"] is not None
         np.testing.assert_array_equal(calls["xarr"], fs.frequencies.value)
 

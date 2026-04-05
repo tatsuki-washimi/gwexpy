@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Literal, Optional, TypeVar
 
 import numpy as np
 from gwpy.time import LIGOTimeGPS
@@ -57,7 +57,7 @@ def to_xarray(
     return da
 
 
-def from_xarray(cls: Type[T], da: xr.DataArray, unit: Optional[str] = None) -> T:
+def from_xarray(cls: type[T], da: xr.DataArray, unit: Optional[str] = None) -> T:
     """DataArray -> TimeSeries"""
     require_optional("xarray")
 
@@ -252,9 +252,6 @@ def from_xarray_field(
     # Order: move axis0_dim → position 0, then spatial dims → 1,2,3
     ordered_spatial = [role_to_dim.get(r) for r in (1, 2, 3)]
     spatial_present = [d for d in ordered_spatial if d is not None]
-    remaining_dims = [d for d in dims if d != ax0_dim and d not in spatial_present]
-    # remaining_dims should be empty in well-formed input; ignored if extra
-
     # Transpose: axis0 first, then spatial, then any extras
     new_order = []
     if ax0_dim and ax0_dim in dims:
@@ -270,7 +267,6 @@ def from_xarray_field(
 
     # Pad to 4D: prepend singleton axis0 if missing, append singleton spatial axes
     # Resulting shape: (n_ax0, n_x, n_y, n_z)
-    n_spatial_found = len([d for d in spatial_present if d in dims])
     ax0_present = ax0_dim and ax0_dim in dims
 
     if not ax0_present:
@@ -318,7 +314,7 @@ def to_xarray_field(
         When *field* is a VectorField.
     """
     xr = require_optional("xarray")
-    from gwexpy.fields import ScalarField, VectorField  # noqa: PLC0415
+    from gwexpy.fields import VectorField  # noqa: PLC0415
 
     if isinstance(field, VectorField):
         arrays = {}

@@ -9,6 +9,7 @@ import numpy as np
 from astropy import units as u
 from iminuit import Minuit
 from iminuit.util import describe
+
 try:
     from scipy.linalg import solve_triangular
 except ImportError as _exc:

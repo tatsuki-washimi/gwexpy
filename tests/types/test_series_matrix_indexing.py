@@ -212,7 +212,7 @@ class TestSubmatrix:
         # But self[[0], [0], :] triggers list branch in __getitem__ which calls row_index(0) → error
         # Just test single-string normalization by checking it runs the normalize path
         try:
-            result = tsm.submatrix(row_key, col_key)
+            tsm.submatrix(row_key, col_key)
         except (KeyError, TypeError):
             pass  # known issue with integer list fallback in __getitem__
 

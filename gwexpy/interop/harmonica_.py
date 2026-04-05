@@ -21,8 +21,6 @@ from __future__ import annotations
 
 from typing import Any
 
-import numpy as np
-
 from gwexpy.fields import ScalarField, VectorField
 
 from ._optional import require_optional

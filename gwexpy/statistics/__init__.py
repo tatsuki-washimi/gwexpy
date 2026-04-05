@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from .gauch import compute_gauch, GauChResult
+from .dq_flag import to_segments
+from .gauch import GauChResult, compute_gauch
 from .rayleigh_test import rayleigh_pvalue
 from .student_t_indicator import compute_student_t_nu
-from .dq_flag import to_segments
 
 __all__ = [
     "compute_gauch",

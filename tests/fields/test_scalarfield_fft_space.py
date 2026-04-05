@@ -288,27 +288,27 @@ class TestScalarFieldFftIfftSpaceReversibility:
             axis_names=["t", "x", "y", "z"],
             space_domain="real",
         )
-        
+
         # FFT all spatial axes
         k_space = field_4d.fft_space()
         assert k_space.axis_names == ("t", "kx", "ky", "kz")
-        
+
         # IFFT only kx and kz
         partial_real = k_space.ifft_space(axes=["kx", "kz"])
-        
+
         # Check axis names: kx -> x, kz -> z, ky remains ky
         assert partial_real.axis_names == ("t", "x", "ky", "z")
-        
+
         # Check space domains
         assert partial_real.space_domains["x"] == "real"
         assert partial_real.space_domains["ky"] == "k"
         assert partial_real.space_domains["z"] == "real"
-        
+
         # Check units
         assert partial_real._axis1_index.unit == u.m
         assert partial_real._axis2_index.unit == 1/u.m
         assert partial_real._axis3_index.unit == u.m
-        
+
         # Check values of untransformed ky axis matches k_space
         assert_allclose(partial_real._axis2_index.value, k_space._axis2_index.value)
 

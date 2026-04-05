@@ -114,7 +114,7 @@ def _reconstruct_timestamps(
                 f"Row {i}: second value {secs[i]} is out of range [0, 59]"
             )
         try:
-            tz = timezone if timezone is not None else _dt.timezone.utc
+            tz = timezone if timezone is not None else _dt.UTC
             dt = _dt.datetime(
                 years[i], months[i], days[i],
                 hours[i], minutes[i], secs[i], microsecs[i],

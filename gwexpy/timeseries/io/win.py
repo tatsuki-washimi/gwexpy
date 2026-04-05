@@ -21,11 +21,10 @@ We also provide regression tests using a sample WIN file under ``tests/sample-da
 
 from __future__ import annotations
 
-from typing import Any, cast
-
 import struct
 import warnings
 from pathlib import Path
+from typing import Any, cast
 
 import numpy as np
 

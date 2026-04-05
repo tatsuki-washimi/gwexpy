@@ -101,6 +101,7 @@ class TestTimeSeriesWindowDataset:
         with patch.dict(sys.modules, {"torch": None}):
             # Reimport to ensure clean state
             import importlib
+
             import gwexpy.interop.torch_dataset as td_mod
             importlib.reload(td_mod)
             with pytest.raises(ImportError):
@@ -133,6 +134,7 @@ class TestToTorchDataloader:
     def test_requires_torch(self):
         with patch.dict(sys.modules, {"torch": None}):
             import importlib
+
             import gwexpy.interop.torch_dataset as td_mod
             importlib.reload(td_mod)
             with pytest.raises(ImportError):

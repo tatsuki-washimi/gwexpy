@@ -417,8 +417,6 @@ def test_local_hurst_impute_policy(monkeypatch):
 
 def test_local_hurst_dt_not_quantity(monkeypatch):
     # Line 242 — dt is not Quantity (fallback to float)
-    ts = TimeSeries(np.arange(10.0), t0=0, dt=1, unit=u.dimensionless_unscaled)
-
     def fake_hurst(_ts, **kwargs):
         return 0.5
 
@@ -443,8 +441,6 @@ def test_local_hurst_dt_not_quantity(monkeypatch):
 
 def test_local_hurst_window_float_non_time_dt(monkeypatch):
     # Lines 259-260 — float window, dt has non-time physical_type
-    ts = TimeSeries(np.arange(10.0), t0=0, dt=1, unit=u.dimensionless_unscaled)
-
     def fake_hurst(_ts, **kwargs):
         return 0.5
 

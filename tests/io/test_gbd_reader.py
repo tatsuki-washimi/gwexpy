@@ -16,21 +16,21 @@ def test_read_gbd_dict():
     # GBD requires a timezone
     with pytest.raises(ValueError, match="timezone is required"):
         read_timeseriesdict_gbd(FIXTURE_DATA)
-    
+
     # Read with JST timezone
     tsd = TimeSeriesDict.read(FIXTURE_DATA, format="gbd", timezone="Asia/Tokyo")
-    
+
     assert isinstance(tsd, TimeSeriesDict)
     # Expected channels from generate_fixtures.py: ["CH1", "Alarm", "AlarmOut"]
     assert "CH1" in tsd
     assert "Alarm" in tsd
     assert "AlarmOut" in tsd
-    
+
     # Check metadata
     ts = tsd["CH1"]
     assert ts.sample_rate == 1.0 * u.Hz
     assert ts.unit == u.V  # Default for non-digital
-    
+
     # Check data content (sin wave was generated for CH1)
     # Just check it's not all zeros or NaNs
     assert not np.all(ts.value == 0)

@@ -49,8 +49,9 @@ class TestToTorchWithMock:
     def test_copy_false_uses_as_tensor(self):
         torch_mod = self._fake_torch()
         with patch.dict(sys.modules, {"torch": torch_mod}):
-            from gwexpy.interop import torch_
             import importlib
+
+            from gwexpy.interop import torch_
             importlib.reload(torch_)
             ts = _make_ts()
             result = torch_.to_torch(ts, copy=False)
@@ -59,8 +60,9 @@ class TestToTorchWithMock:
     def test_copy_true_uses_tensor(self):
         torch_mod = self._fake_torch()
         with patch.dict(sys.modules, {"torch": torch_mod}):
-            from gwexpy.interop import torch_
             import importlib
+
+            from gwexpy.interop import torch_
             importlib.reload(torch_)
             ts = _make_ts()
             result = torch_.to_torch(ts, copy=True)
@@ -69,8 +71,9 @@ class TestToTorchWithMock:
     def test_requires_grad_sets_flag(self):
         torch_mod = self._fake_torch()
         with patch.dict(sys.modules, {"torch": torch_mod}):
-            from gwexpy.interop import torch_
             import importlib
+
+            from gwexpy.interop import torch_
             importlib.reload(torch_)
             ts = _make_ts()
             result = torch_.to_torch(ts, requires_grad=True, copy=False)
@@ -124,7 +127,7 @@ class TestFromTorch:
                 return self
             def numpy(self): return np.ones(3)
 
-        ts = from_torch(TimeSeries, FakeTensor(), t0=0.0, dt=1.0)
+        from_torch(TimeSeries, FakeTensor(), t0=0.0, dt=1.0)
         assert resolved["conj"] is True
         assert resolved["neg"] is True
 
@@ -153,8 +156,9 @@ class TestToTfWithMock:
             convert_to_tensor=lambda data, dtype=None: FakeTensor(data)
         )
         with patch.dict(sys.modules, {"tensorflow": fake_tf}):
-            from gwexpy.interop import tensorflow_
             import importlib
+
+            from gwexpy.interop import tensorflow_
             importlib.reload(tensorflow_)
             ts = _make_ts(n=5)
             tensor = tensorflow_.to_tf(ts)

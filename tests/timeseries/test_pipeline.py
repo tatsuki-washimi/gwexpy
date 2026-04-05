@@ -17,8 +17,6 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-
-
 from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 from gwexpy.timeseries.collections import TimeSeriesDict, TimeSeriesList
 from gwexpy.timeseries.pipeline import (
@@ -360,7 +358,7 @@ class TestImputeTransform:
         tsl = TimeSeriesList()
         tsl.append(ts1)
         imp = ImputeTransform(method="mean")
-        
+
         # Test full list transform
         result = imp.transform(tsl)
         assert isinstance(result, TimeSeriesList)
@@ -802,7 +800,7 @@ class TestPCATransform:
 @pytest.mark.usefixtures("mock_sklearn_decomposition")
 class TestPCATransformMocked:
     """Explicitly test PCA transform with mocks via fixture."""
-    
+
     @pytest.fixture(autouse=True)
     def _setup_imports(self):
         from gwexpy.timeseries.pipeline import PCATransform
@@ -814,7 +812,7 @@ class TestPCATransformMocked:
         result = pca.fit_transform(mat)
         assert isinstance(result, TimeSeriesMatrix)
         assert result.shape == (2, 1, 50)
-        
+
     def test_pca_mocked_inverse(self):
         mat = _make_tsm(n_channels=3, n_time=50)
         pca = self.PCATransform(n_components=3)
@@ -946,7 +944,7 @@ class TestICATransform:
 @pytest.mark.usefixtures("mock_sklearn_decomposition")
 class TestICATransformMocked:
     """Explicitly test ICA transform with mocks via fixture."""
-    
+
     @pytest.fixture(autouse=True)
     def _setup_imports(self):
         from gwexpy.timeseries.pipeline import ICATransform
@@ -958,7 +956,7 @@ class TestICATransformMocked:
         result = ica.fit_transform(mat)
         assert isinstance(result, TimeSeriesMatrix)
         assert result.shape == (2, 1, 50)
-        
+
     def test_ica_mocked_inverse(self):
         mat = _make_tsm(n_channels=3, n_time=50)
         ica = self.ICATransform(n_components=3)

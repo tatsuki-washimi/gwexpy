@@ -34,8 +34,9 @@ class SignalAnalysisMixin:
         Series
             Smoothed series.
         """
-        from astropy import units as u
         from typing import cast
+
+        from astropy import units as u
 
         h = cast(Any, self)
 

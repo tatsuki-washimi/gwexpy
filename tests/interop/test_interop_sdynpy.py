@@ -12,12 +12,12 @@ import numpy as np
 import pytest
 
 from gwexpy.frequencyseries import FrequencySeriesMatrix
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from gwexpy.interop.sdynpy_ import (
     from_sdynpy_frf,
     from_sdynpy_shape,
     from_sdynpy_timehistory,
 )
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 N_MODES = 3
 N_NODES = 10

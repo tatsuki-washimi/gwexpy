@@ -31,7 +31,7 @@ class TestFSMatrixFreqParamPriority:
             df=50.0 * u.Hz,
             f0=100.0 * u.Hz
         )
-        
+
         # Verify result is based on freqs
         np.testing.assert_allclose(fsm.frequencies.value, [10, 20, 30])
         assert fsm.f0 == 10.0 * u.Hz
@@ -42,10 +42,10 @@ class TestFSMatrixEmptyInit:
     def test_data_none_init(self):
         # FrequencySeriesMatrix(data=None)
         fsm = FrequencySeriesMatrix(data=None)
-        
+
         # Verify shape
         assert fsm.shape == (0, 0, 0)
-        
+
         # Verify frequencies (xindex)
         assert len(fsm.frequencies) == 0
         assert isinstance(fsm.frequencies, np.ndarray)
@@ -58,19 +58,19 @@ class TestFSMatrixConversionMethods:
         data = np.random.rand(2, 2, 3)
         freqs = [0, 10, 20] * u.Hz
         return FrequencySeriesMatrix(
-            data, 
-            frequencies=freqs, 
-            rows=["R1", "R2"], 
+            data,
+            frequencies=freqs,
+            rows=["R1", "R2"],
             cols=["C1", "C2"]
         )
 
     def test_to_list_type_and_element(self, fsm_2x2):
         # to_list() should return FrequencySeriesList
         fs_list = fsm_2x2.to_list()
-        
+
         assert isinstance(fs_list, FrequencySeriesList)
         assert len(fs_list) == 4  # N*M elements (flattened list)
-        
+
         # Check first element
         first = fs_list[0]
         assert isinstance(first, FrequencySeries)
@@ -81,17 +81,17 @@ class TestFSMatrixConversionMethods:
     def test_to_dict_type_and_multi_column_keys(self, fsm_2x2):
         # to_dict() should return FrequencySeriesDict
         fs_dict = fsm_2x2.to_dict()
-        
+
         assert isinstance(fs_dict, FrequencySeriesDict)
         assert len(fs_dict) == 4
-        
+
         # Multi-column key check: (row, col) key format for SeriesMatrixBase
         expected_keys = [
             ("R1", "C1"), ("R1", "C2"),
             ("R2", "C1"), ("R2", "C2")
         ]
         assert list(fs_dict.keys()) == expected_keys
-        
+
         # Check first element
         first = fs_dict[("R1", "C1")]
         assert isinstance(first, FrequencySeries)
@@ -148,14 +148,14 @@ class TestFSMatrixChannelNamesReshaping:
         # Trigger the 'except' block at Line 98 using a custom object with None shape
         class FaultyData:
             shape = None  # len(None) raises TypeError
-        
+
         data = FaultyData()
         names = ["ch1", "ch2", "ch3"]
-        
+
         with patch("gwexpy.frequencyseries.matrix.SeriesMatrix.__new__") as mock_new:
             mock_new.return_value = MagicMock()
-            fsm = FrequencySeriesMatrix(data, channel_names=names, frequencies=[0, 1, 2])
-            
+            FrequencySeriesMatrix(data, channel_names=names, frequencies=[0, 1, 2])
+
             # Check what was passed to names (it should be reshaped)
             args, kwargs = mock_new.call_args
             assert kwargs["names"].shape == (3, 1)
@@ -165,14 +165,14 @@ class TestFSMatrixChannelNamesReshaping:
         # Trigger the 'except' block but cn.ndim != 1
         class FaultyData:
             shape = None
-        
+
         data = FaultyData()
         names = np.array([["A"]])
-        
+
         with patch("gwexpy.frequencyseries.matrix.SeriesMatrix.__new__") as mock_new:
             mock_new.return_value = MagicMock()
-            fsm = FrequencySeriesMatrix(data, channel_names=names, frequencies=[0])
-            
+            FrequencySeriesMatrix(data, channel_names=names, frequencies=[0])
+
             args, kwargs = mock_new.call_args
             # Hits Line 102: kwargs["names"] = cn
             assert kwargs["names"].shape == (1, 1)

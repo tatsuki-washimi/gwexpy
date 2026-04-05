@@ -40,8 +40,9 @@ class TestToSpecutilsWithMock:
     def test_basic_conversion(self):
         fake_spec = _fake_specutils_and_units()
         with patch.dict(sys.modules, {"specutils": fake_spec}):
-            from gwexpy.interop import specutils_
             import importlib
+
+            from gwexpy.interop import specutils_
             importlib.reload(specutils_)
             fs = _make_fs(n=5)
             result = specutils_.to_specutils(fs)
@@ -51,8 +52,9 @@ class TestToSpecutilsWithMock:
         fake_spec = _fake_specutils_and_units()
         obj = SimpleNamespace(value=np.ones(5), unit=u.m)  # no .frequencies attr
         with patch.dict(sys.modules, {"specutils": fake_spec}):
-            from gwexpy.interop import specutils_
             import importlib
+
+            from gwexpy.interop import specutils_
             importlib.reload(specutils_)
             with pytest.raises(ValueError, match="frequencies"):
                 specutils_.to_specutils(obj)
@@ -72,8 +74,9 @@ class TestToSpecutilsWithMock:
             frequencies=fs.frequencies,
         )
         with patch.dict(sys.modules, {"specutils": fake_spec}):
-            from gwexpy.interop import specutils_
             import importlib
+
+            from gwexpy.interop import specutils_
             importlib.reload(specutils_)
             result = specutils_.to_specutils(fs_mock)
         assert result is not None
@@ -87,8 +90,9 @@ class TestToSpecutilsWithMock:
             frequencies=fs.frequencies,
         )
         with patch.dict(sys.modules, {"specutils": fake_spec}):
-            from gwexpy.interop import specutils_
             import importlib
+
+            from gwexpy.interop import specutils_
             importlib.reload(specutils_)
             result = specutils_.to_specutils(fs_mock)
         assert result is not None
@@ -103,8 +107,9 @@ class TestToSpecutilsWithMock:
             frequencies=fake_freqs,
         )
         with patch.dict(sys.modules, {"specutils": fake_spec}):
-            from gwexpy.interop import specutils_
             import importlib
+
+            from gwexpy.interop import specutils_
             importlib.reload(specutils_)
             result = specutils_.to_specutils(fs_mock)
         assert result is not None

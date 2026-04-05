@@ -9,14 +9,13 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-from gwexpy.timeseries.io.csv_config import CSVFormatConfig, ColumnSpec
+from gwexpy.timeseries.io.csv_config import ColumnSpec, CSVFormatConfig
 from gwexpy.timeseries.io.csv_enhanced import (
     _detect_delimiter,
     _detect_skip_rows,
     _resample_uniform,
     read_timeseriesdict_csv,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

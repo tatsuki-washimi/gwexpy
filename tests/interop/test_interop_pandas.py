@@ -82,8 +82,8 @@ class TestToPandasDataFrame:
         assert len(df) == 5
 
     def test_empty_dict_returns_empty_dataframe(self):
-        from gwexpy.timeseries import TimeSeriesDict
         from gwexpy.interop.pandas_ import to_pandas_dataframe
+        from gwexpy.timeseries import TimeSeriesDict
         d = TimeSeriesDict()
         df = to_pandas_dataframe(d)
         assert isinstance(df, pd.DataFrame)
@@ -92,8 +92,8 @@ class TestToPandasDataFrame:
 
 class TestFromPandasDataFrame:
     def test_roundtrip(self):
+        from gwexpy.interop.pandas_ import from_pandas_dataframe, to_pandas_dataframe
         from gwexpy.timeseries import TimeSeriesDict
-        from gwexpy.interop.pandas_ import to_pandas_dataframe, from_pandas_dataframe
 
         d = TimeSeriesDict({
             "ch1": TimeSeries(np.arange(5, dtype=float), dt=0.1, t0=0),
@@ -104,8 +104,8 @@ class TestFromPandasDataFrame:
         assert len(d2) == 2
 
     def test_with_unit_map(self):
+        from gwexpy.interop.pandas_ import from_pandas_dataframe, to_pandas_dataframe
         from gwexpy.timeseries import TimeSeriesDict
-        from gwexpy.interop.pandas_ import to_pandas_dataframe, from_pandas_dataframe
 
         d = TimeSeriesDict({
             "ch1": TimeSeries(np.arange(5, dtype=float), dt=0.1, t0=0),

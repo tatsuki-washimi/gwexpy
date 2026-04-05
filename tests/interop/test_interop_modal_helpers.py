@@ -15,7 +15,6 @@ from gwexpy.interop._modal_helpers import (
     infer_unit_from_response_type,
 )
 
-
 # ---------------------------------------------------------------------------
 # infer_unit_from_response_type
 # ---------------------------------------------------------------------------

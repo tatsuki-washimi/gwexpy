@@ -17,7 +17,6 @@ from gwexpy.io.utils import (
     parse_timezone,
 )
 
-
 # ---------------------------------------------------------------------------
 # maybe_pad_timeseries
 # ---------------------------------------------------------------------------
@@ -38,12 +37,12 @@ def test_maybe_pad_timeseries_delegation():
         target = "gwpy.timeseries.connect._pad_series"
     else:
         target = "gwpy.timeseries.io.core._pad_series"
-        
+
     ts = MagicMock()
     with patch(target) as mock_pad:
         maybe_pad_timeseries(ts, gap="raise")
         mock_pad.assert_called_with(ts, np.nan, start=None, end=None, error=True)
-        
+
         maybe_pad_timeseries(ts, gap="pad")
         mock_pad.assert_called_with(ts, np.nan, start=None, end=None, error=False)
 
@@ -57,10 +56,10 @@ def test_apply_unit_series_matrix_path():
     class DummySeriesMatrix:
         def __init__(self):
             self.meta = np.array([[{"unit": u.m}]], dtype=object)
-    
+
     obj = DummySeriesMatrix()
     with patch("gwexpy.interop._registry.ConverterRegistry.get_constructor", return_value=DummySeriesMatrix):
-        result = apply_unit(obj, "V")
+        apply_unit(obj, "V")
         assert obj.meta[0, 0]["unit"] == u.V
 
 
@@ -73,7 +72,7 @@ def test_apply_unit_registry_resolution_failure():
                 self.unit = u.m
         obj = SimpleObj()
         # Should NOT raise TypeError, but fall through to line 125+
-        result = apply_unit(obj, "V")
+        apply_unit(obj, "V")
         assert obj.unit == u.V
 
 
@@ -89,7 +88,7 @@ def test_apply_unit_constructor_fallback_attribute_error():
         @unit.setter
         def unit(self, v):
             raise AttributeError("immutable")
-            
+
     obj = FixedUnitObj(np.array([1.0]), unit=u.m)
     result = apply_unit(obj, "V")
     assert result is not obj
@@ -121,7 +120,7 @@ def test_parse_timezone_manual_fallback():
 def test_ensure_datetime_aware_passthrough():
     """Test ensure_datetime does not replace tzinfo if already aware (Line 76)."""
     tz1 = _dt.timezone(_dt.timedelta(hours=9))
-    tz2 = _dt.timezone.utc
+    tz2 = _dt.UTC
     dt = _dt.datetime(2020, 1, 1, tzinfo=tz1)
     result = ensure_datetime(dt, tzinfo=tz2)
     assert result.tzinfo is tz1

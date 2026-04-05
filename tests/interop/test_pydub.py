@@ -68,11 +68,12 @@ class TestToPydub:
 
         fake_pydub = SimpleNamespace(AudioSegment=FakeAudioSegment)
         with patch.dict(sys.modules, {"pydub": fake_pydub}):
-            from gwexpy.interop import pydub_ as pydub_mod
             import importlib
+
+            from gwexpy.interop import pydub_ as pydub_mod
             importlib.reload(pydub_mod)
             ts = _make_ts(n=8)
-            seg = pydub_mod.to_pydub(ts, sample_width=2)
+            pydub_mod.to_pydub(ts, sample_width=2)
         assert calls["sample_width"] == 2
         assert calls["channels"] == 1
 
@@ -84,12 +85,13 @@ class TestToPydub:
 
         fake_pydub = SimpleNamespace(AudioSegment=FakeAudioSegment)
         with patch.dict(sys.modules, {"pydub": fake_pydub}):
-            from gwexpy.interop import pydub_ as pydub_mod
             import importlib
+
+            from gwexpy.interop import pydub_ as pydub_mod
             importlib.reload(pydub_mod)
             int_data = np.array([0, 100, 200, -100], dtype=np.int16)
             ts = TimeSeries(int_data, dt=1.0 / 44100)
-            seg = pydub_mod.to_pydub(ts, sample_width=2)
+            pydub_mod.to_pydub(ts, sample_width=2)
         assert calls["data"] is not None
 
 

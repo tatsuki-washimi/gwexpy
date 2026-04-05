@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Optional, TypeVar
 
 from ._optional import require_optional
 
@@ -53,7 +53,7 @@ def to_hdf5(
         dset.attrs["channel"] = str(ts.channel)
 
 
-def from_hdf5(cls: Type[T], group: h5py.Group, path: str) -> T:
+def from_hdf5(cls: type[T], group: h5py.Group, path: str) -> T:
     """Read TimeSeries from HDF5 group."""
     require_optional("h5py")
 

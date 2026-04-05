@@ -1,7 +1,7 @@
 """Tests for gwexpy/interop/_time.py."""
 from __future__ import annotations
 
-from datetime import UTC, datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 from unittest.mock import patch
 
 import pytest
@@ -11,7 +11,6 @@ from gwexpy.interop._time import (
     datetime_utc_to_gps,
     gps_to_datetime_utc,
 )
-
 
 # GPS epoch: 1980-01-06 00:00:00 UTC = GPS 0
 GPS_EPOCH = 630763213  # 2000-01-01 00:00:00 UTC in GPS time (approx)

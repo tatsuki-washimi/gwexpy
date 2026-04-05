@@ -28,7 +28,7 @@ def _make_fs(n=10, unit="1/Hz", name="ch"):
 
 class TestToPandasFrequencySeries:
     def test_basic(self):
-        pd = pytest.importorskip("pandas")
+        pytest.importorskip("pandas")
         fs = _make_fs()
         series = to_pandas_frequencyseries(fs)
         assert len(series) == len(fs)
@@ -56,14 +56,14 @@ class TestToPandasFrequencySeries:
 
 class TestFromPandasFrequencySeries:
     def test_basic_roundtrip(self):
-        pd = pytest.importorskip("pandas")
+        pytest.importorskip("pandas")
         fs = _make_fs()
         series = to_pandas_frequencyseries(fs)
         fs2 = from_pandas_frequencyseries(FrequencySeries, series)
         np.testing.assert_array_almost_equal(fs2.value, fs.value)
 
     def test_with_explicit_frequencies(self):
-        pd = pytest.importorskip("pandas")
+        pytest.importorskip("pandas")
         fs = _make_fs()
         series = to_pandas_frequencyseries(fs)
         freqs = np.linspace(1, 10, 10)
@@ -71,14 +71,14 @@ class TestFromPandasFrequencySeries:
         np.testing.assert_array_equal(fs2.frequencies.value, freqs)
 
     def test_with_df_f0(self):
-        pd = pytest.importorskip("pandas")
+        pytest.importorskip("pandas")
         fs = _make_fs()
         series = to_pandas_frequencyseries(fs)
         fs2 = from_pandas_frequencyseries(FrequencySeries, series, df=1.0, f0=1.0)
         assert fs2.value is not None
 
     def test_with_unit(self):
-        pd = pytest.importorskip("pandas")
+        pytest.importorskip("pandas")
         fs = _make_fs()
         series = to_pandas_frequencyseries(fs)
         fs2 = from_pandas_frequencyseries(FrequencySeries, series, unit="m")

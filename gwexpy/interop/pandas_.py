@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Literal, Optional, TypeVar
 
 import numpy as np
 from gwpy.time import LIGOTimeGPS
@@ -79,7 +79,7 @@ def to_pandas_series(
 
 
 def from_pandas_series(
-    cls: Type[T],
+    cls: type[T],
     series: pd.Series,
     *,
     unit: Optional[str] = None,
@@ -206,10 +206,10 @@ def to_pandas_dataframe(
 
 
 def from_pandas_dataframe(
-    cls: Type[TimeSeriesDict],
+    cls: type[TimeSeriesDict],
     df: pd.DataFrame,
     *,
-    unit_map: Optional[Dict[str, str]] = None,
+    unit_map: Optional[dict[str, str]] = None,
     t0: Optional[float] = None,
     dt: Optional[float] = None,
 ) -> TimeSeriesDict:
