@@ -1,17 +1,18 @@
 from __future__ import annotations
 
+import importlib
 import warnings
+from collections import OrderedDict
 from collections.abc import Iterable
+from html import escape
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
 try:
-    import pandas as pd
+    pd: Any = importlib.import_module("pandas")
 except ImportError:
     pd = None
-from collections import OrderedDict
-from html import escape
 
 from astropy import units as u
 from astropy.units import Unit, UnitConversionError
@@ -321,8 +322,8 @@ class MetaDataDict(OrderedDict[str, MetaData]):
         elif pd is not None and isinstance(entries, pd.DataFrame):
             actual_size = len(entries)
             for key, row in entries.iterrows():
-                meta_data_kwargs = row.dropna().to_dict()
-                final_entries[key] = MetaData(**meta_data_kwargs)
+                meta_data_kwargs = cast(dict[str, Any], row.dropna().to_dict())
+                final_entries[str(key)] = MetaData(**meta_data_kwargs)
 
         else:
             raise TypeError(f"Unsupported type for entries: {type(entries)}")

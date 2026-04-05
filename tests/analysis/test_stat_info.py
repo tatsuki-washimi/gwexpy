@@ -6,7 +6,6 @@ import pytest
 
 from gwexpy.analysis.stat_info import association_edges, build_graph
 
-
 # ---------------------------------------------------------------------------
 # association_edges
 # ---------------------------------------------------------------------------
@@ -221,13 +220,13 @@ class TestBuildGraph:
         assert result.number_of_edges() == 2
 
     def test_networkx_directed(self):
-        nx = pytest.importorskip("networkx")
+        pytest.importorskip("networkx")
         df = self._make_edges_df()
         result = build_graph(df, directed=True)
         assert result.is_directed()
 
     def test_networkx_from_list_of_dicts(self):
-        nx = pytest.importorskip("networkx")
+        pytest.importorskip("networkx")
         edges = [
             {"source": "A", "target": "B", "score": 0.5},
             {"source": "C", "target": "D", "score": 0.8},
@@ -236,7 +235,7 @@ class TestBuildGraph:
         assert result.number_of_edges() == 2
 
     def test_networkx_missing_source_or_target_skipped(self):
-        nx = pytest.importorskip("networkx")
+        pytest.importorskip("networkx")
         edges = [
             {"source": "A", "target": None, "score": 0.5},
             {"source": None, "target": "B", "score": 0.5},

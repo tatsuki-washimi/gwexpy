@@ -139,7 +139,7 @@ def read_timeseriesdict_sdb(
             if callable(factor):
                 data = factor(data)
             else:
-                data = data * factor
+                data = np.asarray(data) * factor
 
         ts = TimeSeries(data, t0=t0_gps, sample_rate=sample_rate, name=col, unit=unit)
         tsd[col] = ts

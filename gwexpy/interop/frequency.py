@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Literal, Optional, TypeVar
 
 import numpy as np
 
@@ -33,7 +33,7 @@ def to_pandas_frequencyseries(
 
 
 def from_pandas_frequencyseries(
-    cls: Type[T],
+    cls: type[T],
     series: pd.Series,
     *,
     unit: Optional[str] = None,
@@ -49,7 +49,7 @@ def from_pandas_frequencyseries(
         freq_axis = frequencies
     elif df is not None:
         df_val = float(df)
-        f0_val = float(f0) if f0 is not None else float(idx[0])
+        f0_val = float(f0) if f0 is not None else float(np.asarray(idx)[0])
         freq_axis = f0_val + np.arange(len(vals)) * df_val
     else:
         freq_axis = idx.values
@@ -85,7 +85,7 @@ def to_xarray_frequencyseries(
 
 
 def from_xarray_frequencyseries(
-    cls: Type[T],
+    cls: type[T],
     da: xr.DataArray,
     *,
     unit: Optional[str] = None,
@@ -150,7 +150,7 @@ def to_hdf5_frequencyseries(
     dset.attrs["frequency_unit"] = str(getattr(fs.frequencies, "unit", ""))
 
 
-def from_hdf5_frequencyseries(cls: Type[T], group: h5py.Group, path: str) -> T:
+def from_hdf5_frequencyseries(cls: type[T], group: h5py.Group, path: str) -> T:
     require_optional("h5py")
     dset = group[path]
     data = dset[()]

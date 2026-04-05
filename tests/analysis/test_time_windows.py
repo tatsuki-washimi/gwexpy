@@ -14,11 +14,13 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 from gwexpy.analysis.coupling import CouplingFunctionAnalysis, estimate_coupling
 from gwexpy.analysis.coupling_result import CouplingResult
-from gwexpy.analysis.response import ResponseFunctionAnalysis
-
+from gwexpy.analysis.response import (
+    ResponseFunctionAnalysis,
+    estimate_response_function,
+)
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -39,8 +41,6 @@ def _make_full_data(rng: np.random.Generator) -> TimeSeriesDict:
     n_bkg = int(DURATION_BKG * FS)
     n_gap = int(2.0 * FS)
     n_inj = int(DURATION_INJ * FS)
-    total = n_bkg + n_gap + n_inj
-
     wit_data = np.concatenate([
         rng.normal(0, 1, n_bkg),
         rng.normal(0, 1, n_gap),
@@ -224,6 +224,95 @@ def test_estimate_coupling_legacy_requires_data_bkg():
         )
 
 
+def test_estimate_coupling_forwards_legacy_parameters(monkeypatch: pytest.MonkeyPatch):
+    """estimate_coupling() が legacy mode の主要パラメータを compute() に転送する。"""
+    rng = np.random.default_rng(1234)
+    data_inj, data_bkg = _make_split_dicts(rng)
+    captured: dict[str, object] = {}
+
+    def fake_compute(self, data_inj, data_bkg, fftlength, **kwargs):
+        captured["data_inj"] = data_inj
+        captured["data_bkg"] = data_bkg
+        captured["fftlength"] = fftlength
+        captured.update(kwargs)
+        return "ok"
+
+    monkeypatch.setattr(CouplingFunctionAnalysis, "compute", fake_compute)
+
+    result = estimate_coupling(
+        data_inj=data_inj,
+        data_bkg=data_bkg,
+        fftlength=1.5,
+        overlap=0.25,
+        percentile_factor=3.1,
+        bkg_stride=2.0,
+        memory_limit=123456,
+        n_jobs=2,
+    )
+
+    assert result == "ok"
+    assert captured["data_inj"] is data_inj
+    assert captured["data_bkg"] is data_bkg
+    assert captured["fftlength"] == 1.5
+    assert captured["overlap"] == 0.25
+    assert captured["percentile_factor"] == 3.1
+    assert captured["bkg_stride"] == 2.0
+    assert captured["memory_limit"] == 123456
+    assert captured["n_jobs"] == 2
+
+
+def test_estimate_coupling_forwards_time_window_parameters(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """estimate_coupling() が time-window mode の主要パラメータを転送する。"""
+    rng = np.random.default_rng(5678)
+    data = _make_full_data(rng)
+    captured: dict[str, object] = {}
+
+    @classmethod
+    def fake_from_time_windows(
+        cls,
+        data,
+        bkg_window,
+        inj_window,
+        **kwargs,
+    ):
+        captured["data"] = data
+        captured["bkg_window"] = bkg_window
+        captured["inj_window"] = inj_window
+        captured.update(kwargs)
+        return "time-window-ok"
+
+    monkeypatch.setattr(
+        CouplingFunctionAnalysis,
+        "from_time_windows",
+        fake_from_time_windows,
+    )
+
+    result = estimate_coupling(
+        data_inj=data,
+        fftlength=1.25,
+        bkg_window=(T_BKG_START, T_BKG_END),
+        inj_window=(T_INJ_START, T_INJ_END),
+        overlap=0.5,
+        percentile_factor=2.9,
+        bkg_stride=1.5,
+        memory_limit=654321,
+        n_jobs=3,
+    )
+
+    assert result == "time-window-ok"
+    assert captured["data"] is data
+    assert captured["bkg_window"] == (T_BKG_START, T_BKG_END)
+    assert captured["inj_window"] == (T_INJ_START, T_INJ_END)
+    assert captured["fftlength"] == 1.25
+    assert captured["overlap"] == 0.5
+    assert captured["percentile_factor"] == 2.9
+    assert captured["bkg_stride"] == 1.5
+    assert captured["memory_limit"] == 654321
+    assert captured["n_jobs"] == 3
+
+
 # ---------------------------------------------------------------------------
 # ResponseFunctionAnalysis bkg_window テスト
 # ---------------------------------------------------------------------------
@@ -315,3 +404,38 @@ def test_response_bkg_window_invalid_raises():
             fftlength=1.0,
             bkg_window=(5.0, 1.0),  # 逆順
         )
+
+
+def test_estimate_response_function_forwards_wrapper_parameters(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """estimate_response_function() が wrapper パラメータを compute() に転送する。"""
+    ts = _make_sine_ts(10.0, duration=8.0, t0=1_000_000_000.0)
+    captured: dict[str, object] = {}
+
+    def fake_compute(self, witness, target, **kwargs):
+        captured["witness"] = witness
+        captured["target"] = target
+        captured.update(kwargs)
+        return "response-ok"
+
+    monkeypatch.setattr(ResponseFunctionAnalysis, "compute", fake_compute)
+
+    result = estimate_response_function(
+        witness=ts,
+        target=ts,
+        segments=[(1_000_000_002.0, 1_000_000_006.0, 10.0)],
+        fftlength=2.0,
+        bkg_window=(1_000_000_000.0, 1_000_000_004.0),
+        n_jobs=4,
+        memory_limit=987654,
+    )
+
+    assert result == "response-ok"
+    assert captured["witness"] is ts
+    assert captured["target"] is ts
+    assert captured["segments"] == [(1_000_000_002.0, 1_000_000_006.0, 10.0)]
+    assert captured["fftlength"] == 2.0
+    assert captured["bkg_window"] == (1_000_000_000.0, 1_000_000_004.0)
+    assert captured["n_jobs"] == 4
+    assert captured["memory_limit"] == 987654

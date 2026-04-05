@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")
 
 import numpy as np
@@ -12,7 +13,6 @@ from gwexpy.analysis.bruco import (
     _auto_block_size,
     _resolve_block_size,
 )
-
 
 # ---------------------------------------------------------------------------
 # _auto_block_size

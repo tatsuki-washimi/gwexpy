@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")  # non-interactive backend before any plt import
 
 import numpy as np
@@ -9,13 +10,12 @@ import pytest
 from gwpy.timeseries import TimeSeries
 
 from gwexpy.analysis.response import (
-    ResponseFunctionResult,
     ResponseFunctionAnalysis,
+    ResponseFunctionResult,
     detect_step_segments,
 )
 from gwexpy.frequencyseries import FrequencySeries
 from gwexpy.spectrogram import Spectrogram
-
 
 # ---------------------------------------------------------------------------
 # Helpers

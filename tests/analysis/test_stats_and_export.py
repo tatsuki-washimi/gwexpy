@@ -16,7 +16,6 @@ from gwexpy.analysis.coupling_result import CouplingResult, CouplingResultCollec
 from gwexpy.analysis.stats import SpectralStats
 from gwexpy.frequencyseries import FrequencySeries
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

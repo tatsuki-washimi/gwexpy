@@ -66,11 +66,11 @@ class RowProxy:
         table = self._table
         if key not in table._schema:
             raise KeyError(f"Column {key!r} not found in SegmentTable")
-        
+
         if key in table._payload:
             # Payload column
             return table._payload[key][self._index].get()
-        
+
         # Meta column
         return table._meta.at[self._index, key]
 
@@ -713,7 +713,7 @@ class SegmentTable:
         KeyError
             If a condition column does not exist.
         """
-        bool_mask = pd.Series([True] * len(self))
+        bool_mask: pd.Series[bool] = pd.Series([True] * len(self), dtype=bool)
 
         if mask is not None:
             if len(mask) != len(self):
@@ -721,7 +721,7 @@ class SegmentTable:
                     f"mask length ({len(mask)}) does not match "
                     f"table row count ({len(self)})."
                 )
-            bool_mask = bool_mask & pd.Series(list(mask))
+            bool_mask = bool_mask & pd.Series(list(mask), dtype=bool)
 
         for col, val in conditions.items():
             if col not in self._schema:
@@ -732,8 +732,8 @@ class SegmentTable:
                 )
             bool_mask = bool_mask & (self._meta[col] == val)
 
-        indices = bool_mask[bool_mask].index.tolist()
-        new_meta = self._meta.loc[indices].reset_index(drop=True)
+        indices = [i for i, keep in enumerate(bool_mask.tolist()) if keep]
+        new_meta = cast(pd.DataFrame, self._meta.loc[indices].reset_index(drop=True))
         new_table = SegmentTable(new_meta)
 
         # Carry over non-span schema kinds
@@ -1065,7 +1065,7 @@ class SegmentTable:
                 df[col] = [c._summary(kind) for c in cells]
 
         shown_cols = list(df.columns)[:max_cols]
-        return df[shown_cols].head(max_rows)
+        return cast(pd.DataFrame, df[shown_cols].head(max_rows))
 
 
 # ---------------------------------------------------------------------------
