@@ -8,7 +8,6 @@ from astropy import units as u
 from gwexpy.interop.root_ import _extract_error_array, _get_label
 from gwexpy.timeseries import TimeSeries
 
-
 # ---------------------------------------------------------------------------
 # _get_label
 # ---------------------------------------------------------------------------

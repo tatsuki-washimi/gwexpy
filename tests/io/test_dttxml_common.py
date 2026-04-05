@@ -14,7 +14,6 @@ from gwexpy.io.dttxml_common import (
     extract_xml_channels,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -175,7 +174,7 @@ class TestDecodeDttStream:
 
     def test_big_endian(self):
         values = [1.0, 2.0, 3.0]
-        raw = struct.pack(f">3f", *values)
+        raw = struct.pack(">3f", *values)
         encoded = base64.b64encode(raw).decode()
         result = _decode_dtt_stream(encoded, "BigEndian,base64", "float")
         assert result.dtype == np.dtype(">f4")

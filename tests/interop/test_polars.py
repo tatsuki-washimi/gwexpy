@@ -74,6 +74,7 @@ class TestToPolarsSeriesWithMock:
         pl = _fake_pl()
         with patch.dict(sys.modules, {"polars": pl}):
             import importlib
+
             import gwexpy.interop.polars_ as polars_mod
             importlib.reload(polars_mod)
             ts = _make_ts(n=5, name="test")
@@ -85,6 +86,7 @@ class TestToPolarsSeriesWithMock:
         pl = _fake_pl()
         with patch.dict(sys.modules, {"polars": pl}):
             import importlib
+
             import gwexpy.interop.polars_ as polars_mod
             importlib.reload(polars_mod)
             ts = _make_ts(n=3)
@@ -171,6 +173,7 @@ class TestFromPolarsDataframeWithMock:
 
         with patch.dict(sys.modules, {"polars": pl}):
             import importlib
+
             import gwexpy.interop.polars_ as polars_mod
             importlib.reload(polars_mod)
             ts = polars_mod.from_polars_dataframe(TimeSeries, MockDF())
@@ -188,6 +191,7 @@ class TestFromPolarsDataframeWithMock:
 
         with patch.dict(sys.modules, {"polars": pl}):
             import importlib
+
             import gwexpy.interop.polars_ as polars_mod
             importlib.reload(polars_mod)
             with pytest.raises(ValueError, match="data column"):

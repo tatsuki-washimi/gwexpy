@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
+
 try:
     from scipy import stats
 except ImportError as _exc:
@@ -48,36 +49,36 @@ def compute_student_t_nu(
             stride = fftlength - overlap
 
     # 1. Compute FFT segments
-    # Actually, we can use ts.spectrogram with 'complex' return if possible, 
+    # Actually, we can use ts.spectrogram with 'complex' return if possible,
     # but gwpy's spectrogram normally returns real PSD.
     # We need the complex FFT coefficients.
-    
+
     fs = ts.sample_rate.value
     nfft = int(fftlength * fs)
     nstep = int(stride * fs)
-    
+
     # Simple STFT to get complex values
     # shape (n_freqs, n_times)
     from scipy.signal import stft
     f, t, Zxx = stft(ts.value, fs=fs, nperseg=nfft, noverlap=nfft-nstep, return_onesided=True)
     # Zxx shape: (n_freqs, n_times)
-    
+
     n_freqs, n_times = Zxx.shape
     if n_times < window:
         raise ValueError(f"Too few segments ({n_times}) for window size {window}.")
 
     n_out = n_times - window + 1
     nu_map = np.zeros((n_out, n_freqs))
-    
+
     for i in range(n_out):
         for j in range(n_freqs):
             # Complex FFT values for this frequency bin over the window
             # Zxx is (freq, time)
             segments = Zxx[j, i : i + window]
-            
+
             # Use real and imaginary parts as independent samples
             samples = np.concatenate([np.real(segments), np.imag(segments)])
-            
+
             # Fit Student-t distribution
             # scipy.stats.t.fit(data) returns (nu, loc, scale)
             # nu = degree of freedom
@@ -86,10 +87,10 @@ def compute_student_t_nu(
                 nu_map[i, j] = nu
             except Exception:
                 nu_map[i, j] = np.nan
-                
+
     # Center times
     out_times = t[window // 2 : window // 2 + n_out]
-    
+
     return Spectrogram(
         nu_map,
         times=out_times,

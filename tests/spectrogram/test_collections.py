@@ -48,13 +48,13 @@ class TestResolveCropCompatArgs:
 
     def test_positional_inplace_true(self):
         # Lines 58-84 — 3rd positional = legacy inplace
-        with warnings.catch_warnings(record=True) as w:
+        with warnings.catch_warnings(record=True):
             warnings.simplefilter("always")
             start, end, copy = _resolve_crop_compat_args(1.0, 5.0, True)
         assert copy is False
 
     def test_positional_inplace_false(self):
-        with warnings.catch_warnings(record=True) as w:
+        with warnings.catch_warnings(record=True):
             warnings.simplefilter("always")
             start, end, copy = _resolve_crop_compat_args(1.0, 5.0, False)
         assert copy is True

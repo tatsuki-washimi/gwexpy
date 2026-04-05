@@ -450,7 +450,7 @@ class TestIdct:
         freqs = np.zeros(32) * u.Hz  # all same → df=0
         try:
             fs = FrequencySeries(coeffs, frequencies=freqs, unit=u.m)
-            result = fs.idct()
+            fs.idct()
         except Exception:
             pass  # may fail on construction with degenerate freqs
 

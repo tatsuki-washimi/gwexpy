@@ -7,7 +7,6 @@ from astropy.units import Quantity
 
 from gwexpy.interop.base import from_plain_array, to_plain_array
 
-
 # ---------------------------------------------------------------------------
 # to_plain_array
 # ---------------------------------------------------------------------------
@@ -50,8 +49,9 @@ def test_to_plain_array_copy_true():
 # ---------------------------------------------------------------------------
 
 def test_from_plain_array_basic():
-    from gwexpy.timeseries import TimeSeries
     from astropy import units as u
+
+    from gwexpy.timeseries import TimeSeries
 
     arr = np.array([1.0, 2.0, 3.0])
     result = from_plain_array(TimeSeries, arr, t0=0.0, dt=0.01 * u.s)
@@ -65,8 +65,9 @@ def test_from_plain_array_numpy_method():
         def numpy(self):
             return np.array([5.0, 6.0, 7.0])
 
-    from gwexpy.timeseries import TimeSeries
     from astropy import units as u
+
+    from gwexpy.timeseries import TimeSeries
 
     result = from_plain_array(TimeSeries, TorchLike(), t0=0.0, dt=0.01 * u.s)
     assert result is not None
@@ -78,8 +79,9 @@ def test_from_plain_array_get_method():
         def get(self):
             return np.array([8.0, 9.0])
 
-    from gwexpy.timeseries import TimeSeries
     from astropy import units as u
+
+    from gwexpy.timeseries import TimeSeries
 
     result = from_plain_array(TimeSeries, CupyLike(), t0=0.0, dt=0.01 * u.s)
     assert result is not None

@@ -8,8 +8,12 @@ from unittest.mock import patch
 import numpy as np
 import pytest
 
-from gwexpy.interop.control_ import from_control_frd, from_control_response, to_control_frd
 from gwexpy.frequencyseries import FrequencySeries
+from gwexpy.interop.control_ import (
+    from_control_frd,
+    from_control_response,
+    to_control_frd,
+)
 from gwexpy.timeseries import TimeSeries
 
 

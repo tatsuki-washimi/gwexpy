@@ -104,7 +104,7 @@ def from_wrf_variable(
     -------
     ScalarField
     """
-    xr = require_optional("xarray")
+    require_optional("xarray")
 
     # Try to extract 1D coords from 2D XLAT/XLONG
     lon_1d = _extract_1d_from_2d(da, "XLONG", axis=0)

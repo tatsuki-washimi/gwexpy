@@ -57,7 +57,9 @@ class TestRegisterGetConstructor:
 
 class TestRegisterGetConverter:
     def test_register_and_get(self):
-        fn = lambda x: x
+        def fn(x):
+            return x
+
         ConverterRegistry.register_converter("my_conv", fn)
         assert ConverterRegistry.get_converter("my_conv") is fn
 
@@ -66,8 +68,12 @@ class TestRegisterGetConverter:
             ConverterRegistry.get_converter("_no_such_converter_")
 
     def test_overwrite_different_func_warns(self):
-        fn1 = lambda x: x
-        fn2 = lambda x: x * 2
+        def fn1(x):
+            return x
+
+        def fn2(x):
+            return x * 2
+
         ConverterRegistry.register_converter("conv", fn1)
         with pytest.warns(UserWarning, match="overwriting"):
             ConverterRegistry.register_converter("conv", fn2)

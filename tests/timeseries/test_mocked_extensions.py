@@ -1,8 +1,11 @@
 import sys
+
 import numpy as np
 import pytest
 from astropy import units as u
+
 from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
+
 
 @pytest.mark.usefixtures("mock_optional_ml_stack")
 def test_pca_transform_mocked():
@@ -19,10 +22,10 @@ def test_pca_transform_mocked():
 
     tsm = TimeSeriesMatrix(np.random.randn(3, 1, 10), dt=1)
     pca = PCATransform(n_components=2)
-    
+
     # Fit & Transform
     out = pca.fit_transform(tsm)
-    
+
     assert isinstance(out, TimeSeriesMatrix)
     assert out.shape == (2, 1, 10)
     assert mock_pca.called
@@ -45,7 +48,7 @@ def test_ica_transform_mocked():
 
     tsm = TimeSeriesMatrix(np.random.randn(3, 1, 10), dt=1)
     ica = ICATransform(n_components=2)
-    
+
     out = ica.fit_transform(tsm)
     assert out.shape == (2, 1, 10)
     assert mock_ica.called
@@ -56,10 +59,10 @@ def test_mic_statistics_mocked():
     # Mock minepy.MINE
     mock_mine_instance = mock_minepy.MINE.return_value
     mock_mine_instance.mic.return_value = 0.8
-    
+
     ts1 = TimeSeries([1, 2, 3], dt=1)
     ts2 = TimeSeries([1.1, 2.1, 3.1], dt=1)
-    
+
     # correlation calls MINE internally for method='mic'
     val = ts1.correlation(ts2, method="mic")
     assert val == 0.8
@@ -69,10 +72,10 @@ def test_mic_statistics_mocked():
 def test_dcor_statistics_mocked():
     mock_dcor = sys.modules["dcor"]
     mock_dcor.distance_correlation.return_value = 0.95
-    
+
     ts1 = TimeSeries([1, 2, 3], dt=1)
     ts2 = TimeSeries([1.1, 2.1, 3.1], dt=1)
-    
+
     # correlation calls distance_correlation internally for method='distance'
     val = ts1.correlation(ts2, method="distance")
     assert val == 0.95

@@ -14,13 +14,13 @@ import numpy as np
 import pytest
 
 from gwexpy.frequencyseries import FrequencySeries
-from gwexpy.timeseries import TimeSeries
 from gwexpy.interop.pycbc_ import (
     from_pycbc_frequencyseries,
     from_pycbc_timeseries,
     to_pycbc_frequencyseries,
     to_pycbc_timeseries,
 )
+from gwexpy.timeseries import TimeSeries
 
 # ---------------------------------------------------------------------------
 # sys.modules injection helpers

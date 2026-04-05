@@ -15,7 +15,6 @@ available in GWexpy.
 
 from __future__ import annotations
 
-import warnings
 from typing import Any
 
 from astropy import units as u

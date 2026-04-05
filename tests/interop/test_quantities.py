@@ -66,8 +66,9 @@ class TestToQuantity:
     def test_basic_conversion(self):
         pq = _fake_pq()
         with patch.dict(sys.modules, {"quantities": pq}):
-            from gwexpy.interop import quantities_
             import importlib
+
+            from gwexpy.interop import quantities_
             importlib.reload(quantities_)
             ts = TimeSeries(np.arange(5.0), t0=0, dt=1.0, unit="m")
             q = quantities_.to_quantity(ts)
@@ -77,8 +78,9 @@ class TestToQuantity:
         pq = _fake_pq()
         obj = SimpleNamespace(magnitude=np.array([1.0, 2.0]), unit=None)
         with patch.dict(sys.modules, {"quantities": pq}):
-            from gwexpy.interop import quantities_
             import importlib
+
+            from gwexpy.interop import quantities_
             importlib.reload(quantities_)
             q = quantities_.to_quantity(obj)
         np.testing.assert_array_equal(q.magnitude, np.array([1.0, 2.0]))
@@ -87,8 +89,9 @@ class TestToQuantity:
         pq = _fake_pq()
         data = np.array([3.0, 4.0])
         with patch.dict(sys.modules, {"quantities": pq}):
-            from gwexpy.interop import quantities_
             import importlib
+
+            from gwexpy.interop import quantities_
             importlib.reload(quantities_)
             q = quantities_.to_quantity(data)
         np.testing.assert_array_equal(q.magnitude, data)
@@ -97,8 +100,9 @@ class TestToQuantity:
         pq = _fake_pq()
         obj = SimpleNamespace(value=np.ones(3), unit=None)
         with patch.dict(sys.modules, {"quantities": pq}):
-            from gwexpy.interop import quantities_
             import importlib
+
+            from gwexpy.interop import quantities_
             importlib.reload(quantities_)
             q = quantities_.to_quantity(obj)
         assert q is not None  # Should not raise
@@ -107,8 +111,9 @@ class TestToQuantity:
         pq = _fake_pq()
         ts = TimeSeries(np.ones(3), t0=0, dt=1.0, unit="m")
         with patch.dict(sys.modules, {"quantities": pq}):
-            from gwexpy.interop import quantities_
             import importlib
+
+            from gwexpy.interop import quantities_
             importlib.reload(quantities_)
             q = quantities_.to_quantity(ts, units="km")
         assert q.units == "km"
@@ -139,8 +144,9 @@ class TestToQuantity:
         # unit=None -> u_str = "dimensionless" -> fallback triggers
         bad_pq = BadPQ()
         with patch.dict(sys.modules, {"quantities": bad_pq}):
-            from gwexpy.interop import quantities_
             import importlib
+
+            from gwexpy.interop import quantities_
             importlib.reload(quantities_)
             q = quantities_.to_quantity(obj)
         assert q is not None

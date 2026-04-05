@@ -9,8 +9,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 from gwexpy.interop.opensees_ import from_opensees_recorder
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
 
 N_STEPS = 100
 DT = 0.01

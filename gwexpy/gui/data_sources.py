@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional, TypedDict
 
 import numpy as np
 import qtpy.QtCore as QtCore
+
 if TYPE_CHECKING:
     from typing import Any
     QObject: Any = object

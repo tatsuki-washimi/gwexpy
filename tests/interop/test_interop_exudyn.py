@@ -9,8 +9,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 from gwexpy.interop.exudyn_ import from_exudyn_sensor
+from gwexpy.timeseries import TimeSeries, TimeSeriesMatrix
 
 N_SAMPLES = 200
 DT = 1e-3

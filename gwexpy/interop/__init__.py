@@ -9,35 +9,11 @@ if "JAX_PLATFORMS" not in os.environ:
     os.environ["JAX_PLATFORMS"] = "cpu"
 from ._optional import require_optional
 from .astropy_ import from_astropy_timeseries, to_astropy_timeseries
-from .gwinc_ import from_gwinc_budget
-from .meep_ import from_meep_hdf5
-from .openems_ import from_openems_hdf5
-from .emg3d_ import from_emg3d_field, from_emg3d_h5, to_emg3d_field
-from .meshio_ import from_fenics_vtk, from_fenics_xdmf, from_meshio
-from .metpy_ import from_metpy_dataarray
-from .wrf_ import from_wrf_variable
-from .harmonica_ import from_harmonica_grid
-from .sdynpy_ import from_sdynpy_frf, from_sdynpy_shape, from_sdynpy_timehistory
-from .sdypy_ import from_uff_dataset55, from_uff_dataset58
-from .pyoma_ import from_pyoma_results
-from .opensees_ import from_opensees_recorder
-from .exudyn_ import from_exudyn_sensor
-from .multitaper_ import from_mtspec, from_mtspec_array
-from .lal_ import (
-    from_lal_frequencyseries,
-    from_lal_timeseries,
-    to_lal_frequencyseries,
-    to_lal_timeseries,
-)
-from .pycbc_ import (
-    from_pycbc_frequencyseries,
-    from_pycbc_timeseries,
-    to_pycbc_frequencyseries,
-    to_pycbc_timeseries,
-)
 from .control_ import from_control_frd, from_control_response, to_control_frd
 from .cupy_ import from_cupy, is_cupy_available, to_cupy
 from .dask_ import from_dask, to_dask
+from .emg3d_ import from_emg3d_field, from_emg3d_h5, to_emg3d_field
+from .exudyn_ import from_exudyn_sensor
 from .finesse_ import from_finesse_frequency_response, from_finesse_noise
 from .frequency import (
     from_hdf5_frequencyseries,
@@ -47,13 +23,27 @@ from .frequency import (
     to_pandas_frequencyseries,
     to_xarray_frequencyseries,
 )
+from .gwinc_ import from_gwinc_budget
+from .harmonica_ import from_harmonica_grid
 from .hdf5_ import from_hdf5, to_hdf5
 from .jax_ import from_jax, to_jax
 from .json_ import from_dict, from_json, to_dict, to_json
+from .lal_ import (
+    from_lal_frequencyseries,
+    from_lal_timeseries,
+    to_lal_frequencyseries,
+    to_lal_timeseries,
+)
+from .meep_ import from_meep_hdf5
+from .meshio_ import from_fenics_vtk, from_fenics_xdmf, from_meshio
+from .metpy_ import from_metpy_dataarray
 from .mne_ import from_mne, from_mne_raw, to_mne, to_mne_rawarray
+from .multitaper_ import from_mtspec, from_mtspec_array
 from .neo_ import from_neo, to_neo
 from .netcdf4_ import from_netcdf4, to_netcdf4
 from .obspy_ import from_obspy, from_obspy_trace, to_obspy, to_obspy_trace
+from .openems_ import from_openems_hdf5
+from .opensees_ import from_opensees_recorder
 from .pandas_ import (
     from_pandas_dataframe,
     from_pandas_series,
@@ -69,9 +59,16 @@ from .polars_ import (
     to_polars_frequencyseries,
     to_polars_series,
 )
+from .pycbc_ import (
+    from_pycbc_frequencyseries,
+    from_pycbc_timeseries,
+    to_pycbc_frequencyseries,
+    to_pycbc_timeseries,
+)
 
 # P2
 from .pydub_ import from_pydub, to_librosa, to_pydub
+from .pyoma_ import from_pyoma_results
 from .pyroomacoustics_ import (
     from_pyroomacoustics_field,
     from_pyroomacoustics_mic_signals,
@@ -97,6 +94,8 @@ from .root_ import (
     to_tmultigraph,
     write_root_file,
 )
+from .sdynpy_ import from_sdynpy_frf, from_sdynpy_shape, from_sdynpy_timehistory
+from .sdypy_ import from_uff_dataset55, from_uff_dataset58
 from .simpeg_ import from_simpeg, to_simpeg
 from .skrf_ import (
     from_skrf_impulse_response,
@@ -115,6 +114,7 @@ from .torch_dataset import (
     to_torch_dataloader,
     to_torch_dataset,
 )
+from .wrf_ import from_wrf_variable
 from .xarray_ import from_xarray, from_xarray_field, to_xarray, to_xarray_field
 from .zarr_ import from_zarr, to_zarr
 

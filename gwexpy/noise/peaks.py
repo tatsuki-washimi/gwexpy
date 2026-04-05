@@ -6,6 +6,7 @@ from typing import Any
 
 import numpy as np
 from astropy import units as u
+
 try:
     from scipy.special import wofz
 except ImportError as _exc:

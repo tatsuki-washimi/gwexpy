@@ -6,9 +6,8 @@ from unittest.mock import patch
 
 import pytest
 
-from gwexpy.interop.errors import IoNotImplementedError, raise_unimplemented_io
 from gwexpy.interop._optional import require_optional
-
+from gwexpy.interop.errors import IoNotImplementedError, raise_unimplemented_io
 
 # ---------------------------------------------------------------------------
 # errors.py

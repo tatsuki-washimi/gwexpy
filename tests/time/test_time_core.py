@@ -5,8 +5,14 @@ import numpy as np
 import pytest
 from astropy.time import Time
 
-from gwexpy.time.core import _is_array, _is_numeric_array, _normalize_time_input, from_gps, tconvert, to_gps
-
+from gwexpy.time.core import (
+    _is_array,
+    _is_numeric_array,
+    _normalize_time_input,
+    from_gps,
+    tconvert,
+    to_gps,
+)
 
 # ---------------------------------------------------------------------------
 # _is_array

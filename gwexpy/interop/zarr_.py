@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Type, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from ._optional import require_optional
 
 if TYPE_CHECKING:
-    import zarr
 
     from gwexpy.timeseries import TimeSeries
 
@@ -62,7 +61,7 @@ def to_zarr(
         arr.attrs["name"] = str(ts.name)
 
 
-def from_zarr(cls: Type[T], store: Any, path: str) -> T:
+def from_zarr(cls: type[T], store: Any, path: str) -> T:
     """
     Read from Zarr array.
     """

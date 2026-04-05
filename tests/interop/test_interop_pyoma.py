@@ -12,7 +12,6 @@ import pytest
 from gwexpy.frequencyseries import FrequencySeriesMatrix
 from gwexpy.interop.pyoma_ import from_pyoma_results
 
-
 # ---------------------------------------------------------------------------
 # Mock result dicts
 # ---------------------------------------------------------------------------

@@ -19,6 +19,7 @@ import warnings
 from typing import Any, cast
 
 import numpy as np
+
 try:
     from scipy.signal import get_window
 except ImportError as _exc:

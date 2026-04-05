@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Type, TypeVar
+from typing import Any, TypeVar
 
 import numpy as np
 from astropy.units import Quantity
@@ -22,7 +22,7 @@ def to_plain_array(data: Any, copy: bool = False) -> np.ndarray:
 
 
 def from_plain_array(
-    cls: Type[Any], array: Any, t0: Any, dt: Any, unit: Any = None, **kwargs: Any
+    cls: type[Any], array: Any, t0: Any, dt: Any, unit: Any = None, **kwargs: Any
 ) -> Any:
     """
     Reconstruct a gwexpy object from a plain array.

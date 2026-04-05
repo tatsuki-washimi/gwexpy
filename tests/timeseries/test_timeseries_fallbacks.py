@@ -20,7 +20,6 @@ from astropy import units as u
 from gwexpy.timeseries import TimeSeries
 from gwexpy.timeseries._core import TimeSeriesCore
 
-
 # ---------------------------------------------------------------------------
 # TimeSeries.__new__ Coercion Fallbacks
 # ---------------------------------------------------------------------------
@@ -39,7 +38,7 @@ class TestTimeSeriesNewFallbacks:
         with patch("gwpy.timeseries.TimeSeries.__new__") as mock_super_new:
             mock_super_new.return_value = np.array([1, 2, 3]).view(TimeSeries)
             with patch("gwexpy.timeseries.utils._coerce_t0_gps") as mock_coerce:
-                ts = TimeSeries([1, 2, 3], t0=100.0, xunit="invalid_unit_string")
+                TimeSeries([1, 2, 3], t0=100.0, xunit="invalid_unit_string")
                 # coercion should be skipped
                 mock_coerce.assert_not_called()
                 # super().__new__ should still be called with the invalid unit
@@ -52,7 +51,7 @@ class TestTimeSeriesNewFallbacks:
         with patch("gwpy.timeseries.TimeSeries.__new__") as mock_super_new:
             mock_super_new.return_value = np.array([1, 2, 3]).view(TimeSeries)
             # Use data that doesn't trigger should_coerce=False early (no dt)
-            ts = TimeSeries([1, 2, 3], t0=1234.5, xunit="invalid_again")
+            TimeSeries([1, 2, 3], t0=1234.5, xunit="invalid_again")
             # It should fallback to target_unit = u.s
             args, kwargs = mock_super_new.call_args
             # t0 coerced to float via float(t0_q.to(u.s).value) if coerced
@@ -63,12 +62,12 @@ class TestTimeSeriesNewFallbacks:
         # This triggers UnitConversionError at line 135/143.
         with patch("gwpy.timeseries.TimeSeries.__new__") as mock_super_new:
             mock_super_new.return_value = np.array([1, 2, 3]).view(TimeSeries)
-            
+
             with patch("gwexpy.timeseries.utils._coerce_t0_gps") as mock_coerce:
                 mock_coerce.return_value = 10.0 * u.m  # non-convertible to 's'
                 # Pass dt='s' to set target_unit='s'
-                ts = TimeSeries([1, 2, 3], t0=1234.5, dt=1.0*u.s)
-                
+                TimeSeries([1, 2, 3], t0=1234.5, dt=1.0*u.s)
+
                 # Check what was passed to super().__new__
                 args, kwargs = mock_super_new.call_args
                 assert isinstance(kwargs["t0"], u.Quantity)
@@ -80,7 +79,7 @@ class TestTimeSeriesNewFallbacks:
             mock_super_new.return_value = np.array([1, 2, 3]).view(TimeSeries)
             with patch("gwexpy.timeseries.utils._coerce_t0_gps") as mock_coerce:
                 mock_coerce.return_value = 20.0 * u.kg
-                ts = TimeSeries([1, 2, 3], epoch=5678.9)
+                TimeSeries([1, 2, 3], epoch=5678.9)
                 args, kwargs = mock_super_new.call_args
                 assert kwargs["epoch"].unit == u.kg
 
@@ -120,14 +119,14 @@ class TestTimeSeriesCoreAppendFallback:
         mock_res.unit = u.m
         mock_res.name = "combined"
         mock_res.channel = "L1:TEST"
-        
+
         ts1 = TimeSeries([1, 2, 3], dt=0.1, unit=u.m, name="ch1")
         ts2 = TimeSeries([4, 5, 6], dt=0.1, unit=u.m, name="ch2")
-        
+
         with patch("gwpy.timeseries.TimeSeries.append") as mock_append:
             mock_append.return_value = mock_res
             result = ts1.append(ts2, inplace=False)
-            
+
             assert isinstance(result, TimeSeries)
             assert result.name == "combined"
             assert result.unit == u.m
@@ -171,11 +170,11 @@ class TestTimeSeriesAPIShortcuts:
             # AR(2)
             ts.ar(p=2, trend="c")
             mock_fit.assert_called_with(ts, order=(2, 0, 0), seasonal_order=None, auto=False, trend="c")
-            
+
             # MA(3)
             ts.ma(q=3, method="mle")
             mock_fit.assert_called_with(ts, order=(0, 0, 3), seasonal_order=None, auto=False, method="mle")
-            
+
             # ARMA(1, 2)
             ts.arma(p=1, q=2, solver="newton")
             mock_fit.assert_called_with(ts, order=(1, 0, 2), seasonal_order=None, auto=False, solver="newton")

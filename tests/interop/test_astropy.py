@@ -4,8 +4,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from gwexpy.timeseries import TimeSeries
 from gwexpy.interop.astropy_ import from_astropy_timeseries, to_astropy_timeseries
+from gwexpy.timeseries import TimeSeries
 
 
 def _make_ts(n=10, t0=1000000000.0, dt=1.0, unit="m"):
@@ -55,9 +55,9 @@ class TestToAstropyTimeSeries:
 
 class TestFromAstropyTimeSeries:
     def _make_ap_ts(self, n=5, t0=1000000000.0, dt=1.0):
+        import astropy.units as u
         from astropy.time import Time
         from astropy.timeseries import TimeSeries as APTimeSeries
-        import astropy.units as u
         times = Time(t0 + np.arange(n) * dt, format="gps")
         data = {"value": np.arange(float(n)) * u.m}
         return APTimeSeries(data=data, time=times)

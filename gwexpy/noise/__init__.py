@@ -32,6 +32,7 @@ __all__ = [
     # Submodules
     "asd",
     "field",
+    "line_mask",
     "wave",
     "non_gaussian",
     # ASD Functions

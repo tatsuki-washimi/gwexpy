@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+
 try:
     from scipy.ndimage import median_filter
 except ImportError as _exc:

@@ -1,9 +1,15 @@
 import pickle
+
 import numpy as np
 import pytest
 from astropy import units as u
 
-from gwexpy.spectrogram import Spectrogram, SpectrogramDict, SpectrogramList, SpectrogramMatrix
+from gwexpy.spectrogram import (
+    Spectrogram,
+    SpectrogramDict,
+    SpectrogramList,
+    SpectrogramMatrix,
+)
 
 
 @pytest.fixture
@@ -13,10 +19,10 @@ def sgm_4d():
     times = np.arange(10)
     freqs = np.arange(5)
     return SpectrogramMatrix(
-        data, 
-        times=times, 
-        frequencies=freqs, 
-        rows=["R1", "R2"], 
+        data,
+        times=times,
+        frequencies=freqs,
+        rows=["R1", "R2"],
         cols=["C1", "C2", "C3"],
         name="Matrix4D",
         unit=u.V
@@ -25,13 +31,13 @@ def sgm_4d():
 
 def test_sgm_attribute_propagation(sgm_4d):
     sgm_4d._gwex_custom = "test_value"
-    
+
     # Slice Row 0
     sub = sgm_4d[0]
     assert sub._gwex_custom == "test_value"
     assert sub.ndim == 3
     assert sub.shape == (3, 10, 5) # (Col, Time, Freq)
-    
+
     # Sourced View
     view = sgm_4d.view(SpectrogramMatrix)
     assert view._gwex_custom == "test_value"
@@ -39,11 +45,11 @@ def test_sgm_attribute_propagation(sgm_4d):
 
 def test_sgm_pickle_roundtrip(sgm_4d):
     sgm_4d._gwex_extra = "pickle_me"
-    
+
     # Pickle and Unpickle
     pdata = pickle.dumps(sgm_4d)
     restored = pickle.loads(pdata)
-    
+
     assert isinstance(restored, SpectrogramMatrix)
     assert restored._gwex_extra == "pickle_me"
     assert np.allclose(restored.value, sgm_4d.value)
@@ -59,14 +65,14 @@ def test_sgm_conversion_methods(sgm_4d):
     assert isinstance(sgl, SpectrogramList)
     assert len(sgl) == 2 * 3 # N * M
     assert isinstance(sgl[0], Spectrogram)
-    
+
     # to_dict
     sgd = sgm_4d.to_dict()
     assert isinstance(sgd, SpectrogramDict)
     # Check key format for 4D matrix: (row_key, col_key)
     assert ("R1", "C2") in sgd
     assert isinstance(sgd[("R1", "C2")], Spectrogram)
-    
+
     # to_series_2Dlist
     list2d = sgm_4d.to_series_2Dlist()
     assert len(list2d) == 2 # Rows

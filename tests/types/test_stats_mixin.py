@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 from astropy import units as u
 
-from gwexpy.types.seriesmatrix import SeriesMatrix
 from gwexpy.timeseries import TimeSeries
+from gwexpy.types.seriesmatrix import SeriesMatrix
 
 
 def _make_sm(data=None, unit=None):

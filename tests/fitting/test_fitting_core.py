@@ -649,7 +649,7 @@ class TestFitResultModel:
         x = np.linspace(0, 10, 3)
         y = gaussian(x, 3.0, 5.0, 1.0)
         fs = FrequencySeries(y, frequencies=x)
-        result = fit_series(
+        fit_series(
             fs,
             gaussian,
             p0={"A": 3.0, "mu": 5.0, "sigma": 1.0},

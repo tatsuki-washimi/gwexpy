@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
+
 from ..spectrogram import Spectrogram
 
 if TYPE_CHECKING:
@@ -71,7 +72,7 @@ def compute_gauch(
     # The spectrogram will have many segments.
     spec = ts.spectrogram(fftlength=fftlength, stride=stride)
     asds = np.sqrt(spec.value)  # (n_times, n_freqs)
-    
+
     n_times, n_freqs = asds.shape
     if n_times < window:
         raise ValueError(f"Too few segments ({n_times}) for window size {window}.")
@@ -80,24 +81,24 @@ def compute_gauch(
     # Output will have (n_times - window + 1) time steps.
     n_out = n_times - window + 1
     statistic_map = np.zeros((n_out, n_freqs))
-    
+
     for i in range(n_out):
         window_asds = asds[i : i + window, :] # (window, n_freqs)
-        
+
         # Vectorized sigma2 estimation across frequencies
         sigma2 = np.mean(window_asds**2, axis=0) / 2.0
-        
+
         # Sort along the temporal axis for each frequency bin
         sorted_window = np.sort(window_asds, axis=0) # (window, n_freqs)
-        
+
         # Vectorized ECDF and TCDF calculation
         # ecdf is (window, 1) broadcasted to (window, n_freqs)
         ecdf = (np.arange(1, window + 1) / window)[:, np.newaxis]
-        
+
         # tcdf = 1 - exp(-x^2 / 2sigma^2)
         # sorted_window is (window, n_freqs), sigma2 is (n_freqs,)
         tcdf = 1.0 - np.exp(-(sorted_window**2) / (2.0 * sigma2))
-        
+
         # statistic is max|ecdf - tcdf| along temporal axis
         dn = np.max(np.abs(ecdf - tcdf), axis=0) # (n_freqs,)
         statistic_map[i, :] = dn
@@ -106,7 +107,7 @@ def compute_gauch(
     # Pre-cache Lilliefors distribution for 'window'
     _get_rayleigh_lilliefors_pvalue(0.1, window, n_monte_carlo)
     dist = _LILLIEFORS_CACHE[window]
-    
+
     # p-value is (count of dist >= dn) / len(dist)
     # searchsorted returns index where dn would be inserted to maintain order.
     # idx = number of elements < dn.
@@ -117,10 +118,10 @@ def compute_gauch(
     # 3. Create Resulting Spectrograms
     # Adjust times for the output maps (center of the window)
     out_times = spec.times[window // 2 : window // 2 + n_out]
-    
+
     res_p = Spectrogram(pvalue_map, frequencies=spec.frequencies, times=out_times)
     res_s = Spectrogram(statistic_map, frequencies=spec.frequencies, times=out_times)
-    
+
     return GauChResult(
         pvalue_map=res_p,
         statistic_map=res_s,
@@ -145,6 +146,6 @@ def _get_rayleigh_lilliefors_pvalue(dn: float, n: int, n_trials: int = 1000) -> 
             null_tcdf = 1.0 - np.exp(-(sorted_null**2) / (2.0 * s2_est))
             null_dns[i] = np.max(np.abs(null_ecdf - null_tcdf))
         _LILLIEFORS_CACHE[n] = np.sort(null_dns)
-    
+
     dist = _LILLIEFORS_CACHE[n]
     return float(np.sum(dist >= dn) / len(dist))

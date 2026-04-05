@@ -10,10 +10,9 @@ import sys
 from types import ModuleType, SimpleNamespace
 from unittest.mock import MagicMock, patch
 
+import astropy.units as u
 import numpy as np
 import pytest
-
-import astropy.units as u
 
 # ---------------------------------------------------------------------------
 # Module-level sys.modules injection for gwexpy.utils.lal
@@ -25,8 +24,6 @@ def _make_lal_utils_mock(unit=u.m):
     mod = MagicMock(spec=ModuleType)
     mod.from_lal_unit = MagicMock(return_value=unit)
     mod.LAL_TYPE_FROM_NUMPY = {np.dtype("float64").type: "REAL8", np.dtype("complex128").type: "COMPLEX16"}
-
-    created_lalts = None
 
     def _create_ts(name, epoch, f0_unused, dt, unit, n):
         lalts = MagicMock()
@@ -83,13 +80,13 @@ def _make_lal_frequencyseries(data, epoch=1e9, f0=0.0, df=1.0, name="test", unit
 # ---------------------------------------------------------------------------
 
 from gwexpy.frequencyseries import FrequencySeries
-from gwexpy.timeseries import TimeSeries
 from gwexpy.interop.lal_ import (
     from_lal_frequencyseries,
     from_lal_timeseries,
     to_lal_frequencyseries,
     to_lal_timeseries,
 )
+from gwexpy.timeseries import TimeSeries
 
 # ---------------------------------------------------------------------------
 # from_lal_timeseries

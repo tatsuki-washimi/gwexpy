@@ -19,7 +19,6 @@ from gwexpy.io.utils import (
     set_provenance,
 )
 
-
 # ---------------------------------------------------------------------------
 # parse_timezone
 # ---------------------------------------------------------------------------
@@ -32,7 +31,7 @@ class TestParseTimezone:
 
     def test_tzinfo_passthrough(self):
         # Line 26 — isinstance(tz, _dt.tzinfo) → return tz
-        tz = _dt.timezone.utc
+        tz = _dt.UTC
         result = parse_timezone(tz)
         assert result is tz
 
@@ -99,7 +98,7 @@ class TestParseTimezone:
 
 class TestDatetimeToGps:
     def test_aware_datetime(self):
-        dt = _dt.datetime(2017, 1, 1, 0, 0, 0, tzinfo=_dt.timezone.utc)
+        dt = _dt.datetime(2017, 1, 1, 0, 0, 0, tzinfo=_dt.UTC)
         result = datetime_to_gps(dt)
         assert isinstance(result, float)
         assert result > 0
@@ -125,14 +124,14 @@ class TestDatetimeToGps:
 
 class TestEnsureDatetime:
     def test_aware_datetime_passthrough(self):
-        dt = _dt.datetime(2020, 6, 1, tzinfo=_dt.timezone.utc)
+        dt = _dt.datetime(2020, 6, 1, tzinfo=_dt.UTC)
         result = ensure_datetime(dt)
         assert result == dt
 
     def test_naive_datetime_with_tzinfo(self):
         # Lines 76-77 — value.tzinfo is None and tzinfo is not None → replace
         dt = _dt.datetime(2020, 6, 1)
-        tz = _dt.timezone.utc
+        tz = _dt.UTC
         result = ensure_datetime(dt, tzinfo=tz)
         assert result.tzinfo is not None
 
@@ -179,7 +178,7 @@ class TestEnsureDatetime:
 
     def test_string_with_tzinfo(self):
         # Lines 95-96 — string with no tz → replace tzinfo if provided
-        result = ensure_datetime("2020/06/01 12:00:00", tzinfo=_dt.timezone.utc)
+        result = ensure_datetime("2020/06/01 12:00:00", tzinfo=_dt.UTC)
         assert result.tzinfo is not None
 
     def test_unrecognized_raises(self):
@@ -372,7 +371,7 @@ class TestExtractAudioMetadata:
         # Temporarily hide tinytag
         tinytag_mod = sys.modules.pop("tinytag", None)
         try:
-            with warnings.catch_warnings(record=True) as w:
+            with warnings.catch_warnings(record=True):
                 warnings.simplefilter("always")
                 result = extract_audio_metadata("fake.mp3")
             assert result == {}
@@ -382,7 +381,7 @@ class TestExtractAudioMetadata:
 
     def test_nonexistent_file_returns_empty(self):
         # Lines 294-301 — general exception → warn + return {}
-        with warnings.catch_warnings(record=True) as w:
+        with warnings.catch_warnings(record=True):
             warnings.simplefilter("always")
             result = extract_audio_metadata("/nonexistent/path/to/file.mp3")
         # Returns empty dict (either ImportError or general exception)

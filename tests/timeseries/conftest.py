@@ -1,8 +1,10 @@
-import sys
 import importlib
+import sys
 from unittest.mock import MagicMock, patch
-import pytest
+
 import numpy as np
+import pytest
+
 
 @pytest.fixture
 def mock_sklearn_decomposition(monkeypatch):
@@ -10,7 +12,7 @@ def mock_sklearn_decomposition(monkeypatch):
     mock_sklearn = MagicMock()
     mock_pca = MagicMock()
     mock_ica = MagicMock()
-    
+
     # 精巧なモック挙動を定義 (test_pipeline.py のロジックを参考)
     mock_pca_inst = mock_pca.return_value
     def _pca_fit(X, y=None):
@@ -68,12 +70,12 @@ def mock_sklearn_decomposition(monkeypatch):
     }):
         import gwexpy.timeseries.decomposition as decomposition
         importlib.reload(decomposition)
-        
+
         # decomposition モジュール内の参照を強制的にモックに向ける
         monkeypatch.setattr(decomposition, "SKLEARN_AVAILABLE", True)
         monkeypatch.setattr(decomposition, "PCA", mock_pca)
         monkeypatch.setattr(decomposition, "FastICA", mock_ica)
-        
+
         yield (mock_pca, mock_ica)
 
     # Teardown: sys.modules は patch.dict で戻るが、

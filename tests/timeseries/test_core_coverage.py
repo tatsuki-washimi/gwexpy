@@ -42,11 +42,11 @@ def test_timeseries_new_no_coercion_for_non_time():
 def test_timeseries_array_finalize_propagation():
     ts = TimeSeries([1, 2, 3], t0=0, dt=1)
     ts._gwex_test_attr = "hello"
-    
+
     # Slicing
     sliced = ts[1:3]
     assert sliced._gwex_test_attr == "hello"
-    
+
     # View casting
     view = ts.view(TimeSeries)
     assert view._gwex_test_attr == "hello"
@@ -54,17 +54,17 @@ def test_timeseries_array_finalize_propagation():
 
 def test_timeseries_basic_ops_return_type():
     ts = TimeSeries(np.arange(10), t0=0, dt=1)
-    
+
     # tail
     t = ts.tail(3)
     assert isinstance(t, TimeSeries)
     assert len(t) == 3
-    
+
     # crop
     c = ts.crop(2, 5)
     assert isinstance(c, TimeSeries)
     assert float(c.t0.value) == 2.0
-    
+
     # append
     other = TimeSeries([10, 11], t0=10, dt=1)
     appended = ts.append(other, inplace=False)
@@ -79,14 +79,14 @@ def test_timeseries_find_peaks_with_quantities():
     data[2] = 5.0
     data[6] = 10.0
     ts = TimeSeries(data, t0=0, dt=1 * u.s, unit=u.V)
-    
+
     # Test distance as Quantity
     peaks, props = ts.find_peaks(distance=5 * u.s)
-    assert len(peaks) == 1  # only the higher peak if distance is large? 
+    assert len(peaks) == 1  # only the higher peak if distance is large?
     # Wait, find_peaks distance logic: peaks must be separated by at least distance.
     # At t=2 and t=6, distance is 4s. So if distance=5s, only one peak remains.
     assert float(peaks.times[0].value) == 6.0
-    
+
     # Test width as Quantity
     # We need a wider peak to test width
     data_wide = np.zeros(20)
@@ -102,13 +102,13 @@ def test_regularity_mixin():
     ts_reg = TimeSeries([1, 2, 3], t0=0, dt=1)
     assert ts_reg.is_regular is True
     ts_reg._check_regular() # should not raise
-    
+
     # Irregular series
     # GWpy TimeSeries defaults to regular if created with dt.
     # To make it irregular, we can use xindex.
     times = [0, 1, 2.5, 3]
     ts_irreg = TimeSeries([1, 2, 3, 4], times=times)
     assert ts_irreg.is_regular is False
-    
+
     with pytest.raises(ValueError, match="requires a regular sample rate"):
         ts_irreg._check_regular("Test method")

@@ -141,7 +141,7 @@ class TestScalarFieldSliceMap2D:
         """Test that slice_map2d preserves _gwex_ attributes."""
         sample_field._gwex_test_attr = "important_metadata"
         sliced = sample_field.slice_map2d("xy", at={"t": 0.5 * u.s, "z": 3.0 * u.m})
-        
+
         assert hasattr(sliced, "_gwex_test_attr")
         assert sliced._gwex_test_attr == "important_metadata"
 
@@ -325,30 +325,30 @@ class TestScalarFieldPlotProfile:
         x = np.arange(nx) * u.m
         y = np.arange(ny) * u.m
         z = np.arange(nz) * u.m
-        
+
         # Grid values (indexing='ij' for 4D)
         T, X, Y, Z = np.meshgrid(t.value, x.value, y.value, z.value, indexing='ij')
         data = T + X + Y + Z
-        
+
         field = ScalarField(
             data,
             unit=u.dimensionless_unscaled,
             axis0=t, axis1=x, axis2=y, axis3=z,
             axis_names=["t", "x", "y", "z"]
         )
-        
+
         # Extract profile along x-axis at non-grid coordinates for t, y, z
         t_val = 1.5 * u.s
         y_val = 2.5 * u.m
         z_val = 0.5 * u.m
-        
+
         x_axis, values = field.extract_profile(
             'x', at={'t': t_val, 'y': y_val, 'z': z_val}
         )
-        
+
         # Analytical solution: f = t + x + y + z
         expected = t_val.value + x.value + y_val.value + z_val.value
-        
+
         assert len(x_axis) == nx
         # Linear interpolation should be exact for a linear field
         np.testing.assert_allclose(values.value, expected, atol=1e-10)
@@ -538,14 +538,14 @@ class TestScalarFieldTimeStatMap:
         # Mean time is (0.0 + 0.9) / 2 = 0.45
         t_mean = 0.45 * u.s
         z0 = 2.0 * u.m
-        
+
         # This should fail if line 1658 returns early
         result = sample_field.time_stat_map(
-            stat="mean", 
-            plane="xy", 
+            stat="mean",
+            plane="xy",
             at={"t": t_mean, "z": z0}
         )
-        
+
         # Expected shape: (t=1, x=4, y=4, z=1)
         assert result.shape == (1, 4, 4, 1)
         assert result.axis_names == ("t", "x", "y", "z")

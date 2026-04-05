@@ -10,7 +10,7 @@ Provides conversion from Finesse's ``FrequencyResponseSolution`` and
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union
 
 import numpy as np
 
@@ -31,7 +31,7 @@ __all__ = ["from_finesse_frequency_response", "from_finesse_noise"]
 
 
 def from_finesse_frequency_response(
-    cls: Type[Union[T_fs, FrequencySeriesDict]],
+    cls: type[Union[T_fs, FrequencySeriesDict]],
     sol: Any,
     *,
     output: Any | None = None,
@@ -185,7 +185,7 @@ def _build_frequency_response_collection(
 
 
 def from_finesse_noise(
-    cls: Type[Union[T_fs, FrequencySeriesDict]],
+    cls: type[Union[T_fs, FrequencySeriesDict]],
     sol: Any,
     *,
     output: Any | None = None,

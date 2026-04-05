@@ -20,7 +20,6 @@ from typing import Any
 import numpy as np
 
 from ._modal_helpers import build_mode_dataframe, infer_unit_from_response_type
-from ._optional import require_optional
 from ._registry import ConverterRegistry
 
 __all__ = [
@@ -91,8 +90,6 @@ def from_uff_dataset58(
         return TimeSeries(data.real, dt=dt, t0=t0, unit=unit, name=name)
 
     # Frequency domain (default fallback)
-    df = float(x[1] - x[0]) if len(x) > 1 else 1.0
-    f0 = float(x[0])
     return FrequencySeries(data, frequencies=x, unit=unit, name=name)
 
 
@@ -116,8 +113,6 @@ def from_uff_dataset55(uff_data: dict) -> Any:
     """
     frequencies = np.atleast_1d(uff_data.get("modal_freq", uff_data.get("freq", [])))
     damping = np.atleast_1d(uff_data.get("modal_damp", uff_data.get("damping", [])))
-
-    n_modes = len(frequencies)
 
     # Mode shapes: r1..r6 contain DOF responses per mode
     # Shape varies by implementation; handle common layouts

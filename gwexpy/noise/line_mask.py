@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -31,15 +31,15 @@ def create_line_mask(
     True = clean frequency, False = masked frequency.
     """
     mask = np.ones(len(frequencies), dtype=bool)
-    
+
     lines = custom_lines if custom_lines is not None else []
     if detector == "KAGRA":
         lines.extend(KAGRA_LINES)
-        
+
     for fmin, fmax in lines:
         in_range = (frequencies >= fmin) & (frequencies <= fmax)
         mask[in_range] = False
-        
+
     return mask
 
 
@@ -54,10 +54,10 @@ def apply_line_mask(
     Masked frequencies are replaced with fill_value.
     """
     mask = create_line_mask(spectrogram.frequencies.value, detector, custom_lines)
-    
+
     new_value = spectrogram.value.copy()
     new_value[:, ~mask] = fill_value
-    
+
     return spectrogram.__class__(
         new_value,
         times=spectrogram.times,

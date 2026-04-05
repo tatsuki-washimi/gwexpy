@@ -6,6 +6,7 @@ from typing import Any
 
 import numpy as np
 from astropy import units as u
+
 try:
     from scipy import signal
 except ImportError as _exc:
@@ -50,8 +51,6 @@ def transient_gaussian_noise(
         sample_rate = sample_rate.to("Hz").value
 
     n_samples = int(duration * sample_rate)
-    dt = 1.0 / sample_rate
-
     # Generate n0(t) and n1(t)
     # For now, we use white noise if psd is not provided.
     # In the future, we can use colored noise.

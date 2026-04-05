@@ -114,7 +114,7 @@ class TestFieldListFftOperations:
             assert f.space_domains["x"] == "real"
 
 
-class TestFieldListValidation:
+class TestFieldListValidationCoverage:
     """Test FieldList validation."""
 
     def test_validate_consistent_fields(self):

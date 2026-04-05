@@ -13,7 +13,6 @@ from gwexpy.signal.preprocessing.imputation import (
     impute,
 )
 
-
 # ---------------------------------------------------------------------------
 # _coerce_times
 # ---------------------------------------------------------------------------
@@ -86,7 +85,7 @@ class TestLimitMask:
         nans = np.array([False, True, True, True, False])
         mask = _limit_mask(nans, 1, direction="forward")
         # First NaN is filled (within limit=1), rest are masked
-        assert mask[2] == True or mask[3] == True
+        assert mask[2] or mask[3]
 
     def test_limit_backward(self):
         # Line 48 — direction='backward'

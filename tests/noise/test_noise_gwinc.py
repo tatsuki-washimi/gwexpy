@@ -85,7 +85,6 @@ class TestFromPygwincModels:
         assert fs.name == "Aplus"
 
     def test_custom_frequencies(self):
-        fake_gwinc = _fake_gwinc()
         freqs = np.array([10.0, 50.0, 100.0, 500.0])
 
         class FakeTraceCustom:
@@ -125,8 +124,6 @@ class TestFromPygwincModels:
                 from_pygwinc("aLIGO", fmin=10.0, fmax=100.0, df=10.0, quantity="darm")
 
     def test_default_frequency_array_generated(self):
-        fake_gwinc = _fake_gwinc()
-
         class FakeTraceSize:
             def __init__(self, n):
                 self.psd = np.ones(n) * 1e-46

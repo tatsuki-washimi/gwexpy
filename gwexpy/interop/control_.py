@@ -9,7 +9,7 @@ Provides conversion between FrequencySeries and control.FRD (Frequency Response 
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Literal, TypeVar, Union
 
 import numpy as np
 
@@ -83,7 +83,7 @@ def to_control_frd(
 
 
 def from_control_frd(
-    cls: Type[T_fs], frd: control.FRD, frequency_unit: Literal["Hz", "rad/s"] = "Hz"
+    cls: type[T_fs], frd: control.FRD, frequency_unit: Literal["Hz", "rad/s"] = "Hz"
 ) -> Union[T_fs, FrequencySeriesMatrix]:
     """
     Create FrequencySeries from control.FRD.
@@ -165,7 +165,7 @@ def from_control_frd(
 
 
 def from_control_response(
-    cls: Type[Union[TimeSeries, TimeSeriesDict]],
+    cls: type[Union[TimeSeries, TimeSeriesDict]],
     response: control.TimeResponseData,
     **kwargs: Any,
 ) -> Union[TimeSeries, TimeSeriesDict]:
