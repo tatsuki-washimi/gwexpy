@@ -5,7 +5,12 @@ from .coupling import CouplingFunctionAnalysis, estimate_coupling
 from .coupling_result import CouplingResult, CouplingResultCollection
 from .stat_info import association_edges, build_graph
 from .stats import SpectralStats
-from .threshold import PercentileThreshold, RatioThreshold, SigmaThreshold, ThresholdStrategy
+from .threshold import (
+    PercentileThreshold,
+    RatioThreshold,
+    SigmaThreshold,
+    ThresholdStrategy,
+)
 
 __all__ = [
     "Bruco",

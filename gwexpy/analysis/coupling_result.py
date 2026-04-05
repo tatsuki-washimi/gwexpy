@@ -14,10 +14,11 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
+    from gwexpy.plot import Plot
+
     from ..frequencyseries import FrequencySeries
     from ..timeseries import TimeSeries
     from ..types.typing import IndexLike
-    from gwexpy.plot import Plot
 
 
 class CouplingResult:

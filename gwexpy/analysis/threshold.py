@@ -20,7 +20,6 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from ..table.segment_table import SegmentTable
     from ..frequencyseries import FrequencySeries
     from ..timeseries import TimeSeries
 
@@ -149,16 +148,20 @@ class RatioThreshold(ThresholdStrategy):
         self,
         psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
+        del raw_bkg, kwargs
         return psd_inj.value > (psd_bkg.value * self.ratio)
 
     def threshold(
         self,
-        _psd_inj: FrequencySeries,
+        psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
+        raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
+        del psd_inj, raw_bkg, kwargs
         return psd_bkg.value * self.ratio
 
 
@@ -228,9 +231,10 @@ class SigmaThreshold(ThresholdStrategy):
         self,
         psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
-        _raw_bkg: TimeSeries | None = None,
+        raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
+        del raw_bkg
         n_avg = kwargs.get("n_avg", 1.0)
         if not isinstance(n_avg, (int, float)):
             raise TypeError("SigmaThreshold expects numeric n_avg.")
@@ -243,11 +247,12 @@ class SigmaThreshold(ThresholdStrategy):
 
     def threshold(
         self,
-        _psd_inj: FrequencySeries,
+        psd_inj: FrequencySeries,
         psd_bkg: FrequencySeries,
-        _raw_bkg: TimeSeries | None = None,
+        raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
+        del psd_inj, raw_bkg
         n_avg = kwargs.get("n_avg", 1.0)
         if not isinstance(n_avg, (int, float)):
             raise TypeError("SigmaThreshold expects numeric n_avg.")
@@ -305,10 +310,11 @@ class PercentileThreshold(ThresholdStrategy):
     def threshold(
         self,
         psd_inj: FrequencySeries,
-        _psd_bkg: FrequencySeries,
+        psd_bkg: FrequencySeries,
         raw_bkg: TimeSeries | None = None,
         **kwargs: Any,
     ) -> np.ndarray:
+        del psd_bkg
         fftlength = kwargs.get("fftlength")
         overlap = kwargs.get("overlap")
         bkg_table = kwargs.get("bkg_table")

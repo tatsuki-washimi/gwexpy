@@ -237,182 +237,512 @@ def estimate_coupling(
 
 ---
 
-## 10. レガシーコードから得られた使い勝手パターン
+## 10. レガシーコードから得られた使い勝手パターン（詳細）
 
-実装検証と並行して、レガシーコード（`injection_O3/`, `injection_O4a/`, `injection_O4c/`）から以下の使い勝手パターンを抽出しました。これらは現在の `ResponseFunctionAnalysis` / `CouplingFunctionAnalysis` API の改善方向を示唆しています。
+レガシーコード（`injection_O3/`, `injection_O4a/`, `injection_O4c/`）を精査し、現在の `ResponseFunctionAnalysis` / `CouplingFunctionAnalysis` API との差分を具体的なコード箇所とともに整理します。
+
+---
 
 ### A. 時系列ベースの API（現在未対応）
 
-**レガシーパターン** (`NInjA.py`, `InjectionAnalysis.py`)：
+#### A-1. レガシーの実際のパターン
+
+**`injection_O3/NInjA.py` の `main()` 関数（L173–L213）**では、`configparser` を使ってチャネルと時刻範囲をファイルから読み込み、その場で `crop()` → `spectrogram2()` → 統計計算 という流れが 1 ファイルに完結している。
 
 ```python
-# 1. 背景/注入期間を GPS 時刻で指定
-bkg_start, bkg_end = 1234567890, 1234571490  # GPS epoch
-inj_start, inj_end = 1234575090, 1234578690
+# NInjA.py L173-213
+bkg_start, bkg_end = StartEnd(conf['time'], 'bkg')  # GPS epoch で指定
+inj_start, inj_end = StartEnd(conf['time'], 'inj')
 
-# 2. チャネルを指定して時系列を読み込み
-data = TimeSeriesDict.read(sources, channels, format='gwf.lalframe')
+data = TimeSeriesDict.read(sources, [ch_DARM, ch_PEM], format='gwf.lalframe', nproc=4)
 
-# 3. 時刻範囲でクロップ
-DARM_bkg = data['K1:DARM'].crop(bkg_start, bkg_end)
-DARM_inj = data['K1:DARM'].crop(inj_start, inj_end)
-PEM_bkg  = data['K1:PEM'].crop(bkg_start, bkg_end)
-PEM_inj  = data['K1:PEM'].crop(inj_start, inj_end)
-
-# 4. 個別に ASD 計算
-DARM_bkg_asd = DARM_bkg.asd(fftlen, overlap)
-DARM_inj_asd = DARM_inj.asd(fftlen, overlap)
-PEM_bkg_asd  = PEM_bkg.asd(fftlen, overlap)
-PEM_inj_asd  = PEM_inj.asd(fftlen, overlap)
-
-# 5. 結合係数を手動計算
-CF = (DARM_inj_asd**2 - DARM_bkg_asd**2) / (PEM_inj_asd**2 - PEM_bkg_asd**2)
+DARM_INJ = PSDs(data[ch_DARM].highpass(10).crop(inj_start, inj_end))
+DARM_BKG = PSDs(data[ch_DARM].highpass(10).crop(bkg_start, bkg_end))
+PEM_INJ  = PSDs(data[ch_PEM].crop(inj_start, inj_end))
+PEM_BKG  = PSDs(data[ch_PEM].crop(bkg_start, bkg_end))
 ```
 
-**提案**: `ResponseFunctionAnalysis.from_time_windows()` ファクトリメソッドの追加。
+**`injection_O4a/IFI_shaker_2023-03-07.ipynb` のセル**では、同一背景ウィンドウ（`t1 = start + 8.2*60`）を固定して異なる注入時刻を繰り返し解析するパターンが 5 セルにわたって繰り返されている。
 
 ```python
-rf_analysis = ResponseFunctionAnalysis.from_time_windows(
-    data={'DARM': darm_ts, 'PEM': pem_ts},
-    bkg_window=(bkg_start, bkg_end),
-    inj_window=(inj_start, inj_end),
+# IFI_shaker_2023-03-07.ipynb (セル 8cdca528 〜 72ba96e7)
+t1 = start + 8.2*60  # Background（全セルで固定）
+tw = 16              # ウィンドウ幅 16秒
+
+# 注入時刻だけセルごとに変わる
+t2 = start + 11.6*60  # 1回目
+# t2 = start + 12*60  # 2回目
+# t2 = start + 13.5*60 # 3回目
+
+DARM_bkg = DARM.crop(t1, t1+tw).asd(fftlen, fftlen/2).crop(40, 1000)
+DARM_inj = DARM.crop(t2, t2+tw).asd(fftlen, fftlen/2).crop(40, 1000)
+
+CF2 = (DARM_inj**2 - DARM_bkg**2) / (ACC_inj**2 - ACC_bkg**2)
+CF2.value[ACC_inj.value < 2 * ACC_bkg.value] = np.nan
+CF2.value[DARM_inj.value < 2 * DARM_bkg.value] = np.nan
+DARM_prj = CF2**0.5 * ACC_bkg
+```
+
+**観察**: 背景ウィンドウ指定・クロップ・フィルタ・ASD計算・マスク処理という一連のステップが **5 セル × 手動コピペ** で繰り返され、著しくエラーが混入しやすい。
+
+#### A-2. 現在の API との差分
+
+`CouplingFunctionAnalysis.compute()` は `TimeSeriesDict` を受け取るが、GPS 時刻からの自動クロップ（`data.crop()`）はユーザー責任。つまり：
+
+```python
+# 現在の最短フロー（ユーザー側で手動クロップが必要）
+data = TimeSeriesDict.read(sources, channels)
+data_inj = data.crop(inj_start, inj_end)
+data_bkg = data.crop(bkg_start, bkg_end)
+result = estimate_coupling(data_inj, data_bkg, fftlength=2.0, witness='K1:PEM-ACC_...')
+```
+
+#### A-3. 提案 API
+
+```python
+# 提案: GPS 時刻ウィンドウを直接受け取るクラスメソッド
+result = CouplingFunctionAnalysis.from_time_windows(
+    data=data,                         # TimeSeriesDict（未クロップ）
+    bkg_window=(bkg_start, bkg_end),   # GPS 時刻で背景期間
+    inj_window=(inj_start, inj_end),   # GPS 時刻で注入期間
     fftlength=2.0,
-    overlap=1.0,
-    witness='PEM',
-    target='DARM',
+    witness='K1:PEM-ACC_OMC_VACTABLE_OMC_Y_OUT_DQ',
+    frange=(40, 1000),
 )
-result = rf_analysis.compute()
+
+# 複数注入期間のバッチ処理（IFI notebook の繰り返しセルを1行に）
+results = CouplingFunctionAnalysis.from_time_windows_batch(
+    data=data,
+    bkg_window=(start + 8.2*60, start + 8.2*60 + 16),
+    inj_windows=[
+        (start + 11.6*60, start + 11.6*60 + 16),
+        (start + 12.0*60, start + 12.0*60 + 16),
+        (start + 13.5*60, start + 13.5*60 + 16),
+    ],
+    fftlength=1.0,
+    witness='K1:PEM-ACC_OMC_VACTABLE_OMC_Y_OUT_DQ',
+)
 ```
 
-### B. 複数チャネルに対する階層化計算（現在部分対応）
+---
 
-**レガシーパターン** (InjectionAnalysis.py)：
+### B. 複数チャネルの階層化計算と TimeTable ベースのスケジュール管理
+
+#### B-1. レガシーの実際のパターン
+
+**`injection_O4c/InjectionAnalysis.py` の `get_spectrograms()` / `ASDs_Background()` / `analysis_ResponseFunction()`** は、独立した関数群として分離されており、Jupyter notebook 側（`dev.ipynb`）から自由に組み合わせて使える。
 
 ```python
-# マルチチャネル対応：背景テーブルを一度だけ構築して再利用
-channels = ['K1:DARM', 'K1:PEM_MCF', 'K1:PEM_REFL', 'K1:PEM_OMC']
-data = read_gwf(channels, start, end)
-sg = get_spectrograms(data, start, end, fftlen=2)  # 全チャネルの spectrogram
+# InjectionAnalysis.py L62-78: 全チャネルのスペクトログラムを一括計算
+def get_spectrograms(data, start, end, fftlen=2, fmin=0, fmax=np.inf):
+    sg = {ch: data[ch].spectrogram2(fftlen, fftlen/2)**0.5 for ch in data.keys()}
+    sg = {ch: sg[ch].crop_frequencies(fmin, fmax) for ch in data.keys()}
+    return sg  # チャネル名 -> Spectrogram の辞書
 
-# 背景の統計量を事前計算
-bg_median = {ch: sg[ch].percentile(50) for ch in channels}
-bg_std    = {ch: sg[ch].percentile(90) - sg[ch].percentile(10) for ch in channels}
-
-# 各チャネルに対する閾値を一度に計算
-for ch in channels:
-    threshold = (bg_std[ch] * sigma_factor) / bg_median[ch]
+# InjectionAnalysis.py L154-195: 背景統計（辞書で返す）
+def ASDs_Background(data, start, end, ch_x, ch_y, fftlen, fmin, fmax, th_ratio=1.5, f_frac=0):
+    sg_bkg = get_spectrograms(...)
+    x_bkg, y_bkg = [(sg_bkg[ch]**2).mean(axis=0)**0.5 for ch in [ch_x, ch_y]]
+    x_10, x_50, x_90 = [sg_bkg[ch_x].percentile(p) for p in [10, 50, 90]]
+    y_thre = y_90.copy() * th_ratio
+    return {'x_bkg': x_bkg, 'x_10': x_10, 'x_50': x_50, 'x_90': x_90,
+            'y_bkg': y_bkg, 'y_10': y_10, 'y_50': y_50, 'y_90': y_90, 'y_thre': y_thre}
 ```
 
-**現在の実装との整合性**: `CouplingFunctionAnalysis.compute()` は既に背景テーブルの共通化（`_build_bkg_segment_table`）を実装していますが、**複数ターゲット・複数背景チャネルの組み合わせに対する API 統一** がまだ不透明です。
-
-**提案**: より明示的な背景管理インターフェース。
+**`dev.ipynb` のセル**では、背景計算と注入スケジュール (`time_table`) を明示的に分離している。
 
 ```python
-# 背景テーブルを明示的に構築
-bkg_table = CouplingFunctionAnalysis.build_background(
-    data_bkg=bkg_ts,
+# dev.ipynb (InjectionAnalysis を import して使用)
+# 1. 背景統計を先に計算
+dataset_bkg = ASDs_Background(data, start, end, ch_x, ch_y,
+                               fftlen=2, fmin=50, fmax=400, th_ratio=1.5, f_frac=1)
+
+# 2. 注入スケジュール（pandas DataFrame）を構築
+time_table = time_swept(f_start=200, f_end=50, df_interval=1,
+                         t_start=to_gps('2025-04-03 07:23:30 JST')+3,
+                         dt_span=10, dt_interval=12.024)
+# 先頭行に背景期間を追加（f_inj=None がマーカー）
+time_table = pd.concat([pd.DataFrame({'f_inj': [None], 't1': start, 't2': end}),
+                         time_table.sort_values('f_inj')], ignore_index=True)
+
+# 3. 解析実行（背景は time_table 内の None 行から自動取得）
+inj, bkg = analysis_ResponseFunction(data, time_table, ch_x, ch_y,
+                                      fftlen=2, fmin=50, fmax=400)
+```
+
+**`analysis_ResponseFunction()` の L236-237**:
+
+```python
+# InjectionAnalysis.py L236-237
+start = time_table[time_table['f_inj'].isnull()].at[0, 't1']  # None行が背景期間
+end   = time_table[time_table['f_inj'].isnull()].at[0, 't2']
+bkg = ASDs_Background(data, start, end, ch_x, ch_y, ...)
+```
+
+**観察**: `time_table` は `f_inj=None` のダミー行で背景期間を埋め込むという**一種のメタデータ埋め込みパターン**であり、ユーザーには直感的ではないが、関数内部で自動的に処理される設計。
+
+#### B-2. 現在の API との差分
+
+`CouplingFunctionAnalysis.compute()` は `data_inj` と `data_bkg` を明示的に分離した `TimeSeriesDict` として受け取るため、上記の「time_table の None 行」パターンとは異なる設計思想。ただし、**スキャン解析（周波数を変えながら繰り返す）に対して API が存在しない**点が最大のギャップ。
+
+#### B-3. 提案 API
+
+```python
+# 提案: 注入スケジュールを DataFrame で受け取る高レベル API
+from gwexpy.analysis import SweepAnalysis
+
+# time_table: columns=[f_inj, t1, t2]（InjectionAnalysis.py 互換形式）
+sweep = SweepAnalysis(
+    data=data,
+    time_table=time_table,        # bkg行(f_inj=None)も含む
+    ch_witness='K1:PEM-MIC_OMC_BOOTH_OMC_Z_OUT_DQ',
+    ch_target='K1:CAL-CS_PROC_DARM_STRAIN_DBL_DQ',
     fftlength=2.0,
-    stride=None,  # stride=fftlength のデフォルト
+    frange=(50, 400),
+    th_ratio=1.5,
 )
-
-# 複数ターゲット・単一背景パターン
-result_multi = coupling_analysis.compute(
-    bkg_table=bkg_table,  # 再利用
-    targets=['DARM', 'DARM_ERR'],
-)
+inj_result, bkg_result = sweep.run()
 ```
 
-### C. 可視化パターン（現在未対応）
+---
 
-**レガシーパターン** (`InjectionAnalysis.py` / `IFI_shaker_*.ipynb`)：
-- **Spectrogram plot**: 背景/注入期間の時間発展を比較
-- **ASD + Percentile plot**: 中央値 ± 20-90%ile 帯での不確度表示
-- **Coupling Function + Upper Limit**: CF と統計的上限を同一プロット
-- **Projection vs Background Ratio**: 投影値とバックグラウンドの比率を log-log プロット
+### C. 可視化パターン（具体的な実装差分）
 
-**現在の実装**: `ResponseFunctionResult` / `CouplingResult` は生データを保持していますが、**推奨可視化パターンの定義と helper method** がありません。
+#### C-1. レガシーの実際のパターン
 
-**提案**: 可視化 helper を `Result` クラスに追加。
+レガシーコードには **5 種類の標準的な可視化関数** が定義されている。
+
+**① RMS 時系列プロット** (`NInjA.py` L88-105)
+
+- 背景/注入期間をグレー/赤の `axvspan` で色分け
+- ロック状態（`GRD`）を `add_segments_bar()` で追記
 
 ```python
+# NInjA.py L88-105: plot_RMS()
+ax.axvspan(bkg_start, bkg_end, color="gray", alpha=0.3)
+ax.axvspan(inj_start, inj_end, color="red",  alpha=0.3)
+plot.add_segments_bar(GRD)
+```
+
+**② PSD 比較 + 有意度プロット** (`NInjA.py` L119-160)
+
+- 平均 ± σ/√N のエラーバンドで注入/背景を重ねる (`plot_mmm`)
+- 有意度 Δμ/σ のプロットを別パネルに作成
+
+```python
+# NInjA.py L147-160: plot_PSDs()
+dmu = INJ['mean'] - BKG['mean']
+sigma = (INJ['sigma']**2/INJ['N'] + BKG['sigma']**2/BKG['N'])**0.5
+# 有意度プロット（ylim=(-2, 12)で正規化）
+plot = Plot(dmu/sigma, ylim=(-2, 12),
+            ylabel=r'Significance $(\mu_{inj}-\mu_{bkg})/\sqrt{\sigma_{inj}^2/N_{inj}+\sigma_{bkg}^2/N_{bkg}}$')
+plot.gca().axhline(threshold, color='red')  # 閾値ライン
+```
+
+**③ ASDgram + 10/50/90%ile プロット** (`InjectionAnalysis.py` L82-123)
+
+- 左パネル: 時間発展 Spectrogram（カラーマップ）
+- 右パネル: 10%, 50%, 90% パーセンタイル ASD
+
+```python
+# InjectionAnalysis.py L96-113: plot_ASDgrams()
+axes[i, 0].imshow(sg[ch])          # 左: Spectrogram
+axes[i, 0].colorbar(cmap='viridis', norm='log')
+axes[i, 1].plot_mmm(sg[ch].percentile(50),
+                     sg[ch].percentile(10),
+                     sg[ch].percentile(90))  # 右: 10/50/90%ile
+```
+
+**④ SNR グラム** (`InjectionAnalysis.py` L127-150)
+
+- 中央値で正規化した SNR 比のスペクトログラム
+
+```python
+# InjectionAnalysis.py L135: plot_SNRgrams()
+sg[ch] = (sg[ch] / sg[ch].percentile(50)).crop_frequencies(fmin, fmax)
+axes[i].colorbar(cmap='YlOrRd', norm='linear', vmin=1, vmax=SNRmax,
+                  label='ASD ratio to median')
+```
+
+**⑤ 個別ステップの 3 パネルプロット** (`InjectionAnalysis.py` L272-312)
+
+- Target ASD (背景+注入+Projection+Limit)
+- Witness ASD (背景+注入)
+- コヒーレンス ASD
+
+```python
+# InjectionAnalysis.py L292-300: plot_single()
+axes[0].plot_mmm(y_bkg, y_10, y_90, color='black', label='Background (mean, 10%, 90%)')
+axes[0].plot(y_inj, color='red', label=f'{f_inj} Hz injection')
+axes[0].plot(y_prj, color='tab:green', label='Projection', marker='o')
+axes[0].fill_between(y_lim.frequencies.value, y_lim.value, np.zeros(y_lim.size),
+                      color='tab:blue', label='Projection limit', hatch='//')
+```
+
+**⑥ 全注入周波数の投影集計** (`InjectionAnalysis.py` L316-348)
+
+- 上パネル: 全注入ステップの投影スペクトルを重ね書き（カラーマップで周波数対応）
+- 下パネル: ウィットネス背景 + バー表示（注入強度）
+
+**⑦ 2D 応答行列** (`InjectionAnalysis.py` L361-395)
+
+- `(f_out, f_inj)` の 2D カラーマップ（`pcolor`）
+- 周波数差 `f_out - f_inj` に対するスライスプロット
+
+```python
+# InjectionAnalysis.py L386-393: plot_Resp()
+R = np.array([r.value for r in R_list]).T
+axes[0].pcolor(f_inj, f_out, R**0.5, norm=LogNorm(...))
+for i in range(f_inj.size):
+    axes[1].plot(f_out - f_inj[i], R[:, i]**0.5, color=cmap(i/f_inj.size))
+```
+
+#### C-2. 現在の実装との差分
+
+`CouplingResult.plot()` は 3 パネル（Witness ASD / Target ASD + Projection / CF）のみ。以下が未実装：
+
+| プロット種別 | レガシー関数 | 現在の API |
+| --- | --- | --- |
+| RMS 時系列 + 期間色分け | `plot_RMS()` | なし |
+| PSD 有意度 (Δμ/σ) | `plot_PSDs()` → 有意度パネル | なし |
+| ASDgram + %ile | `plot_ASDgrams()` | なし |
+| SNR グラム | `plot_SNRgrams()` | なし |
+| 個別ステップ 3 パネル | `plot_single()` | `ResponseFunctionResult.plot_snapshot()` が近い |
+| 全ステップ投影集計 | `plot_projection()` | なし |
+| 2D 応答行列 | `plot_Resp()` | `ResponseFunctionResult.plot_map()` が近い |
+
+#### C-3. 提案 API
+
+```python
+class CouplingResult:
+    def plot_significance(self, threshold: float = 3.0) -> Plot:
+        """
+        有意度パネルを追加した拡張プロット。
+        Δμ/σ の周波数プロット（NInjA.py の plot_PSDs 相当）。
+        """
+        ...
+
+    def plot_asdgram(self, fmin: float = 0, fmax: float = np.inf) -> tuple[Figure, Axes]:
+        """
+        時間発展 Spectrogram + 10/50/90%ile ASD の 2 列プロット。
+        InjectionAnalysis.plot_ASDgrams() 相当。
+        """
+        ...
+
+    def plot_snrgram(self, fmin: float = 0, fmax: float = np.inf, snrmax: float = 5) -> tuple[Figure, Axes]:
+        """
+        中央値正規化 SNR グラム（InjectionAnalysis.plot_SNRgrams() 相当）。
+        """
+        ...
+
+
 class ResponseFunctionResult:
-    def plot_coupling_function(self, frange=None, significance_threshold=None):
-        """CF と統計的上限を同一プロットで返す。"""
+    def plot_projection_summary(self) -> tuple[Figure, Axes]:
+        """
+        全注入ステップの投影を重ねた集計プロット。
+        InjectionAnalysis.plot_projection() 相当。
+        """
         ...
-    
-    def plot_projection(self, freq_range=None):
-        """投影値と背景の比較プロット。"""
+
+    def plot_response_matrix(self, vmin: float = 0, vmax: float = np.inf) -> tuple[Figure, Axes]:
+        """
+        2D 応答行列 (f_inj, f_target) のカラーマップ。
+        InjectionAnalysis.plot_Resp() の改良版（既存の plot_map() を統合）。
+        """
         ...
 ```
 
-### D. 統計量レポートの構造化（現在改善途上）
+---
 
-**レガシーパターン** (`NInjA.py`)：
+### D. 統計量レポートの構造化
+
+#### D-1. レガシーの実際のパターン
+
+**`injection_O3/NInjA.py` の `PSDs()` 関数 (L109-115)**は、統計量を辞書として返す最小構造を示している。
 
 ```python
-# 手動で統計量を計算・ファイル出力
-CF.write(output + 'CouplingFunction__' + ch_DARM + '__' + ch_PEM + '.txt')
-project.write(output + 'Projection__' + ch_DARM + '__' + ch_PEM + '.txt')
-
-# TXT ファイルには周波数・値が2列で保存
-# ユーザーは後処理で Correlation、RMS error、SNR などを手動計算
+# NInjA.py L109-115: PSDs()
+def PSDs(data):
+    SG = data.spectrogram2(fftlength, overlap, window='hanning').crop_frequencies(low=fmin, high=fmax)
+    mean  = FrequencySeries(data=SG.mean(0), frequencies=SG.frequencies)
+    sigma = FrequencySeries(data=SG.std(0),  frequencies=SG.frequencies)
+    N = SG.times.size
+    return {'mean': mean, 'sigma': sigma, 'N': N}
 ```
 
-**現在の実装**: `CouplingResult` は `coupling_factors` / `projections` / `upper_limits` を `SegmentTable` 列として保持していますが、**結果サマリー（mean, median, std）の統計構造体** がありません。
+この `mean`, `sigma`, `N` の三つ組みは解析全体を通じて伝播し、有意度計算（`plot_PSDs` L147）で使われる。
 
-**提案**: `SummaryStatistics` 型の追加。
+```python
+# NInjA.py L147: 有意度の計算
+dmu   = INJ['mean'] - BKG['mean']
+sigma = (INJ['sigma']**2/INJ['N'] + BKG['sigma']**2/BKG['N'])**0.5
+```
+
+**`injection_O4a/PEMinjection_Summary.ipynb`**では、個々の実験で生成された CSV/HDF ファイルを読み込んで比較するパターンが採用されている。
+
+```python
+# PEMinjection_Summary.ipynb (セル 77c7c03b)
+file = [f for f in glob.glob('*/*.csv') if 'acoustic' in f]
+ASD  = {f.split('/')[-1].replace('_acoustic', '').replace('_s', '@').split('@')[0]:
+        FrequencySeries.read(f, format='csv') for f in file}
+
+# 複数の注入結果を同一プロットで比較
+for key in ['PSL_2023-06-26_70-900Hz', 'REFL_2023-05-02_50-900Hz', ...]:
+    ax.step(ASD[key].frequencies, ASD[key].value, where='mid', label=key)
+```
+
+**出力ファイル形式** (`NInjA.py` L259-260):
+
+```python
+# NInjA.py L259-260
+C1.write(     output + 'CouplingFunction__' + ch_DARM + '__' + ch_PEM + '.txt')
+project.write(output + 'Projection__'       + ch_DARM + '__' + ch_PEM + '.txt')
+```
+
+TXT ファイルには周波数と値の 2 列のみ。`PEMinjection_Summary.ipynb` ではこれを CSV として読み直して可視化している。
+
+#### D-2. 現在の実装との差分
+
+`CouplingResult` は `cf`, `cf_ul`, `psd_*` 系列を持つが：
+
+- `PSDs()` が返す `{'mean', 'sigma', 'N'}` に相当する **統計的誤差構造体** が不在
+- `FrequencySeries.write()` によるファイル出力メソッドはなし（gwpy の `.write()` を直接呼ぶ必要がある）
+- 複数セッションの結果を比較する **マルチ結果コンテナ** がない
+
+#### D-3. 提案 API
 
 ```python
 @dataclass
-class CouplingResultSummary:
-    """結合係数の統計サマリー。"""
-    frequency: np.ndarray
-    cf_mean: np.ndarray
-    cf_median: np.ndarray
-    cf_std: np.ndarray
-    cf_percentile_low: np.ndarray  # 10%ile
-    cf_percentile_high: np.ndarray  # 90%ile
-    projection_mean: np.ndarray
-    upper_limit_mean: np.ndarray
-    
-    def to_csv(self, filepath: str) -> None:
-        """CSV 形式で保存。"""
+class SpectralStats:
+    """
+    PSDs() 辞書の型安全版（NInjA.py の {'mean', 'sigma', 'N'} 相当）。
+    有意度計算に必要な三つ組みを保持。
+    """
+    mean: FrequencySeries
+    sigma: FrequencySeries
+    n_avg: int
+
+    def significance(self, other: 'SpectralStats') -> FrequencySeries:
+        """(μ_inj - μ_bkg) / sqrt(σ_inj²/N_inj + σ_bkg²/N_bkg) を返す。"""
+        dmu   = self.mean - other.mean
+        sigma = (self.sigma**2/self.n_avg + other.sigma**2/other.n_avg)**0.5
+        return dmu / sigma
+
+
+class CouplingResult:
+    def to_txt(self, output_dir: str) -> None:
+        """
+        NInjA.py 互換の TXT 形式で CF と Projection を保存。
+        ファイル名: CouplingFunction__{target}__{witness}.txt
+        """
         ...
 
-result.summary_statistics() -> CouplingResultSummary
+    def to_csv(self, filepath: str) -> None:
+        """
+        周波数, CF, CF_UL, Projection, Projection_UL を1ファイルに保存。
+        PEMinjection_Summary.ipynb での読み込みに対応。
+        """
+        ...
+
+
+class CouplingResultCollection:
+    """複数セッションの CouplingResult を集約するコンテナ。"""
+    def __init__(self, results: dict[str, CouplingResult]) -> None:
+        ...
+
+    def plot_comparison(self, frange=None) -> Plot:
+        """PEMinjection_Summary.ipynb のマルチキー比較プロット相当。"""
+        ...
 ```
 
-### E. 背景データの明示的指定（現在の課題）
+---
 
-**レガシーパターン** (`IFI_shaker_*.ipynb`)：
+### E. 背景データの明示的指定と自動検出の共存
+
+#### E-1. レガシーの実際のパターン
+
+**`IFI_shaker_2023-03-07.ipynb`** では、1 時間のデータを読み込んだ後、最初に Spectrogram を確認してから背景と注入の期間を目視で決定している。
 
 ```python
-# 背景として明示的に指定する時間帯
-t_bkg_start, t_bkg_end = start + 8.2*60, start + 8.2*60 + 16
+# IFI_shaker_2023-03-07.ipynb (セル aec9838e)
+# まず全体の Spectrogram で注入期間を視認
+fig, axes = plt.subplots(2, 1, ...)
+axes[0].imshow(DARM.crop(start+7*60, start+17*60).spectrogram2(2, 1)**0.5)
+axes[0].set_xscale('auto-gps', epoch=start)
 
-# 注入期間（複数回の注入を複数行で定義）
-t_inj_list = [(start + 11.6*60, start + 11.6*60 + 16),
-              (start + 12.0*60, start + 12.0*60 + 16),
-              (start + 13.5*60, start + 13.5*60 + 16)]
-
-# 各注入期間に対して解析を実施
-for t_inj_start, t_inj_end in t_inj_list:
-    DARM_bkg = data['DARM'].crop(t_bkg_start, t_bkg_end).asd(...)
-    DARM_inj = data['DARM'].crop(t_inj_start, t_inj_end).asd(...)
-    # 計算...
+# 目視確認後、固定値でクロップ
+t1 = start + 8.2*60   # Background（全セルで固定）
+t2 = start + 11.6*60  # Injected（セルごとに変わる）
+tw = 16
 ```
 
-**現在の実装の制限**: `ResponseFunctionAnalysis` は「各ステップの直前データから自動的に背景を抽出」していますが、ユーザーが **明示的に背景期間を指定したい場合** に対応していません。
-
-**提案**: `background_window` パラメータの追加。
+**`InjectionAnalysis.py` の `analysis_ResponseFunction()` (L235-238)**では、`time_table` の `f_inj=None` 行を背景期間として使う。
 
 ```python
-rf_analysis = ResponseFunctionAnalysis(
-    segments=step_segments,
-    background_window=(bkg_start, bkg_end),  # 明示的背景指定
-    # または None のとき自動導出（現在の動作）
-)
+# InjectionAnalysis.py L235-238
+def analysis_ResponseFunction(data, time_table, ch_x, ch_y, ...):
+    # 背景期間: f_inj が NaN の行（先頭行に手動で追加）
+    start = time_table[time_table['f_inj'].isnull()].at[0, 't1']
+    end   = time_table[time_table['f_inj'].isnull()].at[0, 't2']
+    bkg = ASDs_Background(data, start, end, ch_x, ch_y, ...)
 ```
+
+**`NInjA.py` の `get_sources()` (L62-85)**では、背景と注入の時刻範囲の最小/最大から GWF ファイルを自動的に特定し、一括で読み込む。
+
+```python
+# NInjA.py L200-201
+sources = get_sources(np.min([bkg_start, inj_start]), np.max([bkg_end, inj_end]))
+data = TimeSeriesDict.read(sources, ch, format='gwf.lalframe', nproc=4)
+```
+
+#### E-2. 現在の API との差分
+
+`ResponseFunctionAnalysis.compute()` の背景処理 (`response.py` L382-408) は以下のロジック：
+
+```python
+# response.py L389-396: 自動背景抽出
+t_b_s = max(t_s - seg_len - 0.5, witness.span[0])
+t_b_e = min(t_b_s + max(seg_len, fftlength), witness.span[1])
+```
+
+つまり「各注入ステップの直前」から自動的に背景を取得する。これは：
+
+- **長所**: セグメント検出後に自動動作、ユーザー操作不要
+- **短所**: 注入実験が時系列の先頭に来る場合や、前の注入が終わってすぐ次の注入が始まるような場合に、品質の悪い期間が背景として選ばれる可能性がある
+
+#### E-3. 提案 API
+
+```python
+class ResponseFunctionAnalysis:
+    def compute(
+        self,
+        witness: TimeSeries,
+        target: TimeSeries,
+        segments: list[tuple[float, float, float]] | None = None,
+        fftlength: float = 4.0,
+        # --- 背景指定オプション（新規追加） ---
+        witness_bkg: TimeSeries | None = None,          # 既存: 明示的背景 TimeSeries
+        target_bkg: TimeSeries | None = None,           # 既存: 明示的背景 TimeSeries
+        bkg_window: tuple[float, float] | None = None,  # 新規: GPS 時刻で背景期間を指定
+        # None のとき自動導出（現在の動作を維持）
+        ...
+    ) -> ResponseFunctionResult:
+        """
+        bkg_window が指定された場合:
+            witness.crop(*bkg_window) / target.crop(*bkg_window) を背景として使用
+        witness_bkg / target_bkg が指定された場合:
+            既存の動作（明示的 TimeSeries を背景として使用）
+        いずれも None の場合:
+            各ステップの直前から自動抽出（現在の動作）
+        """
+        if bkg_window is not None and witness_bkg is None:
+            witness_bkg = witness.crop(*bkg_window)
+        if bkg_window is not None and target_bkg is None:
+            target_bkg  = target.crop(*bkg_window)
+        ...
+```
+
+これにより、IFI notebook の「固定背景ウィンドウ」パターンが 1 パラメータの追加で対応できる。
 
 ---
 
@@ -549,3 +879,602 @@ conda run -n gwexpy python -m pytest \
 - **71 passed, 3 skipped**
 
 この更新により、`ResponseFunctionAnalysis` に追加されていた `n_jobs` / `memory_limit` は、インターフェース上だけでなく実際の実行制御としても有効になりました。
+
+### H. 追加推奨の検証（2026-04-05）
+
+`pytest` による機能回帰確認は通過している一方で、Phase 2 の実装・テスト資産を長期保守する観点では、以下の focused QA を文書上も明示しておく方が適切であることを確認しました。
+
+#### 1) Ruff による解析領域の focused lint
+
+推奨コマンド:
+
+```bash
+ruff check gwexpy/analysis tests/analysis
+```
+
+- **意図**:
+    - `pytest` では検出されない import 並び、未使用 import、未使用変数、空白崩れを検出する。
+    - とくに `gwexpy/analysis/*.py` と `tests/analysis/*.py` は、Phase 2/Hardening の追加実装後に局所的な lint 崩れが混入しやすい。
+- **2026-04-05 時点の実行結果**:
+    - focused 実行では **83 errors** を確認。
+    - 主な内訳は、`I001`（import 並び）、`F401` / `F811` / `F841`（未使用・再定義）、`W291` / `W293`（空白系）。
+- **文書上の扱い**:
+    - 「Phase 2 の機能検証は pytest で完了」
+    - 「lint clean は未達であり、別途整理対象」
+    という形で、機能正当性とコード衛生状態を分けて記録するのが望ましい。
+
+#### 2) Mypy による解析領域の focused 型検証
+
+推奨コマンド:
+
+```bash
+mypy gwexpy/analysis
+```
+
+- **意図**:
+    - `ThresholdStrategy` 実装クラスの override 整合、wrapper の戻り値型、`kwargs` 経由 API の型安全性を継続監視する。
+    - 特に `PercentileThreshold` / `SigmaThreshold` / `estimate_response_function()` / `estimate_coupling()` 周辺は、静的型チェックなしでは退行を見逃しやすい。
+- **2026-04-05 時点の実行結果**:
+    - focused 実行では **24 errors in 10 files** を確認。
+    - 解析領域では、`gwexpy/analysis/threshold.py` のメソッド署名と ABC の不整合、`gwexpy/analysis/response.py` の `kwargs` 転送まわり、`gwexpy/analysis/coupling.py` の戻り値型に未解消課題がある。
+- **文書上の扱い**:
+    - `pytest` 合格のみをもって「Phase 2 完了」と断定せず、
+      「型検証は未解消課題あり」と併記した方が記録として正確である。
+
+#### 3) 追加した方が良い pytest
+
+既存の `tests/analysis/test_response.py`、`test_coupling.py`、`test_coupling_analysis.py`、`test_hardening.py`、`test_time_windows.py` により主要経路は概ね網羅されているが、以下の回帰テストを追加すると Phase 2 の仕様固定としてより堅牢になる。
+
+- `estimate_coupling()` の wrapper parameter forwarding テスト
+    - `overlap`, `percentile_factor`, `bkg_stride`, `memory_limit` が `CouplingFunctionAnalysis.compute()` に確実に転送されることを mock / spy で確認する。
+    - 2026-04-04 のレビュー是正項目を、以後の回帰で壊さないためのテスト。
+- `estimate_response_function()` の wrapper parameter forwarding テスト
+    - `bkg_window`, `n_jobs`, `memory_limit` を wrapper 経由で渡したとき、`ResponseFunctionAnalysis.compute()` 側へそのまま届くことを確認する。
+    - `response.py` 側は wrapper + `**kwargs` 依存のため、静的にも動的にも退行防止を入れる価値が高い。
+- `PercentileThreshold(freq_align="interpolate")` の境界テスト
+    - 「1 bin 以内の shift は補間を許可し、それを超える shift は skip/reject する」という境界仕様を、人工 PSD で明示的に固定する。
+    - 現在の hardening テストは挙動確認としては有効だが、bin shift の境界契約を仕様として固定するには一段追加が望ましい。
+
+#### 4) 推奨する文書の記述方針
+
+本報告書では、今後は検証結果を少なくとも以下 3 層に分けて記載することを推奨します。
+
+- **機能回帰**: `pytest` の pass/fail と件数
+- **コード衛生**: `ruff check` の pass/fail と主要カテゴリ
+- **型安全性**: `mypy` の pass/fail と未解消論点
+
+これにより、「機能は正しいが lint/type は未整理」という状態を曖昧にせず、将来の保守担当者が追加作業の優先度を判断しやすくなります。
+
+---
+
+## 13. API 拡張計画（2026-04-05）
+
+Section 10 で分析した「レガシーコードから得られた使い勝手パターン」に基づき、`ResponseFunctionAnalysis` および `CouplingFunctionAnalysis` のAPI拡張を段階的に実施する具体的計画を以下にまとめます。
+
+### 計画の概要
+
+| フェーズ | タイトル | 複雑度 | 主対象ファイル |
+|---------|---------|--------|------------|
+| **Phase 0** | ファイル構造化（coupling.py 分割） | M | `threshold.py`(新), `coupling_result.py`(新), `coupling.py`(削減) |
+| **Phase 1** | 時間ウィンドウ API | S | `response.py`, `coupling.py` |
+| **Phase 2** | 統計レポート機能 | M | `coupling_result.py`, `SpectralStats`(新) |
+| **Phase 3** | 可視化拡張 | L | `coupling_result.py`, `response.py` |
+
+### 依存関係
+
+```
+Phase 0 (ファイル構造化)
+  ↓
+  ├→ Phase 1 (時間ウィンドウ API)
+  ├→ Phase 2 (統計レポート機能)
+  │   ↓
+  └→ Phase 3 (可視化拡張) ← Phase 2 に依存
+```
+
+---
+
+### Phase 0: ファイル構造化（前提条件）
+
+**目的**: `coupling.py` (現在 1356 行) を 800 行以下に削減し、メンテナンス性と拡張性を向上させる。
+
+#### 0.1 新規ファイル: `gwexpy/analysis/threshold.py` (~400行)
+
+以下を `coupling.py` から抽出：
+
+```python
+# threshold.py
+- ThresholdStrategy (ABC)
+  - abstract check(validity_mask, inj_asd, bkg_asd) -> bool
+  - abstract threshold(inj_asd, bkg_asd) -> FrequencySeries
+
+- RatioThreshold (lines 136-166)
+  - __init__(threshold: float)
+  - check() / threshold()
+
+- SigmaThreshold (lines 169-261)
+  - __init__(sigma: float, n_average: int = 1)
+  - check() / threshold()
+  - significance() helper
+
+- PercentileThreshold (lines 264-401)
+  - __init__(percentile: float, percentile_factor: float = 2.6)
+  - check() / threshold()
+  - _percentile_threshold() staticmethod
+```
+
+#### 0.2 新規ファイル: `gwexpy/analysis/coupling_result.py` (~350行)
+
+以下を `coupling.py` から抽出：
+
+```python
+# coupling_result.py
+- CouplingResult (lines 407-720)
+  - __init__(cf, cf_ul, psds_inj, psds_bkg, valid_mask, witness_name, target_name)
+  - Properties: frequencies, coupling, uncertainty, inj_asd, bkg_asd, etc.
+  - plot_cf() - 結合係数 vs 周波数
+  - plot() - 3パネル診断（witness, target+projection, CF）
+  - Methods to be extended in Phase 2-3
+```
+
+#### 0.3 既存ファイル: `gwexpy/analysis/coupling.py` (削減, ~600行)
+
+残す内容：
+
+```python
+# coupling.py (削減版)
+- CouplingFunctionAnalysis (lines 1013-1272)
+  - __init__(threshold_strategy)
+  - compute(data_inj, data_bkg, fftlength, witness, frange, ...)
+  - apply(result, slice_dict, ...)
+
+- estimate_coupling() (lines 1276-1356)
+  - wrapper: float threshold → RatioThreshold conversion
+
+- _build_bkg_segment_table() (lines 743-828)
+  - background SegmentTable 構築helper
+  - memory-aware stride
+
+- Imports from threshold.py, coupling_result.py
+```
+
+#### 0.4 既存ファイル: `gwexpy/analysis/__init__.py` (更新)
+
+```python
+# __init__.py
+# 既存export (変化なし)
+from .bruco import Bruco, BrucoResult
+from .coupling import estimate_coupling, CouplingFunctionAnalysis
+
+# 新規export (後方互換性確保)
+from .threshold import (
+    ThresholdStrategy,
+    RatioThreshold,
+    SigmaThreshold,
+    PercentileThreshold
+)
+from .coupling_result import CouplingResult
+
+# 未export（Phase 1で検討）
+# from .response import ResponseFunctionAnalysis, ResponseFunctionResult
+```
+
+#### 0.5 リスク・検証
+
+- **リスク**: 既存コードが `from gwexpy.analysis.coupling import RatioThreshold` のような import パターンに依存している場合、__init__.py の re-export で吸収。
+- **検証**: `pytest tests/analysis/ -v` で既存 162 テスト全て合格を確認。
+  - `test_response.py` (19 tests)
+  - `test_response_compat.py` (15 tests)
+  - `test_coupling.py` (42 tests)
+  - `test_coupling_analysis.py` (35 tests)
+  - `test_hardening.py` (28 tests)
+  - `test_regression_refactor.py` (3 tests)
+
+---
+
+### Phase 1: 時間ウィンドウ API
+
+**目的**: NInjA.py / InjectionAnalysis.py の time_table パターン（Section 10-A, 10-B）に対応。手動で背景・注入区間を指定可能に。
+
+#### 1.1 `ResponseFunctionAnalysis.compute()` の拡張
+
+```python
+def compute(
+    self,
+    witness: str,
+    target: str,
+    segments: SegmentTable,
+    fftlength: float = 2.0,
+    overlap: float | None = None,
+    auto_detect: bool = True,
+    bkg_window: tuple[float, float] | None = None,  # NEW
+    **kwargs
+) -> ResponseFunctionResult:
+    """
+    Args:
+        bkg_window: (t_start, t_end) GPS時刻 tuple.
+            指定時は auto_detect を無視し、該当区間を背景として使用。
+            None (デフォルト): auto_detect に従う。
+    """
+```
+
+**実装詳細**:
+- `bkg_window is not None` なら、該当 GPS 時刻範囲から background SegmentCell を抽出
+- 既存 `auto_detect` 経路を保持（後方互換性）
+
+#### 1.2 `CouplingFunctionAnalysis` クラスメソッド追加
+
+```python
+@classmethod
+def from_time_windows(
+    cls,
+    data: TimeSeriesDict,
+    bkg_window: tuple[float, float],
+    inj_window: tuple[float, float],
+    witness: str,
+    target: str,
+    fftlength: float = 2.0,
+    overlap: float | None = None,
+    threshold_strategy: ThresholdStrategy | float = 3.0,
+    frange: tuple[float, float] | None = None,
+    **kwargs
+) -> CouplingResult:
+    """
+    時間ウィンドウを明示的に指定して結合係数を計算。
+    
+    Args:
+        bkg_window: (t_start, t_end) 背景区間
+        inj_window: (t_start, t_end) 注入区間
+    """
+
+@classmethod
+def from_time_windows_batch(
+    cls,
+    data: TimeSeriesDict,
+    bkg_window: tuple[float, float],
+    inj_windows: list[tuple[float, float]],
+    witness: str,
+    target: str,
+    fftlength: float = 2.0,
+    overlap: float | None = None,
+    threshold_strategy: ThresholdStrategy | float = 3.0,
+    frange: tuple[float, float] | None = None,
+    **kwargs
+) -> CouplingResultCollection:  # Phase 2で定義
+    """
+    複数の注入区間について一括計算（InjectionAnalysis パターン）。
+    """
+```
+
+#### 1.3 既存 `estimate_coupling()` の更新
+
+```python
+def estimate_coupling(
+    data_inj: TimeSeriesDict,
+    data_bkg: TimeSeriesDict | None = None,
+    bkg_window: tuple[float, float] | None = None,  # NEW
+    threshold: float = 3.0,
+    ...
+) -> CouplingResult:
+    """
+    bkg_window を転送するように拡張。
+    """
+```
+
+#### 1.4 テスト追加（4件）
+
+- `test_bkg_window_override_auto_detect`: bkg_window パラメータが auto_detect より優先される
+- `test_from_time_windows_basic`: from_time_windows() が単一CouplingResult を返す
+- `test_from_time_windows_batch_processing`: from_time_windows_batch() で複数結果を返す
+- `test_window_vs_auto_detection_comparison`: 同一データで両メソッド結果が一致する
+
+#### 1.5 前提・リスク
+
+- **前提**: Phase 0 完了（coupling.py < 800行）
+- **リスク**: TimeSeriesDict の時間軸切り抜きが正確か → テストで検証
+
+---
+
+### Phase 2: 統計レポート機能
+
+**目的**: InjectionAnalysis.py の統計情報（mean/sigma/n_avg）と CSV/TXT エクスポート（Section 10-D, 10-E）を実装。
+
+#### 2.1 新規 dataclass: `SpectralStats`
+
+```python
+# gwexpy/analysis/stats.py (新規)
+
+@dataclass
+class SpectralStats:
+    """
+    スペクトラル統計情報（mean, sigma, n_avg）。
+    
+    Attributes:
+        mean: FrequencySeries - 平均ASD/PSD
+        sigma: FrequencySeries - 標準偏差
+        n_avg: int - 平均化サンプル数
+    """
+    mean: FrequencySeries
+    sigma: FrequencySeries
+    n_avg: int
+
+    def significance(
+        self, 
+        mu_inj: FrequencySeries
+    ) -> FrequencySeries:
+        """
+        有意度を計算: (μ_inj - μ_bkg) / σ_bkg
+        
+        Returns:
+            FrequencySeries - (入射 - 背景) / σ の周波数スペクトラム
+        """
+        return (mu_inj - self.mean) / self.sigma
+```
+
+#### 2.2 `CouplingResult` のメソッド拡張
+
+```python
+# coupling_result.py
+
+class CouplingResult:
+    # 既存メソッドを保持
+    
+    def to_txt(self, filepath: str) -> None:
+        """
+        結合係数を NInjA.py 互換形式で保存。
+        
+        Format:
+        frequency(Hz) | coupling_factor | uncertainty | significance
+        1.0 | 0.123 | 0.045 | 2.73
+        ...
+        """
+
+    def to_csv(self, filepath: str) -> None:
+        """
+        結合係数を CSV 形式で保存。
+        
+        Columns: frequency, cf, cf_ul, significance, inj_asd, bkg_asd
+        """
+
+    @classmethod
+    def from_txt(cls, filepath: str) -> CouplingResult:
+        """TXT ファイルから復元（ラウンドトリップテスト用）"""
+
+    @classmethod
+    def from_csv(cls, filepath: str) -> CouplingResult:
+        """CSV ファイルから復元（ラウンドトリップテスト用）"""
+```
+
+#### 2.3 新規クラス: `CouplingResultCollection`
+
+```python
+# coupling_result.py
+
+class CouplingResultCollection(dict):
+    """
+    複数の CouplingResult を管理するコンテナ。
+    
+    例:
+        results = CouplingResultCollection()
+        results['WIT-TGT'] = coupling_result_1
+        results['WIT-TGT2'] = coupling_result_2
+        
+        results.plot_comparison(freq_min=10, freq_max=1000)
+    """
+    
+    def __init__(self, mapping: dict[str, CouplingResult] | None = None):
+        super().__init__(mapping or {})
+    
+    def plot_comparison(
+        self,
+        freq_min: float | None = None,
+        freq_max: float | None = None,
+        threshold: float = 3.0,
+        figsize: tuple = (12, 8)
+    ) -> matplotlib.figure.Figure:
+        """
+        複数の結合係数を重ねたプロット。
+        
+        各チャネルペアを異なる色で描画し、比較分析を支援。
+        """
+
+    def to_summary_csv(self, filepath: str) -> None:
+        """
+        全結果を単一 CSV に集約。
+        
+        Columns: channel_pair, frequency, cf, cf_ul, significance, inj_asd, bkg_asd
+        """
+```
+
+#### 2.4 `__init__.py` 更新
+
+```python
+from .stats import SpectralStats
+from .coupling_result import CouplingResult, CouplingResultCollection
+```
+
+#### 2.5 テスト追加（4件）
+
+- `test_spectral_stats_significance_calculation`: 有意度計算が正確
+- `test_coupling_result_to_csv_roundtrip`: CSV 書き込み → 読み込みで数値一致
+- `test_coupling_result_to_txt_roundtrip`: TXT 書き込み → 読み込みで数値一致
+- `test_coupling_result_collection_multi_result_plots`: コレクション内の複数結果が正しくプロット
+
+#### 2.6 前提・リスク
+
+- **前提**: Phase 0 完了、Phase 1 実装済み
+- **リスク**: CSV エクスポート時の周波数軸がずれていないか → テストで検証
+
+---
+
+### Phase 3: 可視化拡張
+
+**目的**: Section 10-C に記載された 7 種類の可視化（RMS, PSD+significance, ASDgram+%ile, SNRgram, snapshot, projection summary, 2D response matrix）を実装。
+
+#### 3.1 `CouplingResult` への plot メソッド追加
+
+```python
+# coupling_result.py
+
+class CouplingResult:
+    # 既存: plot_cf(), plot()
+
+    def plot_significance(
+        self,
+        threshold: float = 3.0,
+        freq_min: float | None = None,
+        freq_max: float | None = None,
+        figsize: tuple = (12, 6)
+    ) -> matplotlib.figure.Figure:
+        """
+        有意度スペクトラムプロット（Δμ/σ vs周波数）。
+        
+        - 横軸: 周波数
+        - 縦軸: (注入ASD - 背景ASD) / σ
+        - 閾値ライン: threshold (デフォルト 3.0)
+        
+        Section 10-C 種類: "Significance"
+        """
+
+    def plot_asdgram(
+        self,
+        freq_min: float,
+        freq_max: float,
+        vmin: float | None = None,
+        vmax: float | None = None,
+        figsize: tuple = (12, 8)
+    ) -> matplotlib.figure.Figure:
+        """
+        ASD スペクトログラム + パーセンタイルオーバーレイ。
+        
+        - 左パネル: 注入時 ASD spectrogram
+        - 右パネル: 背景時 ASD spectrogram
+        - 両者に 50%, 90%, 99% パーセンタイルを重ねる
+        
+        Section 10-C 種類: "ASDgram+%ile"
+        """
+
+    def plot_snrgram(
+        self,
+        freq_min: float,
+        freq_max: float,
+        snrmax: float = 100,
+        figsize: tuple = (12, 8)
+    ) -> matplotlib.figure.Figure:
+        """
+        SNR スペクトログラム（中央値正規化）。
+        
+        - 数値: (注入ASD - 背景ASD) / 背景中央値
+        - カラーバー: SNRmax で打ち切り
+        
+        Section 10-C 種類: "SNRgram"
+        """
+```
+
+#### 3.2 `ResponseFunctionResult` への plot メソッド追加
+
+```python
+# response.py
+
+class ResponseFunctionResult:
+    # 既存: plot(), plot_map(), plot_snapshot()
+
+    def plot_projection_summary(
+        self,
+        freq_min: float | None = None,
+        freq_max: float | None = None,
+        figsize: tuple = (14, 6)
+    ) -> matplotlib.figure.Figure:
+        """
+        全注入ステップの結合係数を重ねたプロット。
+        
+        - 複数のステップを異なる色で表示
+        - 共通周波数範囲でのみ描画
+        - Legend に step ID と時刻を記載
+        
+        Section 10-C 種類: "Projection Summary"
+        """
+
+    def plot_response_matrix(
+        self,
+        freq_min: float | None = None,
+        freq_max: float | None = None,
+        figsize: tuple = (14, 10)
+    ) -> matplotlib.figure.Figure:
+        """
+        2D 応答関数マトリックスと断面図。
+        
+        - メインパネル: 時刻 vs 周波数, 色=結合係数
+        - サイドパネル: 選定周波数ビンでの時間進化
+        - トップパネル: 選定時刻ステップでの周波数プロファイル
+        
+        Section 10-C 種類: "2D Response Matrix"
+        """
+```
+
+#### 3.3 テスト追加（5件）
+
+- `test_coupling_result_plot_significance_has_threshold_line`: 有意度プロットに閾値ラインが存在
+- `test_coupling_result_plot_asdgram_layout`: 2列レイアウトが正しい
+- `test_coupling_result_plot_snrgram_normalization`: SNR 正規化が正確
+- `test_response_function_plot_projection_overlay_count`: projection summary にステップ数分のラインが存在
+- `test_response_function_plot_matrix_shape`: 2D マトリックスの形状が (step_count, freq_count) である
+
+#### 3.4 前提・リスク
+
+- **前提**: Phase 0, Phase 1, Phase 2 完了
+- **リスク**: 時刻 vs 周波数の方向性を逆にしていないか → 既存 plot_map() との整合確認
+
+---
+
+### Phase (Deferred): SweepAnalysis と時間テーブル統合
+
+将来の拡張として、以下は Phase 1-3 完了後に検討：
+
+- `SweepAnalysis` クラス: 時間掃引解析（一定周波数を複数チャネルで追跡）
+- `time_table` DataFrame 互換ラッパー: `from_legacy_time_table()` class method
+- 統合ヘルパー関数: `analyze_from_time_table(time_table_df, ...)` 
+
+---
+
+### 実装順序と並行実行可能性
+
+1. **Phase 0**: 必須（他の全 phase の前提）
+   - 実装: ファイル分割 + import 整理
+   - 期間: 1-2 営業日
+   - 並行: 不可（基盤作業）
+
+2. **Phase 1 & Phase 2**: 並行実施可能
+   - Phase 1: 時間ウィンドウ API (coupling.py / response.py)
+   - Phase 2: 統計レポート (coupling_result.py / 新規 stats.py)
+   - 期間: 各 2-3 営業日
+   - 並行: ✅ 互いに依存関係なし
+
+3. **Phase 3**: Phase 1 & 2 の後
+   - 前提: CouplingResultCollection, SpectralStats が存在
+   - 実装: CouplingResult と ResponseFunctionResult に 5 個の plot メソッド追加
+   - 期間: 3-4 営業日
+   - 並行: ✅ 可視化メソッドの追加は独立
+
+---
+
+### スケジュール案（推奨）
+
+| 週 | Phase | 担当 | 成果物 |
+|----|-------|------|--------|
+| 1  | Phase 0 | 単一 | threshold.py, coupling_result.py, coupling.py(削減), 検証テスト |
+| 2  | Phase 1 + Phase 2 並行 | 複数可 | from_time_windows(), CouplingResultCollection, SpectralStats, CSV/TXT export, 各テスト |
+| 3  | Phase 3 | 単一 | 5 plot メソッド + 可視化テスト |
+| 4  | 統合テスト + ドキュメント | 単一 | ユースケース実装例、API ドキュメント更新 |
+
+---
+
+### まとめ
+
+本計画は、Section 10 で明らかになった 5 つの API ギャップ（A-E）を段階的に埋めるための具体的なロードマップです。各フェーズは：
+
+- **テスト駆動**: 各フェーズで 3-5 個の新規テストを追加
+- **後方互換性**: 既存 API と既存テストは改変しない
+- **段階的品質確保**: 各フェーズ完了後に full regression 実行
+- **ドキュメント同期**: 実装と同時にこのドキュメントを更新
+
+段階 1（Phase 0）から着手し、各フェーズの検証完了後に次フェーズへ進むことを推奨します。

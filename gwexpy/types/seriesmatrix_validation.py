@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import importlib
 from collections import OrderedDict
-from typing import cast
+from typing import Any, cast
 
 import numpy as np
 
 try:
-    import pandas as pd
+    pd: Any = importlib.import_module("pandas")
 except ImportError:
     pd = None
 

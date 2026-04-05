@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 from astropy import units as u
 from gwpy.timeseries import TimeSeries, TimeSeriesDict
+
 try:
     from scipy.interpolate import interp1d
 except ImportError as _exc:

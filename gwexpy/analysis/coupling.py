@@ -1,726 +1,50 @@
 """
 Coupling Function Analysis Module for gwexpy.
 
-Estimates the coupling function (CF) with flexible threshold strategies:
-- RatioThreshold: Mean power ratio.
-- SigmaThreshold: Statistical significance (Gaussian assumption).
-- PercentileThreshold: Data-driven percentile (Robust to non-Gaussianity).
+Estimates the coupling function (CF) with flexible threshold strategies.
+Threshold strategies are defined in :mod:`gwexpy.analysis.threshold`.
+The result container is defined in :mod:`gwexpy.analysis.coupling_result`.
 """
 
 from __future__ import annotations
 
 import logging
+import time
 import warnings
-from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
 if TYPE_CHECKING:
     from ..table.segment_table import SegmentTable
 
 from ..frequencyseries import FrequencySeries
 from ..timeseries import TimeSeries, TimeSeriesDict
+from .coupling_result import CouplingResult
+from .threshold import (
+    PercentileThreshold,
+    RatioThreshold,
+    SigmaThreshold,
+    ThresholdStrategy,
+    _align_psd_values_to_reference,  # re-export for test compatibility  # noqa: F401
+    _index_values,
+)
+
+__all__ = [
+    "CouplingFunctionAnalysis",
+    "CouplingResult",
+    "PercentileThreshold",
+    "RatioThreshold",
+    "SigmaThreshold",
+    "ThresholdStrategy",
+    "_align_psd_values_to_reference",
+    "estimate_bkg_mem_bytes",
+    "estimate_coupling",
+]
 
-if TYPE_CHECKING:
-    from gwexpy.plot import Plot
-    from gwexpy.types.typing import IndexLike
-
-
-def _index_values(index: object) -> np.ndarray:
-    values = getattr(index, "value", index)
-    return np.asarray(values, dtype=float)
-
-
-def _align_psd_values_to_reference(
-    values: np.ndarray,
-    freqs: np.ndarray,
-    ref_freqs: np.ndarray,
-    method: str = "clip",
-) -> np.ndarray | None:
-    """Align PSD values to a reference frequency grid.
-
-    Parameters
-    ----------
-    values : np.ndarray
-        Source PSD values.
-    freqs : np.ndarray
-        Source frequency axis.
-    ref_freqs : np.ndarray
-        Reference frequency axis.
-    method : {'clip', 'interpolate'}, default: 'clip'
-        Alignment method. 'clip' returns None if frequencies don't match exactly.
-        'interpolate' uses linear interpolation if the maximum bin shift is <= 1.
-
-    Returns
-    -------
-    np.ndarray or None
-        Aligned values, or None if alignment is not possible under the given policy.
-    """
-    if np.array_equal(freqs, ref_freqs):
-        return np.asarray(values, dtype=float)
-
-    if freqs.ndim != 1 or ref_freqs.ndim != 1 or freqs.size == 0 or ref_freqs.size == 0:
-        return None
-
-    # Common range check
-    freq_min = np.min(freqs)
-    freq_max = np.max(freqs)
-    if ref_freqs[0] < freq_min or ref_freqs[-1] > freq_max:
-        # Strictly prohibit extrapolation
-        return None
-
-    if method == "clip":
-        # In clip mode, we only allow exact matches (handled above)
-        return None
-
-    if method == "interpolate":
-        # Estimate index-wise bin shift on the overlapping prefix.
-        df = np.median(np.diff(freqs)) if len(freqs) > 1 else 0
-        if df > 0:
-            n_common = min(len(freqs), len(ref_freqs))
-            max_shift = (
-                np.max(np.abs(freqs[:n_common] - ref_freqs[:n_common])) / df
-            )
-            if max_shift > 1.0:
-                return None
-
-        return np.interp(ref_freqs, freqs, values)
-
-    return None
-
-
-# --- Threshold Strategies ---
-
-
-class ThresholdStrategy(ABC):
-    """Abstract base class for excess detection strategies."""
-
-    @abstractmethod
-    def check(
-        self,
-        psd_inj: FrequencySeries,
-        psd_bkg: FrequencySeries,
-        raw_bkg: TimeSeries | None = None,
-        **kwargs: object,
-    ) -> np.ndarray:
-        """
-        Return a boolean mask where P_inj is considered 'excess'.
-
-        Parameters
-        ----------
-        psd_inj : FrequencySeries
-            PSD of the injection data.
-        psd_bkg : FrequencySeries
-            PSD of the background data (usually mean or median).
-        raw_bkg : TimeSeries, optional
-            Raw background time series data. Required for PercentileThreshold
-            to calculate the distribution of PSDs across segments.
-        """
-        pass
-
-    @abstractmethod
-    def threshold(
-        self,
-        psd_inj: FrequencySeries,
-        psd_bkg: FrequencySeries,
-        raw_bkg: TimeSeries | None = None,
-        **kwargs: object,
-    ) -> np.ndarray:
-        """Return the PSD threshold values used by this strategy."""
-        pass
-
-
-class RatioThreshold(ThresholdStrategy):
-    """
-    Checks if P_inj > ratio * P_bkg_mean.
-
-    Statistical Assumptions:
-        - No specific statistical distribution is assumed.
-        - Tests if injection power exceeds the background level by a fixed factor.
-
-    Usage:
-        - Best for simple, physical excess screening where precise statistical significance is less critical.
-        - Extremely fast as it requires no variance estimation.
-    """
-
-    def __init__(self, ratio: float = 2.0) -> None:
-        self.ratio = ratio
-
-    def check(
-        self,
-        psd_inj: FrequencySeries,
-        psd_bkg: FrequencySeries,
-        **kwargs: object,
-    ) -> np.ndarray:
-        return psd_inj.value > (psd_bkg.value * self.ratio)
-
-    def threshold(
-        self,
-        _psd_inj: FrequencySeries,
-        psd_bkg: FrequencySeries,
-        **kwargs: object,
-    ) -> np.ndarray:
-        return psd_bkg.value * self.ratio
-
-
-class SigmaThreshold(ThresholdStrategy):
-    """
-    Checks if P_inj > P_bkg + sigma * std_error.
-
-    Statistical Assumptions
-    -----------------------
-    - Background Power Spectral Density (PSD) at each bin approximately follows
-      a Gaussian distribution (valid when n_avg is sufficiently large).
-    - The parameter `n_avg` represents the number of independent averages
-      (e.g., in Welch's method).
-    - Assumes standard deviation of the noise reduces as `1 / sqrt(n_avg)`.
-
-    Meaning of Threshold
-    --------------------
-    - ``threshold = mean + sigma * (mean / sqrt(n_avg))``
-    - This is a **statistical significance test**, NOT a physical upper limit.
-    - It identifies frequencies where the injection is statistically
-      distinguishable from background variance.
-
-    Gaussian Approximation Validity
-    -------------------------------
-    Welch PSD estimates follow a χ² distribution with 2K degrees of freedom
-    (K = n_avg). The Gaussian approximation is valid when K ≥ 10 (approximately).
-
-    For K < 10, consider:
-    - Using `PercentileThreshold` (empirical distribution, no Gaussian assumption)
-    - Increasing FFT averaging by using longer data or shorter fftlength
-
-    References
-    ----------
-    - Welch, P.D. (1967): PSD estimation via overlapped segment averaging
-    - Bendat & Piersol, Random Data (4th ed., 2010), Ch. 11
-
-    Warning
-    -------
-    This method relies heavily on the Gaussian and stationary assumptions.
-    It may be unreliable if:
-    - The background contains significant non-Gaussian features (glitches)
-    - `n_avg` is small (< ~10), where the central limit theorem has not converged
-    - There are strong spectral lines (non-stationary or deterministic signals)
-
-    In such cases, `PercentileThreshold` is recommended as it uses the
-    empirical distribution.
-    """
-
-    # Minimum n_avg for reliable Gaussian approximation
-    _MIN_NAVG_GAUSSIAN = 10
-
-    def __init__(self, sigma: float = 3.0) -> None:
-        self.sigma = sigma
-
-    def _check_gaussian_validity(self, n_avg: float) -> None:
-        """Warn if Gaussian approximation may be unreliable."""
-        if n_avg < self._MIN_NAVG_GAUSSIAN:
-            warnings.warn(
-                f"SigmaThreshold: n_avg={n_avg:.1f} < {self._MIN_NAVG_GAUSSIAN}. "
-                f"Gaussian approximation may be inaccurate for χ²(2K) with K < 10. "
-                f"Consider using PercentileThreshold for more robust results.",
-                UserWarning,
-                stacklevel=3,
-            )
-
-    def check(
-        self,
-        psd_inj: FrequencySeries,
-        psd_bkg: FrequencySeries,
-        _raw_bkg: TimeSeries | None = None,
-        **kwargs: object,
-    ) -> np.ndarray:
-        n_avg = kwargs.get("n_avg", 1.0)
-        if not isinstance(n_avg, (int, float)):
-            raise TypeError("SigmaThreshold expects numeric n_avg.")
-        if n_avg <= 0:
-            return np.ones_like(psd_inj.value, dtype=bool)
-
-        self._check_gaussian_validity(n_avg)
-        factor = 1.0 + (self.sigma / np.sqrt(n_avg))
-        return psd_inj.value > (psd_bkg.value * factor)
-
-    def threshold(
-        self,
-        _psd_inj: FrequencySeries,
-        psd_bkg: FrequencySeries,
-        _raw_bkg: TimeSeries | None = None,
-        **kwargs: object,
-    ) -> np.ndarray:
-        n_avg = kwargs.get("n_avg", 1.0)
-        if not isinstance(n_avg, (int, float)):
-            raise TypeError("SigmaThreshold expects numeric n_avg.")
-        if n_avg <= 0:
-            return psd_bkg.value
-        factor = 1.0 + (self.sigma / np.sqrt(n_avg))
-        return psd_bkg.value * factor
-
-
-class PercentileThreshold(ThresholdStrategy):
-    """
-    Threshold strategy based on empirical percentile of background distribution.
-
-    This strategy follows Appendix B of the PEM injection paper, using the
-    99.7th percentile of background segments and a correction factor
-    to account for finite-averaging and χ² distribution scaling.
-
-    Parameters
-    ----------
-    percentile : float, default=99.7
-        The percentile of the background distribution (0-100).
-        99.7% equivalent to 3-sigma for Gaussian noise.
-    factor : float, default=2.6
-        Correction factor (multiplier) for the percentile value.
-        The value 2.6 is recommended in Appendix B.1 to set reduced χ² ≈ 1.
-    freq_align : {'clip', 'interpolate'}, default='clip'
-        Frequency alignment strategy for background segments.
-    """
-
-    def __init__(
-        self,
-        percentile: float = 99.7,
-        factor: float = 2.6,
-        freq_align: str = "clip",
-    ) -> None:
-        self.percentile = percentile
-        self.factor = factor
-        self.freq_align = freq_align
-
-    def check(
-        self,
-        psd_inj: FrequencySeries,
-        psd_bkg: FrequencySeries,
-        raw_bkg: TimeSeries | None = None,
-        **kwargs: object,
-    ) -> np.ndarray:
-        threshold = self.threshold(
-            psd_inj,
-            psd_bkg,
-            raw_bkg=raw_bkg,
-            **kwargs,
-        )
-        return psd_inj.value > threshold
-
-    def threshold(
-        self,
-        psd_inj: FrequencySeries,
-        _psd_bkg: FrequencySeries,
-        raw_bkg: TimeSeries | None = None,
-        **kwargs: Any,
-    ) -> np.ndarray:
-        fftlength = kwargs.get("fftlength")
-        overlap = kwargs.get("overlap")
-        bkg_table = kwargs.get("bkg_table")
-
-        percentile = kwargs.get("percentile", self.percentile)
-        factor = kwargs.get("factor", self.factor)
-        freq_align = kwargs.get("freq_align", self.freq_align)
-
-        if bkg_table is not None:
-            # --- SegmentTable Mode ---
-            if "psd" not in bkg_table.columns:
-                raise ValueError("SegmentTable provided to PercentileThreshold has no 'psd' column.")
-
-            # Extract PSDs (handles both meta values and lazy payload cells)
-            psds = [bkg_table.row(i)["psd"] for i in range(len(bkg_table))]
-
-            target_unit = psd_inj.unit
-            ref_freqs = _index_values(psd_inj.xindex)
-
-            psd_values = []
-            for row_idx, p in enumerate(psds):
-                p_val = p.value
-                p_freqs = _index_values(p.xindex)
-
-                # Frequency Alignment Check
-                if not np.array_equal(p_freqs, ref_freqs):
-                    aligned = _align_psd_values_to_reference(
-                        p_val, p_freqs, ref_freqs, method=freq_align
-                    )
-                    if aligned is None:
-                        warnings.warn(
-                            "Skipping background PSD row "
-                            f"{row_idx} because its frequency grid does not cover the "
-                            "injection PSD grid or exceeds bin shift tolerance.",
-                            UserWarning,
-                            stacklevel=3,
-                        )
-                        continue
-                    p_val = aligned
-
-                if p.unit != target_unit:
-                    try:
-                        # Convert units if needed (Quantity support)
-                        from astropy.units import Quantity
-                        p_q = Quantity(p_val, p.unit)
-                        p_val = p_q.to(target_unit).value
-                    except Exception:
-                        warnings.warn(
-                            f"Unit conversion failed for bkg_table row: {p.unit} -> {target_unit}. "
-                            f"Using numeric values.",
-                            UserWarning,
-                            stacklevel=3,
-                        )
-
-                psd_values.append(p_val)
-
-            if not psd_values:
-                raise ValueError(
-                    "No compatible background PSD rows remain after frequency alignment."
-                )
-
-            data_matrix = np.stack(psd_values)
-            p_bkg_values = np.percentile(data_matrix, percentile, axis=0)
-        else:
-            # --- Legacy / Raw TimeSeries Mode ---
-            if raw_bkg is None or fftlength is None:
-                raise ValueError(
-                    "PercentileThreshold requires 'bkg_table', or 'raw_bkg' + 'fftlength'."
-                )
-
-            if not isinstance(fftlength, (int, float)):
-                raise TypeError("PercentileThreshold expects numeric fftlength.")
-            if overlap is not None and not isinstance(overlap, (int, float)):
-                raise TypeError("PercentileThreshold expects numeric overlap.")
-
-            # Calculate Spectrogram (Time-Frequency map) of background
-            spec = raw_bkg.spectrogram(
-                stride=fftlength,
-                fftlength=fftlength,
-                overlap=overlap if overlap else 0,
-                method="welch",
-                window="hann",
-            )
-            p_bkg_values = spec.percentile(percentile).value
-
-        return p_bkg_values * factor
-
-
-# --- Result Class ---
-
-
-class CouplingResult:
-    """
-    Result object for a SINGLE Witness -> Target pair.
-    """
-
-    def __init__(
-        self,
-        cf: FrequencySeries,
-        psd_witness_inj: FrequencySeries,
-        psd_witness_bkg: FrequencySeries,
-        psd_target_inj: FrequencySeries,
-        psd_target_bkg: FrequencySeries,
-        valid_mask: np.ndarray,
-        witness_name: str,
-        target_name: str,
-        cf_ul: FrequencySeries | None = None,
-        ts_witness_bkg: TimeSeries | None = None,
-        ts_target_bkg: TimeSeries | None = None,
-        fftlength: float | None = None,
-        overlap: float | None = None,
-    ) -> None:
-        self.cf = cf
-        self.cf_ul = cf_ul
-        self.psd_witness_inj = psd_witness_inj
-        self.psd_witness_bkg = psd_witness_bkg
-        self.psd_target_inj = psd_target_inj
-        self.psd_target_bkg = psd_target_bkg
-        self.valid_mask = valid_mask
-        self.witness_name = witness_name
-        self.target_name = target_name
-        self.ts_witness_bkg = ts_witness_bkg
-        self.ts_target_bkg = ts_target_bkg
-        self.fftlength = fftlength
-        self.overlap = overlap
-
-    @property
-    def frequencies(self) -> IndexLike:
-        return self.cf.xindex
-
-    def plot_cf(
-        self,
-        figsize: tuple[float, float] | None = None,
-        xlim: tuple[float, float] | None = None,
-        **kwargs: object,
-    ) -> Plot:
-        """Plot the Coupling Function and its Upper Limit."""
-
-        # Crop data if xlim provided
-        cf_plot = self.cf
-        cf_ul_plot = self.cf_ul
-
-        if xlim is not None:
-            if cf_plot is not None:
-                cf_plot = cf_plot.copy().crop(*xlim)
-            if cf_ul_plot is not None:
-                cf_ul_plot = cf_ul_plot.copy().crop(*xlim)
-
-        cf_plot.name = "Coupling Function"
-
-        # Handle figsize via kwargs if needed, or set explicitly
-        if figsize is not None:
-            kwargs["figsize"] = figsize
-
-        label = kwargs.pop("label", "Coupling Function")
-        plot = cf_plot.plot(
-            color="tab:green",
-            marker=".",
-            linestyle="-",
-            markersize=3,
-            label=label,
-            **kwargs,
-        )
-        ax = plot.gca()
-
-        if cf_ul_plot is not None:
-            cf_ul_plot.name = "Upper Limit"
-            ax.plot(
-                cf_ul_plot,
-                color="lightskyblue",
-                marker=".",
-                linestyle="-",
-                markersize=3,
-                label="Upper Limit",
-            )
-
-        ax.set_yscale("log")
-        ax.set_xscale("log")
-        ax.set_ylabel(f"CF Magnitude [{cf_plot.unit}]")
-        ax.set_title(f"Coupling Function: {self.witness_name} -> {self.target_name}")
-        ax.legend()
-
-        if xlim is not None:
-            ax.set_xlim(*xlim)
-
-        return plot
-
-    def plot(
-        self,
-        figsize: tuple[float, float] = (10, 12),
-        xlim: tuple[float, float] | None = None,
-    ) -> Plot:
-        """
-        Create a diagnostic plot showing ASDs and the resulting CF.
-        """
-        from gwexpy.plot import Plot
-
-        # Helper to crop series safely
-        def crop_if_needed(series):
-            if series is None or xlim is None:
-                return series
-            return series.copy().crop(*xlim)
-
-        # Helper to compute background stats
-        def get_bkg_stats(ts_bkg, psd_bkg):
-            # Crop PSD first if needed
-            psd_bkg_eff = crop_if_needed(psd_bkg)
-
-            # Median/Mean from PSD
-            asd_mean = psd_bkg_eff**0.5
-            asd_mean.name = (
-                f"Background ({ts_bkg.name if ts_bkg is not None else 'Target'})"
-            )
-
-            p10_asd = None
-            p90_asd = None
-
-            if ts_bkg is not None and self.fftlength is not None:
-                try:
-                    spec = ts_bkg.spectrogram(
-                        stride=self.fftlength,
-                        fftlength=self.fftlength,
-                        overlap=self.overlap if self.overlap else 0,
-                        method="welch",
-                        window="hann",
-                    )
-                    # For percentiles, we crop the spectrogram itself if possible or crop result
-                    # Cropping spectrogram is more efficient
-                    if xlim is not None:
-                        spec = spec.crop_frequencies(*xlim)
-
-                    p10 = spec.percentile(10)
-                    p90 = spec.percentile(90)
-                    p10_asd = p10**0.5
-                    p90_asd = p90**0.5
-                except (RuntimeError, TypeError, ValueError):
-                    logger.warning(
-                        "Could not compute background percentiles for %s",
-                        ts_bkg.name if ts_bkg is not None else "Target",
-                        exc_info=True,
-                    )
-
-            return asd_mean, p10_asd, p90_asd
-
-        # --- Prepare Data ---
-
-        # Witness
-        psd_wit_inj_c = crop_if_needed(self.psd_witness_inj)
-        asd_wit_inj = psd_wit_inj_c**0.5
-        asd_wit_inj.name = "Injection (Witness)"
-        asd_wit_mean, wit_p10, wit_p90 = get_bkg_stats(
-            self.ts_witness_bkg, self.psd_witness_bkg
-        )
-        asd_wit_mean.name = "Background (Witness)"
-
-        # Target
-        psd_tgt_inj_c = crop_if_needed(self.psd_target_inj)
-        asd_tgt_inj = psd_tgt_inj_c**0.5
-        asd_tgt_inj.name = "Injection (Target)"
-        asd_tgt_mean, tgt_p10, tgt_p90 = get_bkg_stats(
-            self.ts_target_bkg, self.psd_target_bkg
-        )
-        asd_tgt_mean.name = "Background (Target)"
-
-        # Derived
-        cf_c = crop_if_needed(self.cf)
-        cf_ul_c = crop_if_needed(self.cf_ul)
-        psd_wit_bkg_c = crop_if_needed(self.psd_witness_bkg)
-
-        # Create Plot
-        plot = Plot(geometry=(3, 1), figsize=figsize, sharex=True)
-        ax0 = plot.axes[0]
-        ax1 = plot.axes[1]
-        ax2 = plot.axes[2]
-
-        # 1. Witness ASDs
-        # Background
-        if wit_p10 is not None and wit_p90 is not None:
-            plot.plot_mmm(
-                asd_wit_mean,
-                wit_p10,
-                wit_p90,
-                ax=ax0,
-                color="black",
-                linestyle="-",
-                zorder=5,
-                alpha_fill=0.1,
-            )
-        else:
-            ax0.plot(
-                asd_wit_mean,
-                color="black",
-                linestyle="-",
-                zorder=5,
-                label=asd_wit_mean.name,
-            )
-
-        # Injection
-        ax0.plot(
-            asd_wit_inj, color="red", linestyle="-", zorder=4, label=asd_wit_inj.name
-        )
-
-        ax0.set_ylabel(f"ASD [{asd_wit_inj.unit}]")
-        ax0.set_title(f"Witness: {self.witness_name}")
-        ax0.legend()
-        ax0.grid(True, which="both", linestyle=":")
-
-        # 2. Target ASDs
-        # Background
-        if tgt_p10 is not None and tgt_p90 is not None:
-            plot.plot_mmm(
-                asd_tgt_mean,
-                tgt_p10,
-                tgt_p90,
-                ax=ax1,
-                color="black",
-                linestyle="-",
-                zorder=5,
-                alpha_fill=0.1,
-            )
-        else:
-            ax1.plot(
-                asd_tgt_mean,
-                color="black",
-                linestyle="-",
-                zorder=5,
-                label=asd_tgt_mean.name,
-            )
-
-        # Injection
-        ax1.plot(
-            asd_tgt_inj, color="red", linestyle="-", zorder=4, label=asd_tgt_inj.name
-        )
-
-        # Projection (Witness Bkg * CF)
-        if cf_c is not None:
-            asd_wit_bkg = psd_wit_bkg_c**0.5
-            projection_asd = asd_wit_bkg * cf_c
-            projection_asd.name = "Projection"
-            ax1.plot(
-                projection_asd,
-                color="tab:green",
-                marker=".",
-                linestyle="-",
-                markersize=3,
-                zorder=6,
-                label=projection_asd.name,
-            )
-
-        if cf_ul_c is not None:
-            asd_wit_bkg = psd_wit_bkg_c**0.5
-            projection_ul = asd_wit_bkg * cf_ul_c
-            projection_ul.name = "Projection UL"
-            ax1.plot(
-                projection_ul,
-                color="lightskyblue",
-                marker=".",
-                linestyle="-",
-                markersize=3,
-                zorder=6,
-                label=projection_ul.name,
-            )
-
-        ax1.set_ylabel(f"ASD [{asd_tgt_inj.unit}]")
-        ax1.set_title(f"Target: {self.target_name}")
-        ax1.legend()
-        ax1.grid(True, which="both", linestyle=":")
-
-        # 3. Coupling Function
-        cf_c.name = "Coupling Function"
-        ax2.plot(
-            cf_c,
-            color="tab:green",
-            marker=".",
-            linestyle="-",
-            markersize=3,
-            label=cf_c.name,
-        )
-
-        if cf_ul_c is not None:
-            cf_ul_c.name = "Upper Limit"
-            ax2.plot(
-                cf_ul_c,
-                color="lightskyblue",
-                marker=".",
-                linestyle="-",
-                markersize=3,
-                label=cf_ul_c.name,
-            )
-
-        ax2.set_xlabel("Frequency [Hz]")
-        ax2.set_ylabel(f"CF [{cf_c.unit}]")
-        ax2.set_title(f"Coupling Function ({self.witness_name} -> {self.target_name})")
-        ax2.grid(True, which="both", linestyle=":")
-        ax2.legend()
-
-        # Use log scale for all axes
-        for ax in plot.axes:
-            ax.set_xscale("log")
-            ax.set_yscale("log")
-            if xlim is not None:
-                ax.set_xlim(*xlim)
-
-        plot.tight_layout()
-        return plot
-
-
-# --- Analysis Class ---
 
 def estimate_bkg_mem_bytes(
     duration: float, fftlength: float, stride: float, fs: float
@@ -751,6 +75,7 @@ def _build_bkg_segment_table(
     """Helper to convert a background TimeSeries into a SegmentTable of PSDs.
     """
     from gwpy.segments import Segment
+
     from ..table.segment_table import SegmentTable
 
     if stride is None:
@@ -960,6 +285,186 @@ class CouplingFunctionAnalysis:
     Analysis class to estimate Coupling Functions (CF).
     """
 
+    @classmethod
+    def from_time_windows(
+        cls,
+        data: TimeSeriesDict,
+        bkg_window: tuple[float, float],
+        inj_window: tuple[float, float],
+        witness: str | None = None,
+        fftlength: float = 2.0,
+        overlap: float = 0,
+        threshold_strategy: ThresholdStrategy | float = 3.0,
+        frange: tuple[float, float] | None = None,
+        percentile_factor: float = 2.6,
+        bkg_stride: float | None = None,
+        memory_limit: int = 2 * 1024**3,
+        n_jobs: int | None = None,
+        **kwargs: Any,
+    ) -> CouplingResult | dict[str, CouplingResult]:
+        """時間ウィンドウを明示的に指定して結合係数を計算する。
+
+        Parameters
+        ----------
+        data : TimeSeriesDict
+            全時間範囲を含む入力データ（背景区間・注入区間の両方を含む）。
+        bkg_window : tuple of float
+            背景区間の (t_start, t_end) GPS 時刻 tuple。
+        inj_window : tuple of float
+            注入区間の (t_start, t_end) GPS 時刻 tuple。
+        witness : str, optional
+            Witness チャンネル名。None の場合は最初のチャンネルを使用。
+        fftlength : float
+            FFT 長 [秒]。
+        overlap : float
+            オーバーラップ [秒]（デフォルト 0）。
+        threshold_strategy : ThresholdStrategy or float
+            Witness/Target 両方に使用する閾値戦略。
+            float を渡した場合は :class:`RatioThreshold` として解釈。
+        frange : tuple of float, optional
+            評価する周波数範囲 (fmin, fmax)。
+        percentile_factor : float
+            :class:`PercentileThreshold` 補正係数（Appendix B.1）。
+        bkg_stride : float, optional
+            背景 SegmentTable 構築のストライド [秒]。
+        memory_limit : int
+            背景 SegmentTable の最大メモリ [bytes]（デフォルト 2 GB）。
+        n_jobs : int, optional
+            並列ジョブ数。None で 1、-1 で全コアを使用。
+
+        Returns
+        -------
+        CouplingResult or dict of CouplingResult
+            単一 target の場合は CouplingResult、複数 target の場合は dict。
+
+        Examples
+        --------
+        >>> result = CouplingFunctionAnalysis.from_time_windows(
+        ...     data,
+        ...     bkg_window=(1000000000, 1000000100),
+        ...     inj_window=(1000000200, 1000000300),
+        ...     witness="V1:ENV_WIT",
+        ...     fftlength=4.0,
+        ... )
+        """
+        bkg_start, bkg_end = bkg_window
+        inj_start, inj_end = inj_window
+
+        if bkg_end <= bkg_start:
+            raise ValueError(
+                f"bkg_window end ({bkg_end}) must be greater than start ({bkg_start})."
+            )
+        if inj_end <= inj_start:
+            raise ValueError(
+                f"inj_window end ({inj_end}) must be greater than start ({inj_start})."
+            )
+
+        data_bkg = TimeSeriesDict(
+            {k: v.crop(bkg_start, bkg_end) for k, v in data.items()}
+        )
+        data_inj = TimeSeriesDict(
+            {k: v.crop(inj_start, inj_end) for k, v in data.items()}
+        )
+
+        def _ensure_strategy(val: ThresholdStrategy | float) -> ThresholdStrategy:
+            if isinstance(val, (int, float)):
+                return RatioThreshold(val)
+            return val
+
+        strategy = _ensure_strategy(threshold_strategy)
+
+        instance = cls()
+        return instance.compute(
+            data_inj=data_inj,
+            data_bkg=data_bkg,
+            fftlength=fftlength,
+            witness=witness,
+            frange=frange,
+            overlap=overlap,
+            threshold_witness=strategy,
+            threshold_target=strategy,
+            percentile_factor=percentile_factor,
+            bkg_stride=bkg_stride,
+            memory_limit=memory_limit,
+            n_jobs=n_jobs,
+            **kwargs,
+        )
+
+    @classmethod
+    def from_time_windows_batch(
+        cls,
+        data: TimeSeriesDict,
+        bkg_window: tuple[float, float],
+        inj_windows: list[tuple[float, float]],
+        witness: str | None = None,
+        fftlength: float = 2.0,
+        overlap: float = 0,
+        threshold_strategy: ThresholdStrategy | float = 3.0,
+        frange: tuple[float, float] | None = None,
+        percentile_factor: float = 2.6,
+        bkg_stride: float | None = None,
+        memory_limit: int = 2 * 1024**3,
+        n_jobs: int | None = None,
+        **kwargs: Any,
+    ) -> list[CouplingResult | dict[str, CouplingResult]]:
+        """複数の注入区間について一括して結合係数を計算する。
+
+        Parameters
+        ----------
+        data : TimeSeriesDict
+            全時間範囲を含む入力データ。
+        bkg_window : tuple of float
+            背景区間の (t_start, t_end) GPS 時刻 tuple。全 inj_window で共通。
+        inj_windows : list of tuple of float
+            注入区間のリスト。各要素は (t_start, t_end)。
+        witness : str, optional
+            Witness チャンネル名。None の場合は最初のチャンネルを使用。
+        fftlength : float
+            FFT 長 [秒]。
+        overlap : float
+            オーバーラップ [秒]（デフォルト 0）。
+        threshold_strategy : ThresholdStrategy or float
+            Witness/Target 両方に使用する閾値戦略。
+            float を渡した場合は :class:`RatioThreshold` として解釈。
+        frange : tuple of float, optional
+            評価する周波数範囲 (fmin, fmax)。
+        percentile_factor : float
+            :class:`PercentileThreshold` 補正係数（Appendix B.1）。
+        bkg_stride : float, optional
+            背景 SegmentTable 構築のストライド [秒]。
+        memory_limit : int
+            背景 SegmentTable の最大メモリ [bytes]（デフォルト 2 GB）。
+        n_jobs : int, optional
+            並列ジョブ数。None で 1、-1 で全コアを使用。
+
+        Returns
+        -------
+        list of CouplingResult or dict of CouplingResult
+            各 inj_window に対応する結果のリスト。
+        """
+        if not inj_windows:
+            raise ValueError("inj_windows must contain at least one window.")
+
+        results: list[CouplingResult | dict[str, CouplingResult]] = []
+        for inj_window in inj_windows:
+            res = cls.from_time_windows(
+                data=data,
+                bkg_window=bkg_window,
+                inj_window=inj_window,
+                witness=witness,
+                fftlength=fftlength,
+                overlap=overlap,
+                threshold_strategy=threshold_strategy,
+                frange=frange,
+                percentile_factor=percentile_factor,
+                bkg_stride=bkg_stride,
+                memory_limit=memory_limit,
+                n_jobs=n_jobs,
+                **kwargs,
+            )
+            results.append(res)
+        return results
+
     def auto_calibrate_percentile_factor(
         self,
         raw_bkg: TimeSeries,
@@ -1117,7 +622,6 @@ class CouplingFunctionAnalysis:
         psd_wit_inj = ts_wit_inj.psd(**psd_kwargs)
         psd_wit_bkg = ts_wit_bkg.psd(**psd_kwargs)
 
-        import time
         t_start = time.perf_counter()
 
         # Frequency mask for CF evaluation
@@ -1195,7 +699,6 @@ class CouplingFunctionAnalysis:
 
         # --- 4. Parallel Loop over Targets ---
 
-
         if Parallel is None:
             # Sequential execution
             for tgt_key in target_keys:
@@ -1225,7 +728,8 @@ class CouplingFunctionAnalysis:
                     results[res[0]] = res[1]
         else:
             # Parallel execution
-            # Prepare generator
+            assert Parallel is not None
+            assert delayed is not None
             par_results = Parallel(n_jobs=n_jobs)(
                 delayed(_process_single_target)(
                     tgt_key,
@@ -1275,8 +779,8 @@ class CouplingFunctionAnalysis:
 # Functional interface
 def estimate_coupling(
     data_inj: TimeSeriesDict,
-    data_bkg: TimeSeriesDict,
-    fftlength: float,
+    data_bkg: TimeSeriesDict | None = None,
+    fftlength: float = 2.0,
     witness: str | None = None,
     frange: tuple[float, float] | None = None,
     overlap: float = 0,
@@ -1286,6 +790,8 @@ def estimate_coupling(
     bkg_stride: float | None = None,
     memory_limit: int = 2 * 1024**3,
     n_jobs: int | None = None,
+    bkg_window: tuple[float, float] | None = None,
+    inj_window: tuple[float, float] | None = None,
     **kwargs: Any,
 ) -> CouplingResult | dict[str, CouplingResult]:
     """Helper function to estimate CF.
@@ -1294,8 +800,11 @@ def estimate_coupling(
     ----------
     data_inj : TimeSeriesDict
         Injection data (Witness + Targets).
-    data_bkg : TimeSeriesDict
+        ``bkg_window`` / ``inj_window`` が指定された場合は、全時間範囲を含む
+        データを渡してください。この場合 ``data_bkg`` は不要です。
+    data_bkg : TimeSeriesDict, optional
         Background data (Witness + Targets).
+        ``bkg_window`` が指定された場合は省略可能。
     fftlength : float
         FFT length in seconds.
     witness : str, optional
@@ -1324,6 +833,13 @@ def estimate_coupling(
     n_jobs : int, optional
         Number of jobs for parallel processing.
         ``None`` means 1; ``-1`` means all processors.
+    bkg_window : tuple of float, optional
+        背景区間の (t_start, t_end) GPS 時刻 tuple。
+        指定時は ``data_inj`` から背景データを切り出すため ``data_bkg`` は不要。
+        ``inj_window`` と同時に指定することを推奨。
+    inj_window : tuple of float, optional
+        注入区間の (t_start, t_end) GPS 時刻 tuple。
+        ``bkg_window`` と同時に指定することで時間ウィンドウ API として機能。
     **kwargs
         Additional keyword arguments forwarded to PSD computation.
     """
@@ -1334,6 +850,39 @@ def estimate_coupling(
         if isinstance(val, (int, float)):
             return RatioThreshold(val)
         return val
+
+    # --- Time window mode ---
+    if bkg_window is not None:
+        # Both inj_window and bkg_window must be specified together
+        if inj_window is None:
+            raise ValueError(
+                "inj_window must be specified when bkg_window is given. "
+                "Use estimate_coupling(..., bkg_window=(...), inj_window=(...))"
+            )
+        tw = _ensure_strategy(threshold_witness)
+        analysis = CouplingFunctionAnalysis()
+        return analysis.from_time_windows(
+            data=data_inj,
+            bkg_window=bkg_window,
+            inj_window=inj_window,
+            witness=witness,
+            fftlength=fftlength,
+            overlap=overlap,
+            threshold_strategy=tw,
+            frange=frange,
+            percentile_factor=percentile_factor,
+            bkg_stride=bkg_stride,
+            memory_limit=memory_limit,
+            n_jobs=n_jobs,
+            **kwargs,
+        )
+
+    # --- Legacy two-dict mode ---
+    if data_bkg is None:
+        raise ValueError(
+            "data_bkg is required when bkg_window is not specified. "
+            "Either pass data_bkg or use bkg_window + inj_window."
+        )
 
     tw = _ensure_strategy(threshold_witness)
     tt = _ensure_strategy(threshold_target)

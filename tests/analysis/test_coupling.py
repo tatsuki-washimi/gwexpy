@@ -8,6 +8,7 @@ Tests threshold strategies for coupling function estimation.
 from __future__ import annotations
 
 import matplotlib
+
 matplotlib.use("Agg")
 
 import numpy as np
@@ -136,8 +137,9 @@ class TestPercentileThreshold:
 
     def test_with_segment_table(self, sample_psd_inj, sample_psd_bkg):
         """Test PercentileThreshold with SegmentTable input."""
-        from gwexpy.table.segment_table import SegmentTable
         from gwpy.segments import Segment
+
+        from gwexpy.table.segment_table import SegmentTable
 
         # Create a SegmentTable with 3 rows of identical background PSDs
         # Note: units must match in PercentileThreshold
@@ -298,8 +300,9 @@ class TestPercentileThresholdExtra:
     def test_threshold_skips_non_overlapping_segment_table_rows(
         self, sample_psd_inj, sample_psd_bkg
     ):
-        from gwexpy.table.segment_table import SegmentTable
         from gwpy.segments import Segment
+
+        from gwexpy.table.segment_table import SegmentTable
 
         shifted_freqs = (np.linspace(200, 300, 100) * u.Hz)
         shifted_psd = FrequencySeries(

@@ -12,13 +12,14 @@ import logging
 import time
 import warnings
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from gwpy.segments import Segment
 
-from ..table.segment_table import SegmentTable, RowProxy
+from ..table.segment_table import SegmentTable
 
 logger = logging.getLogger(__name__)
 
@@ -398,14 +399,63 @@ class ResponseFunctionAnalysis:
         # Background
         witness_bkg: TimeSeries | None = None,
         target_bkg: TimeSeries | None = None,
+        bkg_window: tuple[float, float] | None = None,
         # Execution
         n_jobs: int | None = None,
         memory_limit: int = 2 * 1024**3,
         **kwargs: object,
     ) -> ResponseFunctionResult:
+        """Perform the analysis.
+
+        Parameters
+        ----------
+        witness : TimeSeries
+            Witness channel time series.
+        target : TimeSeries
+            Target channel time series.
+        segments : list of tuple, optional
+            Manually specified injection steps as (t_start, t_end, freq) tuples.
+            If None and ``auto_detect=True``, steps are detected automatically.
+        fftlength : float
+            FFT length [seconds].
+        overlap : float
+            Overlap [seconds] (default 0).
+        auto_detect : bool
+            If True and ``segments`` is None, auto-detect injection steps.
+        snr_threshold : float
+            SNR threshold for step detection.
+        min_duration : float
+            Minimum step duration [seconds] for detection.
+        trim_edge : float
+            Edge trim [seconds] for each detected step.
+        witness_bkg : TimeSeries, optional
+            Explicit background for the witness channel.
+            Takes precedence over ``bkg_window``.
+        target_bkg : TimeSeries, optional
+            Explicit background for the target channel.
+            Takes precedence over ``bkg_window``.
+        bkg_window : tuple of float, optional
+            背景区間の (t_start, t_end) GPS 時刻 tuple。
+            ``witness_bkg`` / ``target_bkg`` が指定されていない場合に使用する。
+            指定された時刻範囲を ``witness`` / ``target`` から切り出して
+            背景データとして利用する。auto_detect よりも優先される。
+        n_jobs : int, optional
+            Number of parallel jobs.
+        memory_limit : int
+            Memory limit for batch processing [bytes].
         """
-        Perform the analysis.
-        """
+        # --- 0. Resolve bkg_window ---
+        if bkg_window is not None:
+            bkg_start, bkg_end = bkg_window
+            if bkg_end <= bkg_start:
+                raise ValueError(
+                    f"bkg_window end ({bkg_end}) must be greater than start ({bkg_start})."
+                )
+            if witness_bkg is None:
+                witness_bkg = witness.crop(bkg_start, bkg_end)
+            if target_bkg is None:
+                target_bkg = target.crop(bkg_start, bkg_end)
+
         # --- 1. Step Detection ---
         if segments is None:
             if not auto_detect:
@@ -487,6 +537,8 @@ class ResponseFunctionAnalysis:
                     for segment, injected_freq in batch
                 ]
             else:
+                assert Parallel is not None
+                assert delayed is not None
                 batch_results = Parallel(n_jobs=n_jobs_eff)(
                     delayed(_compute_response_row)(
                         witness=witness,
@@ -516,11 +568,11 @@ class ResponseFunctionAnalysis:
         st.add_column("cf", [row["cf"] for row in row_results], kind="meta")
 
         # --- 3. Wrap in Containers ---
-        st_data = st.to_pandas(meta_only=False)
+        st_data = cast(pd.DataFrame, st.to_pandas(meta_only=False))
         valid_indices: list[int] = []
         ref_freqs: np.ndarray | None = None
 
-        for idx, row in st_data.iterrows():
+        for row_index, (_, row) in enumerate(st_data.iterrows()):
             row_series = [
                 row["wit_asd_inj"],
                 row["tgt_asd_inj"],
@@ -535,7 +587,7 @@ class ResponseFunctionAnalysis:
             )
             if not compatible_within_row:
                 warnings.warn(
-                    f"Skipping response row {idx} due to incompatible ASD frequency grids.",
+                    f"Skipping response row {row_index} due to incompatible ASD frequency grids.",
                     UserWarning,
                     stacklevel=2,
                 )
@@ -545,20 +597,23 @@ class ResponseFunctionAnalysis:
                 ref_freqs = base_freqs
             elif not np.array_equal(base_freqs, ref_freqs):
                 warnings.warn(
-                    f"Skipping response row {idx} due to incompatible ASD frequency grids.",
+                    f"Skipping response row {row_index} due to incompatible ASD frequency grids.",
                     UserWarning,
                     stacklevel=2,
                 )
                 continue
 
-            valid_indices.append(idx)
+            valid_indices.append(row_index)
 
         if not valid_indices:
             raise ValueError("No compatible response rows remain after frequency alignment.")
 
         row_mask = [i in set(valid_indices) for i in range(len(st))]
         st = st.select(mask=row_mask)
-        st_data = st_data.iloc[valid_indices].reset_index(drop=True)
+        st_data = cast(
+            pd.DataFrame,
+            st_data.iloc[valid_indices].reset_index(drop=True),
+        )
 
         spec_inj_data = np.stack([v.value for v in st_data["tgt_asd_inj"]])
         spec_bkg_data = np.stack([v.value for v in st_data["tgt_asd_bkg"]])
@@ -604,7 +659,10 @@ def estimate_response_function(
     trim_edge: float = 1.0,
     witness_bkg: TimeSeries | None = None,
     target_bkg: TimeSeries | None = None,
-    **kwargs: object,
+    bkg_window: tuple[float, float] | None = None,
+    n_jobs: int | None = None,
+    memory_limit: int = 2 * 1024**3,
+    **kwargs: Any,
 ) -> ResponseFunctionResult:
     """Backward-compatible wrapper for :class:`ResponseFunctionAnalysis`.
 
@@ -630,5 +688,8 @@ def estimate_response_function(
         trim_edge=trim_edge,
         witness_bkg=witness_bkg,
         target_bkg=target_bkg,
+        bkg_window=bkg_window,
+        n_jobs=n_jobs,
+        memory_limit=memory_limit,
         **kwargs,
     )

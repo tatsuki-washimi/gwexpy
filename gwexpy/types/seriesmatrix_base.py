@@ -178,8 +178,8 @@ class SeriesMatrix(  # type: ignore[misc]
             rows = OrderedDict(rows)
         if isinstance(cols, dict) and not isinstance(cols, OrderedDict):
             cols = OrderedDict(cols)
-        obj.rows = MetaDataDict(rows, expected_size=N, key_prefix="row")
-        obj.cols = MetaDataDict(cols, expected_size=M, key_prefix="col")
+        obj.rows = MetaDataDict(cast(Any, rows), expected_size=N, key_prefix="row")
+        obj.cols = MetaDataDict(cast(Any, cols), expected_size=M, key_prefix="col")
         obj.xindex = xindex
         obj.name = name
         obj.epoch = epoch
