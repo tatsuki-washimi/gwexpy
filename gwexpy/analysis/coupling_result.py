@@ -695,7 +695,7 @@ class CouplingResult:
         fftlength : float, optional
             Spectrogram の FFT 長 [s]。None の場合は self.fftlength を使用。
         overlap : float, optional
-            Spectrogram のオーバーラップ割合 [0, 1)。None の場合は self.overlap を使用。
+            Spectrogram のオーバーラップ [秒]。None の場合は self.overlap を使用。
         channels : {"witness", "target", "both"}
             プロットするチャンネル。"both" の場合は 2 パネル構成。
         show_windows : bool
@@ -751,6 +751,10 @@ class CouplingResult:
         n_panels = len(ts_pairs)
         fig, axes = plt.subplots(n_panels, 1, figsize=figsize, squeeze=False)
 
+        plot_kwargs = dict(kwargs)
+        for reserved_key in ("color", "label", "linewidth"):
+            plot_kwargs.pop(reserved_key, None)
+
         for (label, ts_bkg, ts_inj), ax in zip(ts_pairs, axes[:, 0]):
             rms_bkg = _compute_rms_timeseries(ts_bkg, _fftlength, _overlap, fmin, fmax)
             rms_inj = _compute_rms_timeseries(ts_inj, _fftlength, _overlap, fmin, fmax)
@@ -764,7 +768,7 @@ class CouplingResult:
                 color="black",
                 linewidth=1.0,
                 label="Background",
-                **kwargs,
+                **plot_kwargs,
             )
             ax.plot(
                 rms_inj.times.value,
@@ -772,7 +776,7 @@ class CouplingResult:
                 color="tab:red",
                 linewidth=1.0,
                 label="Injection",
-                **kwargs,
+                **plot_kwargs,
             )
 
             # 期間色分け (axvspan)
@@ -1062,7 +1066,7 @@ def _compute_rms_timeseries(
     fftlength : float
         Spectrogram の FFT 長 [s]（= 時間ビン幅）。
     overlap : float
-        Spectrogram のオーバーラップ割合 [0, 1)。
+        Spectrogram のオーバーラップ [秒]。
     fmin, fmax : float or None
         積分する周波数帯域 [Hz]。None の場合は全帯域。
 
@@ -1089,13 +1093,12 @@ def _compute_rms_timeseries(
     freqs = spec.frequencies.value  # ndarray [Hz]
     psd_matrix = spec.value          # ndarray (n_times, n_freqs) [unit^2/Hz]
 
-    eps = np.finfo(float).tiny
     # 各時間ビンで周波数方向に台形則積分 → band_power [unit^2]
     # np.trapezoid は NumPy 2.0+、np.trapz は NumPy 1.x 互換
     _trapz = getattr(np, "trapezoid", None) or getattr(np, "trapz")
     band_power = _trapz(psd_matrix, freqs, axis=1)
-    # ゼロ除算防護（PSD が全ゼロの場合）
-    band_power = np.where(band_power > 0, band_power, eps)
+    # 数値誤差で生じた微小な負値は 0 に丸めるが、NaN はそのまま伝播させる。
+    band_power = np.where(np.isnan(band_power), np.nan, np.maximum(band_power, 0.0))
     rms_values = np.sqrt(band_power)
 
     ts_unit = getattr(ts, "unit", None)
