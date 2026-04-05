@@ -39,6 +39,8 @@ class CouplingResult:
         cf_ul: FrequencySeries | None = None,
         ts_witness_bkg: TimeSeries | None = None,
         ts_target_bkg: TimeSeries | None = None,
+        ts_witness_inj: TimeSeries | None = None,
+        ts_target_inj: TimeSeries | None = None,
         fftlength: float | None = None,
         overlap: float | None = None,
     ) -> None:
@@ -53,6 +55,8 @@ class CouplingResult:
         self.target_name = target_name
         self.ts_witness_bkg = ts_witness_bkg
         self.ts_target_bkg = ts_target_bkg
+        self.ts_witness_inj = ts_witness_inj
+        self.ts_target_inj = ts_target_inj
         self.fftlength = fftlength
         self.overlap = overlap
 
@@ -439,6 +443,286 @@ class CouplingResult:
             fh.write("# frequency(Hz) coupling_factor uncertainty significance\n")
             for f, cf, unc, sig in zip(freqs, cf_vals, uncertainty, sig_vals):
                 fh.write(f"{f} {cf} {unc} {sig}\n")
+
+    # ------------------------------------------------------------------
+    # Visualization (Phase 3)
+    # ------------------------------------------------------------------
+
+    def plot_significance(
+        self,
+        threshold: float = 3.0,
+        freq_min: float | None = None,
+        freq_max: float | None = None,
+        figsize: tuple[float, float] = (12, 6),
+    ) -> Any:
+        """
+        有意度スペクトラムプロット（(ASD_inj - ASD_bkg) / ASD_bkg vs 周波数）。
+
+        Parameters
+        ----------
+        threshold : float
+            閾値水平線の値（デフォルト 3.0）。0 以下の場合は描画しない。
+        freq_min, freq_max : float, optional
+            表示する周波数範囲 [Hz]。
+        figsize : tuple
+            Figure サイズ。
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+        """
+        import matplotlib.pyplot as plt
+
+        freqs = self.cf.xindex.value
+        sig_vals = self._significance_array()
+
+        mask = np.ones(len(freqs), dtype=bool)
+        if freq_min is not None:
+            mask &= freqs >= freq_min
+        if freq_max is not None:
+            mask &= freqs <= freq_max
+
+        fig, ax = plt.subplots(figsize=figsize)
+        ax.plot(freqs[mask], sig_vals[mask], color="tab:blue", linewidth=1.0, label="Significance")
+
+        if threshold > 0:
+            ax.axhline(
+                threshold,
+                color="tab:red",
+                linestyle="--",
+                linewidth=1.0,
+                label=f"threshold = {threshold}",
+            )
+
+        ax.set_xscale("log")
+        ax.set_xlabel("Frequency [Hz]")
+        ax.set_ylabel(r"$(ASD_{inj} - ASD_{bkg}) / ASD_{bkg}$")
+        ax.set_title(
+            f"Significance: {self.witness_name} -> {self.target_name}"
+        )
+        ax.legend()
+        ax.grid(True, which="both", linestyle=":")
+
+        if freq_min is not None or freq_max is not None:
+            lo = freq_min if freq_min is not None else freqs[mask][0]
+            hi = freq_max if freq_max is not None else freqs[mask][-1]
+            ax.set_xlim(lo, hi)
+
+        fig.tight_layout()
+        return fig
+
+    def plot_asdgram(
+        self,
+        freq_min: float | None = None,
+        freq_max: float | None = None,
+        vmin: float | None = None,
+        vmax: float | None = None,
+        figsize: tuple[float, float] = (14, 6),
+    ) -> Any:
+        """
+        ASD スペクトログラム + パーセンタイルオーバーレイ（2 列レイアウト）。
+
+        左パネル: 注入時 ASD spectrogram, 右パネル: 背景時 ASD spectrogram。
+        両者に 50%, 90%, 99% パーセンタイルラインを重ねる。
+
+        Parameters
+        ----------
+        freq_min, freq_max : float, optional
+            表示する周波数範囲 [Hz]。
+        vmin, vmax : float, optional
+            カラーバースケール。None の場合は自動設定。
+        figsize : tuple
+            Figure サイズ。
+
+        Raises
+        ------
+        ValueError
+            `ts_witness_inj` または `ts_witness_bkg` が None の場合。
+        """
+        import matplotlib.pyplot as plt
+        from matplotlib.colors import LogNorm
+
+        if self.ts_witness_inj is None:
+            raise ValueError(
+                "ts_witness_inj is required for plot_asdgram(). "
+                "Set it when constructing CouplingResult."
+            )
+        if self.ts_witness_bkg is None:
+            raise ValueError(
+                "ts_witness_bkg is required for plot_asdgram(). "
+                "Set it when constructing CouplingResult."
+            )
+        if self.fftlength is None:
+            raise ValueError("fftlength is required for plot_asdgram().")
+
+        overlap = self.overlap if self.overlap is not None else 0.0
+
+        def _specgram(ts: Any) -> Any:
+            spec = ts.spectrogram(
+                stride=self.fftlength,
+                fftlength=self.fftlength,
+                overlap=overlap,
+                method="welch",
+                window="hann",
+            )
+            if freq_min is not None or freq_max is not None:
+                lo = freq_min if freq_min is not None else 0.0
+                hi = freq_max if freq_max is not None else np.inf
+                spec = spec.crop_frequencies(lo, hi)
+            return spec
+
+        spec_inj = _specgram(self.ts_witness_inj)
+        spec_bkg = _specgram(self.ts_witness_bkg)
+
+        asd_inj = spec_inj**0.5
+        asd_bkg = spec_bkg**0.5
+
+        freqs_plot = asd_inj.frequencies.value
+        times_inj = asd_inj.times.value
+        times_bkg = asd_bkg.times.value
+
+        data_inj = asd_inj.value
+        data_bkg = asd_bkg.value
+
+        _vmin = vmin if vmin is not None else float(np.nanpercentile(data_inj[data_inj > 0], 1))
+        _vmax = vmax if vmax is not None else float(np.nanpercentile(data_inj[data_inj > 0], 99))
+        norm = LogNorm(vmin=max(_vmin, 1e-40), vmax=max(_vmax, _vmin * 2))
+
+        fig, (ax_inj, ax_bkg) = plt.subplots(1, 2, figsize=figsize, sharey=True)
+
+        asd_unit = getattr(self.ts_witness_inj, "unit", "")
+        pct_colors = {50: "white", 90: "yellow", 99: "red"}
+        pct_styles = {50: "-", 90: "--", 99: ":"}
+
+        for ax, data, times, title in [
+            (ax_inj, data_inj, times_inj, f"Injection: {self.witness_name}"),
+            (ax_bkg, data_bkg, times_bkg, f"Background: {self.witness_name}"),
+        ]:
+            c = ax.pcolormesh(
+                times, freqs_plot, data.T,
+                norm=norm, shading="auto", cmap="viridis",
+            )
+            fig.colorbar(c, ax=ax, label=f"ASD [{asd_unit}]")
+
+            # 各周波数ビンの時刻方向パーセンタイルを周波数軸に沿った輪郭として描画
+            # twin x 軸で ASD スケールのパーセンタイルプロファイルを重ねる
+            ax_twin = ax.twiny()
+            for pct in (50, 90, 99):
+                pct_vals = np.nanpercentile(data, pct, axis=0)  # shape: (n_freqs,)
+                ax_twin.plot(
+                    pct_vals,
+                    freqs_plot,
+                    color=pct_colors[pct],
+                    linestyle=pct_styles[pct],
+                    linewidth=1.0,
+                    label=f"p{pct}",
+                )
+            ax_twin.set_xscale("log")
+            ax_twin.set_xlabel(f"ASD [{asd_unit}]", fontsize=8)
+            ax_twin.legend(fontsize=7, loc="upper right")
+
+            ax.set_yscale("log")
+            ax.set_xlabel("Time [s]")
+            ax.set_ylabel("Frequency [Hz]")
+            ax.set_title(title)
+
+        ax_bkg.set_ylabel("")
+        fig.suptitle(
+            f"ASDgram: {self.witness_name} -> {self.target_name}", y=1.02
+        )
+        fig.tight_layout()
+        return fig
+
+    def plot_snrgram(
+        self,
+        freq_min: float | None = None,
+        freq_max: float | None = None,
+        snrmax: float = 100.0,
+        figsize: tuple[float, float] = (12, 6),
+    ) -> Any:
+        """
+        SNR スペクトログラム（中央値正規化: (ASD_inj - median_bkg) / median_bkg）。
+
+        Parameters
+        ----------
+        freq_min, freq_max : float, optional
+            表示する周波数範囲 [Hz]。
+        snrmax : float
+            カラーバー上限（clamp 値）。デフォルト 100。
+        figsize : tuple
+            Figure サイズ。
+
+        Raises
+        ------
+        ValueError
+            `ts_witness_inj` または `ts_witness_bkg` が None の場合。
+        """
+        import matplotlib.pyplot as plt
+
+        if self.ts_witness_inj is None:
+            raise ValueError(
+                "ts_witness_inj is required for plot_snrgram(). "
+                "Set it when constructing CouplingResult."
+            )
+        if self.ts_witness_bkg is None:
+            raise ValueError(
+                "ts_witness_bkg is required for plot_snrgram(). "
+                "Set it when constructing CouplingResult."
+            )
+        if self.fftlength is None:
+            raise ValueError("fftlength is required for plot_snrgram().")
+
+        overlap = self.overlap if self.overlap is not None else 0.0
+
+        def _specgram(ts: Any) -> Any:
+            spec = ts.spectrogram(
+                stride=self.fftlength,
+                fftlength=self.fftlength,
+                overlap=overlap,
+                method="welch",
+                window="hann",
+            )
+            if freq_min is not None or freq_max is not None:
+                lo = freq_min if freq_min is not None else 0.0
+                hi = freq_max if freq_max is not None else np.inf
+                spec = spec.crop_frequencies(lo, hi)
+            return spec
+
+        spec_inj = _specgram(self.ts_witness_inj)
+        spec_bkg = _specgram(self.ts_witness_bkg)
+
+        asd_inj = spec_inj.value**0.5
+        asd_bkg = spec_bkg.value**0.5
+
+        freqs_plot = spec_inj.frequencies.value
+        times_inj = spec_inj.times.value
+
+        eps = np.finfo(float).tiny
+        median_bkg = np.nanmedian(asd_bkg, axis=0)
+        median_bkg = np.where(median_bkg > 0, median_bkg, eps)
+
+        snr = (asd_inj - median_bkg[np.newaxis, :]) / median_bkg[np.newaxis, :]
+        snr = np.clip(snr, -snrmax, snrmax)
+
+        fig, ax = plt.subplots(figsize=figsize)
+        c = ax.pcolormesh(
+            times_inj,
+            freqs_plot,
+            snr.T,
+            vmin=0,
+            vmax=snrmax,
+            shading="auto",
+            cmap="inferno",
+        )
+        fig.colorbar(c, ax=ax, label="SNR")
+        ax.set_yscale("log")
+        ax.set_xlabel("Time [s]")
+        ax.set_ylabel("Frequency [Hz]")
+        ax.set_title(
+            f"SNRgram: {self.witness_name} -> {self.target_name}"
+        )
+        fig.tight_layout()
+        return fig
 
     @classmethod
     def from_txt(cls, filepath: str | os.PathLike) -> CouplingResult:

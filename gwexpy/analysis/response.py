@@ -191,6 +191,169 @@ class ResponseFunctionResult:
         ax.set_title("Response Matrix")
         return ax
 
+    def plot_projection_summary(
+        self,
+        freq_min: float | None = None,
+        freq_max: float | None = None,
+        figsize: tuple[float, float] = (14, 6),
+    ) -> Any:
+        """
+        全注入ステップの ASD スペクトルを重ねたプロット。
+
+        Parameters
+        ----------
+        freq_min, freq_max : float, optional
+            表示する周波数範囲 [Hz]。
+        figsize : tuple
+            Figure サイズ。
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+        """
+        fig, ax = plt.subplots(figsize=figsize)
+
+        freq_axis = self.spectrogram_inj.frequencies.value
+        freq_mask = np.ones(len(freq_axis), dtype=bool)
+        if freq_min is not None:
+            freq_mask &= freq_axis >= freq_min
+        if freq_max is not None:
+            freq_mask &= freq_axis <= freq_max
+
+        n_steps = len(self.injected_freqs)
+        cmap = plt.get_cmap("tab10")
+
+        for i in range(n_steps):
+            asd_row = self.spectrogram_inj[i].value[freq_mask]
+            label = f"step {i} @ {self.injected_freqs[i]:.1f} Hz"
+            ax.plot(
+                freq_axis[freq_mask],
+                asd_row,
+                color=cmap(i % 10),
+                linewidth=0.8,
+                alpha=0.8,
+                label=label,
+            )
+
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlabel("Frequency [Hz]")
+        ax.set_ylabel(f"ASD [{self.spectrogram_inj.unit}]")
+        ax.set_title(
+            f"Projection Summary: {self.witness_name} -> {self.target_name}"
+        )
+        ax.legend(fontsize=7, loc="upper right", ncol=max(1, n_steps // 10))
+        ax.grid(True, which="both", linestyle=":")
+
+        if freq_min is not None or freq_max is not None:
+            lo = freq_min if freq_min is not None else freq_axis[freq_mask][0]
+            hi = freq_max if freq_max is not None else freq_axis[freq_mask][-1]
+            ax.set_xlim(lo, hi)
+
+        fig.tight_layout()
+        return fig
+
+    def plot_response_matrix(
+        self,
+        freq_min: float | None = None,
+        freq_max: float | None = None,
+        figsize: tuple[float, float] = (14, 10),
+    ) -> Any:
+        """
+        2D 応答関数マトリックスと断面図（3 パネルレイアウト）。
+
+        - メインパネル: 時刻 vs 周波数, 色 = ASD amplitude
+        - サイドパネル（右）: 中央の周波数ビンでの時間進化
+        - トップパネル: 中央の時刻ステップでの周波数プロファイル
+
+        Parameters
+        ----------
+        freq_min, freq_max : float, optional
+            表示する周波数範囲 [Hz]。
+        figsize : tuple
+            Figure サイズ。
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+        """
+        from matplotlib.colors import LogNorm
+        from matplotlib.gridspec import GridSpec
+
+        freq_axis = self.spectrogram_inj.frequencies.value
+        freq_mask = np.ones(len(freq_axis), dtype=bool)
+        if freq_min is not None:
+            freq_mask &= freq_axis >= freq_min
+        if freq_max is not None:
+            freq_mask &= freq_axis <= freq_max
+
+        freqs_plot = freq_axis[freq_mask]
+        times_plot = self.step_times
+        data = self.spectrogram_inj.value[:, freq_mask]  # (n_steps, n_freqs)
+
+        n_steps, n_freqs = data.shape
+        mid_freq_idx = n_freqs // 2
+        mid_step_idx = n_steps // 2
+
+        pos_data = np.where(data > 0, data, np.nan)
+        _vmin = float(np.nanpercentile(pos_data, 5))
+        _vmax = float(np.nanpercentile(pos_data, 95))
+        norm = LogNorm(vmin=max(_vmin, 1e-40), vmax=max(_vmax, _vmin * 2))
+
+        fig = plt.figure(figsize=figsize)
+        gs = GridSpec(
+            2, 2,
+            figure=fig,
+            width_ratios=[4, 1],
+            height_ratios=[1, 4],
+            hspace=0.05,
+            wspace=0.05,
+        )
+        ax_main = fig.add_subplot(gs[1, 0])
+        ax_top = fig.add_subplot(gs[0, 0], sharex=ax_main)
+        ax_right = fig.add_subplot(gs[1, 1], sharey=ax_main)
+
+        # メインパネル: 時刻 vs 周波数
+        c = ax_main.pcolormesh(
+            times_plot,
+            freqs_plot,
+            data.T,
+            norm=norm,
+            shading="auto",
+            cmap="viridis",
+        )
+        fig.colorbar(c, ax=ax_right, label=f"ASD [{self.spectrogram_inj.unit}]", fraction=0.5)
+        ax_main.set_yscale("log")
+        ax_main.set_xlabel("Step Time [GPS s]")
+        ax_main.set_ylabel("Frequency [Hz]")
+
+        # トップパネル: 中央ステップの周波数プロファイル
+        ax_top.plot(
+            times_plot,
+            data[:, mid_freq_idx],
+            color="tab:orange",
+            linewidth=1.0,
+        )
+        ax_top.set_yscale("log")
+        ax_top.set_ylabel(f"ASD\n@ {freqs_plot[mid_freq_idx]:.1f} Hz")
+        ax_top.set_title(
+            f"Response Matrix: {self.witness_name} -> {self.target_name}"
+        )
+        plt.setp(ax_top.get_xticklabels(), visible=False)
+
+        # サイドパネル: 中央周波数ビンでの時間進化
+        ax_right.plot(
+            data[mid_step_idx, :],
+            freqs_plot,
+            color="tab:cyan",
+            linewidth=1.0,
+        )
+        ax_right.set_xscale("log")
+        ax_right.set_xlabel(f"ASD\n@ t={times_plot[mid_step_idx]:.1f}")
+        plt.setp(ax_right.get_yticklabels(), visible=False)
+
+        return fig
+
     def plot_snapshot(
         self,
         freq: float | None = None,
