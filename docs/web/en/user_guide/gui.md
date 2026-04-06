@@ -2,7 +2,7 @@
 
 ## Overview
 
-GWexpy includes a **PyQt5-based GUI** for interactive data exploration and visualization. The GUI provides a user-friendly interface for loading, analyzing, and visualizing gravitational wave data without writing Python code.
+GWexpy includes a **PyQt5-based GUI** for interactive data exploration and visualization. However, the GUI should currently be treated as a **prototype-stage / experimental interface**, not as a finalized end-user product. For reproducible and fully supported workflows, the **Python API** remains the primary interface.
 
 ## Installation
 
@@ -14,7 +14,8 @@ pip install gwexpy[gui]
 
 This installs additional dependencies:
 - `PyQt5` - GUI framework
-- `matplotlib` - Plotting backend
+- `pyqtgraph` / `qtpy` - interactive plotting and Qt abstraction
+- `sounddevice` - audio-related GUI features
 
 ## Launching the GUI
 
@@ -27,7 +28,7 @@ python -m gwexpy.gui
 ### Method 2: Via the Package Entry Point
 
 ```bash
-gwexpy-gui
+gwexpy.gui
 ```
 
 ### Method 3: Programmatically
@@ -77,6 +78,7 @@ Open files via:
 
 ## Known Limitations
 
+- The GUI is still a prototype-stage feature. Behavior, supported workflows, and screen layout may change without the same compatibility expectations as the core Python API.
 - The GUI is optimized for single-file analysis. For batch processing, use the Python API.
 - Memory usage increases with file size. For large datasets, consider using the API with streaming options.
 - Some advanced analysis features (e.g., matched filtering, machine learning pipelines) are not available in the GUI. Use the Python API for these workflows.
@@ -110,5 +112,5 @@ python -m gwexpy.gui 2>&1 | head -20
 
 ## See Also
 
-- [Python API Documentation](../index.md) - For programmatic data analysis
-- [Tutorials](../tutorials/index.md) - Interactive examples for learning GWexpy
+- {doc}`Python API Documentation <../index>` - For programmatic data analysis
+- {doc}`Tutorials <tutorials/index>` - Interactive examples for learning GWexpy

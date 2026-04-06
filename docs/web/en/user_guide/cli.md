@@ -2,11 +2,11 @@
 
 ## Overview
 
-The GWexpy CLI provides command-line access to GWpy's pipeline functionality. Currently, GWexpy primarily uses the **Python API** for interactive analysis and scripting. The CLI serves as a lightweight frontend to common workflows.
+The GWexpy CLI is currently a **minimal placeholder interface** and should be treated as a **prototype-stage feature**. At present, GWexpy is intended to be used primarily through the **Python API** for interactive analysis and scripting.
 
 ## Current Status
 
-The GWexpy CLI is in **active development**. Some commands are available, but most advanced analysis workflows are best performed using the **Python API**.
+The GWexpy CLI is in **early development / prototype stage**. The implemented behavior is currently limited to version display and a small informational help message. Advanced analysis workflows are not yet exposed as stable GWexpy subcommands, and the interface should not yet be treated as a finalized public workflow surface.
 
 ## Available Commands
 
@@ -33,7 +33,7 @@ gwexpy --help
 
 ## Using GWpy CLI
 
-GWexpy re-exports GWpy's command-line tools. For detailed documentation on GWpy's CLI, see the [GWpy Documentation](https://gwpy.readthedocs.io/en/latest/cli/).
+If you need GWpy's command-line tools, refer to the [GWpy Documentation](https://gwpy.readthedocs.io/en/latest/cli/) directly. GWexpy does not currently provide a documented compatibility layer that forwards the full GWpy CLI surface.
 
 **Note:** For complex analysis pipelines, gravitational wave parameter estimation, and custom data processing, the **Python API** is recommended. See the [Getting Started](./getting_started.md) guide for API examples.
 
@@ -52,7 +52,7 @@ For planned features and timeline, see the [Roadmap](https://github.com/tatsuki-
 If the `gwexpy` command is not found after installation, ensure that `gwexpy` was installed in the correct environment:
 
 ```bash
-pip install -e ".[gw]"  # Install with gravitational wave extras
+pip install -e .
 ```
 
 Verify the installation:

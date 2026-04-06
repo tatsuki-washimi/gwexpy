@@ -341,3 +341,110 @@ RST / Markdown の静的構造テスト：
 
 1. テストは全て静的解析のみ。CI で `sphinx-build` を実行するジョブを追加すると、broken reference の早期検出に有効。
 2. `case_physics_validation` の相対誤差 73% は非ブロッキング化で対処済みだが、Welch 推定のサンプル数不足が根本原因。実装側の改善余地あり。
+
+---
+
+## 補足：ドキュメント修正の実施記録（2026-04-07、commit `dca93fc3`）
+
+### 概要
+
+前記スプリント計画に基づき、High/Medium 優先度の改善 4 件を実施し、あわせて日本語チュートリアル 3 本の既存反映状況を確認した。
+該当の項目：
+- Step 2: Code of Conduct 連絡先修正
+- Step 1: 日本語チュートリアル3本（既存確認）
+- Step 4: sitemap / html_baseurl 設定
+- Step 3: CLI / GUI ドキュメント追加
+- Step 5: LICENSE ドキュメント追加
+
+### 実施内容
+
+#### 1. CODE_OF_CONDUCT.md の修正
+
+**変更**: プレースホルダコメント（TODO）を削除  
+**理由**: 外部フォーム依存を撤去し、GitHub Discussions/Issues への統一導線として既に適切に設定されていた。
+
+修正内容：
+- 行 128-129（末尾のTODOコメント）を削除
+- GitHub Discussions リンク（行 63）は既に正式設定されているため維持
+
+#### 2. docs/conf.py の設定追加
+
+**変更1**: `extensions` リストに `"sphinx_sitemap"` を追加  
+**理由**: SEO/クロール性改善、gh-pages での sitemap.xml 生成
+
+**変更2**: `html_baseurl` 設定を追加  
+```python
+html_baseurl = "https://tatsuki-washimi.github.io/gwexpy/docs/"
+```
+**理由**: sitemap.xml が絶対 URL を生成するために必須
+
+#### 3. docs/requirements.txt の更新
+
+**変更**: `sphinx-sitemap` を依存リストに追加  
+**理由**: sphinx_sitemap 拡張のインストールを明示的に指定
+
+#### 4. CLI / GUI ドキュメントの新規作成
+
+**EN版**:
+- `docs/web/en/user_guide/cli.md`: GWexpy CLI が placeholder / 試作段階であることを明示し、利用可能コマンド（--version, --help）と GWpy CLI 参照先を説明
+- `docs/web/en/user_guide/gui.md`: PyQt5 ベース GUI が試作段階であることを明示したうえで、起動方法（3通り）、対応フォーマット（GBD/HDF5/FITS/MiniSEED/CSV）、機能、既知制限を記載
+
+**JA版**:
+- `docs/web/ja/user_guide/cli.md`: 英語版の日本語翻訳
+- `docs/web/ja/user_guide/gui.md`: 英語版の日本語翻訳
+
+各ドキュメント構成：
+- 概要（Overview）
+- インストール・起動方法
+- 対応フォーマット（GUI）/ 利用可能コマンド（CLI）
+- 機能・制限事項
+- トラブルシューティング
+- 参照リンク
+
+#### 5. LICENSE ドキュメントの新規作成
+
+**EN版**: `docs/web/en/user_guide/license.md`
+- MIT ライセンスの概要（許可事項・条件）
+- 完全ライセンステキストへのリンク（repository LICENSE.txt）
+- MIT 選択理由（採用促進、コラボレーション、学術/商業友好性）
+- サードパーティライセンス一覧表（NumPy/SciPy/Pandas/Matplotlib/GWpy/Astropy）
+- 貢献時のライセンス同意
+- 質問受付（GitHub Issues/Discussions）
+
+**JA版**: `docs/web/ja/user_guide/license.md`
+- 英語版の日本語翻訳
+
+### ビルド状況
+
+- 設定ファイル（`conf.py`・`requirements.txt`）の変更は構文的に正常
+- 新規ドキュメント（cli.md, gui.md, license.md）は sphinx の Markdown パーサで構文適合を確認
+- CI/CD での `sphinx-build` 実行は以降リポジトリ push で自動実行
+
+### 日本語チュートリアル3本の状況
+
+前回作業（commit `2093651e`）で以下が既に配置・生成済み：
+- `docs/web/ja/user_guide/tutorials/intro_noise.ipynb`
+- `docs/web/ja/user_guide/tutorials/intro_fitting.ipynb`
+- `docs/web/ja/user_guide/tutorials/intro_table.ipynb`
+
+修正日時: 2026-04-05 08:30（toctree から欠落しない状態で公開）
+
+### 完了状況の整理
+
+| スプリント課題 | 優先度 | 状況 | 備考 |
+|---|---|---|---|
+| Quickstart 修正（PowerLawNoise） | Critical | 未実施 | 別途スプリント対象 |
+| 日本語チュートリアル実体追加 | High | ✅ 完了 | commit `2093651e` で実施済み |
+| lang属性（ja）修正 | High | 未実施 | template 修正または build 分離が必要 |
+| Code of Conduct 連絡先確定 | High | ✅ 完了 | GitHub Discussions へ統一（プレースホルダ削除） |
+| CLI docs（placeholder / 試作段階の明示） | Medium | ✅ 完了 | EN/JA 両言語作成 |
+| GUI docs（試作段階の明示、起動・制限・例） | Medium | ✅ 完了 | EN/JA 両言語作成 |
+| LICENSE docs | Low | ✅ 完了 | EN/JA 両言語作成 |
+| sitemap 導入 | Medium | ✅ 完了 | sphinx_sitemap 拡張 + html_baseurl 設定 |
+| 言語跨ぎPrev/Next対策 | Medium | 未実施 | template 修正（今後） |
+
+### 今後の作業予定
+
+- **Quickstart 修正** (Critical): PowerLawNoise → gwexpy.noise への API 統一
+- **lang 属性**（ja）: conf.py の language 固定を言語別 build に対応（別途）
+- **lang跨ぎナビゲーション**: Sphinx template の Prev/Next カスタマイズ（別途）
