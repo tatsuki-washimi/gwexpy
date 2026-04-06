@@ -25,6 +25,7 @@ def compute_student_t_nu(
     stride: float | None = None,
     window: int = 40,
     overlap: float | None = None,
+    frange: tuple[float, float] | None = None,
 ) -> Spectrogram:
     """
     Compute Student-t degree of freedom (nu) for non-Gaussianity detection.
@@ -37,6 +38,8 @@ def compute_student_t_nu(
     stride : float, optional
     window : int, default=40
     overlap : float, optional
+    frange : (float, float), optional
+        Frequency range (low, high) in Hz to limit computation.
 
     Returns
     -------
@@ -64,6 +67,15 @@ def compute_student_t_nu(
     # Zxx shape: (n_freqs, n_times)
 
     n_freqs, n_times = Zxx.shape
+
+    # Apply frequency range restriction to limit computation
+    if frange is not None:
+        flo, fhi = frange
+        freq_mask = (f >= flo) & (f <= fhi)
+        f = f[freq_mask]
+        Zxx = Zxx[freq_mask, :]
+        n_freqs = f.size
+
     if n_times < window:
         raise ValueError(f"Too few segments ({n_times}) for window size {window}.")
 

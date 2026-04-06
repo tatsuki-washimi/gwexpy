@@ -287,7 +287,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         rs = self.rayleigh_spectrogram(stride=stride, fftlength=fftlength, overlap=overlap)
         return rayleigh_pvalue(rs, n_samples=n_samples, **kwargs)
 
-    def student_t_spectrogram(self, fftlength, stride=None, window=40, overlap=None):
+    def student_t_spectrogram(self, fftlength, stride=None, window=40, overlap=None, frange=None):
         """
         Compute Student-t degree of freedom (nu) spectrogram.
 
@@ -303,6 +303,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             stride=stride,
             window=window,
             overlap=overlap,
+            frange=frange,
         )
 
     def histogram(self, bins=None, range=None, weights=None, density=False, **kwargs):

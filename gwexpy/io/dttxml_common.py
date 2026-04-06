@@ -233,7 +233,10 @@ def load_dttxml_native(source: str) -> dict:
             else 0.0
         )
 
-        subtype = params.get("Subtype", 0)
+        try:
+            subtype = int(params.get("Subtype", 0))
+        except (ValueError, TypeError):
+            subtype = 0
         f0 = float(params.get("f0", 0.0))
         df = float(params.get("df", 1.0))
         n_points = int(params.get("N", 0))
