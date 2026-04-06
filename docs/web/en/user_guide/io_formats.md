@@ -3,8 +3,6 @@
 A comprehensive guide to all file formats supported by gwexpy, including how to read and write each format.
 This page covers only the end-user API (`.read()` / `.write()` class methods) and does not expose internal implementation details.
 
----
-
 ## Supported Formats Overview
 
 | Format | Extension | Read | Write | Recommended Class / Method | Dependencies | Notes |
@@ -37,8 +35,6 @@ This page covers only the end-user API (`.read()` / `.write()` class methods) an
 ---
 
 ## Format Details
-
----
 
 ### GBD — GRAPHTEC Data Logger `.gbd`
 

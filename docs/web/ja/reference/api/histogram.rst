@@ -1,5 +1,5 @@
-ヒストグラム (gwexpy.histogram)
-============================
+ヒストグラム API
+================
 
 .. automodule:: gwexpy.histogram
 

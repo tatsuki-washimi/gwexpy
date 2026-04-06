@@ -27,13 +27,15 @@ class Histogram(
 
     Notes
     -----
-    **Statistical Error Tracking (Double Management Rule):**
-    `Histogram` maintains two attributes for error tracking:
-    1. `sumw2`: The sum of squared weights per bin. This tracks the uncorrelated
-       statistical variance (e.g., from counting statistics).
-    2. `cov`: The full covariance matrix. Its diagonal elements SHOULD include the
-       statistical variance tracked by `sumw2`.
-    When filling the histogram, both are updated to ensure consistency.
+    ``Histogram`` maintains two attributes for error tracking:
+
+    1. ``sumw2`` stores the sum of squared weights per bin and tracks the
+       uncorrelated statistical variance.
+    2. ``cov`` stores the full covariance matrix. Its diagonal should include the
+       same statistical variance represented by ``sumw2``.
+
+    When filling the histogram, both quantities are updated to keep the
+    uncertainty bookkeeping consistent.
 
     """
 

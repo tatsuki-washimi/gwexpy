@@ -67,6 +67,14 @@ nbsphinx_prolog = r"""
 {% endif %}
 """
 
+rst_prolog = r"""
+.. role:: dcc(code)
+.. role:: mpltype(code)
+.. role:: doi(code)
+.. |lal.LIGOTimeGPS| replace:: ``lal.LIGOTimeGPS``
+.. _lal.ligotimegps: https://lscsoft.docs.ligo.org/lalsuite/lal/classlal_1_1_l_i_g_o_time_g_p_s.html
+"""
+
 # Ignore nitpick errors for well-known external symbols to keep -n builds manageable.
 nitpick_ignore = []
 nitpick_ignore_regex = []
