@@ -124,6 +124,3 @@ Community Impact Guidelines were inspired by
 [homepage]: https://www.contributor-covenant.org
 [v2.1]: https://www.contributor-covenant.org/version/2.1/code_of_conduct.html
 [mozilla]: https://github.com/mozilla/adequacy
-
-<!-- TODO: Replace the URL in the Enforcement section with the actual Google Forms link -->
-
