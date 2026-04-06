@@ -448,3 +448,60 @@ html_baseurl = "https://tatsuki-washimi.github.io/gwexpy/docs/"
 - **Quickstart 修正** (Critical): PowerLawNoise → gwexpy.noise への API 統一
 - **lang 属性**（ja）: conf.py の language 固定を言語別 build に対応（別途）
 - **lang跨ぎナビゲーション**: Sphinx template の Prev/Next カスタマイズ（別途）
+
+---
+
+## 補足：CLI / GUI を試作段階として明示した修正（2026-04-07、commit `1e1bc257`）
+
+### 概要
+
+CLI / GUI ドキュメントについて、「存在するが未完成であり、完成済みの安定インターフェースではない」という点を、利用者が誤解しない表現へ修正した。あわせて、追加済みの `cli.md` / `gui.md` / `license.md` を docs ナビゲーションから辿れるように調整した。
+
+### 実施内容
+
+#### 1. CLI ドキュメントの表現修正
+
+- `docs/web/en/user_guide/cli.md`
+- `docs/web/ja/user_guide/cli.md`
+
+修正内容：
+- `placeholder` に加えて `prototype-stage` / `試作段階` を明示
+- `GWpy CLI を再エクスポートしている` と読める表現を削除
+- 現状の CLI は `--version` と案内メッセージ中心であり、完成済みの公開 CLI ではないことを明文化
+- インストール確認例を `pip install -e .` に修正
+
+#### 2. GUI ドキュメントの表現修正
+
+- `docs/web/en/user_guide/gui.md`
+- `docs/web/ja/user_guide/gui.md`
+
+修正内容：
+- GUI を `prototype-stage / experimental`、`試作段階 / 実験的` と明示
+- Python API が引き続き主要インターフェースであることを追記
+- 既知の制限事項に「互換性保証を前提としない試作機能」である旨を追加
+- GUI entry point 名を実装に合わせて `gwexpy.gui` に修正済み状態を維持
+
+#### 3. docs ナビゲーションへの接続
+
+- `docs/web/en/index.rst`
+- `docs/web/ja/index.rst`
+
+修正内容：
+- `User Guide` の toctree に `user_guide/cli`, `user_guide/gui`, `user_guide/license` を追加
+- 追加済みドキュメントがトップレベルの docs ナビから到達可能になった
+
+#### 4. 検証レポート本文の整合修正
+
+- 本レポート内の 2026-04-07 節について、CLI / GUI docs が「完成機能の案内」ではなく「試作段階であることを明示した docs」であると分かる表現に更新
+- あわせて「改善 4 件 + 日本語チュートリアル 3 本の既存確認」という位置付けに表現を整理
+
+### 検証結果
+
+- `conda run -n gwexpy sphinx-build -b html docs docs/_build/html` → `build succeeded.`
+- `conda run -n gwexpy python -m pytest -q tests/docs/test_docs_warning_regressions.py tests/docs/test_tutorial_notebook_quality.py` → `7 passed`
+- `sphinx-sitemap` は docs build 検証時に `gwexpy` 環境へ個別導入し、`sitemap.xml` 生成を確認済み
+
+### 補足
+
+- docs 検証中、`pip install -r docs/requirements.txt` は既存依存 `numpy-stubs` の解決失敗で完走しなかったため、今回必要だった `sphinx-sitemap` のみ個別インストールして検証した
+- docs テスト実行時には既知の `ZarrDeprecationWarning` が fixture 生成経路から出るが、今回の docs 修正とは無関係であり、テスト自体は通過している
