@@ -124,6 +124,9 @@ Main Documentation
    user_guide/installation
    user_guide/quickstart
    user_guide/getting_started
+   user_guide/cli
+   user_guide/gui
+   user_guide/license
    user_guide/io_formats
 
 .. toctree::
