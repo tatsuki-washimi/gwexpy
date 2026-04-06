@@ -1,0 +1,598 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.plot.plot &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.plot.plot</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.plot.plot</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span> <span class="k">as</span> <span class="n">BasePlot</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Plot&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="plot_mmm">
+<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.plot_mmm">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_mmm</span><span class="p">(</span><span class="n">median</span><span class="p">,</span> <span class="n">min_s</span><span class="p">,</span> <span class="n">max_s</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot Median, Min, and Max series with a filled area between Min and Max.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    median : Series</span>
+<span class="sd">    min_s : Series</span>
+<span class="sd">    max_s : Series</span>
+<span class="sd">    ax : Axes, optional</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Passed to ax.plot for the median line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+    <span class="c1"># Plot fill between</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">color</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Get next color in cycle if not provided</span>
+        <span class="p">(</span><span class="n">line</span><span class="p">,)</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">median</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">median</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">get_color</span><span class="p">()</span>
+        <span class="n">line</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;alpha_fill&quot;</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">label_fill</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;label_fill&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+        <span class="n">min_s</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">min_s</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">max_s</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">label_fill</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Plot median line</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">median</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">median</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">median</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Plot">
+<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.Plot">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Plot</span><span class="p">(</span><span class="n">BasePlot</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An extension of :class:`gwpy.plot.Plot` that automatically handles</span>
+<span class="sd">    :class:`gwexpy.types.SeriesMatrix` arguments by expanding them into</span>
+<span class="sd">    individual :class:`gwpy.types.Series` objects, while preserving</span>
+<span class="sd">    matrix layout and metadata where possible.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Suppress _repr_html_ to prevent double plotting (repr + backend)</span>
+    <span class="n">_repr_html_</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Glyph .* missing from font&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaults</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot._init_helpers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">_adaptive_decimate_args</span><span class="p">,</span>
+            <span class="n">_add_spectrogram_colorbars</span><span class="p">,</span>
+            <span class="n">_apply_individual_axis_labels</span><span class="p">,</span>
+            <span class="n">_apply_layout_polish</span><span class="p">,</span>
+            <span class="n">_apply_list_labels</span><span class="p">,</span>
+            <span class="n">_apply_xlabel</span><span class="p">,</span>
+            <span class="n">_apply_ylabel</span><span class="p">,</span>
+            <span class="n">_determine_scales_and_labels</span><span class="p">,</span>
+            <span class="n">_expand_args</span><span class="p">,</span>
+            <span class="n">_extract_layout_and_fig_params</span><span class="p">,</span>
+            <span class="n">_filter_monitor_args</span><span class="p">,</span>
+            <span class="n">_flatten_scan</span><span class="p">,</span>
+            <span class="n">_force_scales</span><span class="p">,</span>
+            <span class="n">_manage_sharex_labels</span><span class="p">,</span>
+            <span class="n">_post_plot_overlay</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Retrieve concrete types from registry (avoids circular imports)</span>
+        <span class="n">SeriesMatrix</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;SeriesMatrix&quot;</span><span class="p">)</span>
+        <span class="n">SpectrogramMatrix</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;SpectrogramMatrix&quot;</span><span class="p">)</span>
+        <span class="n">FrequencySeriesList</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesList&quot;</span><span class="p">)</span>
+        <span class="n">FrequencySeriesDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;FrequencySeriesDict&quot;</span><span class="p">)</span>
+        <span class="n">SpectrogramList</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;SpectrogramList&quot;</span><span class="p">)</span>
+        <span class="n">SpectrogramDict</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;SpectrogramDict&quot;</span><span class="p">)</span>
+        <span class="n">Spectrogram</span> <span class="o">=</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;Spectrogram&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 0. Handle monitor filtering</span>
+        <span class="n">monitor</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;monitor&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">monitor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">_filter_monitor_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">monitor</span><span class="p">,</span> <span class="n">SeriesMatrix</span><span class="p">,</span> <span class="n">SpectrogramMatrix</span><span class="p">)</span>
+
+        <span class="c1"># 1. Determine Layout Mode</span>
+        <span class="k">if</span> <span class="s2">&quot;subplots&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="s2">&quot;separate&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;separate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;subplots&quot;</span><span class="p">]</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;subplots&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">separate</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;separate&quot;</span><span class="p">)</span>
+        <span class="n">geometry</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;geometry&quot;</span><span class="p">)</span>
+        <span class="n">separate</span><span class="p">,</span> <span class="n">geometry</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">determine_geometry_and_separate</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">separate</span><span class="o">=</span><span class="n">separate</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="n">geometry</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">monitor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">separate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">separate</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># 2. Expand Arguments</span>
+        <span class="n">final_args</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_expand_args</span><span class="p">(</span>
+            <span class="n">args</span><span class="p">,</span>
+            <span class="n">separate</span><span class="p">,</span>
+            <span class="n">final_args</span><span class="p">,</span>
+            <span class="n">SeriesMatrix</span><span class="o">=</span><span class="n">SeriesMatrix</span><span class="p">,</span>
+            <span class="n">SpectrogramMatrix</span><span class="o">=</span><span class="n">SpectrogramMatrix</span><span class="p">,</span>
+            <span class="n">FrequencySeriesList</span><span class="o">=</span><span class="n">FrequencySeriesList</span><span class="p">,</span>
+            <span class="n">FrequencySeriesDict</span><span class="o">=</span><span class="n">FrequencySeriesDict</span><span class="p">,</span>
+            <span class="n">SpectrogramList</span><span class="o">=</span><span class="n">SpectrogramList</span><span class="p">,</span>
+            <span class="n">SpectrogramDict</span><span class="o">=</span><span class="n">SpectrogramDict</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 2.5 Adaptive Decimation</span>
+        <span class="n">decimate_threshold</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;decimate_threshold&quot;</span><span class="p">,</span> <span class="mi">50000</span><span class="p">)</span>
+        <span class="n">decimate_points</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;decimate_points&quot;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+        <span class="n">final_args</span> <span class="o">=</span> <span class="n">_adaptive_decimate_args</span><span class="p">(</span>
+            <span class="n">final_args</span><span class="p">,</span> <span class="n">decimate_threshold</span><span class="p">,</span> <span class="n">decimate_points</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 3. Determine Scales and Labels</span>
+        <span class="n">scan_data</span> <span class="o">=</span> <span class="n">_flatten_scan</span><span class="p">(</span><span class="n">final_args</span><span class="p">)</span>
+        <span class="n">det_clabel</span> <span class="o">=</span> <span class="n">_determine_scales_and_labels</span><span class="p">(</span>
+            <span class="n">scan_data</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">defaults</span><span class="p">,</span> <span class="n">Spectrogram</span><span class="p">,</span> <span class="n">SpectrogramMatrix</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 4. Definitions for Post-Init Logic</span>
+        <span class="n">use_overlay</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">fa</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">fa</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">fa</span> <span class="ow">in</span> <span class="n">final_args</span>
+        <span class="p">)</span>
+        <span class="n">matrix_args</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">SeriesMatrix</span><span class="p">,</span> <span class="n">SpectrogramMatrix</span><span class="p">))</span>
+        <span class="p">]</span>
+        <span class="n">is_spectrogram</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">Spectrogram</span><span class="p">,</span> <span class="n">SpectrogramMatrix</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">scan_data</span>
+        <span class="p">)</span>
+        <span class="n">subplots_orig</span> <span class="o">=</span> <span class="n">separate</span>
+
+        <span class="n">expanded_args</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="p">(</span><span class="n">SeriesMatrix</span><span class="p">,</span> <span class="n">SpectrogramMatrix</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                    <span class="n">expanded_args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">arg</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">expanded_args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="p">(</span><span class="n">FrequencySeriesList</span><span class="p">,</span> <span class="n">SpectrogramList</span><span class="p">)):</span>
+                    <span class="n">expanded_args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">arg</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="p">(</span><span class="n">FrequencySeriesDict</span><span class="p">,</span> <span class="n">SpectrogramDict</span><span class="p">)):</span>
+                    <span class="n">expanded_args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">expanded_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+        <span class="c1"># 5. Extract params and call super().__init__</span>
+        <span class="n">layout_kwargs</span><span class="p">,</span> <span class="n">fig_params</span><span class="p">,</span> <span class="n">use_cl</span><span class="p">,</span> <span class="n">use_tl</span><span class="p">,</span> <span class="n">labels_list</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">_extract_layout_and_fig_params</span><span class="p">(</span>
+                <span class="n">kwargs</span><span class="p">,</span> <span class="n">separate</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">final_args</span><span class="p">,</span> <span class="n">defaults</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">force_ylabel</span> <span class="o">=</span> <span class="n">layout_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ylabel&quot;</span><span class="p">)</span>
+        <span class="n">force_xlabel</span> <span class="o">=</span> <span class="n">layout_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;xlabel&quot;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">final_args</span><span class="p">,</span> <span class="o">**</span><span class="n">layout_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">fig_params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># 6. Post-Init: Labels</span>
+        <span class="k">if</span> <span class="n">labels_list</span><span class="p">:</span>
+            <span class="n">_apply_list_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels_list</span><span class="p">,</span> <span class="n">layout_kwargs</span><span class="p">)</span>
+
+        <span class="n">_apply_ylabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_ylabel</span><span class="p">,</span> <span class="n">layout_kwargs</span><span class="p">)</span>
+        <span class="n">_apply_individual_axis_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">final_args</span><span class="p">,</span> <span class="n">force_ylabel</span><span class="p">,</span> <span class="n">defaults</span><span class="p">)</span>
+        <span class="n">candidate_xlabel</span> <span class="o">=</span> <span class="n">_apply_xlabel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_xlabel</span><span class="p">,</span> <span class="n">layout_kwargs</span><span class="p">)</span>
+
+        <span class="c1"># 7. Layout polish and force scales</span>
+        <span class="n">_apply_layout_polish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_cl</span><span class="p">,</span> <span class="n">use_tl</span><span class="p">)</span>
+        <span class="n">_force_scales</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout_kwargs</span><span class="p">)</span>
+
+        <span class="c1"># 8. Post-Plotting overlay</span>
+        <span class="n">_post_plot_overlay</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">use_overlay</span><span class="p">,</span>
+            <span class="n">matrix_args</span><span class="p">,</span>
+            <span class="n">subplots_orig</span><span class="p">,</span>
+            <span class="n">expanded_args</span><span class="p">,</span>
+            <span class="n">layout_kwargs</span><span class="p">,</span>
+            <span class="n">SeriesMatrix</span><span class="p">,</span>
+            <span class="n">SpectrogramMatrix</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 9. Spectrogram colorbars</span>
+        <span class="n">_add_spectrogram_colorbars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_spectrogram</span><span class="p">,</span> <span class="n">det_clabel</span><span class="p">)</span>
+
+        <span class="c1"># 10. Sharex label management</span>
+        <span class="n">_manage_sharex_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layout_kwargs</span><span class="p">,</span> <span class="n">candidate_xlabel</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Plot.plot_mmm">
+<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.Plot.plot_mmm">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_mmm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">min_s</span><span class="p">,</span> <span class="n">max_s</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot median line with a min/max envelope.</span>
+
+<span class="sd">        This is a convenience wrapper around :func:`gwexpy.plot.plot_mmm`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        median : gwpy.types.Series</span>
+<span class="sd">            Median series to plot as a line.</span>
+<span class="sd">        min_s : gwpy.types.Series</span>
+<span class="sd">            Minimum series defining the lower envelope.</span>
+<span class="sd">        max_s : gwpy.types.Series</span>
+<span class="sd">            Maximum series defining the upper envelope.</span>
+<span class="sd">        ax : matplotlib.axes.Axes, optional</span>
+<span class="sd">            Target axes. If omitted, uses the current axes of this Plot.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Passed to ``ax.plot`` for the median line. Additional keys supported:</span>
+
+<span class="sd">            - ``alpha_fill``: opacity for the filled envelope</span>
+<span class="sd">            - ``label_fill``: label for the filled envelope</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list</span>
+<span class="sd">            The list of Line2D objects returned by ``ax.plot``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">plot_mmm</span><span class="p">(</span><span class="n">median</span><span class="p">,</span> <span class="n">min_s</span><span class="p">,</span> <span class="n">max_s</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Plot.show">
+<a class="viewcode-back" href="../../../web/en/reference/api/plot.html#gwexpy.plot.Plot.show">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">warn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">close</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show the figure.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        warn : bool, optional</span>
+<span class="sd">            Unused, kept for API compatibility. Default is True.</span>
+<span class="sd">        close : bool, optional</span>
+<span class="sd">            If True (default), close the figure after showing to free</span>
+<span class="sd">            resources and prevent double display in Jupyter.</span>
+<span class="sd">            Set to False if you need to call savefig() after show().</span>
+<span class="sd">        block : bool or None, optional</span>
+<span class="sd">            Whether to block execution until the figure window is closed.</span>
+<span class="sd">            If None (default), uses matplotlib&#39;s default behavior.</span>
+<span class="sd">            Set to False to continue execution immediately after showing,</span>
+<span class="sd">            which allows savefig() to work in scripted workflows.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; plot = Plot(data)</span>
+<span class="sd">        &gt;&gt;&gt; plot.show(close=False, block=False)  # Non-blocking, keep figure</span>
+<span class="sd">        &gt;&gt;&gt; plot.savefig(&quot;output.png&quot;)  # Works because figure is still open</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        In Jupyter notebooks, setting ``close=True`` prevents the figure</span>
+<span class="sd">        from being displayed twice (once by show() and once by the</span>
+<span class="sd">        notebook&#39;s automatic display).</span>
+
+<span class="sd">        In script mode, ``plt.show()`` blocks by default until the window</span>
+<span class="sd">        is closed. Use ``block=False`` if you need to save after showing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">close</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_repr_png_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return PNG representation for Jupyter display.</span>
+
+<span class="sd">        This ensures the figure can be displayed in Jupyter notebooks</span>
+<span class="sd">        when _repr_html_ is disabled to prevent double plotting.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bytes or None</span>
+<span class="sd">            PNG image data, or None if the figure has been closed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BytesIO</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+            <span class="n">buf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">buf</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+            <span class="c1"># Figure may have been closed</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_summary</span><span class="p">(</span><span class="n">sg_collection</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a grid of Spectrograms and their percentile summaries side-by-side.</span>
+
+<span class="sd">    Suitable for ASD, PSD, Coherence, and other spectrograms.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sg_collection : SpectrogramList, SpectrogramDict, or SpectrogramMatrix</span>
+<span class="sd">    fmin, fmax : float, optional</span>
+<span class="sd">        Frequency range.</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Passed to Plot constructor for global settings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConverterRegistry</span>
+
+    <span class="n">SpectrogramMatrix</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+        <span class="n">Any</span><span class="p">,</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;SpectrogramMatrix&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">SpectrogramDict</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;SpectrogramDict&quot;</span><span class="p">))</span>
+    <span class="n">SpectrogramList</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">ConverterRegistry</span><span class="o">.</span><span class="n">get_constructor</span><span class="p">(</span><span class="s2">&quot;SpectrogramList&quot;</span><span class="p">))</span>
+
+    <span class="c1"># Normalize collection to a dict-like or list of (name, spectrogram)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sg_collection</span><span class="p">,</span> <span class="n">SpectrogramMatrix</span><span class="p">):</span>
+        <span class="n">sg_obj</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">sg_collection</span><span class="p">)</span>
+        <span class="c1"># We assume 3D (Batch, Time, Freq) for now as typical use case</span>
+        <span class="k">if</span> <span class="n">sg_obj</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sg_obj</span><span class="o">.</span><span class="n">row_keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">names</span><span class="p">:</span>
+                <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sg_obj</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+            <span class="n">sgs</span> <span class="o">=</span> <span class="n">sg_obj</span><span class="o">.</span><span class="n">to_series_1Dlist</span><span class="p">()</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">sgs</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Flatten 4D if needed, but 3D is primary target for &quot;list of spectrograms&quot;</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">r_keys</span> <span class="o">=</span> <span class="n">sg_obj</span><span class="o">.</span><span class="n">row_keys</span><span class="p">()</span>
+            <span class="n">c_keys</span> <span class="o">=</span> <span class="n">sg_obj</span><span class="o">.</span><span class="n">col_keys</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">r_keys</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">c_keys</span><span class="p">:</span>
+                    <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">sg_obj</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">]))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sg_collection</span><span class="p">,</span> <span class="n">SpectrogramDict</span><span class="p">):</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">sg_collection</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sg_collection</span><span class="p">,</span> <span class="p">(</span><span class="n">SpectrogramList</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">sg_list</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">sg_collection</span><span class="p">)</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Channel </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sg_list</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported collection type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sg_collection</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">num_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num_rows</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Determine frequency limits if not provided</span>
+    <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fmin</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">items</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">items</span><span class="p">)</span>
+
+    <span class="c1"># Crop frequencies</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">crop_frequencies</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
+
+    <span class="n">figsize</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;figsize&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">num_rows</span> <span class="o">*</span> <span class="mf">3.5</span><span class="p">))</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+        <span class="n">num_rows</span><span class="p">,</span>
+        <span class="mi">2</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span>
+        <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;width_ratios&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;wspace&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">num_rows</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="c1"># Import gwpy scales for auto-gps</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span> <span class="k">as</span> <span class="n">GwpyPlot</span>  <span class="c1"># noqa: F401 - registers auto-gps scale</span>
+        <span class="c1"># This import registers the &#39;auto-gps&#39; scale with matplotlib</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">sg</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+        <span class="c1"># 1. Percentile Summary Plot (Right)</span>
+        <span class="n">ax_asd</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">p50</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+        <span class="n">p10</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">p90</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+
+        <span class="c1"># Plot directly on the axis without creating extra figures</span>
+        <span class="n">ax_asd</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span>
+            <span class="n">p10</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">p10</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">p90</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;10</span><span class="si">%-90%</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">ax_asd</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">p50</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">p50</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;50%&quot;</span><span class="p">)</span>
+
+        <span class="n">ax_asd</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="n">ax_asd</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+
+        <span class="n">unit_str</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="s2">&quot;latex_inline&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Hz^{-1/2}&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;/\sqrt</span><span class="si">{Hz}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Auto-detect title based on unit</span>
+        <span class="n">unit_lower</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sg</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">name_lower</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;coherence&quot;</span> <span class="ow">in</span> <span class="n">name_lower</span> <span class="ow">or</span> <span class="n">sg</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">is_equivalent</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="n">summary_title</span> <span class="o">=</span> <span class="s2">&quot;Coherence&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;hz^{-1/2}&quot;</span> <span class="ow">in</span> <span class="n">unit_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;hz^-1/2&quot;</span> <span class="ow">in</span> <span class="n">unit_lower</span><span class="p">:</span>
+            <span class="n">summary_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Amplitude Spectral Density [</span><span class="si">{</span><span class="n">unit_str</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;hz^{-1}&quot;</span> <span class="ow">in</span> <span class="n">unit_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;/hz&quot;</span> <span class="ow">in</span> <span class="n">unit_lower</span><span class="p">:</span>
+            <span class="n">summary_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Power Spectral Density [</span><span class="si">{</span><span class="n">unit_str</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">summary_title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Percentile Summary [</span><span class="si">{</span><span class="n">unit_str</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="n">ax_asd</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">summary_title</span><span class="p">)</span>
+        <span class="c1"># Avoid warning by ensuring xlim &gt; 0 for log axis</span>
+        <span class="n">pos_freqs</span> <span class="o">=</span> <span class="n">p50</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">p50</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">fmin_plot</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">max</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">pos_freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pos_freqs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">else</span> <span class="p">(</span><span class="n">fmin</span> <span class="k">if</span> <span class="n">fmin</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1e-3</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">ax_asd</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">fmin_plot</span><span class="p">,</span> <span class="n">fmax</span><span class="p">)</span>
+        <span class="n">ax_asd</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="c1"># Only show x-label on bottom row</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">num_rows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ax_asd</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax_asd</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">clim</span> <span class="o">=</span> <span class="n">ax_asd</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+
+        <span class="c1"># 2. Spectrogram Plot (Left)</span>
+        <span class="n">ax_sg</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Ensure log norm for spectrogram</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogNorm</span>
+
+        <span class="n">vmin</span> <span class="o">=</span> <span class="n">clim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">clim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1e-25</span>
+        <span class="n">vmax</span> <span class="o">=</span> <span class="n">clim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">clim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">1e-15</span>
+
+        <span class="c1"># Plot spectrogram directly using pcolormesh</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">mesh</span> <span class="o">=</span> <span class="n">ax_sg</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+            <span class="n">times</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">sg</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">LogNorm</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">),</span> <span class="n">shading</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span>
+        <span class="p">)</span>
+        <span class="n">ax_sg</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">ax_sg</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">)</span>
+        <span class="n">ax_sg</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Apply auto-gps scale if available</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ax_sg</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;auto-gps&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># Fall back to default scale</span>
+
+        <span class="c1"># Only show x-label on bottom row - clear any auto-generated labels on non-bottom rows</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">num_rows</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># Let auto-gps handle the xlabel for bottom row</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax_sg</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">ax_sg</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Add colorbar</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax_sg</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">sg</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="s2">&quot;latex_inline&quot;</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span>
+            <span class="s2">&quot;ignore&quot;</span><span class="p">,</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This figure includes Axes that are not compatible with tight_layout&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,1379 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signal Processing &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Time (gwexpy.time)" href="time.html" />
+    <link rel="prev" title="gwexpy.segments.SegmentList" href="_autosummary/gwexpy.segments.SegmentList.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/time_utilities.html">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">API Reference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../classes.html">Class Index</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Signal Processing</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/reference/api/signal.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="signal-processing">
+<h1>Signal Processing<a class="headerlink" href="#signal-processing" title="Link to this heading"></a></h1>
+<p>Filters, window functions, Q-transform, and spectral estimation utilities.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.signal.</span></span><span class="sig-name descname"><span class="pre">WhiteningModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/signal/preprocessing/whitening.html#WhiteningModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Model resulting from whitening transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<em>ndarray</em>) – Mean of the original data.</p></li>
+<li><p><strong>W</strong> (<em>ndarray</em>) – Whitening matrix.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">inverse_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_w</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/signal/preprocessing/whitening.html#WhiteningModel.inverse_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Project whitened data back to original space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X_w</strong> (<em>ndarray</em><em> or </em><em>array-like</em>) – Whitened data with shape (n_samples, n_components).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>X_rec</strong> – Reconstructed data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.</span></span><span class="sig-name descname"><span class="pre">whiten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/signal/preprocessing/whitening.html#whiten"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Whiten an array using PCA or ZCA whitening.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>ndarray</em>) – Input data with shape (n_samples, n_features).</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Whitening method: ‘pca’ or ‘zca’. Default is ‘pca’.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'pca'</span></code>: Principal Component Analysis whitening. Projects data onto
+principal components and scales to unit variance. The output may have
+a different orientation relative to the original feature space.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'zca'</span></code>: Zero-phase Component Analysis whitening (also known as
+Mahalanobis whitening). The whitened data maintains maximum correlation
+with the original data while achieving decorrelation. This preserves
+the original axes alignment better than PCA.</p></li>
+</ul>
+</p></li>
+<li><p><strong>eps</strong> (<em>float</em><em> or </em><em>str</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Small constant added to eigenvalues to avoid division by zero.
+If None or ‘auto’ (default), the value is determined from data variance.</p></li>
+<li><p><strong>n_components</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of components to keep. If None, keep all components.
+For PCA, reduces dimensionality. For ZCA, reduces dimensionality but
+loses the channel-preserving property, and a warning is issued.</p></li>
+<li><p><strong>return_model</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, return (X_whitened, model). If False, return only X_whitened.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_whitened</strong> (<em>ndarray</em>) – Whitened data with shape (n_samples, n_components) or (n_samples, n_features)
+if n_components is None.</p></li>
+<li><p><strong>model</strong> (<em>WhiteningModel, optional</em>) – Model for inverse transformation (if return_model=True).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Both PCA and ZCA whitening produce data with approximately identity covariance
+matrix (assuming sufficient samples). The difference is in the rotation:</p>
+<ul class="simple">
+<li><p>PCA: <code class="docutils literal notranslate"><span class="pre">W</span> <span class="pre">=</span> <span class="pre">S^(-1/2)</span> <span class="pre">&#64;</span> <span class="pre">U^T</span></code> where U and S are from SVD of covariance matrix.</p></li>
+<li><p>ZCA: <code class="docutils literal notranslate"><span class="pre">W</span> <span class="pre">=</span> <span class="pre">U</span> <span class="pre">&#64;</span> <span class="pre">S^(-1/2)</span> <span class="pre">&#64;</span> <span class="pre">U^T</span></code>, which applies the inverse rotation.</p></li>
+</ul>
+<p>The inverse_transform method uses the pseudo-inverse of the whitening matrix
+to project back to the original space.</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.signal.</span></span><span class="sig-name descname"><span class="pre">StandardizationModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/signal/preprocessing/standardization.html#StandardizationModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Model resulting from standardization transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<em>ndarray</em>) – Mean of the original data.</p></li>
+<li><p><strong>scale</strong> (<em>ndarray</em>) – Scale (std or MAD) of the original data.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em> or </em><em>str</em>) – Axis along which standardization was performed.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">inverse_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_std</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/signal/preprocessing/standardization.html#StandardizationModel.inverse_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Undo standardization: X = X_std * scale + mean</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X_std</strong> (<em>ndarray</em><em> or </em><em>array-like</em>) – Standardized data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>X</strong> – Original-scale data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.</span></span><span class="sig-name descname"><span class="pre">standardize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zscore'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/signal/preprocessing/standardization.html#standardize"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Standardize an array using z-score or robust standardization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>ndarray</em>) – Input data.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Standardization method: ‘zscore’ or ‘robust’ (alias: ‘mad’).
+Default is ‘zscore’.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'zscore'</span></code>: Uses mean and standard deviation: <code class="docutils literal notranslate"><span class="pre">(X</span> <span class="pre">-</span> <span class="pre">mean)</span> <span class="pre">/</span> <span class="pre">std</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'robust'</span></code> or <code class="docutils literal notranslate"><span class="pre">'mad'</span></code>: Uses median and MAD (median absolute deviation):
+<code class="docutils literal notranslate"><span class="pre">(X</span> <span class="pre">-</span> <span class="pre">median)</span> <span class="pre">/</span> <span class="pre">(1.4826</span> <span class="pre">*</span> <span class="pre">MAD)</span></code>. The constant 1.4826 is the reciprocal of
+the MAD of a standard normal distribution, which ensures that the resulting
+scale is equivalent to the standard deviation for Gaussian data.</p></li>
+</ul>
+</p></li>
+<li><p><strong>ddof</strong> (<em>int</em><em>, </em><em>optional</em>) – Delta degrees of freedom for std calculation. Default is 0.</p></li>
+<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – Axis along which to standardize. Default is -1.</p></li>
+<li><p><strong>return_model</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, return (X_standardized, model). If False, return only X_standardized.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X_standardized</strong> (<em>ndarray</em>) – Standardized data.</p></li>
+<li><p><strong>model</strong> (<em>StandardizationModel, optional</em>) – Model for inverse transformation (if return_model=True).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>NaN values are handled using <code class="docutils literal notranslate"><span class="pre">nanmean</span></code>/<code class="docutils literal notranslate"><span class="pre">nanstd</span></code> for zscore and
+<code class="docutils literal notranslate"><span class="pre">nanmedian</span></code> for robust methods, so NaN values in the input are ignored
+during computation but preserved in the output.</p>
+<p>If the scale (std or MAD) is zero, a value of 1.0 is used to avoid
+division by zero.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.</span></span><span class="sig-name descname"><span class="pre">impute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'interpolate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_gap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">nan</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/signal/preprocessing/imputation.html#impute"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Impute missing values in an array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>ndarray</em>) – 1D array with potential NaN values.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Imputation method: ‘interpolate’, ‘ffill’, ‘bfill’, ‘mean’, ‘median’.
+Default is ‘interpolate’.</p></li>
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of consecutive NaNs to fill. For ‘ffill’ and ‘bfill’,
+limits the forward/backward propagation. For ‘interpolate’, limits
+the number of consecutive NaNs that will be filled; any excess NaNs
+are restored to NaN after interpolation.</p></li>
+<li><p><strong>times</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Time array corresponding to values. Used for time-based interpolation
+and max_gap calculation. Must be 1D and strictly increasing.</p></li>
+<li><p><strong>max_gap</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum gap duration (in units of <code class="docutils literal notranslate"><span class="pre">times</span></code>) to fill. After
+interpolation, any NaN that was within a gap larger than this
+threshold is restored to NaN. This post-processing ensures that
+large temporal gaps are not bridged by interpolation.</p></li>
+<li><p><strong>fill_value</strong> (<em>float</em><em>, </em><em>optional</em>) – Value to use for edge NaNs that cannot be interpolated or propagated.
+Only applies when there are no valid values to propagate from.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>imputed</strong> – Array with imputed values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">max_gap</span></code> parameter works as follows:</p>
+<ol class="arabic simple">
+<li><p>First, standard interpolation is performed.</p></li>
+<li><p>Then, gaps in the original <code class="docutils literal notranslate"><span class="pre">times</span></code> array are identified.</p></li>
+<li><p>Any interpolated values within gaps exceeding <code class="docutils literal notranslate"><span class="pre">max_gap</span></code> are
+reverted to NaN.</p></li>
+</ol>
+<p>This “fill then restore” approach ensures that the interpolation
+algorithm can be applied uniformly while still respecting gap constraints.</p>
+<p>Similarly, <code class="docutils literal notranslate"><span class="pre">limit</span></code> for ‘interpolate’ method:</p>
+<ol class="arabic simple">
+<li><p>Interpolation fills all internal NaNs.</p></li>
+<li><p>Consecutive NaN runs longer than <code class="docutils literal notranslate"><span class="pre">limit</span></code> have their excess positions
+restored to NaN (forward direction).</p></li>
+</ol>
+</div>
+</dd></dl>
+
+<section id="filter-design">
+<h2>Filter Design<a class="headerlink" href="#filter-design" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">bandpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fhigh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fstop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">QuantityLike</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">QuantityLike</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gstop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'iir'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fir'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'iir'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'zpk'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ba'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sos'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'zpk'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FilterType</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#bandpass"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Design a band-pass filter for the given cutoff frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flow</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>) – Lower corner frequency of pass band.</p></li>
+<li><p><strong>fhigh</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>) – Upper corner frequency of pass band.</p></li>
+<li><p><strong>sample_rate</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>) – Sampling rate of target data.</p></li>
+<li><p><strong>fstop</strong> (<cite>tuple</cite> of <cite>float</cite>) – <cite>(low, high)</cite> edge-frequencies of stop band.</p></li>
+<li><p><strong>gpass</strong> (<cite>float</cite>) – The maximum loss in the passband (dB).</p></li>
+<li><p><strong>gstop</strong> (<cite>float</cite>) – The minimum attenuation in the stopband (dB).</p></li>
+<li><p><strong>type</strong> (<cite>str</cite>) – The filter type, either <code class="docutils literal notranslate"><span class="pre">'iir'</span></code> or <code class="docutils literal notranslate"><span class="pre">'fir'</span></code>.</p></li>
+<li><p><strong>output</strong> (<cite>str</cite>, optional, default: <code class="docutils literal notranslate"><span class="pre">'zpk'</span></code>) – The output format for an IIR filter,
+either <code class="docutils literal notranslate"><span class="pre">'zpk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ba'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'sos'</span></code>.</p></li>
+<li><p><strong>kwargs</strong> – Other keyword arguments are passed directly to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">iirdesign()</span></code> or <code class="xref py py-func docutils literal notranslate"><span class="pre">firwin()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The formatted filter.
+The output format for an IIR filter depends on the input arguments,
+default is a tuple of <cite>(zeros, poles, gain)</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>filter</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>By default a digital filter is returned, meaning the zeros and poles
+are given in the Z-domain in units of radians/sample.</p>
+</div>
+<p class="rubric">Examples</p>
+<p>To create a band-pass filter for 100-1000 Hz for 4096 Hz-sampled data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.signal.filter_design</span><span class="w"> </span><span class="kn">import</span> <span class="n">bandpass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bp</span> <span class="o">=</span> <span class="n">bandpass</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">4096</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To view the filter, you can use the <cite>~gwpy.plot.BodePlot</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">BodePlot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span> <span class="o">=</span> <span class="n">BodePlot</span><span class="p">(</span><span class="n">bp</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">4096</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">concatenate_zpks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">zpks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ZpkCompatible</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ZpkType</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#concatenate_zpks"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Concatenate a list of zero-pole-gain (ZPK) filters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*zpks</strong> – One or more zero-pole-gain format, each one should be a 3-<cite>tuple</cite>
+containing an array of zeros, an array of poles, and a gain <cite>float</cite>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>zeros</strong> (<cite>numpy.ndarray</cite>) – The concatenated array of zeros.</p></li>
+<li><p><strong>poles</strong> (<cite>numpy.ndarray</cite>) – The concatenated array of poles.</p></li>
+<li><p><strong>gain</strong> (<cite>float</cite>) – The overall gain.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Create a lowpass and a highpass filter, and combine them:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.signal.filter_design</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="n">highpass</span><span class="p">,</span> <span class="n">lowpass</span><span class="p">,</span> <span class="n">concatenate_zpks</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hp</span> <span class="o">=</span> <span class="n">highpass</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">4096</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lp</span> <span class="o">=</span> <span class="n">lowpass</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">4096</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zpk</span> <span class="o">=</span> <span class="n">concatenate_zpks</span><span class="p">(</span><span class="n">hp</span><span class="p">,</span> <span class="n">lp</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot the filter:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">BodePlot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span> <span class="o">=</span> <span class="n">BodePlot</span><span class="p">(</span><span class="n">zpk</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">4096</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">fir_from_transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transfer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Array1D</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ntaps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WindowLike</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hann'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncorner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#fir_from_transfer"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Design a Type II FIR filter given an arbitrary transfer function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transfer</strong> (<cite>numpy.ndarray</cite>) – Transfer function to start from, must have at least ten samples.</p></li>
+<li><p><strong>ntaps</strong> (<cite>int</cite>) – Number of taps in the final filter, must be an even number.</p></li>
+<li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – Window function to truncate with, see <cite>scipy.signal.get_window</cite>
+for details on acceptable formats.</p></li>
+<li><p><strong>ncorner</strong> (<cite>int</cite>, optional) – Number of extra samples to zero off at low frequency.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – A time domain FIR filter of length <cite>ntaps</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>numpy.ndarray</cite></p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>The final FIR filter will use <cite>~numpy.fft.rfft</cite> FFT normalisation.</p>
+<p>If <cite>ncorner</cite> is not <cite>None</cite>, then <cite>ncorner</cite> extra samples will be zeroed
+on the left as a hard highpass filter.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.remez</span></code></dt><dd><p>An alternative FIR filter design using the Remez exchange algorithm.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">frequency_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterCompatible</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NDArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UnitBase</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rad/s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_gain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#frequency_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Compute the frequency response of a filter at given frequencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filt</strong> (<cite>FilterCompatible</cite>) – Filter definition in one of the supported formats.</p></li>
+<li><p><strong>frequencies</strong> (<cite>numpy.ndarray</cite>) – Frequencies (in Hz) at which to compute the response.</p></li>
+<li><p><strong>analog</strong> (<cite>bool</cite>, optional) – Whether the filter is analogue (<cite>True</cite>) or digital (<cite>False</cite>).</p></li>
+<li><p><strong>sample_rate</strong> (<cite>astropy.units.Quantity</cite>-like, optional) – Sample rate of the digital data (only used if <cite>analog</cite> is <cite>False</cite>).</p></li>
+<li><p><strong>unit</strong> (<cite>str</cite>, optional) – For analogue ZPK filters, the units in which the zeros and poles are
+specified. Either <code class="docutils literal notranslate"><span class="pre">'Hz'</span></code> or <code class="docutils literal notranslate"><span class="pre">'rad/s'</span></code> (default).</p></li>
+<li><p><strong>normalize_gain</strong> (<cite>bool</cite>, optional) – <p>Whether to normalize the gain when converting from Hz to rad/s.</p>
+<ul>
+<li><p><cite>False</cite> (default):
+Multiply zeros/poles by -2π but leave gain unchanged.
+This matches the LIGO GDS <strong>‘f’ plane</strong> convention
+(<code class="docutils literal notranslate"><span class="pre">plane='f'</span></code> in <code class="docutils literal notranslate"><span class="pre">s2z()</span></code>).</p></li>
+<li><p><cite>True</cite>:
+Normalize gain to preserve frequency response magnitude.
+Gain is scaled by <span class="math notranslate nohighlight">\(|∏p_i/∏z_i| · (2π)^{(n_p - n_z)}\)</span>.
+Use this when your filter was designed with the transfer
+function <span class="math notranslate nohighlight">\(H(f) = k·∏(f-z_i)/∏(f-p_i)\)</span> in Hz.
+This matches the LIGO GDS <strong>‘n’ plane</strong> convention
+(<code class="docutils literal notranslate"><span class="pre">plane='n'</span></code> in <code class="docutils literal notranslate"><span class="pre">s2z()</span></code>).</p></li>
+</ul>
+<p>Only used for analogue filters in Hz (<code class="docutils literal notranslate"><span class="pre">analog=True,</span> <span class="pre">unit=&quot;Hz&quot;</span></code>).</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>frequencies</strong> (<cite>numpy.ndarray</cite>) – Frequencies at which the response was computed.
+If <code class="docutils literal notranslate"><span class="pre">analog=True,</span> <span class="pre">unit='rad/s'</span></code>, these are in rad/s, otherwise
+they are in Hz.</p></li>
+<li><p><strong>response</strong> (<cite>numpy.ndarray</cite>) – Frequency response of the filter at the given frequencies.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.freqs</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.freqz</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.freqz_sos</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.freqs_zpk</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.freqz_zpk</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">highpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fstop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gstop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'iir'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fir'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'iir'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'zpk'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ba'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sos'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'zpk'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FilterType</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#highpass"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Design a high-pass filter for the given cutoff frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>) – Corner frequency of high-pass filter.</p></li>
+<li><p><strong>sample_rate</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>) – Sampling rate of target data.</p></li>
+<li><p><strong>fstop</strong> (<cite>float</cite>) – Edge-frequency of stop-band.</p></li>
+<li><p><strong>gpass</strong> (<cite>float</cite>) – The maximum loss in the passband (dB)</p></li>
+<li><p><strong>gstop</strong> (<cite>float</cite>) – The minimum attenuation in the stopband (dB).</p></li>
+<li><p><strong>type</strong> (<cite>str</cite>) – The filter type, either <code class="docutils literal notranslate"><span class="pre">'iir'</span></code> or <code class="docutils literal notranslate"><span class="pre">'fir'</span></code>.</p></li>
+<li><p><strong>output</strong> (<cite>str</cite>, optional, default: <code class="docutils literal notranslate"><span class="pre">'zpk'</span></code>) – The output format for an IIR filter,
+either <code class="docutils literal notranslate"><span class="pre">'zpk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ba'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'sos'</span></code>.</p></li>
+<li><p><strong>kwargs</strong> – Other keyword arguments are passed directly to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">iirdesign()</span></code> or <code class="xref py py-func docutils literal notranslate"><span class="pre">firwin()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The formatted filter.
+The output format for an IIR filter depends on the input arguments,
+default is a tuple of <code class="docutils literal notranslate"><span class="pre">(zeros,</span> <span class="pre">poles,</span> <span class="pre">gain)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>filter</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>By default a digital filter is returned, meaning the zeros and poles
+are given in the Z-domain in units of radians/sample.</p>
+</div>
+<p class="rubric">Examples</p>
+<p>To create a high-pass filter at 100 Hz for 4096 Hz-sampled data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.signal.filter_design</span><span class="w"> </span><span class="kn">import</span> <span class="n">highpass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hp</span> <span class="o">=</span> <span class="n">highpass</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">4096</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To view the filter, you can use the <cite>~gwpy.plot.BodePlot</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">BodePlot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span> <span class="o">=</span> <span class="n">BodePlot</span><span class="p">(</span><span class="n">hp</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">4096</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">is_sos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#is_sos"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return <cite>True</cite> if <code class="docutils literal notranslate"><span class="pre">sos</span></code> looks like a SOS-format filter definition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issos</strong> – <cite>True</cite> if input argument looks like a 2D-array giving second-order
+sections.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>bool</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">is_zpk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zpktup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#is_zpk"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return <cite>True</cite> if <code class="docutils literal notranslate"><span class="pre">zpktup</span></code> looks like a ZPK-format filter definition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>iszpk</strong> – <cite>True</cite> if input argument looks like a 3-tuple giving arrays of
+zeros and poles, and a gain (<cite>float</cite>).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>bool</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">lowpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fstop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gstop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'iir'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'fir'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'iir'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'zpk'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ba'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sos'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'zpk'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FilterType</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#lowpass"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Design a low-pass filter for the given cutoff frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<cite>float</cite>) – Corner frequency of low-pass filter (Hertz).</p></li>
+<li><p><strong>sample_rate</strong> (<cite>float</cite>) – Sampling rate of target data (Hertz).</p></li>
+<li><p><strong>fstop</strong> (<cite>float</cite>, optional) – Edge-frequency of stop-band (Hertz).</p></li>
+<li><p><strong>gpass</strong> (<cite>float</cite>, optional, default: 2) – The maximum loss in the passband (dB).</p></li>
+<li><p><strong>gstop</strong> (<cite>float</cite>, optional, default: 30) – The minimum attenuation in the stopband (dB).</p></li>
+<li><p><strong>type</strong> (<cite>str</cite>, optional, default: <code class="docutils literal notranslate"><span class="pre">'iir'</span></code>) – The filter type, either <code class="docutils literal notranslate"><span class="pre">'iir'</span></code> or <code class="docutils literal notranslate"><span class="pre">'fir'</span></code>.</p></li>
+<li><p><strong>output</strong> (<cite>str</cite>, optional, default: <code class="docutils literal notranslate"><span class="pre">'zpk'</span></code>) – The output format for an IIR filter,
+either <code class="docutils literal notranslate"><span class="pre">'zpk'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ba'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'sos'</span></code>.</p></li>
+<li><p><strong>kwargs</strong> – Other keyword arguments are passed directly to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">iirdesign()</span></code> or <code class="xref py py-func docutils literal notranslate"><span class="pre">firwin()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The formatted filter.
+The output format for an IIR filter depends on the input arguments,
+default is a tuple of <code class="docutils literal notranslate"><span class="pre">(zeros,</span> <span class="pre">poles,</span> <span class="pre">gain)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>filter</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>By default a digital filter is returned, meaning the zeros and poles
+are given in the Z-domain in units of radians/sample.</p>
+</div>
+<p class="rubric">Examples</p>
+<p>To create a low-pass filter at 1000 Hz for 4096 Hz-sampled data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.signal.filter_design</span><span class="w"> </span><span class="kn">import</span> <span class="n">lowpass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lp</span> <span class="o">=</span> <span class="n">lowpass</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">4096</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To view the filter, you can use the <cite>~gwpy.plot.BodePlot</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">BodePlot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span> <span class="o">=</span> <span class="n">BodePlot</span><span class="p">(</span><span class="n">lp</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">4096</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">notch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'iir'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'iir'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'zpk'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ba'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sos'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'zpk'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IirFilterType</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#notch"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Design a ZPK notch filter for the given frequency and sampling rate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>) – Frequency (default in Hertz) at which to apply the notch.</p></li>
+<li><p><strong>sample_rate</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>) – Number of samples per second for <cite>TimeSeries</cite> to which this notch
+filter will be applied.</p></li>
+<li><p><strong>type</strong> (<cite>str</cite>, optional, default: ‘iir’) – Type of filter to apply, currently only ‘iir’ is supported.</p></li>
+<li><p><strong>output</strong> (<cite>str</cite>, optional, default: ‘zpk’) – Output format for notch.</p></li>
+<li><p><strong>kwargs</strong> – Other keyword arguments to pass to <cite>scipy.signal.iirdesign</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The formatted filter.
+The output format for an IIR filter depends on the input arguments,
+default is a tuple of <code class="docutils literal notranslate"><span class="pre">(zeros,</span> <span class="pre">poles,</span> <span class="pre">gain)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>filter</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.iirdesign</span></code></dt><dd><p>For details on the IIR filter design method and the output formats.</p>
+</dd>
+</dl>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>By default a digital filter is returned, meaning the zeros and poles
+are given in the Z-domain in units of radians/sample.</p>
+</div>
+<p class="rubric">Examples</p>
+<p>To create a low-pass filter at 1000 Hz for 4096 Hz-sampled data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.signal.filter_design</span><span class="w"> </span><span class="kn">import</span> <span class="n">notch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="n">notch</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">4096</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To view the filter, you can use the <cite>~gwpy.plot.BodePlot</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">BodePlot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span> <span class="o">=</span> <span class="n">BodePlot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">4096</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">parse_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterCompatible</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ba'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sos'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zpk'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">BAType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ZpkType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SosType</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#parse_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Parse arbitrary input args into a TF, ZPK, or SOS filter definition.</p>
+<p>No transformations are applied to the filter, it is simply unpacked
+into a standard form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filt</strong> (<cite>numpy.ndarray</cite> or <cite>tuple</cite>) – <p>Filter definition.
+Any of the following formats are supported:</p>
+<ul class="simple">
+<li><p>FIR taps as a 1D <cite>numpy.ndarray</cite></p></li>
+<li><p>IIR transfer function as a 2-tuple of 1D <cite>numpy.ndarray</cite></p></li>
+<li><p>IIR zero-pole-gain as a 3-tuple of 1D <cite>numpy.ndarray</cite> and a <cite>float</cite></p></li>
+<li><p>IIR second-order-sections as a 2D <cite>numpy.ndarray</cite></p></li>
+<li><p><cite>scipy.signal.lti</cite> or <cite>scipy.signal.dlti</cite> object</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>ftype</strong> (<cite>str</cite>) – Either <code class="docutils literal notranslate"><span class="pre">'ba'</span></code> <code class="docutils literal notranslate"><span class="pre">'zpk'</span></code> or <code class="docutils literal notranslate"><span class="pre">'sos'</span></code>.</p></li>
+<li><p><strong>filt</strong> (<cite>numpy.ndarray</cite> or <cite>tuple</cite>) – The filter components for the returned <code class="docutils literal notranslate"><span class="pre">ftype</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">'ba'</span></code>, a 2-tuple of numerator and denominator arrays.
+If <code class="docutils literal notranslate"><span class="pre">'zpk'</span></code>, a 3-tuple of zeros, poles, and gain.
+If <code class="docutils literal notranslate"><span class="pre">'sos'</span></code>, a 2D array of second-order sections.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">prepare_analog_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterCompatible</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UnitBase</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Hz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_gain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'ba'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'zpk'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sos'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">BAType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ZpkType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SosType</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#prepare_analog_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Prepare an analog filter by parsing and converting units.</p>
+<p>This handles:</p>
+<ol class="arabic simple">
+<li><p>Parsing filter specification</p></li>
+<li><p>Converting Hz → rad/s for ZPK filters (if unit=’Hz’)</p></li>
+<li><p>Applying gain normalization (if requested)</p></li>
+</ol>
+<p>Does NOT:</p>
+<ul class="simple">
+<li><p>Convert to digital</p></li>
+<li><p>Extract gain for SOS</p></li>
+<li><p>Apply prewarping</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filt</strong> (<em>filter specification</em>) – Filter as <code class="docutils literal notranslate"><span class="pre">(b,</span> <span class="pre">a)</span></code>, <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">p,</span> <span class="pre">k)</span></code>, sos array,
+or <cite>~scipy.signal.lti</cite> object.</p></li>
+<li><p><strong>unit</strong> (<cite>str</cite>, optional) – For analogue ZPK filters, the units in which the zeros and poles are
+specified. Either <code class="docutils literal notranslate"><span class="pre">'Hz'</span></code> or <code class="docutils literal notranslate"><span class="pre">'rad/s'</span></code> (default).</p></li>
+<li><p><strong>normalize_gain</strong> (<cite>bool</cite>, optional) – <p>Whether to normalize the gain when converting from Hz to rad/s.</p>
+<ul>
+<li><p><cite>False</cite> (default):
+Multiply zeros/poles by -2π but leave gain unchanged.
+This matches the LIGO GDS <strong>‘f’ plane</strong> convention
+(<code class="docutils literal notranslate"><span class="pre">plane='f'</span></code> in <code class="docutils literal notranslate"><span class="pre">s2z()</span></code>).</p></li>
+<li><p><cite>True</cite>:
+Normalize gain to preserve frequency response magnitude.
+Gain is scaled by <span class="math notranslate nohighlight">\(|∏p_i/∏z_i| · (2π)^{(n_p - n_z)}\)</span>.
+Use this when your filter was designed with the transfer
+function <span class="math notranslate nohighlight">\(H(f) = k·∏(f-z_i)/∏(f-p_i)\)</span> in Hz.
+This matches the LIGO GDS <strong>‘n’ plane</strong> convention
+(<code class="docutils literal notranslate"><span class="pre">plane='n'</span></code> in <code class="docutils literal notranslate"><span class="pre">s2z()</span></code>).</p></li>
+</ul>
+<p>Ignored when <cite>unit=’rad/s’</cite>.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>form</strong> (<cite>str</cite>) – Filter form: <code class="docutils literal notranslate"><span class="pre">'ba'</span></code>, <code class="docutils literal notranslate"><span class="pre">'zpk'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'sos'</span></code>.</p></li>
+<li><p><strong>filt</strong> (<cite>tuple</cite> or <cite>numpy.ndarray</cite>) – Filter coefficients in the identified form.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_digital_filter</span></code></dt><dd><p>Prepare filter for digital filtering with prewarping and gain extraction.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_filter</span></code></dt><dd><p>Parse filter specification without unit conversion.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.filter_design.</span></span><span class="sig-name descname"><span class="pre">prepare_digital_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterCompatible</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QuantityLike</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">UnitBase</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Hz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_gain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prewarp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'zpk'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'ba'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sos'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'zpk'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BAType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ZpkType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SosType</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/filter_design.html#prepare_digital_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Prepare a filter for digital filtering.</p>
+<p>This function parses the input filter specification, optionally converts
+an analog filter to digital using prewarping + bilinear transform,
+and returns the filter in the requested format.</p>
+<p>For incoming digital filters, this function basically does nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filt</strong> (<em>filter specification</em>) – <p>Filter as <code class="docutils literal notranslate"><span class="pre">(b,</span> <span class="pre">a)</span></code>, <code class="docutils literal notranslate"><span class="pre">(z,</span> <span class="pre">p,</span> <span class="pre">k)</span></code>, sos array,
+or <cite>~scipy.signal.lti</cite> object.</p>
+<p>For digital filters (<code class="docutils literal notranslate"><span class="pre">analog=False</span></code>), the input filter coefficients
+are assumed to already be in digital form (z-domain).</p>
+<p>For analog filters (<code class="docutils literal notranslate"><span class="pre">analog=True</span></code>), the input filter coefficients
+should be in the units specified by <code class="docutils literal notranslate"><span class="pre">unit</span></code> (default: Hz).</p>
+</p></li>
+<li><p><strong>analog</strong> (<cite>bool</cite>, optional) – When <cite>True</cite>, the input filter is analog and will be converted to
+digital using prewarping + bilinear transform (GDS method).
+When <cite>False</cite> (default), the input filter is already digital.</p></li>
+<li><p><strong>sample_rate</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – Sampling frequency (Hz) of the digital system.
+Required when <code class="docutils literal notranslate"><span class="pre">analog=True</span></code>.</p></li>
+<li><p><strong>unit</strong> (<cite>str</cite>, optional) – For analogue ZPK filters, the units in which the zeros and poles are
+specified. Either <code class="docutils literal notranslate"><span class="pre">'Hz'</span></code> or <code class="docutils literal notranslate"><span class="pre">'rad/s'</span></code> (default).</p></li>
+<li><p><strong>normalize_gain</strong> (<cite>bool</cite>, optional) – <p>Whether to normalize the gain when converting from Hz to rad/s.</p>
+<ul>
+<li><p><cite>False</cite> (default):
+Multiply zeros/poles by -2π but leave gain unchanged.
+This matches the LIGO GDS <strong>‘f’ plane</strong> convention
+(<code class="docutils literal notranslate"><span class="pre">plane='f'</span></code> in <code class="docutils literal notranslate"><span class="pre">s2z()</span></code>).</p></li>
+<li><p><cite>True</cite>:
+Normalize gain to preserve frequency response magnitude.
+Gain is scaled by <span class="math notranslate nohighlight">\(|∏p_i/∏z_i| · (2π)^{(n_p - n_z)}\)</span>.
+Use this when your filter was designed with the transfer
+function <span class="math notranslate nohighlight">\(H(f) = k·∏(f-z_i)/∏(f-p_i)\)</span> in Hz.
+This matches the LIGO GDS <strong>‘n’ plane</strong> convention
+(<code class="docutils literal notranslate"><span class="pre">plane='n'</span></code> in <code class="docutils literal notranslate"><span class="pre">s2z()</span></code>).</p></li>
+</ul>
+<p>Only used for analogue filters in Hz (<code class="docutils literal notranslate"><span class="pre">analog=True,</span> <span class="pre">unit=&quot;Hz&quot;</span></code>).</p>
+</p></li>
+<li><p><strong>prewarp</strong> (<cite>bool</cite>, optional) – If <cite>True</cite>, apply prewarping before bilinear transform (default).
+If <cite>False</cite>, skip prewarping (not recommended).
+Ignored when <code class="docutils literal notranslate"><span class="pre">analog=False</span></code>.</p></li>
+<li><p><strong>output</strong> (<cite>str</cite>, optional) – <p>Desired output filter form:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">'zpk'</span></code>: zero-pole-gain tuple (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'ba'</span></code>: numerator-denominator tuple</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'sos'</span></code>: second-order sections array with separated gain</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>filt_out</strong> – Filter coefficients in the requested form:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">output='ba'</span></code>: 2-tuple of (b, a) arrays</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output='zpk'</span></code>: 3-tuple of (zeros, poles, gain)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output='sos'</span></code>: 2-tuple of (sos_array, gain)</p></li>
+</ul>
+<p>For <code class="docutils literal notranslate"><span class="pre">output='sos'</span></code>, the returned SOS array has unit gain in all
+sections, and the overall gain is returned separately. This must be
+applied to the filter output: <code class="docutils literal notranslate"><span class="pre">filtered_data</span> <span class="pre">*</span> <span class="pre">gain</span></code>.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>tuple</cite></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">analog=True</span></code> but <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> is not provided.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_analog_filter</span></code></dt><dd><p>Prepare analog filter without digital conversion.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.sosfilt</span></code></dt><dd><p>Apply SOS filter to data.</p>
+</dd>
+</dl>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p><strong>Prewarping</strong></p>
+<p>Unlike <cite>scipy.signal.bilinear</cite> and <cite>scipy.signal.bilinear_zpk</cite> which
+do NOT perform prewarping, this function applies prewarping by default.
+Prewarping ensures the digital filter’s frequency response matches the
+analogue design at the pole/zero frequencies.</p>
+</div>
+<p class="rubric">Examples</p>
+<p>Prepare a digital filter from analog specification:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.signal.filter_design</span><span class="w"> </span><span class="kn">import</span> <span class="n">prepare_digital_filter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zpk</span> <span class="o">=</span> <span class="p">([</span><span class="mi">100</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">)</span>  <span class="c1"># 100 Hz zero, 10 Hz pole, gain 1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sos</span> <span class="o">=</span> <span class="n">prepare_digital_filter</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">zpk</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">analog</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">sample_rate</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;Hz&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">output</span><span class="o">=</span><span class="s1">&#39;sos&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Apply to data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filtered</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">sosfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="q-transform">
+<h2>Q-Transform<a class="headerlink" href="#q-transform" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.signal.qtransform.</span></span><span class="sig-name descname"><span class="pre">QGram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QPlane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">TimeSeries</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QGram"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Store tile energies over an irregularly gridded plane.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plane</strong> (<cite>QPlane</cite>) – The time-frequency plane over which to populate.</p></li>
+<li><p><strong>energies</strong> (<cite>list</cite> of <cite>TimeSeries</cite>) – A list of signal energies for each row of tiles.</p></li>
+<li><p><strong>search</strong> (<cite>~gwpy.segments.Segment</cite>) – Search window of interest to determine the loudest tile.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tres</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'&lt;default&gt;'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fres</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'&lt;default&gt;'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">logf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outseg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Spectrogram</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QGram.interpolate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Interpolate this <cite>QGram</cite> over a regularly-gridded spectrogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tres</strong> (<cite>float</cite>) – Desired time resolution (seconds) of output <cite>Spectrogram</cite>,
+default is <cite>abs(outseg) / 1000.</cite></p></li>
+<li><p><strong>fres</strong> (<cite>float</cite>, <cite>int</cite>, <cite>None</cite>) – Desired frequency resolution (Hertz) of output <cite>Spectrogram</cite>,
+or, if <code class="docutils literal notranslate"><span class="pre">logf=True</span></code>, the number of frequency samples;
+give <cite>None</cite> to skip this step and return the original resolution,
+default is 0.5 Hz or 500 frequency samples.</p></li>
+<li><p><strong>logf</strong> (<cite>bool</cite>) – Boolean switch to enable (<cite>True</cite>) or disable (<cite>False</cite>) use of
+log-sampled frequencies in the output <cite>Spectrogram</cite>.</p></li>
+<li><p><strong>outseg</strong> (<cite>~gwpy.segments.Segment</cite>) – GPS <cite>[start, stop)</cite> segment for output <cite>Spectrogram</cite>,
+default is the full duration of the input.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – Output <cite>Spectrogram</cite> of normalised Q energy.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~gwpy.spectrogram.Spectrogram</cite></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.interpolate</span></code></dt><dd><p>This method uses <cite>~scipy.interpolate.InterpolatedUnivariateSpline</cite> to cast all frequency rows to a common time-axis, and then <cite>~scipy.interpolate.interp2d</cite> to apply the desired frequency resolution across the band.</p>
+</dd>
+</dl>
+</div>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>This method will return a <cite>Spectrogram</cite> of dtype <code class="docutils literal notranslate"><span class="pre">float32</span></code> if
+<code class="docutils literal notranslate"><span class="pre">norm</span></code> is given, and <code class="docutils literal notranslate"><span class="pre">float64</span></code> otherwise.</p>
+<p>To optimize plot rendering with <cite>~matplotlib.axes.Axes.pcolormesh</cite>,
+the output <cite>~gwpy.spectrogram.Spectrogram</cite> can be given a log-sampled
+frequency axis by passing <cite>logf=True</cite> at runtime. The <cite>fres</cite> argument
+is then the number of points on the frequency axis. Note, this is
+incompatible with <cite>~matplotlib.axes.Axes.imshow</cite>.</p>
+<p>It is also highly recommended to use the <cite>outseg</cite> keyword argument
+when only a small window around a given GPS time is of interest.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snrthresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EventTable</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QGram.table"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Represent this <cite>QPlane</cite> as an <cite>EventTable</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>snrthresh</strong> (<cite>float</cite>) – Lower inclusive threshold on individual tile SNR to keep in the
+table, default: 5.5.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – A table of time-frequency tiles on this <cite>QPlane</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~gwpy.table.EventTable</cite></p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>Only tiles with signal energy greater than or equal to
+<cite>snrthresh ** 2 / 2</cite> will be stored in the output <cite>EventTable</cite>.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.signal.qtransform.</span></span><span class="sig-name descname"><span class="pre">QPlane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frange</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mismatch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QPlane"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QBase</span></code></p>
+<p>Iterable representation of a Q-transform plane.</p>
+<p>For a given Q, an array of frequencies can be iterated over, yielding
+a <cite>QTile</cite> each time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q</strong> (<cite>float</cite>) – The Q-value for this plane.</p></li>
+<li><p><strong>frange</strong> (<cite>tuple</cite> of <cite>float</cite>) – <code class="docutils literal notranslate"><span class="pre">(low,</span> <span class="pre">high)</span></code> range of frequencies for this plane.</p></li>
+<li><p><strong>duration</strong> (<cite>float</cite>) – The duration of the data to be Q-transformed.</p></li>
+<li><p><strong>sampling</strong> (<cite>float</cite>) – Sampling rate (in Hertz) of data to be Q-transformed.</p></li>
+<li><p><strong>mismatch</strong> (<cite>float</cite>) – Maximum fractional mismatch between neighbouring tiles.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">farray</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>Array of frequencies for the lower-edge of each frequency bin.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frequencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>Array of central frequencies for this <cite>QPlane</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fseries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FrequencySeries</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">LIGOTimeGPS</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Segment</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">QGram</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QPlane.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the energy <cite>QGram</cite> for the given <cite>fseries</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fseries</strong> (<cite>~gwpy.frequencyseries.FrequencySeries</cite>) – The complex FFT of a time-series data set.</p></li>
+<li><p><strong>norm</strong> (<cite>bool</cite>, <cite>str</cite>) – Normalize the energy of the output by the median (if <cite>True</cite> or
+<code class="docutils literal notranslate"><span class="pre">'median'</span></code>) or the <code class="docutils literal notranslate"><span class="pre">'mean'</span></code>, if <cite>False</cite> the output
+is the complex <cite>~numpy.fft.ifft</cite> output of the Q-tranform.</p></li>
+<li><p><strong>epoch</strong> (<cite>~gwpy.time.LIGOTimeGPS</cite>, <cite>float</cite>) – The epoch of these data, only used for metadata in the output
+<cite>TimeSeries</cite>, and not requires if the input <cite>fseries</cite> has the
+epoch populated.</p></li>
+<li><p><strong>search</strong> (<cite>~gwpy.segments.Segment</cite>) – Search window of interest to determine the loudest Q-plane.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>results</strong> – The complex energies of the Q-transform of the input <cite>fseries</cite>
+at each frequency.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>QGram</cite></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">QTile.transform</span></code></dt><dd><p>For details on the transform over a row of <cite>(Q, frequency)</cite> tiles.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">QGram</span></code></dt><dd><p>An object with energies populated over time-frequency tiles.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">whitening_duration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em></dt>
+<dd><p>The recommended data duration required for whitening.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.signal.qtransform.</span></span><span class="sig-name descname"><span class="pre">QTile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mismatch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QTile"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QBase</span></code></p>
+<p>Representation of a tile with fixed Q and frequency.</p>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bandwidth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em></dt>
+<dd><p>The bandwidth for tiles in this row.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_data_indices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QTile.get_data_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return the index array of interesting frequencies for this row.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_window</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QTile.get_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Generate the bi-square window for this row.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>window</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>numpy.ndarray</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ntiles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em></dt>
+<dd><p>The number of tiles in this row.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em></dt>
+<dd><p>The <cite>(left, right)</cite> padding required for the IFFT.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fseries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FrequencySeries</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">LIGOTimeGPS</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TimeSeries</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QTile.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the energy <cite>TimeSeries</cite> for the given fseries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fseries</strong> (<cite>~gwpy.frequencyseries.FrequencySeries</cite>) – The complex FFT of a time-series data set.</p></li>
+<li><p><strong>norm</strong> (<cite>bool</cite>, <cite>str</cite>) – Normalize the energy of the output by the median (if <cite>True</cite> or
+<code class="docutils literal notranslate"><span class="pre">'median'</span></code>) or the <code class="docutils literal notranslate"><span class="pre">'mean'</span></code>, if <cite>False</cite> the output
+is the energy (power) of the Q-tranform.</p></li>
+<li><p><strong>epoch</strong> (<cite>~gwpy.time.LIGOTimeGPS</cite>, <cite>float</cite>) – The epoch of these data, only used for metadata in the output
+<cite>TimeSeries</cite>, and not requires if the input <cite>fseries</cite> has the
+epoch populated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>energy</strong> – A <cite>TimeSeries</cite> of the energy from the Q-transform of
+this tile against the data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~gwpy.timeseries.TimeSeries</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">windowsize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em></dt>
+<dd><p>The size of the frequency-domain window for this row.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.signal.qtransform.</span></span><span class="sig-name descname"><span class="pre">QTiling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qrange</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(4,</span> <span class="pre">64)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frange</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">inf)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mismatch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QTiling"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QObject</span></code></p>
+<p>Iterable constructor of <cite>QPlane</cite> objects.</p>
+<p>For a given Q-range, each of the resulting <cite>QPlane</cite> objects can
+be iterated over.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>duration</strong> (<cite>float</cite>) – The duration of the data to be Q-transformed.</p></li>
+<li><p><strong>qrange</strong> (<cite>tuple</cite> of <cite>float</cite>) – <code class="docutils literal notranslate"><span class="pre">(low,</span> <span class="pre">high)</span></code> pair of Q extrema.</p></li>
+<li><p><strong>frange</strong> (<cite>tuple</cite> of <cite>float</cite>) – <code class="docutils literal notranslate"><span class="pre">(low,</span> <span class="pre">high)</span></code> pair of frequency extrema.</p></li>
+<li><p><strong>sampling</strong> (<cite>float</cite>) – Sampling rate (in Hertz) of data to be Q-transformed.</p></li>
+<li><p><strong>mismatch</strong> (<cite>float</cite>) – Maximum fractional mismatch between neighbouring tiles.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">qs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em></dt>
+<dd><p>Array of Q values for this <cite>QTiling</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fseries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FrequencySeries</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">QGram</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#QTiling.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Compute the time-frequency plane at fixed Q with the most significant tile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fseries</strong> (<cite>~gwpy.timeseries.FrequencySeries</cite>) – The complex FFT of a time-series data set.</p></li>
+<li><p><strong>kwargs</strong> – Other keyword arguments to pass to <cite>QPlane.transform</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>out</strong> (<cite>QGram</cite>) – Signal energies over the time-frequency plane containing the most
+significant tile.</p></li>
+<li><p><strong>far</strong> (<cite>float</cite>) – Crudely estimated false alarm rate (FAR) for the detected signal.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">QPlane.transform</span></code></dt><dd><p>Compute the Q-transform over a single time-frequency plane.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">whitening_duration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em></dt>
+<dd><p>The recommended data duration required for whitening.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.qtransform.</span></span><span class="sig-name descname"><span class="pre">q_scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TimeSeries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mismatch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qrange</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(4,</span> <span class="pre">64)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frange</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">inf)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">QGram</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/qtransform.html#q_scan"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Transform data by scanning over a <cite>QTiling</cite>.</p>
+<p>This utility is provided mainly to allow direct manipulation of the
+<cite>QTiling.transform</cite> output. Most users probably just want to use
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">q_transform()</span></code>, which wraps around this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<cite>~gwpy.timeseries.TimeSeries</cite> or <cite>ndarray</cite>) – The time- or frequency-domain input data.</p></li>
+<li><p><strong>mismatch</strong> (<cite>float</cite>) – Maximum allowed fractional mismatch between neighbouring tiles.</p></li>
+<li><p><strong>qrange</strong> (<cite>tuple</cite> of <cite>float</cite>) – <code class="docutils literal notranslate"><span class="pre">(low,</span> <span class="pre">high)</span></code> range of Qs to scan.</p></li>
+<li><p><strong>frange</strong> (<cite>tuple</cite> of <cite>float</cite>) – <code class="docutils literal notranslate"><span class="pre">(low,</span> <span class="pre">high)</span></code> range of frequencies to scan.</p></li>
+<li><p><strong>duration</strong> (<cite>float</cite>) – Duration (seconds) of input, required if <cite>data</cite> is not a <cite>TimeSeries</cite>.</p></li>
+<li><p><strong>sampling</strong> (<cite>float</cite>) – Sample rate (Hertz) of input, required if <cite>data</cite> is not a <cite>TimeSeries</cite>.</p></li>
+<li><p><strong>kwargs</strong> – Other keyword arguments to be passed to <code class="xref py py-meth docutils literal notranslate"><span class="pre">QTiling.transform()</span></code>,
+including <code class="docutils literal notranslate"><span class="pre">'epoch'</span></code> and <code class="docutils literal notranslate"><span class="pre">'search'</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>qgram</strong> (<cite>QGram</cite>) – The raw output of <code class="xref py py-meth docutils literal notranslate"><span class="pre">QTiling.transform()</span></code>.</p></li>
+<li><p><strong>far</strong> (<cite>float</cite>) – Expected false alarm rate (Hertz) of white Gaussian noise with the
+same peak energy and total duration as <cite>qgram</cite>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="window-functions">
+<h2>Window Functions<a class="headerlink" href="#window-functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.window.</span></span><span class="sig-name descname"><span class="pre">canonical_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/window.html#canonical_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Find the canonical name for the given window in scipy.signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<cite>str</cite>) – The name of the window you want.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>realname</strong> – The name of the window as implemented in <cite>scipy.signal.window</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>str</cite></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">name</span></code> cannot be resolved to a window function in <cite>scipy.signal</cite>.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.signal.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">canonical_name</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">canonical_name</span><span class="p">(</span><span class="s2">&quot;hann&quot;</span><span class="p">)</span>
+<span class="go">&#39;hann&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">canonical_name</span><span class="p">(</span><span class="s2">&quot;ksr&quot;</span><span class="p">)</span>
+<span class="go">&#39;kaiser&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.window.</span></span><span class="sig-name descname"><span class="pre">get_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WindowLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/window.html#get_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return a window of a given length and type.</p>
+<p>This is a thin wrapper around <cite>scipy.signal.get_window</cite> that handles
+pre-computed window arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window</strong> (<cite>str</cite>, <cite>float</cite>, <cite>tuple</cite>, <cite>numpy.ndarray</cite>) – The specification for the window.
+Anything accepted by <cite>scipy.signal.get_window</cite> or an
+array-like object that is already a window (for convenience).</p></li>
+<li><p><strong>Nx</strong> (<cite>int</cite>) – The size of the window.
+If <code class="docutils literal notranslate"><span class="pre">window</span></code> is an array, this size will be checked against the
+size of the array.</p></li>
+<li><p><strong>args</strong> – All other arguments are passed to <cite>scipy.signal.get_window</cite>.</p></li>
+<li><p><strong>kwargs</strong> – All other arguments are passed to <cite>scipy.signal.get_window</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>window</strong> – A 1-d window array with size <code class="docutils literal notranslate"><span class="pre">Nx</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>numpy.ndarray</cite></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an <code class="docutils literal notranslate"><span class="pre">window</span></code> is given an array that doesn’t have shape
+    matching <code class="docutils literal notranslate"><span class="pre">(Nx,)</span></code>.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.get_window</span></code></dt><dd><p>For details of available window types and valid arguments.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.window.</span></span><span class="sig-name descname"><span class="pre">planck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nleft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nright</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NDArray</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/window.html#planck"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return a Planck taper window.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 4.0.0: </span>This function is deprecated and will be removed in a future release.
+Use a different window function (e.g. <cite>~scipy.signal.windows.tukey</cite>)
+or implement your own version of the Planck window if needed.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<cite>int</cite>) – Number of samples in the output window.</p></li>
+<li><p><strong>nleft</strong> (<cite>int</cite>) – Number of samples to taper on the left, should be less than <cite>size/2</cite>.</p></li>
+<li><p><strong>nright</strong> (<cite>int</cite>) – Number of samples to taper on the right, should be less than <cite>size/2</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>w</strong> – The window, with the maximum value normalized to 1 and at least one
+end tapered smoothly to 0.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>ndarray</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>To taper 0.1 seconds on both ends of one second of data sampled at 2048 Hz:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.signal.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">planck</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">planck</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="n">nleft</span><span class="o">=</span><span class="mi">205</span><span class="p">,</span> <span class="n">nright</span><span class="o">=</span><span class="mi">205</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="rubric">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>McKechan, D.J.A., Robinson, C., and Sathyaprakash, B.S. (April
+2010). “A tapering window for time-domain templates and simulated
+signals in the detection of gravitational waves from coalescing
+compact binaries”. Classical and Quantum Gravity 27 (8).
+<code class="code doi docutils literal notranslate"><span class="pre">10.1088/0264-9381/27/8/084020</span></code></p>
+</aside>
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<p>Wikipedia, “Window function”,
+<a class="reference external" href="https://en.wikipedia.org/wiki/Window_function#Planck-taper_window">https://en.wikipedia.org/wiki/Window_function#Planck-taper_window</a></p>
+</aside>
+</aside>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.signal.window.</span></span><span class="sig-name descname"><span class="pre">recommended_overlap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/signal/window.html#recommended_overlap"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return the recommended fractional overlap for the given window.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">nfft</span></code> is given, the return is in samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<cite>str</cite>) – The name of the window you are using.</p></li>
+<li><p><strong>nfft</strong> (<cite>int</cite>) – The length of the window.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>rov</strong> – The recommended overlap (ROV) for the given window, in samples if
+<code class="docutils literal notranslate"><span class="pre">nfft</span></code> is given (<cite>int</cite>), otherwise fractional (<cite>float</cite>).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>float</cite>, <cite>int</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.signal.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">recommended_overlap</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recommended_overlap</span><span class="p">(</span><span class="s2">&quot;hann&quot;</span><span class="p">)</span>
+<span class="go">0.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recommended_overlap</span><span class="p">(</span><span class="s2">&quot;blackmanharris&quot;</span><span class="p">,</span> <span class="n">nfft</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+<span class="go">85</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="_autosummary/gwexpy.segments.SegmentList.html" class="btn btn-neutral float-left" title="gwexpy.segments.SegmentList" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="time.html" class="btn btn-neutral float-right" title="Time (gwexpy.time)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

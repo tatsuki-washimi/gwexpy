@@ -1,0 +1,500 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astrophysics Utilities &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Detector Utilities" href="detector.html" />
+    <link rel="prev" title="gwexpy.interop.root_" href="gwexpy.interop.root_.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/time_utilities.html">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">API Reference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../classes.html">Class Index</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Astrophysics Utilities</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/reference/api/astro.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="astrophysics-utilities">
+<h1>Astrophysics Utilities<a class="headerlink" href="#astrophysics-utilities" title="Link to this heading"></a></h1>
+<p>Astrophysics-related tools including binary inspiral range calculations.</p>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.astro.</span></span><span class="sig-name descname"><span class="pre">burst_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FrequencySeries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">500</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">units.Quantity</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/astro/range.html#burst_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the integrated GRB-like GW burst range from a strain PSD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psd</strong> (<cite>~gwpy.frequencyseries.FrequencySeries</cite>) – The instrumental power-spectral-density data.</p></li>
+<li><p><strong>snr</strong> (<cite>float</cite>, optional) – The signal-to-noise ratio for which to calculate range.</p></li>
+<li><p><strong>energy</strong> (<cite>float</cite>, optional) – The relative energy output of the GW burst.</p></li>
+<li><p><strong>fmin</strong> (<cite>float</cite>, optional) – The lower frequency cutoff of the burst range integral.</p></li>
+<li><p><strong>fmax</strong> (<cite>float</cite>, optional) – The upper frequency cutoff of the burst range integral.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>range</strong> – The GRB-like-burst sensitive range [Mpc (default)].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~astropy.units.Quantity</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Grab some data for LIGO-Livingston around GW150914 and generate a PSD</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hoft</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch_open_data</span><span class="p">(</span><span class="s2">&quot;H1&quot;</span><span class="p">,</span> <span class="mi">1126259446</span><span class="p">,</span> <span class="mi">1126259478</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hoff</span> <span class="o">=</span> <span class="n">hoft</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we can calculate the <code class="xref py py-func docutils literal notranslate"><span class="pre">burst_range()</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.astro</span><span class="w"> </span><span class="kn">import</span> <span class="n">burst_range</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">burst_range</span><span class="p">(</span><span class="n">hoff</span><span class="p">,</span> <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="go">42.5055584195 Mpc</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.astro.</span></span><span class="sig-name descname"><span class="pre">burst_range_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FrequencySeries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeries</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/astro/range.html#burst_range_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the frequency-dependent GW burst range from a strain PSD.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psd</strong> (<cite>~gwpy.frequencyseries.FrequencySeries</cite>) – The instrumental power-spectral-density data.</p></li>
+<li><p><strong>snr</strong> (<cite>float</cite>, optional) – The signal-to-noise ratio for which to calculate range.</p></li>
+<li><p><strong>energy</strong> (<cite>float</cite>, optional) – The relative energy output of the GW burst.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>rangespec</strong> – The burst range <cite>FrequencySeries</cite> [Mpc (default)].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~gwpy.frequencyseries.FrequencySeries</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.astro.</span></span><span class="sig-name descname"><span class="pre">inspiral_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FrequencySeries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">units.Quantity</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/astro/range.html#inspiral_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the cosmology-corrected inspiral sensitive distance.</p>
+<p>This method returns the distance (in megaparsecs) to which a compact
+binary inspiral with the given component masses would be detectable
+given the instrumental PSD. The calculation is defined in Belczynski
+et. al (2014):</p>
+<p><a class="reference external" href="https://dx.doi.org/10.1088/0004-637x/789/2/120">https://dx.doi.org/10.1088/0004-637x/789/2/120</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psd</strong> (<cite>~gwpy.frequencyseries.FrequencySeries</cite>) – The instrumental power-spectral-density data.</p></li>
+<li><p><strong>snr</strong> (<cite>float</cite>, optional) – The signal-to-noise ratio for which to calculate range.</p></li>
+<li><p><strong>mass1</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – The mass of the first binary component
+(<cite>float</cite> assumed in solar masses).</p></li>
+<li><p><strong>mass2</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – The mass of the second binary component
+(<cite>float</cite> assumed in solar masses).</p></li>
+<li><p><strong>fmin</strong> (<cite>float</cite>, optional) – The lower frequency cut-off of the integral, default: <cite>psd.df</cite>.</p></li>
+<li><p><strong>fmax</strong> (<cite>float</cite>, optional) – The maximum frequency limit of the integral, defaults to the rest-frame
+innermost stable circular orbit (ISCO) frequency.</p></li>
+<li><p><strong>horizon</strong> (<cite>bool</cite>, optional) – If <cite>True</cite>, return the maximal ‘horizon’ luminosity distance, otherwise
+return the angle-averaged comoving distance.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments to <cite>~inspiral_range.waveform.CBCWaveform</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>range</strong> – The calculated inspiral range [Mpc].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~astropy.units.Quantity</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Grab some data for LIGO-Livingston around GW150914 and generate a PSD:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hoft</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch_open_data</span><span class="p">(</span><span class="s2">&quot;H1&quot;</span><span class="p">,</span> <span class="mi">1126259446</span><span class="p">,</span> <span class="mi">1126259478</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hoff</span> <span class="o">=</span> <span class="n">hoft</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we can calculate the <code class="xref py py-func docutils literal notranslate"><span class="pre">inspiral_range()</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.astro</span><span class="w"> </span><span class="kn">import</span> <span class="n">inspiral_range</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">inspiral_range</span><span class="p">(</span><span class="n">hoff</span><span class="p">,</span> <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="go">70.4612102889 Mpc</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">sensemon_range</span></code></dt><dd><p>For the method based on <code class="code dcc docutils literal notranslate"><span class="pre">LIGO-T030276</span></code>, also known as LIGO SenseMonitor.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">inspiral-range</span></code></dt><dd><p>The package which does heavy lifting for waveform simulation and cosmology calculations.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.astro.</span></span><span class="sig-name descname"><span class="pre">inspiral_range_psd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FrequencySeries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.4</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeries</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/astro/range.html#inspiral_range_psd"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the cosmology-corrected inspiral sensitive distance PSD.</p>
+<p>This method returns the power spectral density (in <code class="docutils literal notranslate"><span class="pre">Mpc**2</span> <span class="pre">/</span> <span class="pre">Hz</span></code>) to
+which a compact binary inspiral with the given component masses would
+be detectable given the instrumental PSD. The calculation is defined in
+Belczynski et. al (2014):</p>
+<p><a class="reference external" href="https://dx.doi.org/10.1088/0004-637x/789/2/120">https://dx.doi.org/10.1088/0004-637x/789/2/120</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psd</strong> (<cite>~gwpy.frequencyseries.FrequencySeries</cite>) – The instrumental power-spectral-density data.</p></li>
+<li><p><strong>snr</strong> (<cite>float</cite>, optional) – The signal-to-noise ratio for which to calculate range.</p></li>
+<li><p><strong>mass1</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – The mass of the first binary component
+(<cite>float</cite> assumed in solar masses).</p></li>
+<li><p><strong>mass2</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – The mass of the second binary component
+(<cite>float</cite> assumed in solar masses).</p></li>
+<li><p><strong>horizon</strong> (<cite>bool</cite>, optional) – If <cite>True</cite>, return the maximal ‘horizon’ luminosity distance, otherwise
+return the angle-averaged comoving distance.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments to <cite>~inspiral_range.waveform.CBCWaveform</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>rspec</strong> – The calculated inspiral sensitivity PSD [Mpc^2 / Hz].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~gwpy.frequencyseries.FrequencySeries</cite></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">sensemon_range_psd</span></code></dt><dd><p>For the method based on <code class="code dcc docutils literal notranslate"><span class="pre">LIGO-T030276</span></code>, also known as LIGO SenseMonitor.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">inspiral-range</span></code></dt><dd><p>The package which does heavy lifting for waveform simulation and cosmology calculations.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.astro.</span></span><span class="sig-name descname"><span class="pre">range_spectrogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hoft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TimeSeries</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Spectrogram</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftlength</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hann'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'median'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nproc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">rangekwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Spectrogram</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/astro/range.html#range_spectrogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate the average range spectrogram (Mpc or Mpc^2 / Hz) from strain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hoft</strong> (<cite>~gwpy.timeseries.TimeSeries</cite>  or <cite>~gwpy.spectrogram.Spectrogram</cite>) – record of gravitational-wave strain output from a detector</p></li>
+<li><p><strong>stride</strong> (<cite>float</cite>, optional) – number of seconds in a single PSD (i.e., step size of spectrogram),
+required if <cite>hoft</cite> is an instance of <cite>TimeSeries</cite></p></li>
+<li><p><strong>fftlength</strong> (<cite>float</cite>, optional) – number of seconds in a single FFT</p></li>
+<li><p><strong>overlap</strong> (<cite>float</cite>, optional) – number of seconds of overlap between FFTs, defaults to the
+recommended overlap for the given window (if given), or 0</p></li>
+<li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – window function to apply to timeseries prior to FFT, see
+<code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+formats</p></li>
+<li><p><strong>method</strong> (<cite>str</cite>, optional) – FFT-averaging method, defaults to median averaging, see
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">spectrogram()</span></code> for
+more details</p></li>
+<li><p><strong>nproc</strong> (<cite>int</cite>, optional) – number of CPUs to use in parallel processing of FFTs, default: 1</p></li>
+<li><p><strong>fmin</strong> (<cite>float</cite>, optional) – low frequency cut-off (Hz), defaults to <cite>1/fftlength</cite></p></li>
+<li><p><strong>fmax</strong> (<cite>float</cite>, optional) – high frequency cut-off (Hz), defaults to Nyquist frequency of <cite>hoft</cite></p></li>
+<li><p><strong>range_func</strong> (<cite>callable</cite>, optional) – the function to call to generate the range for each stride,
+defaults to <code class="docutils literal notranslate"><span class="pre">inspiral_range</span></code> unless <code class="docutils literal notranslate"><span class="pre">energy</span></code> is given
+as a keyword argument to the range function</p></li>
+<li><p><strong>**rangekwargs</strong> (<cite>dict</cite>, optional) – additional keyword arguments to <code class="xref py py-func docutils literal notranslate"><span class="pre">burst_range_spectrum()</span></code> or
+<code class="xref py py-func docutils literal notranslate"><span class="pre">inspiral_range_psd()</span></code> (see “Notes” below), defaults to
+inspiral range with <cite>mass1 = mass2 = 1.4</cite> solar masses</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – time-frequency spectrogram of astrophysical range</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~gwpy.spectrogram.Spectrogram</cite></p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>This method is designed to show the contribution to a
+gravitational-wave detector’s sensitive range across frequency bins
+as a function of time. It supports the range to compact binary
+inspirals and to unmodelled GW bursts, each a class of transient
+event.</p>
+<p>If inspiral range is requested and <cite>fmax</cite> exceeds the frequency of the
+innermost stable circular orbit (ISCO), the output will extend only up
+to the latter.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwpy.timeseries.TimeSeries.spectrogram</span></code></dt><dd><p>for the underlying power spectral density estimator</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">inspiral_range_psd</span></code></dt><dd><p>for the function that computes inspiral range integrand</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">burst_range_spectrum</span></code></dt><dd><p>for the function that computes burst range integrand</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">range_timeseries</span></code></dt><dd><p>for <cite>TimeSeries</cite> trends of the astrophysical range</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.astro.</span></span><span class="sig-name descname"><span class="pre">range_timeseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hoft</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TimeSeries</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Spectrogram</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftlength</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hann'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'median'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nproc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">rangekwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TimeSeries</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/astro/range.html#range_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Estimate timeseries of astrophysical range (Mpc).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hoft</strong> (<cite>~gwpy.timeseries.TimeSeries</cite>, <cite>~gwpy.spectrogram.Spectrogram</cite>) – Detector (strain) data from which to estimate range.</p></li>
+<li><p><strong>stride</strong> (<cite>float</cite>, optional) – Desired step size (seconds) of range timeseries, required if
+<cite>hoft</cite> is an instance of <cite>TimeSeries</cite>.</p></li>
+<li><p><strong>fftlength</strong> (<cite>float</cite>, optional) – Number of seconds in a single FFT.</p></li>
+<li><p><strong>overlap</strong> (<cite>float</cite>, optional) – Number of seconds of overlap between FFTs, defaults to the
+recommended overlap for the given window (if given), or <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+<li><p><strong>window</strong> (<cite>str</cite>, <cite>numpy.ndarray</cite>, optional) – Window function to apply to timeseries prior to FFT, see
+<code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.signal.get_window()</span></code> for details on acceptable
+formats.</p></li>
+<li><p><strong>method</strong> (<cite>str</cite>, optional) – FFT-averaging method, defaults to median averaging, see
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">spectrogram()</span></code> for
+more details</p></li>
+<li><p><strong>nproc</strong> (<cite>int</cite>, optional) – number of CPUs to use in parallel processing of FFTs, default: 1</p></li>
+<li><p><strong>range_func</strong> (<cite>callable</cite>, optional) – the function to call to generate the range for each stride,
+defaults to <code class="docutils literal notranslate"><span class="pre">inspiral_range</span></code> unless <code class="docutils literal notranslate"><span class="pre">energy</span></code> is given
+as a keyword argument to the range function</p></li>
+<li><p><strong>**rangekwargs</strong> (<cite>dict</cite>, optional) – additional keyword arguments to <code class="xref py py-func docutils literal notranslate"><span class="pre">burst_range()</span></code> or
+<code class="xref py py-func docutils literal notranslate"><span class="pre">inspiral_range()</span></code> (see “Notes” below), defaults to
+inspiral range with <cite>mass1 = mass2 = 1.4</cite> solar masses</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> – timeseries trends of astrophysical range</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~gwpy.timeseries.TimeSeries</cite></p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>This method is designed to quantify a gravitational-wave detector’s
+sensitive range as a function of time. It supports the range to
+compact binary inspirals and to unmodelled GW bursts, each a class
+of transient event.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwpy.timeseries.TimeSeries.spectrogram</span></code></dt><dd><p>for the underlying power spectral density estimator</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">inspiral_range</span></code></dt><dd><p>for the function that computes inspiral range</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">burst_range</span></code></dt><dd><p>for the function that computes burst range</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">range_spectrogram</span></code></dt><dd><p>for a <cite>~gwpy.spectrogram.Spectrogram</cite> of the range integrand</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.astro.</span></span><span class="sig-name descname"><span class="pre">sensemon_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FrequencySeries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">units.Quantity</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/astro/range.html#sensemon_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Approximate the inspiral sensitive distance from a GW strain PSD.</p>
+<p>This method returns the distance (in megaparsecs) to which a compact
+binary inspiral with the given component masses would be detectable
+given the instrumental PSD. The calculation is as defined in:
+<code class="code dcc docutils literal notranslate"><span class="pre">LIGO-T030276</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psd</strong> (<cite>~gwpy.frequencyseries.FrequencySeries</cite>) – The instrumental power-spectral-density data</p></li>
+<li><p><strong>snr</strong> (<cite>float</cite>, optional) – The signal-to-noise ratio for which to calculate range.</p></li>
+<li><p><strong>mass1</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – The mass of the first binary component
+(<cite>float</cite> assumed in solar masses).</p></li>
+<li><p><strong>mass2</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – The mass of the second binary component
+(<cite>float</cite> assumed in solar masses).</p></li>
+<li><p><strong>fmin</strong> (<cite>float</cite>, optional) – The lower frequency cut-off of the integral, default: <cite>psd.df</cite>.</p></li>
+<li><p><strong>fmax</strong> (<cite>float</cite>, optional) – The maximum frequency limit of the integral, defaults to
+innermost stable circular orbit (ISCO) frequency</p></li>
+<li><p><strong>horizon</strong> (<cite>bool</cite>, optional) – If <cite>True</cite>, return the maximal ‘horizon’ sensitive distance, otherwise
+return the angle-averaged range.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>range</strong> – the calculated inspiral range [Mpc]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~astropy.units.Quantity</cite></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Grab some data for LIGO-Livingston around GW150914 and generate a PSD:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hoft</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">fetch_open_data</span><span class="p">(</span><span class="s2">&quot;H1&quot;</span><span class="p">,</span> <span class="mi">1126259446</span><span class="p">,</span> <span class="mi">1126259478</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hoff</span> <span class="o">=</span> <span class="n">hoft</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we can calculate the <code class="xref py py-func docutils literal notranslate"><span class="pre">sensemon_range()</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.astro</span><span class="w"> </span><span class="kn">import</span> <span class="n">sensemon_range</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">sensemon_range</span><span class="p">(</span><span class="n">hoff</span><span class="p">,</span> <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="go">70.4612102889 Mpc</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.astro.</span></span><span class="sig-name descname"><span class="pre">sensemon_range_psd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FrequencySeries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.4</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FrequencySeries</span></span></span><a class="reference internal" href="../../../../_modules/gwpy/astro/range.html#sensemon_range_psd"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Approximate the inspiral sensitive distance PSD from a GW strain PSD.</p>
+<p>This method returns the power spectral density (in <code class="docutils literal notranslate"><span class="pre">Mpc**2</span> <span class="pre">/</span> <span class="pre">Hz</span></code>) to
+which a compact binary inspiral with the given component masses would
+be detectable given the instrumental PSD. The calculation is defined in:
+<code class="code dcc docutils literal notranslate"><span class="pre">LIGO-T030276</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psd</strong> (<cite>~gwpy.frequencyseries.FrequencySeries</cite>) – The instrumental power-spectral-density data.</p></li>
+<li><p><strong>snr</strong> (<cite>float</cite>, optional) – The signal-to-noise ratio for which to calculate range.</p></li>
+<li><p><strong>mass1</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – The mass of the first binary component
+(<cite>float</cite> assumed in solar masses).</p></li>
+<li><p><strong>mass2</strong> (<cite>float</cite>, <cite>~astropy.units.Quantity</cite>, optional) – The mass of the second binary component
+(<cite>float</cite> assumed in solar masses).</p></li>
+<li><p><strong>horizon</strong> (<cite>bool</cite>, optional) – If <cite>True</cite>, return the maximal ‘horizon’ sensitive distance, otherwise
+return the angle-averaged range.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>rspec</strong> – The calculated inspiral sensitivity PSD [Mpc^2 / Hz].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~gwpy.frequencyseries.FrequencySeries</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwexpy.interop.root_.html" class="btn btn-neutral float-left" title="gwexpy.interop.root_" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="detector.html" class="btn btn-neutral float-right" title="Detector Utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

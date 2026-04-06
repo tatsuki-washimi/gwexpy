@@ -1,0 +1,513 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glitch Analysis: Q-Transform and Omega-Scan &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Glitch Analysis: Q-Transform and Omega-Scan</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_glitch_analysis.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_glitch_analysis.ipynb">Download the notebook (.ipynb)</a></p>
+</div>
+<section id="Glitch-Analysis:-Q-Transform-and-Omega-Scan">
+<h1>Glitch Analysis: Q-Transform and Omega-Scan<a class="headerlink" href="#Glitch-Analysis:-Q-Transform-and-Omega-Scan" title="Link to this heading"></a></h1>
+<p><strong>Glitches</strong> are short-duration, non-Gaussian noise transients that contaminate gravitational-wave data. The <strong>Q-transform</strong> (or Omega scan) is the standard time-frequency representation used to characterise and classify glitches at all major detector sites.</p>
+<p>The Q-transform tiles the time-frequency plane with constant-Q (constant bandwidth-to-frequency ratio) windows and measures the normalised energy in each tile. A glitch appears as a cluster of tiles with anomalously high SNR.</p>
+<p><strong>What this tutorial covers:</strong></p>
+<ol class="arabic simple">
+<li><p>Injecting synthetic glitches into a noise background</p></li>
+<li><p>Computing the Q-transform with <code class="docutils literal notranslate"><span class="pre">q_scan()</span></code> and <code class="docutils literal notranslate"><span class="pre">QTiling</span></code></p></li>
+<li><p>Visualising the time-frequency map (Omega scan)</p></li>
+<li><p>Extracting peak SNR, time, and frequency from <code class="docutils literal notranslate"><span class="pre">QGram</span></code></p></li>
+<li><p>Characterising glitch morphology (duration, bandwidth, Q)</p></li>
+</ol>
+<p><strong>Related tutorials:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">advanced_peak_detection.ipynb</span></code> — spectral line detection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">advanced_peak_tracking.ipynb</span></code> — tracking lines over time</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">case_bruco_advanced.ipynb</span></code> — coherence-based noise coupling</p></li>
+</ul>
+<section id="Setup">
+<h2>Setup<a class="headerlink" href="#Setup" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.signal.qtransform</span><span class="w"> </span><span class="kn">import</span> <span class="n">q_scan</span><span class="p">,</span> <span class="n">QTiling</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">kstest</span> <span class="k">as</span> <span class="n">_kstest</span><span class="p">,</span> <span class="n">rayleigh</span> <span class="k">as</span> <span class="n">_rayleigh</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_np</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">rayleigh_test</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;KS test of data against Rayleigh distribution.&quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_kstest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_rayleigh</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span><span class="o">.</span><span class="n">cdf</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="1.-Synthetic-Data-with-Injected-Glitches">
+<h2>1. Synthetic Data with Injected Glitches<a class="headerlink" href="#1.-Synthetic-Data-with-Injected-Glitches" title="Link to this heading"></a></h2>
+<p>We create a 4 s segment of KAGRA-like DARM noise with three injected glitches representative of common morphologies seen in practice:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Glitch</p></th>
+<th class="head"><p>Morphology</p></th>
+<th class="head"><p>Typical origin</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Blip</p></td>
+<td><p>Short broadband burst</p></td>
+<td><p>Unknown / scattered light</p></td>
+</tr>
+<tr class="row-odd"><td><p>Scattered light</p></td>
+<td><p>Arch-shaped frequency sweep</p></td>
+<td><p>Mirror motion + scattering</p></td>
+</tr>
+<tr class="row-even"><td><p>Koi fish</p></td>
+<td><p>Low-frequency with harmonic</p></td>
+<td><p>Suspension resonance</p></td>
+</tr>
+</tbody>
+</table>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs</span>   <span class="o">=</span> <span class="mf">4096.0</span>    <span class="c1"># sample rate [Hz]</span>
+<span class="n">T</span>    <span class="o">=</span> <span class="mf">4.0</span>       <span class="c1"># segment duration [s]</span>
+<span class="n">N</span>    <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span>
+<span class="n">t</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span>
+<span class="n">t0</span>   <span class="o">=</span> <span class="mi">1_300_000_000</span>
+<span class="n">rng</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+
+<span class="c1"># --- Gaussian noise coloured to LIGO-like O3 sensitivity ---</span>
+<span class="n">freqs_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">fs</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="c1"># Simplified ASD: f^{-2} below 30 Hz, flat above (units: normalised)</span>
+<span class="n">asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs_n</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">,</span> <span class="p">(</span><span class="mf">30.0</span> <span class="o">/</span> <span class="n">freqs_n</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">noise_fft</span> <span class="o">=</span> <span class="n">asd</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs_n</span><span class="p">)))</span>
+<span class="n">noise_fft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">],</span> <span class="n">noise_fft</span><span class="p">])</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">noise_fft</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+<span class="n">noise</span> <span class="o">/=</span> <span class="n">noise</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>   <span class="c1"># normalise to unit RMS</span>
+
+<span class="c1"># --- Glitch 1: Blip at t=1.0 s, ~100 Hz, Q~8 ---</span>
+<span class="n">t_blip</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">f_blip</span><span class="p">,</span> <span class="n">Q_blip</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">8.0</span>
+<span class="n">tau_blip</span> <span class="o">=</span> <span class="n">Q_blip</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f_blip</span><span class="p">)</span>
+<span class="n">envelope_blip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">t</span> <span class="o">-</span> <span class="n">t_blip</span><span class="p">)</span> <span class="o">/</span> <span class="n">tau_blip</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">glitch_blip</span> <span class="o">=</span> <span class="mf">15.0</span> <span class="o">*</span> <span class="n">envelope_blip</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_blip</span><span class="o">*</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">t_blip</span><span class="p">))</span>
+
+<span class="c1"># --- Glitch 2: Scattered-light arch at t=2.0–2.5 s ---</span>
+<span class="c1"># Frequency sweeps as f(t) = f0 * |sin(pi*t/P)|  (mirror pendulum)</span>
+<span class="n">t_sl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.8</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">f_sl</span> <span class="o">=</span> <span class="mf">50.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_sl</span> <span class="o">-</span> <span class="mf">1.8</span><span class="p">)</span> <span class="o">/</span> <span class="mf">0.8</span><span class="p">))</span>
+<span class="n">phi_sl</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">f_sl</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_sl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t_sl</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">fs</span>
+<span class="n">glitch_sl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">idx_sl</span> <span class="o">=</span> <span class="p">((</span><span class="n">t_sl</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">fs</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">idx_sl</span> <span class="o">=</span> <span class="n">idx_sl</span><span class="p">[(</span><span class="n">idx_sl</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">idx_sl</span> <span class="o">&lt;</span> <span class="n">N</span><span class="p">)]</span>
+<span class="n">glitch_sl</span><span class="p">[</span><span class="n">idx_sl</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">phi_sl</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">idx_sl</span><span class="p">)])]]</span> <span class="o">=</span> <span class="mf">12.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_sl</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">idx_sl</span><span class="p">)])</span>
+
+<span class="c1"># --- Glitch 3: Koi-fish (low-freq + harmonics) at t=3.0 s ---</span>
+<span class="n">t_koi</span> <span class="o">=</span> <span class="mf">3.0</span>
+<span class="n">f_koi</span><span class="p">,</span> <span class="n">tau_koi</span> <span class="o">=</span> <span class="mf">20.0</span><span class="p">,</span> <span class="mf">0.08</span>
+<span class="n">env_koi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">t</span> <span class="o">-</span> <span class="n">t_koi</span><span class="p">)</span> <span class="o">/</span> <span class="n">tau_koi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">glitch_koi</span> <span class="o">=</span> <span class="p">(</span><span class="mf">8.0</span> <span class="o">*</span> <span class="n">env_koi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f_koi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span>
+              <span class="mf">4.0</span> <span class="o">*</span> <span class="n">env_koi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">f_koi</span><span class="o">*</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span>
+              <span class="mf">2.0</span> <span class="o">*</span> <span class="n">env_koi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">3</span><span class="o">*</span><span class="n">f_koi</span><span class="o">*</span><span class="n">t</span><span class="p">))</span>
+
+<span class="n">signal</span> <span class="o">=</span> <span class="n">noise</span> <span class="o">+</span> <span class="n">glitch_blip</span> <span class="o">+</span> <span class="n">glitch_sl</span> <span class="o">+</span> <span class="n">glitch_koi</span>
+<span class="n">ts</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;K1:LSC-DARM_OUT_DQ&quot;</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">t_blip</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>   <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Blip&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">2.2</span><span class="p">,</span>    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Scattered light&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">t_koi</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span>  <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Koi fish&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Normalised strain&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;4 s DARM segment with injected glitches&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_glitch_analysis_4_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_glitch_analysis_4_0.png" />
+</div>
+</div>
+</section>
+<section id="2.-Q-Transform-(Omega-Scan)">
+<h2>2. Q-Transform (Omega Scan)<a class="headerlink" href="#2.-Q-Transform-(Omega-Scan)" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">q_scan()</span></code> searches over a range of Q values and returns the tile with the highest normalised energy together with the full <code class="docutils literal notranslate"><span class="pre">QGram</span></code> object for plotting.</p>
+<p>Key parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">qrange</span></code> — range of Q values to search (default: 4–64)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">frange</span></code> — frequency range in Hz</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mismatch</span></code> — fractional tile overlap (smaller = finer grid, slower)</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Whiten the data first (Q-transform assumes white noise for SNR normalisation)</span>
+<span class="n">ts_white</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">whiten</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Run Q-scan over the full segment</span>
+<span class="n">qgram</span><span class="p">,</span> <span class="n">far</span> <span class="o">=</span> <span class="n">q_scan</span><span class="p">(</span>
+    <span class="n">ts_white</span><span class="p">,</span>
+    <span class="n">qrange</span>   <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+    <span class="n">frange</span>   <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1200</span><span class="p">),</span>
+    <span class="n">mismatch</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Q-scan result:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Peak SNR      : </span><span class="si">{</span><span class="n">qgram</span><span class="o">.</span><span class="n">peak</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Peak time     : t0 + </span><span class="si">{</span><span class="n">qgram</span><span class="o">.</span><span class="n">peak</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">t0</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Peak frequency: </span><span class="si">{</span><span class="n">qgram</span><span class="o">.</span><span class="n">peak</span><span class="p">[</span><span class="s1">&#39;frequency&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Peak Q        : </span><span class="si">{</span><span class="n">qgram</span><span class="o">.</span><span class="n">peak</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Estimated FAR : </span><span class="si">{</span><span class="n">far</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Q-scan result:
+  Peak SNR      : 4996401.0
+  Peak time     : t0 + 1.000 s
+  Peak frequency: 99.0 Hz
+  Peak Q        : N/A
+  Estimated FAR : 0.00e+00 Hz
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+
+</pre></div></div>
+</div>
+</section>
+<section id="3.-Time-Frequency-Map-(Omega-Scan-Plot)">
+<h2>3. Time-Frequency Map (Omega Scan Plot)<a class="headerlink" href="#3.-Time-Frequency-Map-(Omega-Scan-Plot)" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">QGram.interpolate()</span></code> resamples the irregular Q tiles onto a regular time-frequency grid suitable for imshow.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Interpolate to a regular (time, freq) grid</span>
+<span class="c1"># duration and sampling control the output resolution</span>
+<span class="n">qscan_interp</span> <span class="o">=</span> <span class="n">qgram</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">fs</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+    <span class="n">qscan_interp</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
+    <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span>
+    <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s relative to epoch]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Omega Scan — 4 s DARM segment&quot;</span><span class="p">)</span>
+
+<span class="n">cb</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Normalised energy (SNR²)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Annotate glitch locations</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">t_blip</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>   <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Blip&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">2.2</span><span class="p">,</span>    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Scattered light&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">t_koi</span><span class="p">,</span>  <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lime&quot;</span><span class="p">,</span>   <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Koi fish&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_glitch_analysis_8_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_glitch_analysis_8_0.png" />
+</div>
+</div>
+</section>
+<section id="4.-Glitch-Characterisation-with-QTiling">
+<h2>4. Glitch Characterisation with QTiling<a class="headerlink" href="#4.-Glitch-Characterisation-with-QTiling" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">QTiling</span></code> lets us search a specific Q plane and extract glitch parameters (peak time, frequency, duration, bandwidth) for each candidate event.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Search around each expected glitch location</span>
+<span class="n">glitch_windows</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;Blip&quot;</span><span class="p">,</span>            <span class="mf">0.8</span><span class="p">,</span>  <span class="mf">1.2</span><span class="p">,</span>  <span class="mi">50</span><span class="p">,</span>  <span class="mi">500</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span>  <span class="mi">20</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">&quot;Scattered light&quot;</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span>  <span class="mf">2.7</span><span class="p">,</span>  <span class="mi">10</span><span class="p">,</span>  <span class="mi">200</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span>  <span class="mi">16</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">&quot;Koi fish&quot;</span><span class="p">,</span>        <span class="mf">2.8</span><span class="p">,</span>  <span class="mf">3.3</span><span class="p">,</span>  <span class="mi">10</span><span class="p">,</span>  <span class="mi">150</span><span class="p">,</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">64</span><span class="p">)),</span>
+<span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">t_lo</span><span class="p">,</span> <span class="n">t_hi</span><span class="p">,</span> <span class="n">f_lo</span><span class="p">,</span> <span class="n">f_hi</span><span class="p">,</span> <span class="n">qr</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">glitch_windows</span><span class="p">):</span>
+    <span class="c1"># Extract sub-segment</span>
+    <span class="n">i0</span><span class="p">,</span> <span class="n">i1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">t_lo</span><span class="o">*</span><span class="n">fs</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">t_hi</span><span class="o">*</span><span class="n">fs</span><span class="p">)</span>
+    <span class="n">ts_seg</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">ts_white</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">],</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="o">+</span><span class="n">t_lo</span><span class="p">,</span>
+                        <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">qg</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">q_scan</span><span class="p">(</span><span class="n">ts_seg</span><span class="p">,</span> <span class="n">qrange</span><span class="o">=</span><span class="n">qr</span><span class="p">,</span> <span class="n">frange</span><span class="o">=</span><span class="p">(</span><span class="n">f_lo</span><span class="p">,</span> <span class="n">f_hi</span><span class="p">),</span> <span class="n">mismatch</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+    <span class="n">qi</span> <span class="o">=</span> <span class="n">qg</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mf">2.0</span><span class="o">/</span><span class="n">fs</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">qi</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;inferno&quot;</span><span class="p">,</span>
+              <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">t_lo</span><span class="p">,</span> <span class="n">t_hi</span><span class="p">,</span> <span class="n">f_lo</span><span class="p">,</span> <span class="n">f_hi</span><span class="p">],</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s2">Peak SNR=</span><span class="si">{</span><span class="n">qg</span><span class="o">.</span><span class="n">peak</span><span class="p">[</span><span class="s1">&#39;energy&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, &quot;</span>
+                 <span class="sa">f</span><span class="s2">&quot;f=</span><span class="si">{</span><span class="n">qg</span><span class="o">.</span><span class="n">peak</span><span class="p">[</span><span class="s1">&#39;frequency&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Glitch Morphology Comparison&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_glitch_analysis_10_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_glitch_analysis_10_0.png" />
+</div>
+</div>
+</section>
+<section id="5.-Statistical-Significance-—-Rayleigh-Test">
+<h2>5. Statistical Significance — Rayleigh Test<a class="headerlink" href="#5.-Statistical-Significance-—-Rayleigh-Test" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">rayleigh_test</span></code> measures how non-Gaussian the time-frequency energy distribution is. A p-value below 0.01 in a quiet background suggests the data segment contains a significant non-Gaussian transient.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare a clean segment vs. a glitchy segment</span>
+<span class="n">ts_clean</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">noise</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;clean&quot;</span><span class="p">)</span>
+<span class="n">ts_clean_w</span> <span class="o">=</span> <span class="n">ts_clean</span><span class="o">.</span><span class="n">whiten</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">ts_glitch_w</span> <span class="o">=</span> <span class="n">ts_white</span>
+
+<span class="n">qg_clean</span><span class="p">,</span>  <span class="n">_</span> <span class="o">=</span> <span class="n">q_scan</span><span class="p">(</span><span class="n">ts_clean_w</span><span class="p">,</span>  <span class="n">qrange</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="n">frange</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">500</span><span class="p">))</span>
+<span class="n">qg_glitch</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">q_scan</span><span class="p">(</span><span class="n">ts_glitch_w</span><span class="p">,</span> <span class="n">qrange</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="n">frange</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">500</span><span class="p">))</span>
+
+<span class="c1"># Rayleigh test on normalised energies across tiles</span>
+<span class="c1"># (simulated as white chi-squared background)</span>
+<span class="c1"># interpolate QGram to regular grid first, then extract energy values</span>
+<span class="n">_qi_clean</span>  <span class="o">=</span> <span class="n">qg_clean</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">fs</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="n">_qi_glitch</span> <span class="o">=</span> <span class="n">qg_glitch</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mf">1.0</span><span class="o">/</span><span class="n">fs</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">)</span>
+<span class="n">energies_clean</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">_qi_clean</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span>  <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">energies_glitch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">_qi_glitch</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="n">r_clean</span>  <span class="o">=</span> <span class="n">rayleigh_test</span><span class="p">(</span><span class="n">energies_clean</span><span class="p">[</span><span class="n">energies_clean</span>  <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">r_glitch</span> <span class="o">=</span> <span class="n">rayleigh_test</span><span class="p">(</span><span class="n">energies_glitch</span><span class="p">[</span><span class="n">energies_glitch</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Clean segment  — Rayleigh statistic: </span><span class="si">{</span><span class="n">r_clean</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;p-value: </span><span class="si">{</span><span class="n">r_clean</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Glitchy segment — Rayleigh statistic: </span><span class="si">{</span><span class="n">r_glitch</span><span class="o">.</span><span class="n">statistic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;p-value: </span><span class="si">{</span><span class="n">r_glitch</span><span class="o">.</span><span class="n">pvalue</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">r_glitch</span><span class="o">.</span><span class="n">pvalue</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Non-Gaussian transient detected (p &lt; 0.01)&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Segment appears Gaussian at 1</span><span class="si">% le</span><span class="s2">vel&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Clean segment  — Rayleigh statistic: 0.4346, p-value: 0.0000
+Glitchy segment — Rayleigh statistic: 0.9220, p-value: 0.000000
+Non-Gaussian transient detected (p &lt; 0.01)
+</pre></div></div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Step</p></th>
+<th class="head"><p>API</p></th>
+<th class="head"><p>Output</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Whiten data</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">whiten(ts,</span> <span class="pre">fftlength,</span> <span class="pre">overlap)</span></code></p></td>
+<td><p>Whitened TimeSeries</p></td>
+</tr>
+<tr class="row-odd"><td><p>Q-scan</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">q_scan(ts,</span> <span class="pre">qrange,</span> <span class="pre">frange,</span> <span class="pre">mismatch)</span></code></p></td>
+<td><p>QGram, FAR</p></td>
+</tr>
+<tr class="row-even"><td><p>Plot Omega scan</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">qgram.interpolate(dt,</span> <span class="pre">df)</span></code></p></td>
+<td><p>2D energy array</p></td>
+</tr>
+<tr class="row-odd"><td><p>Glitch parameters</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">qgram.peak</span></code></p></td>
+<td><p>time, frequency, SNR, Q</p></td>
+</tr>
+<tr class="row-even"><td><p>Statistical test</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rayleigh_test(energies)</span></code></p></td>
+<td><p>statistic, p-value</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Glitch morphology guide:</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Frequency sweep</p></th>
+<th class="head"><p>Duration</p></th>
+<th class="head"><p>Q range</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Blip</p></td>
+<td><p>None</p></td>
+<td><p>&lt; 10 ms</p></td>
+<td><p>4–20</p></td>
+</tr>
+<tr class="row-odd"><td><p>Scattered light</p></td>
+<td><p>Arch / inverted arch</p></td>
+<td><p>0.1–1 s</p></td>
+<td><p>4–16</p></td>
+</tr>
+<tr class="row-even"><td><p>Koi fish</p></td>
+<td><p>Low-freq + harmonics</p></td>
+<td><p>50–200 ms</p></td>
+<td><p>16–64</p></td>
+</tr>
+<tr class="row-odd"><td><p>Whistle</p></td>
+<td><p>Monotone sweep</p></td>
+<td><p>0.1–2 s</p></td>
+<td><p>20–100</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Tip</strong>: For production glitch cataloguing, use <code class="docutils literal notranslate"><span class="pre">q_scan</span></code> with the default <code class="docutils literal notranslate"><span class="pre">qrange=(4,64)</span></code> and then manually inspect tiles with SNR &gt; 8.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

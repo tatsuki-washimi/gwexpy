@@ -1,0 +1,1038 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwpy.astro.range &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwpy.astro.range</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwpy.astro.range</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2014-2017 Louisiana State University</span>
+<span class="c1">#               2017-2025 Cardiff University</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of GWpy.</span>
+<span class="c1">#</span>
+<span class="c1"># GWpy is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># GWpy is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with GWpy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">&quot;&quot;&quot;Methods to calculate the sensitive distance.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">cast</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">constants</span><span class="p">,</span>
+    <span class="n">units</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">trapezoid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">interp1d</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">round_to_power</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">ParamSpec</span><span class="p">,</span>
+        <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">inspiral_range.waveform</span><span class="w"> </span><span class="kn">import</span> <span class="n">CBCWaveform</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+
+    <span class="n">P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">)</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Duncan Macleod &lt;duncan.macleod@ligo.org&gt;&quot;</span>
+<span class="n">__credits__</span> <span class="o">=</span> <span class="s2">&quot;Alex Urban &lt;alexander.urban@ligo.org&gt;&quot;</span>
+
+<span class="n">DEFAULT_FFT_METHOD</span> <span class="o">=</span> <span class="s2">&quot;median&quot;</span>
+
+<span class="n">PSD_UNIT</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">Hz</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_isco_frequency</span><span class="p">(</span>
+    <span class="n">mass1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">mass2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine the innermost stable circular orbit (ISCO) frequency.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mass1 : `float`</span>
+<span class="sd">        The mass (in solar masses) of the first binary component.</span>
+
+<span class="sd">    mass2 : `float`</span>
+<span class="sd">        The mass (in solar masses) of the second binary component.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fisco : `~astropy.units.Quantity`</span>
+<span class="sd">        Linear frequency (Hz) of the innermost stable circular orbit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mtotal</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">mass1</span> <span class="o">+</span> <span class="n">mass2</span><span class="p">,</span> <span class="s2">&quot;solMass&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;kg&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">constants</span><span class="o">.</span><span class="n">c</span> <span class="o">**</span> <span class="mi">3</span>
+        <span class="o">/</span> <span class="p">(</span><span class="n">constants</span><span class="o">.</span><span class="n">G</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">**</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">mtotal</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_spectrogram</span><span class="p">(</span>
+    <span class="n">hoft</span><span class="p">:</span> <span class="n">TimeSeries</span> <span class="o">|</span> <span class="n">Spectrogram</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that the input is a spectrogram, or compute one if compatible.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    hoft : `~gwpy.timeseries.TimeSeries` or `~gwpy.spectrogram.Spectrogram`</span>
+<span class="sd">        Record of gravitational-wave strain output from a detector.</span>
+
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments to</span>
+<span class="sd">        `~gwpy.timeseries.TimeSeries.spectrogram`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    hoft : `~gwpy.spectrogram.Spectrogram`</span>
+<span class="sd">        A time-frequency `Spectrogram` of the input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hoft</span><span class="p">,</span> <span class="n">Spectrogram</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hoft</span> <span class="o">=</span> <span class="n">hoft</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span>
+            <span class="ne">AttributeError</span><span class="p">,</span>  <span class="c1"># object doesn&#39;t have a `.spectrogram()` method</span>
+            <span class="ne">TypeError</span><span class="p">,</span>  <span class="c1"># something else went wrong</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;Could not produce a spectrogram from the input, please &quot;</span>
+                <span class="s2">&quot;pass an instance of gwpy.timeseries.TimeSeries or &quot;</span>
+                <span class="s2">&quot;gwpy.spectrogram.Spectrogram&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+    <span class="k">return</span> <span class="n">hoft</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_preformat_psd</span><span class="p">(</span>
+    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap a function to ensure that the incoming PSD has the right units.&quot;&quot;&quot;</span>
+
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decorated_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
+        <span class="n">psd</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;FrequencySeries&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># Force PSD to have the right units</span>
+        <span class="k">if</span> <span class="n">psd</span><span class="o">.</span><span class="n">unit</span> <span class="o">!=</span> <span class="n">PSD_UNIT</span><span class="p">:</span>
+            <span class="n">psd</span> <span class="o">=</span> <span class="n">psd</span><span class="o">.</span><span class="n">view</span><span class="p">()</span>
+            <span class="n">psd</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="n">PSD_UNIT</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">psd</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>  <span class="c1"># type: ignore[assignment]</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">decorated_func</span>
+
+
+<span class="c1"># -- SenseMon range ------------------</span>
+
+<div class="viewcode-block" id="sensemon_range_psd">
+<a class="viewcode-back" href="../../../web/en/reference/api/astro.html#gwexpy.astro.sensemon_range_psd">[docs]</a>
+<span class="nd">@_preformat_psd</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sensemon_range_psd</span><span class="p">(</span>
+    <span class="n">psd</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">snr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">mass1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="n">mass2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Approximate the inspiral sensitive distance PSD from a GW strain PSD.</span>
+
+<span class="sd">    This method returns the power spectral density (in ``Mpc**2 / Hz``) to</span>
+<span class="sd">    which a compact binary inspiral with the given component masses would</span>
+<span class="sd">    be detectable given the instrumental PSD. The calculation is defined in:</span>
+<span class="sd">    :dcc:`LIGO-T030276`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    psd : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">        The instrumental power-spectral-density data.</span>
+
+<span class="sd">    snr : `float`, optional</span>
+<span class="sd">        The signal-to-noise ratio for which to calculate range.</span>
+
+<span class="sd">    mass1 : `float`, `~astropy.units.Quantity`, optional</span>
+<span class="sd">        The mass of the first binary component</span>
+<span class="sd">        (`float` assumed in solar masses).</span>
+
+<span class="sd">    mass2 : `float`, `~astropy.units.Quantity`, optional</span>
+<span class="sd">        The mass of the second binary component</span>
+<span class="sd">        (`float` assumed in solar masses).</span>
+
+<span class="sd">    horizon : `bool`, optional</span>
+<span class="sd">        If `True`, return the maximal &#39;horizon&#39; sensitive distance, otherwise</span>
+<span class="sd">        return the angle-averaged range.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rspec : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">        The calculated inspiral sensitivity PSD [Mpc^2 / Hz].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">frange</span> <span class="o">=</span> <span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># compute total mass and chirp mass</span>
+    <span class="n">mass1</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">mass1</span><span class="p">,</span> <span class="s2">&quot;solMass&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;kg&quot;</span><span class="p">)</span>
+    <span class="n">mass2</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">mass2</span><span class="p">,</span> <span class="s2">&quot;solMass&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;kg&quot;</span><span class="p">)</span>
+    <span class="n">mtotal</span> <span class="o">=</span> <span class="n">mass1</span> <span class="o">+</span> <span class="n">mass2</span>
+    <span class="n">mchirp</span> <span class="o">=</span> <span class="p">(</span><span class="n">mass1</span> <span class="o">*</span> <span class="n">mass2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">3</span> <span class="o">/</span> <span class="mf">5.</span><span class="p">)</span> <span class="o">/</span> <span class="n">mtotal</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">5.</span><span class="p">)</span>
+    <span class="c1"># calculate integrand with pre-factor</span>
+    <span class="n">prefactor</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span>  <span class="c1"># numerator</span>
+            <span class="p">(</span><span class="mi">16</span> <span class="k">if</span> <span class="n">horizon</span> <span class="k">else</span> <span class="mf">1.77</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="o">*</span> <span class="mi">5</span>
+            <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">c</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="n">mchirp</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">G</span> <span class="o">/</span> <span class="n">constants</span><span class="o">.</span><span class="n">c</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">5</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># denominator</span>
+        <span class="o">/</span> <span class="p">(</span>
+            <span class="mi">96</span>
+            <span class="o">*</span> <span class="n">pi</span> <span class="o">**</span> <span class="p">(</span><span class="mi">4</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">)</span>
+            <span class="o">*</span> <span class="n">snr</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>  <span class="c1"># inspiral range PSD, avoiding DC value</span>
+        <span class="mi">1</span>
+        <span class="o">/</span> <span class="n">psd</span><span class="p">[</span><span class="n">frange</span><span class="p">]</span>
+        <span class="o">*</span> <span class="n">psd</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="n">frange</span><span class="p">]</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">7</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">)</span>
+        <span class="o">*</span> <span class="n">prefactor</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Mpc^2 / Hz&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="sensemon_range">
+<a class="viewcode-back" href="../../../web/en/reference/api/astro.html#gwexpy.astro.sensemon_range">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sensemon_range</span><span class="p">(</span>
+    <span class="n">psd</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">snr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">mass1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="n">mass2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Approximate the inspiral sensitive distance from a GW strain PSD.</span>
+
+<span class="sd">    This method returns the distance (in megaparsecs) to which a compact</span>
+<span class="sd">    binary inspiral with the given component masses would be detectable</span>
+<span class="sd">    given the instrumental PSD. The calculation is as defined in:</span>
+<span class="sd">    :dcc:`LIGO-T030276`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    psd : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">        The instrumental power-spectral-density data</span>
+
+<span class="sd">    snr : `float`, optional</span>
+<span class="sd">        The signal-to-noise ratio for which to calculate range.</span>
+
+<span class="sd">    mass1 : `float`, `~astropy.units.Quantity`, optional</span>
+<span class="sd">        The mass of the first binary component</span>
+<span class="sd">        (`float` assumed in solar masses).</span>
+
+<span class="sd">    mass2 : `float`, `~astropy.units.Quantity`, optional</span>
+<span class="sd">        The mass of the second binary component</span>
+<span class="sd">        (`float` assumed in solar masses).</span>
+
+<span class="sd">    fmin : `float`, optional</span>
+<span class="sd">        The lower frequency cut-off of the integral, default: `psd.df`.</span>
+
+<span class="sd">    fmax : `float`, optional</span>
+<span class="sd">        The maximum frequency limit of the integral, defaults to</span>
+<span class="sd">        innermost stable circular orbit (ISCO) frequency</span>
+
+<span class="sd">    horizon : `bool`, optional</span>
+<span class="sd">        If `True`, return the maximal &#39;horizon&#39; sensitive distance, otherwise</span>
+<span class="sd">        return the angle-averaged range.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    range : `~astropy.units.Quantity`</span>
+<span class="sd">        the calculated inspiral range [Mpc]</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Grab some data for LIGO-Livingston around GW150914 and generate a PSD:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.timeseries import TimeSeries</span>
+<span class="sd">    &gt;&gt;&gt; hoft = TimeSeries.fetch_open_data(&quot;H1&quot;, 1126259446, 1126259478)</span>
+<span class="sd">    &gt;&gt;&gt; hoff = hoft.psd(fftlength=4)</span>
+
+<span class="sd">    Now we can calculate the :func:`sensemon_range`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.astro import sensemon_range</span>
+<span class="sd">    &gt;&gt;&gt; r = sensemon_range(hoff, fmin: float = 30)</span>
+<span class="sd">    &gt;&gt;&gt; print(r)</span>
+<span class="sd">    70.4612102889 Mpc</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fisco</span> <span class="o">=</span> <span class="n">_get_isco_frequency</span><span class="p">(</span><span class="n">mass1</span><span class="p">,</span> <span class="n">mass2</span><span class="p">)</span>
+    <span class="c1"># format frequency limits</span>
+    <span class="n">fmin</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">fmin</span> <span class="ow">or</span> <span class="n">psd</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;Hz&quot;</span><span class="p">)</span>  <span class="c1"># avoid DC value</span>
+    <span class="n">fmax</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">fmax</span> <span class="ow">or</span> <span class="n">fisco</span><span class="p">,</span> <span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fmax</span> <span class="o">&gt;</span> <span class="n">fisco</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Upper frequency bound greater than </span><span class="si">{</span><span class="n">mass1</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">mass2</span><span class="si">}</span><span class="s2"> ISCO &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;frequency of </span><span class="si">{</span><span class="n">fisco</span><span class="si">}</span><span class="s2">, using ISCO&quot;</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">fmax</span> <span class="o">=</span> <span class="n">fisco</span>
+    <span class="c1"># integrate and return</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">psd</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+    <span class="n">frange</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span> <span class="o">&gt;=</span> <span class="n">fmin</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f</span> <span class="o">&lt;</span> <span class="n">fmax</span><span class="p">)</span>
+    <span class="n">integrand</span> <span class="o">=</span> <span class="n">sensemon_range_psd</span><span class="p">(</span>
+        <span class="n">psd</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span>
+        <span class="n">snr</span><span class="o">=</span><span class="n">snr</span><span class="p">,</span>
+        <span class="n">mass1</span><span class="o">=</span><span class="n">mass1</span><span class="p">,</span>
+        <span class="n">mass2</span><span class="o">=</span><span class="n">mass2</span><span class="p">,</span>
+        <span class="n">horizon</span><span class="o">=</span><span class="n">horizon</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span>
+        <span class="n">trapezoid</span><span class="p">(</span><span class="n">integrand</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">frange</span><span class="p">]),</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">integrand</span><span class="o">.</span><span class="n">unit</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">Hertz</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Mpc&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># -- inspiral range ------------------</span>
+
+<span class="n">MISSING_INSPIRAL_RANGE_MESSAGE</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;gwpy.astro&#39;s inspiral_range and inspiral_range_psd functions &quot;</span>
+    <span class="s2">&quot;require the extra package &#39;inspiral-range&#39; to provide &quot;</span>
+    <span class="s2">&quot;cosmologically-corrected distance calculations, please install &quot;</span>
+    <span class="s2">&quot;that package and try again, or install gwpy with the &#39;astro&#39; &quot;</span>
+    <span class="s2">&quot;extra via `python -m pip install gwpy[astro]`&quot;</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cbc_waveform</span><span class="p">(</span>
+    <span class="n">frequencies</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">m1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">m2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CBCWaveform</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a CBCWaveform.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">inspiral_range.waveform</span><span class="w"> </span><span class="kn">import</span> <span class="n">CBCWaveform</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">exc</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">; </span><span class="si">{</span><span class="n">MISSING_INSPIRAL_RANGE_MESSAGE</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,)</span>
+        <span class="k">raise</span>
+
+    <span class="k">return</span> <span class="n">CBCWaveform</span><span class="p">(</span>
+        <span class="n">frequencies</span><span class="p">,</span>
+        <span class="n">m1</span><span class="o">=</span><span class="n">m1</span><span class="p">,</span>
+        <span class="n">m2</span><span class="o">=</span><span class="n">m2</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="inspiral_range_psd">
+<a class="viewcode-back" href="../../../web/en/reference/api/astro.html#gwexpy.astro.inspiral_range_psd">[docs]</a>
+<span class="nd">@_preformat_psd</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inspiral_range_psd</span><span class="p">(</span>
+    <span class="n">psd</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">snr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">mass1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="n">mass2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the cosmology-corrected inspiral sensitive distance PSD.</span>
+
+<span class="sd">    This method returns the power spectral density (in ``Mpc**2 / Hz``) to</span>
+<span class="sd">    which a compact binary inspiral with the given component masses would</span>
+<span class="sd">    be detectable given the instrumental PSD. The calculation is defined in</span>
+<span class="sd">    Belczynski et. al (2014):</span>
+
+<span class="sd">    https://dx.doi.org/10.1088/0004-637x/789/2/120</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    psd : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">        The instrumental power-spectral-density data.</span>
+
+<span class="sd">    snr : `float`, optional</span>
+<span class="sd">        The signal-to-noise ratio for which to calculate range.</span>
+
+<span class="sd">    mass1 : `float`, `~astropy.units.Quantity`, optional</span>
+<span class="sd">        The mass of the first binary component</span>
+<span class="sd">        (`float` assumed in solar masses).</span>
+
+<span class="sd">    mass2 : `float`, `~astropy.units.Quantity`, optional</span>
+<span class="sd">        The mass of the second binary component</span>
+<span class="sd">        (`float` assumed in solar masses).</span>
+
+<span class="sd">    horizon : `bool`, optional</span>
+<span class="sd">        If `True`, return the maximal &#39;horizon&#39; luminosity distance, otherwise</span>
+<span class="sd">        return the angle-averaged comoving distance.</span>
+
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments to `~inspiral_range.waveform.CBCWaveform`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rspec : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">        The calculated inspiral sensitivity PSD [Mpc^2 / Hz].</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    sensemon_range_psd</span>
+<span class="sd">        For the method based on :dcc:`LIGO-T030276`, also known as LIGO SenseMonitor.</span>
+
+<span class="sd">    inspiral-range</span>
+<span class="sd">        The package which does heavy lifting for waveform simulation and</span>
+<span class="sd">        cosmology calculations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">inspiral_range</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">find_root_redshift</span><span class="p">,</span>
+            <span class="nb">range</span> <span class="k">as</span> <span class="n">range_func</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">exc</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">; </span><span class="si">{</span><span class="n">MISSING_INSPIRAL_RANGE_MESSAGE</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">psd</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">frange</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># generate a waveform for this system</span>
+    <span class="n">inspiral</span> <span class="o">=</span> <span class="n">_cbc_waveform</span><span class="p">(</span>
+        <span class="n">f</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span>
+        <span class="n">m1</span><span class="o">=</span><span class="n">mass1</span><span class="p">,</span>
+        <span class="n">m2</span><span class="o">=</span><span class="n">mass2</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># determine the detector horizon redshift</span>
+    <span class="n">z_hor</span> <span class="o">=</span> <span class="n">find_root_redshift</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">inspiral</span><span class="o">.</span><span class="n">SNR</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span> <span class="n">z</span><span class="p">)</span> <span class="o">-</span> <span class="n">snr</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">horizon</span><span class="p">:</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">inspiral</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">luminosity_distance</span><span class="p">(</span><span class="n">z_hor</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">range_func</span><span class="p">(</span>
+            <span class="n">f</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span>
+            <span class="n">psd</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span>
+            <span class="n">z_hor</span><span class="o">=</span><span class="n">z_hor</span><span class="p">,</span>
+            <span class="n">H</span><span class="o">=</span><span class="n">inspiral</span><span class="p">,</span>
+            <span class="n">detection_snr</span><span class="o">=</span><span class="n">snr</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># calculate the sensitive distance PSD</span>
+    <span class="p">(</span><span class="n">fz</span><span class="p">,</span> <span class="n">hz</span><span class="p">)</span> <span class="o">=</span> <span class="n">inspiral</span><span class="o">.</span><span class="n">z_scale</span><span class="p">(</span><span class="n">z_hor</span><span class="p">)</span>
+    <span class="n">hz</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span>
+        <span class="n">fz</span><span class="p">,</span>
+        <span class="n">hz</span><span class="p">,</span>
+        <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">fill_value</span><span class="o">=</span><span class="p">(</span><span class="n">hz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="p">)(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">psd</span><span class="p">)(</span>
+        <span class="mi">4</span>
+        <span class="o">*</span> <span class="p">(</span><span class="n">dist</span> <span class="o">/</span> <span class="n">snr</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="o">*</span> <span class="p">(</span><span class="n">hz</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">psd</span><span class="o">.</span><span class="n">value</span><span class="p">)[</span><span class="n">f</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="c1"># finalize properties and return</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">__array_finalize__</span><span class="p">(</span><span class="n">psd</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;Mpc^2 / Hz&quot;</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">f0</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">f</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+
+<div class="viewcode-block" id="inspiral_range">
+<a class="viewcode-back" href="../../../web/en/reference/api/astro.html#gwexpy.astro.inspiral_range">[docs]</a>
+<span class="nd">@_preformat_psd</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inspiral_range</span><span class="p">(</span>
+    <span class="n">psd</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">snr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">mass1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="n">mass2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">horizon</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the cosmology-corrected inspiral sensitive distance.</span>
+
+<span class="sd">    This method returns the distance (in megaparsecs) to which a compact</span>
+<span class="sd">    binary inspiral with the given component masses would be detectable</span>
+<span class="sd">    given the instrumental PSD. The calculation is defined in Belczynski</span>
+<span class="sd">    et. al (2014):</span>
+
+<span class="sd">    https://dx.doi.org/10.1088/0004-637x/789/2/120</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    psd : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">        The instrumental power-spectral-density data.</span>
+
+<span class="sd">    snr : `float`, optional</span>
+<span class="sd">        The signal-to-noise ratio for which to calculate range.</span>
+
+<span class="sd">    mass1 : `float`, `~astropy.units.Quantity`, optional</span>
+<span class="sd">        The mass of the first binary component</span>
+<span class="sd">        (`float` assumed in solar masses).</span>
+
+<span class="sd">    mass2 : `float`, `~astropy.units.Quantity`, optional</span>
+<span class="sd">        The mass of the second binary component</span>
+<span class="sd">        (`float` assumed in solar masses).</span>
+
+<span class="sd">    fmin : `float`, optional</span>
+<span class="sd">        The lower frequency cut-off of the integral, default: `psd.df`.</span>
+
+<span class="sd">    fmax : `float`, optional</span>
+<span class="sd">        The maximum frequency limit of the integral, defaults to the rest-frame</span>
+<span class="sd">        innermost stable circular orbit (ISCO) frequency.</span>
+
+<span class="sd">    horizon : `bool`, optional</span>
+<span class="sd">        If `True`, return the maximal &#39;horizon&#39; luminosity distance, otherwise</span>
+<span class="sd">        return the angle-averaged comoving distance.</span>
+
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments to `~inspiral_range.waveform.CBCWaveform`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    range : `~astropy.units.Quantity`</span>
+<span class="sd">        The calculated inspiral range [Mpc].</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Grab some data for LIGO-Livingston around GW150914 and generate a PSD:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.timeseries import TimeSeries</span>
+<span class="sd">    &gt;&gt;&gt; hoft = TimeSeries.fetch_open_data(&quot;H1&quot;, 1126259446, 1126259478)</span>
+<span class="sd">    &gt;&gt;&gt; hoff = hoft.psd(fftlength=4)</span>
+
+<span class="sd">    Now, we can calculate the :func:`inspiral_range`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.astro import inspiral_range</span>
+<span class="sd">    &gt;&gt;&gt; r = inspiral_range(hoff, fmin: float = 30)</span>
+<span class="sd">    &gt;&gt;&gt; print(r)</span>
+<span class="sd">    70.4612102889 Mpc</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    sensemon_range</span>
+<span class="sd">        For the method based on :dcc:`LIGO-T030276`, also known as LIGO SenseMonitor.</span>
+
+<span class="sd">    inspiral-range</span>
+<span class="sd">        The package which does heavy lifting for waveform simulation and</span>
+<span class="sd">        cosmology calculations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">inspiral_range</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">find_root_redshift</span><span class="p">,</span>
+            <span class="nb">range</span> <span class="k">as</span> <span class="n">range_func</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">exc</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">; </span><span class="si">{</span><span class="n">MISSING_INSPIRAL_RANGE_MESSAGE</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span>
+
+    <span class="c1"># format frequency limits</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">psd</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">fmin</span> <span class="o">=</span> <span class="n">fmin</span> <span class="ow">or</span> <span class="n">psd</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># avoid DC value</span>
+    <span class="n">fmax</span> <span class="o">=</span> <span class="n">fmax</span> <span class="ow">or</span> <span class="n">round_to_power</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">)</span>
+    <span class="n">frange</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span> <span class="o">&gt;=</span> <span class="n">fmin</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f</span> <span class="o">&lt;</span> <span class="n">fmax</span><span class="p">)</span>
+
+    <span class="c1"># generate a waveform for this system</span>
+    <span class="n">inspiral</span> <span class="o">=</span> <span class="n">_cbc_waveform</span><span class="p">(</span>
+        <span class="n">f</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span>
+        <span class="n">m1</span><span class="o">=</span><span class="n">mass1</span><span class="p">,</span>
+        <span class="n">m2</span><span class="o">=</span><span class="n">mass2</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># determine the detector horizon redshift</span>
+    <span class="n">z_hor</span> <span class="o">=</span> <span class="n">find_root_redshift</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">inspiral</span><span class="o">.</span><span class="n">SNR</span><span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">)</span> <span class="o">-</span> <span class="n">snr</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># return the sensitive distance metric</span>
+    <span class="k">if</span> <span class="n">horizon</span><span class="p">:</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">inspiral</span><span class="o">.</span><span class="n">cosmo</span><span class="o">.</span><span class="n">luminosity_distance</span><span class="p">(</span><span class="n">z_hor</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">range_func</span><span class="p">(</span>
+            <span class="n">f</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span>
+            <span class="n">psd</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span>
+            <span class="n">z_hor</span><span class="o">=</span><span class="n">z_hor</span><span class="p">,</span>
+            <span class="n">H</span><span class="o">=</span><span class="n">inspiral</span><span class="p">,</span>
+            <span class="n">detection_snr</span><span class="o">=</span><span class="n">snr</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Mpc&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># -- burst range ---------------------</span>
+
+<div class="viewcode-block" id="burst_range_spectrum">
+<a class="viewcode-back" href="../../../web/en/reference/api/astro.html#gwexpy.astro.burst_range_spectrum">[docs]</a>
+<span class="nd">@_preformat_psd</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">burst_range_spectrum</span><span class="p">(</span>
+    <span class="n">psd</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">snr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-2</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the frequency-dependent GW burst range from a strain PSD.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    psd : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">        The instrumental power-spectral-density data.</span>
+
+<span class="sd">    snr : `float`, optional</span>
+<span class="sd">        The signal-to-noise ratio for which to calculate range.</span>
+
+<span class="sd">    energy : `float`, optional</span>
+<span class="sd">        The relative energy output of the GW burst.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rangespec : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">        The burst range `FrequencySeries` [Mpc (default)].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">frange</span> <span class="o">=</span> <span class="p">(</span><span class="n">psd</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># calculate frequency dependent range in parsecs</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">constants</span><span class="o">.</span><span class="n">G</span>
+        <span class="o">*</span> <span class="n">energy</span>
+        <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">M_sun</span>
+        <span class="o">*</span> <span class="mf">0.4</span>
+        <span class="o">/</span> <span class="p">(</span><span class="n">pi</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">constants</span><span class="o">.</span><span class="n">c</span><span class="p">)</span>
+    <span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>  <span class="c1"># burst range spectrum, avoiding DC value</span>
+        <span class="n">psd</span><span class="p">[</span><span class="n">frange</span><span class="p">]</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+        <span class="o">*</span> <span class="n">a</span>
+        <span class="o">/</span> <span class="p">(</span><span class="n">snr</span> <span class="o">*</span> <span class="n">psd</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="n">frange</span><span class="p">])</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Mpc&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="burst_range">
+<a class="viewcode-back" href="../../../web/en/reference/api/astro.html#gwexpy.astro.burst_range">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">burst_range</span><span class="p">(</span>
+    <span class="n">psd</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">snr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-2</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the integrated GRB-like GW burst range from a strain PSD.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    psd : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">        The instrumental power-spectral-density data.</span>
+
+<span class="sd">    snr : `float`, optional</span>
+<span class="sd">        The signal-to-noise ratio for which to calculate range.</span>
+
+<span class="sd">    energy : `float`, optional</span>
+<span class="sd">        The relative energy output of the GW burst.</span>
+
+<span class="sd">    fmin : `float`, optional</span>
+<span class="sd">        The lower frequency cutoff of the burst range integral.</span>
+
+<span class="sd">    fmax : `float`, optional</span>
+<span class="sd">        The upper frequency cutoff of the burst range integral.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    range : `~astropy.units.Quantity`</span>
+<span class="sd">        The GRB-like-burst sensitive range [Mpc (default)].</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Grab some data for LIGO-Livingston around GW150914 and generate a PSD</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.timeseries import TimeSeries</span>
+<span class="sd">    &gt;&gt;&gt; hoft = TimeSeries.fetch_open_data(&quot;H1&quot;, 1126259446, 1126259478)</span>
+<span class="sd">    &gt;&gt;&gt; hoff = hoft.psd(fftlength=4)</span>
+
+<span class="sd">    Now we can calculate the :func:`burst_range`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.astro import burst_range</span>
+<span class="sd">    &gt;&gt;&gt; r = burst_range(hoff, fmin: float = 30)</span>
+<span class="sd">    &gt;&gt;&gt; print(r)</span>
+<span class="sd">    42.5055584195 Mpc</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">psd</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+    <span class="c1"># restrict integral</span>
+    <span class="n">fmin</span> <span class="o">=</span> <span class="n">fmin</span> <span class="ow">or</span> <span class="n">psd</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">fmax</span> <span class="o">=</span> <span class="n">fmax</span> <span class="ow">or</span> <span class="n">f</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">frange</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span> <span class="o">&gt;=</span> <span class="n">fmin</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f</span> <span class="o">&lt;</span> <span class="n">fmax</span><span class="p">)</span>
+    <span class="c1"># calculate integrand and integrate</span>
+    <span class="n">integrand</span> <span class="o">=</span> <span class="n">burst_range_spectrum</span><span class="p">(</span>
+        <span class="n">psd</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span>
+        <span class="n">snr</span><span class="o">=</span><span class="n">snr</span><span class="p">,</span>
+        <span class="n">energy</span><span class="o">=</span><span class="n">energy</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">**</span> <span class="mi">3</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">integrand</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">f</span><span class="p">[</span><span class="n">frange</span><span class="p">])</span>
+    <span class="c1"># normalize and return</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span>
+        <span class="n">out</span> <span class="o">/</span> <span class="p">(</span><span class="n">fmax</span> <span class="o">-</span> <span class="n">fmin</span><span class="p">),</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">integrand</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Mpc&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># -- timeseries/spectrogram wrappers -</span>
+
+<div class="viewcode-block" id="range_timeseries">
+<a class="viewcode-back" href="../../../web/en/reference/api/astro.html#gwexpy.astro.range_timeseries">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">range_timeseries</span><span class="p">(</span>
+    <span class="n">hoft</span><span class="p">:</span> <span class="n">TimeSeries</span> <span class="o">|</span> <span class="n">Spectrogram</span><span class="p">,</span>
+    <span class="n">stride</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEFAULT_FFT_METHOD</span><span class="p">,</span>
+    <span class="n">nproc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">range_func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">rangekwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate timeseries of astrophysical range (Mpc).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    hoft : `~gwpy.timeseries.TimeSeries`, `~gwpy.spectrogram.Spectrogram`</span>
+<span class="sd">        Detector (strain) data from which to estimate range.</span>
+
+<span class="sd">    stride : `float`, optional</span>
+<span class="sd">        Desired step size (seconds) of range timeseries, required if</span>
+<span class="sd">        `hoft` is an instance of `TimeSeries`.</span>
+
+<span class="sd">    fftlength : `float`, optional</span>
+<span class="sd">        Number of seconds in a single FFT.</span>
+
+<span class="sd">    overlap : `float`, optional</span>
+<span class="sd">        Number of seconds of overlap between FFTs, defaults to the</span>
+<span class="sd">        recommended overlap for the given window (if given), or ``0``.</span>
+
+<span class="sd">    window : `str`, `numpy.ndarray`, optional</span>
+<span class="sd">        Window function to apply to timeseries prior to FFT, see</span>
+<span class="sd">        :func:`scipy.signal.get_window` for details on acceptable</span>
+<span class="sd">        formats.</span>
+
+<span class="sd">    method : `str`, optional</span>
+<span class="sd">        FFT-averaging method, defaults to median averaging, see</span>
+<span class="sd">        :meth:`~gwpy.timeseries.TimeSeries.spectrogram` for</span>
+<span class="sd">        more details</span>
+
+<span class="sd">    nproc : `int`, optional</span>
+<span class="sd">        number of CPUs to use in parallel processing of FFTs, default: 1</span>
+
+<span class="sd">    range_func : `callable`, optional</span>
+<span class="sd">        the function to call to generate the range for each stride,</span>
+<span class="sd">        defaults to ``inspiral_range`` unless ``energy`` is given</span>
+<span class="sd">        as a keyword argument to the range function</span>
+
+<span class="sd">    **rangekwargs : `dict`, optional</span>
+<span class="sd">        additional keyword arguments to :func:`burst_range` or</span>
+<span class="sd">        :func:`inspiral_range` (see &quot;Notes&quot; below), defaults to</span>
+<span class="sd">        inspiral range with `mass1 = mass2 = 1.4` solar masses</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : `~gwpy.timeseries.TimeSeries`</span>
+<span class="sd">        timeseries trends of astrophysical range</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This method is designed to quantify a gravitational-wave detector&#39;s</span>
+<span class="sd">    sensitive range as a function of time. It supports the range to</span>
+<span class="sd">    compact binary inspirals and to unmodelled GW bursts, each a class</span>
+<span class="sd">    of transient event.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gwpy.timeseries.TimeSeries.spectrogram</span>
+<span class="sd">        for the underlying power spectral density estimator</span>
+<span class="sd">    inspiral_range</span>
+<span class="sd">        for the function that computes inspiral range</span>
+<span class="sd">    burst_range</span>
+<span class="sd">        for the function that computes burst range</span>
+<span class="sd">    range_spectrogram</span>
+<span class="sd">        for a `~gwpy.spectrogram.Spectrogram` of the range integrand</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hoft</span><span class="p">,</span> <span class="n">Spectrogram</span><span class="p">):</span>
+        <span class="n">hoft</span> <span class="o">=</span> <span class="n">_get_spectrogram</span><span class="p">(</span>
+            <span class="n">hoft</span><span class="p">,</span>
+            <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">nproc</span><span class="o">=</span><span class="n">nproc</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">rangekwargs</span> <span class="o">=</span> <span class="n">rangekwargs</span> <span class="ow">or</span> <span class="p">{</span>
+        <span class="s2">&quot;mass1&quot;</span><span class="p">:</span> <span class="mf">1.4</span><span class="p">,</span>
+        <span class="s2">&quot;mass2&quot;</span><span class="p">:</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">range_func</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;energy&quot;</span> <span class="ow">in</span> <span class="n">rangekwargs</span><span class="p">:</span>
+        <span class="n">range_func</span> <span class="o">=</span> <span class="n">burst_range</span>
+    <span class="k">elif</span> <span class="n">range_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">range_func</span> <span class="o">=</span> <span class="n">inspiral_range</span>
+
+    <span class="c1"># calculate the timeseries of range</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">range_func</span><span class="p">(</span><span class="n">psd</span><span class="p">,</span> <span class="o">**</span><span class="n">rangekwargs</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">psd</span> <span class="ow">in</span> <span class="n">hoft</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">__array_finalize__</span><span class="p">(</span><span class="n">hoft</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;Mpc&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+
+<div class="viewcode-block" id="range_spectrogram">
+<a class="viewcode-back" href="../../../web/en/reference/api/astro.html#gwexpy.astro.range_spectrogram">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">range_spectrogram</span><span class="p">(</span>
+    <span class="n">hoft</span><span class="p">:</span> <span class="n">TimeSeries</span> <span class="o">|</span> <span class="n">Spectrogram</span><span class="p">,</span>
+    <span class="n">stride</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEFAULT_FFT_METHOD</span><span class="p">,</span>
+    <span class="n">nproc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">range_func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">rangekwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the average range spectrogram (Mpc or Mpc^2 / Hz) from strain.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    hoft : `~gwpy.timeseries.TimeSeries`  or `~gwpy.spectrogram.Spectrogram`</span>
+<span class="sd">        record of gravitational-wave strain output from a detector</span>
+
+<span class="sd">    stride : `float`, optional</span>
+<span class="sd">        number of seconds in a single PSD (i.e., step size of spectrogram),</span>
+<span class="sd">        required if `hoft` is an instance of `TimeSeries`</span>
+
+<span class="sd">    fftlength : `float`, optional</span>
+<span class="sd">        number of seconds in a single FFT</span>
+
+<span class="sd">    overlap : `float`, optional</span>
+<span class="sd">        number of seconds of overlap between FFTs, defaults to the</span>
+<span class="sd">        recommended overlap for the given window (if given), or 0</span>
+
+<span class="sd">    window : `str`, `numpy.ndarray`, optional</span>
+<span class="sd">        window function to apply to timeseries prior to FFT, see</span>
+<span class="sd">        :func:`scipy.signal.get_window` for details on acceptable</span>
+<span class="sd">        formats</span>
+
+<span class="sd">    method : `str`, optional</span>
+<span class="sd">        FFT-averaging method, defaults to median averaging, see</span>
+<span class="sd">        :meth:`~gwpy.timeseries.TimeSeries.spectrogram` for</span>
+<span class="sd">        more details</span>
+
+<span class="sd">    nproc : `int`, optional</span>
+<span class="sd">        number of CPUs to use in parallel processing of FFTs, default: 1</span>
+
+<span class="sd">    fmin : `float`, optional</span>
+<span class="sd">        low frequency cut-off (Hz), defaults to `1/fftlength`</span>
+
+<span class="sd">    fmax : `float`, optional</span>
+<span class="sd">        high frequency cut-off (Hz), defaults to Nyquist frequency of `hoft`</span>
+
+<span class="sd">    range_func : `callable`, optional</span>
+<span class="sd">        the function to call to generate the range for each stride,</span>
+<span class="sd">        defaults to ``inspiral_range`` unless ``energy`` is given</span>
+<span class="sd">        as a keyword argument to the range function</span>
+
+<span class="sd">    **rangekwargs : `dict`, optional</span>
+<span class="sd">        additional keyword arguments to :func:`burst_range_spectrum` or</span>
+<span class="sd">        :func:`inspiral_range_psd` (see &quot;Notes&quot; below), defaults to</span>
+<span class="sd">        inspiral range with `mass1 = mass2 = 1.4` solar masses</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : `~gwpy.spectrogram.Spectrogram`</span>
+<span class="sd">        time-frequency spectrogram of astrophysical range</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This method is designed to show the contribution to a</span>
+<span class="sd">    gravitational-wave detector&#39;s sensitive range across frequency bins</span>
+<span class="sd">    as a function of time. It supports the range to compact binary</span>
+<span class="sd">    inspirals and to unmodelled GW bursts, each a class of transient</span>
+<span class="sd">    event.</span>
+
+<span class="sd">    If inspiral range is requested and `fmax` exceeds the frequency of the</span>
+<span class="sd">    innermost stable circular orbit (ISCO), the output will extend only up</span>
+<span class="sd">    to the latter.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gwpy.timeseries.TimeSeries.spectrogram</span>
+<span class="sd">        for the underlying power spectral density estimator</span>
+<span class="sd">    inspiral_range_psd</span>
+<span class="sd">        for the function that computes inspiral range integrand</span>
+<span class="sd">    burst_range_spectrum</span>
+<span class="sd">        for the function that computes burst range integrand</span>
+<span class="sd">    range_timeseries</span>
+<span class="sd">        for `TimeSeries` trends of the astrophysical range</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rangekwargs</span> <span class="o">=</span> <span class="n">rangekwargs</span> <span class="ow">or</span> <span class="p">{</span>
+        <span class="s2">&quot;mass1&quot;</span><span class="p">:</span> <span class="mf">1.4</span><span class="p">,</span>
+        <span class="s2">&quot;mass2&quot;</span><span class="p">:</span> <span class="mf">1.4</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">range_func</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;energy&quot;</span> <span class="ow">in</span> <span class="n">rangekwargs</span><span class="p">:</span>
+        <span class="n">range_func</span> <span class="o">=</span> <span class="n">burst_range_spectrum</span>
+    <span class="k">elif</span> <span class="n">range_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">range_func</span> <span class="o">=</span> <span class="n">inspiral_range_psd</span>
+    <span class="n">hoft</span> <span class="o">=</span> <span class="n">_get_spectrogram</span><span class="p">(</span>
+        <span class="n">hoft</span><span class="p">,</span>
+        <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+        <span class="n">nproc</span><span class="o">=</span><span class="n">nproc</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># set frequency limits</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">hoft</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+    <span class="n">fmin</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span>
+        <span class="n">rangekwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fmin&quot;</span><span class="p">,</span> <span class="n">hoft</span><span class="o">.</span><span class="n">df</span><span class="p">),</span>
+        <span class="s2">&quot;Hz&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fmax</span> <span class="o">=</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span>
+        <span class="n">rangekwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+            <span class="s2">&quot;fmax&quot;</span><span class="p">,</span>
+            <span class="n">round_to_power</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;Hz&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">frange</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span> <span class="o">&gt;=</span> <span class="n">fmin</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">f</span> <span class="o">&lt;</span> <span class="n">fmax</span><span class="p">)</span>
+    <span class="c1"># loop over time bins</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">range_func</span><span class="p">(</span><span class="n">psd</span><span class="p">[</span><span class="n">frange</span><span class="p">],</span> <span class="o">**</span><span class="n">rangekwargs</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">psd</span> <span class="ow">in</span> <span class="n">hoft</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="c1"># finalise output</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">__array_finalize__</span><span class="p">(</span><span class="n">hoft</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">override_unit</span><span class="p">(</span><span class="s2">&quot;Mpc&quot;</span> <span class="k">if</span> <span class="s2">&quot;energy&quot;</span> <span class="ow">in</span> <span class="n">rangekwargs</span> <span class="k">else</span> <span class="s2">&quot;Mpc^2 / Hz&quot;</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">f0</span> <span class="o">=</span> <span class="n">fmin</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,2060 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwpy.signal.filter_design &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwpy.signal.filter_design</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwpy.signal.filter_design</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2014-2017 Louisiana State University</span>
+<span class="c1">#               2017-2025 Cardiff University</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of GWpy.</span>
+<span class="c1">#</span>
+<span class="c1"># GWpy is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># GWpy is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with GWpy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">&quot;&quot;&quot;Analogue and digital filter design utilities.</span>
+
+<span class="sd">This module is mainly a wrapper around `scipy.signal` filter design,</span>
+<span class="sd">with convenience functions for common filter types, and support for</span>
+<span class="sd">LIGO-specific filter design conventions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">log10</span><span class="p">,</span>
+    <span class="n">pi</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">cast</span><span class="p">,</span>
+    <span class="n">overload</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Quantity</span><span class="p">,</span>
+    <span class="n">Unit</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">fft</span> <span class="k">as</span> <span class="n">npfft</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal.windows</span><span class="w"> </span><span class="kn">import</span> <span class="n">tukey</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_window</span>
+
+<span class="c1"># filter type definitions</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">Literal</span><span class="p">,</span>
+        <span class="n">TypeAlias</span><span class="p">,</span>
+        <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnitBase</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">astropy.units.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantityLike</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">ArrayLike</span><span class="p">,</span>
+        <span class="n">NDArray</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">Array1D</span><span class="p">,</span>
+        <span class="n">ArrayLike1D</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.window</span><span class="w"> </span><span class="kn">import</span> <span class="n">WindowLike</span>
+
+    <span class="n">TArray</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TArray&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Array1D</span><span class="p">)</span>
+
+    <span class="n">LinearTimeInvariant</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lti</span> <span class="o">|</span> <span class="n">signal</span><span class="o">.</span><span class="n">dlti</span>
+
+    <span class="c1"># FIR</span>
+    <span class="n">TapsType</span> <span class="o">=</span> <span class="n">Array1D</span>
+    <span class="c1"># IIR</span>
+    <span class="n">FilterTypeName</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;butter&quot;</span><span class="p">,</span> <span class="s2">&quot;cheby1&quot;</span><span class="p">,</span> <span class="s2">&quot;cheby2&quot;</span><span class="p">,</span> <span class="s2">&quot;ellip&quot;</span><span class="p">]</span>
+    <span class="n">SosType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">6</span><span class="p">]]]</span>
+    <span class="n">ZpkCompatible</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ArrayLike1D</span><span class="p">,</span> <span class="n">ArrayLike1D</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+    <span class="n">ZpkType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Array1D</span><span class="p">,</span> <span class="n">Array1D</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+    <span class="n">BAType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Array1D</span><span class="p">,</span> <span class="n">Array1D</span><span class="p">]</span>
+    <span class="n">IirFilterCompatible</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">SosType</span> <span class="o">|</span> <span class="n">ZpkCompatible</span> <span class="o">|</span> <span class="n">BAType</span>
+    <span class="n">IirFilterType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">SosType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">BAType</span>
+    <span class="c1"># generic</span>
+    <span class="n">FilterCompatible</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">TapsType</span> <span class="o">|</span> <span class="n">IirFilterCompatible</span> <span class="o">|</span> <span class="n">LinearTimeInvariant</span>
+    <span class="n">FilterType</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">TapsType</span> <span class="o">|</span> <span class="n">IirFilterType</span> <span class="o">|</span> <span class="n">LinearTimeInvariant</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Duncan Macleod &lt;duncan.macleod@ligo.org&gt;&quot;</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;concatenate_zpks&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fir_from_transfer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;frequency_response&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;highpass&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_sos&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_zpk&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lowpass&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;notch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;parse_filter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prepare_analog_filter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prepare_digital_filter&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">HERTZ</span> <span class="o">=</span> <span class="n">Unit</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+<span class="n">RAD_S</span> <span class="o">=</span> <span class="n">Unit</span><span class="p">(</span><span class="s2">&quot;rad/s&quot;</span><span class="p">)</span>
+
+<span class="n">TWO_PI</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span>
+
+<span class="c1"># All ZPK filters have three components</span>
+<span class="n">ZPK_NARGS</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1"># All SOS filters are 2D arrays with six coefficients per section</span>
+<span class="n">SOS_NDIM</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">SOS_NCOEFF</span> <span class="o">=</span> <span class="mi">6</span>
+
+
+<span class="c1"># -- Utilities -----------------------</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_as_float</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UnitBase</span> <span class="o">=</span> <span class="s2">&quot;Hz&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert input to a float in the given units.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Quantity</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_hertz</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UnitBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return `True` if ``unit`` represents Hertz.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Unit</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span> <span class="o">==</span> <span class="n">HERTZ</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_radians</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UnitBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return `True` if ``unit`` represents radians per second or sample.&quot;&quot;&quot;</span>
+    <span class="c1"># rad/sample isn&#39;t an astropy Unit, so check string manually</span>
+    <span class="k">if</span> <span class="n">unit</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;rad/s&quot;</span><span class="p">,</span> <span class="s2">&quot;rad/sample&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Unit</span><span class="p">(</span><span class="n">unit</span><span class="p">)</span> <span class="o">==</span> <span class="n">RAD_S</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="is_zpk">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.is_zpk">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_zpk</span><span class="p">(</span><span class="n">zpktup</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return `True` if ``zpktup`` looks like a ZPK-format filter definition.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    iszpk : `bool`</span>
+<span class="sd">        `True` if input argument looks like a 3-tuple giving arrays of</span>
+<span class="sd">        zeros and poles, and a gain (`float`).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="c1"># Input object is a length 3 tuple/list</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">zpktup</span><span class="p">,</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">zpktup</span><span class="p">)</span> <span class="o">==</span> <span class="n">ZPK_NARGS</span>
+        <span class="c1"># First two elements are 1D arrays/lists/tuples</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">zpktup</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;ArrayLike&quot;</span><span class="p">,</span> <span class="n">zpktup</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">zpktup</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="s2">&quot;ArrayLike&quot;</span><span class="p">,</span> <span class="n">zpktup</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="c1"># Third element is a float</span>
+        <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">zpktup</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="is_sos">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.is_sos">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_sos</span><span class="p">(</span><span class="n">sos</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return `True` if ``sos`` looks like a SOS-format filter definition.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    issos : `bool`</span>
+<span class="sd">        `True` if input argument looks like a 2D-array giving second-order</span>
+<span class="sd">        sections.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="nb">isinstance</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="n">sos</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="n">SOS_NDIM</span>
+        <span class="ow">and</span> <span class="n">sos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">SOS_NCOEFF</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="concatenate_zpks">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.concatenate_zpks">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">concatenate_zpks</span><span class="p">(</span><span class="o">*</span><span class="n">zpks</span><span class="p">:</span> <span class="n">ZpkCompatible</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ZpkType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Concatenate a list of zero-pole-gain (ZPK) filters.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    *zpks</span>
+<span class="sd">        One or more zero-pole-gain format, each one should be a 3-`tuple`</span>
+<span class="sd">        containing an array of zeros, an array of poles, and a gain `float`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    zeros : `numpy.ndarray`</span>
+<span class="sd">        The concatenated array of zeros.</span>
+<span class="sd">    poles : `numpy.ndarray`</span>
+<span class="sd">        The concatenated array of poles.</span>
+<span class="sd">    gain : `float`</span>
+<span class="sd">        The overall gain.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Create a lowpass and a highpass filter, and combine them:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.signal.filter_design import (</span>
+<span class="sd">    ...     highpass, lowpass, concatenate_zpks)</span>
+<span class="sd">    &gt;&gt;&gt; hp = highpass(100, 4096)</span>
+<span class="sd">    &gt;&gt;&gt; lp = lowpass(1000, 4096)</span>
+<span class="sd">    &gt;&gt;&gt; zpk = concatenate_zpks(hp, lp)</span>
+
+<span class="sd">    Plot the filter:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.plot import BodePlot</span>
+<span class="sd">    &gt;&gt;&gt; plot = BodePlot(zpk, sample_rate=4096)</span>
+<span class="sd">    &gt;&gt;&gt; plot.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">zeros</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">gains</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">zpks</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">zeros</span><span class="p">),</span>
+        <span class="n">numpy</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">poles</span><span class="p">),</span>
+        <span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="n">gains</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">num_taps</span><span class="p">(</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">transitionwidth</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the number of taps for an FIR filter with the given shape.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sample_rate : `float`</span>
+<span class="sd">        Sampling rate of target data.</span>
+
+<span class="sd">    transitionwidth : `float`</span>
+<span class="sd">        The width (in the same units as `sample_rate`) of the transition</span>
+<span class="sd">        from stop-band to pass-band.</span>
+
+<span class="sd">    gpass : `float`</span>
+<span class="sd">        The maximum loss in the passband (dB).</span>
+
+<span class="sd">    gstop : `float`</span>
+<span class="sd">        The minimum attenuation in the stopband (dB).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numtaps : `int`</span>
+<span class="sd">       The number of taps for an FIR filter.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Credit: http://dsp.stackexchange.com/a/31077/8223</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gpass</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">gpass</span> <span class="o">/</span> <span class="mf">10.</span><span class="p">)</span>
+    <span class="n">gstop</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="n">gstop</span> <span class="o">/</span> <span class="mf">10.</span><span class="p">)</span>
+    <span class="n">ntaps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+        <span class="mi">2</span> <span class="o">/</span> <span class="mf">3.</span>
+        <span class="o">*</span> <span class="n">log10</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">gpass</span> <span class="o">*</span> <span class="n">gstop</span><span class="p">))</span>
+        <span class="o">*</span> <span class="n">sample_rate</span>
+        <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">transitionwidth</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="c1"># highpass filters must have an odd number of taps</span>
+    <span class="k">if</span> <span class="n">transitionwidth</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ntaps</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ntaps</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">ntaps</span>
+
+
+<span class="c1"># -- Formatting / conversions --------</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_transform</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">BAType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">SosType</span><span class="p">,</span>
+    <span class="n">from_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">],</span>
+    <span class="n">to_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ZpkType</span><span class="p">:</span> <span class="o">...</span>
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_transform</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">BAType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">SosType</span><span class="p">,</span>
+    <span class="n">from_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">],</span>
+    <span class="n">to_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BAType</span><span class="p">:</span> <span class="o">...</span>
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_transform</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">BAType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">SosType</span><span class="p">,</span>
+    <span class="n">from_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">],</span>
+    <span class="n">to_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sos&quot;</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SosType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_transform</span><span class="p">(</span>  <span class="c1"># noqa: PLR0911</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">BAType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">SosType</span><span class="p">,</span>
+    <span class="n">from_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">],</span>
+    <span class="n">to_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">],</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BAType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">SosType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform a filter between different representations.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filt : `tuple` or `numpy.ndarray`</span>
+<span class="sd">        Filter definition in one of the supported formats.</span>
+
+<span class="sd">    from_ : `str`</span>
+<span class="sd">        Format of input filter definition.</span>
+<span class="sd">        One of: ``&#39;zpk&#39;``, ``&#39;ba&#39;``, ``&#39;sos&#39;``.</span>
+
+<span class="sd">    to_ : `str`</span>
+<span class="sd">        Format of output filter definition.</span>
+<span class="sd">        One of: ``&#39;zpk&#39;``, ``&#39;ba&#39;``, ``&#39;sos&#39;``.</span>
+
+<span class="sd">    kwargs</span>
+<span class="sd">        Additional keyword arguments passed to the underlying</span>
+<span class="sd">        `scipy.signal` conversion functions.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filt_converted : `tuple` or `numpy.ndarray`</span>
+<span class="sd">        Filter definition in the requested format.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `from_` or `to_` are not one of the supported formats.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    scipy.signal.sos2tf</span>
+<span class="sd">    scipy.signal.sos2zpk</span>
+<span class="sd">    scipy.signal.tf2sos</span>
+<span class="sd">    scipy.signal.tf2zpk</span>
+<span class="sd">    scipy.signal.zpk2sos</span>
+<span class="sd">    scipy.signal.zpk2tf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Null transformation</span>
+    <span class="k">if</span> <span class="n">from_</span> <span class="o">==</span> <span class="n">to_</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">filt</span>
+
+    <span class="k">if</span> <span class="n">to_</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span> <span class="ow">and</span> <span class="n">from_</span> <span class="o">==</span> <span class="s2">&quot;ba&quot;</span><span class="p">:</span>
+        <span class="n">filt</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;BAType&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">tf2zpk</span><span class="p">(</span><span class="o">*</span><span class="n">filt</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">to_</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span> <span class="ow">and</span> <span class="n">from_</span> <span class="o">==</span> <span class="s2">&quot;sos&quot;</span><span class="p">:</span>
+        <span class="n">filt</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;SosType&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">sos2zpk</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">to_</span> <span class="o">==</span> <span class="s2">&quot;ba&quot;</span> <span class="ow">and</span> <span class="n">from_</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span><span class="p">:</span>
+        <span class="n">filt</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;ZpkType&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">zpk2tf</span><span class="p">(</span><span class="o">*</span><span class="n">filt</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">to_</span> <span class="o">==</span> <span class="s2">&quot;ba&quot;</span> <span class="ow">and</span> <span class="n">from_</span> <span class="o">==</span> <span class="s2">&quot;sos&quot;</span><span class="p">:</span>
+        <span class="n">filt</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;SosType&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">sos2tf</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">to_</span> <span class="o">==</span> <span class="s2">&quot;sos&quot;</span> <span class="ow">and</span> <span class="n">from_</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span><span class="p">:</span>
+        <span class="n">filt</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;ZpkType&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">zpk2sos</span><span class="p">(</span><span class="o">*</span><span class="n">filt</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">to_</span> <span class="o">==</span> <span class="s2">&quot;sos&quot;</span> <span class="ow">and</span> <span class="n">from_</span> <span class="o">==</span> <span class="s2">&quot;ba&quot;</span><span class="p">:</span>
+        <span class="n">filt</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;BAType&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">tf2sos</span><span class="p">(</span><span class="o">*</span><span class="n">filt</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;unknown filter transformation: &#39;</span><span class="si">{</span><span class="n">from_</span><span class="si">}</span><span class="s2">&#39; -&gt; &#39;</span><span class="si">{</span><span class="n">to_</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_gain_hz_to_rad</span><span class="p">(</span>
+    <span class="n">zeros</span><span class="p">:</span> <span class="n">Array1D</span><span class="p">,</span>
+    <span class="n">poles</span><span class="p">:</span> <span class="n">Array1D</span><span class="p">,</span>
+    <span class="n">gain</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalize gain when converting Hz to rad/s.</span>
+
+<span class="sd">    This preserves the frequency response magnitude by scaling the gain</span>
+<span class="sd">    according to: k&#39; = k * |∏p_i / ∏z_i| * (2π)^(n_p - n_z)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    zeros : `numpy.ndarray`</span>
+<span class="sd">        Zeros in rad/s (already converted from Hz).</span>
+
+<span class="sd">    poles : `numpy.ndarray`</span>
+<span class="sd">        Poles in rad/s (already converted from Hz).</span>
+
+<span class="sd">    gain : `float`</span>
+<span class="sd">        Original gain (from Hz specification).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    normalized_gain : `float`</span>
+<span class="sd">        Gain scaled to preserve frequency response.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Compute product of non-zero poles and zeros</span>
+    <span class="n">nonzero_poles</span> <span class="o">=</span> <span class="n">poles</span><span class="p">[</span><span class="n">poles</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">nonzero_zeros</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">[</span><span class="n">zeros</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nonzero_zeros</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">nonzero_poles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Scale by ratio of pole to zero magnitudes</span>
+        <span class="n">gain</span> <span class="o">*=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">nonzero_poles</span><span class="p">)</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">nonzero_zeros</span><span class="p">))</span>
+
+    <span class="c1"># Account for poles/zeros at the origin</span>
+    <span class="n">n_poles_at_origin</span> <span class="o">=</span> <span class="n">poles</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">nonzero_poles</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">n_zeros_at_origin</span> <span class="o">=</span> <span class="n">zeros</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">nonzero_zeros</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="c1"># Poles at origin: multiply by (2π)^n_p</span>
+    <span class="c1"># Zeros at origin: divide by (2π)^n_z</span>
+    <span class="k">if</span> <span class="n">n_poles_at_origin</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">n_zeros_at_origin</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">gain</span> <span class="o">*=</span> <span class="n">TWO_PI</span> <span class="o">**</span> <span class="p">(</span><span class="n">n_poles_at_origin</span> <span class="o">-</span> <span class="n">n_zeros_at_origin</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">gain</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_zpk_units</span><span class="p">(</span>
+    <span class="n">zpk</span><span class="p">:</span> <span class="n">ZpkCompatible</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UnitBase</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">normalize_gain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ZpkType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an analogue ZPK between unit conventions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    zpk : `tuple`</span>
+<span class="sd">        (zeros, poles, gain) tuple.</span>
+
+<span class="sd">    unit : `str`</span>
+<span class="sd">        The units in which the zeros and poles are specified.</span>
+<span class="sd">        Either ``&#39;Hz&#39;`` or ``&#39;rad/s&#39;``.</span>
+
+<span class="sd">    normalize_gain : `bool`, optional</span>
+<span class="sd">        Whether to normalize the gain when converting from Hz to rad/s.</span>
+
+<span class="sd">        - `False` (default):</span>
+<span class="sd">          Multiply zeros/poles by -2π but leave gain unchanged.</span>
+<span class="sd">          This matches the LIGO GDS **&#39;f&#39; plane** convention</span>
+<span class="sd">          (``plane=&#39;f&#39;`` in ``s2z()``).</span>
+
+<span class="sd">        - `True`:</span>
+<span class="sd">          Normalize gain to preserve frequency response magnitude.</span>
+<span class="sd">          Gain is scaled by :math:`|∏p_i/∏z_i| · (2π)^{(n_p - n_z)}`.</span>
+<span class="sd">          Use this when your filter was designed with the transfer</span>
+<span class="sd">          function :math:`H(f) = k·∏(f-z_i)/∏(f-p_i)` in Hz.</span>
+<span class="sd">          This matches the LIGO GDS **&#39;n&#39; plane** convention</span>
+<span class="sd">          (``plane=&#39;n&#39;`` in ``s2z()``).</span>
+
+<span class="sd">        Ignored when `unit=&#39;rad/s&#39;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    zeros : `numpy.ndarray` of `numpy.cfloat`</span>
+<span class="sd">        Converted zeros in rad/s.</span>
+
+<span class="sd">    poles : `numpy.ndarray` of `numpy.cfloat`</span>
+<span class="sd">        Converted poles in rad/s.</span>
+
+<span class="sd">    gain : `float`</span>
+<span class="sd">        Adjusted gain accounting for unit conversion and normalization.</span>
+
+<span class="sd">    Warns</span>
+<span class="sd">    -----</span>
+<span class="sd">    UserWarning</span>
+<span class="sd">        If `normalize_gain` is set when `unit=&#39;rad/s&#39;` (normalization is ignored).</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `unit` is not &#39;Hz&#39; or &#39;rad/s&#39;.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function converts TO rad/s (s-plane). For conversions to other</span>
+<span class="sd">    representations, use `scipy.signal.bilinear_zpk()` for z-plane, or</span>
+<span class="sd">    `scipy.signal.zpk2tf()` for transfer function form.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">zeros</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">gain</span> <span class="o">=</span> <span class="n">zpk</span>
+    <span class="n">zeros</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">zeros</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+    <span class="n">poles</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">poles</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">_is_hertz</span><span class="p">(</span><span class="n">unit</span><span class="p">):</span>
+        <span class="c1"># Convert frequencies from Hz to rad/s</span>
+        <span class="k">for</span> <span class="n">zi</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">zeros</span><span class="p">)):</span>
+            <span class="n">zeros</span><span class="p">[</span><span class="n">zi</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="n">TWO_PI</span>
+        <span class="k">for</span> <span class="n">pj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">poles</span><span class="p">)):</span>
+            <span class="n">poles</span><span class="p">[</span><span class="n">pj</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="n">TWO_PI</span>
+
+        <span class="c1"># Apply gain normalization if requested</span>
+        <span class="k">if</span> <span class="n">normalize_gain</span><span class="p">:</span>
+            <span class="n">gain</span> <span class="o">=</span> <span class="n">_normalize_gain_hz_to_rad</span><span class="p">(</span><span class="n">zeros</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">gain</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">_is_radians</span><span class="p">(</span><span class="n">unit</span><span class="p">):</span>
+        <span class="c1"># Already in correct units, warn if normalize_gain was set</span>
+        <span class="k">if</span> <span class="n">normalize_gain</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;normalize_gain parameter is ignored when unit=&#39;</span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                <span class="s2">&quot;(filter is already in rad/s)&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;zpk can only be given with unit=&#39;Hz&#39;, &#39;rad/s&#39;, or &#39;rad/sample&#39;, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;not &#39;</span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">gain</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_digital</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">SosType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">LinearTimeInvariant</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">],</span> <span class="n">ZpkType</span><span class="p">]:</span> <span class="o">...</span>
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_digital</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">TapsType</span> <span class="o">|</span> <span class="n">BAType</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">],</span> <span class="n">BAType</span><span class="p">]:</span> <span class="o">...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_digital</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">FilterType</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;zpk&quot;</span><span class="p">],</span> <span class="n">IirFilterType</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an analog filter to digital via bilinear functions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filt: `tuple`</span>
+<span class="sd">        Input filter to convert.</span>
+
+<span class="sd">    sample_rate: `float`</span>
+<span class="sd">        Sample rate of digital data that will be filtered.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dform : `str`</span>
+<span class="sd">        Type of filter.</span>
+
+<span class="sd">    dfilter : &#39;tuple&#39;</span>
+<span class="sd">        Digital filter values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">form</span><span class="p">,</span> <span class="n">filt_</span> <span class="o">=</span> <span class="n">parse_filter</span><span class="p">(</span><span class="n">filt</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;ba&quot;</span><span class="p">:</span>
+        <span class="n">filt_</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;BAType&quot;</span><span class="p">,</span> <span class="n">filt_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">form</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">bilinear</span><span class="p">(</span><span class="o">*</span><span class="n">filt_</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span><span class="p">:</span>
+        <span class="n">filt_</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;ZpkType&quot;</span><span class="p">,</span> <span class="n">filt_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">form</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">bilinear_zpk</span><span class="p">(</span><span class="o">*</span><span class="n">filt_</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">)</span>
+
+    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;cannot convert &#39;</span><span class="si">{</span><span class="n">form</span><span class="si">}</span><span class="s2">&#39; to digital&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_filter</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">TapsType</span> <span class="o">|</span> <span class="n">BAType</span> <span class="o">|</span> <span class="n">signal</span><span class="o">.</span><span class="n">TransferFunction</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">],</span> <span class="n">BAType</span><span class="p">]:</span> <span class="o">...</span>
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_filter</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">SosType</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sos&quot;</span><span class="p">],</span> <span class="n">SosType</span><span class="p">]:</span> <span class="o">...</span>
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_filter</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">ZpkCompatible</span> <span class="o">|</span> <span class="n">LinearTimeInvariant</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">],</span> <span class="n">ZpkType</span><span class="p">]:</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="parse_filter">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.parse_filter">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_filter</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">FilterCompatible</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">,</span> <span class="s2">&quot;zpk&quot;</span><span class="p">],</span> <span class="n">BAType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">SosType</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse arbitrary input args into a TF, ZPK, or SOS filter definition.</span>
+
+<span class="sd">    No transformations are applied to the filter, it is simply unpacked</span>
+<span class="sd">    into a standard form.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filt : `numpy.ndarray` or `tuple`</span>
+<span class="sd">        Filter definition.</span>
+<span class="sd">        Any of the following formats are supported:</span>
+
+<span class="sd">        - FIR taps as a 1D `numpy.ndarray`</span>
+<span class="sd">        - IIR transfer function as a 2-tuple of 1D `numpy.ndarray`</span>
+<span class="sd">        - IIR zero-pole-gain as a 3-tuple of 1D `numpy.ndarray` and a `float`</span>
+<span class="sd">        - IIR second-order-sections as a 2D `numpy.ndarray`</span>
+<span class="sd">        - `scipy.signal.lti` or `scipy.signal.dlti` object</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ftype : `str`</span>
+<span class="sd">        Either ``&#39;ba&#39;`` ``&#39;zpk&#39;`` or ``&#39;sos&#39;``.</span>
+<span class="sd">    filt : `numpy.ndarray` or `tuple`</span>
+<span class="sd">        The filter components for the returned ``ftype``.</span>
+<span class="sd">        If ``&#39;ba&#39;``, a 2-tuple of numerator and denominator arrays.</span>
+<span class="sd">        If ``&#39;zpk&#39;``, a 3-tuple of zeros, poles, and gain.</span>
+<span class="sd">        If ``&#39;sos&#39;``, a 2D array of second-order sections.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Parse SOS filter</span>
+    <span class="k">if</span> <span class="n">is_sos</span><span class="p">(</span><span class="n">filt</span><span class="p">):</span>  <span class="c1"># sos</span>
+        <span class="k">return</span> <span class="s2">&quot;sos&quot;</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;SosType&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="p">)</span>
+
+    <span class="c1"># Parse FIR taps</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">filt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># fir</span>
+        <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;numpy.ndarray[tuple[int]]&quot;</span><span class="p">,</span> <span class="n">filt</span><span class="p">),</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+    <span class="c1"># Use lti to parse the rest</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">lti</span> <span class="o">|</span> <span class="n">signal</span><span class="o">.</span><span class="n">dlti</span><span class="p">):</span>
+        <span class="n">lti_</span> <span class="o">=</span> <span class="n">filt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lti_</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">lti</span><span class="p">(</span><span class="o">*</span><span class="n">filt</span><span class="p">)</span>  <span class="c1"># ty: ignore[invalid-argument-type]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lti_</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">TransferFunction</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">lti_</span><span class="o">.</span><span class="n">num</span><span class="p">,</span> <span class="n">lti_</span><span class="o">.</span><span class="n">den</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lti_</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">ZerosPolesGain</span><span class="p">):</span>
+        <span class="n">lti_</span> <span class="o">=</span> <span class="n">lti_</span><span class="o">.</span><span class="n">to_zpk</span><span class="p">()</span>      <span class="c1"># ty: ignore[invalid-argument-type]</span>
+    <span class="k">return</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">lti_</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span> <span class="n">lti_</span><span class="o">.</span><span class="n">poles</span><span class="p">,</span> <span class="n">lti_</span><span class="o">.</span><span class="n">gain</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_prewarp_zpk</span><span class="p">(</span>
+    <span class="n">zeros</span><span class="p">:</span> <span class="n">Array1D</span><span class="p">,</span>
+    <span class="n">poles</span><span class="p">:</span> <span class="n">Array1D</span><span class="p">,</span>
+    <span class="n">gain</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">fs</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Array1D</span><span class="p">,</span> <span class="n">Array1D</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply prewarping to analogue ZPK before bilinear transform.</span>
+
+<span class="sd">    This implements the GDS prewarping step (iirutil.cc lines 154-158):</span>
+<span class="sd">    For each pole/zero at frequency ω (rad/s):</span>
+<span class="sd">        mag = |ω|</span>
+<span class="sd">        g = (2*fs / mag) * tan(mag / (2*fs))</span>
+<span class="sd">        ω_warped = ω * g</span>
+<span class="sd">        gain *= g  (for zeros: divide, for poles: multiply)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    zeros : `numpy.ndarray`</span>
+<span class="sd">        Zeros in rad/s.</span>
+
+<span class="sd">    poles : `numpy.ndarray`</span>
+<span class="sd">        Poles in rad/s.</span>
+
+<span class="sd">    gain : `float`</span>
+<span class="sd">        System gain.</span>
+
+<span class="sd">    fs : `float`</span>
+<span class="sd">        Sampling frequency in Hz.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    zeros_warped : `numpy.ndarray`</span>
+<span class="sd">        Prewarped zeros.</span>
+
+<span class="sd">    poles_warped : `numpy.ndarray`</span>
+<span class="sd">        Prewarped poles.</span>
+
+<span class="sd">    gain_warped : `float`</span>
+<span class="sd">        Adjusted gain accounting for prewarping.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This prewarping step ensures that after the bilinear transform,</span>
+<span class="sd">    the digital filter&#39;s frequency response matches the analog design</span>
+<span class="sd">    at the specified pole/zero frequencies. This is the default behavior</span>
+<span class="sd">    in LIGO GDS (fPrewarp = true).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">zeros_warped</span> <span class="o">=</span> <span class="n">zeros</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">poles_warped</span> <span class="o">=</span> <span class="n">poles</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">gain_warped</span> <span class="o">=</span> <span class="n">gain</span>
+
+    <span class="n">fs2</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">fs</span>
+
+    <span class="c1"># Prewarp zeros</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">zeros</span><span class="p">)):</span>
+        <span class="n">mag</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">zeros</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">mag</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="n">fs2</span> <span class="o">/</span> <span class="n">mag</span><span class="p">)</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">mag</span> <span class="o">/</span> <span class="n">fs2</span><span class="p">)</span>
+            <span class="n">zeros_warped</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">g</span>
+            <span class="n">gain_warped</span> <span class="o">/=</span> <span class="n">g</span>  <span class="c1"># Gain adjustment for zeros</span>
+
+    <span class="c1"># Prewarp poles</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">poles</span><span class="p">)):</span>
+        <span class="n">mag</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">poles</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">mag</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="n">fs2</span> <span class="o">/</span> <span class="n">mag</span><span class="p">)</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">mag</span> <span class="o">/</span> <span class="n">fs2</span><span class="p">)</span>
+            <span class="n">poles_warped</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">poles</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">g</span>
+            <span class="n">gain_warped</span> <span class="o">*=</span> <span class="n">g</span>  <span class="c1"># Gain adjustment for poles</span>
+
+    <span class="k">return</span> <span class="n">zeros_warped</span><span class="p">,</span> <span class="n">poles_warped</span><span class="p">,</span> <span class="n">gain_warped</span>
+
+
+<div class="viewcode-block" id="prepare_analog_filter">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.prepare_analog_filter">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_analog_filter</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">FilterCompatible</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UnitBase</span> <span class="o">=</span> <span class="s2">&quot;Hz&quot;</span><span class="p">,</span>
+    <span class="n">normalize_gain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">],</span> <span class="n">BAType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">SosType</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare an analog filter by parsing and converting units.</span>
+
+<span class="sd">    This handles:</span>
+
+<span class="sd">    1. Parsing filter specification</span>
+<span class="sd">    2. Converting Hz → rad/s for ZPK filters (if unit=&#39;Hz&#39;)</span>
+<span class="sd">    3. Applying gain normalization (if requested)</span>
+
+<span class="sd">    Does NOT:</span>
+
+<span class="sd">    - Convert to digital</span>
+<span class="sd">    - Extract gain for SOS</span>
+<span class="sd">    - Apply prewarping</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filt : filter specification</span>
+<span class="sd">        Filter as ``(b, a)``, ``(z, p, k)``, sos array,</span>
+<span class="sd">        or `~scipy.signal.lti` object.</span>
+
+<span class="sd">    unit : `str`, optional</span>
+<span class="sd">        For analogue ZPK filters, the units in which the zeros and poles are</span>
+<span class="sd">        specified. Either ``&#39;Hz&#39;`` or ``&#39;rad/s&#39;`` (default).</span>
+
+<span class="sd">    normalize_gain : `bool`, optional</span>
+<span class="sd">        Whether to normalize the gain when converting from Hz to rad/s.</span>
+
+<span class="sd">        - `False` (default):</span>
+<span class="sd">          Multiply zeros/poles by -2π but leave gain unchanged.</span>
+<span class="sd">          This matches the LIGO GDS **&#39;f&#39; plane** convention</span>
+<span class="sd">          (``plane=&#39;f&#39;`` in ``s2z()``).</span>
+
+<span class="sd">        - `True`:</span>
+<span class="sd">          Normalize gain to preserve frequency response magnitude.</span>
+<span class="sd">          Gain is scaled by :math:`|∏p_i/∏z_i| · (2π)^{(n_p - n_z)}`.</span>
+<span class="sd">          Use this when your filter was designed with the transfer</span>
+<span class="sd">          function :math:`H(f) = k·∏(f-z_i)/∏(f-p_i)` in Hz.</span>
+<span class="sd">          This matches the LIGO GDS **&#39;n&#39; plane** convention</span>
+<span class="sd">          (``plane=&#39;n&#39;`` in ``s2z()``).</span>
+
+<span class="sd">        Ignored when `unit=&#39;rad/s&#39;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    form : `str`</span>
+<span class="sd">        Filter form: ``&#39;ba&#39;``, ``&#39;zpk&#39;``, or ``&#39;sos&#39;``.</span>
+
+<span class="sd">    filt : `tuple` or `numpy.ndarray`</span>
+<span class="sd">        Filter coefficients in the identified form.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    prepare_digital_filter</span>
+<span class="sd">        Prepare filter for digital filtering with prewarping and gain extraction.</span>
+
+<span class="sd">    parse_filter</span>
+<span class="sd">        Parse filter specification without unit conversion.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">form</span><span class="p">,</span> <span class="n">filter_tuple</span> <span class="o">=</span> <span class="n">parse_filter</span><span class="p">(</span><span class="n">filt</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span> <span class="ow">and</span> <span class="n">_is_hertz</span><span class="p">(</span><span class="n">unit</span><span class="p">):</span>
+        <span class="n">filter_tuple</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;ZpkType&quot;</span><span class="p">,</span> <span class="n">filter_tuple</span><span class="p">)</span>
+        <span class="n">filter_tuple</span> <span class="o">=</span> <span class="n">_convert_zpk_units</span><span class="p">(</span>
+            <span class="n">filter_tuple</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">normalize_gain</span><span class="o">=</span><span class="n">normalize_gain</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">form</span><span class="p">,</span> <span class="n">filter_tuple</span></div>
+
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_digital_filter</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">FilterCompatible</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">analog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UnitBase</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">normalize_gain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BAType</span><span class="p">:</span> <span class="o">...</span>
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_digital_filter</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">FilterCompatible</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">analog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UnitBase</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">normalize_gain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ZpkType</span><span class="p">:</span> <span class="o">...</span>
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_digital_filter</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">FilterCompatible</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">analog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UnitBase</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">normalize_gain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SosType</span><span class="p">:</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="prepare_digital_filter">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.prepare_digital_filter">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">prepare_digital_filter</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">FilterCompatible</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">analog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UnitBase</span> <span class="o">=</span> <span class="s2">&quot;Hz&quot;</span><span class="p">,</span>
+    <span class="n">normalize_gain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">prewarp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BAType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">SosType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prepare a filter for digital filtering.</span>
+
+<span class="sd">    This function parses the input filter specification, optionally converts</span>
+<span class="sd">    an analog filter to digital using prewarping + bilinear transform,</span>
+<span class="sd">    and returns the filter in the requested format.</span>
+
+<span class="sd">    For incoming digital filters, this function basically does nothing.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filt : filter specification</span>
+<span class="sd">        Filter as ``(b, a)``, ``(z, p, k)``, sos array,</span>
+<span class="sd">        or `~scipy.signal.lti` object.</span>
+
+<span class="sd">        For digital filters (``analog=False``), the input filter coefficients</span>
+<span class="sd">        are assumed to already be in digital form (z-domain).</span>
+
+<span class="sd">        For analog filters (``analog=True``), the input filter coefficients</span>
+<span class="sd">        should be in the units specified by ``unit`` (default: Hz).</span>
+
+<span class="sd">    analog : `bool`, optional</span>
+<span class="sd">        When `True`, the input filter is analog and will be converted to</span>
+<span class="sd">        digital using prewarping + bilinear transform (GDS method).</span>
+<span class="sd">        When `False` (default), the input filter is already digital.</span>
+
+<span class="sd">    sample_rate : `float`, `~astropy.units.Quantity`, optional</span>
+<span class="sd">        Sampling frequency (Hz) of the digital system.</span>
+<span class="sd">        Required when ``analog=True``.</span>
+
+<span class="sd">    unit : `str`, optional</span>
+<span class="sd">        For analogue ZPK filters, the units in which the zeros and poles are</span>
+<span class="sd">        specified. Either ``&#39;Hz&#39;`` or ``&#39;rad/s&#39;`` (default).</span>
+
+<span class="sd">    normalize_gain : `bool`, optional</span>
+<span class="sd">        Whether to normalize the gain when converting from Hz to rad/s.</span>
+
+<span class="sd">        - `False` (default):</span>
+<span class="sd">          Multiply zeros/poles by -2π but leave gain unchanged.</span>
+<span class="sd">          This matches the LIGO GDS **&#39;f&#39; plane** convention</span>
+<span class="sd">          (``plane=&#39;f&#39;`` in ``s2z()``).</span>
+
+<span class="sd">        - `True`:</span>
+<span class="sd">          Normalize gain to preserve frequency response magnitude.</span>
+<span class="sd">          Gain is scaled by :math:`|∏p_i/∏z_i| · (2π)^{(n_p - n_z)}`.</span>
+<span class="sd">          Use this when your filter was designed with the transfer</span>
+<span class="sd">          function :math:`H(f) = k·∏(f-z_i)/∏(f-p_i)` in Hz.</span>
+<span class="sd">          This matches the LIGO GDS **&#39;n&#39; plane** convention</span>
+<span class="sd">          (``plane=&#39;n&#39;`` in ``s2z()``).</span>
+
+<span class="sd">        Only used for analogue filters in Hz (``analog=True, unit=&quot;Hz&quot;``).</span>
+
+<span class="sd">    prewarp : `bool`, optional</span>
+<span class="sd">        If `True`, apply prewarping before bilinear transform (default).</span>
+<span class="sd">        If `False`, skip prewarping (not recommended).</span>
+<span class="sd">        Ignored when ``analog=False``.</span>
+
+<span class="sd">    output : `str`, optional</span>
+<span class="sd">        Desired output filter form:</span>
+
+<span class="sd">        - ``&#39;zpk&#39;``: zero-pole-gain tuple (default)</span>
+<span class="sd">        - ``&#39;ba&#39;``: numerator-denominator tuple</span>
+<span class="sd">        - ``&#39;sos&#39;``: second-order sections array with separated gain</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filt_out : `tuple`</span>
+<span class="sd">        Filter coefficients in the requested form:</span>
+
+<span class="sd">        - ``output=&#39;ba&#39;``: 2-tuple of (b, a) arrays</span>
+<span class="sd">        - ``output=&#39;zpk&#39;``: 3-tuple of (zeros, poles, gain)</span>
+<span class="sd">        - ``output=&#39;sos&#39;``: 2-tuple of (sos_array, gain)</span>
+
+<span class="sd">        For ``output=&#39;sos&#39;``, the returned SOS array has unit gain in all</span>
+<span class="sd">        sections, and the overall gain is returned separately. This must be</span>
+<span class="sd">        applied to the filter output: ``filtered_data * gain``.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``analog=True`` but ``sample_rate`` is not provided.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    prepare_analog_filter</span>
+<span class="sd">        Prepare analog filter without digital conversion.</span>
+
+<span class="sd">    scipy.signal.sosfilt</span>
+<span class="sd">        Apply SOS filter to data.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **Prewarping**</span>
+
+<span class="sd">    Unlike `scipy.signal.bilinear` and `scipy.signal.bilinear_zpk` which</span>
+<span class="sd">    do NOT perform prewarping, this function applies prewarping by default.</span>
+<span class="sd">    Prewarping ensures the digital filter&#39;s frequency response matches the</span>
+<span class="sd">    analogue design at the pole/zero frequencies.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Prepare a digital filter from analog specification:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.signal.filter_design import prepare_digital_filter</span>
+<span class="sd">    &gt;&gt;&gt; zpk = ([100], [10], 1.0)  # 100 Hz zero, 10 Hz pole, gain 1.0</span>
+<span class="sd">    &gt;&gt;&gt; sos = prepare_digital_filter(</span>
+<span class="sd">    ...     zpk,</span>
+<span class="sd">    ...     analog=True,</span>
+<span class="sd">    ...     sample_rate=4096,</span>
+<span class="sd">    ...     unit=&#39;Hz&#39;,</span>
+<span class="sd">    ...     output=&#39;sos&#39;,</span>
+<span class="sd">    ... )</span>
+
+<span class="sd">    Apply to data:</span>
+
+<span class="sd">    &gt;&gt;&gt; from scipy import signal</span>
+<span class="sd">    &gt;&gt;&gt; filtered = signal.sosfilt(sos, data)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Parse filter to standardize format</span>
+    <span class="n">form</span><span class="p">,</span> <span class="n">filter_tuple</span> <span class="o">=</span> <span class="n">parse_filter</span><span class="p">(</span><span class="n">filt</span><span class="p">)</span>
+
+    <span class="c1"># Convert sample_rate to Hz</span>
+    <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Step 1-2: Prepare analog filter (parse + unit conversion)</span>
+    <span class="k">if</span> <span class="n">analog</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span> <span class="ow">and</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;Hz&quot;</span><span class="p">:</span>
+            <span class="n">filter_tuple</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;ZpkType&quot;</span><span class="p">,</span> <span class="n">filter_tuple</span><span class="p">)</span>
+            <span class="n">filter_tuple</span> <span class="o">=</span> <span class="n">_convert_zpk_units</span><span class="p">(</span>
+                <span class="n">filter_tuple</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+                <span class="n">normalize_gain</span><span class="o">=</span><span class="n">normalize_gain</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Convert to ZPK for prewarping and bilinear transform</span>
+        <span class="n">zeros</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">gain</span> <span class="o">=</span> <span class="n">_transform</span><span class="p">(</span><span class="n">filter_tuple</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="s2">&quot;zpk&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Manual prewarping (GDS default: enabled)</span>
+        <span class="k">if</span> <span class="n">prewarp</span><span class="p">:</span>
+            <span class="n">zeros</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">gain</span> <span class="o">=</span> <span class="n">_prewarp_zpk</span><span class="p">(</span><span class="n">zeros</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">gain</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+
+        <span class="c1"># Apply bilinear transform</span>
+        <span class="n">filter_tuple</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">bilinear_zpk</span><span class="p">(</span><span class="n">zeros</span><span class="p">,</span> <span class="n">poles</span><span class="p">,</span> <span class="n">gain</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">)</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span>
+
+    <span class="c1"># For ba/zpk output, transform as needed</span>
+    <span class="k">return</span> <span class="n">_transform</span><span class="p">(</span><span class="n">filter_tuple</span><span class="p">,</span> <span class="n">form</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># -- FIR from transfer function -------</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_truncate_transfer</span><span class="p">(</span>
+    <span class="n">transfer</span><span class="p">:</span> <span class="n">TArray</span><span class="p">,</span>
+    <span class="n">nsamples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">ncorner</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Smoothly zero the edges of a frequency domain transfer function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    transfer : `numpy.ndarray`</span>
+<span class="sd">        Transfer function to start from, must have at least ten samples.</span>
+
+<span class="sd">    nsamples : `int`, optional</span>
+<span class="sd">        Number of samples to taper on each side.</span>
+
+<span class="sd">    ncorner : `int`, optional</span>
+<span class="sd">        Number of extra samples to zero off at low frequency.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : `numpy.ndarray`</span>
+<span class="sd">        The smoothly-truncated transfer function.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    By default, the input transfer function will have five samples tapered</span>
+<span class="sd">    off at the left and right boundaries. If `ncorner` is not `None`, then</span>
+<span class="sd">    `ncorner` extra samples will be zeroed on the left as a hard highpass</span>
+<span class="sd">    filter.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    scipy.signal.windows.tukey</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nsamp</span> <span class="o">=</span> <span class="n">transfer</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">ncorner</span> <span class="o">=</span> <span class="n">ncorner</span> <span class="k">if</span> <span class="n">ncorner</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">transfer</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">ncorner</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Apply tukey window to taper edges (5 samples on each side)</span>
+    <span class="n">ntaper</span> <span class="o">=</span> <span class="n">nsamp</span> <span class="o">-</span> <span class="n">ncorner</span>
+    <span class="k">if</span> <span class="n">ntaper</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">window_full</span> <span class="o">=</span> <span class="n">tukey</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">nsamples</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">ncorner</span><span class="p">:</span><span class="n">ncorner</span><span class="o">+</span><span class="n">nsamples</span><span class="p">]</span> <span class="o">*=</span> <span class="n">window_full</span><span class="p">[:</span><span class="n">nsamples</span><span class="p">]</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">nsamp</span><span class="o">-</span><span class="n">nsamples</span><span class="p">:</span><span class="n">nsamp</span><span class="p">]</span> <span class="o">*=</span> <span class="n">window_full</span><span class="p">[</span><span class="o">-</span><span class="n">nsamples</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_truncate_impulse</span><span class="p">(</span>
+    <span class="n">impulse</span><span class="p">:</span> <span class="n">TArray</span><span class="p">,</span>
+    <span class="n">ntaps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">window</span><span class="p">:</span> <span class="n">WindowLike</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Smoothly truncate a time domain impulse response.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    impulse : `numpy.ndarray`</span>
+<span class="sd">        The impulse response to start from.</span>
+
+<span class="sd">    ntaps : `int`</span>
+<span class="sd">        Number of taps in the final filter.</span>
+
+<span class="sd">    window : `str`, `float`, `tuple`, `numpy.ndarray`</span>
+<span class="sd">        Window to truncate with, see `scipy.signal.get_window`</span>
+<span class="sd">        for details on acceptable formats.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : `numpy.ndarray`</span>
+<span class="sd">        The smoothly truncated impulse response.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">impulse</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">trunc_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ntaps</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">trunc_stop</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">trunc_start</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">get_window</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">ntaps</span><span class="p">)</span>
+    <span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">trunc_start</span><span class="p">]</span> <span class="o">*=</span> <span class="n">window</span><span class="p">[</span><span class="n">trunc_start</span><span class="p">:</span><span class="n">ntaps</span><span class="p">]</span>
+    <span class="n">out</span><span class="p">[</span><span class="n">trunc_stop</span><span class="p">:</span><span class="n">out</span><span class="o">.</span><span class="n">size</span><span class="p">]</span> <span class="o">*=</span> <span class="n">window</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">trunc_start</span><span class="p">]</span>
+    <span class="n">out</span><span class="p">[</span><span class="n">trunc_start</span><span class="p">:</span><span class="n">trunc_stop</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<div class="viewcode-block" id="fir_from_transfer">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.fir_from_transfer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fir_from_transfer</span><span class="p">(</span>
+    <span class="n">transfer</span><span class="p">:</span> <span class="n">Array1D</span><span class="p">,</span>
+    <span class="n">ntaps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">window</span><span class="p">:</span> <span class="n">WindowLike</span> <span class="o">=</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+    <span class="n">ncorner</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Design a Type II FIR filter given an arbitrary transfer function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    transfer : `numpy.ndarray`</span>
+<span class="sd">        Transfer function to start from, must have at least ten samples.</span>
+
+<span class="sd">    ntaps : `int`</span>
+<span class="sd">        Number of taps in the final filter, must be an even number.</span>
+
+<span class="sd">    window : `str`, `numpy.ndarray`, optional</span>
+<span class="sd">        Window function to truncate with, see `scipy.signal.get_window`</span>
+<span class="sd">        for details on acceptable formats.</span>
+
+<span class="sd">    ncorner : `int`, optional</span>
+<span class="sd">        Number of extra samples to zero off at low frequency.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : `numpy.ndarray`</span>
+<span class="sd">        A time domain FIR filter of length `ntaps`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The final FIR filter will use `~numpy.fft.rfft` FFT normalisation.</span>
+
+<span class="sd">    If `ncorner` is not `None`, then `ncorner` extra samples will be zeroed</span>
+<span class="sd">    on the left as a hard highpass filter.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    scipy.signal.remez</span>
+<span class="sd">        An alternative FIR filter design using the Remez exchange algorithm.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># truncate and highpass the transfer function</span>
+    <span class="n">transfer</span> <span class="o">=</span> <span class="n">_truncate_transfer</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="n">ncorner</span><span class="o">=</span><span class="n">ncorner</span><span class="p">)</span>
+    <span class="c1"># compute and truncate the impulse response</span>
+    <span class="n">impulse</span> <span class="o">=</span> <span class="n">npfft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">transfer</span><span class="p">)</span>
+    <span class="n">impulse</span> <span class="o">=</span> <span class="n">_truncate_impulse</span><span class="p">(</span>
+        <span class="n">impulse</span><span class="p">,</span>
+        <span class="n">ntaps</span><span class="o">=</span><span class="n">ntaps</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># wrap around and normalise to construct the filter</span>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">impulse</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">ntaps</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))[</span><span class="mi">0</span><span class="p">:</span><span class="n">ntaps</span><span class="p">]</span></div>
+
+
+
+<span class="c1"># -- Filter design -------------------</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_design_iir</span><span class="p">(</span>
+    <span class="n">wp</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ws</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">analog</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">ftype</span><span class="p">:</span> <span class="n">FilterTypeName</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ZpkType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_design_iir</span><span class="p">(</span>
+    <span class="n">wp</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ws</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">analog</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">ftype</span><span class="p">:</span> <span class="n">FilterTypeName</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BAType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_design_iir</span><span class="p">(</span>
+    <span class="n">wp</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ws</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">analog</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">ftype</span><span class="p">:</span> <span class="n">FilterTypeName</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sos&quot;</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SosType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_design_iir</span><span class="p">(</span>
+    <span class="n">wp</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ws</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">analog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">ftype</span><span class="p">:</span> <span class="n">FilterTypeName</span> <span class="o">=</span> <span class="s2">&quot;cheby1&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IirFilterType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Design an IIR filter using `scipy.signal.iirdesign`.&quot;&quot;&quot;</span>
+    <span class="n">nyq</span> <span class="o">=</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="mf">2.</span>
+    <span class="n">wp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">analog</span><span class="p">:</span>  <span class="c1"># convert Hz to rad/s</span>
+        <span class="n">wp</span> <span class="o">*=</span> <span class="n">TWO_PI</span>
+        <span class="n">ws</span> <span class="o">*=</span> <span class="n">TWO_PI</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># convert Hz to half-cycles / sample</span>
+        <span class="n">wp</span> <span class="o">/=</span> <span class="n">nyq</span>
+        <span class="n">ws</span> <span class="o">/=</span> <span class="n">nyq</span>
+    <span class="n">z</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">iirdesign</span><span class="p">(</span>
+        <span class="n">wp</span><span class="p">,</span>
+        <span class="n">ws</span><span class="p">,</span>
+        <span class="n">gpass</span><span class="p">,</span>
+        <span class="n">gstop</span><span class="p">,</span>
+        <span class="n">analog</span><span class="o">=</span><span class="n">analog</span><span class="p">,</span>
+        <span class="n">ftype</span><span class="o">=</span><span class="n">ftype</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">=</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">analog</span><span class="p">:</span>  <span class="c1"># convert back to Hz</span>
+        <span class="n">z</span> <span class="o">/=</span> <span class="o">-</span><span class="n">TWO_PI</span>
+        <span class="n">p</span> <span class="o">/=</span> <span class="o">-</span><span class="n">TWO_PI</span>
+        <span class="n">k</span> <span class="o">*=</span> <span class="n">TWO_PI</span> <span class="o">**</span> <span class="n">z</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="o">-</span><span class="n">TWO_PI</span> <span class="o">**</span> <span class="n">p</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">z</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">k</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;ba&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">zpk2tf</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;sos&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">zpk2sos</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&#39; is not a valid output form&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_design_fir</span><span class="p">(</span>
+    <span class="n">wp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ws</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">window</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;hamming&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TapsType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Design an FIR filter using `scipy.signal.firwin`.</span>
+
+<span class="sd">    This is just an internal convenience function to calculate the number of</span>
+<span class="sd">    taps based on the pass and stop band frequencies, and to set sensible</span>
+<span class="sd">    defaults for a few other keyword arguments.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    scipy.signal.firwin</span>
+<span class="sd">        for details of how the FIR filters are actually generated</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># format arguments</span>
+    <span class="n">wp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span>
+    <span class="n">tw</span> <span class="o">=</span> <span class="n">wp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ws</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># calculate the number of taps</span>
+    <span class="n">nt</span> <span class="o">=</span> <span class="n">num_taps</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">tw</span><span class="p">,</span> <span class="n">gpass</span><span class="p">,</span> <span class="n">gstop</span><span class="p">)</span>
+
+    <span class="c1"># set default kw based on the filter shape</span>
+    <span class="k">if</span> <span class="n">wp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">ws</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>  <span class="c1"># highpass</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;pass_zero&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ws</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>  <span class="c1"># simple list of taps</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="n">ws</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">-</span> <span class="n">wp</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fs&quot;</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">firwin</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">wp</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_design</span><span class="p">(</span>
+    <span class="n">type_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">],</span>
+    <span class="n">wp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ws</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">],</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ZpkType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_design</span><span class="p">(</span>
+    <span class="n">type_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">],</span>
+    <span class="n">wp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ws</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">],</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BAType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_design</span><span class="p">(</span>
+    <span class="n">type_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">],</span>
+    <span class="n">wp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ws</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sos&quot;</span><span class="p">],</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SosType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_design</span><span class="p">(</span>
+    <span class="n">type_</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;fir&quot;</span><span class="p">],</span>
+    <span class="n">wp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ws</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TapsType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_design</span><span class="p">(</span>
+    <span class="n">type_</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">wp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">ws</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FilterType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Design an IIR or FIR filter.&quot;&quot;&quot;</span>
+    <span class="n">designer</span><span class="p">:</span> <span class="n">Callable</span>
+    <span class="k">if</span> <span class="n">type_</span> <span class="o">==</span> <span class="s2">&quot;iir&quot;</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span>
+        <span class="n">designer</span> <span class="o">=</span> <span class="n">_design_iir</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">designer</span> <span class="o">=</span> <span class="n">_design_fir</span>
+    <span class="k">return</span> <span class="n">designer</span><span class="p">(</span><span class="n">wp</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">gpass</span><span class="p">,</span> <span class="n">gstop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<span class="c1"># -- user methods --------------------</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lowpass</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="n">QuantityLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ZpkType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lowpass</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="n">QuantityLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BAType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lowpass</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="n">QuantityLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sos&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SosType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lowpass</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="n">QuantityLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fir&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TapsType</span><span class="p">:</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="lowpass">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.lowpass">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">lowpass</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="n">QuantityLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">,</span> <span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>  <span class="c1"># noqa: A002</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FilterType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Design a low-pass filter for the given cutoff frequency.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frequency : `float`</span>
+<span class="sd">        Corner frequency of low-pass filter (Hertz).</span>
+
+<span class="sd">    sample_rate : `float`</span>
+<span class="sd">        Sampling rate of target data (Hertz).</span>
+
+<span class="sd">    fstop : `float`, optional</span>
+<span class="sd">        Edge-frequency of stop-band (Hertz).</span>
+
+<span class="sd">    gpass : `float`, optional, default: 2</span>
+<span class="sd">        The maximum loss in the passband (dB).</span>
+
+<span class="sd">    gstop : `float`, optional, default: 30</span>
+<span class="sd">        The minimum attenuation in the stopband (dB).</span>
+
+<span class="sd">    type : `str`, optional, default: ``&#39;iir&#39;``</span>
+<span class="sd">        The filter type, either ``&#39;iir&#39;`` or ``&#39;fir&#39;``.</span>
+
+<span class="sd">    output : `str`, optional, default: ``&#39;zpk&#39;``</span>
+<span class="sd">        The output format for an IIR filter,</span>
+<span class="sd">        either ``&#39;zpk&#39;``, ``&#39;ba&#39;``, or ``&#39;sos&#39;``.</span>
+
+<span class="sd">    kwargs</span>
+<span class="sd">        Other keyword arguments are passed directly to</span>
+<span class="sd">        :func:`~scipy.signal.iirdesign` or :func:`~scipy.signal.firwin`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filter</span>
+<span class="sd">        The formatted filter.</span>
+<span class="sd">        The output format for an IIR filter depends on the input arguments,</span>
+<span class="sd">        default is a tuple of ``(zeros, poles, gain)``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    By default a digital filter is returned, meaning the zeros and poles</span>
+<span class="sd">    are given in the Z-domain in units of radians/sample.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    To create a low-pass filter at 1000 Hz for 4096 Hz-sampled data:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.signal.filter_design import lowpass</span>
+<span class="sd">    &gt;&gt;&gt; lp = lowpass(1000, 4096)</span>
+
+<span class="sd">    To view the filter, you can use the `~gwpy.plot.BodePlot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.plot import BodePlot</span>
+<span class="sd">    &gt;&gt;&gt; plot = BodePlot(lp, sample_rate=4096)</span>
+<span class="sd">    &gt;&gt;&gt; plot.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">frequency</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fstop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fstop</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">frequency</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+    <span class="n">fstop</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">fstop</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_design</span><span class="p">(</span>
+        <span class="nb">type</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">,</span>
+        <span class="n">fstop</span><span class="p">,</span>
+        <span class="n">sample_rate</span><span class="p">,</span>
+        <span class="n">gpass</span><span class="p">,</span>
+        <span class="n">gstop</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">highpass</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ZpkType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">highpass</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BAType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">highpass</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sos&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SosType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">highpass</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fir&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TapsType</span><span class="p">:</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="highpass">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.highpass">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">highpass</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">,</span> <span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>  <span class="c1"># noqa: A002</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FilterType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Design a high-pass filter for the given cutoff frequency.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frequency : `float`, `~astropy.units.Quantity`</span>
+<span class="sd">        Corner frequency of high-pass filter.</span>
+
+<span class="sd">    sample_rate : `float`, `~astropy.units.Quantity`</span>
+<span class="sd">        Sampling rate of target data.</span>
+
+<span class="sd">    fstop : `float`</span>
+<span class="sd">        Edge-frequency of stop-band.</span>
+
+<span class="sd">    gpass : `float`</span>
+<span class="sd">        The maximum loss in the passband (dB)</span>
+
+<span class="sd">    gstop : `float`</span>
+<span class="sd">        The minimum attenuation in the stopband (dB).</span>
+
+<span class="sd">    type : `str`</span>
+<span class="sd">        The filter type, either ``&#39;iir&#39;`` or ``&#39;fir&#39;``.</span>
+
+<span class="sd">    output : `str`, optional, default: ``&#39;zpk&#39;``</span>
+<span class="sd">        The output format for an IIR filter,</span>
+<span class="sd">        either ``&#39;zpk&#39;``, ``&#39;ba&#39;``, or ``&#39;sos&#39;``.</span>
+
+<span class="sd">    kwargs</span>
+<span class="sd">        Other keyword arguments are passed directly to</span>
+<span class="sd">        :func:`~scipy.signal.iirdesign` or :func:`~scipy.signal.firwin`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filter</span>
+<span class="sd">        The formatted filter.</span>
+<span class="sd">        The output format for an IIR filter depends on the input arguments,</span>
+<span class="sd">        default is a tuple of ``(zeros, poles, gain)``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    By default a digital filter is returned, meaning the zeros and poles</span>
+<span class="sd">    are given in the Z-domain in units of radians/sample.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    To create a high-pass filter at 100 Hz for 4096 Hz-sampled data:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.signal.filter_design import highpass</span>
+<span class="sd">    &gt;&gt;&gt; hp = highpass(100, 4096)</span>
+
+<span class="sd">    To view the filter, you can use the `~gwpy.plot.BodePlot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.plot import BodePlot</span>
+<span class="sd">    &gt;&gt;&gt; plot = BodePlot(hp, sample_rate=4096)</span>
+<span class="sd">    &gt;&gt;&gt; plot.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">frequency</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fstop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fstop</span> <span class="o">=</span> <span class="n">frequency</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="mf">3.</span>
+    <span class="k">return</span> <span class="n">_design</span><span class="p">(</span>
+        <span class="nb">type</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">,</span>
+        <span class="n">fstop</span><span class="p">,</span>
+        <span class="n">sample_rate</span><span class="p">,</span>
+        <span class="n">gpass</span><span class="p">,</span>
+        <span class="n">gstop</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bandpass</span><span class="p">(</span>
+    <span class="n">flow</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fhigh</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QuantityLike</span><span class="p">,</span> <span class="n">QuantityLike</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ZpkType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bandpass</span><span class="p">(</span>
+    <span class="n">flow</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fhigh</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QuantityLike</span><span class="p">,</span> <span class="n">QuantityLike</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BAType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bandpass</span><span class="p">(</span>
+    <span class="n">flow</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fhigh</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QuantityLike</span><span class="p">,</span> <span class="n">QuantityLike</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sos&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SosType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bandpass</span><span class="p">(</span>
+    <span class="n">flow</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fhigh</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QuantityLike</span><span class="p">,</span> <span class="n">QuantityLike</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;fir&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TapsType</span><span class="p">:</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="bandpass">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.bandpass">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bandpass</span><span class="p">(</span>
+    <span class="n">flow</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fhigh</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">fstop</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QuantityLike</span><span class="p">,</span> <span class="n">QuantityLike</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gpass</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">gstop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">,</span> <span class="s2">&quot;fir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>  <span class="c1"># noqa: A002</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FilterType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Design a band-pass filter for the given cutoff frequencies.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    flow : `float`, `~astropy.units.Quantity`</span>
+<span class="sd">        Lower corner frequency of pass band.</span>
+
+<span class="sd">    fhigh : `float`, `~astropy.units.Quantity`</span>
+<span class="sd">        Upper corner frequency of pass band.</span>
+
+<span class="sd">    sample_rate : `float`, `~astropy.units.Quantity`</span>
+<span class="sd">        Sampling rate of target data.</span>
+
+<span class="sd">    fstop : `tuple` of `float`</span>
+<span class="sd">        `(low, high)` edge-frequencies of stop band.</span>
+
+<span class="sd">    gpass : `float`</span>
+<span class="sd">        The maximum loss in the passband (dB).</span>
+
+<span class="sd">    gstop : `float`</span>
+<span class="sd">        The minimum attenuation in the stopband (dB).</span>
+
+<span class="sd">    type : `str`</span>
+<span class="sd">        The filter type, either ``&#39;iir&#39;`` or ``&#39;fir&#39;``.</span>
+
+<span class="sd">    output : `str`, optional, default: ``&#39;zpk&#39;``</span>
+<span class="sd">        The output format for an IIR filter,</span>
+<span class="sd">        either ``&#39;zpk&#39;``, ``&#39;ba&#39;``, or ``&#39;sos&#39;``.</span>
+
+<span class="sd">    kwargs</span>
+<span class="sd">        Other keyword arguments are passed directly to</span>
+<span class="sd">        :func:`~scipy.signal.iirdesign` or :func:`~scipy.signal.firwin`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filter</span>
+<span class="sd">        The formatted filter.</span>
+<span class="sd">        The output format for an IIR filter depends on the input arguments,</span>
+<span class="sd">        default is a tuple of `(zeros, poles, gain)`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    By default a digital filter is returned, meaning the zeros and poles</span>
+<span class="sd">    are given in the Z-domain in units of radians/sample.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    To create a band-pass filter for 100-1000 Hz for 4096 Hz-sampled data:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.signal.filter_design import bandpass</span>
+<span class="sd">    &gt;&gt;&gt; bp = bandpass(100, 1000, 4096)</span>
+
+<span class="sd">    To view the filter, you can use the `~gwpy.plot.BodePlot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.plot import BodePlot</span>
+<span class="sd">    &gt;&gt;&gt; plot = BodePlot(bp, sample_rate=4096)</span>
+<span class="sd">    &gt;&gt;&gt; plot.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">flow</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">flow</span><span class="p">)</span>
+    <span class="n">fhigh</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">fhigh</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fstop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fstop</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">flow</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">,</span>
+            <span class="nb">min</span><span class="p">(</span><span class="n">fhigh</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="n">fstop</span> <span class="o">=</span> <span class="p">(</span><span class="n">_as_float</span><span class="p">(</span><span class="n">fstop</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">fstop</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;fir&quot;</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;pass_zero&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_design</span><span class="p">(</span>
+        <span class="nb">type</span><span class="p">,</span>
+        <span class="p">[</span><span class="n">flow</span><span class="p">,</span> <span class="n">fhigh</span><span class="p">],</span>
+        <span class="n">fstop</span><span class="p">,</span>
+        <span class="n">sample_rate</span><span class="p">,</span>
+        <span class="n">gpass</span><span class="p">,</span>
+        <span class="n">gstop</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">notch</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ZpkType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">notch</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;ba&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BAType</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="nd">@overload</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">notch</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sos&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SosType</span><span class="p">:</span> <span class="o">...</span>
+
+<div class="viewcode-block" id="notch">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.notch">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">notch</span><span class="p">(</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span><span class="p">,</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;iir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;iir&quot;</span><span class="p">,</span>  <span class="c1"># noqa: A002</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;zpk&quot;</span><span class="p">,</span> <span class="s2">&quot;ba&quot;</span><span class="p">,</span> <span class="s2">&quot;sos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IirFilterType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Design a ZPK notch filter for the given frequency and sampling rate.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    frequency : `float`, `~astropy.units.Quantity`</span>
+<span class="sd">        Frequency (default in Hertz) at which to apply the notch.</span>
+
+<span class="sd">    sample_rate : `float`, `~astropy.units.Quantity`</span>
+<span class="sd">        Number of samples per second for `TimeSeries` to which this notch</span>
+<span class="sd">        filter will be applied.</span>
+
+<span class="sd">    type : `str`, optional, default: &#39;iir&#39;</span>
+<span class="sd">        Type of filter to apply, currently only &#39;iir&#39; is supported.</span>
+
+<span class="sd">    output : `str`, optional, default: &#39;zpk&#39;</span>
+<span class="sd">        Output format for notch.</span>
+
+<span class="sd">    kwargs</span>
+<span class="sd">        Other keyword arguments to pass to `scipy.signal.iirdesign`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filter</span>
+<span class="sd">        The formatted filter.</span>
+<span class="sd">        The output format for an IIR filter depends on the input arguments,</span>
+<span class="sd">        default is a tuple of ``(zeros, poles, gain)``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    scipy.signal.iirdesign</span>
+<span class="sd">        For details on the IIR filter design method and the output formats.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    By default a digital filter is returned, meaning the zeros and poles</span>
+<span class="sd">    are given in the Z-domain in units of radians/sample.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    To create a low-pass filter at 1000 Hz for 4096 Hz-sampled data:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.signal.filter_design import notch</span>
+<span class="sd">    &gt;&gt;&gt; n = notch(100, 4096)</span>
+
+<span class="sd">    To view the filter, you can use the `~gwpy.plot.BodePlot`:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.plot import BodePlot</span>
+<span class="sd">    &gt;&gt;&gt; plot = BodePlot(n, sample_rate=4096)</span>
+<span class="sd">    &gt;&gt;&gt; plot.show()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">frequency</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+    <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">df2</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">low1</span> <span class="o">=</span> <span class="p">(</span><span class="n">frequency</span> <span class="o">-</span> <span class="n">df</span><span class="p">)</span>
+    <span class="n">high1</span> <span class="o">=</span> <span class="p">(</span><span class="n">frequency</span> <span class="o">+</span> <span class="n">df</span><span class="p">)</span>
+    <span class="n">low2</span> <span class="o">=</span> <span class="p">(</span><span class="n">frequency</span> <span class="o">-</span> <span class="n">df2</span><span class="p">)</span>
+    <span class="n">high2</span> <span class="o">=</span> <span class="p">(</span><span class="n">frequency</span> <span class="o">+</span> <span class="n">df2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;iir&quot;</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;gpass&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;gstop&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;ftype&quot;</span><span class="p">,</span> <span class="s2">&quot;ellip&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_design_iir</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">low1</span><span class="p">,</span> <span class="n">high1</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">low2</span><span class="p">,</span> <span class="n">high2</span><span class="p">],</span>
+            <span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Generating </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s2"> notch filters has not been implemented yet&quot;</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># -- Frequency response --------------</span>
+
+<div class="viewcode-block" id="frequency_response">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.filter_design.frequency_response">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">frequency_response</span><span class="p">(</span>
+    <span class="n">filt</span><span class="p">:</span> <span class="n">FilterCompatible</span><span class="p">,</span>
+    <span class="n">frequencies</span><span class="p">:</span> <span class="n">NDArray</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">analog</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="n">QuantityLike</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">UnitBase</span> <span class="o">=</span> <span class="s2">&quot;rad/s&quot;</span><span class="p">,</span>
+    <span class="n">normalize_gain</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the frequency response of a filter at given frequencies.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filt : `FilterCompatible`</span>
+<span class="sd">        Filter definition in one of the supported formats.</span>
+
+<span class="sd">    frequencies : `numpy.ndarray`</span>
+<span class="sd">        Frequencies (in Hz) at which to compute the response.</span>
+
+<span class="sd">    analog : `bool`, optional</span>
+<span class="sd">        Whether the filter is analogue (`True`) or digital (`False`).</span>
+
+<span class="sd">    sample_rate : `astropy.units.Quantity`-like, optional</span>
+<span class="sd">        Sample rate of the digital data (only used if `analog` is `False`).</span>
+
+<span class="sd">    unit : `str`, optional</span>
+<span class="sd">        For analogue ZPK filters, the units in which the zeros and poles are</span>
+<span class="sd">        specified. Either ``&#39;Hz&#39;`` or ``&#39;rad/s&#39;`` (default).</span>
+
+<span class="sd">    normalize_gain : `bool`, optional</span>
+<span class="sd">        Whether to normalize the gain when converting from Hz to rad/s.</span>
+
+<span class="sd">        - `False` (default):</span>
+<span class="sd">          Multiply zeros/poles by -2π but leave gain unchanged.</span>
+<span class="sd">          This matches the LIGO GDS **&#39;f&#39; plane** convention</span>
+<span class="sd">          (``plane=&#39;f&#39;`` in ``s2z()``).</span>
+
+<span class="sd">        - `True`:</span>
+<span class="sd">          Normalize gain to preserve frequency response magnitude.</span>
+<span class="sd">          Gain is scaled by :math:`|∏p_i/∏z_i| · (2π)^{(n_p - n_z)}`.</span>
+<span class="sd">          Use this when your filter was designed with the transfer</span>
+<span class="sd">          function :math:`H(f) = k·∏(f-z_i)/∏(f-p_i)` in Hz.</span>
+<span class="sd">          This matches the LIGO GDS **&#39;n&#39; plane** convention</span>
+<span class="sd">          (``plane=&#39;n&#39;`` in ``s2z()``).</span>
+
+<span class="sd">        Only used for analogue filters in Hz (``analog=True, unit=&quot;Hz&quot;``).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    frequencies : `numpy.ndarray`</span>
+<span class="sd">        Frequencies at which the response was computed.</span>
+<span class="sd">        If ``analog=True, unit=&#39;rad/s&#39;``, these are in rad/s, otherwise</span>
+<span class="sd">        they are in Hz.</span>
+<span class="sd">    response : `numpy.ndarray`</span>
+<span class="sd">        Frequency response of the filter at the given frequencies.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    scipy.signal.freqs</span>
+<span class="sd">    scipy.signal.freqz</span>
+<span class="sd">    scipy.signal.freqz_sos</span>
+<span class="sd">    scipy.signal.freqs_zpk</span>
+<span class="sd">    scipy.signal.freqz_zpk</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filt_</span><span class="p">:</span> <span class="n">BAType</span> <span class="o">|</span> <span class="n">ZpkType</span> <span class="o">|</span> <span class="n">SosType</span>
+    <span class="k">if</span> <span class="n">analog</span><span class="p">:</span>
+        <span class="n">form</span><span class="p">,</span> <span class="n">filt_</span> <span class="o">=</span> <span class="n">prepare_analog_filter</span><span class="p">(</span>
+            <span class="n">filt</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">normalize_gain</span><span class="o">=</span><span class="n">normalize_gain</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="s2">&quot;zpk&quot;</span>
+        <span class="n">filt_</span> <span class="o">=</span> <span class="n">prepare_digital_filter</span><span class="p">(</span>
+            <span class="n">filt</span><span class="p">,</span>
+            <span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">normalize_gain</span><span class="o">=</span><span class="n">normalize_gain</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">form</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Use angular frequencies</span>
+    <span class="k">if</span> <span class="n">frequencies</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">frequencies</span> <span class="o">*=</span> <span class="n">TWO_PI</span>
+
+    <span class="c1"># Compute the filter response</span>
+    <span class="k">if</span> <span class="n">analog</span> <span class="ow">and</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;sos&quot;</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;analog SOS frequency response not supported&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Digital SOS</span>
+    <span class="k">if</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;sos&quot;</span><span class="p">:</span>
+        <span class="n">wfreq</span><span class="p">,</span> <span class="n">fresp</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">freqz_sos</span><span class="p">(</span><span class="n">filt_</span><span class="p">,</span> <span class="n">worN</span><span class="o">=</span><span class="n">frequencies</span><span class="p">)</span>
+    <span class="c1"># Analogue ZPK</span>
+    <span class="k">elif</span> <span class="n">analog</span> <span class="ow">and</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span><span class="p">:</span>
+        <span class="n">filt_</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;ZpkType&quot;</span><span class="p">,</span> <span class="n">filt_</span><span class="p">)</span>
+        <span class="n">wfreq</span><span class="p">,</span> <span class="n">fresp</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">freqs_zpk</span><span class="p">(</span><span class="o">*</span><span class="n">filt_</span><span class="p">,</span> <span class="n">worN</span><span class="o">=</span><span class="n">frequencies</span><span class="p">)</span>
+    <span class="c1"># Digital ZPK</span>
+    <span class="k">elif</span> <span class="n">form</span> <span class="o">==</span> <span class="s2">&quot;zpk&quot;</span><span class="p">:</span>
+        <span class="n">filt_</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;ZpkType&quot;</span><span class="p">,</span> <span class="n">filt_</span><span class="p">)</span>
+        <span class="n">wfreq</span><span class="p">,</span> <span class="n">fresp</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">freqz_zpk</span><span class="p">(</span><span class="o">*</span><span class="n">filt_</span><span class="p">,</span> <span class="n">worN</span><span class="o">=</span><span class="n">frequencies</span><span class="p">)</span>
+    <span class="c1"># Analogue BA</span>
+    <span class="k">elif</span> <span class="n">analog</span><span class="p">:</span>
+        <span class="n">filt_</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;BAType&quot;</span><span class="p">,</span> <span class="n">filt_</span><span class="p">)</span>
+        <span class="n">wfreq</span><span class="p">,</span> <span class="n">fresp</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">freqs</span><span class="p">(</span><span class="o">*</span><span class="n">filt_</span><span class="p">,</span> <span class="n">worN</span><span class="o">=</span><span class="n">frequencies</span><span class="p">)</span>
+    <span class="c1"># Digital BA</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">filt_</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;BAType&quot;</span><span class="p">,</span> <span class="n">filt_</span><span class="p">)</span>
+        <span class="n">wfreq</span><span class="p">,</span> <span class="n">fresp</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">freqz</span><span class="p">(</span><span class="o">*</span><span class="n">filt_</span><span class="p">,</span> <span class="n">worN</span><span class="o">=</span><span class="n">frequencies</span><span class="p">)</span>
+
+    <span class="c1"># Convert from digital angular frequency to Hz</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">analog</span><span class="p">:</span>
+        <span class="n">wfreq</span> <span class="o">*=</span> <span class="n">_as_float</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="n">TWO_PI</span>
+    <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;Hz&quot;</span><span class="p">:</span>
+        <span class="n">wfreq</span> <span class="o">/=</span> <span class="n">TWO_PI</span>
+
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">wfreq</span><span class="p">,</span>
+        <span class="n">fresp</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

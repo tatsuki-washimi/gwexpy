@@ -1,0 +1,540 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ja" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy で DTT XML ファイルを読み込む &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">gwexpy で DTT XML ファイルを読み込む</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/case_dttxml_calibration.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>このページは Jupyter Notebook から生成されました。
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/ja/user_guide/tutorials/case_dttxml_calibration.ipynb">ノートブックをダウンロード (.ipynb)</a></p>
+</div>
+<section id="gwexpy-で-DTT-XML-ファイルを読み込む">
+<h1>gwexpy で DTT XML ファイルを読み込む<a class="headerlink" href="#gwexpy-で-DTT-XML-ファイルを読み込む" title="Link to this heading"></a></h1>
+<p><a class="reference external" href="https://dtt.ligo.org/">DTT（Diagnostic Tool for Transfer functions）</a>は、 重力波検出器サイトで標準的に使われる伝達関数測定ツールです。 測定結果は <strong>DTT XML</strong> ファイルとして保存されます。</p>
+<p>このチュートリアルでは以下を学びます：</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">extract_xml_channels()</span></code> でファイル内のチャネルを確認する</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load_dttxml_products()</span></code> で全測定量を読み込む</p></li>
+<li><p><strong>Bode プロット</strong>（振幅・位相）と<strong>コヒーレンス</strong>を可視化する</p></li>
+<li><p>gwexpy のフィッティング機能で共振パラメータを推定する</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">case_transfer_function.ipynb</span></code>（時系列から伝達関数を推定するチュートリアル）の 発展版として、<strong>DTT が出力した測定済み結果</strong>を直接扱うワークフローを示します。</p>
+<section id="セットアップ">
+<h2>セットアップ<a class="headerlink" href="#セットアップ" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.io.dttxml_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">extract_xml_channels</span><span class="p">,</span> <span class="n">load_dttxml_products</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="1.-合成-DTT-XML-ファイルの作成">
+<h2>1. 合成 DTT XML ファイルの作成<a class="headerlink" href="#1.-合成-DTT-XML-ファイルの作成" title="Link to this heading"></a></h2>
+<p>実際の運用では既存の <code class="docutils literal notranslate"><span class="pre">.xml</span></code> ファイルを使いますが、 ここでは KAGRA 懸架系の伝達関数測定を模した合成ファイルを生成します。</p>
+<p>生成するファイルには以下の3種類の測定量が含まれます：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>測定量</p></th>
+<th class="head"><p>型</p></th>
+<th class="head"><p>内容</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PSD</p></td>
+<td><p>実数</p></td>
+<td><p>励振入力の PSD</p></td>
+</tr>
+<tr class="row-odd"><td><p>TF</p></td>
+<td><p>複素数</p></td>
+<td><p>変位 / 励振の伝達関数</p></td>
+</tr>
+<tr class="row-even"><td><p>COH</p></td>
+<td><p>実数</p></td>
+<td><p>変位と励振間のコヒーレンス</p></td>
+</tr>
+</tbody>
+</table>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">base64</span><span class="o">,</span><span class="w"> </span><span class="nn">pathlib</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_synthetic_dttxml</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;合成共振系データを持つ最小限の DTT XML を生成する。&quot;&quot;&quot;</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">f0_hz</span><span class="p">,</span> <span class="n">df</span> <span class="o">=</span> <span class="mi">512</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">*</span> <span class="n">df</span> <span class="o">+</span> <span class="n">f0_hz</span>
+
+    <span class="c1"># 共振系: f_res=100 Hz, Q=30</span>
+    <span class="n">f_res</span><span class="p">,</span> <span class="n">Q</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">30.0</span>
+    <span class="n">tf_data</span> <span class="o">=</span> <span class="n">f_res</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">f_res</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">freqs</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">freqs</span> <span class="o">*</span> <span class="n">f_res</span> <span class="o">/</span> <span class="n">Q</span><span class="p">)</span>
+    <span class="n">tf_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">coh_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">freqs</span> <span class="o">-</span> <span class="n">f_res</span><span class="p">)</span> <span class="o">/</span> <span class="mf">30.0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.97</span> <span class="o">+</span> <span class="mf">0.02</span>
+    <span class="n">psd_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-10</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">b64f32</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">b64c64</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">imag</span>
+        <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">p</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;    &lt;Param Name=&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; Type=&quot;string&quot;&gt;</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1">&lt;/Param&gt;&#39;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">block</span><span class="p">(</span><span class="n">attrs</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">N_</span><span class="p">):</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;  &lt;LIGO_LW Type=&quot;Spectrum&quot;&gt;&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+        <span class="n">lines</span> <span class="o">+=</span> <span class="p">[</span>
+            <span class="s1">&#39;    &lt;Time Name=&quot;t0&quot;&gt;1300000000&lt;/Time&gt;&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;    &lt;Array Type=&quot;</span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s1">&quot;&gt;&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;      &lt;Dim&gt;</span><span class="si">{</span><span class="n">N_</span><span class="si">}</span><span class="s1">&lt;/Dim&gt;&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;      &lt;Stream Encoding=&quot;LittleEndian,base64&quot;&gt;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1">&lt;/Stream&gt;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;    &lt;/Array&gt;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;  &lt;/LIGO_LW&gt;&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+    <span class="n">xml</span> <span class="o">=</span> <span class="s2">&quot;&lt;?xml version=&#39;1.0&#39; encoding=&#39;utf-8&#39;?&gt;</span><span class="se">\n</span><span class="s2">&lt;LIGO_LW&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">xml</span> <span class="o">+=</span> <span class="n">block</span><span class="p">({</span><span class="s2">&quot;ChannelA&quot;</span><span class="p">:</span> <span class="s2">&quot;K1:SUS-ITMX_EXCITATION&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">N</span><span class="p">)},</span>
+                 <span class="n">b64f32</span><span class="p">(</span><span class="n">psd_data</span><span class="p">),</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">xml</span> <span class="o">+=</span> <span class="n">block</span><span class="p">({</span><span class="s2">&quot;ChannelA&quot;</span><span class="p">:</span> <span class="s2">&quot;K1:SUS-ITMX_DISP_DQ&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;ChannelB&quot;</span><span class="p">:</span> <span class="s2">&quot;K1:SUS-ITMX_EXCITATION&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">N</span><span class="p">)},</span>
+                 <span class="n">b64c64</span><span class="p">(</span><span class="n">tf_data</span><span class="p">),</span> <span class="s2">&quot;floatComplex&quot;</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="n">xml</span> <span class="o">+=</span> <span class="n">block</span><span class="p">({</span><span class="s2">&quot;ChannelA&quot;</span><span class="p">:</span> <span class="s2">&quot;K1:SUS-ITMX_DISP_DQ&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;ChannelB&quot;</span><span class="p">:</span> <span class="s2">&quot;K1:SUS-ITMX_EXCITATION&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;Subtype&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;f0&quot;</span><span class="p">:</span> <span class="s2">&quot;0.0&quot;</span><span class="p">,</span> <span class="s2">&quot;df&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">N</span><span class="p">)},</span>
+                 <span class="n">b64f32</span><span class="p">(</span><span class="n">coh_data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)),</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">xml</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;/LIGO_LW&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">xml</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;一時ファイルへ合成 DTT XML を書き込みました&quot;</span><span class="p">)</span>
+
+<span class="n">xml_path</span> <span class="o">=</span> <span class="s2">&quot;/tmp/kagra_sus_itmx.xml&quot;</span>
+<span class="n">make_synthetic_dttxml</span><span class="p">(</span><span class="n">xml_path</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+一時ファイルへ合成 DTT XML を書き込みました
+</pre></div></div>
+</div>
+</section>
+<section id="2.-チャネルの確認">
+<h2>2. チャネルの確認<a class="headerlink" href="#2.-チャネルの確認" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">extract_xml_channels()</span></code> はデータ本体を読み込まずにチャネル名と アクティブ状態だけを返します。大容量ファイルのクイックスキャンに便利です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">channels</span> <span class="o">=</span> <span class="n">extract_xml_channels</span><span class="p">(</span><span class="n">xml_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;チャネル数: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;active&quot;</span> <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s2">&quot;active&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;inactive&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  [</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+チャネル数: 0
+</pre></div></div>
+</div>
+</section>
+<section id="3.-測定量の読み込み">
+<h2>3. 測定量の読み込み<a class="headerlink" href="#3.-測定量の読み込み" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">load_dttxml_products()</span></code> は測定量の種類をキーとする辞書を返します。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;PSD&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;freq&quot;</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;channel_a&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">}],</span>
+  <span class="s2">&quot;TF&quot;</span><span class="p">:</span>  <span class="p">[{</span><span class="s2">&quot;freq&quot;</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">ndarray</span> <span class="p">(</span><span class="n">複素数</span><span class="p">),</span> <span class="o">...</span><span class="p">}],</span>
+  <span class="s2">&quot;COH&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;freq&quot;</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="o">...</span><span class="p">}],</span>
+  <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">native=True</span></code> を指定すると gwexpy 組み込みパーサーを使用します。 dttxml パッケージの複素数位相損失バグを回避できるため推奨です。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">products</span> <span class="o">=</span> <span class="n">load_dttxml_products</span><span class="p">(</span><span class="n">xml_path</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;取得した測定量:&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">products</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="k">for</span> <span class="n">ptype</span><span class="p">,</span> <span class="n">items</span> <span class="ow">in</span> <span class="n">products</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">ptype</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span><span class="si">}</span><span class="s2"> 件&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">(</span><span class="n">items</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="n">items</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    ChannelA=</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;channel_a&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;  N=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;frequencies&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">  df=</span><span class="si">{</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;frequencies&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;frequencies&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+取得した測定量: [&#39;PSD&#39;, &#39;ASD&#39;, &#39;TF&#39;, &#39;CSD&#39;]
+  PSD: 1 件
+    ChannelA=K1:SUS-ITMX_EXCITATION  N=512  df=1.000 Hz
+  ASD: 1 件
+    ChannelA=K1:SUS-ITMX_EXCITATION  N=512  df=1.000 Hz
+  TF: 1 件
+    ChannelA=K1:SUS-ITMX_DISP_DQ  N=512  df=1.000 Hz
+  CSD: 1 件
+    ChannelA=K1:SUS-ITMX_DISP_DQ  N=512  df=1.000 Hz
+</pre></div></div>
+</div>
+</section>
+<section id="4.-Bode-プロット-—-伝達関数の可視化">
+<h2>4. Bode プロット — 伝達関数の可視化<a class="headerlink" href="#4.-Bode-プロット-—-伝達関数の可視化" title="Link to this heading"></a></h2>
+<p>TF データを取り出し、振幅と位相を周波数の関数としてプロットします。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_tf_items</span> <span class="o">=</span> <span class="n">products</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;TF&quot;</span><span class="p">,</span> <span class="p">[])</span>
+<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_tf_items</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="n">_tf_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_tf_items</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_tf_items</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="n">_tf_list</span> <span class="o">=</span> <span class="n">_tf_items</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_tf_list</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">_tf_list</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: TF データが見つかりません&quot;</span><span class="p">)</span>
+    <span class="n">tf_prod</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">tf_prod</span> <span class="o">=</span> <span class="n">_tf_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">tf_prod</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TF 解析をスキップします（データなし）&quot;</span><span class="p">)</span>
+    <span class="n">freqs</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tf_data</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">freqs</span>   <span class="o">=</span> <span class="n">tf_prod</span><span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">]</span>
+    <span class="n">tf_data</span> <span class="o">=</span> <span class="n">tf_prod</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>  <span class="c1"># 複素数配列</span>
+
+<span class="k">if</span> <span class="n">tf_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">freqs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax_mag</span><span class="p">,</span> <span class="n">ax_ph</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">ax_mag</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tf_data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">ax_mag</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;振幅 [m/N]&quot;</span><span class="p">)</span>
+    <span class="n">ax_mag</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;KAGRA ITMX 懸架系：伝達関数（DTT XML より）&quot;</span><span class="p">)</span>
+    <span class="n">ax_mag</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+
+    <span class="n">ax_ph</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">tf_data</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                   <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkorange&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">ax_ph</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;位相 [deg]&quot;</span><span class="p">)</span>
+    <span class="n">ax_ph</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;周波数 [Hz]&quot;</span><span class="p">)</span>
+    <span class="n">ax_ph</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+    <span class="n">ax_ph</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_dttxml_calibration_10_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_dttxml_calibration_10_0.png" />
+</div>
+</div>
+</section>
+<section id="5.-コヒーレンス">
+<h2>5. コヒーレンス<a class="headerlink" href="#5.-コヒーレンス" title="Link to this heading"></a></h2>
+<p>コヒーレンスは測定の信頼性指標です。1 に近いほど出力が入力で よく説明されることを意味します。0.9 以下の周波数帯は 信頼性が低く、フィッティングの対象から外すことが推奨されます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">_coh_items</span> <span class="o">=</span> <span class="n">products</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;COH&quot;</span><span class="p">,</span> <span class="n">products</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CSD&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+<span class="n">_coh_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_coh_items</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_coh_items</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">_coh_items</span><span class="p">)</span>
+<span class="n">coh_prod</span> <span class="o">=</span> <span class="n">_coh_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">_coh_list</span> <span class="k">else</span> <span class="kc">None</span>
+<span class="k">if</span> <span class="n">coh_prod</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skipping COH analysis (no data)&quot;</span><span class="p">)</span>
+    <span class="n">coh_freqs</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">coh_data</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">coh_freqs</span> <span class="o">=</span> <span class="n">coh_prod</span><span class="p">[</span><span class="s2">&quot;frequencies&quot;</span><span class="p">]</span>
+    <span class="n">coh_data</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coh_prod</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>  <span class="c1"># abs handles both real and complex</span>
+
+<span class="k">if</span> <span class="n">coh_freqs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">coh_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">coh_freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">coh_data</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;seagreen&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Coherence = 0.9&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Coherence&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Coherence: ITMX Displacement vs. Excitation&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_dttxml_calibration_12_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_dttxml_calibration_12_0.png" />
+</div>
+</div>
+</section>
+<section id="6.-共振モデルのフィッティング">
+<h2>6. 共振モデルのフィッティング<a class="headerlink" href="#6.-共振モデルのフィッティング" title="Link to this heading"></a></h2>
+<p>機械的共振付近の伝達関数は2次系で近似できます：</p>
+<div class="math notranslate nohighlight">
+\[H(f) = \frac{A \, f_0^2}{f_0^2 - f^2 + i\, f f_0 / Q}\]</div>
+<p>gwexpy のフィッティング機能を使って、 共振周波数 <span class="math notranslate nohighlight">\(f_0\)</span>、Q 値、ゲイン <span class="math notranslate nohighlight">\(A\)</span> を DTT XML データから直接推定します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_series</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+
+<span class="k">if</span> <span class="n">tf_data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">freqs</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">coh_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skipping fit (no TF or COH data)&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Restrict to the frequency band where coherence &gt; 0.9</span>
+    <span class="n">good</span> <span class="o">=</span> <span class="n">coh_data</span> <span class="o">&gt;</span> <span class="mf">0.9</span>
+    <span class="n">fit_freqs</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">good</span><span class="p">]</span>
+    <span class="n">fit_data</span>  <span class="o">=</span> <span class="n">tf_data</span><span class="p">[</span><span class="n">good</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">resonator_model</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">f_res</span><span class="p">,</span> <span class="n">Q</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">A</span> <span class="o">*</span> <span class="n">f_res</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">f_res</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">f</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">f</span> <span class="o">*</span> <span class="n">f_res</span> <span class="o">/</span> <span class="n">Q</span><span class="p">)</span>
+
+    <span class="c1"># Wrap data in FrequencySeries for fit_series</span>
+    <span class="n">fs_to_fit</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">fit_data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">fit_freqs</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m/N&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span>
+            <span class="n">fs_to_fit</span><span class="p">,</span>
+            <span class="n">resonator_model</span><span class="p">,</span>
+            <span class="n">p0</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">95.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">],</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;complex_least_squares&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">A_fit</span><span class="p">,</span> <span class="n">f0_fit</span><span class="p">,</span> <span class="n">Q_fit</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitted resonance frequency : </span><span class="si">{</span><span class="n">f0_fit</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz  (true: 100.0 Hz)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitted quality factor      : </span><span class="si">{</span><span class="n">Q_fit</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">   (true: 30.0)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitted gain                : </span><span class="si">{</span><span class="n">A_fit</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fit failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">A_fit</span> <span class="o">=</span> <span class="n">f0_fit</span> <span class="o">=</span> <span class="n">Q_fit</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Fitted resonance frequency : 100.00 Hz  (true: 100.0 Hz)
+Fitted quality factor      : 30.0   (true: 30.0)
+Fitted gain                : 1.000
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">tf_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">freqs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># Overlay the fitted model on the Bode plot</span>
+    <span class="n">f_model</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">511</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">tf_model</span> <span class="o">=</span> <span class="n">resonator_model</span><span class="p">(</span><span class="n">f_model</span><span class="p">,</span> <span class="n">A_fit</span><span class="p">,</span> <span class="n">f0_fit</span><span class="p">,</span> <span class="n">Q_fit</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+        <span class="n">tf_model</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax_mag</span><span class="p">,</span> <span class="n">ax_ph</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">ax_mag</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tf_data</span><span class="p">[</span><span class="mi">1</span><span class="p">:]),</span>
+                  <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;DTT data&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tf_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax_mag</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">f_model</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tf_model</span><span class="p">),</span>
+                      <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                      <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Fit: f0=</span><span class="si">{</span><span class="n">f0_fit</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz, Q=</span><span class="si">{</span><span class="n">Q_fit</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ax_mag</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Magnitude [m/N]&quot;</span><span class="p">)</span>
+    <span class="n">ax_mag</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax_mag</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+
+    <span class="n">phase_deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">tf_data</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">deg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ax_ph</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">phase_deg</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkorange&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">ax_ph</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Phase [deg]&quot;</span><span class="p">)</span>
+    <span class="n">ax_ph</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+    <span class="n">ax_ph</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+    <span class="n">ax_ph</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_ja_user_guide_tutorials_case_dttxml_calibration_15_0.png" src="../../../../_images/web_ja_user_guide_tutorials_case_dttxml_calibration_15_0.png" />
+</div>
+</div>
+</section>
+<section id="まとめ">
+<h2>まとめ<a class="headerlink" href="#まとめ" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>ステップ</p></th>
+<th class="head"><p>gwexpy API</p></th>
+<th class="head"><p>出力</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>チャネル確認</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">extract_xml_channels(path)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{&quot;name&quot;,</span> <span class="pre">&quot;active&quot;}</span></code> のリスト</p></td>
+</tr>
+<tr class="row-odd"><td><p>測定量の読み込み</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">load_dttxml_products(path,</span> <span class="pre">native=True)</span></code></p></td>
+<td><p>TF / PSD / COH 辞書</p></td>
+</tr>
+<tr class="row-even"><td><p>Bode プロット</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FrequencySeries</span></code> + matplotlib</p></td>
+<td><p>振幅・位相グラフ</p></td>
+</tr>
+<tr class="row-odd"><td><p>共振フィット</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fit_series(freqs,</span> <span class="pre">data,</span> <span class="pre">model,</span> <span class="pre">p0)</span></code></p></td>
+<td><p><span class="math notranslate nohighlight">\(f_0\)</span>, <span class="math notranslate nohighlight">\(Q\)</span>, <span class="math notranslate nohighlight">\(A\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>実測ファイルを使うときの注意点：</strong></p>
+<ul class="simple">
+<li><p>dttxml パッケージがインストール済みなら <code class="docutils literal notranslate"><span class="pre">native=False</span></code>（デフォルト）が高速。</p></li>
+<li><p>複素 TF で位相が飛ぶ場合は <code class="docutils literal notranslate"><span class="pre">native=True</span></code> を指定してください（既知バグの回避）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load_dttxml_products()</span></code> の返却キー：<code class="docutils literal notranslate"><span class="pre">&quot;TF&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;STF&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;PSD&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ASD&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;CSD&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;COH&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;TS&quot;</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

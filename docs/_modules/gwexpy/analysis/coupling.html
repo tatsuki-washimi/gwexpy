@@ -1,0 +1,1032 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.analysis.coupling &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.analysis.coupling</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.analysis.coupling</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Coupling Function Analysis Module for gwexpy.</span>
+
+<span class="sd">Estimates the coupling function (CF) with flexible threshold strategies.</span>
+<span class="sd">Threshold strategies are defined in :mod:`gwexpy.analysis.threshold`.</span>
+<span class="sd">The result container is defined in :mod:`gwexpy.analysis.coupling_result`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..table.segment_table</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegmentTable</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.coupling_result</span><span class="w"> </span><span class="kn">import</span> <span class="n">CouplingResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.threshold</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PercentileThreshold</span><span class="p">,</span>
+    <span class="n">RatioThreshold</span><span class="p">,</span>
+    <span class="n">SigmaThreshold</span><span class="p">,</span>
+    <span class="n">ThresholdStrategy</span><span class="p">,</span>
+    <span class="n">_align_psd_values_to_reference</span><span class="p">,</span>  <span class="c1"># re-export for test compatibility  # noqa: F401</span>
+    <span class="n">_index_values</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;CouplingFunctionAnalysis&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CouplingResult&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PercentileThreshold&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RatioThreshold&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SigmaThreshold&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ThresholdStrategy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_align_psd_values_to_reference&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;estimate_bkg_mem_bytes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;estimate_coupling&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="estimate_bkg_mem_bytes">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.estimate_bkg_mem_bytes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_bkg_mem_bytes</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stride</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">fs</span><span class="p">:</span> <span class="nb">float</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimate memory required for a background SegmentTable.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bytes_est : int</span>
+<span class="sd">        Estimated memory in bytes (including 20% overhead).</span>
+<span class="sd">    n_rows : int</span>
+<span class="sd">        Number of rows.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">duration</span> <span class="o">-</span> <span class="n">fftlength</span><span class="p">)</span> <span class="o">/</span> <span class="n">stride</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">n_freqs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fftlength</span> <span class="o">*</span> <span class="n">fs</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">bytes_est</span> <span class="o">=</span> <span class="n">n_rows</span> <span class="o">*</span> <span class="n">n_freqs</span> <span class="o">*</span> <span class="mi">8</span>  <span class="c1"># float64</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">bytes_est</span> <span class="o">*</span> <span class="mf">1.2</span><span class="p">),</span> <span class="n">n_rows</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_bkg_segment_table</span><span class="p">(</span>
+    <span class="n">ts_bkg</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">stride</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">memory_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>  <span class="c1"># Default 2GB</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentTable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper to convert a background TimeSeries into a SegmentTable of PSDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.segments</span><span class="w"> </span><span class="kn">import</span> <span class="n">Segment</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..table.segment_table</span><span class="w"> </span><span class="kn">import</span> <span class="n">SegmentTable</span>
+
+    <span class="k">if</span> <span class="n">stride</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">stride</span> <span class="o">=</span> <span class="n">fftlength</span>
+
+    <span class="n">duration</span> <span class="o">=</span> <span class="n">ts_bkg</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ts_bkg</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">fs</span> <span class="o">=</span> <span class="n">ts_bkg</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="c1"># --- Step-wise Stride Adjustment for Memory Control ---</span>
+    <span class="n">mem_size</span><span class="p">,</span> <span class="n">n_rows</span> <span class="o">=</span> <span class="n">estimate_bkg_mem_bytes</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">fftlength</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">mem_size</span> <span class="o">&gt;</span> <span class="n">memory_limit</span><span class="p">:</span>
+        <span class="n">orig_stride</span> <span class="o">=</span> <span class="n">stride</span>
+        <span class="c1"># Increase stride automatically up to 10x fftlength to fit memory</span>
+        <span class="k">while</span> <span class="n">mem_size</span> <span class="o">&gt;</span> <span class="n">memory_limit</span> <span class="ow">and</span> <span class="n">stride</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">fftlength</span> <span class="o">*</span> <span class="mi">10</span><span class="p">):</span>
+            <span class="n">stride</span> <span class="o">*=</span> <span class="mi">2</span>
+            <span class="n">mem_size</span><span class="p">,</span> <span class="n">n_rows</span> <span class="o">=</span> <span class="n">estimate_bkg_mem_bytes</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">fftlength</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">fs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mem_size</span> <span class="o">&gt;</span> <span class="n">memory_limit</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Background SegmentTable memory estimate (</span><span class="si">{</span><span class="n">mem_size</span><span class="o">/</span><span class="mf">1e6</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB) &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;exceeds limit (</span><span class="si">{</span><span class="n">memory_limit</span><span class="o">/</span><span class="mf">1e6</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB) even after stride adjustment. &quot;</span>
+                <span class="s2">&quot;Increase &#39;memory_limit&#39; or use a larger &#39;bkg_stride&#39;.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Increased bkg_stride from </span><span class="si">%.2f</span><span class="s2">s to </span><span class="si">%.2f</span><span class="s2">s to fit memory limit (</span><span class="si">%.2f</span><span class="s2"> MB).&quot;</span><span class="p">,</span>
+            <span class="n">orig_stride</span><span class="p">,</span>
+            <span class="n">stride</span><span class="p">,</span>
+            <span class="n">memory_limit</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;Building bkg SegmentTable: </span><span class="si">%d</span><span class="s2"> rows, estimated </span><span class="si">%.2f</span><span class="s2"> MB.&quot;</span><span class="p">,</span>
+        <span class="n">n_rows</span><span class="p">,</span>
+        <span class="n">mem_size</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">segments</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">ts_bkg</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rows</span><span class="p">):</span>
+        <span class="n">t_s</span> <span class="o">=</span> <span class="n">t0</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">stride</span>
+        <span class="n">t_e</span> <span class="o">=</span> <span class="n">t_s</span> <span class="o">+</span> <span class="n">fftlength</span>
+        <span class="n">segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Segment</span><span class="p">(</span><span class="n">t_s</span><span class="p">,</span> <span class="n">t_e</span><span class="p">))</span>
+
+    <span class="n">st</span> <span class="o">=</span> <span class="n">SegmentTable</span><span class="o">.</span><span class="n">from_segments</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span>
+
+    <span class="c1"># --- Materialization Strategy for Joblib Pickling ---</span>
+    <span class="c1"># We materialize PSDs directly into the table row by row.</span>
+    <span class="c1"># Since we already verified it fits in memory_limit, this is safe and pickle-stable.</span>
+    <span class="n">kept_segments</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">psds</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">:</span>
+        <span class="n">cropped</span> <span class="o">=</span> <span class="n">ts_bkg</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">seg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">seg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">cropped</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">cropped</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">fftlength</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Skipping background segment because its cropped duration is &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;shorter than fftlength (</span><span class="si">{</span><span class="n">fftlength</span><span class="si">}</span><span class="s2">s).&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">cropped</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="n">kept_segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+        <span class="n">psds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">psds</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No background segments remain after boundary checks.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">psds</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">segments</span><span class="p">):</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">SegmentTable</span><span class="o">.</span><span class="n">from_segments</span><span class="p">(</span><span class="n">kept_segments</span><span class="p">)</span>
+
+    <span class="n">st</span><span class="o">.</span><span class="n">add_series_column</span><span class="p">(</span><span class="s2">&quot;psd&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">psds</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;frequencyseries&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">st</span>
+
+
+<span class="c1"># --- Helper for Parallel Processing ---</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_single_target</span><span class="p">(</span>
+    <span class="n">tgt_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">ts_tgt_inj</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">ts_tgt_bkg</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">psd_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+    <span class="n">psd_wit_inj</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">psd_wit_bkg</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+    <span class="n">mask_wit</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">delta_wit</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">witness_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">ts_wit_inj</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">ts_wit_bkg</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">threshold_target</span><span class="p">:</span> <span class="n">ThresholdStrategy</span><span class="p">,</span>
+    <span class="n">check_kwargs</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">freq_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">bkg_table</span><span class="p">:</span> <span class="n">SegmentTable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CouplingResult</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process a single target channel.</span>
+<span class="sd">    This function is defined at module level to ensuring picklability for multiprocessing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Target PSDs</span>
+    <span class="n">psd_tgt_inj</span> <span class="o">=</span> <span class="n">ts_tgt_inj</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="o">**</span><span class="n">psd_kwargs</span><span class="p">)</span>
+    <span class="n">psd_tgt_bkg</span> <span class="o">=</span> <span class="n">ts_tgt_bkg</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="o">**</span><span class="n">psd_kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Frequency check</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
+        <span class="n">_index_values</span><span class="p">(</span><span class="n">psd_wit_inj</span><span class="o">.</span><span class="n">xindex</span><span class="p">),</span> <span class="n">_index_values</span><span class="p">(</span><span class="n">psd_tgt_inj</span><span class="o">.</span><span class="n">xindex</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Frequency mismatch for </span><span class="si">{</span><span class="n">tgt_key</span><span class="si">}</span><span class="s2">. Skipping.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Check Target Excess</span>
+    <span class="n">mask_tgt</span> <span class="o">=</span> <span class="n">threshold_target</span><span class="o">.</span><span class="n">check</span><span class="p">(</span>
+        <span class="n">psd_tgt_inj</span><span class="p">,</span> <span class="n">psd_tgt_bkg</span><span class="p">,</span> <span class="n">raw_bkg</span><span class="o">=</span><span class="n">ts_tgt_bkg</span><span class="p">,</span> <span class="n">bkg_table</span><span class="o">=</span><span class="n">bkg_table</span><span class="p">,</span> <span class="o">**</span><span class="n">check_kwargs</span>
+    <span class="p">)</span>
+
+    <span class="n">delta_tgt</span> <span class="o">=</span> <span class="n">psd_tgt_inj</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">psd_tgt_bkg</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="c1"># --- Compute CF ---</span>
+    <span class="n">valid_mask</span> <span class="o">=</span> <span class="n">mask_wit</span> <span class="o">&amp;</span> <span class="n">mask_tgt</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">delta_wit</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">delta_tgt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">freq_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">valid_mask</span> <span class="o">=</span> <span class="n">valid_mask</span> <span class="o">&amp;</span> <span class="n">freq_mask</span>
+
+    <span class="n">cf_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">delta_wit</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+        <span class="n">sq_cf</span> <span class="o">=</span> <span class="n">delta_tgt</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">/</span> <span class="n">delta_wit</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+        <span class="n">cf_values</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sq_cf</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cf_unit</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">psd_tgt_inj</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">is_unity</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="s2">&quot;dimensionless&quot;</span>
+            <span class="ow">or</span> <span class="p">(</span><span class="n">ts_tgt_inj</span><span class="o">.</span><span class="n">unit</span> <span class="o">/</span> <span class="n">ts_wit_inj</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Automatic CF unit determination failed, falling back to dimensionless.&quot;</span><span class="p">,</span>
+            <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">cf_unit</span> <span class="o">=</span> <span class="s2">&quot;dimensionless&quot;</span>
+
+    <span class="n">cf</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">cf_values</span><span class="p">,</span>
+        <span class="n">xindex</span><span class="o">=</span><span class="n">psd_wit_inj</span><span class="o">.</span><span class="n">xindex</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">cf_unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;CF: </span><span class="si">{</span><span class="n">witness_key</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">tgt_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># --- Calculate Upper Limit (UL) ---</span>
+    <span class="n">mask_ul</span> <span class="o">=</span> <span class="n">mask_wit</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">~</span><span class="n">mask_tgt</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">delta_wit</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">freq_mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask_ul</span> <span class="o">=</span> <span class="n">mask_ul</span> <span class="o">&amp;</span> <span class="n">freq_mask</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">psd_tgt_threshold</span> <span class="o">=</span> <span class="n">threshold_target</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span>
+            <span class="n">psd_tgt_inj</span><span class="p">,</span> <span class="n">psd_tgt_bkg</span><span class="p">,</span> <span class="n">raw_bkg</span><span class="o">=</span><span class="n">ts_tgt_bkg</span><span class="p">,</span> <span class="n">bkg_table</span><span class="o">=</span><span class="n">bkg_table</span><span class="p">,</span> <span class="o">**</span><span class="n">check_kwargs</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">psd_tgt_threshold</span> <span class="o">=</span> <span class="n">psd_tgt_bkg</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">psd_tgt_threshold</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+        <span class="n">psd_tgt_threshold</span> <span class="o">=</span> <span class="n">psd_tgt_threshold</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="n">delta_thr</span> <span class="o">=</span> <span class="n">psd_tgt_threshold</span> <span class="o">-</span> <span class="n">psd_tgt_bkg</span><span class="o">.</span><span class="n">value</span>
+    <span class="n">mask_ul</span> <span class="o">=</span> <span class="n">mask_ul</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">delta_thr</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">ul_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">delta_wit</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+        <span class="n">sq_ul</span> <span class="o">=</span> <span class="n">delta_thr</span> <span class="o">/</span> <span class="n">delta_wit</span>
+        <span class="n">ul_values</span><span class="p">[</span><span class="n">mask_ul</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sq_ul</span><span class="p">[</span><span class="n">mask_ul</span><span class="p">])</span>
+
+    <span class="n">cf_ul</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+        <span class="n">ul_values</span><span class="p">,</span>
+        <span class="n">xindex</span><span class="o">=</span><span class="n">psd_wit_inj</span><span class="o">.</span><span class="n">xindex</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">cf_unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;CF Upper Limit: </span><span class="si">{</span><span class="n">witness_key</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">tgt_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">CouplingResult</span><span class="p">(</span>
+        <span class="n">cf</span><span class="o">=</span><span class="n">cf</span><span class="p">,</span>
+        <span class="n">cf_ul</span><span class="o">=</span><span class="n">cf_ul</span><span class="p">,</span>
+        <span class="n">psd_witness_inj</span><span class="o">=</span><span class="n">psd_wit_inj</span><span class="p">,</span>
+        <span class="n">psd_witness_bkg</span><span class="o">=</span><span class="n">psd_wit_bkg</span><span class="p">,</span>
+        <span class="n">psd_target_inj</span><span class="o">=</span><span class="n">psd_tgt_inj</span><span class="p">,</span>
+        <span class="n">psd_target_bkg</span><span class="o">=</span><span class="n">psd_tgt_bkg</span><span class="p">,</span>
+        <span class="n">valid_mask</span><span class="o">=</span><span class="n">valid_mask</span><span class="p">,</span>
+        <span class="n">witness_name</span><span class="o">=</span><span class="n">witness_key</span><span class="p">,</span>
+        <span class="n">target_name</span><span class="o">=</span><span class="n">tgt_key</span><span class="p">,</span>
+        <span class="n">ts_witness_inj</span><span class="o">=</span><span class="n">ts_wit_inj</span><span class="p">,</span>
+        <span class="n">ts_witness_bkg</span><span class="o">=</span><span class="n">ts_wit_bkg</span><span class="p">,</span>
+        <span class="n">ts_target_inj</span><span class="o">=</span><span class="n">ts_tgt_inj</span><span class="p">,</span>
+        <span class="n">ts_target_bkg</span><span class="o">=</span><span class="n">ts_tgt_bkg</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">tgt_key</span><span class="p">,</span> <span class="n">res</span>
+
+
+<span class="c1"># --- Analysis Class ---</span>
+
+
+<div class="viewcode-block" id="CouplingFunctionAnalysis">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingFunctionAnalysis">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CouplingFunctionAnalysis</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Analysis class to estimate Coupling Functions (CF).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CouplingFunctionAnalysis.from_time_windows">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingFunctionAnalysis.from_time_windows">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_time_windows</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">,</span>
+        <span class="n">bkg_window</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">inj_window</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">witness</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">threshold_strategy</span><span class="p">:</span> <span class="n">ThresholdStrategy</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">percentile_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.6</span><span class="p">,</span>
+        <span class="n">bkg_stride</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">memory_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CouplingResult</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CouplingResult</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;時間ウィンドウを明示的に指定して結合係数を計算する。</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : TimeSeriesDict</span>
+<span class="sd">            全時間範囲を含む入力データ（背景区間・注入区間の両方を含む）。</span>
+<span class="sd">        bkg_window : tuple of float</span>
+<span class="sd">            背景区間の (t_start, t_end) GPS 時刻 tuple。</span>
+<span class="sd">        inj_window : tuple of float</span>
+<span class="sd">            注入区間の (t_start, t_end) GPS 時刻 tuple。</span>
+<span class="sd">        witness : str, optional</span>
+<span class="sd">            Witness チャンネル名。None の場合は最初のチャンネルを使用。</span>
+<span class="sd">        fftlength : float</span>
+<span class="sd">            FFT 長 [秒]。</span>
+<span class="sd">        overlap : float</span>
+<span class="sd">            オーバーラップ [秒]（デフォルト 0）。</span>
+<span class="sd">        threshold_strategy : ThresholdStrategy or float</span>
+<span class="sd">            Witness/Target 両方に使用する閾値戦略。</span>
+<span class="sd">            float を渡した場合は :class:`RatioThreshold` として解釈。</span>
+<span class="sd">        frange : tuple of float, optional</span>
+<span class="sd">            評価する周波数範囲 (fmin, fmax)。</span>
+<span class="sd">        percentile_factor : float</span>
+<span class="sd">            :class:`PercentileThreshold` 補正係数（Appendix B.1）。</span>
+<span class="sd">        bkg_stride : float, optional</span>
+<span class="sd">            背景 SegmentTable 構築のストライド [秒]。</span>
+<span class="sd">        memory_limit : int</span>
+<span class="sd">            背景 SegmentTable の最大メモリ [bytes]（デフォルト 2 GB）。</span>
+<span class="sd">        n_jobs : int, optional</span>
+<span class="sd">            並列ジョブ数。None で 1、-1 で全コアを使用。</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        CouplingResult or dict of CouplingResult</span>
+<span class="sd">            単一 target の場合は CouplingResult、複数 target の場合は dict。</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; result = CouplingFunctionAnalysis.from_time_windows(</span>
+<span class="sd">        ...     data,</span>
+<span class="sd">        ...     bkg_window=(1000000000, 1000000100),</span>
+<span class="sd">        ...     inj_window=(1000000200, 1000000300),</span>
+<span class="sd">        ...     witness=&quot;V1:ENV_WIT&quot;,</span>
+<span class="sd">        ...     fftlength=4.0,</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bkg_start</span><span class="p">,</span> <span class="n">bkg_end</span> <span class="o">=</span> <span class="n">bkg_window</span>
+        <span class="n">inj_start</span><span class="p">,</span> <span class="n">inj_end</span> <span class="o">=</span> <span class="n">inj_window</span>
+
+        <span class="k">if</span> <span class="n">bkg_end</span> <span class="o">&lt;=</span> <span class="n">bkg_start</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;bkg_window end (</span><span class="si">{</span><span class="n">bkg_end</span><span class="si">}</span><span class="s2">) must be greater than start (</span><span class="si">{</span><span class="n">bkg_start</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">inj_end</span> <span class="o">&lt;=</span> <span class="n">inj_start</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;inj_window end (</span><span class="si">{</span><span class="n">inj_end</span><span class="si">}</span><span class="s2">) must be greater than start (</span><span class="si">{</span><span class="n">inj_start</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">data_bkg</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">bkg_start</span><span class="p">,</span> <span class="n">bkg_end</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="p">)</span>
+        <span class="n">data_inj</span> <span class="o">=</span> <span class="n">TimeSeriesDict</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">inj_start</span><span class="p">,</span> <span class="n">inj_end</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_strategy</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="n">ThresholdStrategy</span> <span class="o">|</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ThresholdStrategy</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="n">RatioThreshold</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">val</span>
+
+        <span class="n">strategy</span> <span class="o">=</span> <span class="n">_ensure_strategy</span><span class="p">(</span><span class="n">threshold_strategy</span><span class="p">)</span>
+
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+            <span class="n">data_inj</span><span class="o">=</span><span class="n">data_inj</span><span class="p">,</span>
+            <span class="n">data_bkg</span><span class="o">=</span><span class="n">data_bkg</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">witness</span><span class="o">=</span><span class="n">witness</span><span class="p">,</span>
+            <span class="n">frange</span><span class="o">=</span><span class="n">frange</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">threshold_witness</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span>
+            <span class="n">threshold_target</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span>
+            <span class="n">percentile_factor</span><span class="o">=</span><span class="n">percentile_factor</span><span class="p">,</span>
+            <span class="n">bkg_stride</span><span class="o">=</span><span class="n">bkg_stride</span><span class="p">,</span>
+            <span class="n">memory_limit</span><span class="o">=</span><span class="n">memory_limit</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CouplingFunctionAnalysis.from_time_windows_batch">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingFunctionAnalysis.from_time_windows_batch">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_time_windows_batch</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">,</span>
+        <span class="n">bkg_window</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">inj_windows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+        <span class="n">witness</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">threshold_strategy</span><span class="p">:</span> <span class="n">ThresholdStrategy</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">percentile_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.6</span><span class="p">,</span>
+        <span class="n">bkg_stride</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">memory_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CouplingResult</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CouplingResult</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;複数の注入区間について一括して結合係数を計算する。</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : TimeSeriesDict</span>
+<span class="sd">            全時間範囲を含む入力データ。</span>
+<span class="sd">        bkg_window : tuple of float</span>
+<span class="sd">            背景区間の (t_start, t_end) GPS 時刻 tuple。全 inj_window で共通。</span>
+<span class="sd">        inj_windows : list of tuple of float</span>
+<span class="sd">            注入区間のリスト。各要素は (t_start, t_end)。</span>
+<span class="sd">        witness : str, optional</span>
+<span class="sd">            Witness チャンネル名。None の場合は最初のチャンネルを使用。</span>
+<span class="sd">        fftlength : float</span>
+<span class="sd">            FFT 長 [秒]。</span>
+<span class="sd">        overlap : float</span>
+<span class="sd">            オーバーラップ [秒]（デフォルト 0）。</span>
+<span class="sd">        threshold_strategy : ThresholdStrategy or float</span>
+<span class="sd">            Witness/Target 両方に使用する閾値戦略。</span>
+<span class="sd">            float を渡した場合は :class:`RatioThreshold` として解釈。</span>
+<span class="sd">        frange : tuple of float, optional</span>
+<span class="sd">            評価する周波数範囲 (fmin, fmax)。</span>
+<span class="sd">        percentile_factor : float</span>
+<span class="sd">            :class:`PercentileThreshold` 補正係数（Appendix B.1）。</span>
+<span class="sd">        bkg_stride : float, optional</span>
+<span class="sd">            背景 SegmentTable 構築のストライド [秒]。</span>
+<span class="sd">        memory_limit : int</span>
+<span class="sd">            背景 SegmentTable の最大メモリ [bytes]（デフォルト 2 GB）。</span>
+<span class="sd">        n_jobs : int, optional</span>
+<span class="sd">            並列ジョブ数。None で 1、-1 で全コアを使用。</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of CouplingResult or dict of CouplingResult</span>
+<span class="sd">            各 inj_window に対応する結果のリスト。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inj_windows</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;inj_windows must contain at least one window.&quot;</span><span class="p">)</span>
+
+        <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CouplingResult</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CouplingResult</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">inj_window</span> <span class="ow">in</span> <span class="n">inj_windows</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_time_windows</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">bkg_window</span><span class="o">=</span><span class="n">bkg_window</span><span class="p">,</span>
+                <span class="n">inj_window</span><span class="o">=</span><span class="n">inj_window</span><span class="p">,</span>
+                <span class="n">witness</span><span class="o">=</span><span class="n">witness</span><span class="p">,</span>
+                <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+                <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+                <span class="n">threshold_strategy</span><span class="o">=</span><span class="n">threshold_strategy</span><span class="p">,</span>
+                <span class="n">frange</span><span class="o">=</span><span class="n">frange</span><span class="p">,</span>
+                <span class="n">percentile_factor</span><span class="o">=</span><span class="n">percentile_factor</span><span class="p">,</span>
+                <span class="n">bkg_stride</span><span class="o">=</span><span class="n">bkg_stride</span><span class="p">,</span>
+                <span class="n">memory_limit</span><span class="o">=</span><span class="n">memory_limit</span><span class="p">,</span>
+                <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="CouplingFunctionAnalysis.auto_calibrate_percentile_factor">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingFunctionAnalysis.auto_calibrate_percentile_factor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">auto_calibrate_percentile_factor</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">raw_bkg</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">percentile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">99.7</span><span class="p">,</span>
+        <span class="n">factor_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Automatically calibrate the percentile correction factor (Appendix B).</span>
+
+<span class="sd">        Finds the factor `c` such that the background noise distribution</span>
+<span class="sd">        best matches the expected statistical floor, aiming for reduced chi2 ≈ 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize_scalar</span>
+
+        <span class="c1"># 1. Prepare Background Distribution</span>
+        <span class="c1"># We use a SegmentTable for the background to get the empirical distribution</span>
+        <span class="n">st_bkg</span> <span class="o">=</span> <span class="n">_build_bkg_segment_table</span><span class="p">(</span>
+            <span class="n">raw_bkg</span><span class="p">,</span> <span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="c1"># psd_matrix shape: (segments, frequencies)</span>
+        <span class="n">psd_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;psd&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">st_bkg</span><span class="p">])</span>
+        <span class="n">p_emp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">psd_matrix</span><span class="p">,</span> <span class="n">percentile</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># 2. Target Baseline (Mean/Median PSD)</span>
+        <span class="n">psd_tgt_bkg</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span> <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="c1"># 3. Objective Function: |Reduced Chi2 - 1|</span>
+        <span class="c1"># We want: mean_target ≈ factor * percentile_bkg</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="n">p_emp</span> <span class="o">*</span> <span class="n">c</span>
+            <span class="c1"># Simple reduced chi2 proxy: average ratio</span>
+            <span class="c1"># (In a real scenario, this would be more complex weighting)</span>
+            <span class="n">r_chi2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">psd_tgt_bkg</span> <span class="o">/</span> <span class="n">threshold</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">r_chi2</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">factor_range</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bounded&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Auto-calibration failed to converge. Using best guess.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;percentile_factor&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">),</span>
+            <span class="s2">&quot;reduced_chi2&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">fun</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">),</span>
+            <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">success</span><span class="p">),</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="CouplingFunctionAnalysis.compute">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingFunctionAnalysis.compute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data_inj</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">,</span>
+        <span class="n">data_bkg</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">witness</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">threshold_witness</span><span class="p">:</span> <span class="n">ThresholdStrategy</span> <span class="o">=</span> <span class="n">RatioThreshold</span><span class="p">(</span><span class="mf">25.0</span><span class="p">),</span>
+        <span class="n">threshold_target</span><span class="p">:</span> <span class="n">ThresholdStrategy</span> <span class="o">=</span> <span class="n">RatioThreshold</span><span class="p">(</span><span class="mf">4.0</span><span class="p">),</span>
+        <span class="n">percentile_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.6</span><span class="p">,</span>
+        <span class="n">bkg_stride</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">memory_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CouplingResult</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CouplingResult</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute Coupling Function(s) from TimeSeriesDicts.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_inj : TimeSeriesDict</span>
+<span class="sd">            Injection data (Witness + Targets).</span>
+<span class="sd">        data_bkg : TimeSeriesDict</span>
+<span class="sd">            Background data (Witness + Targets).</span>
+<span class="sd">        fftlength : float</span>
+<span class="sd">            FFT length in seconds.</span>
+<span class="sd">        witness : str, optional</span>
+<span class="sd">            The name (key) of the witness channel.</span>
+<span class="sd">            If None, the FIRST channel in `data_inj` is used.</span>
+<span class="sd">        frange : tuple of float, optional</span>
+<span class="sd">            Frequency range (fmin, fmax) to evaluate CF and CF upper limit.</span>
+<span class="sd">            Values outside the range are set to NaN.</span>
+<span class="sd">        overlap : float, optional</span>
+<span class="sd">            Overlap in seconds (default 0).</span>
+<span class="sd">        threshold_witness : ThresholdStrategy</span>
+<span class="sd">            Strategy to determine if Witness is excited.</span>
+<span class="sd">        threshold_target : ThresholdStrategy</span>
+<span class="sd">            Strategy to determine if Target is excited.</span>
+<span class="sd">        n_jobs : int, optional</span>
+<span class="sd">            Number of jobs for parallel processing. None means 1 unless in a joblib.parallel_config context.</span>
+<span class="sd">            -1 means using all processors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># --- 1. Identify Witness Channel ---</span>
+        <span class="n">all_channels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data_inj</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">witness</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">witness_key</span> <span class="o">=</span> <span class="n">all_channels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">witness_key</span> <span class="o">=</span> <span class="n">witness</span>
+            <span class="k">if</span> <span class="n">witness_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_inj</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Witness channel &#39;</span><span class="si">{</span><span class="n">witness_key</span><span class="si">}</span><span class="s2">&#39; not found in input data.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">witness_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_bkg</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Witness channel &#39;</span><span class="si">{</span><span class="n">witness_key</span><span class="si">}</span><span class="s2">&#39; not found in background data.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># --- 2. Separate Data ---</span>
+        <span class="n">ts_wit_inj</span> <span class="o">=</span> <span class="n">data_inj</span><span class="p">[</span><span class="n">witness_key</span><span class="p">]</span>
+        <span class="n">ts_wit_bkg</span> <span class="o">=</span> <span class="n">data_bkg</span><span class="p">[</span><span class="n">witness_key</span><span class="p">]</span>
+        <span class="n">target_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">all_channels</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="n">witness_key</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target_keys</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;No target channels found. Data must contain at least 2 channels.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># --- 3. Compute PSDs &amp; N_avg ---</span>
+        <span class="n">psd_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;fftlength&quot;</span><span class="p">:</span> <span class="n">fftlength</span><span class="p">,</span>
+            <span class="s2">&quot;overlap&quot;</span><span class="p">:</span> <span class="n">overlap</span><span class="p">,</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;welch&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;window&quot;</span><span class="p">:</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">psd_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Helper to pass extra data needed by PercentileThreshold</span>
+        <span class="n">check_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;fftlength&quot;</span><span class="p">:</span> <span class="n">fftlength</span><span class="p">,</span>
+            <span class="s2">&quot;overlap&quot;</span><span class="p">:</span> <span class="n">overlap</span><span class="p">,</span>
+            <span class="s2">&quot;n_avg&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>  <span class="c1"># Will be updated</span>
+            <span class="s2">&quot;factor&quot;</span><span class="p">:</span> <span class="n">percentile_factor</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Estimate number of averages (N_avg)</span>
+        <span class="n">duration_inj</span> <span class="o">=</span> <span class="n">ts_wit_inj</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ts_wit_inj</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">duration_bkg</span> <span class="o">=</span> <span class="n">ts_wit_bkg</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ts_wit_bkg</span><span class="o">.</span><span class="n">span</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">eff_ovlp</span> <span class="o">=</span> <span class="n">overlap</span>
+
+        <span class="c1"># Guard against fftlength == overlap (would cause division by zero)</span>
+        <span class="k">if</span> <span class="n">fftlength</span> <span class="o">&lt;=</span> <span class="n">eff_ovlp</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;fftlength (</span><span class="si">{</span><span class="n">fftlength</span><span class="si">}</span><span class="s2">) must be greater than overlap (</span><span class="si">{</span><span class="n">eff_ovlp</span><span class="si">}</span><span class="s2">). &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Otherwise, n_avg cannot be computed (division by zero).&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">n_avg_inj</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">duration_inj</span> <span class="o">-</span> <span class="n">eff_ovlp</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">fftlength</span> <span class="o">-</span> <span class="n">eff_ovlp</span><span class="p">))</span>
+        <span class="n">n_avg_bkg</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">duration_bkg</span> <span class="o">-</span> <span class="n">eff_ovlp</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">fftlength</span> <span class="o">-</span> <span class="n">eff_ovlp</span><span class="p">))</span>
+        <span class="n">check_kwargs</span><span class="p">[</span><span class="s2">&quot;n_avg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_avg_inj</span><span class="p">,</span> <span class="n">n_avg_bkg</span><span class="p">)</span>
+
+        <span class="c1"># Witness PSDs</span>
+        <span class="n">psd_wit_inj</span> <span class="o">=</span> <span class="n">ts_wit_inj</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="o">**</span><span class="n">psd_kwargs</span><span class="p">)</span>
+        <span class="n">psd_wit_bkg</span> <span class="o">=</span> <span class="n">ts_wit_bkg</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="o">**</span><span class="n">psd_kwargs</span><span class="p">)</span>
+
+        <span class="n">t_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+        <span class="c1"># Frequency mask for CF evaluation</span>
+        <span class="n">freq_mask</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">frange</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frange</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;frange must be a tuple of (fmin, fmax)&quot;</span><span class="p">)</span>
+            <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span> <span class="o">=</span> <span class="n">frange</span>
+            <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fmin_val</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fmin_val</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="s2">&quot;to_value&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">fmin</span><span class="p">)(</span><span class="s2">&quot;Hz&quot;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="s2">&quot;to_value&quot;</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">fmin</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">fmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fmax_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fmax_val</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">fmax</span><span class="p">,</span> <span class="s2">&quot;to_value&quot;</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">fmax</span><span class="p">)(</span><span class="s2">&quot;Hz&quot;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fmax</span><span class="p">,</span> <span class="s2">&quot;to_value&quot;</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">fmax</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">fmin_val</span> <span class="o">&gt;</span> <span class="n">fmax_val</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;frange must satisfy fmin &lt;= fmax&quot;</span><span class="p">)</span>
+            <span class="n">freqs</span> <span class="o">=</span> <span class="n">_index_values</span><span class="p">(</span><span class="n">psd_wit_inj</span><span class="o">.</span><span class="n">xindex</span><span class="p">)</span>
+            <span class="n">freq_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&gt;=</span> <span class="n">fmin_val</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&lt;=</span> <span class="n">fmax_val</span><span class="p">)</span>
+
+        <span class="c1"># --- 4. Parallel Setup ---</span>
+        <span class="n">Parallel</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">delayed</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">n_jobs_eff</span> <span class="o">=</span> <span class="n">n_jobs</span> <span class="k">if</span> <span class="n">n_jobs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">n_jobs_eff</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.interop._optional</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_optional</span>
+            <span class="n">joblib</span> <span class="o">=</span> <span class="n">require_optional</span><span class="p">(</span><span class="s2">&quot;joblib&quot;</span><span class="p">)</span>
+            <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">Parallel</span><span class="p">,</span> <span class="n">joblib</span><span class="o">.</span><span class="n">delayed</span>
+
+        <span class="c1"># --- 3.5 Prepare Background SegmentTables for PercentileThreshold ---</span>
+        <span class="n">st_wit_bkg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">threshold_witness</span><span class="p">,</span> <span class="n">PercentileThreshold</span><span class="p">):</span>
+            <span class="n">st_wit_bkg</span> <span class="o">=</span> <span class="n">_build_bkg_segment_table</span><span class="p">(</span>
+                <span class="n">ts_wit_bkg</span><span class="p">,</span>
+                <span class="n">fftlength</span><span class="p">,</span>
+                <span class="n">overlap</span><span class="p">,</span>
+                <span class="n">stride</span><span class="o">=</span><span class="n">bkg_stride</span><span class="p">,</span>
+                <span class="n">memory_limit</span><span class="o">=</span><span class="n">memory_limit</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">target_bkg_tables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentTable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">threshold_target</span><span class="p">,</span> <span class="n">PercentileThreshold</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">tgt_key</span> <span class="ow">in</span> <span class="n">target_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tgt_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_bkg</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">st_tgt_bkg</span> <span class="o">=</span> <span class="n">_build_bkg_segment_table</span><span class="p">(</span>
+                    <span class="n">data_bkg</span><span class="p">[</span><span class="n">tgt_key</span><span class="p">],</span>
+                    <span class="n">fftlength</span><span class="p">,</span>
+                    <span class="n">overlap</span><span class="p">,</span>
+                    <span class="n">stride</span><span class="o">=</span><span class="n">bkg_stride</span><span class="p">,</span>
+                    <span class="n">memory_limit</span><span class="o">=</span><span class="n">memory_limit</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">target_bkg_tables</span><span class="p">[</span><span class="n">tgt_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">st_tgt_bkg</span>
+
+        <span class="c1"># Check Witness Excess</span>
+        <span class="n">mask_wit</span> <span class="o">=</span> <span class="n">threshold_witness</span><span class="o">.</span><span class="n">check</span><span class="p">(</span>
+            <span class="n">psd_wit_inj</span><span class="p">,</span> <span class="n">psd_wit_bkg</span><span class="p">,</span> <span class="n">raw_bkg</span><span class="o">=</span><span class="n">ts_wit_bkg</span><span class="p">,</span> <span class="n">bkg_table</span><span class="o">=</span><span class="n">st_wit_bkg</span><span class="p">,</span> <span class="o">**</span><span class="n">check_kwargs</span>
+        <span class="p">)</span>
+
+        <span class="n">delta_wit</span> <span class="o">=</span> <span class="n">psd_wit_inj</span><span class="o">.</span><span class="n">value</span> <span class="o">-</span> <span class="n">psd_wit_bkg</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># --- 4. Parallel Loop over Targets ---</span>
+
+        <span class="k">if</span> <span class="n">Parallel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Sequential execution</span>
+            <span class="k">for</span> <span class="n">tgt_key</span> <span class="ow">in</span> <span class="n">target_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tgt_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_bkg</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">res</span> <span class="o">=</span> <span class="n">_process_single_target</span><span class="p">(</span>
+                    <span class="n">tgt_key</span><span class="p">,</span>
+                    <span class="n">data_inj</span><span class="p">[</span><span class="n">tgt_key</span><span class="p">],</span>
+                    <span class="n">data_bkg</span><span class="p">[</span><span class="n">tgt_key</span><span class="p">],</span>
+                    <span class="n">psd_kwargs</span><span class="p">,</span>
+                    <span class="n">psd_wit_inj</span><span class="p">,</span>
+                    <span class="n">psd_wit_bkg</span><span class="p">,</span>
+                    <span class="n">mask_wit</span><span class="p">,</span>
+                    <span class="n">delta_wit</span><span class="p">,</span>
+                    <span class="n">witness_key</span><span class="p">,</span>
+                    <span class="n">ts_wit_inj</span><span class="p">,</span>
+                    <span class="n">ts_wit_bkg</span><span class="p">,</span>
+                    <span class="n">threshold_target</span><span class="p">,</span>
+                    <span class="n">check_kwargs</span><span class="p">,</span>
+                    <span class="n">fftlength</span><span class="p">,</span>
+                    <span class="n">overlap</span><span class="p">,</span>
+                    <span class="n">freq_mask</span><span class="p">,</span>
+                    <span class="n">bkg_table</span><span class="o">=</span><span class="n">target_bkg_tables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tgt_key</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">res</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Parallel execution</span>
+            <span class="k">assert</span> <span class="n">Parallel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="n">delayed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">par_results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)(</span>
+                <span class="n">delayed</span><span class="p">(</span><span class="n">_process_single_target</span><span class="p">)(</span>
+                    <span class="n">tgt_key</span><span class="p">,</span>
+                    <span class="n">data_inj</span><span class="p">[</span><span class="n">tgt_key</span><span class="p">],</span>
+                    <span class="n">data_bkg</span><span class="p">[</span><span class="n">tgt_key</span><span class="p">],</span>
+                    <span class="n">psd_kwargs</span><span class="p">,</span>
+                    <span class="n">psd_wit_inj</span><span class="p">,</span>
+                    <span class="n">psd_wit_bkg</span><span class="p">,</span>
+                    <span class="n">mask_wit</span><span class="p">,</span>
+                    <span class="n">delta_wit</span><span class="p">,</span>
+                    <span class="n">witness_key</span><span class="p">,</span>
+                    <span class="n">ts_wit_inj</span><span class="p">,</span>
+                    <span class="n">ts_wit_bkg</span><span class="p">,</span>
+                    <span class="n">threshold_target</span><span class="p">,</span>
+                    <span class="n">check_kwargs</span><span class="p">,</span>
+                    <span class="n">fftlength</span><span class="p">,</span>
+                    <span class="n">overlap</span><span class="p">,</span>
+                    <span class="n">freq_mask</span><span class="p">,</span>
+                    <span class="n">bkg_table</span><span class="o">=</span><span class="n">target_bkg_tables</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tgt_key</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">tgt_key</span> <span class="ow">in</span> <span class="n">target_keys</span>
+                <span class="k">if</span> <span class="n">tgt_key</span> <span class="ow">in</span> <span class="n">data_bkg</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">par_results</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">res</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">t_end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="n">dur</span> <span class="o">=</span> <span class="n">t_end</span> <span class="o">-</span> <span class="n">t_start</span>
+
+        <span class="c1"># --- 5. Summary Logging ---</span>
+        <span class="n">n_targets</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="n">n_total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_keys</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Coupling Analysis Complete: </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> channels estimated in </span><span class="si">%.2f</span><span class="s2">s. &quot;</span>
+            <span class="s2">&quot;percentile_factor=</span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">n_targets</span><span class="p">,</span> <span class="n">n_total</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">percentile_factor</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+</div>
+
+
+
+<span class="c1"># Functional interface</span>
+<div class="viewcode-block" id="estimate_coupling">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.estimate_coupling">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_coupling</span><span class="p">(</span>
+    <span class="n">data_inj</span><span class="p">:</span> <span class="n">TimeSeriesDict</span><span class="p">,</span>
+    <span class="n">data_bkg</span><span class="p">:</span> <span class="n">TimeSeriesDict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">witness</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">threshold_witness</span><span class="p">:</span> <span class="n">ThresholdStrategy</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">25.0</span><span class="p">,</span>
+    <span class="n">threshold_target</span><span class="p">:</span> <span class="n">ThresholdStrategy</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span>
+    <span class="n">percentile_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.6</span><span class="p">,</span>
+    <span class="n">bkg_stride</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">memory_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">bkg_window</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">inj_window</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CouplingResult</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CouplingResult</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to estimate CF.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_inj : TimeSeriesDict</span>
+<span class="sd">        Injection data (Witness + Targets).</span>
+<span class="sd">        ``bkg_window`` / ``inj_window`` が指定された場合は、全時間範囲を含む</span>
+<span class="sd">        データを渡してください。この場合 ``data_bkg`` は不要です。</span>
+<span class="sd">    data_bkg : TimeSeriesDict, optional</span>
+<span class="sd">        Background data (Witness + Targets).</span>
+<span class="sd">        ``bkg_window`` が指定された場合は省略可能。</span>
+<span class="sd">    fftlength : float</span>
+<span class="sd">        FFT length in seconds.</span>
+<span class="sd">    witness : str, optional</span>
+<span class="sd">        The name (key) of the witness channel.</span>
+<span class="sd">        If None, the FIRST channel in ``data_inj`` is used.</span>
+<span class="sd">    frange : tuple of float, optional</span>
+<span class="sd">        Frequency range (fmin, fmax) to evaluate CF and CF upper limit.</span>
+<span class="sd">        Values outside the range are set to NaN.</span>
+<span class="sd">    overlap : float, optional</span>
+<span class="sd">        Overlap in seconds (default 0).</span>
+<span class="sd">    threshold_witness : ThresholdStrategy or float</span>
+<span class="sd">        Strategy to determine if Witness is excited.</span>
+<span class="sd">        If a float is given, it is interpreted as a ratio for :class:`RatioThreshold`.</span>
+<span class="sd">    threshold_target : ThresholdStrategy or float</span>
+<span class="sd">        Strategy to determine if Target is excited.</span>
+<span class="sd">        If a float is given, it is interpreted as a ratio for :class:`RatioThreshold`.</span>
+<span class="sd">    percentile_factor : float, optional</span>
+<span class="sd">        Correction factor for :class:`PercentileThreshold` (Appendix B.1).</span>
+<span class="sd">        Default is 2.6.</span>
+<span class="sd">    bkg_stride : float, optional</span>
+<span class="sd">        Stride in seconds for background SegmentTable construction.</span>
+<span class="sd">        Defaults to ``fftlength``.</span>
+<span class="sd">    memory_limit : int, optional</span>
+<span class="sd">        Maximum memory in bytes for the background SegmentTable.</span>
+<span class="sd">        Default is 2 GB.</span>
+<span class="sd">    n_jobs : int, optional</span>
+<span class="sd">        Number of jobs for parallel processing.</span>
+<span class="sd">        ``None`` means 1; ``-1`` means all processors.</span>
+<span class="sd">    bkg_window : tuple of float, optional</span>
+<span class="sd">        背景区間の (t_start, t_end) GPS 時刻 tuple。</span>
+<span class="sd">        指定時は ``data_inj`` から背景データを切り出すため ``data_bkg`` は不要。</span>
+<span class="sd">        ``inj_window`` と同時に指定することを推奨。</span>
+<span class="sd">    inj_window : tuple of float, optional</span>
+<span class="sd">        注入区間の (t_start, t_end) GPS 時刻 tuple。</span>
+<span class="sd">        ``bkg_window`` と同時に指定することで時間ウィンドウ API として機能。</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Additional keyword arguments forwarded to PSD computation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_strategy</span><span class="p">(</span>
+        <span class="n">val</span><span class="p">:</span> <span class="n">ThresholdStrategy</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ThresholdStrategy</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">RatioThreshold</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="c1"># --- Time window mode ---</span>
+    <span class="k">if</span> <span class="n">bkg_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Both inj_window and bkg_window must be specified together</span>
+        <span class="k">if</span> <span class="n">inj_window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;inj_window must be specified when bkg_window is given. &quot;</span>
+                <span class="s2">&quot;Use estimate_coupling(..., bkg_window=(...), inj_window=(...))&quot;</span>
+            <span class="p">)</span>
+        <span class="n">tw</span> <span class="o">=</span> <span class="n">_ensure_strategy</span><span class="p">(</span><span class="n">threshold_witness</span><span class="p">)</span>
+        <span class="n">analysis</span> <span class="o">=</span> <span class="n">CouplingFunctionAnalysis</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">analysis</span><span class="o">.</span><span class="n">from_time_windows</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data_inj</span><span class="p">,</span>
+            <span class="n">bkg_window</span><span class="o">=</span><span class="n">bkg_window</span><span class="p">,</span>
+            <span class="n">inj_window</span><span class="o">=</span><span class="n">inj_window</span><span class="p">,</span>
+            <span class="n">witness</span><span class="o">=</span><span class="n">witness</span><span class="p">,</span>
+            <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+            <span class="n">threshold_strategy</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span>
+            <span class="n">frange</span><span class="o">=</span><span class="n">frange</span><span class="p">,</span>
+            <span class="n">percentile_factor</span><span class="o">=</span><span class="n">percentile_factor</span><span class="p">,</span>
+            <span class="n">bkg_stride</span><span class="o">=</span><span class="n">bkg_stride</span><span class="p">,</span>
+            <span class="n">memory_limit</span><span class="o">=</span><span class="n">memory_limit</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># --- Legacy two-dict mode ---</span>
+    <span class="k">if</span> <span class="n">data_bkg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;data_bkg is required when bkg_window is not specified. &quot;</span>
+            <span class="s2">&quot;Either pass data_bkg or use bkg_window + inj_window.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">tw</span> <span class="o">=</span> <span class="n">_ensure_strategy</span><span class="p">(</span><span class="n">threshold_witness</span><span class="p">)</span>
+    <span class="n">tt</span> <span class="o">=</span> <span class="n">_ensure_strategy</span><span class="p">(</span><span class="n">threshold_target</span><span class="p">)</span>
+
+    <span class="n">analysis</span> <span class="o">=</span> <span class="n">CouplingFunctionAnalysis</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">analysis</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+        <span class="n">data_inj</span><span class="p">,</span>
+        <span class="n">data_bkg</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="p">,</span>
+        <span class="n">witness</span><span class="o">=</span><span class="n">witness</span><span class="p">,</span>
+        <span class="n">frange</span><span class="o">=</span><span class="n">frange</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+        <span class="n">threshold_witness</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span>
+        <span class="n">threshold_target</span><span class="o">=</span><span class="n">tt</span><span class="p">,</span>
+        <span class="n">percentile_factor</span><span class="o">=</span><span class="n">percentile_factor</span><span class="p">,</span>
+        <span class="n">bkg_stride</span><span class="o">=</span><span class="n">bkg_stride</span><span class="p">,</span>
+        <span class="n">memory_limit</span><span class="o">=</span><span class="n">memory_limit</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

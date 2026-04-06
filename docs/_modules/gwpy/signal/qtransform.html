@@ -1,0 +1,1025 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwpy.signal.qtransform &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwpy.signal.qtransform</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwpy.signal.qtransform</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2016-2017 Louisiana State University</span>
+<span class="c1">#               2017-2025 Cardiff University</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of GWpy.</span>
+<span class="c1">#</span>
+<span class="c1"># GWpy is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># GWpy is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with GWpy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">&quot;&quot;&quot;Python implementation of the tiled Q-transform scan.</span>
+
+<span class="sd">This is a re-implementation of the original Q-transform scan from the Omega</span>
+<span class="sd">pipeline, all credits for the original algorithm go to its</span>
+<span class="sd">authors.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ceil</span><span class="p">,</span>
+    <span class="n">exp</span><span class="p">,</span>
+    <span class="n">isinf</span><span class="p">,</span>
+    <span class="n">log</span><span class="p">,</span>
+    <span class="n">pi</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">fft</span> <span class="k">as</span> <span class="n">npfft</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..segments</span><span class="w"> </span><span class="kn">import</span> <span class="n">Segment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">round_to_power</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..table</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventTable</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..time</span><span class="w"> </span><span class="kn">import</span> <span class="n">LIGOTimeGPS</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Duncan Macleod &lt;duncan.macleod@ligo.org&gt;&quot;</span>
+<span class="n">__credits__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Scott Coughlin &lt;scott.coughlin@ligo.org&gt;, &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Alex Urban &lt;alexander.urban@ligo.org&gt;&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;QGram&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;QPlane&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;QTile&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;QTiling&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;q_scan&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># -- q-transform defaults</span>
+
+<span class="c1">#: Default ``(fmin, fmax)`` frequency range for Q-transform.</span>
+<span class="n">DEFAULT_FRANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">))</span>
+
+<span class="c1">#: Default maximum fractional mismatch between neighbouring tiles.</span>
+<span class="n">DEFAULT_MISMATCH</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+<span class="c1">#: Default ``(qlow, qhigh)`` Q range for Q-transform.</span>
+<span class="n">DEFAULT_QRANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+
+<span class="c1"># constants</span>
+<span class="n">_SQRT_2</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+
+
+<span class="c1"># -- object class definitions --------</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">QObject</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for Q-transform objects.</span>
+
+<span class="sd">    This object exists just to provide basic methods for all other</span>
+<span class="sd">    Q-transform objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">sampling</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">mismatch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_MISMATCH</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a `QObject`.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampling</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mismatch</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mismatch</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deltam</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fractional mismatch between neighbouring tiles.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mismatch</span> <span class="o">/</span> <span class="mf">3.</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">QBase</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for Q-transform objects with fixed Q.</span>
+
+<span class="sd">    This class just provides a property for Q-prime = Q / sqrt(11)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">q</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">sampling</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">mismatch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_MISMATCH</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a `QBase`.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">duration</span><span class="p">,</span>
+            <span class="n">sampling</span><span class="p">,</span>
+            <span class="n">mismatch</span><span class="o">=</span><span class="n">mismatch</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">qprime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalized Q `(q/sqrt(11))`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">/</span> <span class="mi">11</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="QTiling">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QTiling">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">QTiling</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterable constructor of `QPlane` objects.</span>
+
+<span class="sd">    For a given Q-range, each of the resulting `QPlane` objects can</span>
+<span class="sd">    be iterated over.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : `float`</span>
+<span class="sd">        The duration of the data to be Q-transformed.</span>
+
+<span class="sd">    qrange : `tuple` of `float`</span>
+<span class="sd">        ``(low, high)`` pair of Q extrema.</span>
+
+<span class="sd">    frange : `tuple` of `float`</span>
+<span class="sd">        ``(low, high)`` pair of frequency extrema.</span>
+
+<span class="sd">    sampling : `float`</span>
+<span class="sd">        Sampling rate (in Hertz) of data to be Q-transformed.</span>
+
+<span class="sd">    mismatch : `float`</span>
+<span class="sd">        Maximum fractional mismatch between neighbouring tiles.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">sampling</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">qrange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_QRANGE</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_FRANGE</span><span class="p">,</span>
+        <span class="n">mismatch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_MISMATCH</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a `QTiling` object.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">duration</span><span class="p">,</span>
+            <span class="n">sampling</span><span class="p">,</span>
+            <span class="n">mismatch</span><span class="o">=</span><span class="n">mismatch</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qrange</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">qrange</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">qrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="c1"># format (min, max) frequency range</span>
+        <span class="n">qlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iter_qs</span><span class="p">())</span>
+        <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">frange</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">frange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">fmin</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># set non-zero lower frequency</span>
+            <span class="n">fmin</span> <span class="o">=</span> <span class="mi">50</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">qlist</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+        <span class="n">maxf</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampling</span>
+            <span class="o">/</span> <span class="mi">2</span>
+            <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">11</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span> <span class="o">/</span> <span class="nb">min</span><span class="p">(</span><span class="n">qlist</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">isinf</span><span class="p">(</span><span class="n">fmax</span><span class="p">):</span>
+            <span class="n">fmax</span> <span class="o">=</span> <span class="n">maxf</span>
+        <span class="k">elif</span> <span class="n">fmax</span> <span class="o">&gt;</span> <span class="n">maxf</span><span class="p">:</span>  <span class="c1"># truncate upper frequency to maximum</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;upper frequency of </span><span class="si">{</span><span class="n">fmax</span><span class="si">}</span><span class="s2"> Hz is too high for the given &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Q range, resetting to </span><span class="si">{</span><span class="n">maxf</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">fmax</span> <span class="o">=</span> <span class="n">maxf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frange</span> <span class="o">=</span> <span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">qs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Array of Q values for this `QTiling`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iter_qs</span><span class="p">()))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">whitening_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The recommended data duration required for whitening.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">whitening_duration</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_iter_qs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate over the Q values.&quot;&quot;&quot;</span>
+        <span class="c1"># work out how many Qs we need</span>
+        <span class="n">sqrt_2</span> <span class="o">=</span> <span class="n">_SQRT_2</span>
+        <span class="n">cumum</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">qrange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">sqrt_2</span>
+        <span class="n">nplanes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">ceil</span><span class="p">(</span><span class="n">cumum</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">deltam</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">delta_q</span> <span class="o">=</span> <span class="n">cumum</span> <span class="o">/</span> <span class="n">nplanes</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nplanes</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">qrange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="n">sqrt_2</span> <span class="o">*</span> <span class="n">delta_q</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">.5</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">QPlane</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate over this `QTiling`.</span>
+
+<span class="sd">        Yields a `QPlane` at each Q value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter_qs</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">QPlane</span><span class="p">(</span>
+                <span class="n">q</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frange</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sampling</span><span class="p">,</span>
+                <span class="n">mismatch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mismatch</span><span class="p">,</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="QTiling.transform">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QTiling.transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fseries</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QGram</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the time-frequency plane at fixed Q with the most significant tile.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fseries : `~gwpy.timeseries.FrequencySeries`</span>
+<span class="sd">            The complex FFT of a time-series data set.</span>
+
+<span class="sd">        kwargs</span>
+<span class="sd">            Other keyword arguments to pass to `QPlane.transform`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : `QGram`</span>
+<span class="sd">            Signal energies over the time-frequency plane containing the most</span>
+<span class="sd">            significant tile.</span>
+
+<span class="sd">        far : `float`</span>
+<span class="sd">            Crudely estimated false alarm rate (FAR) for the detected signal.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        QPlane.transform</span>
+<span class="sd">            Compute the Q-transform over a single time-frequency plane.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">fseries</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Input signal contains non-numerical values&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">qrange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">nind</span><span class="p">,</span> <span class="n">nplanes</span><span class="p">,</span> <span class="n">peak</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># identify the plane with the loudest tile</span>
+        <span class="k">for</span> <span class="n">plane</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">nplanes</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">nind</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">([</span><span class="mi">1</span> <span class="o">+</span> <span class="n">row</span><span class="o">.</span><span class="n">ntiles</span> <span class="o">*</span> <span class="n">row</span><span class="o">.</span><span class="n">deltam</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">plane</span><span class="p">])</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">plane</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">fseries</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">peak</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">peak</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">result</span>
+                <span class="n">peak</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">peak</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]</span>
+
+        <span class="n">ntiles</span> <span class="o">=</span> <span class="n">nind</span> <span class="o">*</span> <span class="n">weight</span> <span class="o">/</span> <span class="n">nplanes</span>
+        <span class="n">far</span> <span class="o">=</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">ntiles</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">out</span><span class="o">.</span><span class="n">peak</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+        <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">far</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="QPlane">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QPlane">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">QPlane</span><span class="p">(</span><span class="n">QBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Iterable representation of a Q-transform plane.</span>
+
+<span class="sd">    For a given Q, an array of frequencies can be iterated over, yielding</span>
+<span class="sd">    a `QTile` each time.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    q : `float`</span>
+<span class="sd">        The Q-value for this plane.</span>
+
+<span class="sd">    frange : `tuple` of `float`</span>
+<span class="sd">        ``(low, high)`` range of frequencies for this plane.</span>
+
+<span class="sd">    duration : `float`</span>
+<span class="sd">        The duration of the data to be Q-transformed.</span>
+
+<span class="sd">    sampling : `float`</span>
+<span class="sd">        Sampling rate (in Hertz) of data to be Q-transformed.</span>
+
+<span class="sd">    mismatch : `float`</span>
+<span class="sd">        Maximum fractional mismatch between neighbouring tiles.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">q</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">sampling</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">mismatch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_MISMATCH</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a `QPlane` object.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">q</span><span class="p">,</span>
+            <span class="n">duration</span><span class="p">,</span>
+            <span class="n">sampling</span><span class="p">,</span>
+            <span class="n">mismatch</span><span class="o">=</span><span class="n">mismatch</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># format (min, max) frequency range</span>
+        <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">frange</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">frange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">fmin</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># set non-zero lower frequency</span>
+            <span class="n">fmin</span> <span class="o">=</span> <span class="mi">50</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isinf</span><span class="p">(</span><span class="n">fmax</span><span class="p">):</span>  <span class="c1"># set non-infinite upper frequency</span>
+            <span class="n">fmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">qprime</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frange</span> <span class="o">=</span> <span class="p">(</span><span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">QTile</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate over this `QPlane`.</span>
+
+<span class="sd">        Yields a `QTile` at each frequency.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># for each frequency, yield a QTile</span>
+        <span class="k">for</span> <span class="n">freq</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter_frequencies</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">QTile</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
+                <span class="n">freq</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sampling</span><span class="p">,</span>
+                <span class="n">mismatch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mismatch</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_iter_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate over the frequencies of this `QPlane`.&quot;&quot;&quot;</span>
+        <span class="c1"># work out how many frequencies we need</span>
+        <span class="n">minf</span><span class="p">,</span> <span class="n">maxf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frange</span>
+        <span class="n">fcum_mismatch</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">maxf</span> <span class="o">/</span> <span class="n">minf</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span>
+        <span class="n">nfreq</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ceil</span><span class="p">(</span><span class="n">fcum_mismatch</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">deltam</span><span class="p">)))</span>
+        <span class="n">fstep</span> <span class="o">=</span> <span class="n">fcum_mismatch</span> <span class="o">/</span> <span class="n">nfreq</span>
+        <span class="n">fstepmin</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+        <span class="c1"># for each frequency, yield a QTile</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nfreq</span><span class="p">):</span>
+            <span class="n">this</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">minf</span>
+                <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mf">.5</span><span class="p">)</span> <span class="o">*</span> <span class="n">fstep</span><span class="p">)</span>
+                <span class="o">//</span> <span class="n">fstepmin</span> <span class="o">*</span> <span class="n">fstepmin</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">this</span> <span class="o">!=</span> <span class="n">last</span><span class="p">:</span>  <span class="c1"># yield only unique elements</span>
+                <span class="k">yield</span> <span class="n">this</span>
+            <span class="n">last</span> <span class="o">=</span> <span class="n">this</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Array of central frequencies for this `QPlane`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iter_frequencies</span><span class="p">()))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">farray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Array of frequencies for the lower-edge of each frequency bin.&quot;&quot;&quot;</span>
+        <span class="n">bandwidths</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">-</span> <span class="n">bandwidths</span> <span class="o">/</span> <span class="mf">2.</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">whitening_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The recommended data duration required for whitening.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">round_to_power</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">frange</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">which</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="QPlane.transform">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QPlane.transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fseries</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">epoch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">LIGOTimeGPS</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">search</span><span class="p">:</span> <span class="n">Segment</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGram</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the energy `QGram` for the given `fseries`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fseries : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">            The complex FFT of a time-series data set.</span>
+
+<span class="sd">        norm : `bool`, `str`</span>
+<span class="sd">            Normalize the energy of the output by the median (if `True` or</span>
+<span class="sd">            ``&#39;median&#39;``) or the ``&#39;mean&#39;``, if `False` the output</span>
+<span class="sd">            is the complex `~numpy.fft.ifft` output of the Q-tranform.</span>
+
+<span class="sd">        epoch : `~gwpy.time.LIGOTimeGPS`, `float`</span>
+<span class="sd">            The epoch of these data, only used for metadata in the output</span>
+<span class="sd">            `TimeSeries`, and not requires if the input `fseries` has the</span>
+<span class="sd">            epoch populated.</span>
+
+<span class="sd">        search : `~gwpy.segments.Segment`</span>
+<span class="sd">            Search window of interest to determine the loudest Q-plane.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        results : `QGram`</span>
+<span class="sd">            The complex energies of the Q-transform of the input `fseries`</span>
+<span class="sd">            at each frequency.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        QTile.transform</span>
+<span class="sd">            For details on the transform over a row of `(Q, frequency)` tiles.</span>
+<span class="sd">        QGram</span>
+<span class="sd">            An object with energies populated over time-frequency tiles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">[</span><span class="n">qtile</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+            <span class="n">fseries</span><span class="p">,</span>
+            <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
+            <span class="n">epoch</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">for</span> <span class="n">qtile</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">QGram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="QTile">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QTile">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">QTile</span><span class="p">(</span><span class="n">QBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Representation of a tile with fixed Q and frequency.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">q</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">sampling</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">mismatch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_MISMATCH</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a `QTile` object.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">q</span><span class="p">,</span>
+            <span class="n">duration</span><span class="p">,</span>
+            <span class="n">sampling</span><span class="p">,</span>
+            <span class="n">mismatch</span><span class="o">=</span><span class="n">mismatch</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="n">frequency</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The bandwidth for tiles in this row.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ntiles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The number of tiles in this row.&quot;&quot;&quot;</span>
+        <span class="n">tcum_mismatch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">round_to_power</span><span class="p">(</span>
+            <span class="n">tcum_mismatch</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">deltam</span><span class="p">,</span>
+            <span class="n">base</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">which</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span>
+        <span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">windowsize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The size of the frequency-domain window for this row.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span>
+            <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">qprime</span>
+            <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">int64</span><span class="p">]:</span>
+        <span class="n">half</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">windowsize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">half</span><span class="p">,</span> <span class="n">half</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="QTile.get_window">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QTile.get_window">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_window</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the bi-square window for this row.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        window : `numpy.ndarray`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># real frequencies</span>
+        <span class="n">wfrequencies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+        <span class="c1"># dimensionless frequencies</span>
+        <span class="n">xfrequencies</span> <span class="o">=</span> <span class="n">wfrequencies</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">qprime</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span>
+        <span class="c1"># normalize and generate bi-square window</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ntiles</span>
+            <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling</span><span class="p">)</span>
+            <span class="o">*</span> <span class="p">(</span><span class="mi">315</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">qprime</span> <span class="o">/</span> <span class="p">(</span><span class="mi">128</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">xfrequencies</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">norm</span></div>
+
+
+<div class="viewcode-block" id="QTile.get_data_indices">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QTile.get_data_indices">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">int64</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the index array of interesting frequencies for this row.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">round</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_indices</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">padding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The `(left, right)` padding required for the IFFT.&quot;&quot;&quot;</span>
+        <span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ntiles</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">windowsize</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">pad</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">),</span> <span class="nb">int</span><span class="p">((</span><span class="n">pad</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">))</span>
+
+<div class="viewcode-block" id="QTile.transform">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QTile.transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fseries</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">epoch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">LIGOTimeGPS</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSeries</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the energy `TimeSeries` for the given fseries.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fseries : `~gwpy.frequencyseries.FrequencySeries`</span>
+<span class="sd">            The complex FFT of a time-series data set.</span>
+
+<span class="sd">        norm : `bool`, `str`</span>
+<span class="sd">            Normalize the energy of the output by the median (if `True` or</span>
+<span class="sd">            ``&#39;median&#39;``) or the ``&#39;mean&#39;``, if `False` the output</span>
+<span class="sd">            is the energy (power) of the Q-tranform.</span>
+
+<span class="sd">        epoch : `~gwpy.time.LIGOTimeGPS`, `float`</span>
+<span class="sd">            The epoch of these data, only used for metadata in the output</span>
+<span class="sd">            `TimeSeries`, and not requires if the input `fseries` has the</span>
+<span class="sd">            epoch populated.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        energy : `~gwpy.timeseries.TimeSeries`</span>
+<span class="sd">            A `TimeSeries` of the energy from the Q-transform of</span>
+<span class="sd">            this tile against the data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+        <span class="n">windowed</span> <span class="o">=</span> <span class="n">fseries</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_data_indices</span><span class="p">()]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_window</span><span class="p">()</span>
+        <span class="c1"># pad data, move negative frequencies to the end, and IFFT</span>
+        <span class="n">padded</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span>
+            <span class="n">windowed</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">wenergy</span> <span class="o">=</span> <span class="n">npfft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span><span class="n">padded</span><span class="p">)</span>
+        <span class="c1"># return a `TimeSeries`</span>
+        <span class="k">if</span> <span class="n">epoch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">epoch</span> <span class="o">=</span> <span class="n">fseries</span><span class="o">.</span><span class="n">epoch</span>
+        <span class="n">tdenergy</span> <span class="o">=</span> <span class="n">npfft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">wenergy</span><span class="p">)</span>
+        <span class="n">cenergy</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span>
+            <span class="n">tdenergy</span><span class="p">,</span>
+            <span class="n">x0</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
+            <span class="n">dx</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">/</span> <span class="n">tdenergy</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+            <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">energy</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">cenergy</span><span class="p">)(</span>
+            <span class="n">cenergy</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">real</span> <span class="o">**</span> <span class="mf">2.</span> <span class="o">+</span> <span class="n">cenergy</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">imag</span> <span class="o">**</span> <span class="mf">2.</span><span class="p">,</span>
+            <span class="n">x0</span><span class="o">=</span><span class="n">cenergy</span><span class="o">.</span><span class="n">x0</span><span class="p">,</span>
+            <span class="n">dx</span><span class="o">=</span><span class="n">cenergy</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span>
+            <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">norm</span><span class="p">:</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">norm</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">norm</span>
+            <span class="k">if</span> <span class="n">norm</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">):</span>
+                <span class="n">narray</span> <span class="o">=</span> <span class="n">energy</span> <span class="o">/</span> <span class="n">energy</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">norm</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,):</span>
+                <span class="n">narray</span> <span class="o">=</span> <span class="n">energy</span> <span class="o">/</span> <span class="n">energy</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;invalid normalisation &#39;</span><span class="si">{</span><span class="n">norm</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">narray</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">energy</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="QGram">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QGram">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">QGram</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Store tile energies over an irregularly gridded plane.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    plane : `QPlane`</span>
+<span class="sd">        The time-frequency plane over which to populate.</span>
+
+<span class="sd">    energies : `list` of `TimeSeries`</span>
+<span class="sd">        A list of signal energies for each row of tiles.</span>
+
+<span class="sd">    search : `~gwpy.segments.Segment`</span>
+<span class="sd">        Search window of interest to determine the loudest tile.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">plane</span><span class="p">:</span> <span class="n">QPlane</span><span class="p">,</span>
+        <span class="n">energies</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TimeSeries</span><span class="p">],</span>
+        <span class="n">search</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a `QGram` object.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plane</span> <span class="o">=</span> <span class="n">plane</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energies</span> <span class="o">=</span> <span class="n">energies</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peak</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_peak</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_find_peak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">peak</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span>
+            <span class="s2">&quot;snr&quot;</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span>
+            <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span>
+            <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="mf">0.</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">freq</span><span class="p">,</span> <span class="n">energy</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">frequencies</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">search</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">energy</span> <span class="o">=</span> <span class="n">energy</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">*</span><span class="n">search</span><span class="p">)</span>  <span class="c1"># noqa: PLW2901</span>
+            <span class="n">maxidx</span> <span class="o">=</span> <span class="n">energy</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+            <span class="n">maxe</span> <span class="o">=</span> <span class="n">energy</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">maxidx</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">maxe</span> <span class="o">&gt;</span> <span class="n">peak</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]:</span>
+                <span class="n">peak</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                    <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n">maxe</span><span class="p">,</span>
+                    <span class="s2">&quot;snr&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">maxe</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">),</span>
+                    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">energy</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">energy</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="n">maxidx</span><span class="p">,</span>
+                    <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="n">freq</span><span class="p">,</span>
+                <span class="p">})</span>
+        <span class="k">return</span> <span class="n">peak</span>
+
+<div class="viewcode-block" id="QGram.interpolate">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QGram.interpolate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">interpolate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tres</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&lt;default&gt;&quot;</span><span class="p">,</span>
+        <span class="n">fres</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&lt;default&gt;&quot;</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">logf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">outseg</span><span class="p">:</span> <span class="n">Segment</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrogram</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Interpolate this `QGram` over a regularly-gridded spectrogram.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tres : `float`</span>
+<span class="sd">            Desired time resolution (seconds) of output `Spectrogram`,</span>
+<span class="sd">            default is `abs(outseg) / 1000.`</span>
+
+<span class="sd">        fres : `float`, `int`, `None`</span>
+<span class="sd">            Desired frequency resolution (Hertz) of output `Spectrogram`,</span>
+<span class="sd">            or, if ``logf=True``, the number of frequency samples;</span>
+<span class="sd">            give `None` to skip this step and return the original resolution,</span>
+<span class="sd">            default is 0.5 Hz or 500 frequency samples.</span>
+
+<span class="sd">        logf : `bool`</span>
+<span class="sd">            Boolean switch to enable (`True`) or disable (`False`) use of</span>
+<span class="sd">            log-sampled frequencies in the output `Spectrogram`.</span>
+
+<span class="sd">        outseg : `~gwpy.segments.Segment`</span>
+<span class="sd">            GPS `[start, stop)` segment for output `Spectrogram`,</span>
+<span class="sd">            default is the full duration of the input.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : `~gwpy.spectrogram.Spectrogram`</span>
+<span class="sd">            Output `Spectrogram` of normalised Q energy.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        scipy.interpolate</span>
+<span class="sd">            This method uses `~scipy.interpolate.InterpolatedUnivariateSpline`</span>
+<span class="sd">            to cast all frequency rows to a common time-axis, and then</span>
+<span class="sd">            `~scipy.interpolate.interp2d` to apply the desired frequency</span>
+<span class="sd">            resolution across the band.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method will return a `Spectrogram` of dtype ``float32`` if</span>
+<span class="sd">        ``norm`` is given, and ``float64`` otherwise.</span>
+
+<span class="sd">        To optimize plot rendering with `~matplotlib.axes.Axes.pcolormesh`,</span>
+<span class="sd">        the output `~gwpy.spectrogram.Spectrogram` can be given a log-sampled</span>
+<span class="sd">        frequency axis by passing `logf=True` at runtime. The `fres` argument</span>
+<span class="sd">        is then the number of points on the frequency axis. Note, this is</span>
+<span class="sd">        incompatible with `~matplotlib.axes.Axes.imshow`.</span>
+
+<span class="sd">        It is also highly recommended to use the `outseg` keyword argument</span>
+<span class="sd">        when only a small window around a given GPS time is of interest.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">InterpolatedUnivariateSpline</span><span class="p">,</span>
+            <span class="n">RectBivariateSpline</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..spectrogram</span><span class="w"> </span><span class="kn">import</span> <span class="n">Spectrogram</span>
+
+        <span class="k">if</span> <span class="n">outseg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">outseg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">span</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">frequencies</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span>
+
+        <span class="c1"># build regular Spectrogram from peak-Q data by interpolating each</span>
+        <span class="c1"># (Q, frequency) `TimeSeries` to have the same time resolution</span>
+        <span class="k">if</span> <span class="n">tres</span> <span class="o">==</span> <span class="s2">&quot;&lt;default&gt;&quot;</span><span class="p">:</span>
+            <span class="n">tres</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Segment</span><span class="p">(</span><span class="n">outseg</span><span class="p">))</span> <span class="o">/</span> <span class="mf">1000.</span>
+        <span class="n">xout</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">]]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="n">outseg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">outseg</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">step</span><span class="o">=</span><span class="n">tres</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">nx</span> <span class="o">=</span> <span class="n">xout</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">ny</span> <span class="o">=</span> <span class="n">frequencies</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">Spectrogram</span><span class="p">(</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span>
+            <span class="n">t0</span><span class="o">=</span><span class="n">outseg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">dt</span><span class="o">=</span><span class="n">tres</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">frequencies</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># record Q in output</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">q</span>
+        <span class="c1"># interpolate rows</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">):</span>
+            <span class="n">xrow</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">x0</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">x0</span> <span class="o">+</span> <span class="n">row</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">dx</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">interp</span> <span class="o">=</span> <span class="n">InterpolatedUnivariateSpline</span><span class="p">(</span><span class="n">xrow</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">out</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp</span><span class="p">(</span><span class="n">xout</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="n">dtype</span><span class="p">,</span>
+                <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span>
+                <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">fres</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+        <span class="c1"># interpolate the spectrogram to increase its frequency resolution</span>
+        <span class="c1"># --- this is done because Duncan doesn&#39;t like interpolated images</span>
+        <span class="c1">#     since they don&#39;t support log scaling</span>
+        <span class="n">interp</span> <span class="o">=</span> <span class="n">RectBivariateSpline</span><span class="p">(</span><span class="n">xout</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">logf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fres</span> <span class="o">==</span> <span class="s2">&quot;&lt;default&gt;&quot;</span><span class="p">:</span>
+                <span class="n">fres</span> <span class="o">=</span> <span class="mf">.5</span>
+            <span class="n">outfreq</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">frange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">frange</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">fres</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fres</span> <span class="o">==</span> <span class="s2">&quot;&lt;default&gt;&quot;</span><span class="p">:</span>
+                <span class="n">fres</span> <span class="o">=</span> <span class="mi">500</span>
+            <span class="n">outfreq</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">frange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">frange</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">num</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">fres</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">)(</span>
+            <span class="n">interp</span><span class="p">(</span><span class="n">xout</span><span class="p">,</span> <span class="n">outfreq</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+                <span class="n">dtype</span><span class="p">,</span>
+                <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span>
+                <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">t0</span><span class="o">=</span><span class="n">outseg</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">dt</span><span class="o">=</span><span class="n">tres</span><span class="p">,</span>
+            <span class="n">frequencies</span><span class="o">=</span><span class="n">outfreq</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">new</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">q</span>
+        <span class="k">return</span> <span class="n">new</span></div>
+
+
+<div class="viewcode-block" id="QGram.table">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.QGram.table">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snrthresh</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EventTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Represent this `QPlane` as an `EventTable`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        snrthresh : `float`</span>
+<span class="sd">            Lower inclusive threshold on individual tile SNR to keep in the</span>
+<span class="sd">            table, default: 5.5.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : `~gwpy.table.EventTable`</span>
+<span class="sd">            A table of time-frequency tiles on this `QPlane`.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Only tiles with signal energy greater than or equal to</span>
+<span class="sd">        `snrthresh ** 2 / 2` will be stored in the output `EventTable`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..table</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventTable</span>
+
+        <span class="c1"># get plane properties</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">frequencies</span>
+        <span class="n">bws</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">farray</span><span class="p">)</span>
+
+        <span class="c1"># collect table data as a recarray</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;time&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;frequency&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;duration&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bandwidth&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;energy&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">rec</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">recarray</span><span class="p">((</span><span class="mi">0</span><span class="p">,),</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">formats</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;f8&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">bw</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">bws</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">ind</span><span class="p">,</span> <span class="o">=</span> <span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="n">snrthresh</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="mf">2.</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">size</span>
+            <span class="k">if</span> <span class="n">new</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">rec</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">rec</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">new</span><span class="p">,),</span> <span class="n">refcheck</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">][</span><span class="o">-</span><span class="n">new</span><span class="p">:]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;frequency&quot;</span><span class="p">][</span><span class="o">-</span><span class="n">new</span><span class="p">:]</span> <span class="o">=</span> <span class="n">f</span>
+                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;duration&quot;</span><span class="p">][</span><span class="o">-</span><span class="n">new</span><span class="p">:]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;bandwidth&quot;</span><span class="p">][</span><span class="o">-</span><span class="n">new</span><span class="p">:]</span> <span class="o">=</span> <span class="n">bw</span>
+                <span class="n">rec</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">][</span><span class="o">-</span><span class="n">new</span><span class="p">:]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
+
+        <span class="c1"># save to a table</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">EventTable</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plane</span><span class="o">.</span><span class="n">q</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+
+<span class="c1"># -- utilities -----------------------</span>
+
+<div class="viewcode-block" id="q_scan">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.qtransform.q_scan">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">q_scan</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">TimeSeries</span><span class="p">,</span>
+    <span class="n">mismatch</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DEFAULT_MISMATCH</span><span class="p">,</span>
+    <span class="n">qrange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_QRANGE</span><span class="p">,</span>
+    <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_FRANGE</span><span class="p">,</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sampling</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QGram</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform data by scanning over a `QTiling`.</span>
+
+<span class="sd">    This utility is provided mainly to allow direct manipulation of the</span>
+<span class="sd">    `QTiling.transform` output. Most users probably just want to use</span>
+<span class="sd">    :meth:`~gwpy.timeseries.TimeSeries.q_transform`, which wraps around this.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : `~gwpy.timeseries.TimeSeries` or `ndarray`</span>
+<span class="sd">        The time- or frequency-domain input data.</span>
+
+<span class="sd">    mismatch : `float`</span>
+<span class="sd">        Maximum allowed fractional mismatch between neighbouring tiles.</span>
+
+<span class="sd">    qrange : `tuple` of `float`</span>
+<span class="sd">        ``(low, high)`` range of Qs to scan.</span>
+
+<span class="sd">    frange : `tuple` of `float`</span>
+<span class="sd">        ``(low, high)`` range of frequencies to scan.</span>
+
+<span class="sd">    duration : `float`</span>
+<span class="sd">        Duration (seconds) of input, required if `data` is not a `TimeSeries`.</span>
+
+<span class="sd">    sampling : `float`</span>
+<span class="sd">        Sample rate (Hertz) of input, required if `data` is not a `TimeSeries`.</span>
+
+<span class="sd">    kwargs</span>
+<span class="sd">        Other keyword arguments to be passed to :meth:`QTiling.transform`,</span>
+<span class="sd">        including ``&#39;epoch&#39;`` and ``&#39;search&#39;``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    qgram : `QGram`</span>
+<span class="sd">        The raw output of :meth:`QTiling.transform`.</span>
+
+<span class="sd">    far : `float`</span>
+<span class="sd">        Expected false alarm rate (Hertz) of white Gaussian noise with the</span>
+<span class="sd">        same peak energy and total duration as `qgram`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+
+    <span class="c1"># prepare input</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">span</span><span class="p">)</span>
+        <span class="n">sampling</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;Hz&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;epoch&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">x0</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">fft</span><span class="p">()</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="c1"># return a raw Q-transform and its significance</span>
+    <span class="k">return</span> <span class="n">QTiling</span><span class="p">(</span>
+        <span class="n">duration</span><span class="p">,</span>
+        <span class="n">sampling</span><span class="p">,</span>
+        <span class="n">mismatch</span><span class="o">=</span><span class="n">mismatch</span><span class="p">,</span>
+        <span class="n">qrange</span><span class="o">=</span><span class="n">qrange</span><span class="p">,</span>
+        <span class="n">frange</span><span class="o">=</span><span class="n">frange</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

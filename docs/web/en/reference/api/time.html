@@ -1,0 +1,625 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Time (gwexpy.time) &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="gwexpy.time.Time" href="gwexpy.time.Time.html" />
+    <link rel="prev" title="Signal Processing" href="signal.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">GWexpy Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#choose-your-guide">Choose Your Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#visual-examples">Visual Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#example-gallery">Example Gallery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#learning-path-by-user-level">Learning Path by User Level</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html#main-documentation">Main Documentation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/installation.html">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/quickstart.html">Quickstart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/getting_started.html">Getting Started</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/io_formats.html">File I/O Supported Formats Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../examples/index.html">Case Studies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/migration_0.1.1.html">Migrating to GWexpy v0.1.1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/gwexpy_for_gwpy_users_en.html">GWexpy Features (For GWpy Users)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/time_utilities.html">Time Utilities (<code class="docutils literal notranslate"><span class="pre">gwexpy.time</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/numerical_stability.html">Numerical Stability and Precision</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/scalarfield_slicing.html">ScalarField Slicing Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html">Validated Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/validated_algorithms.html#assumptions-and-conventions">Assumptions and Conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/architecture.html">Architecture &amp; Physics</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">Reference</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">API Reference</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../classes.html">Class Index</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../index.html#language">Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">GWexpy Documentation</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Reference</a></li>
+          <li class="breadcrumb-item"><a href="index.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Time (gwexpy.time)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/reference/api/time.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="time-gwexpy-time">
+<h1>Time (gwexpy.time)<a class="headerlink" href="#time-gwexpy-time" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">from_gps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gps</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/time/core.html#from_gps"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">tconvert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'now'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/time/core.html#tconvert"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">to_gps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwexpy/time/core.html#to_gps"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">LIGOTimeGPS</span></span></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SwigPyObject</span></code></p>
+<p>::tagLIGOTimeGPS</p>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">asutcstr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">char</span> <span class="pre">*</span></span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">gpsNanoSeconds</span></span></dt>
+<dd><p>INT4</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpsNanoSeconds</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">gpsSeconds</span></span></dt>
+<dd><p>INT4</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>gpsSeconds</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">ns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LIGOTimeGPS</span> <span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">INT8</span></span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">this</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">thisown</span></span></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">LIGOTimeGPSLike</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">LIGOTimeGPS</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/gwpy/time/_ligotimegps.html#LIGOTimeGPSLike"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p>Protocol for types that are implementations of LIGOTimeGPS.</p>
+<p>This is used for type hinting functions that can accept
+<a class="reference external" href="https://lscsoft.docs.ligo.org/lalsuite/lal/classlal_1_1_l_i_g_o_time_g_p_s.html"><code class="docutils literal notranslate"><span class="pre">lal.LIGOTimeGPS</span></code></a>, or <cite>ligotimegps.LIGOTimeGPS</cite>, or any
+other implementation of the <code class="docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code> standard.</p>
+<p>This can also be used at runtime with <cite>isinstance</cite> to check if an
+object is a LIGOTimeGPS-like object, but cannot be used with
+<cite>issubclass</cite>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">gpsSeconds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">gpsNanoSeconds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwexpy.time.</span></span><span class="sig-name descname"><span class="pre">Time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_subfmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_subfmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/astropy/time/core.html#Time"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TimeBase</span></code></p>
+<p>Represent and manipulate times and dates for astronomy.</p>
+<p>A <cite>Time</cite> object is initialized with one or more times in the <code class="docutils literal notranslate"><span class="pre">val</span></code>
+argument.  The input times in <code class="docutils literal notranslate"><span class="pre">val</span></code> must conform to the specified
+<code class="docutils literal notranslate"><span class="pre">format</span></code> and must correspond to the specified time <code class="docutils literal notranslate"><span class="pre">scale</span></code>.  The
+optional <code class="docutils literal notranslate"><span class="pre">val2</span></code> time input should be supplied only for numeric input
+formats (e.g. JD) where very high precision (better than 64-bit precision)
+is required.</p>
+<p>The allowed values for <code class="docutils literal notranslate"><span class="pre">format</span></code> can be listed with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">Time</span><span class="o">.</span><span class="n">FORMATS</span><span class="p">)</span>
+<span class="go">[&#39;jd&#39;, &#39;mjd&#39;, &#39;decimalyear&#39;, &#39;unix&#39;, &#39;unix_tai&#39;, &#39;cxcsec&#39;, &#39;galexsec&#39;, &#39;gps&#39;,</span>
+<span class="go"> &#39;plot_date&#39;, &#39;stardate&#39;, &#39;datetime&#39;, &#39;ymdhms&#39;, &#39;iso&#39;, &#39;isot&#39;, &#39;yday&#39;, &#39;datetime64&#39;,</span>
+<span class="go"> &#39;fits&#39;, &#39;byear&#39;, &#39;jyear&#39;, &#39;byear_str&#39;, &#39;jyear_str&#39;]</span>
+</pre></div>
+</div>
+<p>See also: <a class="reference external" href="http://docs.astropy.org/en/stable/time/">http://docs.astropy.org/en/stable/time/</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val</strong> (sequence, ndarray, number, str, bytes, or <cite>~astropy.time.Time</cite> object) – Value(s) to initialize the time or times.  Bytes are decoded as ascii.</p></li>
+<li><p><strong>val2</strong> (<em>sequence</em><em>, </em><em>ndarray</em><em>, or </em><em>number; optional</em>) – Value(s) to initialize the time or times.  Only used for numerical
+input, to help preserve precision.</p></li>
+<li><p><strong>format</strong> (<em>str</em><em>, </em><em>optional</em>) – Format of input value(s), specifying how to interpret them (e.g., ISO, JD, or
+Unix time). By default, the same format will be used for output representation.</p></li>
+<li><p><strong>scale</strong> (<em>str</em><em>, </em><em>optional</em>) – Time scale of input value(s), must be one of the following:
+(‘tai’, ‘tcb’, ‘tcg’, ‘tdb’, ‘tt’, ‘ut1’, ‘utc’)</p></li>
+<li><p><strong>precision</strong> (<em>int</em><em>, </em><em>optional</em>) – Digits of precision in string representation of time</p></li>
+<li><p><strong>in_subfmt</strong> (<em>str</em><em>, </em><em>optional</em>) – Unix glob to select subformats for parsing input times</p></li>
+<li><p><strong>out_subfmt</strong> (<em>str</em><em>, </em><em>optional</em>) – Unix glob to select subformat for outputting times</p></li>
+<li><p><strong>location</strong> (<cite>~astropy.coordinates.EarthLocation</cite> or tuple, optional) – If given as an tuple, it should be able to initialize an
+an EarthLocation instance, i.e., either contain 3 items with units of
+length for geocentric coordinates, or contain a longitude, latitude,
+and an optional height for geodetic coordinates.
+Can be a single location, or one for each input time.
+If not given, assumed to be the center of the Earth for time scale
+transformations to and from the solar-system barycenter.</p></li>
+<li><p><strong>copy</strong> (<em>bool</em><em>, </em><em>optional</em>) – Make a copy of the input values</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">FORMATS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'byear':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeBesselianEpoch'&gt;,</span> <span class="pre">'byear_str':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeBesselianEpochString'&gt;,</span> <span class="pre">'cxcsec':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeCxcSec'&gt;,</span> <span class="pre">'datetime':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeDatetime'&gt;,</span> <span class="pre">'datetime64':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeDatetime64'&gt;,</span> <span class="pre">'decimalyear':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeDecimalYear'&gt;,</span> <span class="pre">'fits':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeFITS'&gt;,</span> <span class="pre">'galexsec':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeGalexSec'&gt;,</span> <span class="pre">'gps':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeGPS'&gt;,</span> <span class="pre">'iso':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeISO'&gt;,</span> <span class="pre">'isot':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeISOT'&gt;,</span> <span class="pre">'jd':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeJD'&gt;,</span> <span class="pre">'jyear':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeJulianEpoch'&gt;,</span> <span class="pre">'jyear_str':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeJulianEpochString'&gt;,</span> <span class="pre">'mjd':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeMJD'&gt;,</span> <span class="pre">'plot_date':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimePlotDate'&gt;,</span> <span class="pre">'stardate':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeStardate'&gt;,</span> <span class="pre">'unix':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeUnix'&gt;,</span> <span class="pre">'unix_tai':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeUnixTai'&gt;,</span> <span class="pre">'yday':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeYearDayTime'&gt;,</span> <span class="pre">'ymdhms':</span> <span class="pre">&lt;class</span> <span class="pre">'astropy.time.formats.TimeYMDHMS'&gt;}</span></em></dt>
+<dd><p>Dict of time formats</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">SCALES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('tai',</span> <span class="pre">'tcb',</span> <span class="pre">'tcg',</span> <span class="pre">'tdb',</span> <span class="pre">'tt',</span> <span class="pre">'ut1',</span> <span class="pre">'utc',</span> <span class="pre">'local')</span></em></dt>
+<dd><p>List of time scales</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_tdb_tt</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_ut1_utc</span></span></dt>
+<dd><p>Get ERFA DUT arg = UT1 - UTC.  This getter takes optional jd1 and
+jd2 args because it gets called that way when converting time scales.
+If delta_ut1_utc is not yet set, this will interpolate them from the
+the IERS table.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">earth_rotation_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">longitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/astropy/time/core.html#Time.earth_rotation_angle"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate local Earth rotation angle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>longitude</strong> (<cite>~astropy.units.Quantity</cite>, <cite>~astropy.coordinates.EarthLocation</cite>, str, or None; optional) – The longitude on the Earth at which to compute the Earth rotation
+angle (taken from a location as needed).  If <cite>None</cite> (default), taken
+from the <code class="docutils literal notranslate"><span class="pre">location</span></code> attribute of the Time instance. If the special
+string ‘tio’, the result will be relative to the Terrestrial
+Intermediate Origin (TIO) (i.e., the output of <cite>~erfa.era00</cite>).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Local Earth rotation angle with units of hourangle.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~astropy.coordinates.Longitude</cite></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">astropy.time.Time.sidereal_time</span></code></p>
+</div>
+<p class="rubric">References</p>
+<p>IAU 2006 NFA Glossary
+(currently located at: <a class="reference external" href="https://syrte.obspm.fr/iauWGnfa/NFA_Glossary.html">https://syrte.obspm.fr/iauWGnfa/NFA_Glossary.html</a>)</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>The difference between apparent sidereal time and Earth rotation angle
+is the equation of the origins, which is the angle between the Celestial
+Intermediate Origin (CIO) and the equinox. Applying apparent sidereal
+time to the hour angle yields the true apparent Right Ascension with
+respect to the equinox, while applying the Earth rotation angle yields
+the intermediate (CIRS) Right Ascension with respect to the CIO.</p>
+<p>The result includes the TIO locator (s’), which positions the Terrestrial
+Intermediate Origin on the equator of the Celestial Intermediate Pole (CIP)
+and is rigorously corrected for polar motion.
+(except when <code class="docutils literal notranslate"><span class="pre">longitude='tio'</span></code>).</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_delta_ut1_utc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iers_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/astropy/time/core.html#Time.get_delta_ut1_utc"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Find UT1 - UTC differences by interpolating in IERS Table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iers_table</strong> (<cite>~astropy.utils.iers.IERS</cite>, optional) – Table containing UT1-UTC differences from IERS Bulletins A
+and/or B.  Default: <cite>~astropy.utils.iers.earth_orientation_table</cite>
+(which in turn defaults to the combined version provided by
+<cite>~astropy.utils.iers.IERS_Auto</cite>).</p></li>
+<li><p><strong>return_status</strong> (<em>bool</em>) – Whether to return status values.  If <cite>False</cite> (default), iers
+raises <cite>IndexError</cite> if any time is out of the range
+covered by the IERS table.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul>
+<li><p><strong>ut1_utc</strong> (<em>float or float array</em>) – UT1-UTC, interpolated in IERS Table</p></li>
+<li><p><strong>status</strong> (<em>int or int array</em>) –</p>
+<dl class="simple">
+<dt>Status values (if <code class="docutils literal notranslate"><span class="pre">return_status=`True`</span></code>)::</dt><dd><p><code class="docutils literal notranslate"><span class="pre">astropy.utils.iers.FROM_IERS_B</span></code>
+<code class="docutils literal notranslate"><span class="pre">astropy.utils.iers.FROM_IERS_A</span></code>
+<code class="docutils literal notranslate"><span class="pre">astropy.utils.iers.FROM_IERS_A_PREDICTION</span></code>
+<code class="docutils literal notranslate"><span class="pre">astropy.utils.iers.TIME_BEFORE_IERS_RANGE</span></code>
+<code class="docutils literal notranslate"><span class="pre">astropy.utils.iers.TIME_BEYOND_IERS_RANGE</span></code></p>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>In normal usage, UT1-UTC differences are calculated automatically
+on the first instance ut1 is needed.</p>
+</div>
+<p class="rubric">Examples</p>
+<p>To check in code whether any times are before the IERS table range:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.utils.iers</span><span class="w"> </span><span class="kn">import</span> <span class="n">TIME_BEFORE_IERS_RANGE</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Time</span><span class="p">([</span><span class="s1">&#39;1961-01-01&#39;</span><span class="p">,</span> <span class="s1">&#39;2000-01-01&#39;</span><span class="p">],</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;utc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">delta</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">get_delta_ut1_utc</span><span class="p">(</span><span class="n">return_status</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">status</span> <span class="o">==</span> <span class="n">TIME_BEFORE_IERS_RANGE</span>
+<span class="go">array([ True, False]...)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">info</span></span></dt>
+<dd><p>Container for meta information like name, description, format.  This is
+required when the object is used as a mixin column within a table, but can
+be used as a general way to store meta information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">light_travel_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skycoord</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'barycentric'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ephemeris</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/astropy/time/core.html#Time.light_travel_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Light travel time correction to the barycentre or heliocentre.</p>
+<p>The frame transformations used to calculate the location of the solar
+system barycentre and the heliocentre rely on the erfa routine epv00,
+which is consistent with the JPL DE405 ephemeris to an accuracy of
+11.2 km, corresponding to a light travel time of 4 microseconds.</p>
+<p>The routine assumes the source(s) are at large distance, i.e., neglects
+finite-distance effects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>skycoord</strong> (<cite>~astropy.coordinates.SkyCoord</cite>) – The sky location to calculate the correction for.</p></li>
+<li><p><strong>kind</strong> (<em>str</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">'barycentric'</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">'heliocentric'</span></code></p></li>
+<li><p><strong>location</strong> (<cite>~astropy.coordinates.EarthLocation</cite>, optional) – The location of the observatory to calculate the correction for.
+If no location is given, the <code class="docutils literal notranslate"><span class="pre">location</span></code> attribute of the Time
+object is used</p></li>
+<li><p><strong>ephemeris</strong> (<em>str</em><em>, </em><em>optional</em>) – Solar system ephemeris to use (e.g., ‘builtin’, ‘jpl’). By default,
+use the one set with <code class="docutils literal notranslate"><span class="pre">astropy.coordinates.solar_system_ephemeris.set</span></code>.
+For more information, see <cite>~astropy.coordinates.solar_system_ephemeris</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>time_offset</strong> – The time offset between the barycentre or Heliocentre and Earth,
+in TDB seconds.  Should be added to the original time to get the
+time in the Solar system barycentre or the Heliocentre.
+Also, the time conversion to BJD will then include the relativistic correction as well.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~astropy.time.TimeDelta</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/astropy/time/core.html#Time.mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">now</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/astropy/time/core.html#Time.now"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Creates a new object corresponding to the instant in time this
+method is called.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>“Now” is determined using the <cite>~datetime.datetime.now</cite>
+function, so its accuracy and precision is determined by that
+function.  Generally that means it is set by the accuracy of
+your system clock. The timezone is set to UTC.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nowtime</strong> – A new <cite>Time</cite> object (or a subclass of <cite>Time</cite> if this is called from
+such a subclass) at the current time.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Time</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">sidereal_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">longitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/astropy/time/core.html#Time.sidereal_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Calculate sidereal time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kind</strong> (<em>str</em>) – <code class="docutils literal notranslate"><span class="pre">'mean'</span></code> or <code class="docutils literal notranslate"><span class="pre">'apparent'</span></code>, i.e., accounting for precession
+only, or also for nutation.</p></li>
+<li><p><strong>longitude</strong> (<cite>~astropy.units.Quantity</cite>, <cite>~astropy.coordinates.EarthLocation</cite>, str, or None; optional) – The longitude on the Earth at which to compute the Earth rotation
+angle (taken from a location as needed).  If <cite>None</cite> (default), taken
+from the <code class="docutils literal notranslate"><span class="pre">location</span></code> attribute of the Time instance. If the special
+string  ‘greenwich’ or ‘tio’, the result will be relative to longitude
+0 for models before 2000, and relative to the Terrestrial Intermediate
+Origin (TIO) for later ones (i.e., the output of the relevant ERFA
+function that calculates greenwich sidereal time).</p></li>
+<li><p><strong>model</strong> (<em>str</em><em> or </em><em>None; optional</em>) – Precession (and nutation) model to use.  The available ones are:
+- apparent: [‘IAU1994’, ‘IAU2000A’, ‘IAU2000B’, ‘IAU2006A’]
+- mean: [‘IAU1982’, ‘IAU2000’, ‘IAU2006’]
+If <cite>None</cite> (default), the last (most recent) one from the appropriate
+list above is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Local sidereal time, with units of hourangle.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~astropy.coordinates.Longitude</cite></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">astropy.time.Time.earth_rotation_angle</span></code></p>
+</div>
+<p class="rubric">References</p>
+<p>IAU 2006 NFA Glossary
+(currently located at: <a class="reference external" href="https://syrte.obspm.fr/iauWGnfa/NFA_Glossary.html">https://syrte.obspm.fr/iauWGnfa/NFA_Glossary.html</a>)</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>The difference between apparent sidereal time and Earth rotation angle
+is the equation of the origins, which is the angle between the Celestial
+Intermediate Origin (CIO) and the equinox. Applying apparent sidereal
+time to the hour angle yields the true apparent Right Ascension with
+respect to the equinox, while applying the Earth rotation angle yields
+the intermediate (CIRS) Right Ascension with respect to the CIO.</p>
+<p>For the IAU precession models from 2000 onwards, the result includes the
+TIO locator (s’), which positions the Terrestrial Intermediate Origin on
+the equator of the Celestial Intermediate Pole (CIP) and is rigorously
+corrected for polar motion (except when <code class="docutils literal notranslate"><span class="pre">longitude='tio'</span></code> or <code class="docutils literal notranslate"><span class="pre">'greenwich'</span></code>).</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">strftime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format_spec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/astropy/time/core.html#Time.strftime"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Convert Time to a string or a numpy.array of strings according to a
+format specification.
+See <cite>time.strftime</cite> documentation for format specification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>format_spec</strong> (<em>str</em>) – Format definition of return string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>formatted</strong> – String or numpy.array of strings formatted according to the given
+format string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">strptime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_string</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/astropy/time/core.html#Time.strptime"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Parse a string to a Time according to a format specification.
+See <cite>time.strptime</cite> documentation for format specification.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Time</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s1">&#39;2012-Jun-30 23:59:60&#39;</span><span class="p">,</span> <span class="s1">&#39;%Y-%b-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+<span class="go">&lt;Time object: scale=&#39;utc&#39; format=&#39;isot&#39; value=2012-06-30T23:59:60.000&gt;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time_string</strong> (<em>str</em><em>, </em><em>sequence</em><em>, or </em><em>ndarray</em>) – Objects containing time data of type string</p></li>
+<li><p><strong>format_string</strong> (<em>str</em>) – String specifying format of time_string.</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – Any keyword arguments for <code class="docutils literal notranslate"><span class="pre">Time</span></code>.  If the <code class="docutils literal notranslate"><span class="pre">format</span></code> keyword
+argument is present, this will be used as the Time format.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>time_obj</strong> – A new <cite>~astropy.time.Time</cite> object corresponding to the input
+<code class="docutils literal notranslate"><span class="pre">time_string</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~astropy.time.Time</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">to_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timezone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leap_second_strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/astropy/time/core.html#Time.to_datetime"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Convert to (potentially timezone-aware) <cite>~datetime.datetime</cite> object.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">timezone</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>, return a timezone-aware datetime object.</p>
+<p>Since the <cite>~datetime.datetime</cite> class does not natively handle leap seconds, the
+behavior when converting a time within a leap second is controlled by the
+<code class="docutils literal notranslate"><span class="pre">leap_second_strict</span></code> argument. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">astropy.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">Time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Time</span><span class="p">(</span><span class="s2">&quot;2015-06-30 23:59:60.500&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">leap_second_strict</span><span class="o">=</span><span class="s1">&#39;silent&#39;</span><span class="p">))</span>
+<span class="go">2015-07-01 00:00:00.500000</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timezone</strong> ({<cite>~datetime.tzinfo</cite>, None}, optional) – If not <cite>None</cite>, return timezone-aware datetime.</p></li>
+<li><p><strong>leap_second_strict</strong> (<em>str</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">raise</span></code> (default), raise an exception if the time is within a leap
+second. If <code class="docutils literal notranslate"><span class="pre">warn</span></code> then issue a warning. If <code class="docutils literal notranslate"><span class="pre">silent</span></code> then silently
+handle the leap second.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If <code class="docutils literal notranslate"><span class="pre">timezone</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>, output will be timezone-aware.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>~datetime.datetime</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Time</span></code></p></td>
+<td><p>Represent and manipulate times and dates for astronomy.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">LIGOTimeGPS</span></code></p></td>
+<td><p>::tagLIGOTimeGPS</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_gps</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_gps</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tconvert</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="signal.html" class="btn btn-neutral float-left" title="Signal Processing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwexpy.time.Time.html" class="btn btn-neutral float-right" title="gwexpy.time.Time" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

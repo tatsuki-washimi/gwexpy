@@ -1,0 +1,336 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "e41d7944",
+   "metadata": {},
+   "source": [
+    "# ASD 解析パイプライン\n",
+    "\n",
+    "このチュートリアルでは、`SegmentTable` を使用して、複数セグメントにわたる一括 ASD（振幅スペクトル密度）解析パイプラインを構築する方法を学びます。各セグメントの切り出し（crop）、ASD計算、可視化までを流れるように実行します。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "fb26a324",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-04-05T13:14:09.861828Z",
+     "iopub.status.busy": "2026-04-05T13:14:09.861665Z",
+     "iopub.status.idle": "2026-04-05T13:14:12.187068Z",
+     "shell.execute_reply": "2026-04-05T13:14:12.186526Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": []
+    },
+    {
+     "data": {
+      "text/html": [
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>span</th>\n",
+       "      <th>raw</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>(0, 16)</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>(16, 32)</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>(32, 48)</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>(48, 64)</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n"
+      ],
+      "text/plain": [
+       "SegmentTable(n_rows=4, n_cols=2, payload=1, columns=['span', 'raw'])\n",
+       "span=[0 ... 64]\n"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import warnings\n",
+    "warnings.filterwarnings(\"ignore\", \"Wswiglal-redir-stdio\")\n",
+    "import numpy as np\n",
+    "from gwpy.segments import Segment\n",
+    "from gwexpy.table import SegmentTable\n",
+    "from gwpy.timeseries import TimeSeries\n",
+    "\n",
+    "def get_synthetic_data(t0):\n",
+    "    return TimeSeries(np.random.randn(1024), sample_rate=64, t0=t0)\n",
+    "\n",
+    "segs = [Segment(i*16, i*16+16) for i in range(4)]\n",
+    "st = SegmentTable.from_segments(segs)\n",
+    "st.add_series_column(\"raw\", data=[get_synthetic_data(seg[0]) for seg in segs], kind=\"timeseries\")\n",
+    "st"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d5fa65b1",
+   "metadata": {},
+   "source": [
+    "## 切り出し (Crop) と ASD 計算\n",
+    "\n",
+    "`crop()` と `asd()` という便利な Sugar API を使って、全セグメントを一括処理できます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "6fd2bf7d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-04-05T13:14:12.191103Z",
+     "iopub.status.busy": "2026-04-05T13:14:12.190597Z",
+     "iopub.status.idle": "2026-04-05T13:14:12.264118Z",
+     "shell.execute_reply": "2026-04-05T13:14:12.263499Z"
+    }
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "  warn(\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>span</th>\n",
+       "      <th>raw</th>\n",
+       "      <th>cropped</th>\n",
+       "      <th>asd</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>(0, 16)</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 65 bins&gt;</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>(16, 32)</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>(32, 48)</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>(48, 64)</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>\n"
+      ],
+      "text/plain": [
+       "       span                         raw                     cropped  \\\n",
+       "0   (0, 16)  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
+       "1  (16, 32)  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
+       "2  (32, 48)  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
+       "3  (48, 64)  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
+       "                          asd  \n",
+       "0  <frequencyseries: 65 bins>  \n",
+       "1   <frequencyseries: 0 bins>  \n",
+       "2   <frequencyseries: 0 bins>  \n",
+       "3   <frequencyseries: 0 bins>  \n"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# 各行の期間 (span) でデータを切り出し\n",
+    "st_cropped = st.crop(\"raw\", out_col=\"cropped\")\n",
+    "# セグメントごとに ASD を計算\n",
+    "st_asd = st_cropped.asd(\"cropped\", out_col=\"asd\", fftlength=2.0)\n",
+    "st_asd.display()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fd0638b1",
+   "metadata": {},
+   "source": [
+    "## 解析結果の集計\n",
+    "\n",
+    "`map()` を使うことで、独自関数（例：特定の周波数帯域の RMS 計算）を適用してテーブルに結果を統合できます。"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "c048a6b3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-04-05T13:14:12.265735Z",
+     "iopub.status.busy": "2026-04-05T13:14:12.265618Z",
+     "iopub.status.idle": "2026-04-05T13:14:12.272429Z",
+     "shell.execute_reply": "2026-04-05T13:14:12.271683Z"
+    }
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>span</th>\n",
+       "      <th>band_rms</th>\n",
+       "      <th>raw</th>\n",
+       "      <th>cropped</th>\n",
+       "      <th>asd</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>(0, 16)</td>\n",
+       "      <td>1.369095</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 65 bins&gt;</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>(16, 32)</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>(32, 48)</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>(48, 64)</td>\n",
+       "      <td>0.000000</td>\n",
+       "      <td>&lt;timeseries: 1024 samples&gt;</td>\n",
+       "      <td>&lt;timeseries: 0 samples&gt;</td>\n",
+       "      <td>&lt;frequencyseries: 0 bins&gt;</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>\n"
+      ],
+      "text/plain": [
+       "       span  band_rms                         raw                     cropped  \\\n",
+       "0   (0, 16)  1.369095  <timeseries: 1024 samples>  <timeseries: 1024 samples>   \n",
+       "1  (16, 32)  0.000000  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
+       "2  (32, 48)  0.000000  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
+       "3  (48, 64)  0.000000  <timeseries: 1024 samples>     <timeseries: 0 samples>   \n",
+       "                          asd  \n",
+       "0  <frequencyseries: 65 bins>  \n",
+       "1   <frequencyseries: 0 bins>  \n",
+       "2   <frequencyseries: 0 bins>  \n",
+       "3   <frequencyseries: 0 bins>  \n"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "def calc_rms(fs):\n",
+    "    return np.sqrt(np.sum(fs.value**2)) # 簡略化した例\n",
+    "\n",
+    "st_asd.map(\"asd\", calc_rms, out_col=\"band_rms\", inplace=True)\n",
+    "st_asd.display()"
+   ]
+  }
+ ],
+ "metadata": {
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

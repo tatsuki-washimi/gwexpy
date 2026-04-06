@@ -1,0 +1,495 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calibration Pipeline: Counts → Strain &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Calibration Pipeline: Counts → Strain</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page was generated from a Jupyter Notebook.
+<a class="reference external" href="https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/web/en/user_guide/tutorials/case_calibration_pipeline.ipynb">Download the notebook (.ipynb)</a></p>
+</div>
+<section id="Calibration-Pipeline:-Counts-→-Strain">
+<h1>Calibration Pipeline: Counts → Strain<a class="headerlink" href="#Calibration-Pipeline:-Counts-→-Strain" title="Link to this heading"></a></h1>
+<p>Gravitational-wave detectors record data in <em>digital counts</em> — raw ADC output. Before any astrophysical analysis the data must be converted to physical strain <span class="math notranslate nohighlight">\(h(f)\)</span> or displacement <span class="math notranslate nohighlight">\(x(f)\)</span> by applying a <strong>calibration transfer function</strong>.</p>
+<p>KAGRA’s calibration pipeline involves two steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Coupling factor measurement</strong> — a known signal (swept or stepped sine) is injected via the photon calibrator (PCal) and the detector response is measured using <code class="docutils literal notranslate"><span class="pre">ResponseFunctionAnalysis</span></code>.</p></li>
+<li><p><strong>Calibration application</strong> — the raw spectrum is divided by the coupling function to produce a calibrated strain-equivalent ASD.</p></li>
+</ol>
+<p><strong>What this tutorial covers:</strong></p>
+<ol class="arabic simple">
+<li><p>Generating synthetic uncalibrated data (counts) with realistic noise</p></li>
+<li><p>Using <code class="docutils literal notranslate"><span class="pre">ResponseFunctionAnalysis</span></code> to extract coupling factors from a stepped-sine injection</p></li>
+<li><p>Fitting a frequency-dependent calibration model</p></li>
+<li><p>Applying the calibration and producing a strain-calibrated ASD</p></li>
+</ol>
+<p><strong>Related tutorials:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">case_dttxml_calibration.ipynb</span></code> — loading pre-measured TF from DTT XML files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">case_transfer_function.ipynb</span></code> — estimating TF directly from time series</p></li>
+</ul>
+<section id="Setup">
+<h2>Setup<a class="headerlink" href="#Setup" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.analysis.response</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResponseFunctionAnalysis</span><span class="p">,</span> <span class="n">detect_step_segments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">fit_series</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.fitting.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">lorentzian</span><span class="p">,</span> <span class="n">power_law</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.numerics.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">SAFE_FLOOR</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="1.-Synthetic-Uncalibrated-Data">
+<h2>1. Synthetic Uncalibrated Data<a class="headerlink" href="#1.-Synthetic-Uncalibrated-Data" title="Link to this heading"></a></h2>
+<p>We create a synthetic DARM (Differential Arm length) signal in counts. The system has:</p>
+<ul class="simple">
+<li><p><strong>Optical cavity pole</strong> at 50 Hz (single-pole low-pass response)</p></li>
+<li><p><strong>Seismic wall</strong> rising below 10 Hz as 1/f^4</p></li>
+<li><p><strong>Shot noise</strong> floor flat above ~100 Hz</p></li>
+<li><p><strong>Lines</strong> at 60 Hz (power) and 120 Hz (harmonic)</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fs_hz</span> <span class="o">=</span> <span class="mi">4096</span>           <span class="c1"># sample rate [Hz]</span>
+<span class="n">T</span>     <span class="o">=</span> <span class="mf">300.0</span>          <span class="c1"># total duration [s]</span>
+<span class="n">t0</span>    <span class="o">=</span> <span class="mi">1_300_000_000</span>  <span class="c1"># GPS epoch</span>
+<span class="n">N</span>     <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="n">fs_hz</span><span class="p">)</span>
+<span class="n">t</span>     <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs_hz</span>
+<span class="n">rng</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Calibration parameters (known &quot;true&quot; values)</span>
+<span class="n">COUNTS_PER_METER</span> <span class="o">=</span> <span class="mf">4.5e10</span>   <span class="c1"># ADC counts per meter of DARM</span>
+<span class="n">F_POLE_HZ</span> <span class="o">=</span> <span class="mf">50.0</span>             <span class="c1"># optical cavity pole [Hz]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">cal_tf</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="c1"># Counts/m transfer function: C(f) = C0 / (1 + i*f/f_pole)</span>
+    <span class="k">return</span> <span class="n">COUNTS_PER_METER</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">f</span> <span class="o">/</span> <span class="n">F_POLE_HZ</span><span class="p">)</span>
+
+<span class="c1"># Noise model in counts</span>
+<span class="n">freqs_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">fs_hz</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+
+<span class="c1"># Shot noise (white, above cavity pole → flat counts)</span>
+<span class="n">shot_counts</span>   <span class="o">=</span> <span class="n">COUNTS_PER_METER</span> <span class="o">*</span> <span class="mf">3e-21</span>
+
+<span class="c1"># Seismic noise: rises as (10/f)^4 metres, converted to counts</span>
+<span class="n">seismic_m</span>  <span class="o">=</span> <span class="mf">1e-12</span> <span class="o">*</span> <span class="p">(</span><span class="mf">10.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">freqs_noise</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">))</span><span class="o">**</span><span class="mi">4</span>
+<span class="n">seismic_cnts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cal_tf</span><span class="p">(</span><span class="n">freqs_noise</span><span class="p">))</span> <span class="o">*</span> <span class="n">seismic_m</span>
+
+<span class="n">noise_psd</span> <span class="o">=</span> <span class="n">shot_counts</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">seismic_cnts</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">noise_amp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">noise_psd</span> <span class="o">*</span> <span class="n">fs_hz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">noise_fft</span> <span class="o">=</span> <span class="n">noise_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs_noise</span><span class="p">)))</span>
+<span class="n">noise_fft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">],</span> <span class="n">noise_fft</span><span class="p">])</span>   <span class="c1"># DC = 0</span>
+<span class="n">noise_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">noise_fft</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
+
+<span class="c1"># Add power-line interference at 60 Hz and 120 Hz</span>
+<span class="n">noise_counts</span> <span class="o">+=</span> <span class="mi">500</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">60</span>  <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">noise_counts</span> <span class="o">+=</span> <span class="mi">150</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mi">120</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Wrap in TimeSeries</span>
+<span class="n">ts_raw</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">noise_counts</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs_hz</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;K1:LSC-DARM_OUT_DQ&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ct&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Signal: </span><span class="si">{</span><span class="n">T</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> s at </span><span class="si">{</span><span class="n">fs_hz</span><span class="si">}</span><span class="s2"> Hz  (</span><span class="si">{</span><span class="n">N</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> samples)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMS (counts): </span><span class="si">{</span><span class="n">ts_raw</span><span class="o">.</span><span class="n">rms</span><span class="p">()</span><span class="o">.</span><span class="n">value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Signal: 300 s at 4096 Hz  (1,228,800 samples)
+RMS (counts): 1411.87
+</pre></div></div>
+</div>
+</section>
+<section id="2.-Stepped-Sine-Injection-Campaign">
+<h2>2. Stepped-Sine Injection Campaign<a class="headerlink" href="#2.-Stepped-Sine-Injection-Campaign" title="Link to this heading"></a></h2>
+<p>In a real calibration run, a PCal signal is injected at a series of discrete frequencies while the detector is locked. Each frequency step typically lasts 30–120 s.</p>
+<p>We synthesise an injection campaign with 6 frequencies spanning 10–1000 Hz.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inj_freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">])</span>
+<span class="n">step_dur</span>  <span class="o">=</span> <span class="mf">40.0</span>   <span class="c1"># seconds per step</span>
+<span class="n">pcal_amp</span>  <span class="o">=</span> <span class="mf">3e-13</span>  <span class="c1"># PCal amplitude [m]  (typical photon calibrator level)</span>
+
+<span class="c1"># Build injection time series</span>
+<span class="n">ts_inj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+<span class="n">t_start</span> <span class="o">=</span> <span class="mf">10.0</span>   <span class="c1"># injection starts at GPS + 10 s</span>
+
+<span class="k">for</span> <span class="n">f0</span> <span class="ow">in</span> <span class="n">inj_freqs</span><span class="p">:</span>
+    <span class="n">i0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">t_start</span> <span class="o">*</span> <span class="n">fs_hz</span><span class="p">)</span>
+    <span class="n">i1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">t_start</span> <span class="o">+</span> <span class="n">step_dur</span><span class="p">)</span> <span class="o">*</span> <span class="n">fs_hz</span><span class="p">)</span>
+    <span class="c1"># Convert metres to counts via calibration TF</span>
+    <span class="n">amp_counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cal_tf</span><span class="p">(</span><span class="n">f0</span><span class="p">))</span> <span class="o">*</span> <span class="n">pcal_amp</span>
+    <span class="n">ts_inj</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_counts</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f0</span> <span class="o">*</span> <span class="n">t</span><span class="p">[</span><span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">])</span>
+    <span class="n">t_start</span> <span class="o">+=</span> <span class="n">step_dur</span> <span class="o">+</span> <span class="mf">5.0</span>   <span class="c1"># 5 s gap between steps</span>
+
+<span class="n">ts_witness</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">ts_inj</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs_hz</span><span class="p">,</span>
+                        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;K1:CAL-PCAL_SWEPT_EXC&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ct&quot;</span><span class="p">)</span>
+
+<span class="c1"># Combined DARM signal = noise + injection response</span>
+<span class="n">ts_darm</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">ts_raw</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">ts_inj</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="n">fs_hz</span><span class="p">,</span>
+                     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;K1:LSC-DARM_OUT_DQ&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ct&quot;</span><span class="p">)</span>
+
+<span class="c1"># Quick overview plot</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mi">280</span><span class="o">*</span><span class="n">fs_hz</span><span class="p">)],</span> <span class="n">ts_darm</span><span class="o">.</span><span class="n">value</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="mi">280</span><span class="o">*</span><span class="n">fs_hz</span><span class="p">)],</span>
+        <span class="n">lw</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;DARM [counts]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Raw DARM signal with stepped-sine PCal injections&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_calibration_pipeline_6_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_calibration_pipeline_6_0.png" />
+</div>
+</div>
+</section>
+<section id="3.-Extract-Coupling-Factors">
+<h2>3. Extract Coupling Factors<a class="headerlink" href="#3.-Extract-Coupling-Factors" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ResponseFunctionAnalysis.compute()</span></code> automatically detects the injection steps in the witness channel and estimates the coupling factor at each injected frequency.</p>
+<p>The coupling factor <span class="math notranslate nohighlight">\(C(f_i)\)</span> is defined as:</p>
+<div class="math notranslate nohighlight">
+\[C(f_i) = \frac{\text{ASD}_{\text{target}}(f_i)}{\text{ASD}_{\text{witness}}(f_i)}\]</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rfa</span> <span class="o">=</span> <span class="n">ResponseFunctionAnalysis</span><span class="p">()</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">rfa</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
+    <span class="n">witness</span>    <span class="o">=</span> <span class="n">ts_witness</span><span class="p">,</span>
+    <span class="n">target</span>     <span class="o">=</span> <span class="n">ts_darm</span><span class="p">,</span>
+    <span class="n">fftlength</span>  <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span>      <span class="c1"># 4 s FFT segments</span>
+    <span class="n">overlap</span>    <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">snr_threshold</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>   <span class="c1"># minimum SNR to accept a step</span>
+    <span class="n">min_duration</span>  <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>  <span class="c1"># minimum step duration [s]</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Injection frequencies detected:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">injected_freqs</span><span class="p">,</span> <span class="s2">&quot;Hz&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coupling factors (counts/count):&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">coupling_factors</span><span class="p">))</span>
+
+<span class="c1"># Compare with theoretical values</span>
+<span class="n">cf_theory</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cal_tf</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">injected_freqs</span><span class="p">))</span> <span class="o">/</span> <span class="mf">1.0</span>  <span class="c1"># witness already in counts</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Measured vs. theoretical coupling factors:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">cf_meas</span><span class="p">,</span> <span class="n">cf_th</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">injected_freqs</span><span class="p">,</span>
+                              <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">coupling_factors</span><span class="p">),</span>
+                              <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cal_tf</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">injected_freqs</span><span class="p">))):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">f</span><span class="si">:</span><span class="s2">6.0f</span><span class="si">}</span><span class="s2"> Hz: measured=</span><span class="si">{</span><span class="n">cf_meas</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, theory=</span><span class="si">{</span><span class="n">cf_th</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">, &quot;</span>
+          <span class="sa">f</span><span class="s2">&quot;ratio=</span><span class="si">{</span><span class="n">cf_meas</span><span class="o">/</span><span class="n">cf_th</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Injection frequencies detected: [  10.   30.  100.  200.  500. 1000.] Hz
+Coupling factors (counts/count): [5.14959810e+07 1.00121682e+00 1.00009536e+00 1.00002108e+00
+ 9.99998128e-01 1.00000068e+00]
+
+Measured vs. theoretical coupling factors:
+      10 Hz: measured=5.150e+07, theory=4.413e+10, ratio=0.0012
+      30 Hz: measured=1.001e+00, theory=3.859e+10, ratio=0.0000
+     100 Hz: measured=1.000e+00, theory=2.012e+10, ratio=0.0000
+     200 Hz: measured=1.000e+00, theory=1.091e+10, ratio=0.0000
+     500 Hz: measured=1.000e+00, theory=4.478e+09, ratio=0.0000
+    1000 Hz: measured=1.000e+00, theory=2.247e+09, ratio=0.0000
+</pre></div></div>
+</div>
+</section>
+<section id="4.-Fit-the-Calibration-Transfer-Function">
+<h2>4. Fit the Calibration Transfer Function<a class="headerlink" href="#4.-Fit-the-Calibration-Transfer-Function" title="Link to this heading"></a></h2>
+<p>We fit a single-pole model to the measured coupling factors:</p>
+<div class="math notranslate nohighlight">
+\[C(f) = \frac{C_0}{1 + i\,f / f_\text{pole}}\]</div>
+<p>The fit gives us a smooth, continuous calibration function.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">freqs_meas</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">injected_freqs</span>
+<span class="n">cf_meas</span>    <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">coupling_factors</span><span class="p">)</span>
+
+<span class="c1"># Build FrequencySeries for fitting</span>
+<span class="n">cf_fs</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">cf_meas</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">complex</span><span class="p">),</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs_meas</span><span class="p">,</span>
+                         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Coupling function&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;ct/ct&quot;</span><span class="p">)</span>
+
+<span class="c1"># Define calibration model: |C(f)| = C0 / sqrt(1 + (f/f_pole)^2)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cal_model_mag</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">C0</span><span class="p">,</span> <span class="n">f_pole</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">C0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">f</span> <span class="o">/</span> <span class="n">f_pole</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">result_fit</span> <span class="o">=</span> <span class="n">fit_series</span><span class="p">(</span>
+    <span class="n">cf_fs</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>            <span class="c1"># fit the magnitude (real part of the measured CF)</span>
+    <span class="n">cal_model_mag</span><span class="p">,</span>
+    <span class="n">p0</span><span class="o">=</span><span class="p">[</span><span class="n">COUNTS_PER_METER</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">C0_fit</span><span class="p">,</span> <span class="n">fpole_fit</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">result_fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">result_fit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitted gain : </span><span class="si">{</span><span class="n">C0_fit</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> ct/m  (true: </span><span class="si">{</span><span class="n">COUNTS_PER_METER</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitted pole : </span><span class="si">{</span><span class="n">fpole_fit</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz  (true: </span><span class="si">{</span><span class="n">F_POLE_HZ</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> Hz)&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Fitted gain : 7.140e+09 ct/m  (true: 4.500e+10)
+Fitted pole : -0.06 Hz  (true: 50.00 Hz)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot coupling function: measured vs. fitted model</span>
+<span class="n">f_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">cf_model</span> <span class="o">=</span> <span class="n">cal_model_mag</span><span class="p">(</span><span class="n">f_plot</span><span class="p">,</span> <span class="n">C0_fit</span><span class="p">,</span> <span class="n">fpole_fit</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_meas</span><span class="p">,</span> <span class="n">cf_meas</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span>
+          <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Measured (stepped-sine)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">f_plot</span><span class="p">,</span> <span class="n">cf_model</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tomato&quot;</span><span class="p">,</span>
+          <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Fit: C₀=</span><span class="si">{</span><span class="n">C0_fit</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">, f_pole=</span><span class="si">{</span><span class="n">fpole_fit</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">f_plot</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cal_tf</span><span class="p">(</span><span class="n">f_plot</span><span class="p">)),</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;seagreen&quot;</span><span class="p">,</span>
+          <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;True model&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Coupling factor [ct/m]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Calibration Transfer Function&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_calibration_pipeline_11_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_calibration_pipeline_11_0.png" />
+</div>
+</div>
+</section>
+<section id="5.-Apply-Calibration-—-Counts-→-Metres-ASD">
+<h2>5. Apply Calibration — Counts → Metres ASD<a class="headerlink" href="#5.-Apply-Calibration-—-Counts-→-Metres-ASD" title="Link to this heading"></a></h2>
+<p>With the calibration function in hand, we apply it to the raw DARM ASD to produce a calibrated displacement ASD in metres per root-Hz.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># --- Compute raw ASD ---</span>
+<span class="n">asd_raw</span> <span class="o">=</span> <span class="n">ts_darm</span><span class="o">.</span><span class="n">asd</span><span class="p">(</span><span class="n">fftlength</span><span class="o">=</span><span class="mf">16.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;median&quot;</span><span class="p">)</span>
+<span class="n">freqs_asd</span> <span class="o">=</span> <span class="n">asd_raw</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
+
+<span class="c1"># Calibration function on the ASD frequency grid</span>
+<span class="n">cal_mag</span> <span class="o">=</span> <span class="n">cal_model_mag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">freqs_asd</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">C0_fit</span><span class="p">,</span> <span class="n">fpole_fit</span><span class="p">)</span>
+
+<span class="c1"># Calibrated ASD [m/sqrt(Hz)] = raw ASD [ct/sqrt(Hz)] / |C(f)| [ct/m]</span>
+<span class="n">asd_cal_data</span> <span class="o">=</span> <span class="n">asd_raw</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">cal_mag</span>
+<span class="n">asd_cal</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">asd_cal_data</span><span class="p">,</span> <span class="n">frequencies</span><span class="o">=</span><span class="n">freqs_asd</span><span class="p">,</span>
+                          <span class="n">name</span><span class="o">=</span><span class="s2">&quot;DARM calibrated&quot;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;m/sqrt(Hz)&quot;</span><span class="p">)</span>
+
+<span class="c1"># True sensitivity (noise model in metres)</span>
+<span class="n">shot_m</span>    <span class="o">=</span> <span class="n">shot_counts</span> <span class="o">/</span> <span class="n">COUNTS_PER_METER</span>
+<span class="n">seismic_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">freqs_asd</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">seismic_asd_m</span> <span class="o">=</span> <span class="mf">1e-12</span> <span class="o">*</span> <span class="p">(</span><span class="mf">10.0</span> <span class="o">/</span> <span class="n">seismic_f</span><span class="p">)</span><span class="o">**</span><span class="mi">4</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_asd</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">asd_cal</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;steelblue&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+          <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Calibrated DARM&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">freqs_asd</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">seismic_asd_m</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkorange&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+          <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Seismic noise model&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">shot_m</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;seagreen&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Shot noise floor&quot;</span><span class="p">)</span>
+
+<span class="c1"># Mark calibration injection frequencies</span>
+<span class="k">for</span> <span class="n">f0</span> <span class="ow">in</span> <span class="n">inj_freqs</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">f0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Displacement ASD [m/√Hz]&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;KAGRA DARM: Calibrated Sensitivity&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../../../_images/web_en_user_guide_tutorials_case_calibration_pipeline_13_0.png" src="../../../../_images/web_en_user_guide_tutorials_case_calibration_pipeline_13_0.png" />
+</div>
+</div>
+</section>
+<section id="Summary">
+<h2>Summary<a class="headerlink" href="#Summary" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Step</p></th>
+<th class="head"><p>API</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Stepped-sine injection</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TimeSeries</span></code> + synthetic signal</p></td>
+<td><p>Inject known signal</p></td>
+</tr>
+<tr class="row-odd"><td><p>Step detection + coupling</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ResponseFunctionAnalysis.compute()</span></code></p></td>
+<td><p>Extract C(f) at each freq</p></td>
+</tr>
+<tr class="row-even"><td><p>Calibration model fit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fit_series(cf,</span> <span class="pre">model,</span> <span class="pre">p0)</span></code></p></td>
+<td><p>Smooth continuous C(f)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Apply calibration</p></td>
+<td><p>ASD / C(f)</p></td>
+<td><p>Counts → metres/strain</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Physical constants used from ``gwexpy.numerics.constants``:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SAFE_FLOOR</span></code> — prevents log(0) in ASD estimation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EPS_PSD</span></code> — regularises Welch estimator denominators</p></li>
+</ul>
+<p><strong>In real KAGRA calibration:</strong></p>
+<ul class="simple">
+<li><p>PCal amplitude is independently measured by the PCal power monitor</p></li>
+<li><p>The calibration transfer function has both optical and electrical components</p></li>
+<li><p>Time-varying parameters (finesse, input power) require continuous monitoring</p></li>
+<li><p>See <code class="docutils literal notranslate"><span class="pre">case_dttxml_calibration.ipynb</span></code> for loading pre-measured TF from DTT XML</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,422 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwpy.signal.window &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwpy.signal.window</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwpy.signal.window</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2017 Louisiana State University</span>
+<span class="c1">#               2017-2025 Cardiff University</span>
+<span class="c1">#</span>
+<span class="c1"># This file is part of GWpy.</span>
+<span class="c1">#</span>
+<span class="c1"># GWpy is free software: you can redistribute it and/or modify</span>
+<span class="c1"># it under the terms of the GNU General Public License as published by</span>
+<span class="c1"># the Free Software Foundation, either version 3 of the License, or</span>
+<span class="c1"># (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># GWpy is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with GWpy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">&quot;&quot;&quot;Utilities for signal-processing with windows.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">ceil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_window</span> <span class="k">as</span> <span class="n">_get_window</span><span class="p">,</span>
+    <span class="n">windows</span> <span class="k">as</span> <span class="n">scipy_windows</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">expit</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal.windows._windows</span><span class="w"> </span><span class="kn">import</span> <span class="n">_WIN_FUNCS</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># scipy &lt; 1.17</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal.windows._windows</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">_win_equiv</span> <span class="k">as</span> <span class="n">WINDOWS</span><span class="p">,</span>  <span class="c1"># noqa: N812</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># Cannot find window equivalences</span>
+        <span class="n">WINDOWS</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">WINDOWS</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">func</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_WIN_FUNCS</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeAlias</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NDArray</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">optype.numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Array1D</span>
+
+    <span class="n">WindowLike</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">tuple</span> <span class="o">|</span> <span class="n">Array1D</span><span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Duncan Macleod &lt;duncan.macleod@ligo.org&gt;&quot;</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;canonical_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_window&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;planck&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;recommended_overlap&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="get_window">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.window.get_window">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_window</span><span class="p">(</span>
+    <span class="n">window</span><span class="p">:</span> <span class="n">WindowLike</span><span class="p">,</span>
+    <span class="n">Nx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># noqa: N803</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a window of a given length and type.</span>
+
+<span class="sd">    This is a thin wrapper around `scipy.signal.get_window` that handles</span>
+<span class="sd">    pre-computed window arrays.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    window : `str`, `float`, `tuple`, `numpy.ndarray`</span>
+<span class="sd">        The specification for the window.</span>
+<span class="sd">        Anything accepted by `scipy.signal.get_window` or an</span>
+<span class="sd">        array-like object that is already a window (for convenience).</span>
+
+<span class="sd">    Nx : `int`</span>
+<span class="sd">        The size of the window.</span>
+<span class="sd">        If ``window`` is an array, this size will be checked against the</span>
+<span class="sd">        size of the array.</span>
+
+<span class="sd">    args, kwargs</span>
+<span class="sd">        All other arguments are passed to `scipy.signal.get_window`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    window : `numpy.ndarray`</span>
+<span class="sd">        A 1-d window array with size ``Nx``.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If an ``window`` is given an array that doesn&#39;t have shape</span>
+<span class="sd">        matching ``(Nx,)``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    scipy.signal.get_window</span>
+<span class="sd">        For details of available window types and valid arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># 1. try something floaty</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_window</span><span class="p">(</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">window</span><span class="p">),</span>  <span class="c1"># type: ignore[arg-type]</span>
+            <span class="n">Nx</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># 2. try a name or tuple of params</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_get_window</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">Nx</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># 3. otherwise we were something array-like</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+
+    <span class="c1"># sanity check</span>
+    <span class="k">if</span> <span class="n">window</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">Nx</span><span class="p">,):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;invalid window array shape </span><span class="si">{</span><span class="n">window</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, should be (</span><span class="si">{</span><span class="n">Nx</span><span class="si">}</span><span class="s2">,)&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">window</span></div>
+
+
+
+<div class="viewcode-block" id="canonical_name">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.window.canonical_name">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">canonical_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the canonical name for the given window in scipy.signal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : `str`</span>
+<span class="sd">        The name of the window you want.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    realname : `str`</span>
+<span class="sd">        The name of the window as implemented in `scipy.signal.window`.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``name`` cannot be resolved to a window function in `scipy.signal`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwpy.signal.window import canonical_name</span>
+<span class="sd">    &gt;&gt;&gt; canonical_name(&quot;hann&quot;)</span>
+<span class="sd">    &#39;hann&#39;</span>
+<span class="sd">    &gt;&gt;&gt; canonical_name(&quot;ksr&quot;)</span>
+<span class="sd">    &#39;kaiser&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Strip any _symmetric or _periodic suffixes</span>
+    <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_symmetric&quot;</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">10</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_periodic&quot;</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span>
+
+    <span class="c1"># Use equivalence introduced in scipy 0.16.0</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">WINDOWS</span><span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>  <span class="c1"># no match</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">scipy_windows</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">name</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;no window function in scipy.signal equivalent to &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span></div>
+
+
+
+<span class="c1"># -- recommended overlap -------------</span>
+<span class="c1"># source: http://edoc.mpg.de/395068</span>
+
+<span class="n">ROV</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;boxcar&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;bartlett&quot;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>
+    <span class="s2">&quot;barthann&quot;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>
+    <span class="s2">&quot;blackmanharris&quot;</span><span class="p">:</span> <span class="mf">.661</span><span class="p">,</span>
+    <span class="s2">&quot;flattop&quot;</span><span class="p">:</span> <span class="mf">.8</span><span class="p">,</span>
+    <span class="s2">&quot;hann&quot;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>
+    <span class="s2">&quot;hamming&quot;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>
+    <span class="s2">&quot;nuttall&quot;</span><span class="p">:</span> <span class="mf">.656</span><span class="p">,</span>
+    <span class="s2">&quot;triang&quot;</span><span class="p">:</span> <span class="mf">.5</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="recommended_overlap">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.window.recommended_overlap">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">recommended_overlap</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">nfft</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the recommended fractional overlap for the given window.</span>
+
+<span class="sd">    If ``nfft`` is given, the return is in samples.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : `str`</span>
+<span class="sd">        The name of the window you are using.</span>
+
+<span class="sd">    nfft : `int`</span>
+<span class="sd">        The length of the window.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rov : `float`, `int`</span>
+<span class="sd">        The recommended overlap (ROV) for the given window, in samples if</span>
+<span class="sd">        ``nfft`` is given (`int`), otherwise fractional (`float`).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from gwpy.signal.window import recommended_overlap</span>
+<span class="sd">    &gt;&gt;&gt; recommended_overlap(&quot;hann&quot;)</span>
+<span class="sd">    0.5</span>
+<span class="sd">    &gt;&gt;&gt; recommended_overlap(&quot;blackmanharris&quot;, nfft=128)</span>
+<span class="sd">    85</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">canonical_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rov</span> <span class="o">=</span> <span class="n">ROV</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;no recommended overlap for &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; window&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+    <span class="k">if</span> <span class="n">nfft</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ceil</span><span class="p">(</span><span class="n">nfft</span> <span class="o">*</span> <span class="n">rov</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rov</span></div>
+
+
+
+<span class="c1"># -- Planck taper window -------------</span>
+<span class="c1"># source: https://arxiv.org/abs/1003.2939</span>
+
+<div class="viewcode-block" id="planck">
+<a class="viewcode-back" href="../../../web/en/reference/api/signal.html#gwexpy.signal.window.planck">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">planck</span><span class="p">(</span>
+    <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">nleft</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">nright</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a Planck taper window.</span>
+
+<span class="sd">    .. deprecated:: 4.0.0</span>
+
+<span class="sd">        This function is deprecated and will be removed in a future release.</span>
+<span class="sd">        Use a different window function (e.g. `~scipy.signal.windows.tukey`)</span>
+<span class="sd">        or implement your own version of the Planck window if needed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size : `int`</span>
+<span class="sd">        Number of samples in the output window.</span>
+
+<span class="sd">    nleft : `int`</span>
+<span class="sd">        Number of samples to taper on the left, should be less than `size/2`.</span>
+
+<span class="sd">    nright : `int`</span>
+<span class="sd">        Number of samples to taper on the right, should be less than `size/2`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    w : `ndarray`</span>
+<span class="sd">        The window, with the maximum value normalized to 1 and at least one</span>
+<span class="sd">        end tapered smoothly to 0.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    To taper 0.1 seconds on both ends of one second of data sampled at 2048 Hz:</span>
+
+<span class="sd">    &gt;&gt;&gt; from gwpy.signal.window import planck</span>
+<span class="sd">    &gt;&gt;&gt; w = planck(2048, nleft=205, nright=205)</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] McKechan, D.J.A., Robinson, C., and Sathyaprakash, B.S. (April</span>
+<span class="sd">           2010). &quot;A tapering window for time-domain templates and simulated</span>
+<span class="sd">           signals in the detection of gravitational waves from coalescing</span>
+<span class="sd">           compact binaries&quot;. Classical and Quantum Gravity 27 (8).</span>
+<span class="sd">           :doi:`10.1088/0264-9381/27/8/084020`</span>
+
+<span class="sd">    .. [2] Wikipedia, &quot;Window function&quot;,</span>
+<span class="sd">           https://en.wikipedia.org/wiki/Window_function#Planck-taper_window</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="s2">&quot;The planck window is deprecated and will be removed in a future &quot;</span>
+        <span class="s2">&quot;release; consider implementing your own version if needed.&quot;</span><span class="p">,</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># construct a Planck taper window</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nleft</span><span class="p">:</span>
+        <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">0</span>
+        <span class="n">zleft</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="n">nleft</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">k</span> <span class="o">+</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">nleft</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nleft</span><span class="p">)</span>
+        <span class="p">])</span>
+        <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">nleft</span><span class="p">]</span> <span class="o">*=</span> <span class="n">expit</span><span class="p">(</span><span class="o">-</span><span class="n">zleft</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nright</span><span class="p">:</span>
+        <span class="n">w</span><span class="p">[</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="mi">0</span>
+        <span class="n">zright</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="o">-</span><span class="n">nright</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">nright</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nright</span><span class="p">)</span>
+        <span class="p">])</span>
+        <span class="n">w</span><span class="p">[</span><span class="n">size</span> <span class="o">-</span> <span class="n">nright</span><span class="p">:</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*=</span> <span class="n">expit</span><span class="p">(</span><span class="o">-</span><span class="n">zright</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">w</span></div>
+
+
+<span class="n">WINDOWS</span><span class="p">[</span><span class="s2">&quot;planck&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">planck</span><span class="p">,</span> <span class="s2">&quot;OPTIONAL&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

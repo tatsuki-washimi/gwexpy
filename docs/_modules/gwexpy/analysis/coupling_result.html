@@ -1,0 +1,1259 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwexpy.analysis.coupling_result &mdash; GWexpy Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            GWexpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/en/index.html">GWexpy Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../web/ja/index.html">GWexpy ドキュメントへようこそ</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GWexpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwexpy.analysis.coupling_result</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwexpy.analysis.coupling_result</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">CouplingResult: result container for a single Witness -&gt; Target pair.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..types.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">IndexLike</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralStats</span>
+
+
+<div class="viewcode-block" id="CouplingResult">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CouplingResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Result object for a SINGLE Witness -&gt; Target pair.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cf</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+        <span class="n">psd_witness_inj</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+        <span class="n">psd_witness_bkg</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+        <span class="n">psd_target_inj</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+        <span class="n">psd_target_bkg</span><span class="p">:</span> <span class="n">FrequencySeries</span><span class="p">,</span>
+        <span class="n">valid_mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">witness_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">target_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">cf_ul</span><span class="p">:</span> <span class="n">FrequencySeries</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ts_witness_bkg</span><span class="p">:</span> <span class="n">TimeSeries</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ts_target_bkg</span><span class="p">:</span> <span class="n">TimeSeries</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ts_witness_inj</span><span class="p">:</span> <span class="n">TimeSeries</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ts_target_inj</span><span class="p">:</span> <span class="n">TimeSeries</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cf</span> <span class="o">=</span> <span class="n">cf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cf_ul</span> <span class="o">=</span> <span class="n">cf_ul</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_inj</span> <span class="o">=</span> <span class="n">psd_witness_inj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_bkg</span> <span class="o">=</span> <span class="n">psd_witness_bkg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psd_target_inj</span> <span class="o">=</span> <span class="n">psd_target_inj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psd_target_bkg</span> <span class="o">=</span> <span class="n">psd_target_bkg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">valid_mask</span> <span class="o">=</span> <span class="n">valid_mask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span> <span class="o">=</span> <span class="n">witness_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_name</span> <span class="o">=</span> <span class="n">target_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_bkg</span> <span class="o">=</span> <span class="n">ts_witness_bkg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ts_target_bkg</span> <span class="o">=</span> <span class="n">ts_target_bkg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_inj</span> <span class="o">=</span> <span class="n">ts_witness_inj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ts_target_inj</span> <span class="o">=</span> <span class="n">ts_target_inj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span> <span class="o">=</span> <span class="n">fftlength</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="o">=</span> <span class="n">overlap</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IndexLike</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span>
+
+<div class="viewcode-block" id="CouplingResult.plot_cf">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot_cf">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_cf</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">xlim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plot</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the Coupling Function and its Upper Limit.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Crop data if xlim provided</span>
+        <span class="n">cf_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span>
+        <span class="n">cf_ul_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf_ul</span>
+
+        <span class="k">if</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cf_plot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">cf_plot</span> <span class="o">=</span> <span class="n">cf_plot</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">*</span><span class="n">xlim</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cf_ul_plot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">cf_ul_plot</span> <span class="o">=</span> <span class="n">cf_ul_plot</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">*</span><span class="n">xlim</span><span class="p">)</span>
+
+        <span class="n">cf_plot</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Coupling Function&quot;</span>
+
+        <span class="c1"># Handle figsize via kwargs if needed, or set explicitly</span>
+        <span class="k">if</span> <span class="n">figsize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figsize</span>
+
+        <span class="n">label</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;Coupling Function&quot;</span><span class="p">)</span>
+        <span class="n">plot</span> <span class="o">=</span> <span class="n">cf_plot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span>
+            <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+            <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">cf_ul_plot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cf_ul_plot</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Upper Limit&quot;</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">cf_ul_plot</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightskyblue&quot;</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Upper Limit&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CF Magnitude [</span><span class="si">{</span><span class="n">cf_plot</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coupling Function: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">*</span><span class="n">xlim</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">plot</span></div>
+
+
+<div class="viewcode-block" id="CouplingResult.plot">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+        <span class="n">xlim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plot</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a diagnostic plot showing ASDs and the resulting CF.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.plot</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plot</span>
+
+        <span class="c1"># Helper to crop series safely</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">crop_if_needed</span><span class="p">(</span><span class="n">series</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">series</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">series</span>
+            <span class="k">return</span> <span class="n">series</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">*</span><span class="n">xlim</span><span class="p">)</span>
+
+        <span class="c1"># Helper to compute background stats</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_bkg_stats</span><span class="p">(</span><span class="n">ts_bkg</span><span class="p">,</span> <span class="n">psd_bkg</span><span class="p">):</span>
+            <span class="c1"># Crop PSD first if needed</span>
+            <span class="n">psd_bkg_eff</span> <span class="o">=</span> <span class="n">crop_if_needed</span><span class="p">(</span><span class="n">psd_bkg</span><span class="p">)</span>
+
+            <span class="c1"># Median/Mean from PSD</span>
+            <span class="n">asd_mean</span> <span class="o">=</span> <span class="n">psd_bkg_eff</span><span class="o">**</span><span class="mf">0.5</span>
+            <span class="n">asd_mean</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Background (</span><span class="si">{</span><span class="n">ts_bkg</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">ts_bkg</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;Target&#39;</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">p10_asd</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">p90_asd</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">ts_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">spec</span> <span class="o">=</span> <span class="n">ts_bkg</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span>
+                        <span class="n">stride</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span><span class="p">,</span>
+                        <span class="n">fftlength</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span><span class="p">,</span>
+                        <span class="n">overlap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+                        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">,</span>
+                        <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="c1"># For percentiles, we crop the spectrogram itself if possible or crop result</span>
+                    <span class="c1"># Cropping spectrogram is more efficient</span>
+                    <span class="k">if</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">crop_frequencies</span><span class="p">(</span><span class="o">*</span><span class="n">xlim</span><span class="p">)</span>
+
+                    <span class="n">p10</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+                    <span class="n">p90</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+                    <span class="n">p10_asd</span> <span class="o">=</span> <span class="n">p10</span><span class="o">**</span><span class="mf">0.5</span>
+                    <span class="n">p90_asd</span> <span class="o">=</span> <span class="n">p90</span><span class="o">**</span><span class="mf">0.5</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;Could not compute background percentiles for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">ts_bkg</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">ts_bkg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;Target&quot;</span><span class="p">,</span>
+                        <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">asd_mean</span><span class="p">,</span> <span class="n">p10_asd</span><span class="p">,</span> <span class="n">p90_asd</span>
+
+        <span class="c1"># --- Prepare Data ---</span>
+
+        <span class="c1"># Witness</span>
+        <span class="n">psd_wit_inj_c</span> <span class="o">=</span> <span class="n">crop_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_inj</span><span class="p">)</span>
+        <span class="n">asd_wit_inj</span> <span class="o">=</span> <span class="n">psd_wit_inj_c</span><span class="o">**</span><span class="mf">0.5</span>
+        <span class="n">asd_wit_inj</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Injection (Witness)&quot;</span>
+        <span class="n">asd_wit_mean</span><span class="p">,</span> <span class="n">wit_p10</span><span class="p">,</span> <span class="n">wit_p90</span> <span class="o">=</span> <span class="n">get_bkg_stats</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_bkg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_bkg</span>
+        <span class="p">)</span>
+        <span class="n">asd_wit_mean</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Background (Witness)&quot;</span>
+
+        <span class="c1"># Target</span>
+        <span class="n">psd_tgt_inj_c</span> <span class="o">=</span> <span class="n">crop_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_target_inj</span><span class="p">)</span>
+        <span class="n">asd_tgt_inj</span> <span class="o">=</span> <span class="n">psd_tgt_inj_c</span><span class="o">**</span><span class="mf">0.5</span>
+        <span class="n">asd_tgt_inj</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Injection (Target)&quot;</span>
+        <span class="n">asd_tgt_mean</span><span class="p">,</span> <span class="n">tgt_p10</span><span class="p">,</span> <span class="n">tgt_p90</span> <span class="o">=</span> <span class="n">get_bkg_stats</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ts_target_bkg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psd_target_bkg</span>
+        <span class="p">)</span>
+        <span class="n">asd_tgt_mean</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Background (Target)&quot;</span>
+
+        <span class="c1"># Derived</span>
+        <span class="n">cf_c</span> <span class="o">=</span> <span class="n">crop_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="p">)</span>
+        <span class="n">cf_ul_c</span> <span class="o">=</span> <span class="n">crop_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cf_ul</span><span class="p">)</span>
+        <span class="n">psd_wit_bkg_c</span> <span class="o">=</span> <span class="n">crop_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_bkg</span><span class="p">)</span>
+
+        <span class="c1"># Create Plot</span>
+        <span class="n">plot</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">(</span><span class="n">geometry</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ax0</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ax1</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ax2</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="c1"># 1. Witness ASDs</span>
+        <span class="c1"># Background</span>
+        <span class="k">if</span> <span class="n">wit_p10</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">wit_p90</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">plot_mmm</span><span class="p">(</span>
+                <span class="n">asd_wit_mean</span><span class="p">,</span>
+                <span class="n">wit_p10</span><span class="p">,</span>
+                <span class="n">wit_p90</span><span class="p">,</span>
+                <span class="n">ax</span><span class="o">=</span><span class="n">ax0</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">alpha_fill</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">asd_wit_mean</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">asd_wit_mean</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Injection</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">asd_wit_inj</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">asd_wit_inj</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">)</span>
+
+        <span class="n">ax0</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD [</span><span class="si">{</span><span class="n">asd_wit_inj</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Witness: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 2. Target ASDs</span>
+        <span class="c1"># Background</span>
+        <span class="k">if</span> <span class="n">tgt_p10</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tgt_p90</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plot</span><span class="o">.</span><span class="n">plot_mmm</span><span class="p">(</span>
+                <span class="n">asd_tgt_mean</span><span class="p">,</span>
+                <span class="n">tgt_p10</span><span class="p">,</span>
+                <span class="n">tgt_p90</span><span class="p">,</span>
+                <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">alpha_fill</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">asd_tgt_mean</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">asd_tgt_mean</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Injection</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">asd_tgt_inj</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">asd_tgt_inj</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Projection (Witness Bkg * CF)</span>
+        <span class="k">if</span> <span class="n">cf_c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">asd_wit_bkg</span> <span class="o">=</span> <span class="n">psd_wit_bkg_c</span><span class="o">**</span><span class="mf">0.5</span>
+            <span class="n">projection_asd</span> <span class="o">=</span> <span class="n">asd_wit_bkg</span> <span class="o">*</span> <span class="n">cf_c</span>
+            <span class="n">projection_asd</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Projection&quot;</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">projection_asd</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">projection_asd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cf_ul_c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">asd_wit_bkg</span> <span class="o">=</span> <span class="n">psd_wit_bkg_c</span><span class="o">**</span><span class="mf">0.5</span>
+            <span class="n">projection_ul</span> <span class="o">=</span> <span class="n">asd_wit_bkg</span> <span class="o">*</span> <span class="n">cf_ul_c</span>
+            <span class="n">projection_ul</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Projection UL&quot;</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">projection_ul</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightskyblue&quot;</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">zorder</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">projection_ul</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD [</span><span class="si">{</span><span class="n">asd_tgt_inj</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 3. Coupling Function</span>
+        <span class="n">cf_c</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Coupling Function&quot;</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">cf_c</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:green&quot;</span><span class="p">,</span>
+            <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+            <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">cf_c</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cf_ul_c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cf_ul_c</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Upper Limit&quot;</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">cf_ul_c</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;lightskyblue&quot;</span><span class="p">,</span>
+                <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+                <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">cf_ul_c</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CF [</span><span class="si">{</span><span class="n">cf_c</span><span class="o">.</span><span class="n">unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coupling Function (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+        <span class="c1"># Use log scale for all axes</span>
+        <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">plot</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">*</span><span class="n">xlim</span><span class="p">)</span>
+
+        <span class="n">plot</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">plot</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Export / Import</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_significance_array</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        有意度 (ASD_inj - ASD_bkg) / ASD_bkg を計算して返す。</span>
+
+<span class="sd">        背景 ASD をゼロ除算から防護するため epsilon ガードを適用する。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">asd_inj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_inj</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">asd_bkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">tiny</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">asd_inj</span> <span class="o">-</span> <span class="n">asd_bkg</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">asd_bkg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">asd_bkg</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CouplingResult.spectral_stats">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.spectral_stats">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spectral_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpectralStats</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        背景 ASD の簡易統計情報を返す。</span>
+
+<span class="sd">        現時点では CouplingResult が保持する背景/注入 PSD から、</span>
+<span class="sd">        背景 ASD を mean、注入との差分絶対値を sigma として構成する。</span>
+<span class="sd">        sigma はゼロ除算を避けるため epsilon で下限を設ける。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectralStats</span>
+
+        <span class="n">mean_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">sigma_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_inj</span><span class="o">.</span><span class="n">value</span><span class="p">))</span> <span class="o">-</span> <span class="n">mean_vals</span><span class="p">)</span>
+        <span class="n">sigma_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sigma_vals</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">sigma_vals</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+            <span class="n">mean_vals</span><span class="p">,</span>
+            <span class="n">xindex</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_bkg</span><span class="o">.</span><span class="n">xindex</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_bkg</span><span class="o">.</span><span class="n">unit</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Background Mean ASD&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">FrequencySeries</span><span class="p">(</span>
+            <span class="n">sigma_vals</span><span class="p">,</span>
+            <span class="n">xindex</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_bkg</span><span class="o">.</span><span class="n">xindex</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="n">mean</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Background Sigma ASD&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">n_avg</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_mask</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">SpectralStats</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">n_avg</span><span class="o">=</span><span class="n">n_avg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CouplingResult.to_csv">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.to_csv">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        結合係数を CSV 形式で保存する。</span>
+
+<span class="sd">        列: frequency, cf, cf_ul, significance, inj_asd, bkg_asd</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">cf_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">cf_ul_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf_ul</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf_ul</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">cf_vals</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">sig_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_significance_array</span><span class="p">()</span>
+        <span class="n">inj_asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_inj</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">bkg_asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">psd_witness_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s2">&quot;frequency&quot;</span><span class="p">,</span> <span class="s2">&quot;cf&quot;</span><span class="p">,</span> <span class="s2">&quot;cf_ul&quot;</span><span class="p">,</span> <span class="s2">&quot;significance&quot;</span><span class="p">,</span> <span class="s2">&quot;inj_asd&quot;</span><span class="p">,</span> <span class="s2">&quot;bkg_asd&quot;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">cf_vals</span><span class="p">,</span> <span class="n">cf_ul_vals</span><span class="p">,</span> <span class="n">sig_vals</span><span class="p">,</span> <span class="n">inj_asd</span><span class="p">,</span> <span class="n">bkg_asd</span><span class="p">):</span>
+                <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CouplingResult.from_csv">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.from_csv">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CouplingResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        CSV ファイルから CouplingResult を復元する（ラウンドトリップ用）。</span>
+
+<span class="sd">        to_csv() で書き出したファイルのみ対応。cf / cf_ul / ASD のみ復元し、</span>
+<span class="sd">        その他フィールドは最小限のダミーで補完する。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+
+        <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CSV file is empty: </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;frequency&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+        <span class="n">cf_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;cf&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+        <span class="n">cf_ul_raw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;cf_ul&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+        <span class="n">inj_asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;inj_asd&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+        <span class="n">bkg_asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;bkg_asd&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">])</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_fs</span><span class="p">(</span><span class="n">vals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="n">cf_ul</span> <span class="o">=</span> <span class="n">_fs</span><span class="p">(</span><span class="n">cf_ul_raw</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">cf_ul_raw</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">psd_inj</span> <span class="o">=</span> <span class="n">_fs</span><span class="p">(</span><span class="n">inj_asd</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">psd_bkg</span> <span class="o">=</span> <span class="n">_fs</span><span class="p">(</span><span class="n">bkg_asd</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">valid_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">cf_vals</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">cf</span><span class="o">=</span><span class="n">_fs</span><span class="p">(</span><span class="n">cf_vals</span><span class="p">),</span>
+            <span class="n">psd_witness_inj</span><span class="o">=</span><span class="n">psd_inj</span><span class="p">,</span>
+            <span class="n">psd_witness_bkg</span><span class="o">=</span><span class="n">psd_bkg</span><span class="p">,</span>
+            <span class="n">psd_target_inj</span><span class="o">=</span><span class="n">psd_inj</span><span class="p">,</span>
+            <span class="n">psd_target_bkg</span><span class="o">=</span><span class="n">psd_bkg</span><span class="p">,</span>
+            <span class="n">valid_mask</span><span class="o">=</span><span class="n">valid_mask</span><span class="p">,</span>
+            <span class="n">witness_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">target_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">cf_ul</span><span class="o">=</span><span class="n">cf_ul</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CouplingResult.to_txt">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.to_txt">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_txt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        結合係数を NInjA.py 互換テキスト形式で保存する。</span>
+
+<span class="sd">        フォーマット::</span>
+
+<span class="sd">            # frequency(Hz) coupling_factor uncertainty significance</span>
+<span class="sd">            1.0 0.123 0.045 2.73</span>
+<span class="sd">            ...</span>
+
+<span class="sd">        uncertainty は cf_ul - cf（cf_ul がない場合は NaN）。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">cf_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">cf_ul_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf_ul</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf_ul</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">cf_vals</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">uncertainty</span> <span class="o">=</span> <span class="n">cf_ul_vals</span> <span class="o">-</span> <span class="n">cf_vals</span>
+        <span class="n">sig_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_significance_array</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# frequency(Hz) coupling_factor uncertainty significance</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">cf</span><span class="p">,</span> <span class="n">unc</span><span class="p">,</span> <span class="n">sig</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">cf_vals</span><span class="p">,</span> <span class="n">uncertainty</span><span class="p">,</span> <span class="n">sig_vals</span><span class="p">):</span>
+                <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cf</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">unc</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">sig</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Visualization (Phase 3)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="CouplingResult.plot_significance">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot_significance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_significance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span>
+        <span class="n">freq_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">freq_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        有意度スペクトラムプロット（(ASD_inj - ASD_bkg) / ASD_bkg vs 周波数）。</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        threshold : float</span>
+<span class="sd">            閾値水平線の値（デフォルト 3.0）。0 以下の場合は描画しない。</span>
+<span class="sd">        freq_min, freq_max : float, optional</span>
+<span class="sd">            表示する周波数範囲 [Hz]。</span>
+<span class="sd">        figsize : tuple</span>
+<span class="sd">            Figure サイズ。</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        matplotlib.figure.Figure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+        <span class="n">freqs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">sig_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_significance_array</span><span class="p">()</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">freq_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">freqs</span> <span class="o">&gt;=</span> <span class="n">freq_min</span>
+        <span class="k">if</span> <span class="n">freq_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">freqs</span> <span class="o">&lt;=</span> <span class="n">freq_max</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">sig_vals</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:blue&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Significance&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
+                <span class="n">threshold</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;threshold = </span><span class="si">{</span><span class="n">threshold</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$(ASD_</span><span class="si">{inj}</span><span class="s2"> - ASD_</span><span class="si">{bkg}</span><span class="s2">) / ASD_</span><span class="si">{bkg}</span><span class="s2">$&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Significance: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">freq_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">freq_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lo</span> <span class="o">=</span> <span class="n">freq_min</span> <span class="k">if</span> <span class="n">freq_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">freqs</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">hi</span> <span class="o">=</span> <span class="n">freq_max</span> <span class="k">if</span> <span class="n">freq_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">freqs</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="CouplingResult.plot_asdgram">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot_asdgram">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_asdgram</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">freq_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">freq_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">vmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">vmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ASD スペクトログラム + パーセンタイルオーバーレイ（2 列レイアウト）。</span>
+
+<span class="sd">        左パネル: 注入時 ASD spectrogram, 右パネル: 背景時 ASD spectrogram。</span>
+<span class="sd">        両者に 50%, 90%, 99% パーセンタイルラインを重ねる。</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        freq_min, freq_max : float, optional</span>
+<span class="sd">            表示する周波数範囲 [Hz]。</span>
+<span class="sd">        vmin, vmax : float, optional</span>
+<span class="sd">            カラーバースケール。None の場合は自動設定。</span>
+<span class="sd">        figsize : tuple</span>
+<span class="sd">            Figure サイズ。</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            `ts_witness_inj` または `ts_witness_bkg` が None の場合。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogNorm</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_inj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;ts_witness_inj is required for plot_asdgram(). &quot;</span>
+                <span class="s2">&quot;Set it when constructing CouplingResult.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_bkg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;ts_witness_bkg is required for plot_asdgram(). &quot;</span>
+                <span class="s2">&quot;Set it when constructing CouplingResult.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fftlength is required for plot_asdgram().&quot;</span><span class="p">)</span>
+
+        <span class="n">overlap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_specgram</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+            <span class="n">spec</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span>
+                <span class="n">stride</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span><span class="p">,</span>
+                <span class="n">fftlength</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span><span class="p">,</span>
+                <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">,</span>
+                <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">freq_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">freq_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">lo</span> <span class="o">=</span> <span class="n">freq_min</span> <span class="k">if</span> <span class="n">freq_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span>
+                <span class="n">hi</span> <span class="o">=</span> <span class="n">freq_max</span> <span class="k">if</span> <span class="n">freq_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                <span class="n">spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">crop_frequencies</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">spec</span>
+
+        <span class="n">spec_inj</span> <span class="o">=</span> <span class="n">_specgram</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_inj</span><span class="p">)</span>
+        <span class="n">spec_bkg</span> <span class="o">=</span> <span class="n">_specgram</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_bkg</span><span class="p">)</span>
+
+        <span class="n">asd_inj</span> <span class="o">=</span> <span class="n">spec_inj</span><span class="o">**</span><span class="mf">0.5</span>
+        <span class="n">asd_bkg</span> <span class="o">=</span> <span class="n">spec_bkg</span><span class="o">**</span><span class="mf">0.5</span>
+
+        <span class="n">freqs_plot</span> <span class="o">=</span> <span class="n">asd_inj</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">times_inj</span> <span class="o">=</span> <span class="n">asd_inj</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">times_bkg</span> <span class="o">=</span> <span class="n">asd_bkg</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">data_inj</span> <span class="o">=</span> <span class="n">asd_inj</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">data_bkg</span> <span class="o">=</span> <span class="n">asd_bkg</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">_vmin</span> <span class="o">=</span> <span class="n">vmin</span> <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">data_inj</span><span class="p">[</span><span class="n">data_inj</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">_vmax</span> <span class="o">=</span> <span class="n">vmax</span> <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">data_inj</span><span class="p">[</span><span class="n">data_inj</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">99</span><span class="p">))</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">LogNorm</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">_vmin</span><span class="p">,</span> <span class="mf">1e-40</span><span class="p">),</span> <span class="n">vmax</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">_vmax</span><span class="p">,</span> <span class="n">_vmin</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax_inj</span><span class="p">,</span> <span class="n">ax_bkg</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">asd_unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_inj</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">pct_colors</span> <span class="o">=</span> <span class="p">{</span><span class="mi">50</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="mi">90</span><span class="p">:</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="mi">99</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">}</span>
+        <span class="n">pct_styles</span> <span class="o">=</span> <span class="p">{</span><span class="mi">50</span><span class="p">:</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="mi">90</span><span class="p">:</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="mi">99</span><span class="p">:</span> <span class="s2">&quot;:&quot;</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">title</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">ax_inj</span><span class="p">,</span> <span class="n">data_inj</span><span class="p">,</span> <span class="n">times_inj</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Injection: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">ax_bkg</span><span class="p">,</span> <span class="n">data_bkg</span><span class="p">,</span> <span class="n">times_bkg</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Background: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="p">]:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+                <span class="n">times</span><span class="p">,</span> <span class="n">freqs_plot</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">shading</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ASD [</span><span class="si">{</span><span class="n">asd_unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+
+            <span class="c1"># 各周波数ビンの時刻方向パーセンタイルを周波数軸に沿った輪郭として描画</span>
+            <span class="c1"># twin x 軸で ASD スケールのパーセンタイルプロファイルを重ねる</span>
+            <span class="n">ax_twin</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">twiny</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">pct</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">99</span><span class="p">):</span>
+                <span class="n">pct_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanpercentile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pct</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># shape: (n_freqs,)</span>
+                <span class="n">ax_twin</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">pct_vals</span><span class="p">,</span>
+                    <span class="n">freqs_plot</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="n">pct_colors</span><span class="p">[</span><span class="n">pct</span><span class="p">],</span>
+                    <span class="n">linestyle</span><span class="o">=</span><span class="n">pct_styles</span><span class="p">[</span><span class="n">pct</span><span class="p">],</span>
+                    <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;p</span><span class="si">{</span><span class="n">pct</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="n">ax_twin</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+            <span class="n">ax_twin</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ASD [</span><span class="si">{</span><span class="n">asd_unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+            <span class="n">ax_twin</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+        <span class="n">ax_bkg</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ASDgram: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.02</span>
+        <span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="CouplingResult.plot_rms">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot_rms">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_rms</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">channels</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">,</span>
+        <span class="n">show_windows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        RMS 時系列プロット（帯域制限付き）。</span>
+
+<span class="sd">        Witness / Target チャンネルのローリング RMS を時間軸に表示する。</span>
+<span class="sd">        `show_windows=True` の場合、背景区間（グレー）と注入区間（赤）を</span>
+<span class="sd">        `axvspan` で色分けして重ねる。</span>
+
+<span class="sd">        RMS の定義（PSD を周波数積分してルート）::</span>
+
+<span class="sd">            RMS(t) = sqrt( trapz(PSD(t, f), f) )  for f in [fmin, fmax]</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fmin : float, optional</span>
+<span class="sd">            RMS を計算する下限周波数 [Hz]。None の場合は 0 Hz。</span>
+<span class="sd">        fmax : float, optional</span>
+<span class="sd">            RMS を計算する上限周波数 [Hz]。None の場合は Nyquist 周波数。</span>
+<span class="sd">        fftlength : float, optional</span>
+<span class="sd">            Spectrogram の FFT 長 [s]。None の場合は self.fftlength を使用。</span>
+<span class="sd">        overlap : float, optional</span>
+<span class="sd">            Spectrogram のオーバーラップ [秒]。None の場合は self.overlap を使用。</span>
+<span class="sd">        channels : {&quot;witness&quot;, &quot;target&quot;, &quot;both&quot;}</span>
+<span class="sd">            プロットするチャンネル。&quot;both&quot; の場合は 2 パネル構成。</span>
+<span class="sd">        show_windows : bool</span>
+<span class="sd">            背景・注入区間を axvspan で色分けする場合 True（デフォルト）。</span>
+<span class="sd">        figsize : tuple</span>
+<span class="sd">            Figure サイズ。</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            matplotlib の plot() に渡す追加キーワード引数。</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        matplotlib.figure.Figure</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            `channels` に応じた TimeSeries が None の場合。</span>
+<span class="sd">            `channels` の値が不正な場合。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+        <span class="k">if</span> <span class="n">channels</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;witness&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;channels must be &#39;witness&#39;, &#39;target&#39;, or &#39;both&#39;, got </span><span class="si">{</span><span class="n">channels</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">_fftlength</span> <span class="o">=</span> <span class="n">fftlength</span> <span class="k">if</span> <span class="n">fftlength</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span>
+        <span class="n">_overlap</span> <span class="o">=</span> <span class="n">overlap</span> <span class="k">if</span> <span class="n">overlap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">_fftlength</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;fftlength is required for plot_rms(). &quot;</span>
+                <span class="s2">&quot;Pass fftlength= or set it when constructing CouplingResult.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># チャンネル選択と検証</span>
+        <span class="n">ts_pairs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># (label, ts_bkg, ts_inj)</span>
+        <span class="k">if</span> <span class="n">channels</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;witness&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_bkg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_inj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;ts_witness_bkg and ts_witness_inj are required for plot_rms(). &quot;</span>
+                    <span class="s2">&quot;Set them when constructing CouplingResult.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">ts_pairs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_bkg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_inj</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">channels</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_target_bkg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_target_inj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;ts_target_bkg and ts_target_inj are required for plot_rms(). &quot;</span>
+                    <span class="s2">&quot;Set them when constructing CouplingResult.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">ts_pairs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_target_bkg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_target_inj</span><span class="p">))</span>
+
+        <span class="n">n_panels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts_pairs</span><span class="p">)</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">n_panels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">plot_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">reserved_key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;linewidth&quot;</span><span class="p">):</span>
+            <span class="n">plot_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">reserved_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">ts_bkg</span><span class="p">,</span> <span class="n">ts_inj</span><span class="p">),</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ts_pairs</span><span class="p">,</span> <span class="n">axes</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]):</span>
+            <span class="n">rms_bkg</span> <span class="o">=</span> <span class="n">_compute_rms_timeseries</span><span class="p">(</span><span class="n">ts_bkg</span><span class="p">,</span> <span class="n">_fftlength</span><span class="p">,</span> <span class="n">_overlap</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">)</span>
+            <span class="n">rms_inj</span> <span class="o">=</span> <span class="n">_compute_rms_timeseries</span><span class="p">(</span><span class="n">ts_inj</span><span class="p">,</span> <span class="n">_fftlength</span><span class="p">,</span> <span class="n">_overlap</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">)</span>
+
+            <span class="n">unit_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ts_bkg</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+            <span class="c1"># RMS カーブの描画</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">rms_bkg</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">rms_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Background&quot;</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">rms_inj</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">rms_inj</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:red&quot;</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Injection&quot;</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># 期間色分け (axvspan)</span>
+            <span class="k">if</span> <span class="n">show_windows</span><span class="p">:</span>
+                <span class="n">t0_bkg</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">rms_bkg</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">t1_bkg</span> <span class="o">=</span> <span class="n">t0_bkg</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">rms_bkg</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">t0_inj</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">rms_inj</span><span class="o">.</span><span class="n">t0</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">t1_inj</span> <span class="o">=</span> <span class="n">t0_inj</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">rms_inj</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">t0_bkg</span><span class="p">,</span> <span class="n">t1_bkg</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Bkg window&quot;</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">t0_inj</span><span class="p">,</span> <span class="n">t1_inj</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Inj window&quot;</span><span class="p">)</span>
+
+            <span class="n">freq_label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">fmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">lo</span> <span class="o">=</span> <span class="n">fmin</span> <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="n">hi</span> <span class="o">=</span> <span class="n">fmax</span> <span class="k">if</span> <span class="n">fmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;Nyq&quot;</span>
+                <span class="n">freq_label</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; [</span><span class="si">{</span><span class="n">lo</span><span class="si">}</span><span class="s2">–</span><span class="si">{</span><span class="n">hi</span><span class="si">}</span><span class="s2"> Hz]&quot;</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMS [</span><span class="si">{</span><span class="n">unit_str</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMS</span><span class="si">{</span><span class="n">freq_label</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="CouplingResult.plot_snrgram">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.plot_snrgram">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_snrgram</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">freq_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">freq_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">snrmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        SNR スペクトログラム（中央値正規化: (ASD_inj - median_bkg) / median_bkg）。</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        freq_min, freq_max : float, optional</span>
+<span class="sd">            表示する周波数範囲 [Hz]。</span>
+<span class="sd">        snrmax : float</span>
+<span class="sd">            カラーバー上限（clamp 値）。デフォルト 100。</span>
+<span class="sd">        figsize : tuple</span>
+<span class="sd">            Figure サイズ。</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            `ts_witness_inj` または `ts_witness_bkg` が None の場合。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_inj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;ts_witness_inj is required for plot_snrgram(). &quot;</span>
+                <span class="s2">&quot;Set it when constructing CouplingResult.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_bkg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;ts_witness_bkg is required for plot_snrgram(). &quot;</span>
+                <span class="s2">&quot;Set it when constructing CouplingResult.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;fftlength is required for plot_snrgram().&quot;</span><span class="p">)</span>
+
+        <span class="n">overlap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_specgram</span><span class="p">(</span><span class="n">ts</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+            <span class="n">spec</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span>
+                <span class="n">stride</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span><span class="p">,</span>
+                <span class="n">fftlength</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fftlength</span><span class="p">,</span>
+                <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">,</span>
+                <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">freq_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">freq_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">lo</span> <span class="o">=</span> <span class="n">freq_min</span> <span class="k">if</span> <span class="n">freq_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span>
+                <span class="n">hi</span> <span class="o">=</span> <span class="n">freq_max</span> <span class="k">if</span> <span class="n">freq_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+                <span class="n">spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">crop_frequencies</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">spec</span>
+
+        <span class="n">spec_inj</span> <span class="o">=</span> <span class="n">_specgram</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_inj</span><span class="p">)</span>
+        <span class="n">spec_bkg</span> <span class="o">=</span> <span class="n">_specgram</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ts_witness_bkg</span><span class="p">)</span>
+
+        <span class="n">asd_inj</span> <span class="o">=</span> <span class="n">spec_inj</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mf">0.5</span>
+        <span class="n">asd_bkg</span> <span class="o">=</span> <span class="n">spec_bkg</span><span class="o">.</span><span class="n">value</span><span class="o">**</span><span class="mf">0.5</span>
+
+        <span class="n">freqs_plot</span> <span class="o">=</span> <span class="n">spec_inj</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">times_inj</span> <span class="o">=</span> <span class="n">spec_inj</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">tiny</span>
+        <span class="n">median_bkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmedian</span><span class="p">(</span><span class="n">asd_bkg</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">median_bkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">median_bkg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">median_bkg</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+
+        <span class="n">snr</span> <span class="o">=</span> <span class="p">(</span><span class="n">asd_inj</span> <span class="o">-</span> <span class="n">median_bkg</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:])</span> <span class="o">/</span> <span class="n">median_bkg</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">snr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">snr</span><span class="p">,</span> <span class="o">-</span><span class="n">snrmax</span><span class="p">,</span> <span class="n">snrmax</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+            <span class="n">times_inj</span><span class="p">,</span>
+            <span class="n">freqs_plot</span><span class="p">,</span>
+            <span class="n">snr</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">vmax</span><span class="o">=</span><span class="n">snrmax</span><span class="p">,</span>
+            <span class="n">shading</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;inferno&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;SNR&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;SNRgram: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">witness_name</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="CouplingResult.from_txt">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResult.from_txt">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_txt</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CouplingResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TXT ファイルから CouplingResult を復元する（ラウンドトリップ用）。</span>
+
+<span class="sd">        to_txt() で書き出したファイルのみ対応。cf と cf_ul のみ復元し、</span>
+<span class="sd">        その他フィールドは最小限のダミーで補完する。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">gwexpy.frequencyseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrequencySeries</span>
+
+        <span class="n">freqs_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cf_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">uncertainty_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">freqs_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="n">cf_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="n">uncertainty_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">freqs_list</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TXT file contains no data rows: </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freqs_list</span><span class="p">)</span>
+        <span class="n">cf_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cf_list</span><span class="p">)</span>
+        <span class="n">unc_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">uncertainty_list</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mf">1.0</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_fs</span><span class="p">(</span><span class="n">vals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FrequencySeries</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FrequencySeries</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">f0</span><span class="o">=</span><span class="n">freqs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="n">cf_ul_vals</span> <span class="o">=</span> <span class="n">cf_vals</span> <span class="o">+</span> <span class="n">unc_vals</span>
+        <span class="n">cf_ul</span> <span class="o">=</span> <span class="n">_fs</span><span class="p">(</span><span class="n">cf_ul_vals</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">cf_ul_vals</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">dummy_psd</span> <span class="o">=</span> <span class="n">_fs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">cf_vals</span><span class="p">))</span>
+        <span class="n">valid_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">cf_vals</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">cf</span><span class="o">=</span><span class="n">_fs</span><span class="p">(</span><span class="n">cf_vals</span><span class="p">),</span>
+            <span class="n">psd_witness_inj</span><span class="o">=</span><span class="n">dummy_psd</span><span class="p">,</span>
+            <span class="n">psd_witness_bkg</span><span class="o">=</span><span class="n">dummy_psd</span><span class="p">,</span>
+            <span class="n">psd_target_inj</span><span class="o">=</span><span class="n">dummy_psd</span><span class="p">,</span>
+            <span class="n">psd_target_bkg</span><span class="o">=</span><span class="n">dummy_psd</span><span class="p">,</span>
+            <span class="n">valid_mask</span><span class="o">=</span><span class="n">valid_mask</span><span class="p">,</span>
+            <span class="n">witness_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">target_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">cf_ul</span><span class="o">=</span><span class="n">cf_ul</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># ------------------------------------------------------------------</span>
+<span class="c1"># CouplingResultCollection</span>
+<span class="c1"># ------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="CouplingResultCollection">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResultCollection">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CouplingResultCollection</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    複数の CouplingResult を管理するコンテナ。</span>
+
+<span class="sd">    使用例::</span>
+
+<span class="sd">        results = CouplingResultCollection()</span>
+<span class="sd">        results[&#39;WIT-TGT&#39;] = coupling_result_1</span>
+<span class="sd">        results[&#39;WIT-TGT2&#39;] = coupling_result_2</span>
+<span class="sd">        results.to_summary_csv(&quot;summary.csv&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">mapping</span> <span class="ow">or</span> <span class="p">{})</span>
+
+<div class="viewcode-block" id="CouplingResultCollection.to_summary_csv">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResultCollection.to_summary_csv">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_summary_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        全結果を単一 CSV に集約して保存する。</span>
+
+<span class="sd">        列: channel_pair, frequency, cf, cf_ul, significance, inj_asd, bkg_asd</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;channel_pair&quot;</span><span class="p">,</span> <span class="s2">&quot;frequency&quot;</span><span class="p">,</span> <span class="s2">&quot;cf&quot;</span><span class="p">,</span> <span class="s2">&quot;cf_ul&quot;</span><span class="p">,</span> <span class="s2">&quot;significance&quot;</span><span class="p">,</span> <span class="s2">&quot;inj_asd&quot;</span><span class="p">,</span> <span class="s2">&quot;bkg_asd&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">CouplingResult</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">freqs</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span>
+                <span class="n">cf_vals</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">cf</span><span class="o">.</span><span class="n">value</span>
+                <span class="n">cf_ul_vals</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">cf_ul</span><span class="o">.</span><span class="n">value</span>
+                    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">cf_ul</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">cf_vals</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">sig_vals</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">_significance_array</span><span class="p">()</span>
+                <span class="n">inj_asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">psd_witness_inj</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+                <span class="n">bkg_asd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">psd_witness_bkg</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">cf_vals</span><span class="p">,</span> <span class="n">cf_ul_vals</span><span class="p">,</span> <span class="n">sig_vals</span><span class="p">,</span> <span class="n">inj_asd</span><span class="p">,</span> <span class="n">bkg_asd</span><span class="p">):</span>
+                    <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">row</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="CouplingResultCollection.plot_comparison">
+<a class="viewcode-back" href="../../../web/ja/reference/api/analysis.html#gwexpy.analysis.coupling.CouplingResultCollection.plot_comparison">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_comparison</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">freq_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">freq_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        複数の結合係数を重ねたプロット。</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        matplotlib.figure.Figure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+        <span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="n">freq_min</span><span class="p">,</span> <span class="n">freq_max</span><span class="p">)</span> <span class="k">if</span> <span class="n">freq_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">freq_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">CouplingResult</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">cf</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">cf</span>
+            <span class="k">if</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">cf</span> <span class="o">=</span> <span class="n">cf</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="o">*</span><span class="n">xlim</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cf</span><span class="o">.</span><span class="n">xindex</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">cf</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+        <span class="c1"># 閾値ラインを水平線として描画</span>
+        <span class="k">if</span> <span class="n">threshold</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;threshold=</span><span class="si">{</span><span class="n">threshold</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Coupling Function&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Coupling Function Comparison&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">*</span><span class="n">xlim</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fig</span></div>
+</div>
+
+
+
+<span class="c1"># ------------------------------------------------------------------</span>
+<span class="c1"># Module-level helpers</span>
+<span class="c1"># ------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_rms_timeseries</span><span class="p">(</span>
+    <span class="n">ts</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">fftlength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TimeSeries から帯域制限 RMS 時系列を計算して返す。</span>
+
+<span class="sd">    Spectrogram（PSD: unit^2/Hz）を `stride=fftlength` で作成し、</span>
+<span class="sd">    各時間ビンの PSD を [fmin, fmax] の範囲で台形則積分してルートを取る::</span>
+
+<span class="sd">        RMS(t) = sqrt( trapz(PSD(t, f), f) )  for f in [fmin, fmax]</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ts : gwpy.timeseries.TimeSeries</span>
+<span class="sd">        入力 TimeSeries。</span>
+<span class="sd">    fftlength : float</span>
+<span class="sd">        Spectrogram の FFT 長 [s]（= 時間ビン幅）。</span>
+<span class="sd">    overlap : float</span>
+<span class="sd">        Spectrogram のオーバーラップ [秒]。</span>
+<span class="sd">    fmin, fmax : float or None</span>
+<span class="sd">        積分する周波数帯域 [Hz]。None の場合は全帯域。</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gwpy.timeseries.TimeSeries</span>
+<span class="sd">        RMS 時系列（入力 ts と同じ単位）。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gwpy.timeseries</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeries</span> <span class="k">as</span> <span class="n">GWpyTimeSeries</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">spectrogram</span><span class="p">(</span>
+        <span class="n">stride</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+        <span class="n">fftlength</span><span class="o">=</span><span class="n">fftlength</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="o">=</span><span class="n">overlap</span><span class="p">,</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="s2">&quot;hann&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">fmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lo</span> <span class="o">=</span> <span class="n">fmin</span> <span class="k">if</span> <span class="n">fmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="n">hi</span> <span class="o">=</span> <span class="n">fmax</span> <span class="k">if</span> <span class="n">fmax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">crop_frequencies</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span>
+
+    <span class="n">freqs</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># ndarray [Hz]</span>
+    <span class="n">psd_matrix</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">value</span>          <span class="c1"># ndarray (n_times, n_freqs) [unit^2/Hz]</span>
+
+    <span class="c1"># 各時間ビンで周波数方向に台形則積分 → band_power [unit^2]</span>
+    <span class="c1"># np.trapezoid は NumPy 2.0+、np.trapz は NumPy 1.x 互換</span>
+    <span class="n">_trapz</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">np</span><span class="p">,</span> <span class="s2">&quot;trapezoid&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">np</span><span class="p">,</span> <span class="s2">&quot;trapz&quot;</span><span class="p">)</span>
+    <span class="n">band_power</span> <span class="o">=</span> <span class="n">_trapz</span><span class="p">(</span><span class="n">psd_matrix</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># 数値誤差で生じた微小な負値は 0 に丸めるが、NaN はそのまま伝播させる。</span>
+    <span class="n">band_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">band_power</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">band_power</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+    <span class="n">rms_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">band_power</span><span class="p">)</span>
+
+    <span class="n">ts_unit</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">GWpyTimeSeries</span><span class="p">(</span>
+        <span class="n">rms_values</span><span class="p">,</span>
+        <span class="n">t0</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">ts_unit</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;RMS(</span><span class="si">{</span><span class="n">ts</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, GWexpy contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
