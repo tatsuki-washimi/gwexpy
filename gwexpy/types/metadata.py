@@ -21,7 +21,7 @@ from gwpy.types.array import Array
 from gwpy.types.series import Series
 
 if TYPE_CHECKING:
-    import pandas as pd
+    import pandas as pandas_module
 
 _UFUNC_ABS_REAL = {np.abs, np.negative, np.positive, np.real, np.imag}
 _UFUNC_CONJ = {np.conjugate, np.conj}

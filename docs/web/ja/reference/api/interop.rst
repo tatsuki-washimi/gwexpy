@@ -1,5 +1,5 @@
 外部連携 (gwexpy.interop)
-========================
+=========================
 
 .. automodule:: gwexpy.interop
 
@@ -10,10 +10,10 @@
    :toctree:
    :nosignatures:
 
-   gwexpy.interop.hdf5_
-   gwexpy.interop.json_
-   gwexpy.interop.zarr_
-   gwexpy.interop.netcdf4_
+   hdf5_
+   json_
+   zarr_
+   netcdf4_
 
 データ解析ライブラリ
 --------------------
@@ -22,10 +22,10 @@
    :toctree:
    :nosignatures:
 
-   gwexpy.interop.pandas_
-   gwexpy.interop.xarray_
-   gwexpy.interop.astropy_
-   gwexpy.interop.dask_
+   pandas_
+   xarray_
+   astropy_
+   dask_
 
 ドメイン特化ライブラリ
 ----------------------
@@ -34,10 +34,10 @@
    :toctree:
    :nosignatures:
 
-   gwexpy.interop.finesse_
-   gwexpy.interop.control_
-   gwexpy.interop.obspy_
-   gwexpy.interop.lal_
-   gwexpy.interop.gwinc_
-   gwexpy.interop.pycbc_
-   gwexpy.interop.root_
+   finesse_
+   control_
+   obspy_
+   lal_
+   gwinc_
+   pycbc_
+   root_

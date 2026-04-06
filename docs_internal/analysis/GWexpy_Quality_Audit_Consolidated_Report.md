@@ -113,3 +113,48 @@ gantt
 - [ ] **チュートリアル**: 日本語索引に「基礎」項目が含まれ、リンク切れがないか？
 - [ ] **API リファレンス**: `gwexpy.time` や主要 Matrix クラスが Reference 索引に含まれているか？
 - [ ] **窓口**: `CODE_OF_CONDUCT.md` と `SECURITY.md` の連絡先がプレースホルダのままになっていないか？
+
+## 7. 追補: 全ノートブック出力生成後の独立レビュー
+
+2026-04-06 時点で、`docs/web/en/user_guide/tutorials/` の 52 本、`docs/web/ja/user_guide/tutorials/` の 50 本を対象に、出力セルの有無、警告表示、ローカルパス露出、日英の章立て整合性を独立に再点検しました。
+
+結論として、**全対象ノートブックで出力セル自体は生成済み**であり、`TODO` や `FIXME` のような露骨な未完了表示は確認されませんでした。一方で、**サンプルノートブックとしては未整理の warning / log / ローカルパス表示がまだ残っている**こと、および **EN/JA の同名ノートブックに内容差分が残っている**ことを確認しました。
+
+### 7.1 主要所見
+
+- **（Major）warning とローカルパスが出力セルに露出している**
+  - `advanced_correlation.ipynb`, `advanced_peak_tracking.ipynb`, `advanced_spectrogram_processing.ipynb`, `case_bruco_ica_denoising.ipynb`, `case_glitch_analysis.ipynb`, `case_hdf5_provenance.ipynb`, `intro_interop.ipynb`, `intro_frequencyseries.ipynb`, `case_segment_analysis.ipynb`, `intro_segment_table.ipynb`, `segment_asd_pipeline.ipynb`, `segment_visualization.ipynb` などで、`UserWarning` / `DeprecationWarning` / `ConvergenceWarning` や `/home/washimi/...`, `/tmp/...` を含む生出力が可視状態のまま残っています。
+  - 特に `case_dttxml_calibration.ipynb` の `Wrote /tmp/kagra_sus_itmx.xml`、`case_gbd_format.ipynb` の `Written: /tmp/.../synthetic_pem.gbd`、`intro_interop.ipynb` の MTH5 初期化ログなどは、再現確認の痕跡としては有用でも、公開サンプルとしては環境依存情報が強すぎます。
+  - `advanced_coupling.ipynb` の統計的注意喚起自体は妥当ですが、現在は Markdown の注意書きに加えて warning 本体も出力されており、冗長かつ見栄えが悪い状態です。
+
+- **（Major）EN/JA の同名ノートブックが単純翻訳になっていない**
+  - `advanced_coupling.ipynb` では、英語版に存在する `## 5. Frequency Range Restriction` が日本語版から欠落しています。
+  - `case_seismic_obspy.ipynb` では、英語版の `## 5. Multi-channel Seismic Analysis` が日本語版に存在せず、章構成が一段短くなっています。
+  - `advanced_hht.ipynb` は日英で章立てそのものがかなり異なっており、翻訳版というより別ドキュメントに近い構成です。意図的差分であれば注記が必要で、そうでなければ同期漏れとみなすべきです。
+
+- **（Minor）日本語側の parity は以前より改善したが、運用ルールが混在している**
+  - `time_frequency_analysis_comparison` は、日本語側では `.ipynb` ではなく `time_frequency_analysis_comparison.md` から英語版インタラクティブノートブックへ誘導する構成になっており、これは明示的な運用として成立しています。
+  - ただし、同じ索引ブロック内で他のチュートリアルは日英それぞれ `.ipynb` を持つため、「翻訳済み notebook を置くケース」と「日本語ページから英語 notebook へ誘導するケース」の基準が見えにくい状態です。
+
+- **（Minor）英語ツリー内に日本語本文の notebook が残っている**
+  - `docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb` は、ファイル位置は英語ツリーですが、タイトルと導入本文が日本語です。主索引への露出は限定的でも、`en/` 配下のサンプルとしては一貫性を欠きます。
+
+### 7.2 今回の追補で特に確認できたこと
+
+- EN/JA の tutorial notebook 数は **52 本 / 50 本** でした。
+- **出力セルが全く無い notebook は 0 本** でした。
+- `TODO`, `TBD`, `FIXME` を Markdown セル内に含む tutorial notebook は確認されませんでした。
+- 日本語側の `time_frequency_analysis_comparison` は欠落ではなく、`time_frequency_analysis_comparison.md` を介して英語版 notebook に誘導する暫定構成でした。
+
+### 7.3 統合評価への反映
+
+この追補を踏まえると、既存の「日本語チュートリアル欠落」や「ドキュメント品質改善」の項目は、単に本数を揃えるだけでは不十分です。リリース前には少なくとも次の 3 点を追加で満たす必要があります。
+
+1. **Notebook 出力の公開品質基準を定義すること**
+   warning, deprecation, 一時ファイルパス, ローカルユーザー名, 環境依存ログを公開出力から除去する。
+
+2. **EN/JA の同期ポリシーを明文化すること**
+   「同名 notebook は原則同一構成」「英語版のみ提供する場合は日本語 wrapper ページを置く」など、運用ルールを決める。
+
+3. **“実行できる” だけでなく “教材として読める” 状態まで確認すること**
+   実行成功率だけでなく、警告の見え方、説明の粒度、節構成の対称性もレビュー対象に含める。
