@@ -21,6 +21,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "nbsphinx",
     "sphinx_design",
+    "sphinx_sitemap",
 ]
 
 # nbsphinx configuration
@@ -104,6 +105,7 @@ gettext_compact = False
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ['_static']
+html_baseurl = "https://tatsuki-washimi.github.io/gwexpy/docs/"
 
 # User-facing site title/branding (package name remains `gwexpy`).
 html_title = "GWexpy Documentation"
