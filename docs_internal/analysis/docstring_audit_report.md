@@ -16,11 +16,10 @@
 
 ### 表 1: 解析 & フィッティング (analysis/)
 | 要素名 | ファイルパス | Docstring 状態 | 判定・コメント |
-| :--- | :--- | :---: | :--- |
-| Bruco | analysis/bruco.py | [/] | 概要はあるが、パラメータの詳細が不足 |
+| Bruco | analysis/bruco.py | [x] | クラスおよび compute メソッドを NumPy スタイルで硬化完了 |
 | BrucoPairSummary | analysis/bruco.py | [x] | TypedDict として定義済 |
-| BrucoResult | analysis/bruco.py | [/] | 概要はあるが `Attributes` セクションが不足 |
-| FastCoherenceEngine | analysis/bruco.py | [/] | 1行の概要のみ。内部実装寄り |
+| BrucoResult | analysis/bruco.py | [x] | Attributes (型/単位/shape) を含め、ユーザー草案を適用し硬化完了 |
+| FastCoherenceEngine | analysis/bruco.py | [x] | 使用例を含むユーザー草案を適用し硬化完了 |
 | CouplingFunctionAnalysis | analysis/coupling.py | [x] | 良好な記述を確認 |
 | CouplingResult | analysis/coupling_result.py | [x] | Attributes (型/単位/shape) の明記を完了 |
 | ResponseFunctionAnalysis | analysis/response.py | [x] | 良好な記述、およびメソッドの英語化を完了 |
@@ -49,7 +48,7 @@
 | calculate_coupling | analysis/coupling.py | [x] | 良好 |
 | compute_spectral_stats | analysis/stats.py | [DELETE] | 削除済（SpectralStats へ移行） |
 | get_logger | utils/logger.py | [x] | 良好 |
-| get_unit | types/metadata.py | [x] | 戻り値の型（dimensionless 等）や挙動の説明・例を追加 |
+| get_unit | types/metadata.py | [x] | ユーザー草案に基づき、対象型やデフォルト挙動を詳細化 |
 
 ---
 
@@ -71,7 +70,7 @@
 | red_noise | noise/colored.py | [x] | Parameters/Returns/Examples の記述を完了 |
 | from_asd | noise/wave.py | [x] | 良好 |
 | sine / square / chirp | noise/wave.py | [x] | 良好 |
-| inject_noise | noise/non_gaussian.py | [/] | 1行のみ。概要が不足 |
+| inject_noise | noise/non_gaussian.py | [x] | 詳細な内容、引数、例外、使用例を記述した草案を適用 |
 
 ---
 

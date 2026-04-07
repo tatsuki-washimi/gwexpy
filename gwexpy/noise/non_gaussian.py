@@ -24,9 +24,9 @@ def transient_gaussian_noise(
     psd: Any | None = None,
     **kwargs: Any,
 ) -> TimeSeries:
-    """
-    Generate Model I non-Gaussian noise: Superposition of transient Gaussian noise.
-    x(t) = n0(t) + A1 * B(t) * n1(t)
+    """Generate Model I non-Gaussian noise: Superposition of transient Gaussian noise.
+
+    x(t) = n0(t) + A1 * B(t) * n1(t).
 
     Parameters
     ----------
@@ -44,6 +44,7 @@ def transient_gaussian_noise(
     Returns
     -------
     TimeSeries
+
     """
     if isinstance(duration, u.Quantity):
         duration = duration.to("s").value
@@ -87,15 +88,17 @@ def scatter_light_noise(
     f_amp: float = 0.1,
     **kwargs: Any,
 ) -> TimeSeries:
-    """
-    Generate Model II non-Gaussian noise: Scattered light noise.
+    """Generate Model II non-Gaussian noise: Scattered light noise.
+
     x(t) = n0(t) + G * sin(4pi/lambda * (x0 + delta_x_sc(t)))
-    delta_x_sc = A2 * (1 + 0.25 * sin(2pi * f_amp * t)) * cos(2pi * f_sc * t)
+    delta_x_sc = A2 * (1 + 0.25 * sin(2pi * f_amp * t)) * cos(2pi * f_sc * t).
 
     Parameters
     ----------
     duration : float, u.Quantity
+        Duration of the noise in seconds.
     sample_rate : float, u.Quantity
+        Sample rate in Hz.
     A2 : float
         Amplitude of the scattering motion.
     f_sc : float, default=0.2
@@ -114,6 +117,7 @@ def scatter_light_noise(
     Returns
     -------
     TimeSeries
+
     """
     if isinstance(duration, u.Quantity):
         duration = duration.to("s").value
@@ -134,7 +138,38 @@ def scatter_light_noise(
 
 
 def inject_noise(clean_ts: TimeSeries, noise_ts: TimeSeries) -> TimeSeries:
-    """
-    Inject noise into a clean time series.
+    """Inject `noise_ts` into `clean_ts` and return the noisy TimeSeries.
+
+    The function returns the pointwise sum of the clean time series and the
+    noise time series. Both series must be aligned in time and have compatible
+    sample rates. This convenience wrapper preserves metadata where possible.
+
+    Parameters
+    ----------
+    clean_ts : TimeSeries
+        Clean (signal-only) time series that will receive the noise.
+        The series may have `name`, `unit`, and time span attributes.
+    noise_ts : TimeSeries
+        Noise time series to add to `clean_ts`. Should be aligned with
+        `clean_ts` (same sample rate and overlapping span). If sample rates
+        differ, users should resample externally prior to calling this function.
+
+    Returns
+    -------
+    TimeSeries
+        New TimeSeries equal to `clean_ts + noise_ts`. Metadata from `clean_ts`
+        are preserved where possible; `unit` will follow arithmetic rules
+        (e.g., addition requires compatible units).
+
+    Raises
+    ------
+    ValueError
+        If the time alignment or sample rates are incompatible (unless the
+        underlying TimeSeries implementation handles resampling).
+
+    Examples
+    --------
+    >>> noisy = inject_noise(clean_ts, noise_ts)
+
     """
     return clean_ts + noise_ts
