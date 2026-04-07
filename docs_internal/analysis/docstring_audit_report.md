@@ -16,6 +16,7 @@
 
 ### 表 1: 解析 & フィッティング (analysis/)
 | 要素名 | ファイルパス | Docstring 状態 | 判定・コメント |
+| :--- | :--- | :---: | :--- |
 | Bruco | analysis/bruco.py | [x] | クラスおよび compute メソッドを NumPy スタイルで硬化完了 |
 | BrucoPairSummary | analysis/bruco.py | [x] | TypedDict として定義済 |
 | BrucoResult | analysis/bruco.py | [x] | Attributes (型/単位/shape) を含め、ユーザー草案を適用し硬化完了 |
