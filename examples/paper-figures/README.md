@@ -61,6 +61,7 @@ python examples/paper-figures/01_transfer_function_workflow.py
 ## Generated Figures
 
 Running the notebooks will generate paper figures in `docs_internal/publications/paper_softwarex/`:
+- `figure2_transfer_function.{png,pdf}`
 - `figure3_coherence_ranking.{png,pdf}`
 - `figure5_gwosc_case_study.{png,pdf}`
 

@@ -172,36 +172,37 @@ gantt
 | # | 指摘事項 | 重大度 | 実態 | 解決状況 |
 |---|---------|--------|------|---------|
 | 1 | インストール要件の不整合 | Critical | Python 3.11+ に統一済み、extras 名も整合済み | ✅ 解決済み |
-| 2 | paper-figures のパス不備 | Critical | スクリプトに `mkdir(parents=True, exist_ok=True)` あり、実行は成功するが整理の余地あり | ⚠️ 部分的 |
+| 2 | paper-figures のパス不備 | Critical | `01_transfer_function_workflow.py` の出力先を `docs_internal/publications/paper_softwarex/` に統一し、関連 README の生成物一覧も整合済み | ✅ 解決済み |
 | 3 | 日本語チュートリアルの欠落 | High | 日本語 intro_noise/fitting/table 已实装（commit `2093651e`） | ✅ 解決済み |
 | 4 | Monkeypatching 方針の矛盾 | High | CONTRIBUTING.md と実装が一貫（標準 GWpy API 使用） | ✅ 解決済み |
-| 5 | MyST admonition 記法統一 | High | GitHub Callout 形式 0 件、すべて MyST 形式で統一 | ✅ 解決済み |
+| 5 | MyST admonition 記法統一 | High | `docs/web/` 配下では GitHub Callout は確認されないが、README には `> [!NOTE]` 形式が残存 | ⚠️ 部分的 |
 | 6 | gwexpy.time 導線不足 | Medium | time_utilities.md 作成済み | ✅ 解決済み |
 | 7 | CLI/GUI ガイド不足 | Medium | cli.md / gui.md 新規作成済み（commit `dca93fc3`, `1e1bc257`） | ✅ 解決済み |
 | 8 | 依存関係下限調整 | Medium | numpy>=1.23.2, scipy>=1.10.0 に設定済み | ✅ 解決済み |
 | 9 | license メタデータ仕様準拠 | Medium | `{text = “MIT”}` 形式で PEP 621 準拠 | ✅ 解決済み |
 | 10 | all extra 自己参照 | Medium | フラット列挙に変更済み（コメント付き） | ✅ 解決済み |
-| 11 | API リファレンス欠落 | High | 22パッケージ追加済み、cli/gui は toctree 未記載 | ⚠️ 部分的 |
+| 11 | API リファレンス欠落 | High | JA 側 `reference/api/index.rst` にも EN 側と同等の toctree 項目を反映済み | ✅ 解決済み |
 
 ### 詳細
 
-#### 課題A: paper-figures のパス不備（Critical → 実質的には Low）
+#### 課題A: paper-figures のパス不備（解決済み）
 
 **現状:**
-- スクリプト内に `output_dir.mkdir(parents=True, exist_ok=True)` がある
-- 出力先 `examples/docs/gwexpy-paper/` は存在しなくても自動作成される
-- 実行は成功するが、出力先が `docs_internal/publications/paper_softwarex/` と異なる
+- `examples/paper-figures/01_transfer_function_workflow.py` の出力先を `docs_internal/publications/paper_softwarex/` に修正
+- `examples/paper-figures/README.md` および `docs/repro/README.md` の成果物一覧に `figure2_transfer_function` を追記
+- これにより、実装と再現ガイドの成果物配置先が一致した
 
-**判定:** 実行は問題なく通るため Critical ではない。整理の余地はあるが今回は対応スコープ外。
+**判定:** 実装・README・再現ガイドの間で出力先不一致は解消された。今後は実行結果の確認を CI または再現手順で継続監視すればよい。
 
-#### 課題B: API リファレンス cli/gui が toctree に未記載（部分的）
+#### 課題B: API リファレンス cli/gui が toctree に未記載（解決済み）
 
 **現状:**
 - `docs/web/en/reference/api/cli.rst`（プレースホルダとして適切に記載済み）
 - `docs/web/en/reference/api/gui.rst`（実験的として warning で記載済み）
-- ファイルは存在するが、`docs/web/en/reference/api/index.rst` の toctree に含まれていない
+- EN 側の `docs/web/en/reference/api/index.rst` には `cli` と `gui` が追記済み
+- JA 側 `docs/web/ja/reference/api/index.rst` にも `cli` / `gui` を含む不足項目を追記済み
 
-**対応:** toctree に `cli` と `gui` のエントリを追記（1行ずつ、末尾）
+**対応:** JA 側 index に EN 側と同等の toctree 項目を追加し、多言語間の導線差分を解消した。
 
 ### 実施内容
 
@@ -218,15 +219,22 @@ toctree の末尾に以下を追記：
 #### 検証結果
 
 - `docs/web/en/reference/api/index.rst` の toctree に cli/gui が含まれていることを確認
+- `docs/web/ja/reference/api/index.rst` にも cli/gui を含む不足項目が記載されたことを確認
 - `sphinx-build -b html docs docs/_build/html` でビルド成功を確認
+
+#### 補足: MyST admonition 記法
+
+- `docs/web/` 配下では GitHub Callout 形式は確認されなかった
+- ただし `README.md` には `> [!IMPORTANT]`, `> [!WARNING]`, `> [!NOTE]` が残っている
+- よって「リポジトリ全体で 0 件」とは言えず、「公開ドキュメント本体では概ね解消、README は未対応」と表現するのが正確
 
 ### 結論
 
-本レポートの指摘11件のうち、9件が既に解決済み、2件（paper-figures・API reference toctree）が軽微な未対応として確認された。
+本レポートの指摘11件のうち、多くは解消済みであり、今回の追補で `paper-figures` の出力先不一致と JA 側 API index 未反映は解消された。継続課題としては、README に残る GitHub Callout など、記法統一の残件が中心となる。
 
 **スプリント完了状況**（2026-04-07 時点）:
 - リリース基盤の品質は非常に高い状態に到達している
-- 残存課題は軽微であり、追加の対応で解決可能な範囲内
+- 残存課題は限定的であり、主として README を含む記法統一と公開品質ルールの運用整備に集約された
 
 ---
 

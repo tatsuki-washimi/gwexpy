@@ -52,6 +52,8 @@ python examples/paper-figures/03_gwosc_case_study.py
 
 Running the scripts above writes the figure files used by the manuscript to `docs_internal/publications/paper_softwarex/`:
 
+- `figure2_transfer_function.pdf`
+- `figure2_transfer_function.png`
 - `figure3_coherence_ranking.pdf`
 - `figure3_coherence_ranking.png`
 - `figure5_gwosc_case_study.pdf`
