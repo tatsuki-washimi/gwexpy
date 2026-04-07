@@ -25,6 +25,43 @@ if TYPE_CHECKING:
 class CouplingResult:
     """
     Result object for a SINGLE Witness -> Target pair.
+
+    This object stores all Amplitude Spectral Densities (ASDs), the resulting
+    Coupling Function (CF), and metadata needed to reproduce and visualize the
+    injection analysis for a given witness-target pair.
+
+    Attributes
+    ----------
+    cf : FrequencySeries
+        The measured Coupling Function (CF) magnitude spectrum.
+    cf_ul : FrequencySeries or None
+        The upper limit of the Coupling Function magnitude, if applicable.
+    psd_witness_inj : FrequencySeries
+        The Power Spectral Density (PSD) of the witness channel during injection.
+    psd_witness_bkg : FrequencySeries
+        The background PSD of the witness channel.
+    psd_target_inj : FrequencySeries
+        The PSD of the target channel during injection.
+    psd_target_bkg : FrequencySeries
+        The background PSD of the target channel.
+    valid_mask : numpy.ndarray
+        Boolean array indicating where the CF measurement is considered valid.
+    witness_name : str
+        Name of the witness channel.
+    target_name : str
+        Name of the target channel.
+    ts_witness_bkg : TimeSeries or None
+        The original background TimeSeries for the witness channel.
+    ts_target_bkg : TimeSeries or None
+        The original background TimeSeries for the target channel.
+    ts_witness_inj : TimeSeries or None
+        The original injection TimeSeries for the witness channel.
+    ts_target_inj : TimeSeries or None
+        The original injection TimeSeries for the target channel.
+    fftlength : float or None
+        The FFT length (in seconds) used to compute the spectra.
+    overlap : float or None
+        The overlap duration (in seconds) used to compute the spectra.
     """
 
     def __init__(

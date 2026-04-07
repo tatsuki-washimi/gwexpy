@@ -75,19 +75,65 @@ def power_law(
 
 
 def white_noise(amplitude: float | u.Quantity, **kwargs: Any) -> FrequencySeries:
-    """Generate White noise ASD (~ f^0)."""
+    """
+    Generate White noise ASD (~ f^0).
+
+    Parameters
+    ----------
+    amplitude : float or astropy.units.Quantity
+        The noise amplitude.
+    **kwargs : Any
+        Additional keyword arguments passed to `power_law`.
+
+    Returns
+    -------
+    FrequencySeries
+        The generated white noise ASD.
+    """
     return power_law(0.0, amplitude=amplitude, **kwargs)
 
 
 def pink_noise(
     amplitude: float | u.Quantity, f_ref: float | u.Quantity = 1.0, **kwargs: Any
 ) -> FrequencySeries:
-    """Generate Pink noise ASD (~ f^-0.5)."""
+    """
+    Generate Pink noise ASD (~ f^-0.5).
+
+    Parameters
+    ----------
+    amplitude : float or astropy.units.Quantity
+        The noise amplitude at the reference frequency.
+    f_ref : float or astropy.units.Quantity, optional
+        The reference frequency in Hz (default is 1.0).
+    **kwargs : Any
+        Additional keyword arguments passed to `power_law`.
+
+    Returns
+    -------
+    FrequencySeries
+        The generated pink noise ASD.
+    """
     return power_law(0.5, amplitude=amplitude, f_ref=f_ref, **kwargs)
 
 
 def red_noise(
     amplitude: float | u.Quantity, f_ref: float | u.Quantity = 1.0, **kwargs: Any
 ) -> FrequencySeries:
-    """Generate Red (Brownian) noise ASD (~ f^-1)."""
+    """
+    Generate Red (Brownian) noise ASD (~ f^-1).
+
+    Parameters
+    ----------
+    amplitude : float or astropy.units.Quantity
+        The noise amplitude at the reference frequency.
+    f_ref : float or astropy.units.Quantity, optional
+        The reference frequency in Hz (default is 1.0).
+    **kwargs : Any
+        Additional keyword arguments passed to `power_law`.
+
+    Returns
+    -------
+    FrequencySeries
+        The generated red noise ASD.
+    """
     return power_law(1.0, amplitude=amplitude, f_ref=f_ref, **kwargs)
