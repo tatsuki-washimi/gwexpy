@@ -156,5 +156,74 @@ gantt
 2. **EN/JA の同期ポリシーを明文化すること**
    「同名 notebook は原則同一構成」「英語版のみ提供する場合は日本語 wrapper ページを置く」など、運用ルールを決める。
 
-3. **“実行できる” だけでなく “教材として読める” 状態まで確認すること**
+3. **”実行できる” だけでなく “教材として読める” 状態まで確認すること**
    実行成功率だけでなく、警告の見え方、説明の粒度、節構成の対称性もレビュー対象に含める。
+
+---
+
+## 補足：品質監査指摘事項の実態確認（2026-04-07）
+
+### 概要
+
+本レポートの11件の指摘事項について、ソースコードを直接調査した結果、**9件がすでに解決済み**であることが判明した。真に残存する課題は以下の2件。
+
+### 実態調査結果表
+
+| # | 指摘事項 | 重大度 | 実態 | 解決状況 |
+|---|---------|--------|------|---------|
+| 1 | インストール要件の不整合 | Critical | Python 3.11+ に統一済み、extras 名も整合済み | ✅ 解決済み |
+| 2 | paper-figures のパス不備 | Critical | スクリプトに `mkdir(parents=True, exist_ok=True)` あり、実行は成功するが整理の余地あり | ⚠️ 部分的 |
+| 3 | 日本語チュートリアルの欠落 | High | 日本語 intro_noise/fitting/table 已实装（commit `2093651e`） | ✅ 解決済み |
+| 4 | Monkeypatching 方針の矛盾 | High | CONTRIBUTING.md と実装が一貫（標準 GWpy API 使用） | ✅ 解決済み |
+| 5 | MyST admonition 記法統一 | High | GitHub Callout 形式 0 件、すべて MyST 形式で統一 | ✅ 解決済み |
+| 6 | gwexpy.time 導線不足 | Medium | time_utilities.md 作成済み | ✅ 解決済み |
+| 7 | CLI/GUI ガイド不足 | Medium | cli.md / gui.md 新規作成済み（commit `dca93fc3`, `1e1bc257`） | ✅ 解決済み |
+| 8 | 依存関係下限調整 | Medium | numpy>=1.23.2, scipy>=1.10.0 に設定済み | ✅ 解決済み |
+| 9 | license メタデータ仕様準拠 | Medium | `{text = “MIT”}` 形式で PEP 621 準拠 | ✅ 解決済み |
+| 10 | all extra 自己参照 | Medium | フラット列挙に変更済み（コメント付き） | ✅ 解決済み |
+| 11 | API リファレンス欠落 | High | 22パッケージ追加済み、cli/gui は toctree 未記載 | ⚠️ 部分的 |
+
+### 詳細
+
+#### 課題A: paper-figures のパス不備（Critical → 実質的には Low）
+
+**現状:**
+- スクリプト内に `output_dir.mkdir(parents=True, exist_ok=True)` がある
+- 出力先 `examples/docs/gwexpy-paper/` は存在しなくても自動作成される
+- 実行は成功するが、出力先が `docs_internal/publications/paper_softwarex/` と異なる
+
+**判定:** 実行は問題なく通るため Critical ではない。整理の余地はあるが今回は対応スコープ外。
+
+#### 課題B: API リファレンス cli/gui が toctree に未記載（部分的）
+
+**現状:**
+- `docs/web/en/reference/api/cli.rst`（プレースホルダとして適切に記載済み）
+- `docs/web/en/reference/api/gui.rst`（実験的として warning で記載済み）
+- ファイルは存在するが、`docs/web/en/reference/api/index.rst` の toctree に含まれていない
+
+**対応:** toctree に `cli` と `gui` のエントリを追記（1行ずつ、末尾）
+
+### 実施内容
+
+#### Step 1: API リファレンス index.rst に cli/gui を追記
+
+**対象ファイル**: `docs/web/en/reference/api/index.rst`
+
+toctree の末尾に以下を追記：
+```rst
+   cli
+   gui
+```
+
+#### 検証結果
+
+- `docs/web/en/reference/api/index.rst` の toctree に cli/gui が含まれていることを確認
+- `sphinx-build -b html docs docs/_build/html` でビルド成功を確認
+
+### 結論
+
+本レポートの指摘11件のうち、9件が既に解決済み、2件（paper-figures・API reference toctree）が軽微な未対応として確認された。
+
+**スプリント完了状況**（2026-04-07 時点）:
+- リリース基盤の品質は非常に高い状態に到達している
+- 残存課題は軽微であり、追加の対応で解決可能な範囲内

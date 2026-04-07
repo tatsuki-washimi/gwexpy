@@ -26,3 +26,5 @@ API Reference
    plot
    io
    extra
+   cli
+   gui
