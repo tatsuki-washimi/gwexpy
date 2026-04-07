@@ -2,7 +2,10 @@
 gwexpy.frequencyseries
 ----------------------
 
-Extends gwpy.frequencyseries with matrix support and future extensibility.
+Representation of a frequency series.
+
+This module extends `gwpy.frequencyseries.FrequencySeries` with matrix support,
+enhanced signal analysis, fitting capabilities, and deep metadata propagation.
 """
 
 from __future__ import annotations
@@ -50,15 +53,91 @@ class FrequencySeries(
     StatisticalMethodsMixin,
     BaseFrequencySeries,
 ):
-    """Light wrapper of gwpy's FrequencySeries for compatibility and future extension."""
+    """A data array holding some metadata to represent a frequency series.
+
+    `FrequencySeries` is the primary object used to represent frequency-domain
+    data in `gwexpy`. It extends the standard `gwpy.frequencyseries.FrequencySeries`
+    by incorporating additional mixins for plotting, signal analysis,
+    regularity checks, numerical fitting, and statistical methods.
+
+    Parameters
+    ----------
+    data : array-like
+        Input data array.
+
+    unit : `~astropy.units.Unit`, optional
+        Physical unit of these data.
+
+    f0 : `float`, `~astropy.units.Quantity`, optional, default: `0`
+        Starting frequency for these data.
+
+    df : `float`, `~astropy.units.Quantity`, optional, default: `1`
+        Frequency resolution for these data.
+
+    frequencies : `array-like`
+        The complete array of frequencies indexing the data.
+        This argument takes precedence over `f0` and `df` so should
+        be given in place of these if relevant, not alongside.
+
+    epoch : `~gwpy.time.LIGOTimeGPS`, `float`, `str`, optional
+        GPS epoch associated with these data,
+        any input parsable by `~gwpy.time.to_gps` is fine.
+
+    name : `str`, optional
+        Descriptive title for this array.
+
+    channel : `~gwpy.detector.Channel`, `str`, optional
+        Source data stream for these data.
+
+    dtype : `~numpy.dtype`, optional
+        Input data type.
+
+    copy : `bool`, optional, default: `False`
+        Choose to copy the input data to new memory.
+
+    subok : `bool`, optional, default: `True`
+        Allow passing of sub-classes by the array generator.
+
+    Notes
+    -----
+    In addition to the standard GWpy functionality, this class provides
+    advanced features such as frequency-domain differentiation/integration,
+    histogramming, and seamless interoperability with Polars, Pandas,
+    and ROOT (TGraph/TH1).
+
+    Key methods:
+
+    .. autosummary::
+
+       ~FrequencySeries.plot
+       ~FrequencySeries.ifft
+       ~FrequencySeries.zpk
+       ~FrequencySeries.differentiate
+       ~FrequencySeries.integrate
+       ~FrequencySeries.to_db
+
+    Examples
+    --------
+    >>> from gwexpy.frequencyseries import FrequencySeries
+    >>> import numpy as np
+    >>> data = np.ones(10)
+    >>> fs = FrequencySeries(data, df=1.0, f0=0.0, unit='V/Hz')
+    >>> fs
+    <FrequencySeries([1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
+                     unit=Unit("V / Hz"),
+                     f0=<Quantity 0. Hz>,
+                     df=<Quantity 1. Hz>,
+                     epoch=None,
+                     name=None,
+                     channel=None)>
+    """
 
     def __new__(cls, *args: Any, **kwargs: Any) -> FrequencySeries:
-        """
-        Create a new FrequencySeries instance.
+        """Create a new FrequencySeries instance.
 
-        This override filters out noise-generation parameters (fmin, fmax, df)
-        that may be passed from gwexpy.noise functions but are not valid
-        arguments for the parent FrequencySeries constructor.
+        This override ensures compatibility with `gwexpy.noise` generation
+        functions by filtering out transient parameters (`fmin`, `fmax`)
+        that are not recognized by the parent `gwpy` constructor.
         """
         # Remove noise-generation parameters that shouldn't be passed to parent
         for key in ["fmin", "fmax"]:
@@ -678,8 +757,10 @@ class FrequencySeries(
 
         Examples
         --------
-        >>> fs = FrequencySeries(dct_coeffs, ...)
-        >>> ts = fs.idct()
+        >>> from gwexpy.frequencyseries import FrequencySeries
+        >>> import numpy as np
+        >>> fs = FrequencySeries(np.ones(10), df=1.0)
+        >>> ts = fs.idct(n=10)
         """
         self._check_regular("idct")
 
