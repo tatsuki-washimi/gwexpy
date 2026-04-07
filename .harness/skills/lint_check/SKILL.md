@@ -46,6 +46,15 @@ import と pyproject.toml の依存関係を比較：
 
 詳細：[reference/deps.md](reference/deps.md)
 
+### 4. Hardening Check (English-primary)
+
+`gwexpy/` 下に CJK 文字が混入していないかを確認。「英語一次」ポリシーを遵守。
+```bash
+python scripts/check_non_ascii.py --root gwexpy
+```
+
+詳細：[verify_hardening](../verify_hardening/SKILL.md)
+
 ## Configuration
 
 設定は `pyproject.toml` に統一。

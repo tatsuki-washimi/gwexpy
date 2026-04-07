@@ -19,7 +19,7 @@ finalize_work --full
 
 ## Modes
 
-### Quick Mode (デフォルト)
+### 1. Quick Mode (デフォルト)
 
 最小限のクリーンアップとコミットのみ実行:
 
@@ -27,17 +27,18 @@ finalize_work --full
 2. Git ステータス確認
 3. コミット
 
-### Full Mode
+### 2. Full Mode
 
 完全な検証フローを実行:
 
 1. 物理検証（該当する場合）
-2. `gwexpy_conda_jobs` 経由でテスト実行
-3. `gwexpy_conda_jobs` 経由でリント・型チェック
-4. ドキュメント同期
-5. ディレクトリ整理
-6. コミット
-7. 結果報告
+2. **堅牢化検証 (`verify_hardening`)** - 非 ASCII 検知、Doctest、Sphinx -W
+3. `gwexpy_conda_jobs` 経由でテスト実行
+4. `gwexpy_conda_jobs` 経由でリント・型チェック
+5. ドキュメント同期
+6. ディレクトリ整理
+7. コミット
+8. 結果報告
 
 ## Instructions
 
@@ -80,6 +81,7 @@ git commit -m "<conventional commit message>"
 詳細な手順は以下を参照:
 
 - [物理検証](reference/physics.md)
+- [堅牢化検証](../verify_hardening/SKILL.md)
 - [テスト実行](reference/tests.md)
 - [ドキュメント更新](reference/docs.md)
 

@@ -69,9 +69,11 @@ sphinx-build -b html docs/web/en/ docs/_build/html/en/
 # 日本語版
 sphinx-build -b html docs/web/ja/ docs/_build/html/ja/
 
-# 警告をエラーとして扱う
+# 警告をエラーとして扱う（CI と同じ厳格モード）
 sphinx-build -W -b html docs/web/en/ docs/_build/html/en/
 ```
+
+- **重要**: `main` ブランチへプッシュする前に、`-W` フラグ付きでビルドがパスすることを確認してください。
 
 ### 4. 検証
 

@@ -129,9 +129,10 @@ def pink_noise(
     --------
     >>> from gwexpy.noise import pink_noise
     >>> from astropy import units as u
-    >>> asd = pink_noise(10 * u.V / u.Hz**0.5, f_ref=10 * u.Hz, df=1.0, fmin=1, fmax=100)
-    >>> asd.at(10 * u.Hz)
-    <Quantity 10. V / Hz(1/2)>
+    >>> asd = pink_noise(10.0, f_ref=10.0, df=1.0, fmin=1, fmax=100)
+    >>> # 10 Hz is at index 9 (if fmin=1, f_0=1, index 9 is f=10)
+    >>> bool(abs(asd[9].value - 10.0) < 1e-10)
+    True
 
     """
     return power_law(0.5, amplitude=amplitude, f_ref=f_ref, **kwargs)
@@ -164,6 +165,8 @@ def red_noise(
     >>> from gwexpy.noise import red_noise
     >>> # Generate red noise with 1e-10 unit/rtHz at 1 Hz
     >>> asd = red_noise(1e-10, f_ref=1.0, df=0.1, fmin=0.1, fmax=10)
+    >>> bool(abs(asd.value[9] - 1e-10) < 1e-18)  # At index 9, f=1.0Hz
+    True
 
     """
     return power_law(1.0, amplitude=amplitude, f_ref=f_ref, **kwargs)

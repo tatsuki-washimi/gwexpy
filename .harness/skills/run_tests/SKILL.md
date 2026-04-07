@@ -32,6 +32,7 @@ bash .agent/skills/gwexpy_conda_jobs/scripts/run_job.sh start pytest tests/field
 | Unit      | `pytest tests/`                       | ユニットテスト              |
 | GUI       | `pytest tests/gui/`                   | GUI テスト（pytest-qt必要） |
 | Notebooks | `pytest --nbmake examples/**/*.ipynb` | ノートブック実行            |
+| Doctest   | `pytest --doctest-modules gwexpy/`    | **Docstring 例の自動検証**  |
 
 ## Common Options
 

@@ -19,36 +19,7 @@ jobs:
 
       - name: Run non-ASCII check (CJK detection)
         run: |
-          python - <<'PY'
-          import os, re, sys
-          # Scan only the core library and related docs
-          scan_dirs = ['gwexpy']
-          # Match CJK characters (Hiragana, Katakana, Kanji)
-          pattern = re.compile(r'[\u3040-\u30ff\u4e00-\u9fff]')
-          bad = []
-          
-          for root_dir in scan_dirs:
-              if not os.path.exists(root_dir):
-                  continue
-              for dp, _, fns in os.walk(root_dir):
-                  for fn in fns:
-                      if not fn.endswith(('.py', '.md')):
-                          continue
-                      path = os.path.join(dp, fn)
-                      try:
-                          with open(path, 'r', encoding='utf-8', errors='ignore') as fh:
-                              for i, l in enumerate(fh, 1):
-                                  if pattern.search(l):
-                                      bad.append(f"{path}:{i}: {l.strip()}")
-                      except Exception as e:
-                          print(f"Error reading {path}: {e}")
-          
-          if bad:
-              print(f"Found {len(bad)} Non-ASCII (CJK) characters in 'gwexpy/':")
-              print('\n'.join(bad[:100]))
-              sys.exit(1)
-          print("No CJK characters found in 'gwexpy/' .py/.md files.")
-          PY
+          python scripts/check_non_ascii.py --root gwexpy
 
       - name: Run ruff (docstring hardening)
         run: |
