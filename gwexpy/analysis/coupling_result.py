@@ -379,9 +379,10 @@ class CouplingResult:
     # ------------------------------------------------------------------
 
     def _significance_array(self) -> np.ndarray:
-        """有意度 (ASD_inj - ASD_bkg) / ASD_bkg を計算して返す。.
+        """Calculate and return significance: (ASD_inj - ASD_bkg) / ASD_bkg.
 
-        背景 ASD をゼロ除算から防護するため epsilon ガードを適用する。
+        Apply epsilon guard to protect against division by zero for
+        background ASD.
         """
         asd_inj = np.sqrt(np.abs(self.psd_witness_inj.value))
         asd_bkg = np.sqrt(np.abs(self.psd_witness_bkg.value))
@@ -389,11 +390,12 @@ class CouplingResult:
         return (asd_inj - asd_bkg) / np.where(asd_bkg > 0, asd_bkg, eps)
 
     def spectral_stats(self) -> SpectralStats:
-        """背景 ASD の簡易統計情報を返す。.
+        """Return summary statistical information for background ASD.
 
-        現時点では CouplingResult が保持する背景/注入 PSD から、
-        背景 ASD を mean、注入との差分絶対値を sigma として構成する。
-        sigma はゼロ除算を避けるため epsilon で下限を設ける。
+        Currently, it constructs the statistics from the background/injection
+        PSDs stored in the CouplingResult, using background ASD as mean and
+        the absolute difference from injection as sigma. Sigma has an epsilon
+        lower bound to avoid division by zero.
         """
         from ..frequencyseries import FrequencySeries
         from .stats import SpectralStats
@@ -417,9 +419,9 @@ class CouplingResult:
         return SpectralStats(mean=mean, sigma=sigma, n_avg=n_avg)
 
     def to_csv(self, filepath: str | os.PathLike) -> None:
-        """結合係数を CSV 形式で保存する。.
+        """Save coupling factors to a CSV file.
 
-        列: frequency, cf, cf_ul, significance, inj_asd, bkg_asd
+        Columns: frequency, cf, cf_ul, significance, inj_asd, bkg_asd
         """
         freqs = self.cf.xindex.value
         cf_vals = self.cf.value
@@ -436,10 +438,10 @@ class CouplingResult:
 
     @classmethod
     def from_csv(cls, filepath: str | os.PathLike) -> CouplingResult:
-        """CSV ファイルから CouplingResult を復元する（ラウンドトリップ用）。.
+        """Restore a CouplingResult from a CSV file (for round-tripping).
 
-        to_csv() で書き出したファイルのみ対応。cf / cf_ul / ASD のみ復元し、
-        その他フィールドは最小限のダミーで補完する。
+        Only supports files exported by to_csv(). Restores cf, cf_ul, and ASDs;
+        other fields are filled with minimal dummy values.
         """
         from gwexpy.frequencyseries import FrequencySeries
 
@@ -481,15 +483,15 @@ class CouplingResult:
         )
 
     def to_txt(self, filepath: str | os.PathLike) -> None:
-        """結合係数を NInjA.py 互換テキスト形式で保存する。.
+        """Save coupling factors in NInjA.py-compatible text format.
 
-        フォーマット::
+        Format::
 
             # frequency(Hz) coupling_factor uncertainty significance
             1.0 0.123 0.045 2.73
             ...
 
-        uncertainty は cf_ul - cf（cf_ul がない場合は NaN）。
+        The uncertainty is calculated as cf_ul - cf (NaN if cf_ul is missing).
         """
         freqs = self.cf.xindex.value
         cf_vals = self.cf.value
@@ -513,20 +515,22 @@ class CouplingResult:
         freq_max: float | None = None,
         figsize: tuple[float, float] = (12, 6),
     ) -> Any:
-        """有意度スペクトラムプロット（(ASD_inj - ASD_bkg) / ASD_bkg vs 周波数）。.
+        """Plot the significance spectrum ((ASD_inj - ASD_bkg) / ASD_bkg vs. frequency).
 
         Parameters
         ----------
         threshold : float
-            閾値水平線の値（デフォルト 3.0）。0 以下の場合は描画しない。
+            Value for the horizontal threshold line (default: 3.0). If <= 0,
+            no line is drawn.
         freq_min, freq_max : float, optional
-            表示する周波数範囲 [Hz]。
-        figsize : tuple
-            Figure サイズ。
+            Frequency range to display [Hz].
+        figsize : tuple of float, optional
+            Figure size.
 
         Returns
         -------
         matplotlib.figure.Figure
+            The resulting figure instance.
 
         """
         import matplotlib.pyplot as plt
@@ -577,24 +581,25 @@ class CouplingResult:
         vmax: float | None = None,
         figsize: tuple[float, float] = (14, 6),
     ) -> Any:
-        """ASD スペクトログラム + パーセンタイルオーバーレイ（2 列レイアウト）。.
+        """Plot ASD spectrogram with percentile overlays (2-column layout).
 
-        左パネル: 注入時 ASD spectrogram, 右パネル: 背景時 ASD spectrogram。
-        両者に 50%, 90%, 99% パーセンタイルラインを重ねる。
+        The layout shows the injection ASD spectrogram in the left panel and
+        the background ASD spectrogram in the right panel. Both are overlaid
+        with 50th, 90th, and 99th percentile lines.
 
         Parameters
         ----------
         freq_min, freq_max : float, optional
-            表示する周波数範囲 [Hz]。
+            Frequency range to display [Hz].
         vmin, vmax : float, optional
-            カラーバースケール。None の場合は自動設定。
-        figsize : tuple
-            Figure サイズ。
+            Colorbar scale limits. Automatic if None.
+        figsize : tuple of float, optional
+            Figure size.
 
         Raises
         ------
         ValueError
-            `ts_witness_inj` または `ts_witness_bkg` が None の場合。
+            If `ts_witness_inj` or `ts_witness_bkg` is None.
 
         """
         import matplotlib.pyplot as plt
@@ -662,8 +667,8 @@ class CouplingResult:
             )
             fig.colorbar(c, ax=ax, label=f"ASD [{asd_unit}]")
 
-            # 各周波数ビンの時刻方向パーセンタイルを周波数軸に沿った輪郭として描画
-            # twin x 軸で ASD スケールのパーセンタイルプロファイルを重ねる
+            # Draw time-direction percentiles for each frequency bin as contours
+            # along the frequency axis using a twin X-axis.
             ax_twin = ax.twiny()
             for pct in (50, 90, 99):
                 pct_vals = np.nanpercentile(data, pct, axis=0)  # shape: (n_freqs,)
@@ -702,44 +707,45 @@ class CouplingResult:
         figsize: tuple[float, float] = (12, 4),
         **kwargs: Any,
     ) -> Any:
-        """RMS 時系列プロット（帯域制限付き）。.
+        """Plot rolling RMS time-series (band-limited).
 
-        Witness / Target チャンネルのローリング RMS を時間軸に表示する。
-        `show_windows=True` の場合、背景区間（グレー）と注入区間（赤）を
-        `axvspan` で色分けして重ねる。
+        Displays the rolling RMS for witness and target channels over time.
+        If show_windows=True, background (grey) and injection (red) intervals
+        are shaded using axvspan.
 
-        RMS の定義（PSD を周波数積分してルート）::
+        RMS definition (root frequency-integral of PSD)::
 
             RMS(t) = sqrt( trapz(PSD(t, f), f) )  for f in [fmin, fmax]
 
         Parameters
         ----------
         fmin : float, optional
-            RMS を計算する下限周波数 [Hz]。None の場合は 0 Hz。
+            Lower frequency limit for RMS calculation [Hz]. Defaults to 0 Hz.
         fmax : float, optional
-            RMS を計算する上限周波数 [Hz]。None の場合は Nyquist 周波数。
+            Upper frequency limit for RMS calculation [Hz]. Defaults to Nyquist.
         fftlength : float, optional
-            Spectrogram の FFT 長 [s]。None の場合は self.fftlength を使用。
+            FFT length for the spectrogram [s]. Uses self.fftlength if None.
         overlap : float, optional
-            Spectrogram のオーバーラップ [秒]。None の場合は self.overlap を使用。
+            Overlap for the spectrogram [s]. Uses self.overlap if None.
         channels : {"witness", "target", "both"}
-            プロットするチャンネル。"both" の場合は 2 パネル構成。
+            Which channels to plot. "both" creates a 2-panel layout.
         show_windows : bool
-            背景・注入区間を axvspan で色分けする場合 True（デフォルト）。
-        figsize : tuple
-            Figure サイズ。
+            If True, shades background and injection intervals using axvspan (default: True).
+        figsize : tuple of float, optional
+            Figure size.
         **kwargs
-            matplotlib の plot() に渡す追加キーワード引数。
+            Additional keyword arguments for matplotlib's plot().
 
         Returns
         -------
         matplotlib.figure.Figure
+            The created figure.
 
         Raises
         ------
         ValueError
-            `channels` に応じた TimeSeries が None の場合。
-            `channels` の値が不正な場合。
+            If the required TimeSeries for the selected channels is None,
+            or if the 'channels' argument is invalid.
 
         """
         import matplotlib.pyplot as plt
@@ -758,7 +764,7 @@ class CouplingResult:
                 "Pass fftlength= or set it when constructing CouplingResult."
             )
 
-        # チャンネル選択と検証
+        # Channel selection and validation
         ts_pairs: list[tuple[str, Any, Any]] = []  # (label, ts_bkg, ts_inj)
         if channels in ("witness", "both"):
             if self.ts_witness_bkg is None or self.ts_witness_inj is None:
@@ -788,7 +794,7 @@ class CouplingResult:
 
             unit_str = str(getattr(ts_bkg, "unit", ""))
 
-            # RMS カーブの描画
+            # Draw RMS curves
             ax.plot(
                 rms_bkg.times.value,
                 rms_bkg.value,
@@ -806,7 +812,7 @@ class CouplingResult:
                 **plot_kwargs,
             )
 
-            # 期間色分け (axvspan)
+            # Interval shading (axvspan)
             if show_windows:
                 t0_bkg = float(rms_bkg.t0.value)
                 t1_bkg = t0_bkg + float(rms_bkg.duration.value)
@@ -837,21 +843,21 @@ class CouplingResult:
         snrmax: float = 100.0,
         figsize: tuple[float, float] = (12, 6),
     ) -> Any:
-        """SNR スペクトログラム（中央値正規化: (ASD_inj - median_bkg) / median_bkg）。.
+        """Plot SNR spectrogram ((ASD_inj - median_bkg) / median_bkg).
 
         Parameters
         ----------
         freq_min, freq_max : float, optional
-            表示する周波数範囲 [Hz]。
+            Frequency range to display [Hz].
         snrmax : float
-            カラーバー上限（clamp 値）。デフォルト 100。
-        figsize : tuple
-            Figure サイズ。
+            Colorbar maximum limit (clamp value). Defaults to 100.0.
+        figsize : tuple of float, optional
+            Figure size.
 
         Raises
         ------
         ValueError
-            `ts_witness_inj` または `ts_witness_bkg` が None の場合。
+            If `ts_witness_inj` or `ts_witness_bkg` is None.
 
         """
         import matplotlib.pyplot as plt
@@ -923,10 +929,10 @@ class CouplingResult:
 
     @classmethod
     def from_txt(cls, filepath: str | os.PathLike) -> CouplingResult:
-        """TXT ファイルから CouplingResult を復元する（ラウンドトリップ用）。.
+        """Restore a CouplingResult from a plain-text NInjA compatible file.
 
-        to_txt() で書き出したファイルのみ対応。cf と cf_ul のみ復元し、
-        その他フィールドは最小限のダミーで補完する。
+        Only supports files exported by to_txt(). Restores cf and cf_ul;
+        other fields are filled with minimal dummy values.
         """
         from gwexpy.frequencyseries import FrequencySeries
 
@@ -980,23 +986,24 @@ class CouplingResult:
 
 
 class CouplingResultCollection(dict):
-    """複数の CouplingResult を管理するコンテナ。.
+    """Container for managing multiple CouplingResult objects.
 
-    使用例::
+    Examples
+    --------
+    >>> results = CouplingResultCollection()
+    >>> results['WIT-TGT'] = coupling_result_1
+    >>> results['WIT-TGT2'] = coupling_result_2
+    >>> results.to_summary_csv("summary.csv")
 
-        results = CouplingResultCollection()
-        results['WIT-TGT'] = coupling_result_1
-        results['WIT-TGT2'] = coupling_result_2
-        results.to_summary_csv("summary.csv")
     """
 
     def __init__(self, mapping: dict[str, Any] | None = None) -> None:
         super().__init__(mapping or {})
 
     def to_summary_csv(self, filepath: str | os.PathLike) -> None:
-        """全結果を単一 CSV に集約して保存する。.
+        """Export all results to a single summary CSV file.
 
-        列: channel_pair, frequency, cf, cf_ul, significance, inj_asd, bkg_asd
+        Columns: channel_pair, frequency, cf, cf_ul, significance, inj_asd, bkg_asd
         """
         with open(filepath, "w", newline="", encoding="utf-8") as fh:
             writer = csv.writer(fh)
@@ -1026,11 +1033,21 @@ class CouplingResultCollection(dict):
         threshold: float = 3.0,
         figsize: tuple[float, float] = (12, 8),
     ) -> Any:
-        """複数の結合係数を重ねたプロット。.
+        """Plot a comparison of multiple coupling factors.
+
+        Parameters
+        ----------
+        freq_min, freq_max : float, optional
+            Frequency range to display [Hz].
+        threshold : float
+            Value for the horizontal threshold line (default: 3.0).
+        figsize : tuple of float, optional
+            Figure size.
 
         Returns
         -------
         matplotlib.figure.Figure
+            The created figure instance.
 
         """
         import matplotlib.pyplot as plt
@@ -1046,7 +1063,7 @@ class CouplingResultCollection(dict):
                 cf = cf.copy().crop(*xlim)
             ax.plot(cf.xindex.value, cf.value, marker=".", linestyle="-", markersize=3, label=label)
 
-        # 閾値ラインを水平線として描画
+        # Draw threshold line
         if threshold > 0:
             ax.axhline(threshold, color="gray", linestyle="--", linewidth=0.8, label=f"threshold={threshold}")
 
@@ -1118,11 +1135,12 @@ def _compute_rms_timeseries(
     freqs = spec.frequencies.value  # ndarray [Hz]
     psd_matrix = spec.value          # ndarray (n_times, n_freqs) [unit^2/Hz]
 
-    # 各時間ビンで周波数方向に台形則積分 → band_power [unit^2]
-    # np.trapezoid は NumPy 2.0+、np.trapz は NumPy 1.x 互換
+    # Integrate across frequency for each time bin (trapezoidal rule).
+    # np.trapezoid for NumPy 2.0+, np.trapz for NumPy 1.x compatibility.
     _trapz = getattr(np, "trapezoid", None) or getattr(np, "trapz")
     band_power = _trapz(psd_matrix, freqs, axis=1)
-    # 数値誤差で生じた微小な負値は 0 に丸めるが、NaN はそのまま伝播させる。
+
+    # Round tiny negative values to zero; propagate NaNs.
     band_power = np.where(np.isnan(band_power), np.nan, np.maximum(band_power, 0.0))
     rms_values = np.sqrt(band_power)
 

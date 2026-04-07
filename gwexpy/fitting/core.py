@@ -1170,7 +1170,7 @@ def fit_series(
     else:
         cost = RealLeastSquares(x, y, dy, model)
 
-    # 3. Minuit 初期化
+    # 3. Minuit initialization
     # Get parameter names from the cost function (which got them from model)
     param_names = describe(cost)
     sig = inspect.signature(model)
@@ -1202,7 +1202,7 @@ def fit_series(
 
     m = Minuit(cost, **init_params)
 
-    # 4. Limit / Fix の適用
+    # 4. Applying Limits / Fixes
     if limits:
         for name, (vmin, vmax) in limits.items():
             m.limits[name] = (vmin, vmax)
@@ -1211,7 +1211,7 @@ def fit_series(
         for name in fixed:
             m.fixed[name] = True
 
-    # 5. 実行
+    # 5. Execution
     m.migrad()
     m.hesse()
 

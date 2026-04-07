@@ -1,67 +1,75 @@
-# チャンネルの扱いについて (Channel Handling Explanation)
+# Channel Handling in pyaggui
 
-`gwexpy` の GUI (`pyaggui`) におけるチャンネルの扱いについて、コードベース調査および実装に基づき解説します。
+This document explains how channels are handled in the `gwexpy` GUI (`pyaggui`), based on codebase analysis and implementation details.
 
-## 1. 概要
-`gwexpy` および `pyaggui` において、チャンネルは基本的に **文字列（チャンネル名）** として扱われます。データ構造としては `gwpy.timeseries.TimeSeries` 等のオブジェクトが使用され、その `name` 属性や辞書のキーとして管理されます。
+## 1. Overview
 
-## 2. GUI におけるチャンネル選択
-`pyaggui` では、DTT (`diaggui`) の設計思想に基づき、チャンネル選択は「計測対象の定義 (Measurement)」と「表示対象の選択 (Results)」に分かれています。
+In `gwexpy` and `pyaggui`, channels are primarily handled as **strings (channel names)**. Data structures utilize objects such as `gwpy.timeseries.TimeSeries`, with the channel name managed via the `name` attribute or as a dictionary key.
 
-*   **Measurement タブ**:
-    *   **役割**: ここで **計測対象（データ取得対象）とするチャンネル** を選択します。
-    *   多数のチャンネル（最大96個など）を登録・管理することができます。
-    *   ここで `Active` にチェックを入れたチャンネルのみが、SIM/NDSモードでのデータ取得対象となります。
+## 2. Channel Selection in the GUI
 
-*   **Result タブ (GraphPanel)**:
-    *   **役割**: Measurement タブで登録されたチャンネルの中から、**グラフに描画したいチャンネル (Traces)** を選択します。
-    *   各トレースには `A` (チャンネルA) と `B` (チャンネルB、伝達関数などの2チャンネル測定用) の入力欄があります。
-    *   コンボボックスの選択肢には、**Measurement タブで Active になっているチャンネルのみ** が表示されます（即時連動）。
+`pyaggui` follows the design philosophy of DTT (`diaggui`), separating channel selection into "Measurement Definition" and "Result Selection (Plotting)."
 
-## 3. データソース別の処理フロー
+* **Measurement Tab**:
+  * **Role**: Define the **channels to be targeted for data acquisition**.
+  * Supports registering and managing many channels (e.g., up to 96).
+  * Only channels marked as `Active` are targeted for data acquisition in SIM/NDS modes.
 
-### A. オンライン (NDS) - ※動作未検証 / リスト取得未実装
-1.  **Measurement タブ** で計測したいチャンネル名を入力し、`Active` にします。
-    *   現状、サーバーからチャンネル一覧を取得して選択肢にする機能はないため、手動入力が必要です。
-2.  **Result タブ** のコンボボックスには、Measurement タブで Active なチャンネルのみが選択肢として現れます。
-3.  「Start」ボタンを押すと、`start_animation` が **Measurement タブで Active な全チャンネル** に対してデータ取得要求 (`NDSDataCache`) を行います。
+* **Result Tab (GraphPanel)**:
+  * **Role**: Select the **channels to be plotted (Traces)** from those registered in the Measurement tab.
+  * Each trace has input fields for `A` (Channel A) and `B` (Channel B, used for dual-channel measurements like transfer functions).
+  * The combo boxes only list **channels that are marked as Active in the Measurement tab** (updated dynamically).
 
-### B. ファイル (FILE) - XMLファイル
-`diaggui` との互換性を重視し、LIGO light weight XML (`.xml`) ファイルについては以下の挙動となります。
+## 3. Processing Flow by Data Source
 
-1.  「Open...」で XML ファイルを読み込みます。
-2.  ファイル内のパラメータ情報から、チャンネルリストおよび各チャンネルの **Active 状態** が読み取られます。
-3.  これらが **Measurement タブ** に即座に反映（復元）されます。
-4.  Measurement タブの更新に伴い、**Results タブ** のコンボボックスの選択肢も自動的に更新されます。
-    *   つまり、ファイルに保存されていた「計測設定」が再現され、そこから選んでグラフを表示するというフローになります。
+### A. Online (NDS) - *Verification Pending / List Retrieval Not Implemented*
 
-### C. ファイル (FILE) - その他 (GWF, miniseed, HDF5等)
-**申し送り事項 (Future Work)**:
-`.gwf`, `.miniseed`, `.h5` 等の形式については、現状読み込みは可能（レガシー挙動）ですが、MeasurementタブへのActive状態反映などのDTT互換機能は**未対応**です。
-*   現状は、ファイルに含まれる全チャンネルが直接 Results タブの候補になる、あるいは Measurement タブを経由しない挙動となる場合があります。
-*   将来的には、これらの形式も Measurement タブをマスターとする仕様へ統一することが望まれます。
+1.  Enter the desired channel names in the **Measurement tab** and mark them as `Active`.
+    *   Currently, manual entry is required as there is no feature to retrieve a channel list from the server.
+2.  The combo boxes in the **Result tab** will display only the Active channels from the Measurement tab.
+3.  Clicking "Start" triggers `start_animation`, which requests data (`NDSDataCache`) for **all Active channels** defined in the Measurement tab.
+
+### B. File (FILE) - XML Files
+
+Following compatibility with `diaggui`, LIGO lightweight XML (`.xml`) files behave as follows:
+
+1.  Load the XML file via "Open...".
+2.  The channel list and the **Active status** of each channel are extracted from the parameter information in the file.
+3.  These states are immediately reflected (restored) in the **Measurement Master**: Entry of channel names for measurement (SIM/NDS/FILE).
+* **Result Selection**: Selection of traces for plotting (A/B) from Active measurement channels.
+* **Compatibility**: Restoration of DTT measurement configurations from XML files.
+4.  Updating the Measurement tab automatically refreshes the combo box options in the **Results tab**.
+    *   This restores the "measurement configuration" saved in the file, allowing users to select and plot traces from the restored list.
+
+### C. File (FILE) - Others (GWF, Mini-SEED, HDF5, etc.)
+
+**Future Work**:
+Format support for `.gwf`, `.miniseed`, `.h5`, etc., is currently functional for reading (legacy behavior), but DTT-compatible features like reflecting Active states in the Measurement tab are **not yet supported**.
+*   Currently, all channels in a file may appear directly as candidates in the Results tab, or the Measurement tab may be bypassed.
+*   In the future, we aim to unify these formats to use the Measurement tab as the primary master configuration.
 
 ### D. Excitation (Simulation)
-**NDS (Online)** モードにおいて、**Excitation (Simulation) タブ** を使用して擬似信号を生成・表示することができます（NDS接続がなくても動作します）。
+In **NDS (Online)** mode, the **Excitation (Simulation) tab** can be used to generate and display synthetic signals (functional even without an NDS connection).
 
-1.  **Excitation (Simulation) タブ** でパネルを有効 (`Active`) にし、波形パラメータを設定します。
-2.  ターゲットチャンネル名（デフォルトは `Excitation-0` 等）が自動的に生成・登録されます。
-3.  **Result タブ** のコンボボックスに、Active になった Excitation チャンネルが自動的に追加されます。
-4.  「Start」ボタンを押すと、NDSからのデータ取得（あれば）に加え、ローカルで生成された波形が描画されます。
-    *   Measurement タブでの設定は不要です（Excitationチャンネルは別扱いとなります）。
+1.  Enable a panel (`Active`) in the **Excitation (Simulation) tab** and configure waveform parameters.
+2.  Target channel names (e.g., `Excitation-0`) are automatically generated and registered.
+3.  The Active excitation channels are automatically added to the combo boxes in the **Result tab**.
+4.  Clicking "Start" plots both the data retrieved from NDS (if any) and the locally generated waveforms.
+    *   Settings in the Measurement tab are not required (Excitation channels are handled separately).
 
-## 4. DTT (diaggui) との整合性
-2025/12/25 の改修により、`pyaggui` のチャンネルハンドリングは `diaggui` の設計思想（Measurement = Master / Results = View）に整合するようになりました。
+## 4. Alignment with DTT (diaggui)
 
-*   **改善点**:
-    *   以前は Results タブで直接チャンネル名を入力・選択していましたが、Measurement タブでの定義が必須（または優先）となるフローに変更されました。
-    *   特に XML ファイル読み込み時に `Active` フラグも含めて復元されるようになったことで、DTT で保存した計測設定を忠実に再現可能となりました。
+Following updates on 2025/12/25, channel handling in `pyaggui` aligns with the DTT design principle where **Measurement = Master** and **Results = View**.
 
-## 5. 内部実装のポイントと今後の課題
-*   **`gwexpy/gui/ui/tabs.py`**: `Measurement` タブのチャンネル状態（名前、Activeフラグ）を管理するモデル (`channel_states`) を保持し、変更シグナル (`measure_callback`) を発行します。
+*   **Improvements**:
+    *   Previously, channel names were entered or selected directly in the Results tab. The flow now requires (or prioritizes) definition in the Measurement tab.
+    *   By restoring the `Active` flags during XML loading, users can faithfully reproduce measurement configurations saved in DTT.
+
+## 5. Implementation Notes and Future Challenges
+*   **`gwexpy/gui/ui/tabs.py`**: Holds the model (`channel_states`) for managing channel states (names, Active flags) in the `Measurement` tab and issues change signals (`measure_callback`).
 *   **`gwexpy/gui/ui/main_window.py`**:
-    *   `on_measurement_channel_changed`: Measurement タブからの変更通知を受け取り、Results タブのコンボボックスを更新します。
-    *   XML読み込み時に `loaders.extract_xml_channels` を使用して Measurement タブの状態をプログラムから更新 (`set_all_channels`) します。
-*   **技術的負債 / リファクタリング**:
-    *   以前は `gwexpy/gui/io/loaders.py` 内に実装されていましたが、現在は **`gwexpy/io/dttxml_common.py`** に移動・統合されました。
-    *   `loaders.py` は必要に応じて `dttxml_common.py` の機能を利用する構成になっています。
+    *   `on_measurement_channel_changed`: Receives change notifications from the Measurement tab and updates the Results tab combo boxes.
+    *   Uses `loaders.extract_xml_channels` during XML loading to programmatically update the Measurement tab state via `set_all_channels`.
+*   **Technical Debt / Refactoring**:
+    *   Previously implemented in `gwexpy/gui/io/loaders.py`, this logic has been moved and integrated into **`gwexpy/io/dttxml_common.py`**.
+    *   `loaders.py` now utilizes functionalities from `dttxml_common.py` as needed.

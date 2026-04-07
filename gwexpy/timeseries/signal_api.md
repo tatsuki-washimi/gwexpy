@@ -1,25 +1,24 @@
 # Signal Processing API Reference
 
-このドキュメントは `gwexpy.timeseries.TimeSeries` の信号処理メソッドの API リファレンスです。
+This document is the API reference for signal processing methods in `gwexpy.timeseries.TimeSeries`.
 
-## Hilbert 変換関連
+## Hilbert Transform Related
 
-### 概要
+### Overview
 
-Hilbert 変換は実信号から解析信号（analytic signal）を生成するための手法です。
-解析信号を用いることで、瞬時位相や瞬時周波数を計算できます。
+The Hilbert transform is a method for generating an analytic signal from a real-valued signal. By using the analytic signal, instantaneous phase and instantaneous frequency can be calculated.
 
-### 数学的定義
+### Mathematical Definition
 
-実信号 $x(t)$ に対して、解析信号 $z(t)$ は以下で定義されます：
+For a real-valued signal $x(t)$, the analytic signal $z(t)$ is defined as:
 
 $$
 z(t) = x(t) + i \cdot \mathcal{H}[x(t)]
 $$
 
-ここで $\mathcal{H}[x]$ は $x$ の Hilbert 変換であり、$1/(\pi t)$ との畳み込みで定義されます。
+where $\mathcal{H}[x]$ is the Hilbert transform of $x$, defined by convolution with $1/(\pi t)$.
 
-瞬時位相と瞬時周波数は以下で定義されます：
+Instantaneous phase and instantaneous frequency are defined as:
 
 $$
 \phi(t) = \arg(z(t))
@@ -43,34 +42,34 @@ TimeSeries.hilbert(
 ) -> TimeSeries
 ```
 
-### 説明
+### Description
 
-Hilbert 変換を用いて解析信号を計算します。
+Calculate the analytic signal using the Hilbert transform.
 
-### パラメータ
+### Parameters
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |-----------|-----|-----------|------|
-| `pad` | int または Quantity | 0 | 各端にパディングするサンプル数（または時間長）|
-| `pad_mode` | str | "reflect" | パディングモード（'reflect', 'constant', 'edge' など）|
-| `pad_value` | float | 0.0 | 'constant' モード時の値 |
-| `nan_policy` | str | "raise" | NaN/Inf の処理方法。'raise' で例外、'propagate' で伝播 |
-| `copy` | bool | True | 入力が複素数の場合にコピーを返すか |
+| `pad` | int or Quantity | 0 | Number of samples (or time duration) to pad at each end. |
+| `pad_mode` | str | "reflect" | Padding mode (e.g., 'reflect', 'constant', 'edge'). |
+| `pad_value` | float | 0.0 | Value used in 'constant' mode. |
+| `nan_policy` | str | "raise" | How to handle NaN/Inf. 'raise' for an exception, 'propagate' to pass them through. |
+| `copy` | bool | True | Whether to return a copy if the input is complex. |
 
-### 戻り値
+### Returns
 
-複素数の解析信号を含む `TimeSeries`。入力と同じ長さ。
+A `TimeSeries` containing the complex analytic signal. Same length as the input.
 
-### 例外
+### Exceptions
 
-- `ValueError`: 入力に NaN または無限大が含まれる場合（`nan_policy='raise'` 時）
-- `ValueError`: 不規則サンプリングの場合
+- `ValueError`: If the input contains NaN or infinity (when `nan_policy='raise'`).
+- `ValueError`: If the sampling is irregular.
 
-### 注意事項
+### Notes
 
-⚠️ **前処理はユーザー責務**: demean、detrend、フィルタリング、窓関数などは自動適用されません。必要に応じてユーザーが事前に適用してください。
+⚠️ **Pre-processing is the user's responsibility**: Operations like demean, detrend, filtering, and windowing are not automatically applied. Users should apply them as needed beforehand.
 
-⚠️ **端点アーティファクト**: Hilbert 変換はスペクトル漏れにより端点でアーティファクトを生じる可能性があります。`pad` パラメータを使用するか、適切な窓関数を適用してください。
+⚠️ **Endpoint Artifacts**: The Hilbert transform can produce artifacts at the endpoints due to spectral leakage. Use the `pad` parameter or apply an appropriate window function.
 
 ---
 
@@ -84,35 +83,35 @@ TimeSeries.instantaneous_phase(
 ) -> TimeSeries
 ```
 
-### 説明
+### Description
 
-Hilbert 変換を用いて瞬時位相を計算します。
+Calculate the instantaneous phase using the Hilbert transform.
 
-### パラメータ
+### Parameters
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |-----------|-----|-----------|------|
-| `deg` | bool | False | True の場合、度単位で返す。False の場合、ラジアン |
-| `unwrap` | bool | False | True の場合、位相のアンラップ（不連続の除去）を行う |
-| `**kwargs` | - | - | `hilbert()` に渡されるオプション |
+| `deg` | bool | False | If True, returns the phase in degrees. If False, returns in radians. |
+| `unwrap` | bool | False | If True, removes phase discontinuities (unwrapping). |
+| `**kwargs` | - | - | Options passed to `hilbert()`. |
 
-### 戻り値
+### Returns
 
-瞬時位相を含む `TimeSeries`。単位は 'rad' または 'deg'。
+A `TimeSeries` containing the instantaneous phase. Units are 'rad' or 'deg'.
 
-### 定義
+### Definition
 
 ```python
 analytic = hilbert(x)
-phase = np.angle(analytic)  # ラジアン
+phase = np.angle(analytic)  # radians
 if unwrap:
-    phase = np.unwrap(phase, period=2*np.pi)  # 度の場合は period=360
+    phase = np.unwrap(phase, period=2*np.pi)  # period=360 if degrees
 ```
 
-### 注意事項
+### Notes
 
-- 端点は自動でトリミングされません
-- 前処理（demean、detrend など）は自動適用されません
+- Endpoints are not automatically trimmed.
+- Pre-processing (demean, detrend, etc.) is not automatically applied.
 
 ---
 
@@ -126,93 +125,93 @@ TimeSeries.instantaneous_frequency(
 ) -> TimeSeries
 ```
 
-### 説明
+### Description
 
-Hilbert 変換を用いて瞬時周波数を計算します。
+Calculate the instantaneous frequency using the Hilbert transform.
 
-### パラメータ
+### Parameters
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |-----------|-----|-----------|------|
-| `unwrap` | bool | True | 微分前に位相をアンラップするか（推奨: True）|
-| `smooth` | int, Quantity, None | None | 平滑化窓。None で平滑化なし |
-| `**kwargs` | - | - | `hilbert()` に渡されるオプション |
+| `unwrap` | bool | True | Whether to unwrap the phase before differentiation (recommended: True). |
+| `smooth` | int, Quantity, None | None | Smoothing window width. None for no smoothing. |
+| `**kwargs` | - | - | Options passed to `hilbert()`. |
 
-### 戻り値
+### Returns
 
-瞬時周波数を含む `TimeSeries`。単位は 'Hz'。
+A `TimeSeries` containing the instantaneous frequency. Units are 'Hz'.
 
-### 定義
+### Definition
 
 ```python
-phase = instantaneous_phase(unwrap=True, deg=False)  # ラジアン
-dphi_dt = np.gradient(phase, dt)  # 時間微分
-f_inst = dphi_dt / (2 * np.pi)  # Hz に変換
+phase = instantaneous_phase(unwrap=True, deg=False)  # radians
+dphi_dt = np.gradient(phase, dt)  # time differentiation
+f_inst = dphi_dt / (2 * np.pi)  # convert to Hz
 ```
 
-### 注意事項
+### Notes
 
-- 端点は自動でトリミングされません
-- 端点付近は数値微分とHilbert変換のアーティファクトにより精度が低下する可能性があります
-- 精度評価時は中央領域（例：10%-90%）のみを使用することを推奨
+- Endpoints are not automatically trimmed.
+- Accuracy may decrease near the endpoints due to numerical differentiation and Hilbert transform artifacts.
+- It is recommended to use only the central region (e.g., 10%-90%) for accuracy evaluation.
 
 ---
 
-## 使用例
+## Examples
 
-### 基本的な使用法
+### Basic Usage
 
 ```python
 import numpy as np
 from gwexpy.timeseries import TimeSeries
 
-# テスト信号の生成
+# Generate test signal
 t = np.linspace(0, 10, 10000)
 f0 = 5.0  # Hz
 signal = np.cos(2 * np.pi * f0 * t)
 ts = TimeSeries(signal, dt=0.001, unit='V')
 
-# 前処理（ユーザー責務）
+# Pre-processing (User responsibility)
 ts_processed = ts.detrend().taper()
 
-# Hilbert 変換
+# Hilbert transform
 analytic = ts_processed.hilbert()
 envelope = np.abs(analytic.value)
 
-# 瞬時位相
+# Instantaneous phase
 phase = ts_processed.instantaneous_phase(unwrap=True)
 
-# 瞬時周波数
+# Instantaneous frequency
 f_inst = ts_processed.instantaneous_frequency()
 
-# 中央領域で周波数を評価
+# Evaluate frequency in the central region
 n = len(f_inst.value)
 central = f_inst.value[int(n*0.1):int(n*0.9)]
 print(f"Median frequency: {np.median(central):.2f} Hz")  # ≈ 5.0 Hz
 ```
 
-### 端点アーティファクトの軽減
+### Mitigating Endpoint Artifacts
 
 ```python
-# パディングを使用
+# Use padding
 analytic = ts.hilbert(pad=100)
 
-# または窓関数を適用
+# Or apply a window function
 ts_windowed = ts.taper(side='both')
 analytic = ts_windowed.hilbert()
 ```
 
-### チャープ信号の解析
+### Chirp Signal Analysis
 
 ```python
-# 周波数が変化するチャープ信号
+# Chirp signal with varying frequency
 f_start, f_end = 10.0, 50.0
 t = np.linspace(0, 5, 50000)
 chirp_phase = 2 * np.pi * (f_start * t + (f_end - f_start) / (2 * 5) * t**2)
 signal = np.cos(chirp_phase)
 ts = TimeSeries(signal, dt=0.0001, unit='V')
 
-# 瞬時周波数で周波数変化を追跡
+# Track frequency changes using instantaneous frequency
 f_inst = ts.instantaneous_frequency()
 ```
 
@@ -228,29 +227,29 @@ TimeSeries.heterodyne(
 ) -> TimeSeries
 ```
 
-### 説明
+### Description
 
-信号を指定された位相シリーズでヘテロダイン検波（復調）し、ストライドごとに平均化します。このメソッドは GWpy の `TimeSeries.heterodyne()` と同じアルゴリズムとデフォルト挙動 (`singlesided=False`) を採用しています。
+Heterodyne (demodulate) the signal using the specified phase series and average over each stride. This method uses the same algorithm and default behavior (`singlesided=False`) as GWpy's `TimeSeries.heterodyne()`.
 
-### パラメータ
+### Parameters
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |-----------|-----|-----------|------|
-| `phase` | array_like | (必須) | 復調に使用する位相（ラジアン）。入力信号と同じ長さである必要があります |
-| `stride` | float または Quantity | 1.0 | 平均化を行う時間刻み（秒）。内部で `int(stride * sample_rate)` サンプルに丸められます |
-| `singlesided` | bool | False | True の場合、振幅を 2 倍します（実信号の規約）。GWpy のデフォルト（False）に準拠します |
+| `phase` | array_like | (Required) | Phase used for demodulation (radians). Must be the same length as the input signal. |
+| `stride` | float or Quantity | 1.0 | Time step for averaging (seconds). Internally rounded to `int(stride * sample_rate)` samples. |
+| `singlesided` | bool | False | If True, doubles the amplitude (real-signal convention). Complies with GWpy's default (False). |
 
-### 戻り値
+### Returns
 
-複素数の復調・平均化された信号を含む `TimeSeries`。
+A `TimeSeries` containing the complex demodulated and averaged signal.
 
-### アルゴリズム
+### Algorithm
 
-1. 複素オシレータ $\exp(-i \cdot \text{phase})$ を乗算します。
-2. 指定された `stride` ごとにセグメントに分割し、各セグメントの複素平均（mean）を計算します。
-3. セグメント長は `int(stride * sample_rate)` として計算されます。
-4. セグメント長に満たない末尾のサンプルは破棄（floor）されます。
-5. `singlesided=True` の場合、結果を 2 倍します。
+1. Multiply by the complex oscillator $\exp(-i \cdot \text{phase})$.
+2. Split into segments for each defined `stride` and calculate the complex mean for each segment.
+3. Segment length is calculated as `int(stride * sample_rate)`.
+4. Trailing samples that do not fill a complete segment are discarded (floor).
+5. If `singlesided=True`, the result is doubled.
 
 ---
 
@@ -272,67 +271,67 @@ TimeSeries.lock_in(
 ) -> TimeSeries | tuple
 ```
 
-### 説明
+### Description
 
-ロックインアンプ方式による復調と平均化を行います。平均化ベース（stride）とフィルタベース（bandwidth）の 2 つのモードをサポートしています。
+Perform demodulation and averaging using a lock-in amplifier approach. Supports two modes: averaging-based (`stride`) and filter-based (`bandwidth`).
 
-### パラメータ
+### Parameters
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |-----------|-----|-----------|------|
-| `f0` | float | None | 固定周波数で復調する場合の中心周波数 (Hz) |
-| `phase` | array_like | None | 明示的な位相配列（ラジアン） |
-| `stride` | float | None | 平均化時間（秒）。`bandwidth` 未指定時に必須 |
-| `bandwidth` | float | None | ローパスフィルタの遮断周波数 (Hz)。指定時はフィルタモードで動作 |
-| `singlesided` | bool | True | True の場合、振幅を 2 倍します（ロックインの標準的な規約）。**注: `heterodyne` のデフォルト (False) とは異なります** |
-| `output` | str | "amp_phase" | 出力形式 ('amp_phase', 'complex', 'iq') |
-| `deg` | bool | True | `amp_phase` 出力時の位相単位（True で度、False でラジアン） |
+| `f0` | float | None | Center frequency (Hz) for fixed-frequency demodulation. |
+| `phase` | array_like | None | Explicit phase array (radians). |
+| `stride` | float | None | Averaging time (seconds). Required if `bandwidth` is not specified. |
+| `bandwidth` | float | None | Corner frequency (Hz) of the low-pass filter. Enables filter-based mode when specified. |
+| `singlesided` | bool | True | If True, doubles the amplitude (standard lock-in convention). **Note: Differs from `heterodyne` default (False).** |
+| `output` | str | "amp_phase" | Output format ('amp_phase', 'complex', 'iq'). |
+| `deg` | bool | True | Phase unit for `amp_phase` output (True for degrees, False for radians). |
 
-### 注意点
+### Important Notes
 
-- `bandwidth` が指定されていない場合は、内部的に `heterodyne` を使用して平均化を行います。
-- `bandwidth` が指定されている場合は、内部的に `baseband` を使用してフィルタリングを行います。
-- `stride` は `bandwidth` が指定されていない場合にのみ有効です。
-- 端数サンプルは `heterodyne` と同様に破棄されます。
-
----
-
-## 関連メソッド
-
-- `envelope()`: Hilbert 変換を用いた包絡線（振幅）の計算
-- `radian()`: 複素信号の位相角（Hilbert なし）
-- `degree()`: 複素信号の位相角（度単位、Hilbert なし）
-- `unwrap_phase()`: `instantaneous_phase(unwrap=True)` のエイリアス
-- `mix_down()`: 周波数ミキシング（複素復調）のみを実行
-- `transfer_function()`: 伝達関数の推定
+- If `bandwidth` is not specified, it internally use `heterodyne` for averaging.
+- If `bandwidth` is specified, it internally use `baseband` for filtering.
+- `stride` is only valid when `bandwidth` is not specified.
+- Fractional samples are discarded, similar to `heterodyne`.
 
 ---
 
-## Baseband 復調
+## Related Methods
 
-### 概要
+- `envelope()`: Calculate the envelope (amplitude) using the Hilbert transform.
+- `radian()`: Phase angle of a complex signal (no Hilbert).
+- `degree()`: Phase angle in degrees (no Hilbert).
+- `unwrap_phase()`: Alias for `instantaneous_phase(unwrap=True)`.
+- `mix_down()`: Perform only frequency mixing (complex demodulation).
+- `transfer_function()`: Estimate the transfer function.
 
-`baseband` メソッドは、キャリア周波数をベースバンド（DC）にシフトし、オプションでローパスフィルタとリサンプリングを適用します。
+---
 
-処理チェーン：
+## Baseband Demodulation
+
+### Overview
+
+The `baseband` method shifts the carrier frequency to baseband (DC) and optionally applies a low-pass filter and resampling.
+
+Processing Chain:
 
 ```
 mix_down(f0) → [lowpass(cutoff)] → [resample(output_rate)]
 ```
 
-### 2つの実行モード
+### Two Execution Modes
 
-**モードA（解析帯域明示）**:
+**Mode A (Explicit Analysis Bandwidth)**:
 
 - `baseband(f0=fc, lowpass=cutoff, output_rate=None|...)`
-- ミキシング後にローパスフィルタを適用して解析帯域を定義
-- オプションでリサンプルしてデータレートを削減
+- Apply a low-pass filter after mixing to define the analysis bandwidth.
+- Optionally resample to reduce the data rate.
 
-**モードB（ダウンサンプル優先）**:
+**Mode B (Downsampling Priority)**:
 
 - `baseband(f0=fc, lowpass=None, output_rate=rate)`
-- 明示的なローパスをスキップし、リサンプルのアンチエイリアスに依存
-- 二重フィルタを避けたい場合に有用
+- Skip explicit low-pass filtering and rely on the resampling anti-aliasing filter.
+- Useful when avoiding double filtering.
 
 ---
 
@@ -355,116 +354,116 @@ TimeSeries.baseband(
 ) -> TimeSeries
 ```
 
-### 説明
+### Description
 
-TimeSeries を周波数シフト（ヘテロダイン）してベースバンドに復調し、オプションでローパスフィルタとリサンプリングを適用します。
+Demodulates the `TimeSeries` to baseband by frequency shifting (heterodyning) and optionally applying a low-pass filter and resampling.
 
-### パラメータ
+### Parameters
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |-----------|-----|-----------|------|
-| `phase` | array_like または None | None | ミキシング用の明示的な位相配列（ラジアン）|
-| `f0` | float または Quantity | None | ミキシングの中心周波数（Hz）。0 < f0 < Nyquist である必要あり |
-| `fdot` | float または Quantity | 0.0 | 周波数微分（Hz/s）|
-| `fddot` | float または Quantity | 0.0 | 周波数2階微分（Hz/s²）|
-| `phase_epoch` | float または None | None | 位相モデルの基準エポック |
-| `phase0` | float | 0.0 | 初期位相オフセット（ラジアン）|
-| `lowpass` | float または Quantity または None | None | ローパスフィルタのコーナー周波数（Hz）|
-| `lowpass_kwargs` | dict または None | None | `lowpass()` に渡す追加引数 |
-| `output_rate` | float または Quantity または None | None | 出力サンプルレート（Hz）|
-| `resample_kwargs` | dict または None | None | `resample()` に渡す追加引数 |
-| `singlesided` | bool | False | True の場合、振幅を2倍（実信号用）|
+| `phase` | array_like or None | None | Explicit phase array (radians) for mixing. |
+| `f0` | float or Quantity | None | Center frequency for mixing (Hz). Must be 0 < f0 < Nyquist. |
+| `fdot` | float or Quantity | 0.0 | Frequency derivative (Hz/s). |
+| `fddot` | float or Quantity | 0.0 | Frequency second derivative (Hz/s²). |
+| `phase_epoch` | float or None | None | Reference epoch for the phase model. |
+| `phase0` | float | 0.0 | Initial phase offset (radians). |
+| `lowpass` | float or Quantity or None | None | Corner frequency of the low-pass filter (Hz). |
+| `lowpass_kwargs` | dict or None | None | Additional arguments passed to `lowpass()`. |
+| `output_rate` | float or Quantity or None | None | Output sample rate (Hz). |
+| `resample_kwargs` | dict or None | None | Additional arguments passed to `resample()`. |
+| `singlesided` | bool | False | If True, doubles the amplitude (for real signals). |
 
-### 戻り値
+### Returns
 
-複素数のベースバンド信号を含む `TimeSeries`。
+A `TimeSeries` containing the complex baseband signal.
 
-### 例外条件
+### Exception Conditions
 
-| 条件 | 例外 |
+| Condition | Exception |
 |------|------|
 | `f0 <= 0` | `ValueError` |
-| `f0 >= Nyquist`（regular series の場合）| `ValueError` |
+| `f0 >= Nyquist` (for regular series) | `ValueError` |
 | `lowpass <= 0` | `ValueError` |
 | `lowpass >= Nyquist` | `ValueError` |
 | `output_rate <= 0` | `ValueError` |
-| `lowpass` と `output_rate` の両方が None | `ValueError` |
-| `lowpass >= output_rate/2`（新 Nyquist 超過）| `ValueError` |
+| Both `lowpass` and `output_rate` are None | `ValueError` |
+| `lowpass >= output_rate/2` (exceeds new Nyquist) | `ValueError` |
 
-### 注意事項
+### Notes
 
-⚠️ **前処理はユーザー責務**: demean、detrend、フィルタリングは自動適用されません。DC オフセットやトレンドがある場合、ベースバンド結果に影響します。
+⚠️ **Pre-processing is the user's responsibility**: Demean, detrend, and filtering are not automatically applied. DC offsets or trends will affect the baseband results.
 
-⚠️ **lowpass と f0 の関係**: 一般に `lowpass < f0` が推奨されますが、強制はされません。キャリア周辺の変調のみを捉える場合は、lowpass をキャリア周波数より小さく設定してください。
+⚠️ **Relationship between lowpass and f0**: Generally `lowpass < f0` is recommended, but not enforced. To capture only modulation around the carrier, set lowpass smaller than the carrier frequency.
 
-⚠️ **GWpy 互換**: lowpass と resample の内部処理は GWpy のメソッドに委譲されます。カスタマイズは `lowpass_kwargs` と `resample_kwargs` で可能です。
+⚠️ **GWpy Compatibility**: Internal processing for lowpass and resampling is delegated to GWpy methods. Customization is possible via `lowpass_kwargs` and `resample_kwargs`.
 
 ---
 
-## Baseband 使用例
+## Baseband Examples
 
-### モードA: ローパス指定
+### Mode A: Specifying Low-pass
 
 ```python
 import numpy as np
 from gwexpy.timeseries import TimeSeries
 
-# 100 Hz のキャリア信号
-t = np.arange(0, 10, 0.001)  # 1000 Hz サンプリング
+# 100 Hz carrier signal
+t = np.arange(0, 10, 0.001)  # 1000 Hz sampling
 signal = np.cos(2 * np.pi * 100 * t)
 ts = TimeSeries(signal, dt=0.001, unit='V')
 
-# 前処理（推奨）
+# Pre-processing (recommended)
 ts = ts.detrend()
 
-# ベースバンドに復調（10 Hz 解析帯域）
+# Demodulate to baseband (10 Hz analysis bandwidth)
 z = ts.baseband(f0=100, lowpass=10)
 
-# DC 成分が支配的になる
+# DC component becomes dominant
 print(f"DC magnitude: {np.abs(np.mean(z.value)):.3f}")
 ```
 
-### モードB: リサンプルのみ
+### Mode B: Resampling Only
 
 ```python
-# リサンプルのアンチエイリアスに依存
+# Rely on resampling anti-aliasing
 z = ts.baseband(f0=100, lowpass=None, output_rate=50)
 
-# 出力サンプルレートが 50 Hz になる
+# Output sample rate becomes 50 Hz
 print(f"Output rate: {z.sample_rate}")
 ```
 
-### 両方を指定
+### Specifying Both
 
 ```python
-# ローパスとリサンプルの両方
+# Both low-pass and resample
 z = ts.baseband(f0=100, lowpass=10, output_rate=50)
 
-# lowpass < output_rate/2 (= 25 Hz) である必要あり
+# lowpass must be < output_rate/2 (= 25 Hz)
 ```
 
-### GWpy kwargs の透過
+### Passing GWpy kwargs
 
 ```python
-# ローパスフィルタのカスタマイズ
+# Customizing the low-pass filter
 z = ts.baseband(
     f0=100,
     lowpass=10,
-    lowpass_kwargs={"filtfilt": True}  # GWpy オプション
+    lowpass_kwargs={"filtfilt": True}  # GWpy option
 )
 
-# リサンプルのカスタマイズ
+# Customizing resampling
 z = ts.baseband(
     f0=100,
     lowpass=None,
     output_rate=50,
-    resample_kwargs={"window": "hamming"}  # GWpy オプション
+    resample_kwargs={"window": "hamming"}  # GWpy option
 )
 ```
 
 ---
 
-## `heterodyne` （GWpy 互換）
+## `heterodyne` (GWpy Compatible)
 
 ```python
 TimeSeries.heterodyne(
@@ -474,35 +473,35 @@ TimeSeries.heterodyne(
 ) -> TimeSeries
 ```
 
-### 説明
+### Description
 
-GWpy の `TimeSeries.heterodyne()` と**完全に同一のアルゴリズム**を実装しています。
-入力 TimeSeries を位相系列でヘテロダインし、固定ストライドで平均化します。
+Implements **exactly the same algorithm** as GWpy's `TimeSeries.heterodyne()`.
+Heterodynes the input `TimeSeries` with a phase series and averages over a fixed stride.
 
-### パラメータ
+### Parameters
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |-----------|-----|-----------|------|
-| `phase` | array_like | - | ミキシング用位相配列（ラジアン）。`len(phase) == len(self)` が必須 |
-| `stride` | float または Quantity | 1.0 | 平均化の時間ステップ（秒）。サンプル数は `int(stride * sample_rate)` で切り捨て |
-| `singlesided` | bool | False | True の場合、振幅を2倍（実信号用）。GWpy のデフォルト（False）に準拠します |
+| `phase` | array_like | - | Phase array for mixing (radians). `len(phase) == len(self)` is required. |
+| `stride` | float or Quantity | 1.0 | Averaging time step (seconds). Sample count is floored to `int(stride * sample_rate)`. |
+| `singlesided` | bool | False | If True, doubles the amplitude (for real signals). Complies with GWpy's default (False). |
 
-### 戻り値
+### Returns
 
-複素 `TimeSeries`。`dt = stride`、値は各ストライドでの平均振幅と位相を `mag * exp(1j * phase)` として表現。
+A complex `TimeSeries`. `dt = stride`, with values representing the average amplitude and phase in each stride as `mag * exp(1j * phase)`.
 
-### 例外
+### Exceptions
 
-| 条件 | 例外 |
+| Condition | Exception |
 |------|------|
-| `phase` が array_like でない（`len()` が失敗）| `TypeError` |
+| `phase` is not array_like (`len()` fails) | `TypeError` |
 | `len(phase) != len(self)` | `ValueError` |
 
-### アルゴリズム（GWpy と同一）
+### Algorithm (Same as GWpy)
 
 ```python
-stridesamp = int(stride * sample_rate)  # floor 切り捨て
-nsteps = int(N // stridesamp)           # 余りのサンプルは破棄
+stridesamp = int(stride * sample_rate)  # floor truncation
+nsteps = int(N // stridesamp)           # discard remaining samples
 
 for step in range(nsteps):
     istart = stridesamp * step
@@ -513,13 +512,13 @@ for step in range(nsteps):
 output.sample_rate = 1 / stride
 ```
 
-### 使用例
+### Examples
 
 ```python
 import numpy as np
 from gwexpy.timeseries import TimeSeries
 
-# 正弦波を生成
+# Generate sine wave
 A, f0, phi0 = 2.5, 30.0, np.pi/4
 sample_rate = 1024.0
 duration = 10.0
@@ -529,20 +528,20 @@ t = np.arange(n) / sample_rate
 data = A * np.cos(2 * np.pi * f0 * t + phi0)
 ts = TimeSeries(data, dt=1/sample_rate, unit='V')
 
-# 位相配列を作成
+# Create phase array
 phase = 2 * np.pi * f0 * t
 
-# ヘテロダイン（singlesided=True がデフォルト）
+# Heterodyne (using singlesided=True as an example)
 het = ts.heterodyne(phase, stride=1.0)
 
-# 期待値: A * exp(1j * phi0)
+# Expected values: A * exp(1j * phi0)
 print(f"Amplitude: {np.mean(np.abs(het.value)):.3f}")  # ≈ 2.5
 print(f"Phase: {np.mean(np.angle(het.value)):.3f}")    # ≈ 0.785 (π/4)
 ```
 
 ---
 
-## `lock_in` （ロックイン増幅器）
+## `lock_in` (Lock-in Amplifier)
 
 ```python
 TimeSeries.lock_in(
@@ -562,121 +561,120 @@ TimeSeries.lock_in(
 ) -> TimeSeries | tuple
 ```
 
-### 説明
+### Description
 
-ロックイン増幅（復調 + 平均化またはフィルタリング）を実行します。
-2つの動作モードがあり、`bandwidth` パラメータで選択されます。
+Executes lock-in amplification (demodulation + averaging or filtering).
+There are two operating modes, selected by the `bandwidth` parameter.
 
-### 動作モード
+### Operating Modes
 
-**LPF モード（`bandwidth` 指定時）**:
+**LPF Mode (when `bandwidth` is specified)**:
 
-- `baseband(lowpass=bandwidth, ...)` を使用して復調とローパスフィルタリング
-- `stride` は指定**禁止**（ValueError）
+- Demodulation and low-pass filtering using `baseband(lowpass=bandwidth, ...)`.
+- Specifying `stride` is **prohibited** (ValueError).
 
-**ストライド平均モード（`bandwidth` 未指定時）**:
+**Stride Averaging Mode (when `bandwidth` is not specified)**:
 
-- `heterodyne(phase, stride, ...)` を使用して復調と固定ストライド平均化
-- `stride` は**必須**
+- Demodulation and fixed-stride averaging using `heterodyne(phase, stride, ...)`.
+- `stride` is **required**.
 
-### パラメータ
+### Parameters
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |-----------|-----|-----------|------|
-| `f0` | float または Quantity | None | 中心周波数（Hz）。`phase` と**排他** |
-| `phase` | array_like | None | 明示的位相配列（rad）。`f0` 系パラメータと**排他** |
-| `fdot` | float または Quantity | 0.0 | 周波数微分（Hz/s）|
-| `fddot` | float または Quantity | 0.0 | 周波数2階微分（Hz/s²）|
-| `phase_epoch` | float | None | 位相モデル基準エポック |
-| `phase0` | float | 0.0 | 初期位相オフセット（rad）|
-| `stride` | float または Quantity | None | 平均化時間ステップ（秒）。`bandwidth` と**排他** |
-| `bandwidth` | float または Quantity | None | LPF 帯域幅（Hz）。`stride` と**排他** |
-| `singlesided` | bool | True | True で振幅2倍 |
-| `output` | str | "amp_phase" | 出力形式: `'complex'`, `'amp_phase'`, `'iq'` |
-| `deg` | bool | True | `'amp_phase'` 時に位相を度で返すか |
-| `**kwargs` | - | - | LPF モード時に `baseband()` に渡す引数 |
+| `f0` | float or Quantity | None | Center frequency (Hz). **Mutually exclusive** with `phase`. |
+| `phase` | array_like | None | Explicit phase array (rad). **Mutually exclusive** with `f0` parameters. |
+| `fdot` | float or Quantity | 0.0 | Frequency derivative (Hz/s). |
+| `fddot` | float or Quantity | 0.0 | Frequency second derivative (Hz/s²). |
+| `phase_epoch` | float | None | Reference epoch for the phase model. |
+| `phase0` | float | 0.0 | Initial phase offset (rad). |
+| `stride` | float or Quantity | None | Averaging time step (seconds). **Mutually exclusive** with `bandwidth`. |
+| `bandwidth` | float or Quantity | None | LPF bandwidth (Hz). **Mutually exclusive** with `stride`. |
+| `singlesided` | bool | True | If True, doubles the amplitude. |
+| `output` | str | "amp_phase" | Output format: `'complex'`, `'amp_phase'`, `'iq'`. |
+| `deg` | bool | True | Whether to return phase in degrees when using `'amp_phase'`. |
+| `**kwargs` | - | - | Arguments passed to `baseband()` in LPF mode. |
 
-### 戻り値
+### Returns
 
-| `output` | 戻り値 |
+| `output` | Returns |
 |----------|--------|
-| `'complex'` | 複素 TimeSeries |
-| `'amp_phase'` | `(amplitude, phase)` タプル |
-| `'iq'` | `(I, Q)` タプル（real/imag 成分）|
+| `'complex'` | Complex TimeSeries. |
+| `'amp_phase'` | `(amplitude, phase)` tuple. |
+| `'iq'` | `(I, Q)` tuple (real/imag components). |
 
-### 例外条件
+### Exception Conditions
 
-| 条件 | 例外 |
+| Condition | Exception |
 |------|------|
-| `phase` と `f0`/`fdot`/`fddot`/`phase_epoch`/`phase0` の同時指定 | `ValueError` |
-| `phase` も `f0` も未指定 | `ValueError` |
-| `bandwidth` と `stride` の同時指定 | `ValueError` |
-| `bandwidth` も `stride` も未指定 | `ValueError` |
-| `output` が無効な値 | `ValueError` |
+| Simultaneous specification of `phase` and any `f0` parameters. | `ValueError` |
+| Neither `phase` nor `f0` specified. | `ValueError` |
+| Simultaneous specification of `bandwidth` and `stride`. | `ValueError` |
+| Neither `bandwidth` nor `stride` specified. | `ValueError` |
+| Invalid value for `output`. | `ValueError` |
 
-### 位相指定優先規則
+### Phase Specification Precedence Rules
 
-`phase` パラメータは**最優先**されます。`phase` を指定する場合、
-`f0`/`fdot`/`fddot`/`phase_epoch`/`phase0` パラメータは指定できません
-（デフォルト値を除く）。これにより、曖昧な設定を防止します。
+The `phase` parameter takes **highest precedence**. If `phase` is specified,
+`f0`/`fdot`/`fddot`/`phase_epoch`/`phase0` parameters cannot be set
+(except for their default values). This prevents ambiguous configurations.
 
-### 使用例
+### Examples
 
-**ストライド平均モード（f0 から位相生成）:**
+**Stride Averaging Mode (Phase generated from f0):**
 
 ```python
-# 固定周波数での復調
+# Demodulation at a fixed frequency
 amp, phase = ts.lock_in(f0=100.0, stride=1.0, output='amp_phase')
 ```
 
-**ストライド平均モード（明示的位相）:**
+**Stride Averaging Mode (Explicit phase):**
 
 ```python
-# カスタム位相配列で復調
+# Demodulation with a custom phase array
 phase_arr = 2 * np.pi * 100.0 * ts.times.value
 result = ts.lock_in(phase=phase_arr, stride=1.0, output='complex')
 ```
 
-**LPF モード:**
+**LPF Mode:**
 
 ```python
-# ローパスフィルタを使用した復調
+# Demodulation using a low-pass filter
 amp, phase = ts.lock_in(f0=100.0, bandwidth=10.0, output='amp_phase')
 ```
 
-**チャープ信号の追跡:**
+**Tracking a Chirp Signal:**
 
 ```python
-# 周波数変化する信号の復調
+# Demodulation of a signal with varying frequency
 result = ts.lock_in(f0=100.0, fdot=0.1, stride=1.0, output='complex')
 ```
 
 ---
 
-## 関連項目
+## See Also
 
-- `heterodyne()`: 位相ヘテロダインとストライド平均
-- `baseband()`: ベースバンド復調（LPF + リサンプル）
-- `mix_down()`: 複素オシレータとのミキシング（低レベル）
-- `_build_phase_series()`: 内部ヘルパー（f0 系から位相生成）
+- `heterodyne()`: Phase heterodyne and stride averaging.
+- `baseband()`: Baseband demodulation (LPF + resample).
+- `mix_down()`: Mixing with a complex oscillator (low-level).
+- `_build_phase_series()`: Internal helper (phase generation from f0 parameters).
 
 ---
 
 # HHT (Hilbert-Huang Transform) API Reference
 
-このセクションでは、`gwexpy.timeseries.TimeSeries` の HHT 関連メソッドについて説明します。
+This section describes HHT-related methods in `gwexpy.timeseries.TimeSeries`.
 
 ---
 
-## 概要
+## Overview
 
-Hilbert-Huang Transform (HHT) は、非線形・非定常な時系列データを解析するための手法です。
-以下の2ステップで構成されます：
+The Hilbert-Huang Transform (HHT) is a method for analyzing non-linear and non-stationary time-series data. It consists of the following two steps:
 
-1.  **Empirical Mode Decomposition (EMD)**: 信号を固有モード関数 (IMF) と残差に分解する。
-2.  **Hilbert Spectral Analysis (HSA)**: 各 IMF に対してヒルベルト変換を適用し、瞬時振幅と瞬時周波数を計算する。
+1.  **Empirical Mode Decomposition (EMD)**: Decomposes a signal into Intrinsic Mode Functions (IMFs) and a residual.
+2.  **Hilbert Spectral Analysis (HSA)**: Applies the Hilbert transform to each IMF to calculate instantaneous amplitude and instantaneous frequency.
 
-`gwexpy` では、これらのステップを個別に実行するメソッド (`emd`, `hilbert_analysis`) と、一括して実行するメソッド (`hht`) を提供しています。
+`gwexpy` provides individual methods for these steps (`emd`, `hilbert_analysis`) and a unified method (`hht`) to execute them together.
 
 ---
 
@@ -698,39 +696,39 @@ TimeSeries.emd(
 ) -> TimeSeriesDict
 ```
 
-### 説明
+### Description
 
-時系列データを EMD (Empirical Mode Decomposition) または EEMD (Ensemble EMD) を用いて IMF (Intrinsic Mode Functions) と残差に分解します。PyEMD パッケージが必要です。
+Decomposes time-series data into IMFs (Intrinsic Mode Functions) and a residual using EMD (Empirical Mode Decomposition) or EEMD (Ensemble EMD). Requires the PyEMD package.
 
-### パラメータ
+### Parameters
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |---|---|---|---|
-| `method` | str | "eemd" | 分解手法 ('emd' または 'eemd') |
-| `max_imf` | int, None | None | 抽出する最大 IMF 数 (None は全て) |
-| `sift_max_iter` | int | 1000 | 1回の sifting の最大反復回数 (PyEMD の `MAX_ITERATION`) |
-| `stopping_criterion` | Any | "default" | `"default"` または `None` なら PyEMD 既定値を使用。数値なら `std_thr` として使用 |
-| `eemd_noise_std` | float | 0.2 | EEMD の付加ノイズの標準偏差 (信号の std に対する比率) |
-| `eemd_trials` | int | 100 | EEMD の試行回数 |
-| `random_state` | int, None | None | 乱数シード。EEMD は確率的な手法であるため、再現性が必要な場合に指定します。EMD は確定的であるため無視されます |
-| `return_residual` | bool | True | 結果に残差を含めるかどうか |
-| `eemd_parallel` | bool, None | None | EEMD の並列処理を有効にするか |
-| `eemd_processes` | int, None | None | EEMD の並列プロセス数 |
+| `method` | str | "eemd" | Decomposition method ('emd' or 'eemd'). |
+| `max_imf` | int, None | None | Maximum number of IMFs to extract (None for all). |
+| `sift_max_iter` | int | 1000 | Maximum iterations for a single sifting (PyEMD's `MAX_ITERATION`). |
+| `stopping_criterion` | Any | "default" | Uses PyEMD default if `"default"` or `None`. Numerical values are used as `std_thr`. |
+| `eemd_noise_std` | float | 0.2 | Standard deviation of added noise in EEMD (relative to signal std). |
+| `eemd_trials` | int | 100 | Number of trials for EEMD. |
+| `random_state` | int, None | None | Random seed. Required for reproducibility in EEMD (stochastic). Ignored for EMD (deterministic). |
+| `return_residual` | bool | True | Whether to include the residual in the result. |
+| `eemd_parallel` | bool, None | None | Whether to enable parallel processing for EEMD. |
+| `eemd_processes` | int, None | None | Number of parallel processes for EEMD. |
 
-### 戻り値
+### Returns
 
-`TimeSeriesDict`: キーは `'IMF1'`, `'IMF2'`, ..., `'residual'`。
+`TimeSeriesDict`: Keys are `'IMF1'`, `'IMF2'`, ..., `'residual'`.
 
-### 注意事項
+### Notes
 
-- **再現性**: EEMD は確率的なプロセスです。再現性を確保するには `random_state` を指定するか、PyEMD の `noise_seed()` を使用してください。EMD メソッドは確定的です。
-- **残差**: PyEMD のバージョンによっては残差の抽出方法が異なる場合がありますが、本メソッドは適切にハンドリングして出力します。
-- **停止条件**: `stopping_criterion` に数値を渡すと、PyEMD の `std_thr` として扱われます。`"default"` または `None` の場合は既定値を使用します。
+- **Reproducibility**: EEMD is a stochastic process. To ensure reproducibility, specify `random_state` or use PyEMD's `noise_seed()`. The EMD method is deterministic.
+- **Residual**: Residual extraction may vary by PyEMD version, but this method handles it appropriately.
+- **Stopping Criterion**: Numerical values passed to `stopping_criterion` are treated as `std_thr` for PyEMD.
 
-### 例
+### Examples
 
 ```python
-# 推奨: hht() で一括実行
+# Recommended: execute everything via hht()
 result = ts.hht(
     emd_method="eemd",
     emd_kwargs={
@@ -743,7 +741,7 @@ result = ts.hht(
     output="dict",
 )
 
-# EMD だけを直接実行する場合
+# Executing EMD directly
 imfs = ts.emd(method="emd", sift_max_iter=200, stopping_criterion=0.2)
 ```
 
@@ -760,31 +758,31 @@ TimeSeries.hilbert_analysis(
 ) -> dict[str, Any]
 ```
 
-### 説明
+### Description
 
-ヒルベルト変換を実行し、解析信号、瞬時振幅 (IA)、瞬時位相、瞬時周波数 (IF) を計算します。
+Performs Hilbert transform analysis to calculate the analytic signal, instantaneous amplitude (IA), instantaneous phase, and instantaneous frequency (IF).
 
-### パラメータ
+### Parameters
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |---|---|---|---|
-| `unwrap_phase` | bool | True | 位相のアンラップを行うかどうか |
-| `frequency_unit` | str | "Hz" | 瞬時周波数の単位 |
-| `if_smooth` | int, Quantity, None | None | 瞬時周波数の平滑化窓幅。奇数を推奨 (偶数は+1されます) |
-| `**hilbert_kwargs` | Any | - | 内部で呼ぶ `hilbert()` に渡す引数 (例: `pad`, `pad_mode`) |
+| `unwrap_phase` | bool | True | Whether to perform phase unwrapping. |
+| `frequency_unit` | str | "Hz" | Unit for instantaneous frequency. |
+| `if_smooth` | int, Quantity, None | None | Smoothing window width for instantaneous frequency. Odd numbers are recommended. |
+| `**hilbert_kwargs` | Any | - | Arguments passed to the internal `hilbert()` call (e.g., `pad`, `pad_mode`). |
 
-### 戻り値
+### Returns
 
-辞書形式:
-- `'analytic'`: 解析信号 (複素 TimeSeries)
-- `'amplitude'`: 瞬時振幅 (IA)
-- `'phase'`: 瞬時位相
-- `'frequency'`: 瞬時周波数 (IF)
+Dictionary format:
+- `'analytic'`: Analytic signal (complex TimeSeries)
+- `'amplitude'`: Instantaneous amplitude (IA)
+- `'phase'`: Instantaneous phase
+- `'frequency'`: Instantaneous frequency (IF)
 
-### 注意事項
+### Notes
 
-- **端点効果**: ヒルベルト変換と数値微分により端点不連続が生じます。`.hilbert(pad=...)` でパディングするか、解析後に端を切り落とすことを推奨します。
-- **平滑化**: 瞬時周波数はノイズに敏感です。`.hilbert_analysis(if_smooth=...)` で移動平均を適用して安定化できます。
+- **Endpoint Effects**: Artifacts occur due to the Hilbert transform and numerical differentiation. It is recommended to use `pad` or trim the edges after analysis.
+- **Smoothing**: Instantaneous frequency is sensitive to noise. Stabilization can be achieved using a moving average via `if_smooth`.
 
 ---
 
@@ -798,46 +796,46 @@ TimeSeries.hht(
     output: str = "dict",
     n_bins: int = 100,
     freq_bins: Any = None,
-    fmin: float | Quantity | None = None,
-    fmax: float | Quantity | None = None,
-    weight: str = "ia2",
-    if_policy: str = "drop",
-    finite_only: bool = True
-) -> dict | Spectrogram
+	fmin: float | None = None,
+	fmax: float | None = None,
+	weight: str = "ia2",
+	if_policy: str = "drop",
+	finite_only: bool = True
+) -> Any
 ```
 
-### 説明
+### Description
 
-HHT 解析の一連の流れ (EMD → Hilbert) を実行します。結果を辞書形式またはスペクトログラム (Hilbert Spectrum) として返します。
+Executes the full HHT process (EMD → Hilbert). Returns the result in a dictionary or as a spectrogram (Hilbert Spectrum).
 
-### パラメータ
+### Parameters
 
-**共通オプション**
+**Common Options**
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |---|---|---|---|
-| `output` | str | "dict" | 出力形式 ('dict' または 'spectrogram') |
-| `emd_method` | str | "eemd" | EMD 手法 |
-| `emd_kwargs` | dict | None | `emd()` に渡す引数 |
-| `hilbert_kwargs` | dict | None | `hilbert_analysis()` に渡す引数 |
+| `output` | str | "dict" | Output format ('dict' or 'spectrogram'). |
+| `emd_method` | str | "eemd" | EMD method. |
+| `emd_kwargs` | dict | None | Arguments passed to `emd()`. |
+| `hilbert_kwargs` | dict | None | Arguments passed to `hilbert_analysis()`. |
 
-**スペクトログラムオプション (`output='spectrogram'`)**
+**Spectrogram Options (`output='spectrogram'`)**
 
-| パラメータ | 型 | デフォルト | 説明 |
+| Parameter | Type | Default | Description |
 |---|---|---|---|
-| `n_bins` | int | 100 | 周波数ビンの数 (`freq_bins`指定時は無視) |
-| `freq_bins` | array-like | None | カスタム周波数ビンエッジ (単調増加である必要あり) |
-| `fmin`/`fmax` | float | None | 周波数範囲 |
-| `weight` | str | "ia2" | 重み付け ('ia2': エネルギー, 'ia': 振幅) |
-| `if_policy` | str | "drop" | 範囲外 IF の処理 ('drop': 無視, 'clip': 端に寄せる) |
-| `finite_only` | bool | True | **重要**: Hilbert解析後の IF/IA の NaN/Inf をビニング前に除外するか。EMD 入力の NaN を救うものではありません |
+| `n_bins` | int | 100 | Number of frequency bins (ignored if `freq_bins` is specified). |
+| `freq_bins` | array-like | None | Custom frequency bin edges (must be monotonically increasing). |
+| `fmin`/`fmax` | float | None | Frequency range. |
+| `weight` | str | "ia2" | Weighting scheme ('ia2': energy, 'ia': amplitude). |
+| `if_policy` | str | "drop" | Treatment of out-of-range IF ('drop': ignore, 'clip': clamp to edge). |
+| `finite_only` | bool | True | **Important**: Exclude NaN/Inf values after Hilbert analysis before binning. |
 
-### 戻り値
+### Returns
 
-- `output='dict'`: `{'imfs': ..., 'ia': ..., 'if': ..., 'residual': ...}`
-- `output='spectrogram'`: `gwpy.spectrogram.Spectrogram` オブジェクト (Hilbert Spectrum)
+- `output='dict'`: `TimeSeriesDict` containing the analysis results for each IMF.
+- `output='spectrogram'`: `gwpy.spectrogram.Spectrogram` object (Hilbert Spectrum).
 
-### Note
+### Notes
 
-- **スペクトログラム**: 通常の STFT スペクトログラムとは異なり、瞬時周波数のヒストグラムとして構成されます。`.hht(weight='ia2')` がデフォルトで、エネルギースペクトル (振幅の二乗) を表します。
-- **入力バリデーション**: `if_policy` は 'drop' か 'clip' である必要があります。`freq_bins` は単調増加である必要があります。
+- **Spectrogram**: Unlike standard STFT spectrograms, this is constructed as a histogram of instantaneous frequencies. `.hht(weight='ia2')` is the default, representing the energy spectrum (amplitude squared).
+- **Validation**: `if_policy` must be 'drop' or 'clip'. `freq_bins` must be monotonically increasing.

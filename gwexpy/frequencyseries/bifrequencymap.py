@@ -10,36 +10,34 @@ from scipy.interpolate import interp1d
 
 
 class BifrequencyMap(Array2D):
-    """2つの異なる周波数軸を持つマップ（応答関数や相関行列）クラス。
+    """A map class with two distinct frequency axes (e.g., response functions or correlation matrices).
 
-    (行, 列) = (周波数2, 周波数1) としてデータを保持します。
+    Data is stored with (rows, columns) = (frequency2, frequency1).
     """
 
-    @property
     def frequency1(self):
-        """周波数軸 1 (X軸/Columns)"""
+        """Frequency axis 1 (X-axis/Columns)."""
         return self.yindex
 
-    @property
     def frequency2(self):
-        """周波数軸 2 (Y軸/Rows)"""
+        """Frequency axis 2 (Y-axis/Rows)."""
         return self.xindex
 
     @classmethod
     def from_points(cls, data, f2, f1, **kwargs):
-        """
-        データと2つの周波数軸からインスタンスを生成します。
+        """Create an instance from data and two frequency axes.
 
         Parameters
         ----------
         data : array-like
-            形状が (len(f2), len(f1)) の2次元配列
+            2D array with shape (len(f2), len(f1)).
         f2 : array-like
-            周波数軸 2（Y軸/行）
+            Frequency axis 2 (Y-axis/Rows).
         f1 : array-like
-            周波数軸 1（X軸/列）
+            Frequency axis 1 (X-axis/Columns).
+
         """
-        # 単位が付いていない場合はHzとみなす
+        # Default to Hz if no units are specified
         if not isinstance(f1, u.Quantity):
             f1 = u.Quantity(f1, unit="Hz")
         if not isinstance(f2, u.Quantity):
@@ -49,45 +47,45 @@ class BifrequencyMap(Array2D):
         return cls(data, xindex=f2, yindex=f1, **kwargs)
 
     def propagate(self, input_spectrum, interpolate=True, fill_value=0):
-        """
-        入力スペクトルに応答関数を適用し、出力スペクトルを計算します。
+        """Apply the response function to an input spectrum and calculate the output spectrum.
 
-        入力スペクトルの周波数軸がこのマップの軸1(xindex)と異なる場合、
-        自動的に線形補間を行って合わせることができます。
+        If the frequency axis of the input spectrum differs from axis 1 (xindex)
+        of this map, linear interpolation can be applied automatically.
 
         Parameters
         ----------
         input_spectrum : FrequencySeries
-            入力となるノイズスペクトル。
+            The input noise spectrum.
         interpolate : bool, optional
-            Trueの場合、入力スペクトルの周波数軸をマップの軸1に合わせて補間します。
-            Falseの場合、サイズが一致していないとエラーになります。デフォルトは True。
+            If True, interpolates the input spectrum to match axis 1 of the map.
+            If False, raises an error if the sizes do not match. Default is True.
         fill_value : float, optional
-            補間時に範囲外となった場合の埋め込み値。デフォルトは 0。
+            Value used for points outside the interpolation range. Default is 0.
 
         Returns
         -------
         FrequencySeries
-            軸2(frequency2)を持つ計算結果。
+            The resulting spectrum with axis 2 (frequency2).
+
         """
-        # 入力データの検証
+        # Input data validation
         if not isinstance(input_spectrum, FrequencySeries):
             raise ValueError(
                 "input_spectrum must be a gwpy.frequencyseries.FrequencySeries"
             )
 
-        # 演算用の入力データ配列
+        # Input data for computation
         in_val = input_spectrum.value
         in_freq = input_spectrum.frequencies.value
         map_in_freq = self.frequency1.value
 
-        # 周波数軸の整合性チェックと補間
+        # Consistency check and interpolation for frequency axes
         if interpolate:
-            # 軸が完全に一致していない場合は補間を行う
+            # Apply interpolation if the axes do not match exactly
             if len(in_freq) != len(map_in_freq) or not np.allclose(
                 in_freq, map_in_freq
             ):
-                # 線形補間関数を作成
+                # Create linear interpolation function
                 f = interp1d(
                     in_freq,
                     in_val,
@@ -95,24 +93,24 @@ class BifrequencyMap(Array2D):
                     bounds_error=False,
                     fill_value=fill_value,
                 )
-                # マップのX軸に合わせてリサンプリング
+                # Resample to match map's X-axis
                 in_val = f(map_in_freq)
         else:
-            # 補間しない場合はサイズチェックのみ
+            # Perform only size check if interpolation is disabled
             if len(in_val) != self.shape[1]:
                 raise ValueError(
                     f"Input spectrum size {len(in_val)} does not match "
                     f"map input size {self.shape[1]}. Enable `interpolate=True`."
                 )
 
-        # 行列積の計算: (N_f2, N_f1) @ (N_f1,) -> (N_f2,)
-        # これにより、周波数1軸方向の成分が積算され、周波数2軸のデータになる
+        # Matrix multiplication: (N_f2, N_f1) @ (N_f1,) -> (N_f2,)
+        # Integrating along frequency axis 1 to produce frequency axis 2 data.
         out_val = self.value @ in_val
 
-        # 単位の計算
+        # Unit calculation
         new_unit = self.unit * input_spectrum.unit
 
-        # 結果をFrequencySeriesとして返す（軸はマップのY軸=周波数2を使用）
+        # Return as FrequencySeries (axis is map axis 2 = frequency2)
         return FrequencySeries(
             out_val,
             frequencies=self.frequency2,
@@ -121,8 +119,7 @@ class BifrequencyMap(Array2D):
         )
 
     def inverse(self, rcond=None) -> BifrequencyMap:
-        """
-        Calculate the (pseudo-)inverse of the BifrequencyMap.
+        """Calculate the (pseudo-)inverse of the BifrequencyMap.
 
         Parameters
         ----------
@@ -133,6 +130,7 @@ class BifrequencyMap(Array2D):
         -------
         inv_map : BifrequencyMap
             New BifrequencyMap instance representing the inverse matrix.
+
         """
         from numpy.linalg import pinv
 
@@ -162,8 +160,7 @@ class BifrequencyMap(Array2D):
         )
 
     def crop(self, low=None, high=None, low2=None, high2=None) -> BifrequencyMap:
-        """
-        Crop this BifrequencyMap to a specific frequency range.
+        """Crop this BifrequencyMap to a specific frequency range.
 
         Parameters
         ----------
@@ -180,6 +177,7 @@ class BifrequencyMap(Array2D):
         -------
         cropped : BifrequencyMap
             The cropped map.
+
         """
         if low2 is None:
             low2 = low
@@ -270,6 +268,7 @@ class BifrequencyMap(Array2D):
             'imshow' or 'pcolormesh'. Default is 'imshow'.
         **kwargs
             Keywork arguments passed to the plotting method or Plot constructor.
+
         """
         from gwpy.plot import Plot
 
@@ -380,8 +379,7 @@ class BifrequencyMap(Array2D):
         return plot
 
     def get_slice(self, at, axis="f1"):
-        """
-        Extract a 1D slice (FrequencySeries) at a specific frequency on one axis.
+        """Extract a 1D slice (FrequencySeries) at a specific frequency on one axis.
 
         Parameters
         ----------
@@ -397,6 +395,7 @@ class BifrequencyMap(Array2D):
         -------
         FrequencySeries
             The extracted 1D spectrum.
+
         """
         # Determine target axis and slice axis
         if axis == "f1":
@@ -434,8 +433,7 @@ class BifrequencyMap(Array2D):
         return FrequencySeries(data, frequencies=result_axis, unit=self.unit, name=name)
 
     def diagonal(self, method="mean", bins=None, absolute=False, **kwargs):
-        """
-        Calculates statistics along the diagonal axis (f2 - f1).
+        """Calculates statistics along the diagonal axis (f2 - f1).
 
         Parameters
         ----------
@@ -459,6 +457,7 @@ class BifrequencyMap(Array2D):
         -------
         FrequencySeries
             The result of the diagonal projection.
+
         """
         from scipy.stats import binned_statistic
 
@@ -569,8 +568,7 @@ class BifrequencyMap(Array2D):
         )
 
     def convolute(self, input_spectrum, interpolate=True, fill_value=0):
-        """
-        Convolutes the map with an input spectrum (integration along f1).
+        """Convolutes the map with an input spectrum (integration along f1).
 
         Calculates:
             S_out(f2) = integral( M(f2, f1) * S_in(f1) * df1 )
@@ -591,6 +589,7 @@ class BifrequencyMap(Array2D):
         -------
         FrequencySeries
             Output spectrum S_out(f2).
+
         """
         # Reuse propagate logic logic to get the matrix product (Sum[M*S])
         # We can call propagate assuming it does the matrix product part correctly.
@@ -636,8 +635,7 @@ class BifrequencyMap(Array2D):
     def plot_lines(
         self, xaxis="f1", color="f2", num_lines=None, ax=None, cmap=None, **kwargs
     ):
-        """
-        Plot the map as a set of lines (1D spectra).
+        """Plot the map as a set of lines (1D spectra).
 
         Parameters
         ----------
@@ -668,6 +666,7 @@ class BifrequencyMap(Array2D):
         -------
         matplotlib.figure.Figure or matplotlib.axes.Axes
             The figure or axes where the plot was drawn.
+
         """
         import matplotlib.pyplot as plt
         from gwpy.plot import Plot

@@ -1,102 +1,98 @@
 # gwexpy GUI (pyaggui)
 
-> ⚠️ **警告 / Warning**
->
-> このGUIモジュールは**開発中**です。APIやUIは改善のため予告なく変更される可能性があります。
->
-> This GUI module is **under active development**. The API and UI may change without notice for improvements.
+> [!WARNING]
+> This GUI module is **under active development**. The API and UI may change without notice as improvements are made.
 
-## 概要 / Overview
+## Overview
 
-`pyaggui` は LIGO DTT (Diagnostic Test Tools) の `diaggui` を模したGUIツールで、`gwexpy` ライブラリを用いた時系列データのリアルタイム可視化、解析、およびファイルデータの閲覧を行います。
+`pyaggui` is a GUI tool modeled after the LIGO DTT (Diagnostic Test Tools) `diaggui`. It enables real-time visualization, analysis of time-series data, and browsing of saved file data using the `gwexpy` library.
 
-## 主な機能 / Features
+## Features
 
-### 1. データソース (Data Sources)
+### 1. Data Sources
 
-- **NDS / NDS2 (Online)**: KAGRA NDSサーバー等からデータを取得・表示します。
-  - **Channel Browser**: サーバー上のチャンネルリストをブラウズし、計測対象を選択可能です。
-  - **PC Audio**: PCのマイク入力やスピーカー出力をデータソースとして利用可能です。
-- **Excitation (Simulation)**: 多彩な波形生成器を用いて、オンラインデータへの信号注入や単独のシミュレーション信号生成が可能です。
-- **FILE (File Load)**: ローカルファイル（DTT XML, GWF, HDF5, CSV 等）を読み込んでデータを表示します。
+- **NDS / NDS2 (Online)**: Retrieve and display data from NDS servers (e.g., KAGRA NDS).
+  - **Channel Browser**: Browse channel lists on the server and select measurement targets.
+  - **PC Audio**: Utilize PC microphone input or speaker output as data sources.
+- **Excitation (Simulation)**: Use various waveform generators for signal injection into online data or standalone simulation signal generation.
+- **FILE (File Load)**: Load and display data from local files (DTT XML, GWF, HDF5, CSV, etc.).
 
-### 2. チャンネルハンドリング (Channel Handling)
+### 2. Channel Handling
 
-`diaggui` の設計思想に基づき、計測対象と表示対象を分離して管理します。
+Based on the design philosophy of `diaggui`, measurement targets and display targets are managed separately.
 
-- **Measurement タブ**:
-  - データ取得を行うチャンネルを選択し、`Active` に設定します。
-  - チャンネルブラウザからの追加や、ファイル読み込み時の設定復元に対応しています。
-- **Results タブ**:
-  - **表示の選択**: Measurement タブで `Active` になっているチャンネルから、グラフに描画する対象を選択します。
-  - **複数グラフ**: 2つの独立したグラフパネルを持ち、それぞれで異なる解析（時系列、ASD、コヒーレンス、スペクトログラム等）を同時に表示できます。
+- **Measurement Tab**:
+  - Select channels for data acquisition and set them to `Active`.
+  - Supports adding channels from the Channel Browser and restoring configurations from loaded files.
+- **Results Tab**:
+  - **Display Selection**: Choose which channels to plot on the graph from those marked as `Active` in the Measurement tab.
+  - **Dual Graphs**: Features two independent graph panels, allowing simultaneous display of different analyses (Time Series, ASD, Coherence, Spectrogram, etc.).
 
-### 3. 多彩な解析と表示 (Analysis & Plotting)
+### 3. Analysis & Plotting
 
-- **解析タイプ**: Time Series, ASD, CSD, Coherence, Squared Coherence, Transfer Function, Spectrogram.
-- **豊かな表示オプション**:
-  - **Style**: 線種、シンボル、色、軸のスケール（Linear/Log）のカスタマイズ。
-  - **Legend / Cursor**: 凡例の表示や、データポイントへのスナップ機能を持つカーソルによる値の読み取り。
-  - **Display**: dB表示、位相表示、アンラップ表示等への切り替え。
+- **Analysis Types**: Time Series, ASD, CSD, Coherence, Squared Coherence, Transfer Function, Spectrogram.
+- **Rich Display Options**:
+  - **Style**: Customize line types, symbols, colors, and axis scales (Linear/Log).
+  - **Legend / Cursor**: Display legends and read values using a cursor with a snap-to-data-point feature.
+  - **Display**: Toggle options such as dB display, phase display, and unwrapped phase.
 
-### 4. ファイルサポート (File Support)
+### 4. File Support
 
-`gwexpy` の強力なI/O機能を利用して、LIGO/KAGRAで標準的なデータ形式に加え、各種計測器や汎用的なデータ形式の読み込みに対応しています。
+Utilizing the powerful I/O capabilities of `gwexpy`, the GUI supports standard LIGO/KAGRA formats as well as various instrument-specific and general data formats.
 
-| 形式 / Format | 拡張子 / Extension | 読み込み可能な情報 / Data Types | 備考 / Remarks |
+| Format | Extension | Data Types | Remarks |
 | :--- | :--- | :--- | :--- |
-| **DTT XML** | `.xml` | TS, ASD, CSD, COH, TF, **計測状態** | **推奨形式**。計測設定や解析結果を完全に復元。 |
-| **LIGO LW XML** | `.xml` | TS, ASD, CSD, COH, TF | DTT形式でない一般のLIGO LW形式。 |
-| **GW Frame** | `.gwf` | TS | 重力波観測データの標準形式。 |
-| **HDF5** | `.h5`, `.hdf5` | TS, ASD, CSD, COH, TF, Spectrogram | 階層的な汎用データ形式。 |
-| **MiniSEED / SAC** | `.mseed`, `.sac` | TS | 地震計等（ObsPy依存）で用いられる形式。 |
-| **WAV Audio** | `.wav` | TS | 音声データ。マイク録音等の解析に利用可能。 |
-| **NI TDMS** | `.tdms` | TS | **National Instruments** 製機器のデータ形式。 |
-| **Graphtec GBD** | `.gbd` | TS | **Graphtec** 製データロガーのバイナリ形式（アナログはレンジ換算、`Alarm/AlarmOut/Pulse*/Logic*` はステータス扱い）。 |
-| **Metronix ATS** | `.ats` | TS | **Metronix ADU** 製機器のデータ形式。 |
-| **Text / CSV** | `.txt`, `.csv`, `.dat` | TS | カンマまたはスペース区切りのテキストデータ。 |
-| **その他 / Others** | `.npy`, `.mat`, `.fits`, `.pkl`, `.ffl`, `.sdb` | TS | NumPy, MATLAB, FFL(Frame File List)等。 |
+| **DTT XML** | `.xml` | TS, ASD, CSD, COH, TF, **Measurement State** | **Recommended**. Fully restores measurement settings and analysis results. |
+| **LIGO LW XML** | `.xml` | TS, ASD, CSD, COH, TF | General LIGO LW format (not specific to DTT). |
+| **GW Frame** | `.gwf` | TS | Standard format for gravitational-wave observation data. |
+| **HDF5** | `.h5`, `.hdf5` | TS, ASD, CSD, COH, TF, Spectrogram | Hierarchical general-purpose data format. |
+| **MiniSEED / SAC** | `.mseed`, `.sac` | TS | Format used for seismometers (requires ObsPy). |
+| **WAV Audio** | `.wav` | TS | Audio data. Useful for analyzing microphone recordings. |
+| **NI TDMS** | `.tdms` | TS | Data format for **National Instruments** equipment. |
+| **Graphtec GBD** | `.gbd` | TS | Binary format for **Graphtec** data loggers (analog converted via range; statuses handled for `Alarm/Logic`). |
+| **Metronix ATS** | `.ats` | TS | Data format for **Metronix ADU** equipment. |
+| **Text / CSV** | `.txt`, `.csv`, `.dat` | TS | Comma or space-separated text data. |
+| **Others** | `.npy`, `.mat`, `.fits`, `.pkl`, `.ffl`, `.sdb` | TS | Support for NumPy, MATLAB, FFL, and other common scientific formats. |
 
 > [!NOTE]
->
-> - **TS**: Time Series (時系列), **ASD**: Amplitude Spectral Density (振幅スペクトル密度)
+> - **TS**: Time Series, **ASD**: Amplitude Spectral Density
 > - **CSD**: Cross Spectral Density, **COH**: Coherence, **TF**: Transfer Function
-> - DTT XML形式以外のファイルでは、チャンネル設定（どのチャンネルがActiveか等）の保存・復元には対応していません。
+> - For files other than DTT XML, saving/restoring channel settings (e.g., which channels are Active) is not supported.
 
-## 既存ツールとの比較 / Comparison with Existing Tools
+## Comparison with Existing Tools
 
-- **ndscope** (LIGO開発, KAGRA利用):
-  - 時系列波形（もしくはトレンド）のみ対応ですが、本ツールはスペクトル解析やスペクトログラムにも対応しています。
-- **diaggui** (LIGO DTT, KAGRA利用):
-  - 本ツールは `diaggui` の操作感を再現しつつ、Apple Silicon Mac (ARM系) 等の現代的な環境でも動作し、さらに `diaggui` にはないスペクトログラム表示機能も備えています。
+- **ndscope** (Developed by LIGO, used by KAGRA):
+  - `ndscope` primarily handles time-series waveforms or trends, whereas this tool also supports spectral analysis and spectrograms.
+- **diaggui** (LIGO DTT, used by KAGRA):
+  - This tool reproduces the operational feel of `diaggui` but runs on modern environments including Apple Silicon (ARM) and includes features not present in `diaggui`, such as spectrogram display.
 
-## 起動方法 / How to Run
+## How to Run
 
 ```bash
 cd gwexpy/gui
 python pyaggui.py [filename]
 ```
 
-## 依存関係 / Dependencies
+## Dependencies
 
 - PyQt5
 - pyqtgraph
 - qtpy
-- sounddevice (PC Audio利用時)
-- nds2-client (NDS接続時)
-- gwexpy (numpy, scipy, astropy, gwpy 等に依存)
+- sounddevice (required for PC Audio)
+- nds2-client (required for NDS connection)
+- gwexpy (depends on numpy, scipy, astropy, gwpy, etc.)
 
-## ディレクトリ構造 / Directory Structure
+## Directory Structure
 
-- `pyaggui.py`: エントリーポイント。
-- `ui/`: メインウィンドウ、タブ、グラフパネル等のUI定義。
-- `loaders/`: 各種ファイルフォーマットのローダーと、XMLパースロジック。
-- `nds/`: NDS通信、PC Audio通信、およびデータバッファリング管理。
-- `excitation/`: 信号生成エンジンとパラメータ管理。
-- `plotting/`: グラフ描画のユーティリティ。
+- `pyaggui.py`: Main entry point.
+- `ui/`: Definitions for the main window, tabs, graph panels, and UI components.
+- `loaders/`: Loaders for various file formats and XML parsing logic.
+- `nds/`: Management of NDS/PC Audio communication and data buffering.
+- `excitation/`: Signal generation engine and parameter management.
+- `plotting/`: Plotting utilities.
 
-## 今後の課題 (Future Work)
+## Future Work
 
-- **NDS接続の堅牢化**: 特定のネットワーク環境下でのタイムアウト処理の改善。
-- **コード統合**: `gui/loaders/` 内のXMLパースロジックの `gwexpy/io/` への共通化 (一部完了)。
-- **機能拡張**: Fotonフィルタの直接読み込みや、より高度な統計解析機能の実装。
+- **Robust NDS Connection**: Improve timeout handling under specific network conditions.
+- **Code Integration**: Generalize XML parsing logic from `gui/loaders/` into `gwexpy/io/` (partially complete).
+- **Feature Expansion**: Direct loading of Foton filters and implementation of advanced statistical analysis features.

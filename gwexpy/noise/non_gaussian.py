@@ -147,8 +147,8 @@ def inject_noise(clean_ts: TimeSeries, noise_ts: TimeSeries) -> TimeSeries:
     Parameters
     ----------
     clean_ts : TimeSeries
-        Clean (signal-only) time series that will receive the noise.
-        The series may have `name`, `unit`, and time span attributes.
+        Clean (signal-only) time series that will receive the noise. The series
+        may have `name`, `unit`, and time span attributes.
     noise_ts : TimeSeries
         Noise time series to add to `clean_ts`. Should be aligned with
         `clean_ts` (same sample rate and overlapping span). If sample rates

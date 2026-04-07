@@ -88,7 +88,7 @@ def read_timeseriesdict_tdms(
             ) and "DateTime" in tdms_file.properties:
                 t0 = tdms_file.properties["DateTime"]
 
-            # epoch オーバーライド処理
+            # Epoch override processing
             if epoch is not None:
                 if isinstance(epoch, (int, float)):
                     t0 = float(epoch)

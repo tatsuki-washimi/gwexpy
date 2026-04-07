@@ -57,7 +57,8 @@
 | 要素名 | ファイルパス | Docstring 状態 | 判定・コメント |
 | :--- | :--- | :---: | :--- |
 | TimeSeries | timeseries/timeseries.py | [x] | 良好 |
-| FrequencySeries | frequencyseries/frequencyseries.py | [/] | 概要が簡素すぎる（**次期課題**） |
+| FrequencySeries | frequencyseries/frequencyseries.py | [/] | 概要が簡素すぎる（**将来の課題**） |
+| BifrequencyMap | frequencyseries/bifrequencymap.py | [x] | 内部コメントおよび docstring の英語化を完了 |
 
 ---
 
@@ -91,16 +92,19 @@
 2. **Result 系オブジェクトの `Attributes` 拡充**:
    - `CouplingResult` および `ResponseFunctionResult` のフィールド詳細化および翻訳。
 3. **ノイズ生成関数の詳細化**:
-   - `white_noise` 等に対する `Parameters` / `Returns` / `Examples` 追加。
+   - `white_noise` 文等に対する `Parameters` / `Returns` / `Examples` 追加。
 4. **言語の統一 (英語化)**:
    - `SpectralStats`, `ResponseFunctionResult` メソッド, `CouplingResult` 内部関数の翻訳。
 5. **時刻変換関数の docstring 新規追加**:
    - `to_gps`, `from_gps`, `tconvert` への記述追加。
+6. **残存日本語の完全排除**:
+   - `coupling_result.py`, `bifrequencymap.py`, `coupling.py` 内の最後の日本語コメントを翻訳。
 
 ---
 
 ## 9. 結び
-本監査およびその後の硬化フェーズにより、GWexpy の中核となるメタデータ・結果保持クラス、および基本ユーティリティのドキュメント品質が大幅に向上した。解析結果の信頼性と再利用性を高めるための「型・単位・形状」の明示が完了している。
+
+本監査およびその後の硬化フェーズにより、GWexpy の中核となるメタデータ・結果保持クラス、および基本ユーティリティのドキュメント品質が大幅に向上した。解析結果の信頼性と再利用性を高めるための「型・単位・形状」の明示が完了し、**Sphinx ビルドも警告なし（-W フラグ適用）で成功**している。
 
 ---
 
@@ -113,4 +117,5 @@
 2. **英語一次の徹底**
    - 監査で指摘された全日本語箇所の翻訳を完了。
 3. **CI による自動検出 (Ruff `D` ルール)**
-   - **[導入済み]** `pyproject.toml` の `ruff` 設定に `"D"` を追加。修正対象ファイルについては現在 100% クリーンな状態を維持。
+   - **[導入済み]** `pyproject.toml` の `ruff` 設定に `"D"` を追加。
+   - **[実績]** `sphinx-build -W` による警告ゼロビルドを確認。
