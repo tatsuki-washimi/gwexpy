@@ -2,16 +2,16 @@
 gwexpy.signal.preprocessing.ml
 -------------------------------
 
-機械学習用の前処理パイプライン。
+Preprocessing pipeline for machine learning.
 
-このモジュールは、DeepCleanなどのノイズ除去タスクで使用される前処理
-（データ分割、バンドパスフィルタリング、標準化）を、汎用的な
-scikit-learn風のTransformer APIとして提供します。
+This module provides preprocessing utilities (data splitting, band-pass 
+filtering, standardization) used in noise removal tasks like DeepClean,
+implemented as a generic scikit-learn-style Transformer API.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import astropy.units as u
 import numpy as np
@@ -24,53 +24,54 @@ if TYPE_CHECKING:
 
 class MLPreprocessor:
     """
-    機械学習用の前処理パイプライン。
+    Preprocessing pipeline for machine learning.
 
-    データ分割、バンドパスフィルタリング、チャンネルごと標準化を行う
-    scikit-learn風のTransformer。DeepCleanなどのノイズ除去タスクだけでなく、
-    ランダムフォレスト、XGBoost、その他の機械学習モデルでも使用可能。
+    A scikit-learn-style Transformer that performs data splitting,
+    band-pass filtering, and per-channel standardization. Can be used for
+    noise removal tasks like DeepClean, as well as Random Forest, XGBoost,
+    and other machine learning models.
 
     Parameters
     ----------
     sample_rate : Quantity or float
-        サンプリングレート（Hz単位）
+        Sampling rate (in Hz).
     freq_low : list[float] or None, optional
-        バンドパスフィルタの低周波カットオフ（複数帯域対応）。
-        Noneの場合はフィルタリングをスキップ。
+        Low-frequency cutoff for the band-pass filter (supports multiple bands).
+        If None, filtering is skipped.
     freq_high : list[float] or None, optional
-        バンドパスフィルタの高周波カットオフ（複数帯域対応）。
-        Noneの場合はフィルタリングをスキップ。
+        High-frequency cutoff for the band-pass filter (supports multiple bands).
+        If None, filtering is skipped.
     filt_order : int, optional
-        バターワースフィルタの次数（デフォルト: 8）
+        Order of the Butterworth filter (default: 8).
     valid_frac : float, optional
-        検証データの割合（0.0～1.0、デフォルト: 0.0）
-        0.0の場合は分割なし。
+        Proportion of validation data (0.0 to 1.0, default: 0.0).
+        If 0.0, no splitting is performed.
     standardization_method : str, optional
-        標準化手法（'zscore'または'robust'、デフォルト: 'zscore'）
+        Standardization method ('zscore' or 'robust', default: 'zscore').
 
     Attributes
     ----------
     X_scaler_ : StandardizationModel or None
-        参照チャンネル用の標準化モデル（fit後に設定）
+        Standardization model for reference channels (set after fit).
     y_scaler_ : StandardizationModel or None
-        ターゲットチャンネル用の標準化モデル（fit後に設定）
+        Standardization model for target channel (set after fit).
     filter_coeffs_ : list[np.ndarray] or None
-        バンドパスフィルタ係数（SOS形式、fit後に設定）
+        Band-pass filter coefficients (SOS format, set after fit).
     is_fitted_ : bool
-        fitが完了しているかのフラグ
+        Flag indicating if fit is complete.
 
     Examples
     --------
-    基本的な使用例：
+    Basic usage:
 
     >>> from gwexpy.timeseries import TimeSeriesMatrix, TimeSeries
     >>> from gwexpy.signal.preprocessing import MLPreprocessor
     >>>
-    >>> # データ読み込み
+    >>> # Load data
     >>> witnesses = TimeSeriesMatrix(...)  # (n_channels, n_samples)
     >>> strain = TimeSeries(...)            # (n_samples,)
     >>>
-    >>> # 前処理パイプライン
+    >>> # Preprocessing pipeline
     >>> preprocessor = MLPreprocessor(
     ...     sample_rate=4096,
     ...     freq_low=[55.0],
@@ -78,7 +79,7 @@ class MLPreprocessor:
     ...     valid_frac=0.2
     ... )
     >>>
-    >>> # 分割 → fit → transform
+    >>> # Split -> fit -> transform
     >>> X_train, y_train, X_valid, y_valid = preprocessor.split(witnesses, strain)
     >>> preprocessor.fit(X_train, y_train)
     >>> X_train_proc, y_train_proc = preprocessor.transform(X_train, y_train)
@@ -86,15 +87,15 @@ class MLPreprocessor:
 
     Notes
     -----
-    処理順序はDeepClean v2の実装に準拠：
-    1. データ分割（時系列順）
-    2. X標準化パラメータ学習（フィルタリングなし）
-    3. フィルタ係数設計
-    4. yフィルタリング → y標準化パラメータ学習
+    Processing order follows the DeepClean v2 implementation:
+    1. Data splitting (chronological)
+    2. Learn X standardization parameters (no filtering)
+    3. Design filter coefficients
+    4. Filter y -> Learn y standardization parameters
 
-    重要な注意点：
-    - **Xはフィルタリングしない**（参照チャンネルは生データのまま標準化）
-    - **yはフィルタリングしてから標準化**（ターゲットチャンネルは帯域制限）
+    Important notes:
+    - **X is not filtered** (reference channels are standardized as raw data).
+    - **y is filtered before standardization** (target channel is band-limited).
     """
 
     def __init__(
@@ -113,7 +114,7 @@ class MLPreprocessor:
         self.valid_frac = valid_frac
         self.standardization_method = standardization_method
 
-        # 内部状態（fit後に設定）
+        # Internal state (set after fit)
         self.X_scaler_: Optional[StandardizationModel] = None
         self.y_scaler_: Optional[StandardizationModel] = None
         self.filter_coeffs_: Optional[list[np.ndarray]] = None
@@ -125,33 +126,33 @@ class MLPreprocessor:
         y: TimeSeries,
     ) -> tuple[TimeSeriesMatrix, TimeSeries, TimeSeriesMatrix, TimeSeries]:
         """
-        データを訓練/検証に分割。
+        Split data into training and validation sets.
 
         Parameters
         ----------
         X : TimeSeriesMatrix
-            参照チャンネル (shape: (n_channels, n_samples))
+            Reference channels (shape: (n_channels, n_samples))
         y : TimeSeries
-            ターゲットチャンネル (shape: (n_samples,))
+            Target channel (shape: (n_samples,))
 
         Returns
         -------
         X_train : TimeSeriesMatrix
-            訓練用参照チャンネル
+            Training reference channels
         y_train : TimeSeries
-            訓練用ターゲットチャンネル
+            Training target channel
         X_valid : TimeSeriesMatrix
-            検証用参照チャンネル
+            Validation reference channels
         y_valid : TimeSeries
-            検証用ターゲットチャンネル
+            Validation target channel
         """
         if self.valid_frac == 0.0:
-            # 分割なし: crop()を使って長さ0の検証データを作成
+            # No split: use crop() to create zero-length validation data
             empty_X = X.crop(start=X.t0, end=X.t0)
             empty_y = y.crop(start=y.t0, end=y.t0)
             return X, y, empty_X, empty_y
 
-        # 整数秒単位に調整（DeepClean互換）
+        # Adjust to integer seconds (DeepClean compatibility)
         sample_rate_hz = self._get_sample_rate_hz()
         total_length = len(y)
         valid_size_float = self.valid_frac * total_length
@@ -159,7 +160,7 @@ class MLPreprocessor:
         valid_size = int(valid_length_sec * sample_rate_hz)
         train_size = total_length - valid_size
 
-        # crop()メソッドで分割（時間情報を保持）
+        # Split using crop() method (preserves time information)
         train_end_time = X.t0 + train_size * X.dt
         valid_start_time = train_end_time
 
@@ -176,38 +177,38 @@ class MLPreprocessor:
         y: TimeSeries | None = None,
     ) -> MLPreprocessor:
         """
-        統計量とフィルタ係数を学習。
+        Learn statistics and filter coefficients.
 
         Parameters
         ----------
         X : TimeSeriesMatrix
-            参照チャンネル（訓練データ）
+            Reference channels (training data)
         y : TimeSeries or None, optional
-            ターゲットチャンネル（訓練データ）
-            Noneの場合はyの標準化をスキップ。
+            Target channel (training data)
+            If None, skip y standardization.
 
         Returns
         -------
         self : MLPreprocessor
-            fitted preprocessor
+            Fitted preprocessor
         """
         from scipy.signal import butter
 
         from gwexpy.signal.preprocessing import standardize
 
-        # 1. Xの標準化パラメータを学習
-        X_val = self._extract_value(X)  # ndarray取得
+        # 1. Learn X standardization parameters
+        X_val = self._extract_value(X)  # Get ndarray
         X_std, X_model = standardize(
             X_val,
             method=self.standardization_method,
-            axis=-1,  # time軸で標準化（チャンネルごと独立）
+            axis=-1,  # Standardize along time axis (independent per channel)
             return_model=True,
         )
         self.X_scaler_ = X_model
 
-        # 2. フィルタ係数を設計
+        # 2. Design filter coefficients
         if self.freq_low is not None and self.freq_high is not None:
-            sample_rate_hz = self._get_sample_rate_hz()
+            sample_rate_hz = self._to_float_rate(self.sample_rate)
             self.filter_coeffs_ = []
             for f_low, f_high in zip(self.freq_low, self.freq_high):
                 sos = butter(
@@ -221,12 +222,12 @@ class MLPreprocessor:
         else:
             self.filter_coeffs_ = None
 
-        # 3. yの標準化パラメータを学習
+        # 3. Learn y standardization parameters
         if y is not None:
-            # yをフィルタリング
+            # Filter y
             y_filt = self._apply_bandpass(y)
 
-            # yの標準化パラメータを学習
+            # Learn y standardization parameters
             y_val = self._extract_value(y_filt)
             y_std, y_model = standardize(
                 y_val,
@@ -247,40 +248,38 @@ class MLPreprocessor:
         y: TimeSeries | None = None,
     ) -> tuple[TimeSeriesMatrix, TimeSeries] | TimeSeriesMatrix:
         """
-        フィルタリングと標準化を適用。
+        Apply filtering and standardization.
 
         Parameters
         ----------
         X : TimeSeriesMatrix
-            参照チャンネル
+            Reference channels
         y : TimeSeries or None, optional
-            ターゲットチャンネル
-            Noneの場合はXのみ返す。
+            Target channel
+            If None, return only X.
 
         Returns
         -------
         X_proc : TimeSeriesMatrix
-            処理済みX（dimensionless_unscaled単位）
-        y_proc : TimeSeries (yが指定された場合)
-            処理済みy（dimensionless_unscaled単位）
+            Processed X (dimensionless_unscaled unit)
+        y_proc : TimeSeries (if y is specified)
+            Processed y (dimensionless_unscaled unit)
         """
         if not self.is_fitted_:
-            raise RuntimeError("fit()を先に呼び出してください")
+            raise RuntimeError("Call fit() first")
 
-        # 1. Xの標準化
+        # 1. Standardize X
         X_val = self._extract_value(X)
-        # meanとscaleをブロードキャスト可能な形状にreshape
-        # X_valの形状: (n_rows, n_cols, n_samples) or (n_channels, n_samples)
-        # X_scaler_.meanの形状: (n_channels,) -> (n_channels, 1, ...)にreshapeが必要
+        # Reshape mean and scale for broadcasting
         assert self.X_scaler_ is not None
         mean = self.X_scaler_.mean
         scale = self.X_scaler_.scale
 
-        # スカラーの場合は配列に変換（単一チャンネルケース対応）
+        # Convert to array if scalar (handles single-channel cases)
         mean = np.atleast_1d(mean)
         scale = np.atleast_1d(scale)
 
-        # X_valの次元数に応じてreshape
+        # Reshape according to the number of dimensions in X_val
         if X_val.ndim == 3:
             mean = mean[:, None, None]
             scale = scale[:, None, None]
@@ -292,26 +291,24 @@ class MLPreprocessor:
             X_std_val, X, unit=u.dimensionless_unscaled
         )
 
-        # 2. yの処理
+        # 2. Handle y
         if y is not None:
             if self.y_scaler_ is None:
-                raise RuntimeError("yが指定されましたが、fit()でyを使用していません。")
+                raise RuntimeError("y was specified, but fit() did not use y.")
 
-            # yフィルタリング
+            # Filter y
             y_filt = self._apply_bandpass(y)
 
-            # y標準化
+            # Standardize y
             y_val = self._extract_value(y_filt)
-            # y_scaler_.meanとscaleはスカラーまたは1次元配列
-            # y_valが1次元の場合はそのまま、2次元の場合はreshapeが必要
             y_mean = self.y_scaler_.mean
             y_scale = self.y_scaler_.scale
 
-            # スカラーの場合は配列に変換
+            # Convert to array if scalar
             y_mean = np.atleast_1d(y_mean)
             y_scale = np.atleast_1d(y_scale)
 
-            # y_valの次元数に応じてreshape
+            # Reshape according to the number of dimensions in y_val
             if y_val.ndim > 1 and y_mean.ndim > 0:
                 y_mean = y_mean[:, None]
                 y_scale = y_scale[:, None]
@@ -324,54 +321,52 @@ class MLPreprocessor:
 
         return X_proc
 
-    # ヘルパーメソッド（プライベート）
+    # Helper methods (private)
 
-    def _get_sample_rate_hz(self) -> float:
-        """sample_rateをHz単位のfloatに変換。"""
-        if hasattr(self.sample_rate, "to"):
-            # Quantity型の場合はHz単位に変換
-            return float(self.sample_rate.to(u.Hz).value)
-        # float型の場合はそのまま返す
-        return float(self.sample_rate)
+    def _to_float_rate(self, sample_rate: Any) -> float:
+        """Convert sample_rate to a float in Hz."""
+        if hasattr(sample_rate, "to"):
+            # Convert to Hz if it is a Quantity
+            return float(sample_rate.to(u.Hz).value)
+        # Return as is if it is a float
+        return float(sample_rate)
 
     def _extract_value(self, ts) -> np.ndarray:
-        """TimeSeries/TimeSeriesMatrixからndarrayを取得。"""
+        """Retrieve ndarray from TimeSeries or TimeSeriesMatrix."""
         if hasattr(ts, "value"):
             return ts.value
         return np.asarray(ts)
 
     def _reconstruct_timeseries_matrix(self, val, original, unit=None):
-        """ndarrayからTimeSeriesMatrixを再構築。"""
-        # 元のクラスを使用して新しいインスタンスを作成（コンストラクタで単位を設定）
+        """Reconstruct TimeSeriesMatrix from ndarray."""
         if unit is not None:
             new_mat = original.__class__(val, t0=original.t0, dt=original.dt, unit=unit)
         else:
             new_mat = original.__class__(val, t0=original.t0, dt=original.dt)
 
-        # メタデータを保持
+        # Preserve metadata
         if hasattr(original, "channel_names"):
             new_mat.channel_names = original.channel_names
 
         return new_mat
 
     def _reconstruct_timeseries(self, val, original, unit=None):
-        """ndarrayからTimeSeriesを再構築。"""
-        # 元のクラスを使用して新しいインスタンスを作成（コンストラクタで単位を設定）
+        """Reconstruct TimeSeries from ndarray."""
         if unit is not None:
             new_ts = original.__class__(val, t0=original.t0, dt=original.dt, unit=unit)
         else:
             new_ts = original.__class__(val, t0=original.t0, dt=original.dt)
 
-        # メタデータを保持
+        # Preserve metadata
         if hasattr(original, "name"):
             new_ts.name = original.name
 
         return new_ts
 
     def _apply_bandpass(self, y):
-        """バンドパスフィルタを適用。"""
+        """Apply band-pass filter."""
         if self.filter_coeffs_ is None:
-            # フィルタリングなし
+            # No filtering
             return y
 
         from scipy.signal import sosfiltfilt
@@ -379,11 +374,11 @@ class MLPreprocessor:
         y_val = self._extract_value(y)
         y_filt_val = np.zeros_like(y_val)
 
-        # 各帯域のフィルタを適用して加算
+        # Apply filters for each band and sum them
         for sos in self.filter_coeffs_:
             y_filt_val += sosfiltfilt(sos, y_val, axis=-1)
 
-        # TimeSeriesとして再構築
+        # Reconstruct as TimeSeries
         return self._reconstruct_timeseries(y_filt_val, y)
 
 

@@ -23,7 +23,7 @@ else:
     HAS_PYGMT = False
     _PYGMT_IMPORT_ERROR = RuntimeError("pygmt import skipped via GWEXPY_SKIP_PYGMT")
 
-# 検出器座標データベース (簡易版)
+# Detector coordinate database (simplified version)
 DETECTORS = {
     "K1": {"lon": 137.31, "lat": 36.41, "name": "KAGRA", "color": "darkgreen"},
     "H1": {"lon": -119.41, "lat": 46.45, "name": "LIGO Hanford", "color": "darkred"},
@@ -32,7 +32,7 @@ DETECTORS = {
     "G1": {"lon": 9.80, "lat": 52.24, "name": "GEO600", "color": "darkmagenta"},
 }
 
-# 投影法のマッピング (Friendly Name -> GMT Code)
+# Projection mapping (Friendly Name -> GMT Code)
 PROJECTIONS = {
     "Mercator": "M",
     "Robinson": "N",
@@ -41,7 +41,7 @@ PROJECTIONS = {
     "Equidistant": "Q",
 }
 
-# マーカーのマッピング (Matplotlib -> GMT)
+# Marker mapping (Matplotlib -> GMT)
 MARKERS = {
     "o": "c",  # circle
     "s": "s",  # square
@@ -82,10 +82,10 @@ class GeoMap:
         assert pygmt is not None
         self.fig = pygmt.Figure()
 
-        # 投影法の設定
+        # Setup projection
         proj_code = PROJECTIONS.get(projection, projection)
 
-        # GMTの投影指定を作成
+        # Create GMT projection string
         # region 'd' is -180/180/-90/90
         self.region = kwargs.get("region", "d")
 
@@ -100,7 +100,7 @@ class GeoMap:
 
         self.frame = kwargs.get("frame", "ag")  # auto, grid
 
-        # ベースマップの初期化
+        # Initialize base map
         self.fig.basemap(
             region=self.region, projection=self.projection, frame=self.frame
         )

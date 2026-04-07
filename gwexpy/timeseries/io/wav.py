@@ -80,7 +80,7 @@ def read_timeseriesdict_wav(
         # Multi-channel
         n_channels = data.shape[1]
 
-    # epoch 処理
+    # Epoch processing
     if epoch is not None:
         if isinstance(epoch, (int, float)):
             t0 = float(epoch)
@@ -89,7 +89,7 @@ def read_timeseriesdict_wav(
         else:
             raise TypeError(f"epoch must be float or datetime, got {type(epoch)}")
     else:
-        t0 = 0.0  # 既存の動作を維持
+        t0 = 0.0  # Preserve existing behavior
 
     tsd = TimeSeriesDict()
     dt = 1.0 / rate
@@ -104,12 +104,12 @@ def read_timeseriesdict_wav(
             name=name,
             channel=name,
         )
-        # unit 適用
+        # Apply unit
         if unit is not None:
             ts = apply_unit(ts, unit)
         tsd[name] = ts
 
-    # channels フィルタリング
+    # Channel filtering
     if channels is not None:
         tsd = TimeSeriesDict(filter_by_channels(tsd, channels))
 

@@ -220,19 +220,24 @@ class ResponseFunctionResult:
         freq_max: float | None = None,
         figsize: tuple[float, float] = (14, 6),
     ) -> Any:
-        """Plot summary of ASD spectra across all injection steps.
+        """Plot the ASD spectra across injection steps.
+
+        Create a single-panel figure that overlays the ASD (or PSD) spectra for
+        all injection steps. This visualization helps inspect step-to-step
+        consistency and detect non-linear or time-dependent response.
 
         Parameters
         ----------
         freq_min, freq_max : float, optional
-            Frequency range to display [Hz].
-        figsize : tuple of float, optional
-            Figure size (width, height).
+            Frequency range in Hz to include in the plot. If None, the full
+            spectrogram frequency range is used.
+        figsize : tuple, optional
+            Matplotlib figure size as (width, height). Defaults to (14, 6).
 
         Returns
         -------
         matplotlib.figure.Figure
-            The resulting figure.
+            The created figure instance.
 
         """
         fig, ax = plt.subplots(figsize=figsize)
@@ -283,23 +288,24 @@ class ResponseFunctionResult:
         freq_max: float | None = None,
         figsize: tuple[float, float] = (14, 10),
     ) -> Any:
-        """Plot 2D response matrix with cross-section profiles (3-panel layout).
+        """Plot the 2D response matrix and diagnostic cross-sections (3-panel layout).
 
-        - Main panel: Time vs Frequency, color mapped to ASD amplitude.
-        - Side panel (right): Frequency profile at a central time step.
-        - Top panel: Time evolution at a central frequency bin.
+        The figure consists of:
+          - Main panel: time (injection step) vs response frequency, color = ASD amplitude.
+          - Right-side panel: temporal evolution (time series) at the central frequency bin.
+          - Top panel: frequency profile at the central time step.
 
         Parameters
         ----------
         freq_min, freq_max : float, optional
-            Frequency range to display [Hz].
-        figsize : tuple of float, optional
-            Figure size (width, height).
+            Frequency range in Hz to visualize.
+        figsize : tuple, optional
+            Figure size.
 
         Returns
         -------
         matplotlib.figure.Figure
-            The resulting figure.
+            The created figure.
 
         """
         from matplotlib.colors import LogNorm
@@ -338,7 +344,7 @@ class ResponseFunctionResult:
         ax_top = fig.add_subplot(gs[0, 0], sharex=ax_main)
         ax_right = fig.add_subplot(gs[1, 1], sharey=ax_main)
 
-        # メインパネル: 時刻 vs 周波数
+        # Main panel: Time vs Frequency
         c = ax_main.pcolormesh(
             times_plot,
             freqs_plot,
@@ -352,7 +358,7 @@ class ResponseFunctionResult:
         ax_main.set_xlabel("Step Time [GPS s]")
         ax_main.set_ylabel("Frequency [Hz]")
 
-        # トップパネル: 中央ステップの周波数プロファイル
+        # Top panel: Frequency profile at center step
         ax_top.plot(
             times_plot,
             data[:, mid_freq_idx],
@@ -366,7 +372,7 @@ class ResponseFunctionResult:
         )
         plt.setp(ax_top.get_xticklabels(), visible=False)
 
-        # サイドパネル: 中央周波数ビンでの時間進化
+        # Side panel: Time evolution at center frequency bin
         ax_right.plot(
             data[mid_step_idx, :],
             freqs_plot,

@@ -98,7 +98,7 @@ def read_timeseriesdict_audio(
     tsd = TimeSeriesDict()
     dt = 1.0 / sample_rate
 
-    # epoch 処理
+    # Epoch processing
     if epoch is not None:
         if isinstance(epoch, (int, float)):
             t0 = float(epoch)

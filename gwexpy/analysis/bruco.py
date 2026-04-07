@@ -25,7 +25,7 @@ except ImportError as _exc:
         "scipy is required for gwexpy.analysis.bruco. Install with: pip install scipy"
     ) from _exc
 
-# ロガーの設定
+# Logger configuration
 logger = logging.getLogger(__name__)
 _BRUCO_BLOCK_SIZE_DEFAULT = 256
 _BRUCO_BLOCK_BYTES_DEFAULT = 64 * 1024 * 1024
@@ -1278,12 +1278,11 @@ class Bruco:
                         ts.t0.value > start + 0.1
                         or (ts.t0.value + ts.duration.value) < end - 0.1
                     ):
-                        # We can skip or raise. User requested error/strictness.
-                        # But for generator, maybe just skipping invalid ones is better?
-                        # "spanが矛盾する場合はエラー" -> Raise.
-                        raise ValueError(
-                            f"Streamed TimeSeries {ts.name} does not cover requested span."
-                        )
+                        # Raise error if spans are inconsistent.
+                        if (ts.duration.value) < fftlength:
+                            raise ValueError(
+                                f"Streamed TimeSeries {ts.name} does not cover requested span."
+                            )
 
                     batch_dict[ts.name] = ts
 

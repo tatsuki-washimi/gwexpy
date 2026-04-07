@@ -1,5 +1,4 @@
-"""
-Coupling Function Analysis Module for gwexpy.
+"""Coupling Function Analysis Module for gwexpy.
 
 Estimates the coupling function (CF) with flexible threshold strategies.
 Threshold strategies are defined in :mod:`gwexpy.analysis.threshold`.
@@ -57,6 +56,7 @@ def estimate_bkg_mem_bytes(
         Estimated memory in bytes (including 20% overhead).
     n_rows : int
         Number of rows.
+
     """
     n_rows = max(1, int(np.floor((duration - fftlength) / stride)) + 1)
     n_freqs = int(fftlength * fs / 2) + 1
@@ -175,8 +175,7 @@ def _process_single_target(
     freq_mask: np.ndarray | None,
     bkg_table: SegmentTable | None = None,
 ) -> tuple[str, CouplingResult] | None:
-    """
-    Process a single target channel.
+    """Process a single target channel.
     This function is defined at module level to ensuring picklability for multiprocessing.
     """
     # Target PSDs
@@ -283,8 +282,7 @@ def _process_single_target(
 
 
 class CouplingFunctionAnalysis:
-    """
-    Analysis class to estimate Coupling Functions (CF).
+    """Analysis class to estimate Coupling Functions (CF).
     """
 
     @classmethod
@@ -304,40 +302,40 @@ class CouplingFunctionAnalysis:
         n_jobs: int | None = None,
         **kwargs: Any,
     ) -> CouplingResult | dict[str, CouplingResult]:
-        """時間ウィンドウを明示的に指定して結合係数を計算する。
+        """Compute Coupling Function by specifying time windows explicitly.
 
         Parameters
         ----------
         data : TimeSeriesDict
-            全時間範囲を含む入力データ（背景区間・注入区間の両方を含む）。
+            Input data containing the full time range (both background and injection).
         bkg_window : tuple of float
-            背景区間の (t_start, t_end) GPS 時刻 tuple。
+            GPS time window (t_start, t_end) for the background period.
         inj_window : tuple of float
-            注入区間の (t_start, t_end) GPS 時刻 tuple。
+            GPS time window (t_start, t_end) for the injection period.
         witness : str, optional
-            Witness チャンネル名。None の場合は最初のチャンネルを使用。
+            The name of the witness channel. If None, the first channel is used.
         fftlength : float
-            FFT 長 [秒]。
+            FFT length in seconds.
         overlap : float
-            オーバーラップ [秒]（デフォルト 0）。
+            Overlap in seconds (default 0).
         threshold_strategy : ThresholdStrategy or float
-            Witness/Target 両方に使用する閾値戦略。
-            float を渡した場合は :class:`RatioThreshold` として解釈。
+            Threshold strategy used for both Witness and Target.
+            If a float is provided, it is interpreted as a :class:`RatioThreshold`.
         frange : tuple of float, optional
-            評価する周波数範囲 (fmin, fmax)。
+            Frequency range (fmin, fmax) to evaluate.
         percentile_factor : float
-            :class:`PercentileThreshold` 補正係数（Appendix B.1）。
+            Correction factor for :class:`PercentileThreshold` (Appendix B.1).
         bkg_stride : float, optional
-            背景 SegmentTable 構築のストライド [秒]。
+            Stride in seconds for building the background SegmentTable.
         memory_limit : int
-            背景 SegmentTable の最大メモリ [bytes]（デフォルト 2 GB）。
+            Maximum memory in bytes for the background SegmentTable (default 2 GB).
         n_jobs : int, optional
-            並列ジョブ数。None で 1、-1 で全コアを使用。
+            Number of parallel jobs. None means 1; -1 uses all cores.
 
         Returns
         -------
         CouplingResult or dict of CouplingResult
-            単一 target の場合は CouplingResult、複数 target の場合は dict。
+            A CouplingResult for a single target, or a dict for multiple targets.
 
         Examples
         --------
@@ -348,6 +346,7 @@ class CouplingFunctionAnalysis:
         ...     witness="V1:ENV_WIT",
         ...     fftlength=4.0,
         ... )
+
         """
         bkg_start, bkg_end = bkg_window
         inj_start, inj_end = inj_window
@@ -409,40 +408,42 @@ class CouplingFunctionAnalysis:
         n_jobs: int | None = None,
         **kwargs: Any,
     ) -> list[CouplingResult | dict[str, CouplingResult]]:
-        """複数の注入区間について一括して結合係数を計算する。
+        """Compute Coupling Functions for multiple injection windows in a batch.
 
         Parameters
         ----------
         data : TimeSeriesDict
-            全時間範囲を含む入力データ。
+            Input data containing the full time range.
         bkg_window : tuple of float
-            背景区間の (t_start, t_end) GPS 時刻 tuple。全 inj_window で共通。
+            GPS time window (t_start, t_end) for the background period.
+            Commonly used across all injection windows.
         inj_windows : list of tuple of float
-            注入区間のリスト。各要素は (t_start, t_end)。
+            List of injection windows, each as (t_start, t_end).
         witness : str, optional
-            Witness チャンネル名。None の場合は最初のチャンネルを使用。
+            The name of the witness channel. If None, the first channel is used.
         fftlength : float
-            FFT 長 [秒]。
+            FFT length in seconds.
         overlap : float
-            オーバーラップ [秒]（デフォルト 0）。
+            Overlap in seconds (default 0).
         threshold_strategy : ThresholdStrategy or float
-            Witness/Target 両方に使用する閾値戦略。
-            float を渡した場合は :class:`RatioThreshold` として解釈。
+            Threshold strategy used for both Witness and Target.
+            If a float is provided, it is interpreted as a :class:`RatioThreshold`.
         frange : tuple of float, optional
-            評価する周波数範囲 (fmin, fmax)。
+            Frequency range (fmin, fmax) to evaluate.
         percentile_factor : float
-            :class:`PercentileThreshold` 補正係数（Appendix B.1）。
+            Correction factor for :class:`PercentileThreshold` (Appendix B.1).
         bkg_stride : float, optional
-            背景 SegmentTable 構築のストライド [秒]。
+            Stride in seconds for building the background SegmentTable.
         memory_limit : int
-            背景 SegmentTable の最大メモリ [bytes]（デフォルト 2 GB）。
+            Maximum memory in bytes for the background SegmentTable (default 2 GB).
         n_jobs : int, optional
-            並列ジョブ数。None で 1、-1 で全コアを使用。
+            Number of parallel jobs. None means 1; -1 uses all cores.
 
         Returns
         -------
         list of CouplingResult or dict of CouplingResult
-            各 inj_window に対応する結果のリスト。
+            List of results corresponding to each injection window.
+
         """
         if not inj_windows:
             raise ValueError("inj_windows must contain at least one window.")
@@ -477,8 +478,7 @@ class CouplingFunctionAnalysis:
         factor_range: tuple[float, float] = (0.1, 10.0),
         **kwargs: Any,
     ) -> dict[str, Any]:
-        """
-        Automatically calibrate the percentile correction factor (Appendix B).
+        """Automatically calibrate the percentile correction factor (Appendix B).
 
         Finds the factor `c` such that the background noise distribution
         best matches the expected statistical floor, aiming for reduced chi2 ≈ 1.
@@ -533,8 +533,7 @@ class CouplingFunctionAnalysis:
         n_jobs: int | None = None,
         **kwargs: object,
     ) -> CouplingResult | dict[str, CouplingResult]:
-        """
-        Compute Coupling Function(s) from TimeSeriesDicts.
+        """Compute Coupling Function(s) from TimeSeriesDicts.
 
         Parameters
         ----------
@@ -559,6 +558,7 @@ class CouplingFunctionAnalysis:
         n_jobs : int, optional
             Number of jobs for parallel processing. None means 1 unless in a joblib.parallel_config context.
             -1 means using all processors.
+
         """
         # --- 1. Identify Witness Channel ---
         all_channels = list(data_inj.keys())
@@ -802,11 +802,11 @@ def estimate_coupling(
     ----------
     data_inj : TimeSeriesDict
         Injection data (Witness + Targets).
-        ``bkg_window`` / ``inj_window`` が指定された場合は、全時間範囲を含む
-        データを渡してください。この場合 ``data_bkg`` は不要です。
+        If ``bkg_window`` / ``inj_window`` are specified, please pass data covering
+        the full time range. In this case, ``data_bkg`` is not required.
     data_bkg : TimeSeriesDict, optional
         Background data (Witness + Targets).
-        ``bkg_window`` が指定された場合は省略可能。
+        Can be omitted if ``bkg_window`` is specified.
     fftlength : float
         FFT length in seconds.
     witness : str, optional
@@ -836,14 +836,15 @@ def estimate_coupling(
         Number of jobs for parallel processing.
         ``None`` means 1; ``-1`` means all processors.
     bkg_window : tuple of float, optional
-        背景区間の (t_start, t_end) GPS 時刻 tuple。
-        指定時は ``data_inj`` から背景データを切り出すため ``data_bkg`` は不要。
-        ``inj_window`` と同時に指定することを推奨。
+        GPS time window (t_start, t_end) for the background period.
+        If specified, background data is cropped from ``data_inj``, so ``data_bkg`` is not required.
+        Recommended to be used with ``inj_window``.
     inj_window : tuple of float, optional
-        注入区間の (t_start, t_end) GPS 時刻 tuple。
-        ``bkg_window`` と同時に指定することで時間ウィンドウ API として機能。
+        GPS time window (t_start, t_end) for the injection period.
+        Works as part of the time-window API when used with ``bkg_window``.
     **kwargs
         Additional keyword arguments forwarded to PSD computation.
+
     """
 
     def _ensure_strategy(

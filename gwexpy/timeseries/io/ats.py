@@ -214,7 +214,7 @@ def _read_timeseries_ats_file(f, *, unit=None, epoch=None, **kwargs):
 
     # Calculate t0
     if epoch is not None:
-        # epoch オーバーライド
+        # Epoch override
         if isinstance(epoch, (int, float)):
             t0 = float(epoch)
         elif isinstance(epoch, datetime.datetime):
@@ -223,7 +223,7 @@ def _read_timeseries_ats_file(f, *, unit=None, epoch=None, **kwargs):
             raise TypeError(f"epoch must be float or datetime, got {type(epoch)}")
         epoch_source = "user"
     else:
-        # ヘッダーから取得（既存の動作）
+        # Retrieve from header (existing behavior)
         dt_obj = datetime.datetime.fromtimestamp(start_time_unix, tz=datetime.UTC)
         t0 = to_gps(dt_obj)
         epoch_source = "ats_header"
@@ -253,11 +253,11 @@ def _read_timeseries_ats_file(f, *, unit=None, epoch=None, **kwargs):
         unit="V",  # 'Volt'
     )
 
-    # unit 適用
+    # Apply unit
     if unit is not None:
         ts = apply_unit(ts, unit)
 
-    # provenance 記録
+    # Record provenance
     set_provenance(
         ts,
         {
