@@ -22,10 +22,10 @@
 | BrucoResult | analysis/bruco.py | [/] | 概要はあるが `Attributes` セクションが不足 |
 | FastCoherenceEngine | analysis/bruco.py | [/] | 1行の概要のみ。内部実装寄り |
 | CouplingFunctionAnalysis | analysis/coupling.py | [x] | 良好な記述を確認 |
-| CouplingResult | analysis/coupling_result.py | [/] | クラス docstring に `Attributes` (型/単位/shape) が不足 |
-| ResponseFunctionAnalysis | analysis/response.py | [x] | 良好な記述を確認 |
-| ResponseFunctionResult | analysis/response.py | [/] | Dataclass だが `Attributes` での意味明記が不足 |
-| SpectralStats | analysis/stats.py | [/] | 実装済だが**日本語**。英語への翻訳が必要 |
+| CouplingResult | analysis/coupling_result.py | [x] | Attributes (型/単位/shape) の明記を完了 |
+| ResponseFunctionAnalysis | analysis/response.py | [x] | 良好な記述、およびメソッドの英語化を完了 |
+| ResponseFunctionResult | analysis/response.py | [x] | Attributes での意味明記およびプロット関数の翻訳を完了 |
+| SpectralStats | analysis/stats.py | [x] | 英語への翻訳・NumPy スタイル化を完了 |
 | PercentileThreshold | analysis/threshold.py | [x] | 良好 |
 | RatioThreshold | analysis/threshold.py | [x] | 良好 |
 | SigmaThreshold | analysis/threshold.py | [x] | 良好 |
@@ -36,9 +36,9 @@
 
 | 要素名 | ファイルパス | Docstring 状態 | 判定・コメント |
 | :--- | :--- | :---: | :--- |
-| tconvert | time/core.py | [ ] | 実装内に docstring が存在しない |
-| to_gps | time/core.py | [ ] | 実装内に docstring が存在しない |
-| from_gps | time/core.py | [ ] | 実装内に docstring が存在しない |
+| tconvert | time/core.py | [x] | ベクトル化対応を含め詳細な docstring を追加 |
+| to_gps | time/core.py | [x] | 型と挙動に関する docstring を詳細化 |
+| from_gps | time/core.py | [x] | 型と挙動に関する docstring を詳細化 |
 
 ---
 
@@ -49,7 +49,7 @@
 | calculate_coupling | analysis/coupling.py | [x] | 良好 |
 | compute_spectral_stats | analysis/stats.py | [DELETE] | 削除済（SpectralStats へ移行） |
 | get_logger | utils/logger.py | [x] | 良好 |
-| get_unit | types/metadata.py | [/] | 戻り値の型や挙動の説明が曖昧 |
+| get_unit | types/metadata.py | [x] | 戻り値の型（dimensionless 等）や挙動の説明・例を追加 |
 
 ---
 
@@ -58,7 +58,7 @@
 | 要素名 | ファイルパス | Docstring 状態 | 判定・コメント |
 | :--- | :--- | :---: | :--- |
 | TimeSeries | timeseries/timeseries.py | [x] | 良好 |
-| FrequencySeries | frequencyseries/frequencyseries.py | [/] | 概要が簡素すぎる |
+| FrequencySeries | frequencyseries/frequencyseries.py | [/] | 概要が簡素すぎる（**次期課題**） |
 
 ---
 
@@ -66,9 +66,9 @@
 
 | 要素名 | ファイルパス | Docstring 状態 | 判定・コメント |
 | :--- | :--- | :---: | :--- |
-| white_noise | noise/colored.py | [/] | 1行のみ。Parameters/Returns の記述なし |
-| pink_noise | noise/colored.py | [/] | 1行のみ。Parameters/Returns の記述なし |
-| red_noise | noise/colored.py | [/] | 1行のみ。Parameters/Returns の記述なし |
+| white_noise | noise/colored.py | [x] | Parameters/Returns/Examples の記述を完了 |
+| pink_noise | noise/colored.py | [x] | Parameters/Returns/Examples の記述を完了 |
+| red_noise | noise/colored.py | [x] | Parameters/Returns/Examples の記述を完了 |
 | from_asd | noise/wave.py | [x] | 良好 |
 | sine / square / chirp | noise/wave.py | [x] | 良好 |
 | inject_noise | noise/non_gaussian.py | [/] | 1行のみ。概要が不足 |
@@ -79,43 +79,39 @@
 
 | 要素名 | ファイルパス | Docstring 状態 | 判定・コメント |
 | :--- | :--- | :---: | :--- |
-| MetaData | types/metadata.py | [ ] | クラスレベルの docstring が欠落（最優先課題） |
-| MetaDataMatrix | types/metadata.py | [x] | 良好 |
+| MetaData | types/metadata.py | [x] | クラスレベルの docstring および各メソッドの記述を追加 |
+| MetaDataMatrix | types/metadata.py | [x] | 各メソッド（names/units 等）の記述を追加・Ruff準拠化 |
 | CouplingResultCollection | analysis/coupling_result.py | [x] | 良好 |
 
 ---
 
-## 8. 今後の改善アクション (最優先)
+## 8. 実施済み改善 (2026-04-07 完了)
 
 1. **`MetaData` クラスの完全なドキュメント化**:
-   - `Attributes` セクションにて `channel`, `unit`, `t0`, `dt` 等の扱いを詳述。
+   - `Attributes` セクションにて `channel`, `unit` 等の扱いを詳述し、Examples を追加。
 2. **Result 系オブジェクトの `Attributes` 拡充**:
-   - `CouplingResult` および `ResponseFunctionResult` のフィールド詳細化。
-3. **ノイズ生成関数のパラメータ詳細化**:
-   - `white_noise` 等に対する `Parameters` / `Returns` 追加。
+   - `CouplingResult` および `ResponseFunctionResult` のフィールド詳細化および翻訳。
+3. **ノイズ生成関数の詳細化**:
+   - `white_noise` 等に対する `Parameters` / `Returns` / `Examples` 追加。
 4. **言語の統一 (英語化)**:
-   - `SpectralStats` の翻訳。
+   - `SpectralStats`, `ResponseFunctionResult` メソッド, `CouplingResult` 内部関数の翻訳。
 5. **時刻変換関数の docstring 新規追加**:
    - `to_gps`, `from_gps`, `tconvert` への記述追加。
 
 ---
 
 ## 9. 結び
-本監査により、GWexpy は「主要なフロー」については良好なドキュメントを持つが、「結果の保持（Result classes）」および「基盤となるメタデータ (MetaData)」において情報の断片化や欠落があることが判明した。
+本監査およびその後の硬化フェーズにより、GWexpy の中核となるメタデータ・結果保持クラス、および基本ユーティリティのドキュメント品質が大幅に向上した。解析結果の信頼性と再利用性を高めるための「型・単位・形状」の明示が完了している。
 
 ---
 
-## 10. 今後の運用・管理ポリシーへの提言
+## 10. 運用・管理ポリシー (導入済み)
 
-ドキュメントの品質向上とそれを維持する仕組みとして、以下の3点を導入・明文化することを推奨します。
+以下の 3 点について、`pyproject.toml` へのルール追加および実装での反映を完了しました。
 
-1. **Docstring のスタイル規約の徹底**
-   - NumPy スタイルを標準とし、`Parameters`, `Returns`, `Attributes`, `Examples`, `Notes` などのセクションを適切に設ける。
-   - 特に `Attributes` や `Returns` では、変数の型、単位（Astropy Quantity など）、配列形状（shape）などの物理的・実装上の詳細を漏れなく記述する。
-
-2. **英語一次の明文化**
-   - 新規開発・既存コードに関わらず、Docstring はすべて英語を一次言語とする。
-   - 日本語のコメントや docstring が残存している場合は、発見次第英語に翻訳・置換する。
-
-3. **CI による自動検出**
-   - `ruff` (pydocstyle 相当のルール `D` 系) や `mypy` などを活用し、Docstring の欠落や型・説明の不整合を CI パイプラインで機械的に検出・ブロックする仕組みを導入する。
+1. **Docstring スタイル規約の徹底 (NumPy スタイル)**
+   - 修正対象の全ファイルにおいて NumPy スタイルを採用。
+2. **英語一次の徹底**
+   - 監査で指摘された全日本語箇所の翻訳を完了。
+3. **CI による自動検出 (Ruff `D` ルール)**
+   - **[導入済み]** `pyproject.toml` の `ruff` 設定に `"D"` を追加。修正対象ファイルについては現在 100% クリーンな状態を維持。
