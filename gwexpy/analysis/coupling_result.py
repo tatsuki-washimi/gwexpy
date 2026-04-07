@@ -1,6 +1,4 @@
-"""
-CouplingResult: result container for a single Witness -> Target pair.
-"""
+"""CouplingResult: result container for a single Witness -> Target pair."""
 
 from __future__ import annotations
 
@@ -23,8 +21,7 @@ if TYPE_CHECKING:
 
 
 class CouplingResult:
-    """
-    Result object for a SINGLE Witness -> Target pair.
+    """Result object for a SINGLE Witness -> Target pair.
 
     This object stores all Amplitude Spectral Densities (ASDs), the resulting
     Coupling Function (CF), and metadata needed to reproduce and visualize the
@@ -62,6 +59,7 @@ class CouplingResult:
         The FFT length (in seconds) used to compute the spectra.
     overlap : float or None
         The overlap duration (in seconds) used to compute the spectra.
+
     """
 
     def __init__(
@@ -100,6 +98,7 @@ class CouplingResult:
 
     @property
     def frequencies(self) -> IndexLike:
+        """Return the frequency axis of the coupling function result."""
         return self.cf.xindex
 
     def plot_cf(
@@ -109,7 +108,6 @@ class CouplingResult:
         **kwargs: object,
     ) -> Plot:
         """Plot the Coupling Function and its Upper Limit."""
-
         # Crop data if xlim provided
         cf_plot = self.cf
         cf_ul_plot = self.cf_ul
@@ -164,9 +162,7 @@ class CouplingResult:
         figsize: tuple[float, float] = (10, 12),
         xlim: tuple[float, float] | None = None,
     ) -> Plot:
-        """
-        Create a diagnostic plot showing ASDs and the resulting CF.
-        """
+        """Create a diagnostic plot showing ASDs and the resulting CF."""
         from gwexpy.plot import Plot
 
         # Helper to crop series safely
@@ -383,8 +379,7 @@ class CouplingResult:
     # ------------------------------------------------------------------
 
     def _significance_array(self) -> np.ndarray:
-        """
-        有意度 (ASD_inj - ASD_bkg) / ASD_bkg を計算して返す。
+        """有意度 (ASD_inj - ASD_bkg) / ASD_bkg を計算して返す。.
 
         背景 ASD をゼロ除算から防護するため epsilon ガードを適用する。
         """
@@ -394,8 +389,7 @@ class CouplingResult:
         return (asd_inj - asd_bkg) / np.where(asd_bkg > 0, asd_bkg, eps)
 
     def spectral_stats(self) -> SpectralStats:
-        """
-        背景 ASD の簡易統計情報を返す。
+        """背景 ASD の簡易統計情報を返す。.
 
         現時点では CouplingResult が保持する背景/注入 PSD から、
         背景 ASD を mean、注入との差分絶対値を sigma として構成する。
@@ -423,8 +417,7 @@ class CouplingResult:
         return SpectralStats(mean=mean, sigma=sigma, n_avg=n_avg)
 
     def to_csv(self, filepath: str | os.PathLike) -> None:
-        """
-        結合係数を CSV 形式で保存する。
+        """結合係数を CSV 形式で保存する。.
 
         列: frequency, cf, cf_ul, significance, inj_asd, bkg_asd
         """
@@ -443,8 +436,7 @@ class CouplingResult:
 
     @classmethod
     def from_csv(cls, filepath: str | os.PathLike) -> CouplingResult:
-        """
-        CSV ファイルから CouplingResult を復元する（ラウンドトリップ用）。
+        """CSV ファイルから CouplingResult を復元する（ラウンドトリップ用）。.
 
         to_csv() で書き出したファイルのみ対応。cf / cf_ul / ASD のみ復元し、
         その他フィールドは最小限のダミーで補完する。
@@ -489,8 +481,7 @@ class CouplingResult:
         )
 
     def to_txt(self, filepath: str | os.PathLike) -> None:
-        """
-        結合係数を NInjA.py 互換テキスト形式で保存する。
+        """結合係数を NInjA.py 互換テキスト形式で保存する。.
 
         フォーマット::
 
@@ -522,8 +513,7 @@ class CouplingResult:
         freq_max: float | None = None,
         figsize: tuple[float, float] = (12, 6),
     ) -> Any:
-        """
-        有意度スペクトラムプロット（(ASD_inj - ASD_bkg) / ASD_bkg vs 周波数）。
+        """有意度スペクトラムプロット（(ASD_inj - ASD_bkg) / ASD_bkg vs 周波数）。.
 
         Parameters
         ----------
@@ -537,6 +527,7 @@ class CouplingResult:
         Returns
         -------
         matplotlib.figure.Figure
+
         """
         import matplotlib.pyplot as plt
 
@@ -586,8 +577,7 @@ class CouplingResult:
         vmax: float | None = None,
         figsize: tuple[float, float] = (14, 6),
     ) -> Any:
-        """
-        ASD スペクトログラム + パーセンタイルオーバーレイ（2 列レイアウト）。
+        """ASD スペクトログラム + パーセンタイルオーバーレイ（2 列レイアウト）。.
 
         左パネル: 注入時 ASD spectrogram, 右パネル: 背景時 ASD spectrogram。
         両者に 50%, 90%, 99% パーセンタイルラインを重ねる。
@@ -605,6 +595,7 @@ class CouplingResult:
         ------
         ValueError
             `ts_witness_inj` または `ts_witness_bkg` が None の場合。
+
         """
         import matplotlib.pyplot as plt
         from matplotlib.colors import LogNorm
@@ -711,8 +702,7 @@ class CouplingResult:
         figsize: tuple[float, float] = (12, 4),
         **kwargs: Any,
     ) -> Any:
-        """
-        RMS 時系列プロット（帯域制限付き）。
+        """RMS 時系列プロット（帯域制限付き）。.
 
         Witness / Target チャンネルのローリング RMS を時間軸に表示する。
         `show_windows=True` の場合、背景区間（グレー）と注入区間（赤）を
@@ -750,6 +740,7 @@ class CouplingResult:
         ValueError
             `channels` に応じた TimeSeries が None の場合。
             `channels` の値が不正な場合。
+
         """
         import matplotlib.pyplot as plt
 
@@ -846,8 +837,7 @@ class CouplingResult:
         snrmax: float = 100.0,
         figsize: tuple[float, float] = (12, 6),
     ) -> Any:
-        """
-        SNR スペクトログラム（中央値正規化: (ASD_inj - median_bkg) / median_bkg）。
+        """SNR スペクトログラム（中央値正規化: (ASD_inj - median_bkg) / median_bkg）。.
 
         Parameters
         ----------
@@ -862,6 +852,7 @@ class CouplingResult:
         ------
         ValueError
             `ts_witness_inj` または `ts_witness_bkg` が None の場合。
+
         """
         import matplotlib.pyplot as plt
 
@@ -932,8 +923,7 @@ class CouplingResult:
 
     @classmethod
     def from_txt(cls, filepath: str | os.PathLike) -> CouplingResult:
-        """
-        TXT ファイルから CouplingResult を復元する（ラウンドトリップ用）。
+        """TXT ファイルから CouplingResult を復元する（ラウンドトリップ用）。.
 
         to_txt() で書き出したファイルのみ対応。cf と cf_ul のみ復元し、
         その他フィールドは最小限のダミーで補完する。
@@ -990,8 +980,7 @@ class CouplingResult:
 
 
 class CouplingResultCollection(dict):
-    """
-    複数の CouplingResult を管理するコンテナ。
+    """複数の CouplingResult を管理するコンテナ。.
 
     使用例::
 
@@ -1005,8 +994,7 @@ class CouplingResultCollection(dict):
         super().__init__(mapping or {})
 
     def to_summary_csv(self, filepath: str | os.PathLike) -> None:
-        """
-        全結果を単一 CSV に集約して保存する。
+        """全結果を単一 CSV に集約して保存する。.
 
         列: channel_pair, frequency, cf, cf_ul, significance, inj_asd, bkg_asd
         """
@@ -1038,12 +1026,12 @@ class CouplingResultCollection(dict):
         threshold: float = 3.0,
         figsize: tuple[float, float] = (12, 8),
     ) -> Any:
-        """
-        複数の結合係数を重ねたプロット。
+        """複数の結合係数を重ねたプロット。.
 
         Returns
         -------
         matplotlib.figure.Figure
+
         """
         import matplotlib.pyplot as plt
 
@@ -1087,29 +1075,30 @@ def _compute_rms_timeseries(
     fmin: float | None,
     fmax: float | None,
 ) -> Any:
-    """
-    TimeSeries から帯域制限 RMS 時系列を計算して返す。
+    """Compute the band-limited RMS time series from a TimeSeries.
 
-    Spectrogram（PSD: unit^2/Hz）を `stride=fftlength` で作成し、
-    各時間ビンの PSD を [fmin, fmax] の範囲で台形則積分してルートを取る::
+    A spectrogram is generated with `stride=fftlength`. Each time bin's PSD
+    is integrated over the [fmin, fmax] range using the trapezoidal rule,
+    and the square root is taken::
 
         RMS(t) = sqrt( trapz(PSD(t, f), f) )  for f in [fmin, fmax]
 
     Parameters
     ----------
-    ts : gwpy.timeseries.TimeSeries
-        入力 TimeSeries。
+    ts : TimeSeries
+        Input time series.
     fftlength : float
-        Spectrogram の FFT 長 [s]（= 時間ビン幅）。
+        FFT length [s] for the spectrogram (equal to step size).
     overlap : float
-        Spectrogram のオーバーラップ [秒]。
+        Overlap [s] for the spectrogram.
     fmin, fmax : float or None
-        積分する周波数帯域 [Hz]。None の場合は全帯域。
+        Frequency band [Hz] to integrate. If None, the entire band is used.
 
     Returns
     -------
-    gwpy.timeseries.TimeSeries
-        RMS 時系列（入力 ts と同じ単位）。
+    TimeSeries
+        The resulting RMS time series with the same units as the input.
+
     """
     from gwpy.timeseries import TimeSeries as GWpyTimeSeries
 

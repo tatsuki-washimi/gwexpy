@@ -65,8 +65,7 @@ def _normalize_time_input(t):
 
 
 def to_gps(t, *args, **kwargs):
-    """
-    Convert a given time or array of times to GPS seconds.
+    """Convert a given time or array of times to GPS seconds.
 
     This is a vectorized extension of `gwpy.time.to_gps`. It supports
     single values (strings, datetime, etc.) as well as arrays, pandas Series,
@@ -87,6 +86,7 @@ def to_gps(t, *args, **kwargs):
     float or numpy.ndarray
         The equivalent time in GPS seconds. Returns a float for scalar inputs
         and a numpy.ndarray of floats for array-like inputs.
+
     """
     t_norm = _normalize_time_input(t)
 
@@ -108,8 +108,7 @@ def to_gps(t, *args, **kwargs):
 
 
 def from_gps(gps, *args, **kwargs):
-    """
-    Convert a given GPS time or array of GPS times to datetime objects.
+    """Convert a given GPS time or array of GPS times to datetime objects.
 
     This is a vectorized extension of `gwpy.time.from_gps`. It supports
     single scalar GPS times as well as arrays, pandas Series, and lists.
@@ -128,6 +127,7 @@ def from_gps(gps, *args, **kwargs):
     datetime.datetime or numpy.ndarray
         The equivalent UTC datetime object. Returns a datetime for scalar inputs
         and a numpy.ndarray of datetime objects for array-like inputs.
+
     """
     gps_norm = _normalize_time_input(gps)
 
@@ -147,8 +147,7 @@ def from_gps(gps, *args, **kwargs):
 
 
 def tconvert(t="now", *args, **kwargs):
-    """
-    Convert a time between GPS seconds and UTC datetime.
+    """Convert a time between GPS seconds and UTC datetime.
 
     This function automatically detects the type of the input `t`. If `t` is
     numeric (or an array of numbers), it is assumed to be a GPS time and is
@@ -168,6 +167,7 @@ def tconvert(t="now", *args, **kwargs):
     -------
     float, datetime.datetime, or numpy.ndarray
         The converted time. The return type depends on the input type.
+
     """
     t_norm = _normalize_time_input(t)
 

@@ -1,5 +1,4 @@
-"""
-Response Function Analysis Module for gwexpy.
+"""Response Function Analysis Module for gwexpy.
 
 This module implements the Response Function Model (RFM) based on
 Stepped Sine (Discrete) Injections. It prioritizes statistical significance
@@ -116,8 +115,7 @@ def _compute_response_row(
 
 @dataclass
 class ResponseFunctionResult:
-    """
-    Result object for Stepped Sine Response Function Analysis.
+    """Result object for Stepped Sine Response Function Analysis.
 
     Stores the full spectral data for all injection steps efficiently.
 
@@ -139,6 +137,7 @@ class ResponseFunctionResult:
         Name of the target channel.
     table : SegmentTable, optional
         Underlying segment table containing detailed analysis information.
+
     """
 
     # 2D Data: (Steps x Frequencies)
@@ -155,9 +154,7 @@ class ResponseFunctionResult:
     table: SegmentTable | None = None
 
     def plot(self, ax: Axes | None = None, **kwargs: Any) -> Axes:
-        """
-        Plot the Coupling Factor vs Injected Frequency (The Transfer Function).
-        """
+        """Plot the Coupling Factor vs Injected Frequency (The Transfer Function)."""
         if ax is None:
             fig, ax = plt.subplots(figsize=(8, 5))
 
@@ -180,8 +177,8 @@ class ResponseFunctionResult:
         return ax
 
     def plot_map(self, ax: Axes | None = None, **kwargs: Any) -> Axes:
-        """
-        Plot the 2D Response Map (Injected Freq vs Target Spectrum).
+        """Plot the 2D Response Map (Injected Freq vs Target Spectrum).
+
         Useful to check for non-linear couplings.
         """
         # Create a 2D array: X=Injected Freq, Y=Target Freq, Z=Amplitude
@@ -223,19 +220,20 @@ class ResponseFunctionResult:
         freq_max: float | None = None,
         figsize: tuple[float, float] = (14, 6),
     ) -> Any:
-        """
-        全注入ステップの ASD スペクトルを重ねたプロット。
+        """Plot summary of ASD spectra across all injection steps.
 
         Parameters
         ----------
         freq_min, freq_max : float, optional
-            表示する周波数範囲 [Hz]。
-        figsize : tuple
-            Figure サイズ。
+            Frequency range to display [Hz].
+        figsize : tuple of float, optional
+            Figure size (width, height).
 
         Returns
         -------
         matplotlib.figure.Figure
+            The resulting figure.
+
         """
         fig, ax = plt.subplots(figsize=figsize)
 
@@ -285,23 +283,24 @@ class ResponseFunctionResult:
         freq_max: float | None = None,
         figsize: tuple[float, float] = (14, 10),
     ) -> Any:
-        """
-        2D 応答関数マトリックスと断面図（3 パネルレイアウト）。
+        """Plot 2D response matrix with cross-section profiles (3-panel layout).
 
-        - メインパネル: 時刻 vs 周波数, 色 = ASD amplitude
-        - サイドパネル（右）: 中央の周波数ビンでの時間進化
-        - トップパネル: 中央の時刻ステップでの周波数プロファイル
+        - Main panel: Time vs Frequency, color mapped to ASD amplitude.
+        - Side panel (right): Frequency profile at a central time step.
+        - Top panel: Time evolution at a central frequency bin.
 
         Parameters
         ----------
         freq_min, freq_max : float, optional
-            表示する周波数範囲 [Hz]。
-        figsize : tuple
-            Figure サイズ。
+            Frequency range to display [Hz].
+        figsize : tuple of float, optional
+            Figure size (width, height).
 
         Returns
         -------
         matplotlib.figure.Figure
+            The resulting figure.
+
         """
         from matplotlib.colors import LogNorm
         from matplotlib.gridspec import GridSpec
@@ -386,9 +385,7 @@ class ResponseFunctionResult:
         step_index: int | None = None,
         ax: Axes | None = None,
     ) -> Axes:
-        """
-        Plot ASDs and Upper Limits for a SPECIFIC injection step.
-        """
+        """Plot ASDs and Upper Limits for a SPECIFIC injection step."""
         # Find the step
         if step_index is None and freq is not None:
             step_index = int(np.argmin(np.abs(self.injected_freqs - freq)))
@@ -473,8 +470,7 @@ def detect_step_segments(
     trim_edge: float = 1.0,
     freq_tolerance: float = 2.0,
 ) -> list[tuple[float, float, float]]:
-    """
-    Automatically detect time segments where the injection frequency is constant.
+    """Automatically detect time segments where the injection frequency is constant.
 
     Parameters
     ----------
@@ -503,6 +499,7 @@ def detect_step_segments(
     -------
     list of tuple
         List of (start_time, end_time, frequency) tuples for each detected step.
+
     """
     # High-res tracking spectrogram
     # Note: gwpy requires stride >= fftlength. We use stride=fftlength for tracking.
@@ -569,9 +566,7 @@ def detect_step_segments(
 
 
 class ResponseFunctionAnalysis:
-    """
-    Analysis engine for Stepped Sine Injections.
-    """
+    """Analysis engine for Stepped Sine Injections."""
 
     def compute(
         self,
@@ -624,14 +619,17 @@ class ResponseFunctionAnalysis:
             Explicit background for the target channel.
             Takes precedence over ``bkg_window``.
         bkg_window : tuple of float, optional
-            背景区間の (t_start, t_end) GPS 時刻 tuple。
-            ``witness_bkg`` / ``target_bkg`` が指定されていない場合に使用する。
-            指定された時刻範囲を ``witness`` / ``target`` から切り出して
-            背景データとして利用する。auto_detect よりも優先される。
+            A tuple of (t_start, t_end) GPS times for the background interval.
+            Used if ``witness_bkg`` / ``target_bkg`` are not specified.
+            The specified time range will be cropped from ``witness`` / ``target``
+            and used as background data. Has precedence over auto-detection.
         n_jobs : int, optional
             Number of parallel jobs.
         memory_limit : int
             Memory limit for batch processing [bytes].
+        **kwargs : dict
+            Additional keyword arguments passed to the spectrum calculation.
+
         """
         # --- 0. Resolve bkg_window ---
         if bkg_window is not None:

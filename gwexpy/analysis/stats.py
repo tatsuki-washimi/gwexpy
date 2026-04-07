@@ -1,6 +1,4 @@
-"""
-SpectralStats: Spectral statistics container (mean, sigma, n_avg).
-"""
+"""SpectralStats: Spectral statistics container (mean, sigma, n_avg)."""
 
 from __future__ import annotations
 
@@ -13,8 +11,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class SpectralStats:
-    """
-    Spectral statistics container (mean, sigma, n_avg).
+    """Spectral statistics container (mean, sigma, n_avg).
 
     Attributes
     ----------
@@ -24,6 +21,7 @@ class SpectralStats:
         Standard deviation of the ASD or PSD.
     n_avg : int
         Number of samples used for averaging.
+
     """
 
     mean: FrequencySeries
@@ -31,8 +29,7 @@ class SpectralStats:
     n_avg: int
 
     def significance(self, mu_inj: FrequencySeries) -> FrequencySeries:
-        """
-        Calculate statistical significance: (μ_inj - μ_bkg) / σ_bkg
+        """Calculate statistical significance: (μ_inj - μ_bkg) / σ_bkg.
 
         Parameters
         ----------
@@ -43,6 +40,7 @@ class SpectralStats:
         -------
         FrequencySeries
             Frequency spectrum of the significance: (μ_inj - μ_bkg) / σ_bkg.
+
         """
         return (mu_inj - self.mean) / self.sigma
 
