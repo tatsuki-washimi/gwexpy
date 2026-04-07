@@ -37,6 +37,8 @@ BrucoMetadata: TypeAlias = Mapping[str, BrucoMetadataValue]
 
 
 class BrucoPairSummary(TypedDict):
+    """Summary of coherence for a single target-auxiliary pair."""
+
     channel: str
     max_coherence: float
     freq_at_max: float
@@ -79,8 +81,70 @@ def _resolve_block_size(block_size: int | str | None, n_bins: int, top_n: int) -
 
 
 class FastCoherenceEngine:
-    """
-    Welch coherence engine that caches target FFT/PSD for reuse.
+    """Welch coherence engine optimized for repeated coherence computations.
+
+    The engine caches FFTs / PSD of a *target* TimeSeries so that coherence
+    between that target and multiple auxiliary (witness) TimeSeries can be
+    computed efficiently. It implements an internal Welch-like windowing and
+    scaling to produce coherence estimates compatible with typical `welch`
+    PSD scaling (density).
+
+    Parameters
+    ----------
+    target_data : TimeSeries
+        The target TimeSeries whose FFT and PSD are cached.
+    fftlength : float
+        Segment length in seconds used for FFT (must be positive and large
+        enough that nperseg > 0 for the target sample rate).
+    overlap : float
+        Overlap between segments (in seconds, or fractional overlap if you
+        normalize accordingly). Must be smaller than `fftlength`.
+
+    Attributes
+    ----------
+    sample_rate : float
+        Resolved sample rate in Hz (float).
+    nperseg : int
+        Number of samples per segment (rounded from fftlength * sample_rate).
+    noverlap : int
+        Number of overlap samples.
+    frequencies : numpy.ndarray
+        Frequency bin centers (Hz) corresponding to the cached FFT/PSD.
+    _target_fft : numpy.ndarray
+        Cached complex FFT for each segment of the target (used internally).
+    _target_psd : numpy.ndarray
+        Cached PSD for the target (array of length n_freqs).
+
+    Raises
+    ------
+    ValueError
+        If `fftlength` is too small for the target sample rate or if `noverlap`
+        is not smaller than `nperseg`.
+
+    Notes
+    -----
+    - The engine assumes a Hann window and scales results to produce PSD in
+      units of power per Hz.
+    - When computing coherence with an auxiliary TimeSeries, the auxiliary is
+      resampled to the target sample rate if necessary, and its length is
+      truncated or padded to match the cached target length.
+
+    Methods
+    -------
+    compute_coherence(aux_data)
+        Compute the magnitude-squared coherence between the cached target and
+        `aux_data`. Returns a 1D array over the engine's frequency bins.
+
+    Examples
+    --------
+    >>> from gwexpy.analysis.bruco import FastCoherenceEngine
+    >>> from gwpy.timeseries import TimeSeries
+    >>> ts_target = TimeSeries(np.random.randn(1024), sample_rate=1024.0)
+    >>> engine = FastCoherenceEngine(ts_target, fftlength=1.0, overlap=0.5)
+    >>> ts_aux = TimeSeries(np.random.randn(1024), sample_rate=1024.0)
+    >>> coh = engine.compute_coherence(ts_aux)
+    >>> # coh is a numpy.ndarray with length equal to len(engine.frequencies)
+
     """
 
     def __init__(
@@ -132,6 +196,7 @@ class FastCoherenceEngine:
         return np.lib.stride_tricks.as_strided(data, shape=shape, strides=strides)
 
     def compute_coherence(self, aux_data: TimeSeries) -> np.ndarray:
+        """Compute the magnitude-squared coherence between target and aux_data."""
         if not np.isclose(float(aux_data.sample_rate.value), self.sample_rate):
             aux_data = aux_data.resample(self.sample_rate * u.Hz)
         aux_array = np.asarray(aux_data.value, dtype=float)
@@ -154,8 +219,81 @@ class FastCoherenceEngine:
 
 
 class BrucoResult:
-    """
-    Hold and analyze Bruco results with Top-N coherence per frequency bin.
+    """Hold and analyze Bruco results with Top-N coherence per frequency bin.
+
+    BrucoResult stores the results of a Top-N coherence analysis for a single
+    target channel. It tracks the top-N coherent witness channels per frequency
+    bin and provides utilities to compute noise projections and per-channel
+    projections for visualization and further analysis.
+
+    Parameters
+    ----------
+    frequencies : numpy.ndarray
+        Frequency vector in Hz. Length must match `target_spectrum`.
+    target_name : str
+        Name of the target channel.
+    target_spectrum : numpy.ndarray or FrequencySeries
+        PSD (power spectral density) of the target channel aligned to `frequencies`.
+        If a FrequencySeries is provided, its xindex is expected to match `frequencies`.
+    top_n : int, optional
+        Number of top witness channels to keep per frequency bin (default: 5).
+    metadata : dict | None, optional
+        Optional mapping of metadata values (reporting or provenance).
+    block_size : int or 'auto' or None, optional
+        Number of channels processed per internal block for Top-N updates. Use
+        'auto' to let the engine estimate a block size from memory budget.
+
+    Attributes
+    ----------
+    frequencies : numpy.ndarray
+        Frequency vector (Hz).
+    target_name : str
+        Target channel name.
+    target_spectrum : numpy.ndarray or FrequencySeries
+        Target PSD used as reference for projections.
+    top_n : int
+        Number of top channels recorded per frequency bin.
+    n_bins : int
+        Number of frequency bins (len(frequencies)).
+    block_size : int
+        Resolved block size used for batch Top-N updates.
+    top_coherence : numpy.ndarray
+        Array of shape (n_bins, top_n) with stored coherence values (float).
+    top_channels : numpy.ndarray
+        Object array of shape (n_bins, top_n) with witness channel names (str).
+    metadata : dict
+        User-provided metadata for reporting.
+
+    Notes
+    -----
+    - Internally, coherence values that are invalid are stored as zeros or NaNs
+      depending on the operation; users should consult `valid_mask` (if present)
+      or check for NaNs before numerical aggregation.
+    - `get_noise_projection` returns ASD by default (sqrt of PSD) if `asd=True`.
+
+    Methods
+    -------
+    update_batch(channel_names, coherences)
+        Update Top-N records using a new batch of coherence results.
+    get_noise_projection(rank=0, asd=True, coherence_threshold=0.0)
+        Return (projection, coherence) for the channel at the given rank.
+    projection_for_channel(channel, asd=True, coherence_threshold=0.0)
+        Return the projected (ASD or PSD) spectrum for `channel` as recorded
+        in Top-N across ranks.
+
+    Examples
+    --------
+    >>> from gwexpy.analysis.bruco import BrucoResult
+    >>> import numpy as np
+    >>> freqs = np.linspace(0, 512, 257)
+    >>> target_psd = np.ones_like(freqs)  # example PSD
+    >>> res = BrucoResult(frequencies=freqs, target_name="TGT", target_spectrum=target_psd)
+    >>> # Suppose we have coherences of shape (n_channels, n_bins)
+    >>> channels = ["W1", "W2", "W3"]
+    >>> coherences = np.random.rand(len(channels), len(freqs))
+    >>> res.update_batch(channels, coherences)
+    >>> proj_asd, coh = res.get_noise_projection(rank=0, asd=True)
+
     """
 
     def __init__(
@@ -167,15 +305,6 @@ class BrucoResult:
         metadata: BrucoMetadata | None = None,
         block_size: int | str | None = None,
     ) -> None:
-        """
-        Args:
-            frequencies: Frequency vector (Hz).
-            target_name: Name of the target channel.
-            target_spectrum: PSD of the target channel (same length as frequencies).
-            top_n: Number of top channels to keep per frequency bin.
-            metadata: Optional metadata dict for reporting.
-            block_size: Channels per block in Top-N updates (int or 'auto').
-        """
 
         if top_n < 1:
             raise ValueError("top_n must be >= 1")
@@ -202,13 +331,13 @@ class BrucoResult:
     def update_batch(
         self, channel_names: Sequence[str], coherences: np.ndarray
     ) -> None:
-        """
-        Update the Top-N records with a new batch of results.
+        """Update the Top-N records with a new batch of results.
 
         Args:
             channel_names: List of channel names in this batch.
             coherences: Coherence matrix of shape (n_channels, n_bins).
                         Must align to self.frequencies.
+
         """
         if len(channel_names) == 0:
             return
@@ -289,15 +418,24 @@ class BrucoResult:
         asd: bool = True,
         coherence_threshold: float = 0.0,
     ) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Calculate noise projection for the channel at a specific rank (0 = highest coherence).
+        """Calculate noise projection for the channel at a specific rank.
 
-        Args:
-            asd: If True (default), return ASD projection. If False, return PSD projection.
-            coherence_threshold: Frequencies with coherence below this value contribute zero noise.
+        Parameters
+        ----------
+        rank : int
+            The rank of the witness channel (0 = highest coherence).
+        asd : bool, default=True
+            If True, return ASD projection. If False, return PSD.
+        coherence_threshold : float, default=0.0
+            Coherence values below this are treated as zero.
 
-        Returns:
-            (projection, coherence)
+        Returns
+        -------
+        projection : numpy.ndarray
+            The projected spectrum.
+        coherence : numpy.ndarray
+            The coherence spectrum used for the projection.
+
         """
         if rank >= self.top_n or rank < 0:
             raise ValueError(f"Rank {rank} is out of range for top_n={self.top_n}")
@@ -314,9 +452,7 @@ class BrucoResult:
         asd: bool = True,
         coherence_threshold: float = 0.0,
     ) -> np.ndarray:
-        """
-        Calculate projection spectrum for a specific channel where it appears in Top-N.
-        """
+        """Calculate projection spectrum for a specific channel where it appears in Top-N."""
         projection = np.zeros(self.n_bins, dtype=float)
 
         for rank in range(self.top_n):
@@ -331,9 +467,7 @@ class BrucoResult:
         return projection
 
     def dominant_channel(self, rank: int = 0) -> str | None:
-        """
-        Return the most frequent channel name at a given rank.
-        """
+        """Return the most frequent channel name at a given rank."""
         if rank >= self.top_n or rank < 0:
             raise ValueError(f"Rank {rank} is out of range for top_n={self.top_n}")
         channels = self.top_channels[:, rank]
@@ -348,8 +482,7 @@ class BrucoResult:
         limit: int = 5,
         band: tuple[float, float] | None = None,
     ) -> list[str]:
-        """
-        Get a list of channels ranked by their total coherence contribution.
+        """Get a list of channels ranked by their total coherence contribution.
 
         Args:
             limit: Maximum number of channels to return.
@@ -361,6 +494,7 @@ class BrucoResult:
 
         Returns:
             List of channel names sorted by importance.
+
         """
         if band is not None:
             f_low, f_high = band
@@ -388,8 +522,7 @@ class BrucoResult:
         n: int = 5,
         band: tuple[float, float] | None = None,
     ) -> list[str]:
-        """
-        Return the top-*n* channels ranked by coherence.
+        """Return the top-*n* channels ranked by coherence.
 
         This is a convenience alias for :meth:`get_ranked_channels`.
 
@@ -400,6 +533,7 @@ class BrucoResult:
 
         Returns:
             List of up to *n* channel names, most coherent first.
+
         """
         return self.get_ranked_channels(limit=n, band=band)
 
@@ -411,8 +545,7 @@ class BrucoResult:
         coherence_threshold: float = 0.0,
         save_path: str | None = None,
     ) -> plt.Figure:
-        """
-        Plot coherence spectra for the top-ranked channels.
+        """Plot coherence spectra for the top-ranked channels.
 
         Selects channels via :meth:`topk` (optionally band-limited) and
         delegates to :meth:`plot_coherence`.
@@ -428,6 +561,7 @@ class BrucoResult:
 
         Returns:
             :class:`matplotlib.figure.Figure`
+
         """
         channels = self.topk(n=top_k, band=band)
         return self.plot_coherence(
@@ -442,16 +576,22 @@ class BrucoResult:
         channel: str,
         asd: bool = True,
     ) -> np.ndarray:
-        """
-        Get the coherence spectrum for a specific channel.
+        """Get the coherence spectrum for a specific channel.
+
         Values are NaN where the channel is not in the Top-N.
 
-        Args:
-            channel: Channel name.
-            asd: If True, return Amplitude Coherence. If False, Squared Coherence.
+        Parameters
+        ----------
+        channel : str
+            Channel name.
+        asd : bool, default=True
+            If True, return Amplitude Coherence. If False, Squared Coherence.
 
-        Returns:
+        Returns
+        -------
+        numpy.ndarray
             Coherence spectrum (same length as frequencies).
+
         """
         coherence = np.full(self.n_bins, np.nan, dtype=float)
 
@@ -471,9 +611,7 @@ class BrucoResult:
         asd: bool = True,
         coherence_threshold: float = 0.0,
     ) -> pd.DataFrame:
-        """
-        Convert results to a long-form DataFrame.
-        """
+        """Convert results to a long-form DataFrame."""
         if ranks is None:
             ranks = list(range(self.top_n))
         ranks = [r for r in ranks if 0 <= r < self.top_n]
@@ -517,8 +655,7 @@ class BrucoResult:
         coherence_threshold: float = 0.0,
         save_path: str | None = None,
     ) -> plt.Figure:
-        """
-        Plot target spectrum and noise projections for selected ranks or channels.
+        """Plot target spectrum and noise projections for selected ranks or channels.
 
         Default behavior (ranks=None, channels=None):
             Plots the Top-K contributors (per-channel mode).
@@ -601,16 +738,32 @@ class BrucoResult:
         coherence_threshold: float = 0.0,
         save_path: str | None = None,
     ) -> plt.Figure:
-        """
-        Plot coherence spectrum for selected ranks or channels.
+        """Plot coherence spectrum for selected ranks or channels.
 
         Default behavior (ranks=None, channels=None):
             Plots the Top-K contributors (per-channel mode).
 
-        Args:
-            asd: If True (default), plot Amplitude Coherence (sqrt(Coh^2)).
-                 If False, plot Squared Coherence (Coh^2).
-            coherence_threshold: Draw a horizontal line at this value (default 0.0=off).
+        Parameters
+        ----------
+        ranks : list of int, optional
+            Ranks to plot (e.g., [0, 1] for Top-1 and Top-2).
+        channels : list of str, optional
+            Specific channel names to plot.
+        max_channels : int, default=3
+            Maximum number of channels to plot.
+        asd : bool, default=True
+            If True, plot Amplitude Coherence (sqrt(Coh^2)).
+            If False, plot Squared Coherence (Coh^2).
+        coherence_threshold : float, default=0.0
+            Draw a horizontal line at this value (0.0=off).
+        save_path : str, optional
+            Optional file path to save the figure.
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+            The generated figure.
+
         """
         if ranks is None and channels is None:
             channels = self.get_ranked_channels(max_channels)
@@ -676,14 +829,26 @@ class BrucoResult:
         plot_ranks: int = 3,
         asd: bool = True,
     ) -> str:
-        """
-        Generate an HTML report with plots and data summary.
+        """Generate an HTML report with plots and data summary.
 
-        Args:
-            asd: If True (default), report and plots use ASD units.
+        Parameters
+        ----------
+        output_dir : str
+            Directory to save the report and plots.
+        max_rows : int, default=2000
+            Maximum rows for the frequency table.
+        coherence_threshold : float, default=0.5
+            Threshold for significant peaks and color coding.
+        plot_ranks : int, default=3
+            Number of Top-N ranks to include in plots.
+        asd : bool, default=True
+            If True, report and plots use ASD units.
 
-        Returns:
+        Returns
+        -------
+        str
             Path to the generated HTML file.
+
         """
         os.makedirs(output_dir, exist_ok=True)
 
@@ -825,13 +990,33 @@ class BrucoResult:
 
 
 class Bruco:
-    """
-    Brute force Coherence (Bruco) scanner.
+    """Brute force Coherence (Bruco) scanner.
 
-    Attributes:
-        target (str): The name of the target channel (e.g., DARM).
-        aux_channels (List[str]): List of auxiliary channels to scan.
-        excluded (List[str]): List of channels to exclude from analysis.
+    The scanner facilitates large-scale coherence searches between a target
+    channel and a list of auxiliary (witness) channels. It handles data
+    fetching, batching, and parallelized coherence computation.
+
+    Parameters
+    ----------
+    target_channel : str
+        The main channel to analyze (e.g., 'H1:GDS-CALIB_STRAIN_CLEAN').
+    aux_channels : list of str
+        A list of all available auxiliary channels to scan.
+    excluded_channels : list of str, optional
+        Channels to ignore (e.g., specific calibration lines or known
+        self-coupling channels).
+
+    Attributes
+    ----------
+    target : str
+        The name of the target channel.
+    aux_channels : list of str
+        The original list of auxiliary channels.
+    excluded : set of str
+        The set of excluded channel names.
+    channels_to_scan : list of str
+        The final sorted list of channels to be scanned (aux - excluded - target).
+
     """
 
     def __init__(
@@ -840,13 +1025,13 @@ class Bruco:
         aux_channels: list[str],
         excluded_channels: list[str] | None = None,
     ) -> None:
-        """
-        Initialize the Bruco scanner.
+        """Initialize the Bruco scanner.
 
         Args:
             target_channel (str): The main channel to analyze.
             aux_channels (List[str]): A list of all available auxiliary channels.
             excluded_channels (List[str], optional): Channels to ignore (e.g., calibration lines).
+
         """
         self.target = str(target_channel)
         self.aux_channels = [str(c) for c in aux_channels]
@@ -878,25 +1063,46 @@ class Bruco:
         aux_data: TimeSeriesDict | Iterable[TimeSeries] | None = None,
         preprocess_batch: Callable[[TimeSeriesDict], TimeSeriesDict] | None = None,
     ) -> BrucoResult:
-        """
-        Execute the coherence scan.
+        """Execute the coherence scan and return the results.
 
-        Args:
-            start (int or float, optional): GPS start time. Required if not inferable from data.
-            duration (int, optional): Duration of data in seconds. Required if not inferable.
-            fftlength (float): FFT length in seconds.
-            overlap (float): Overlap in seconds.
-            parallel (int): Number of parallel jobs for reading data and computing coherence.
-            batch_size (int): Channels per batch.
-            top_n (int): Number of top channels to keep per frequency bin.
-            block_size (int or 'auto', optional): Channels per block in Top-N updates.
-            target_data (TimeSeries, optional): Pre-loaded target channel data.
-            aux_data (TimeSeriesDict or Iterable[TimeSeries], optional): Pre-loaded auxiliary channels data.
-                         Can be a dictionary-like object or an iterable/generator yielding TimeSeries.
-            preprocess_batch (Callable, optional): Batch preprocessing callback.
+        Parameters
+        ----------
+        start : int or float, optional
+            GPS start time. Required if not inferable from data.
+        duration : int, optional
+            Duration of data in seconds. Required if not inferable.
+        fftlength : float, default=2.0
+            FFT length in seconds.
+        overlap : float, default=1.0
+            Overlap in seconds.
+        parallel : int, default=4
+            Number of parallel jobs for reading data and computing coherence.
+        batch_size : int, default=100
+            Number of channels processed per fetch/compute batch.
+        top_n : int, default=5
+            Number of top channels to keep per frequency bin in the result.
+        block_size : int or 'auto', optional
+            Channels per internal block in Top-N updates.
+        target_data : TimeSeries, optional
+            Pre-loaded target channel data. If provided, `start` and `duration`
+            can be inferred.
+        aux_data : TimeSeriesDict or Iterable[TimeSeries], optional
+            Pre-loaded auxiliary channels data. Can be a dictionary or a
+            generator yielding TimeSeries.
+        preprocess_batch : callable, optional
+            Optional callback to preprocess each batch of TimeSeriesDict.
 
-        Returns:
-            BrucoResult: Object containing frequency-wise analysis results.
+        Returns
+        -------
+        BrucoResult
+            Object containing frequency-wise Top-N analysis results.
+
+        Raises
+        ------
+        ValueError
+            If `start`/`duration` are missing and cannot be inferred, or if
+            `fftlength` exceeds `duration`.
+
         """
         # --- 0. Infer start/duration if missing ---
         if start is None or duration is None:
@@ -1217,8 +1423,8 @@ class Bruco:
         parallel: int,
         target_frequencies: np.ndarray,
     ) -> list[tuple[str, np.ndarray] | None]:
-        """
-        Helper method to process a single batch.
+        """Process a single batch of channels.
+
         Passes target_frequencies to worker to ensure alignment.
         """
         aux_list = list(aux_dict.values())
@@ -1263,8 +1469,8 @@ class Bruco:
         overlap: float,
         target_frequencies: np.ndarray,
     ) -> tuple[str, np.ndarray] | None:
-        """
-        Worker: Calculate coherence and align to target frequencies.
+        """Calculate coherence and align to target frequencies (Worker).
+
         Returns (channel_name, coherence_values_aligned).
         """
         try:
@@ -1458,9 +1664,7 @@ class Bruco:
         fftlength: float,
         overlap: float,
     ) -> BrucoPairSummary:
-        """
-        Convenience helper to summarize coherence for a single pair.
-        """
+        """Summarize coherence for a single target-auxiliary pair."""
         coh = target.coherence(aux, fftlength=fftlength, overlap=overlap)
         coh_val = coh.value
         coh_freqs = coh.frequencies.value

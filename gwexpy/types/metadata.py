@@ -779,34 +779,41 @@ class MetaDataMatrix(np.ndarray):
 # =============================
 
 
-def get_unit(obj):
-    """Extract or infer the physical unit from a given object.
+def get_unit(obj) -> u.UnitBase:
+    """Obtain an `astropy` unit for a variety of input types.
 
-    This function attempts to safely extract an `astropy.units.UnitBase`
-    object from various types of inputs (numeric, astropy Quantity, GWpy Series,
-    GWexpy MetaData, etc.). If no unit can be found or interpreted, it defaults
-    to a dimensionless unit.
+    This helper returns an `astropy.units.UnitBase` instance describing the
+    physical unit associated with `obj`. It is used to canonicalize units
+    across metadata and to supply a reasonable default (dimensionless) for
+    inputs without explicit units.
 
     Parameters
     ----------
-    obj : Any
-        The object from which to extract the unit. Supported types include
-        numeric scalars, `astropy.units.UnitBase`, `astropy.units.Quantity`,
-        `gwpy.types.Series`, `gwexpy.types.MetaData`, or any object with
-        a `unit` attribute.
+    obj : MetaData, astropy.units.Quantity, gwpy Series/TimeSeries/Array, or scalar
+        The object whose unit is to be determined. Supported inputs:
+        - MetaData: return `obj.unit`.
+        - astropy Quantity: return `obj.unit`.
+        - gwpy Series/TimeSeries/FrequencySeries/Array: attempt to return
+          `obj.unit` (or `obj.unit`-equivalent attribute).
+        - Plain numeric scalars (int/float) or numpy arrays without unit:
+          treated as dimensionless.
 
     Returns
     -------
     astropy.units.UnitBase
-        The extracted unit, or `u.dimensionless_unscaled` if none could be found.
+        The resolved unit. If resolution fails, `astropy.units.dimensionless_unscaled`
+        is returned.
 
     Examples
     --------
     >>> from astropy import units as u
-    >>> from gwexpy.types.metadata import get_unit
-    >>> q = 5.0 * u.m
-    >>> get_unit(q)
+    >>> get_unit(3.0 * u.m)
     Unit("m")
+    >>> md = MetaData(unit="s")
+    >>> get_unit(md)
+    Unit("s")
+    >>> get_unit(5.0)
+    Unit("dimensionless")
     >>> get_unit(3.14)
     Unit(dimensionless)
 
