@@ -21,7 +21,7 @@ from gwpy.types.array import Array
 from gwpy.types.series import Series
 
 if TYPE_CHECKING:
-    import pandas as pandas_module
+    pass
 
 _UFUNC_ABS_REAL = {np.abs, np.negative, np.positive, np.real, np.imag}
 _UFUNC_CONJ = {np.conjugate, np.conj}
@@ -45,6 +45,51 @@ from gwpy.timeseries import TimeSeries
 
 
 class MetaData(dict):
+    """
+    A dictionary-like container for metadata describing a single data object.
+
+    This class serves as the core metadata container for channels, parameters,
+    or matrix rows/columns in GWexpy. It ensures type safety and consistency
+    for crucial physical attributes, particularly the physical unit.
+
+    Parameters
+    ----------
+    name : str, optional
+        A human-readable name or label (default: "").
+    channel : str or gwpy.detector.Channel, optional
+        The data channel associated with this metadata (default: "").
+    unit : str, astropy.units.UnitBase, or pint.Unit, optional
+        The physical unit of the data. Automatically converted to an
+        `astropy.units.UnitBase` instance (default: dimensionless).
+    **kwargs
+        Additional arbitrary metadata key-value pairs.
+
+    Attributes
+    ----------
+    name : str
+        The human-readable name.
+    channel : gwpy.detector.Channel
+        The associated data channel.
+    unit : astropy.units.UnitBase
+        The physical unit of the data.
+
+    Examples
+    --------
+    >>> from gwexpy.types.metadata import MetaData
+    >>> from astropy import units as u
+    >>> meta = MetaData(name="strain", channel="H1:STRAIN", unit="m")
+    >>> meta.unit
+    Unit("m")
+    >>> meta.name
+    'strain'
+
+    Notes
+    -----
+    When performing arithmetic with `MetaData` instances (e.g., using NumPy ufuncs),
+    the `unit` attribute is automatically propagated correctly. For example,
+    multiplying two `MetaData` objects will result in a new `MetaData` object
+    with the multiplied units.
+    """
     def __init__(self, **kwargs):
         kwargs.setdefault("name", "")
         kwargs.setdefault("channel", "")
@@ -707,6 +752,37 @@ class MetaDataMatrix(np.ndarray):
 
 
 def get_unit(obj):
+    """
+    Extract or infer the physical unit from a given object.
+
+    This function attempts to safely extract an `astropy.units.UnitBase`
+    object from various types of inputs (numeric, astropy Quantity, GWpy Series,
+    GWexpy MetaData, etc.). If no unit can be found or interpreted, it defaults
+    to a dimensionless unit.
+
+    Parameters
+    ----------
+    obj : Any
+        The object from which to extract the unit. Supported types include
+        numeric scalars, `astropy.units.UnitBase`, `astropy.units.Quantity`,
+        `gwpy.types.Series`, `gwexpy.types.MetaData`, or any object with
+        a `unit` attribute.
+
+    Returns
+    -------
+    astropy.units.UnitBase
+        The extracted unit, or `u.dimensionless_unscaled` if none could be found.
+
+    Examples
+    --------
+    >>> from astropy import units as u
+    >>> from gwexpy.types.metadata import get_unit
+    >>> q = 5.0 * u.m
+    >>> get_unit(q)
+    Unit("m")
+    >>> get_unit(3.14)
+    Unit(dimensionless)
+    """
     if isinstance(obj, (int, float, complex, np.number)):
         return u.dimensionless_unscaled
     elif isinstance(obj, u.UnitBase):

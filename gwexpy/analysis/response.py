@@ -120,6 +120,25 @@ class ResponseFunctionResult:
     Result object for Stepped Sine Response Function Analysis.
 
     Stores the full spectral data for all injection steps efficiently.
+
+    Attributes
+    ----------
+    spectrogram_inj : Spectrogram
+        The measured spectrogram of the target channel during the injection steps.
+    spectrogram_bkg : Spectrogram
+        The background spectrogram of the target channel for the injection steps.
+    injected_freqs : numpy.ndarray
+        Array of injected frequencies [Hz] corresponding to each step.
+    step_times : numpy.ndarray
+        Array of GPS start times corresponding to each step.
+    coupling_factors : numpy.ndarray
+        Representative coupling factors evaluated at each injection frequency.
+    witness_name : str
+        Name of the witness channel.
+    target_name : str
+        Name of the target channel.
+    table : SegmentTable, optional
+        Underlying segment table containing detailed analysis information.
     """
 
     # 2D Data: (Steps x Frequencies)
