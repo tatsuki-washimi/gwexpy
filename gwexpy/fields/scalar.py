@@ -18,57 +18,59 @@ __all__ = ["ScalarField"]
 
 
 class ScalarField(FieldBase):
-    """4D Field with domain states and FFT operations.
+    """A 4-dimensional scalar field with domain tracking.
 
-    This class extends :class:`Array4D` to represent physical fields that
-    can exist in different domains (time/frequency for axis 0, real/k-space
-    for spatial axes 1-3).
-
-    **Key feature**: All indexing operations return a ScalarField, maintaining
-    4D structure. Integer indices result in axes with length 1 rather than
-    being dropped.
+    `ScalarField` represents a physical field defined on a 4D grid
+    (typically 1 time and 3 spatial dimensions). It supports domain
+    transformations (Fourier transforms) while preserving coordinate
+    metadata and units.
 
     Parameters
     ----------
     data : array-like
         4-dimensional input data.
-    unit : `~astropy.units.Unit`, optional
-        Physical unit of the data.
-    axis0 : `~astropy.units.Quantity` or array-like, optional
-        Index values for axis 0 (time or frequency).
-    axis1 : `~astropy.units.Quantity` or array-like, optional
-        Index values for axis 1 (x or kx).
-    axis2 : `~astropy.units.Quantity` or array-like, optional
-        Index values for axis 2 (y or ky).
-    axis3 : `~astropy.units.Quantity` or array-like, optional
-        Index values for axis 3 (z or kz).
-    axis_names : iterable of str, optional
-        Names for each axis (length 4). Defaults based on domain.
-    axis0_domain : {'time', 'frequency'}, optional
-        Domain of axis 0. Default is 'time'.
-    space_domain : {'real', 'k'} or dict, optional
-        Domain of spatial axes. If str, applies to all spatial axes.
-        If dict, maps axis names to domains. Default is 'real'.
-    **kwargs
-        Additional keyword arguments passed to :class:`Array4D`.
 
-    Attributes
-    ----------
-    axis0_domain : str
-        Current domain of axis 0 ('time' or 'frequency').
-    space_domains : dict
-        Mapping of spatial axis names to their domains ('real' or 'k').
+    unit : `str`, `~astropy.units.Unit`, optional
+        Physical unit of the field values.
+
+    axis0 : array-like, optional
+        Coordinate values for axis 0 (Time or Frequency).
+
+    axis1, axis2, axis3 : array-like, optional
+        Coordinate values for spatial axes.
+
+    axis_names : iterable of str, optional
+        Names for each axis (length 4).
+
+    axis0_domain : {'time', 'frequency'}, optional
+        Initial domain of the first axis.
+
+    space_domain : {'real', 'k'} or dict, optional
+        Initial domain of the spatial axes.
+
+    **kwargs
+        Additional keyword arguments passed to `FieldBase`.
+
+    Notes
+    -----
+    A key feature of `ScalarField` is that slicing always returns a
+    4D `ScalarField`. Integer indices are automatically converted to
+    length-1 slices to prevent dimension loss.
 
     Examples
     --------
     >>> import numpy as np
-    >>> from astropy import units as u
     >>> from gwexpy.fields import ScalarField
-    >>> data = np.random.randn(100, 32, 32, 32)
-    >>> times = np.arange(100) * 0.01 * u.s
-    >>> x = np.arange(32) * 1.0 * u.m
-    >>> field = ScalarField(data, axis0=times, axis1=x, axis2=x, axis3=x,
-    ...                 axis_names=['t', 'x', 'y', 'z'])
+    >>> data = np.ones((2, 2, 2, 2))
+    >>> sf = ScalarField(data, axis0=[0, 1], axis1=[0, 1],
+    ...                  axis2=[0, 1], axis3=[0, 1])
+    >>> sf
+    <ScalarField([[[[1., 1.],
+                    [1., 1.]],
+    ...
+                 axis0_domain='time',
+                 space_domains={'x': 'real', 'y': 'real', 'z': 'real'},
+                 axis0_offset=None)>
     """
 
     _axis0_index: IndexLike
@@ -232,34 +234,29 @@ class ScalarField(FieldBase):
             )
 
     def fft_time(self, nfft: int | None = None) -> ScalarField:
-        """Compute FFT along time axis (axis 0).
+        """Compute FFT along the time axis (axis 0).
 
-        This method applies the same normalization as GWpy's
-        ``TimeSeries.fft()``: rfft / nfft, with DC-excluded bins
-        multiplied by 2 (except Nyquist bin for even nfft).
+        Transforms the field from 'time' to 'frequency' domain using
+        `scipy.fft.rfft`, applying GWpy-style half-sided normalization.
 
         Parameters
         ----------
         nfft : int, optional
-            Length of the FFT. If None, uses the length of axis 0.
+            Length of the FFT. Defaults to the length of axis 0.
 
         Returns
         -------
         ScalarField
-            Transformed field with ``axis0_domain='frequency'``.
+            A new field with `axis0_domain='frequency'`.
 
-        Raises
-        ------
-        ValueError
-            If ``axis0_domain`` is not 'time'.
-        ValueError
-            If time axis length < 2 or is irregularly spaced.
-        TypeError
-            If input data is complex-valued.
+        Notes
+        -----
+        Normalizes by `1/nfft` and doubles non-DC/non-Nyquist bins to preserve
+        amplitude.
 
         See Also
         --------
-        gwpy.timeseries.TimeSeries.fft : The reference implementation.
+        gwpy.timeseries.TimeSeries.fft : The underlying transformation.
         """
         if self._axis0_domain != "time":
             raise ValueError(
@@ -1195,7 +1192,10 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> fig, ax = field.plot_map2d('xy', at={'t': 0.5 * u.s, 'z': 0.0 * u.m})
+        >>> import numpy as np
+        >>> from gwexpy.fields import ScalarField
+        >>> sf = ScalarField(np.ones((1, 10, 10, 1)))
+        >>> fig, ax = sf.plot_map2d('xy', at={'z': 0.0}) # doctest: +SKIP
         """
         import matplotlib.pyplot as plt
 
@@ -1326,8 +1326,10 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> points = [(1.0 * u.m, 2.0 * u.m, 3.0 * u.m)]
-        >>> fig, ax = field.plot_timeseries_points(points)
+        >>> import numpy as np
+        >>> from gwexpy.fields import ScalarField
+        >>> sf = ScalarField(np.ones((1024, 1, 1, 1)))
+        >>> psd = sf.compute_psd((0, 0, 0)) # doctest: +SKIP
         """
         import matplotlib.pyplot as plt
 
@@ -1387,9 +1389,10 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> fig, ax = field.plot_profile(
-        ...     'x', at={'t': 0.5 * u.s, 'y': 0.0 * u.m, 'z': 0.0 * u.m}
-        ... )
+        >>> import numpy as np
+        >>> from gwexpy.fields import ScalarField
+        >>> sf = ScalarField(np.ones((2, 4, 4, 1)))
+        >>> fig, ax = sf.plot_profile('x', at={'t': 0.5 * u.s, 'y': 0.0 * u.m, 'z': 0.0 * u.m}) # doctest: +SKIP
         """
         import matplotlib.pyplot as plt
 
@@ -1456,8 +1459,11 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> diff_field = field1.diff(field2)
-        >>> ratio_field = field1.diff(field2, mode='ratio')
+        >>> import numpy as np
+        >>> from gwexpy.fields import ScalarField
+        >>> sf = ScalarField(np.ones((2, 2, 2, 2)))
+        >>> sf # doctest: +ELLIPSIS
+        <ScalarField(2, 2, 2, 2)@time, 1.0>
         """
         from astropy import units as u
 
@@ -1522,8 +1528,12 @@ class ScalarField(FieldBase):
 
         Examples
         --------
+        >>> import numpy as np
         >>> from astropy import units as u
-        >>> zscore_field = field.zscore(baseline_t=(0 * u.s, 1 * u.s))
+        >>> from gwexpy.fields import ScalarField
+        >>> sf = ScalarField(np.ones((100, 2, 2, 2)), axis0=np.arange(100)*u.s)
+        >>> sf.zscore(baseline_t=(0 * u.s, 1 * u.s)) # doctest: +ELLIPSIS
+        <ScalarField(100, 2, 2, 2)@time, ...>
         """
         from astropy import units as u
 
@@ -1600,9 +1610,11 @@ class ScalarField(FieldBase):
 
         Examples
         --------
+        >>> import numpy as np
+        >>> from gwexpy.fields import ScalarField
         >>> from astropy import units as u
-        >>> mean_map = field.time_stat_map('mean', t_range=(0 * u.s, 1 * u.s))
-        >>> mean_map.plot_map2d('xy')
+        >>> sf = ScalarField(np.ones((100, 2, 2, 2)), axis0=np.arange(100)*u.s)
+        >>> mean_map = sf.time_stat_map('mean', t_range=(0 * u.s, 1 * u.s))
         """
         from gwexpy.plot._coord import nearest_index
 
@@ -1693,8 +1705,11 @@ class ScalarField(FieldBase):
 
         Examples
         --------
+        >>> import numpy as np
         >>> from astropy import units as u
-        >>> t, x, data = field.time_space_map('x', at={'y': 0 * u.m, 'z': 0 * u.m})
+        >>> from gwexpy.fields import ScalarField
+        >>> sf = ScalarField(np.ones((100, 10, 1, 1)))
+        >>> t, x, data = sf.time_space_map('x', at={'y': 0 * u.m, 'z': 0 * u.m})
         """
         from gwexpy.plot._coord import nearest_index, select_value, slice_from_index
 
@@ -1800,7 +1815,11 @@ class ScalarField(FieldBase):
 
         Examples
         --------
-        >>> fig, ax = field.plot_time_space_map('x', at={'y': 0*u.m, 'z': 0*u.m})
+        >>> import numpy as np
+        >>> from gwexpy.fields import ScalarField
+        >>> from astropy import units as u
+        >>> sf = ScalarField(np.ones((100, 4, 1, 1)), axis1=np.arange(4)*u.m)
+        >>> fig, ax = sf.plot_time_space_map('x') # doctest: +SKIP
         """
         import matplotlib.pyplot as plt
 

@@ -34,15 +34,70 @@ class TimeSeriesMatrix(  # type: ignore[misc]
     TimeSeriesMatrixInteropMixin,
     SeriesMatrix,
 ):
-    """
-    2D Matrix container for multiple TimeSeries objects sharing a common time axis.
+    """A 2D matrix of TimeSeries objects sharing a common time axis.
 
-    This class represents a 2-dimensional array (rows x columns) where each element corresponds
-    to a TimeSeries data stream. Crucially, **all elements in the matrix share the same time array**
-    (same `t0`, `dt`, and number of samples). It behaves like a multivariate time series
-    organized in a grid structure.
+    `TimeSeriesMatrix` represents a 2-dimensional array (rows x columns)
+    where each element is a `TimeSeries`. All elements in the matrix
+    must share the same time synchronization (same `t0`, `dt`, and
+    number of samples).
 
-    Provides dt, t0, times aliases and constructs FrequencySeriesMatrix via FFT.
+    This class is ideal for representing multi-channel data from a
+    detector sub-system or a set of sensors where the spatial or logical
+    relationship is best represented as a grid.
+
+    Parameters
+    ----------
+    data : array-like
+        The data values for the matrix. Should be of shape
+        `(rows, columns, samples)`.
+
+    times : array-like, optional
+        The time values corresponding to each sample. If provided,
+        `dt` and `t0` are ignored.
+
+    dt : `float`, `~astropy.units.Quantity`, optional
+        The time step between samples.
+
+    t0 : `float`, `~astropy.units.Quantity`, optional
+        The start time of the data.
+
+    sample_rate : `float`, `~astropy.units.Quantity`, optional
+        The sample rate of the data (1/dt).
+
+    epoch : `float`, `~astropy.units.Quantity`, optional
+        The epoch of the data.
+
+    **kwargs
+        Additional keyword arguments:
+        - `channel_names`: list of strings for channel labels.
+        - `unit`: physical unit of the data.
+        - `name`: descriptive title for the matrix.
+
+    Notes
+    -----
+    `TimeSeriesMatrix` supports element-wise signal processing (e.g.,
+    `detrend`, `filter`, `resample`) and bivariate spectral methods
+    (e.g., `csd`, `coherence`) between matrices.
+
+    Key methods:
+
+    .. autosummary::
+
+       ~TimeSeriesMatrix.plot
+       ~TimeSeriesMatrix.fft
+       ~TimeSeriesMatrix.psd
+       ~TimeSeriesMatrix.csd
+       ~TimeSeriesMatrix.coherence
+       ~TimeSeriesMatrix.to_dict
+
+    Examples
+    --------
+    >>> from gwexpy.timeseries import TimeSeriesMatrix
+    >>> import numpy as np
+    >>> data = np.ones((2, 2, 3))
+    >>> tsm = TimeSeriesMatrix(data, sample_rate=1, unit='m')
+    >>> tsm
+    <SeriesMatrix shape=(2, 2, 3) rows=('row0', 'row1') cols=('col0', 'col1')>
     """
 
     series_class = TimeSeries
@@ -63,30 +118,11 @@ class TimeSeriesMatrix(  # type: ignore[misc]
         epoch: Any = None,
         **kwargs: Any,
     ) -> TimeSeriesMatrix:
-        """
-        Create a new TimeSeriesMatrix.
+        """Create a new TimeSeriesMatrix.
 
-        Parameters
-        ----------
-        data : array_like, optional
-            The data values for the matrix. Should be of shape (rows, cols, samples).
-        times : array_like, optional
-            The time values corresponding to each sample. If provided, `dt` and `t0` are ignored.
-        dt : float, astropy.units.Quantity, optional
-            The time step between samples.
-        t0 : float, astropy.units.Quantity, optional
-            The start time of the data.
-        sample_rate : float, astropy.units.Quantity, optional
-            The sample rate of the data (1/dt).
-        epoch : float, astropy.units.Quantity, optional
-            The epoch of the data.
-        **kwargs
-            Additional keyword arguments.
-            Supported: `channel_names`, `xunit`, `unit`, `name`, `meta`.
-
-        Returns
-        -------
-        TimeSeriesMatrix
+        This constructor extends the standard `SeriesMatrix` by adding support 
+        for time-domain metadata (`t0`, `dt`, `sample_rate`) and automatic 
+        GPS time coercion.
         """
         import warnings
 

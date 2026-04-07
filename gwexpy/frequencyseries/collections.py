@@ -261,7 +261,53 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
 
 @as_series_dict_class(FrequencySeries)
 class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]):
-    """Ordered mapping of `FrequencySeries` objects keyed by label."""
+    """A dictionary of FrequencySeries, indexed by name.
+
+    `FrequencySeriesDict` is a specialized dictionary designed to hold
+    and manipulate multiple `FrequencySeries` objects simultaneously.
+    It provides batch processing methods (e.g., `zpk`, `filter`, `smooth`)
+    that operate on all entries at once, and supports advanced I/O for
+    multi-channel data (HDF5, Zarr, CSV).
+
+    Parameters
+    ----------
+    *args
+        A mapping or iterable of `(key, FrequencySeries)` pairs.
+
+    **kwargs
+        Additional keyword arguments for the dictionary.
+
+    Notes
+    -----
+    This class is highly interoperable, supporting conversions to and from
+    Pandas DataFrames and Xarray Datasets. It also supports matrix
+    conversion via `to_matrix()`.
+
+    Key methods:
+
+    .. autosummary::
+
+       ~FrequencySeriesDict.read
+       ~FrequencySeriesDict.write
+       ~FrequencySeriesDict.plot
+       ~FrequencySeriesDict.zpk
+       ~FrequencySeriesDict.smooth
+       ~FrequencySeriesDict.to_pandas
+
+    Examples
+    --------
+    >>> from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
+    >>> fsd = FrequencySeriesDict()
+    >>> fsd['H1'] = FrequencySeries([1, 2], df=1)
+    >>> fsd
+    FrequencySeriesDict([('H1', <FrequencySeries([1, 2],
+                     unit=Unit(dimensionless),
+                     f0=<Quantity 0. Hz>,
+                     df=<Quantity 1. Hz>,
+                     epoch=None,
+                     name=None,
+                     channel=None)>)])
+    """
 
     EntryClass = FrequencySeries
 
@@ -783,7 +829,42 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
 
 
 class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]):
-    """List of `FrequencySeries` objects."""
+    """A list of FrequencySeries objects.
+
+    `FrequencySeriesList` is a specialized list designed to hold and
+    manipulate multiple `FrequencySeries` objects. It provides batch
+    processing methods that operate on all entries at once.
+
+    Parameters
+    ----------
+    *args
+        An iterable of `FrequencySeries` objects.
+
+    Notes
+    -----
+    Key methods:
+
+    .. autosummary::
+
+       ~FrequencySeriesList.plot
+       ~FrequencySeriesList.append
+       ~FrequencySeriesList.extend
+       ~FrequencySeriesList.zpk
+       ~FrequencySeriesList.smooth
+
+    Examples
+    --------
+    >>> from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
+    >>> fsl = FrequencySeriesList([FrequencySeries([1, 2], df=1)])
+    >>> fsl
+    [<FrequencySeries([1, 2],
+                     unit=Unit(dimensionless),
+                     f0=<Quantity 0. Hz>,
+                     df=<Quantity 1. Hz>,
+                     epoch=None,
+                     name=None,
+                     channel=None)>]
+    """
 
     EntryClass = FrequencySeries
 

@@ -18,25 +18,50 @@ class Histogram(
     HistogramRebinMixin,
     HistogramCoreMixin,
 ):
-    """
-    A unified 1D Histogram representation preserving astropy.units.
+    """A 1D Histogram representation with physical units and uncertainty.
 
-    Unlike TimeSeries/FrequencySeries, Histogram is not an instance of ndarray,
-    but instead a composite holding `values`, `edges`, `cov`, and `sumw2` attributes.
-    All properties expose proper astropy Quantities to maintain physical consistency.
+    `Histogram` stores a 1-dimensional distribution of values across a
+    set of bin edges. It maintains physical consistency using
+    `astropy.units` and provides robust uncertainty tracking via
+    covariance matrices and sum-of-weights-squared.
+
+    Parameters
+    ----------
+    values : array-like or `~astropy.units.Quantity`
+        The counts or integrated values in each bin.
+
+    edges : array-like or `~astropy.units.Quantity`
+        The bin boundaries (length n_bins + 1).
+
+    unit : `str`, `~astropy.units.Unit`, optional
+        Unit for `values`.
+
+    xunit : `str`, `~astropy.units.Unit`, optional
+        Unit for `edges`.
+
+    cov : array-like or `~astropy.units.Quantity`, optional
+        Covariance matrix for the bin values.
+
+    sumw2 : array-like or `~astropy.units.Quantity`, optional
+        Sum of squared weights per bin for statistical error tracking.
+
+    **kwargs
+        Additional attributes like `name`, `channel`, `underflow`, etc.
 
     Notes
     -----
-    ``Histogram`` maintains two attributes for error tracking:
+    The uncertainty is tracked in two ways:
 
-    1. ``sumw2`` stores the sum of squared weights per bin and tracks the
-       uncorrelated statistical variance.
-    2. ``cov`` stores the full covariance matrix. Its diagonal should include the
-       same statistical variance represented by ``sumw2``.
+    1. `sumw2`: Statistical (uncorrelated) variance per bin.
+    2. `cov`: Full covariance matrix. The diagonal of `cov` must stay
+       consistent with `sumw2`.
 
-    When filling the histogram, both quantities are updated to keep the
-    uncertainty bookkeeping consistent.
-
+    Examples
+    --------
+    >>> from gwexpy.histogram import Histogram
+    >>> h = Histogram([1, 2], [0, 1, 2])
+    >>> h
+    <Histogram (nbins=2, unit=)>
     """
 
     def __init__(
@@ -156,29 +181,35 @@ class Histogram(
         self.channel = channel
 
     def fill(self, data: Any, weights: Any = None) -> Histogram:
-        """
-        Fill the histogram with new data points.
+        """Fill the histogram with new data points.
 
-        This method calculates the occurrence counts for the given data
-        within the existing bin edges and adds them to the current values.
-
-        Statistical Error Tracking (Double Management Rule):
-        It updates both `sumw2` and the diagonal of `cov` if they are present.
-        The diagonal of `cov` is updated with the new statistical variance
-        derived from weights (or counts if weights are None).
+        Calculates occurrence counts for the given data within current
+        edges and increments existing values.
 
         Parameters
         ----------
-        data : array-like or Quantity
-            Data points to be added to the histogram.
-        weights : array-like or Quantity, optional
-            Weights for each data point. If a Quantity, it is converted to
-            the histogram's unit (`self.unit`).
+        data : array-like or `~astropy.units.Quantity`
+            Data points to add.
+
+        weights : array-like or `~astropy.units.Quantity`, optional
+            Weights for each data point.
 
         Returns
         -------
         Histogram
             A new Histogram object with updated values and uncertainties.
+
+        Notes
+        -----
+        Updates both `sumw2` and the diagonal of `cov` to maintain
+        statistical consistency.
+
+        Examples
+        --------
+        >>> h = Histogram([1, 2], [0, 1, 2])
+        >>> h = h.fill([0.5, 1.5, 1.5])
+        >>> h.values
+        <Quantity [2., 4.]>
         """
         import numpy as np
 

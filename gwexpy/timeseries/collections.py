@@ -69,7 +69,52 @@ def _parse_fft_positional_args(
 
 
 class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesDict):
-    """Dictionary of TimeSeries objects."""
+    """A dictionary of TimeSeries, indexed by name.
+
+    `TimeSeriesDict` is a specialized dictionary designed to hold and
+    manipulate multiple `TimeSeries` objects simultaneously. It provides
+    batch processing methods (e.g., `resample`, `filter`, `fft`) that
+    operate on all entries at once, and supports advanced I/O for
+    multi-channel data (HDF5, Zarr, CSV).
+
+    Parameters
+    ----------
+    *args
+        A mapping or iterable of `(key, TimeSeries)` pairs.
+
+    **kwargs
+        Additional keyword arguments for the dictionary.
+
+    Notes
+    -----
+    This class is highly interoperable, supporting conversions to and from
+    Pandas DataFrames, Polars DataFrames, and MNE Raw objects. It also
+    supports matrix conversion via `to_matrix()`.
+
+    Key methods:
+
+    .. autosummary::
+
+       ~TimeSeriesDict.read
+       ~TimeSeriesDict.write
+       ~TimeSeriesDict.plot
+       ~TimeSeriesDict.resample
+       ~TimeSeriesDict.fft
+       ~TimeSeriesDict.psd
+
+    Examples
+    --------
+    >>> from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+    >>> tsd = TimeSeriesDict()
+    >>> tsd['H1'] = TimeSeries([1, 2], sample_rate=1)
+    >>> tsd
+    {'H1': <TimeSeries([1, 2],
+                unit=Unit(dimensionless),
+                t0=<Quantity 0. s>,
+                dt=<Quantity 1. s>,
+                name=None,
+                channel=None)>}
+    """
 
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
@@ -1000,7 +1045,41 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
 
 class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesList):
-    """List of TimeSeries objects."""
+    """A list of TimeSeries objects.
+
+    `TimeSeriesList` is a specialized list designed to hold and manipulate
+    multiple `TimeSeries` objects. It provides batch processing methods
+    that operate on all entries at once.
+
+    Parameters
+    ----------
+    *args
+        An iterable of `TimeSeries` objects.
+
+    Notes
+    -----
+    Key methods:
+
+    .. autosummary::
+
+       ~TimeSeriesList.plot
+       ~TimeSeriesList.append
+       ~TimeSeriesList.extend
+       ~TimeSeriesList.csd_matrix
+       ~TimeSeriesList.coherence_matrix
+
+    Examples
+    --------
+    >>> from gwexpy.timeseries import TimeSeries, TimeSeriesList
+    >>> tsl = TimeSeriesList([TimeSeries([1, 2], sample_rate=1)])
+    >>> tsl
+    [<TimeSeries([1, 2],
+                unit=Unit(dimensionless),
+                t0=<Quantity 0. s>,
+                dt=<Quantity 1. s>,
+                name=None,
+                channel=None)>]
+    """
 
     def csd_matrix(
         self,

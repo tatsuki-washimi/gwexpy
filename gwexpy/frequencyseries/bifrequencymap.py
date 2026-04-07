@@ -10,15 +10,58 @@ from scipy.interpolate import interp1d
 
 
 class BifrequencyMap(Array2D):
-    """A map class with two distinct frequency axes (e.g., response functions or correlation matrices).
+    """A map class with two distinct frequency axes.
 
-    Data is stored with (rows, columns) = (frequency2, frequency1).
+    `BifrequencyMap` represents a 2-dimensional frequency-frequency mapping,
+    typically used for response functions, correlation matrices, or 
+    coupling kernels between different frequency bins.
+
+    Data is stored with mapping: `(rows, columns) = (frequency2, frequency1)`.
+
+    Parameters
+    ----------
+    data : array-like
+        2D array of data values.
+
+    xindex : array-like, optional
+        Frequency axis 2 (rows).
+
+    yindex : array-like, optional
+        Frequency axis 1 (columns).
+
+    **kwargs
+        Additional keyword arguments passed to the `~gwpy.types.Array2D`
+        constructor.
+
+    Notes
+    -----
+    The `propagate` method allows applying this map to an input
+    `FrequencySeries` to calculate the resulting output `FrequencySeries`
+    via matrix-vector multiplication.
+
+    Examples
+    --------
+    >>> from gwexpy.frequencyseries import BifrequencyMap
+    >>> import numpy as np
+    >>> data = np.eye(3)
+    >>> f = [10, 20, 30]
+    >>> bfm = BifrequencyMap.from_points(data, f, f)
+    >>> bfm
+    <BifrequencyMap([[1., 0., 0.],
+                     [0., 1., 0.],
+                     [0., 0., 1.]],
+                    unit=Unit(dimensionless),
+                    name=None,
+                    frequency2=[10.0 Hz, ..., 30.0 Hz],
+                    frequency1=[10.0 Hz, ..., 30.0 Hz])>
     """
 
+    @property
     def frequency1(self):
         """Frequency axis 1 (X-axis/Columns)."""
         return self.yindex
 
+    @property
     def frequency2(self):
         """Frequency axis 2 (Y-axis/Rows)."""
         return self.xindex
@@ -214,15 +257,16 @@ class BifrequencyMap(Array2D):
         )
 
     def __repr__(self):
-        prefix = super().__repr__()
+        data_str = np.array2string(self.value, threshold=9, edgeitems=3, separator=", ")
+        # Indent second and subsequent lines of data_str
+        indent = " " * (len(self.__class__.__name__) + 2)
+        data_str = data_str.replace("\n", "\n" + indent)
         return (
-            f"<{self.__class__.__name__}(\n"
-            f"    {prefix},\n"
-            f"    unit={self.unit},\n"
-            f"    name={self.name!r},\n"
-            f"    frequency2=[{self.frequency2[0]}, ..., {self.frequency2[-1]}],\n"
-            f"    frequency1=[{self.frequency1[0]}, ..., {self.frequency1[-1]}]\n"
-            f")>"
+            f"<{self.__class__.__name__}({data_str},\n"
+            f"{indent}unit={self.unit!r},\n"
+            f"{indent}name={self.name!r},\n"
+            f"{indent}frequency2=[{self.frequency2[0]}, ..., {self.frequency2[-1]}],\n"
+            f"{indent}frequency1=[{self.frequency1[0]}, ..., {self.frequency1[-1]}])>"
         )
 
     def __str__(self):

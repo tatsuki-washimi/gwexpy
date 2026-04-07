@@ -15,7 +15,28 @@ _AXIS_ATOL = 1e-12
 
 
 class FieldList(list):
-    """List-like collection for `ScalarField` objects with batch operations."""
+    """A list of ScalarField objects with batch operations.
+
+    `FieldList` provides a container for multiple fields, supporting
+    arithmetic and batch processing across the list.
+
+    Parameters
+    ----------
+    items : list, optional
+        A list of `ScalarField` objects.
+
+    validate : bool, optional
+        If True, ensures that all fields have matching axes.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from gwexpy.fields import ScalarField, FieldList
+    >>> sf = ScalarField(np.ones((2, 2, 2, 2)))
+    >>> fl = FieldList([sf])
+    >>> fl
+    [<ScalarField(2, 2, 2, 2)@time, 1.0>]
+    """
 
     def __init__(self, items=None, validate=False):
         if items is None:
@@ -136,7 +157,28 @@ class FieldList(list):
 
 
 class FieldDict(dict):
-    """Dict-like collection for `ScalarField` objects with batch operations."""
+    """A dictionary of ScalarField objects with batch operations.
+
+    `FieldDict` provides a labeled container for multiple fields,
+    supporting arithmetic and batch processing.
+
+    Parameters
+    ----------
+    items : dict, optional
+        A dictionary mapping labels to `ScalarField` objects.
+
+    validate : bool, optional
+        If True, ensures that all fields have matching axes.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from gwexpy.fields import ScalarField, FieldDict
+    >>> f = ScalarField(np.ones((2, 2, 2, 2)))
+    >>> fd = FieldDict({'E': f})
+    >>> fd
+    {'E': <ScalarField(2, 2, 2, 2)@time, 1.0>}
+    """
 
     def __init__(self, items=None, validate=False):
         if items is None:
