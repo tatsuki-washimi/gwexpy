@@ -990,11 +990,12 @@ class CouplingResultCollection(dict):
 
     Examples
     --------
+    >>> from gwexpy.analysis.coupling_result import CouplingResultCollection
     >>> results = CouplingResultCollection()
-    >>> results['WIT-TGT'] = coupling_result_1
-    >>> results['WIT-TGT2'] = coupling_result_2
-    >>> results.to_summary_csv("summary.csv")
-
+    >>> isinstance(results, dict)
+    True
+    >>> # results['WIT-TGT'] = coupling_result_1
+    >>> # results.to_summary_csv("summary.csv")
     """
 
     def __init__(self, mapping: dict[str, Any] | None = None) -> None:

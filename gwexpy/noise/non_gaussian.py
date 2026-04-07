@@ -169,7 +169,13 @@ def inject_noise(clean_ts: TimeSeries, noise_ts: TimeSeries) -> TimeSeries:
 
     Examples
     --------
+    >>> from gwexpy import TimeSeries
+    >>> import numpy as np
+    >>> t = np.linspace(0, 1, 100)
+    >>> clean_ts = TimeSeries(np.sin(2 * np.pi * 10 * t), t0=0, sample_rate=100)
+    >>> noise_ts = TimeSeries(np.random.randn(100) * 0.1, t0=0, sample_rate=100)
     >>> noisy = inject_noise(clean_ts, noise_ts)
-
+    >>> isinstance(noisy, TimeSeries)
+    True
     """
     return clean_ts + noise_ts
