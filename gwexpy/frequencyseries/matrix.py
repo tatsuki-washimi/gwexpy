@@ -13,16 +13,60 @@ from .matrix_core import FrequencySeriesMatrixCoreMixin
 class FrequencySeriesMatrix(  # type: ignore[misc]
     FrequencySeriesMatrixCoreMixin, FrequencySeriesMatrixAnalysisMixin, SeriesMatrix
 ):
-    """
-    2D Matrix container for multiple FrequencySeries objects sharing a common frequency axis.
+    """A 2D matrix of FrequencySeries objects sharing a common frequency axis.
 
-    This class represents a 2-dimensional array (rows x columns) where each element
-    is a `FrequencySeries`. All elements in the matrix share the same frequency array
-    (same `f0`, `df`, and number of frequency bins). It is typically used to represent
-    multi-channel spectral data, such as CSD matrices or multi-channel PSDs.
+    `FrequencySeriesMatrix` represents a 2-dimensional array (rows x columns)
+    where each element is a `FrequencySeries`. All elements in the matrix
+    must share the same frequency synchronization (same `f0`, `df`, and
+    number of frequency bins).
 
-    Inherits from `SeriesMatrix` and returns `FrequencySeries` instances when indexed
-    per-channel.
+    This class is typically used to represent multi-channel spectral data,
+    such as Cross-Spectral Density (CSD) matrices, coherence matrices,
+    or multi-channel Power Spectral Densities (PSDs).
+
+    Parameters
+    ----------
+    data : array-like, optional
+        The data values for the matrix. Should be of shape
+        `(rows, columns, frequencies)`.
+
+    frequencies : array-like, optional
+        The frequency values corresponding to each bin. If provided,
+        `df` and `f0` are ignored.
+
+    df : `float`, `~astropy.units.Quantity`, optional
+        The frequency resolution.
+
+    f0 : `float`, `~astropy.units.Quantity`, optional
+        The start frequency.
+
+    **kwargs
+        Additional keyword arguments:
+        - `channel_names`: list of strings for channel labels.
+        - `unit`: physical unit of the data.
+        - `name`: descriptive title for the matrix.
+
+    Notes
+    -----
+    `FrequencySeriesMatrix` supports element-wise spectral operations
+    (e.g., `zpk`, `filter`, `smooth`) and statistical aggregations.
+
+    Key methods:
+
+    .. autosummary::
+
+       ~FrequencySeriesMatrix.plot
+       ~FrequencySeriesMatrix.smooth
+       ~FrequencySeriesMatrix.to_dict
+
+    Examples
+    --------
+    >>> from gwexpy.frequencyseries import FrequencySeriesMatrix
+    >>> import numpy as np
+    >>> data = np.ones((2, 2, 100))
+    >>> fsm = FrequencySeriesMatrix(data, df=1, unit='V/Hz')
+    >>> fsm
+    <SeriesMatrix shape=(2, 2, 100) rows=('row0', 'row1') cols=('col0', 'col1')>
     """
 
     series_class = FrequencySeries
@@ -34,26 +78,10 @@ class FrequencySeriesMatrix(  # type: ignore[misc]
     _default_plot_method = "plot"
 
     def __new__(cls, data=None, frequencies=None, df=None, f0=None, **kwargs):
-        """
-        Create a new FrequencySeriesMatrix.
+        """Create a new FrequencySeriesMatrix.
 
-        Parameters
-        ----------
-        data : array_like, optional
-            The data values for the matrix.
-        frequencies : array_like, optional
-            The frequency values corresponding to each bin.
-        df : float, astropy.units.Quantity, optional
-            The frequency resolution.
-        f0 : float, astropy.units.Quantity, optional
-            The start frequency.
-        **kwargs
-            Additional keyword arguments.
-            Supported: `channel_names`, `xunit`, `unit`, `name`, `meta`.
-
-        Returns
-        -------
-        FrequencySeriesMatrix
+        This constructor extends the standard `SeriesMatrix` by adding support 
+        for frequency-domain metadata (`f0`, `df`) and automatic axis alignment.
         """
         channel_names = kwargs.pop("channel_names", None)
 

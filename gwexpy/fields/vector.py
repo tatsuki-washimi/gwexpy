@@ -13,31 +13,38 @@ __all__ = ["VectorField"]
 
 
 class VectorField(FieldDict):
-    """Vector-valued field as a collection of ScalarField components.
+    """A vector-valued field composed of ScalarField components.
 
-    This class maintains a collection of :class:`ScalarField` objects,
-    constrained to have identical axis metadata. This structure allows
-    performing physical operations (FFT, filtering) on each component
-    independently while ensuring geometrical consistency.
+    `VectorField` maintains a collection of `ScalarField` objects
+    representing different components (e.g., 'x', 'y', 'z') of a
+    vector field. It ensures that all components share the same
+    spatial and temporal grid.
 
     Parameters
     ----------
     components : dict[str, ScalarField], optional
-        Dictionary mapping component names (e.g., 'x', 'y') to
-        :class:`ScalarField` objects.
+        Mapping of component names to field objects.
+
     basis : {'cartesian', 'custom'}, optional
-        The coordinate basis of the vector. Default is 'cartesian'.
+        The coordinate basis. Default is 'cartesian'.
+
     validate : bool, optional
-        Whether to validate that all components have consistent axes
-        and units. Default is True.
+        If True (default), validates that all components have
+        consistent axes and units.
+
+    Notes
+    -----
+    Vector-specific operations like `norm()`, `dot()`, and `cross()`
+    are supported, returning either a `ScalarField` or a new
+    `VectorField`.
 
     Examples
     --------
-    >>> from gwexpy.fields import ScalarField, VectorField
-    >>> fx = ScalarField(np.random.randn(100, 4, 4, 4))
-    >>> fy = ScalarField(np.random.randn(100, 4, 4, 4))
-    >>> vf = VectorField({'x': fx, 'y': fy})
-    >>> vnorm = vf.norm()
+    >>> import numpy as np
+    >>> from gwexpy.fields import VectorField
+    >>> v = VectorField(np.ones((2, 2, 2, 2, 3)))
+    >>> v
+    <VectorField(2, 2, 2, 2, 3)@time, 1.0>
     """
 
     def __init__(

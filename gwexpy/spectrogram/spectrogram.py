@@ -17,8 +17,77 @@ if TYPE_CHECKING:
 
 
 class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
-    """
-    Extends gwpy.spectrogram.Spectrogram with additional interop methods.
+    """A 2D time-frequency spectrogram.
+
+    `Spectrogram` represents a 2-dimensional array of spectral data,
+    where the first dimension corresponds to time and the second
+    dimension corresponds to frequency. It extends the core GWpy
+    `~gwpy.spectrogram.Spectrogram` with additional signal processing
+    (e.g., bootstrap ASD estimation, cleaning) and interoperability
+    methods.
+
+    Parameters
+    ----------
+    data : array-like
+        2D array of spectral data.
+
+    times : array-like, optional
+        Time values corresponding to each row. If provided, `dt` and
+        `t0` are ignored.
+
+    dt : `float`, `~astropy.units.Quantity`, optional
+        Time step between rows.
+
+    t0 : `float`, `~astropy.units.Quantity`, optional
+        Start time of the data.
+
+    frequencies : array-like, optional
+        Frequency values corresponding to each column. If provided,
+        `df` and `f0` are ignored.
+
+    df : `float`, `~astropy.units.Quantity`, optional
+        Frequency step between columns.
+
+    f0 : `float`, `~astropy.units.Quantity`, optional
+        Start frequency of the data.
+
+    **kwargs
+        Additional keyword arguments passed to the
+        `~gwpy.spectrogram.Spectrogram` constructor.
+
+    Notes
+    -----
+    Key methods:
+
+    .. autosummary::
+
+       ~Spectrogram.plot
+       ~Spectrogram.imshow
+       ~Spectrogram.pcolormesh
+       ~Spectrogram.bootstrap
+       ~Spectrogram.normalize
+       ~Spectrogram.clean
+       ~Spectrogram.rebin
+
+    Examples
+    --------
+    >>> from gwexpy.spectrogram import Spectrogram
+    >>> import numpy as np
+    >>> data = np.ones((2, 2))
+    >>> spec = Spectrogram(data, dt=1, f0=0, df=1)
+    >>> spec
+    <Spectrogram([[1., 1.],
+                  [1., 1.]],
+                 unit=Unit(dimensionless),
+                 name=None,
+                 epoch=<Time object: scale='utc' format='gps' value=0.0>,
+                 channel=None,
+                 x0=<Quantity 0. s>,
+                 dx=<Quantity 1. s>,
+                 xindex=<Index [0., 1.] s>,
+                 y0=<Quantity 0. Hz>,
+                 dy=<Quantity 1. Hz>,
+                 yindex=<Index [0., 1.] Hz>)>
     """
 
     def __getitem__(self, item: Any) -> Any:
@@ -779,12 +848,14 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         Examples
         --------
+        >>> import numpy as np
+        >>> data = np.ones((10, 5))
         >>> spec = Spectrogram(data, t0=0, dt=0.1, f0=10, df=5, name="test")
         >>> ts_list, freqs = spec.to_timeseries_list()
         >>> len(ts_list)  # equals nfreqs
         5
         >>> ts_list[0].name
-        'test_f10.0Hz'
+        'test_f10.0 Hz'
         """
         from gwexpy.interop._registry import ConverterRegistry
 
@@ -854,12 +925,14 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         Examples
         --------
+        >>> import numpy as np
+        >>> data = np.ones((10, 5))
         >>> spec = Spectrogram(data, t0=0, dt=0.1, f0=10, df=5, name="test")
         >>> fs_list, times = spec.to_frequencyseries_list()
         >>> len(fs_list)  # equals ntimes
         10
         >>> fs_list[0].name
-        'test_t0.0s'
+        'test_t0.0 s'
         """
         from gwexpy.interop._registry import ConverterRegistry
 

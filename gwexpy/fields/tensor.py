@@ -14,21 +14,38 @@ __all__ = ["TensorField"]
 
 
 class TensorField(FieldDict):
-    """Tensor-valued field as a collection of ScalarField components.
+    """A tensor-valued field as a collection of ScalarField components.
 
-    Keys are typically tuples of indices representing the tensor components,
-    e.g., ``(0, 0)`` for the :math:`T_{00}` component.
+    `TensorField` represents a higher-order (typically rank-2) field.
+    Each component is indexed by a tuple of integers (e.g., `(0, 0)` for
+    $T_{00}$). It supports standard linear algebra operations carried
+    out independently at each grid point.
 
     Parameters
     ----------
     components : dict[tuple, ScalarField], optional
-        Dictionary mapping component index tuples to :class:`ScalarField`
-        objects.
+        Mapping of index tuples to field objects.
+
     rank : int, optional
-        The rank (order) of the tensor. If not provided, it is inferred
-        from the keys.
+        The tensor rank. If None, it is inferred from keys.
+
     validate : bool, optional
-        Whether to validate component consistency. Default is True.
+        If True (default), validates component consistency.
+
+    Notes
+    -----
+    Rank-2 tensor operations like `@` (matrix multiplication) and
+    `trace()` are implemented.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from gwexpy.fields import TensorField
+    >>> t = TensorField(np.ones((2, 2, 2, 2, 3, 3)))
+    >>> t
+    <TensorField(2, 2, 2, 2, 3, 3)@time, 1.0>
+    >>> t.trace()
+    <ScalarField(...), axis0_domain='time', ...>
     """
 
     def __init__(

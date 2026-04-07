@@ -55,17 +55,83 @@ class TimeSeries(
     PhaseMethodsMixin,  # Phase/Angle methods (radian, degree, phase, angle)
     TimeSeriesCore,  # Core operations (tail, crop, append, find_peaks, RegularityMixin)
 ):
-    """
-    Extended TimeSeries with all gwexpy functionality.
+    """A data array holding some metadata to represent a time-series.
 
-    This class combines functionality from multiple modules:
-    - Core operations: is_regular, _check_regular, tail, crop, append, find_peaks
-    - Spectral transforms: fft, psd, cwt, laplace, etc.
-    - Signal processing: hilbert, mix_down, xcorr, etc.
-    - Analysis: impute, standardize, rolling_*, etc.
-    - Interoperability: to_pandas, to_torch, to_xarray, etc.
+    `TimeSeries` is the primary object used to represent time-domain
+    data in `gwexpy`. It extends the standard `gwpy.timeseries.TimeSeries`
+    by incorporating additional mixins for plotting, signal analysis,
+    regularity checks, numerical fitting, statistical methods, and
+    enhanced interoperability.
 
-    Inherits from gwpy.timeseries.TimeSeries for full compatibility.
+    Parameters
+    ----------
+    data : array-like
+        Input data array.
+
+    unit : `~astropy.units.Unit`, optional
+        Physical unit of these data.
+
+    t0 : `~gwpy.time.LIGOTimeGPS`, `float`, `str`, optional, default: `0`
+        GPS epoch associated with these data,
+        any input parsable by `~gwpy.time.to_gps` is fine.
+
+    dt : `float`, `~astropy.units.Quantity`, optional, default: `1`
+        Time resolution for these data.
+
+    sample_rate : `float`, `~astropy.units.Quantity`, optional, default: `1`
+        Sample rate for these data.
+
+    times : `array-like`
+        The complete array of times indexing the data.
+        This argument takes precedence over `t0` and `dt` so should
+        be given in place of these if relevant, not alongside.
+
+    name : `str`, optional
+        Descriptive title for this array.
+
+    channel : `~gwpy.detector.Channel`, `str`, optional
+        Source data stream for these data.
+
+    dtype : `~numpy.dtype`, optional
+        Input data type.
+
+    copy : `bool`, optional, default: `False`
+        Choose to copy the input data to new memory.
+
+    subok : `bool`, optional, default: `True`
+        Allow passing of sub-classes by the array generator.
+
+    Notes
+    -----
+    In addition to the standard GWpy functionality, this class provides
+    advanced features such as time-domain differentiation/integration,
+    rolling statistics, and seamless interoperability with PyTorch,
+    Xarray, and Polars.
+
+    Key methods:
+
+    .. autosummary::
+
+       ~TimeSeries.plot
+       ~TimeSeries.resample
+       ~TimeSeries.filter
+       ~TimeSeries.fft
+       ~TimeSeries.psd
+       ~TimeSeries.spectrogram
+
+    Examples
+    --------
+    >>> from gwexpy.timeseries import TimeSeries
+    >>> import numpy as np
+    >>> data = np.array([0.1, -1.2, 0.5])
+    >>> ts = TimeSeries(data, sample_rate=1000, unit='V')
+    >>> ts
+    <TimeSeries([ 0.1, -1.2,  0.5],
+                unit=Unit("V"),
+                t0=<Quantity 0. s>,
+                dt=<Quantity 0.001 s>,
+                name=None,
+                channel=None)>
     """
 
     def _get_meta_for_constructor(self) -> dict[str, Any]:
@@ -76,20 +142,10 @@ class TimeSeries(
         }
 
     def __new__(cls, data: ArrayLike, *args: Any, **kwargs: Any) -> TimeSeries:
-        """
-        Create a new TimeSeries.
+        """Create a new TimeSeries.
 
-        This constructor extends the standard gwpy.timeseries.TimeSeries constructor
-        by adding support for automatic GPS time coercion for 't0' and 'epoch' parameters.
-
-        Parameters
-        ----------
-        data : array_like
-            The data values for the series.
-        *args
-            Additional positional arguments passed to the parent constructor.
-        **kwargs
-            Additional keyword arguments passed to the parent constructor.
+        This constructor extends the standard `gwpy.timeseries.TimeSeries` constructor
+        by adding support for automatic GPS time coercion for `t0` and `epoch` parameters.
         """
         from gwexpy.timeseries.utils import _coerce_t0_gps
 

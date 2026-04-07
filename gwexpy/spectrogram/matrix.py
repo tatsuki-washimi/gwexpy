@@ -21,24 +21,58 @@ class SpectrogramMatrix(  # type: ignore[misc]
     SpectrogramMatrixAnalysisMixin,
     SeriesMatrix,
 ):
-    """
-    Evaluation Matrix for Spectrograms (Time-Frequency maps).
+    """Evaluation Matrix for Spectrograms (Time-Frequency maps).
 
-    This class represents a collection of Spectrograms, structured as either:
+    `SpectrogramMatrix` represents a collection of Spectrograms,
+    structured as a multivariate matrix with dimensions either:
 
-    - 3D: (Batch, Time, Frequency)
-    - 4D: (Row, Col, Time, Frequency)
+    - 3D: ``(Batch, Time, Frequency)``
+    - 4D: ``(Row, Col, Time, Frequency)``
 
-    It inherits from SeriesMatrix, providing powerful indexing, metadata management,
-    and analysis capabilities (slicing, interpolation, statistics).
+    It extends the core `~gwexpy.types.seriesmatrix.SeriesMatrix` with
+    spectrogram-specific axes (times and frequencies) and analysis
+    methods.
 
-    Serialization
-    -------------
-    Pickle round-trips are supported via a custom ``__reduce__``/``__setstate__``
-    that appends ``__dict__`` to the ndarray state. This preserves axis metadata
-    such as ``times``/``frequencies``, ``rows``/``cols``, and ``meta`` as long as
-    they live in ``__dict__``. Attributes stored elsewhere or pointing to external
-    resources still require higher-level I/O (e.g., HDF5) for full fidelity.
+    Parameters
+    ----------
+    data : array-like
+        The data values for the matrix. Should be 3D or 4D.
+
+    times : array-like, optional
+        The time values corresponding to each row.
+
+    frequencies : array-like, optional
+        The frequency values corresponding to each column.
+
+    unit : `str`, `~astropy.units.Unit`, optional
+        Physical unit of the data.
+
+    **kwargs
+        Additional keyword arguments passed to the
+        `~gwexpy.types.seriesmatrix.SeriesMatrix` constructor.
+
+    Notes
+    -----
+    Serialization is supported via HDF5 and Pickle. Metadata is
+    preserved per-element in the `meta` attribute.
+
+    Key methods:
+
+    .. autosummary::
+
+       ~SpectrogramMatrix.plot_summary
+       ~SpectrogramMatrix.to_dict
+       ~SpectrogramMatrix.to_list
+       ~SpectrogramMatrix.radian
+
+    Examples
+    --------
+    >>> from gwexpy.spectrogram import SpectrogramMatrix
+    >>> import numpy as np
+    >>> data = np.ones((1, 2, 2))
+    >>> sm = SpectrogramMatrix(data, times=[0, 1], frequencies=[10, 20])
+    >>> sm
+    <SeriesMatrix shape=(1, 2, 2) rows=('batch0',) cols=('col0',)>
     """
 
     series_class = Spectrogram

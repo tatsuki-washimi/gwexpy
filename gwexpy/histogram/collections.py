@@ -194,7 +194,37 @@ class HistogramBaseDict(OrderedDict[str, _H]):
 
 
 class HistogramDict(DictMapMixin, HistogramBaseDict[Histogram]):
-    """Ordered mapping of `Histogram` objects keyed by label."""
+    """A dictionary of Histogram objects, indexed by label.
+
+    `HistogramDict` provides a convenient container for multiple
+    histograms, allowing batch operations like `fill`, `rebin`, and
+    statistical summaries.
+
+    Parameters
+    ----------
+    *args, **kwargs
+        Passed to `OrderedDict` and `update`.
+
+    Notes
+    -----
+    Key mapping methods:
+
+    .. autosummary::
+
+       ~HistogramDict.fill
+       ~HistogramDict.rebin
+       ~HistogramDict.mean
+       ~HistogramDict.std
+
+    Examples
+    --------
+    >>> from gwexpy.histogram import Histogram, HistogramDict
+    >>> h = Histogram([1, 2], [0, 1, 2])
+    >>> hd = HistogramDict()
+    >>> hd['H1'] = h
+    >>> hd
+    HistogramDict([('H1', <Histogram (nbins=2, unit=)>)])
+    """
 
     EntryClass = Histogram
 
@@ -352,7 +382,34 @@ class HistogramBaseList(PlotMixin, list[_H]):
 
 
 class HistogramList(ListMapMixin, HistogramBaseList[Histogram]):
-    """List of `Histogram` objects."""
+    """A list of Histogram objects.
+
+    `HistogramList` provides a container for an ordered sequence of
+    histograms, supporting batch processing.
+
+    Parameters
+    ----------
+    *items : Histogram or iterable of Histograms
+        Initial items to populate the list.
+
+    Notes
+    -----
+    Key mapping methods:
+
+    .. autosummary::
+
+       ~HistogramList.fill
+       ~HistogramList.rebin
+       ~HistogramList.mean
+
+    Examples
+    --------
+    >>> from gwexpy.histogram import Histogram, HistogramList
+    >>> h = Histogram([1, 2], [0, 1, 2])
+    >>> hl = HistogramList([h])
+    >>> hl
+    [<Histogram (nbins=2, unit=)>]
+    """
 
     EntryClass = Histogram
 

@@ -93,13 +93,54 @@ def _resolve_crop_compat_args(*args, **kwargs):
 
 
 class SpectrogramList(PhaseMethodsMixin, UserList):
-    """
-    List of Spectrogram objects.
-    Reference: similar to TimeSeriesList but for 2D Spectrograms.
+    """A list of Spectrogram objects.
 
-    .. note::
-       Spectrogram objects can be very large in memory.
-       Use `inplace=True` where possible to avoid deep copies.
+    `SpectrogramList` is a specialized list designed to hold and
+    manipulate multiple `Spectrogram` objects. It provides batch
+    processing methods (e.g., `crop`, `rebin`, `bootstrap`) that operate
+    on all entries at once.
+
+    Parameters
+    ----------
+    initlist : iterable, optional
+        An initial list of `Spectrogram` objects.
+
+    Notes
+    -----
+    Spectrogram objects can be very large in memory. For large datasets,
+    consider using `SpectrogramMatrix` for more efficient 3D/4D
+    operations, or use the `inplace=True` option in methods like `rebin`
+    when available.
+
+    Key methods:
+
+    .. autosummary::
+
+       ~SpectrogramList.plot
+       ~SpectrogramList.to_matrix
+       ~SpectrogramList.bootstrap
+       ~SpectrogramList.rebin
+       ~SpectrogramList.crop
+
+    Examples
+    --------
+    >>> from gwexpy.spectrogram import Spectrogram, SpectrogramList
+    >>> import numpy as np
+    >>> spec = Spectrogram(np.ones((2, 2)), dt=1, f0=0, df=1)
+    >>> sl = SpectrogramList([spec])
+    >>> sl
+    [<Spectrogram([[1., 1.],
+                  [1., 1.]],
+                 unit=Unit(dimensionless),
+                 name=None,
+                 epoch=<Time object: scale='utc' format='gps' value=0.0>,
+                 channel=None,
+                 x0=<Quantity 0. s>,
+                 dx=<Quantity 1. s>,
+                 xindex=<Index [0., 1.] s>,
+                 y0=<Quantity 0. Hz>,
+                 dy=<Quantity 1. Hz>,
+                 yindex=<Index [0., 1.] Hz>)>]
     """
 
     def __init__(self, initlist=None):
@@ -460,12 +501,55 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
 
 
 class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
-    """
-    Dictionary of Spectrogram objects.
+    """A dictionary of Spectrogram objects, indexed by name.
 
-    .. note::
-       Spectrogram objects can be very large in memory.
-       Use `inplace=True` where possible to update container in-place.
+    `SpectrogramDict` is a specialized dictionary designed to hold
+    and manipulate multiple `Spectrogram` objects simultaneously.
+    It supports batch I/O (HDF5), normalization, and conversion to
+    multivariate `SpectrogramMatrix`.
+
+    Parameters
+    ----------
+    dict : mapping, optional
+        A mapping or iterable of `(key, Spectrogram)` pairs.
+
+    **kwargs
+        Additional keyword arguments for the dictionary.
+
+    Notes
+    -----
+    Spectrogram objects can be very large in memory. For large datasets,
+    prefer `SpectrogramMatrix` or HDF5-backed storage.
+
+    Key methods:
+
+    .. autosummary::
+
+       ~SpectrogramDict.read
+       ~SpectrogramDict.write
+       ~SpectrogramDict.plot
+       ~SpectrogramDict.to_matrix
+       ~SpectrogramDict.rebin
+
+    Examples
+    --------
+    >>> from gwexpy.spectrogram import Spectrogram, SpectrogramDict
+    >>> import numpy as np
+    >>> sd = SpectrogramDict()
+    >>> sd['H1'] = Spectrogram(np.ones((2, 2)), dt=1, f0=0, df=1)
+    >>> sd
+    {'H1': <Spectrogram([[1., 1.],
+                  [1., 1.]],
+                 unit=Unit(dimensionless),
+                 name=None,
+                 epoch=<Time object: scale='utc' format='gps' value=0.0>,
+                 channel=None,
+                 x0=<Quantity 0. s>,
+                 dx=<Quantity 1. s>,
+                 xindex=<Index [0., 1.] s>,
+                 y0=<Quantity 0. Hz>,
+                 dy=<Quantity 1. Hz>,
+                 yindex=<Index [0., 1.] Hz>)>}
     """
 
     def __init__(self, dict=None, **kwargs):
