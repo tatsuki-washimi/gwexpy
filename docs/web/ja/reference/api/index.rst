@@ -7,6 +7,7 @@ API リファレンス
    timeseries
    frequencyseries
    spectrogram
+   matrix
    fields
    spectral
    analysis
@@ -16,6 +17,14 @@ API リファレンス
    types
    table
    histogram
+   segments
+   signal
    time
    interop
+   astro
+   detector
+   plot
+   io
    extra
+   cli
+   gui

@@ -84,7 +84,7 @@ def main():
         axes[1].set_ylabel('Phase [°]')
 
     # Save figures for paper
-    output_dir = Path(__file__).parent.parent / "docs" / "gwexpy-paper"
+    output_dir = Path(__file__).resolve().parents[2] / "docs_internal" / "publications" / "paper_softwarex"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     plot.save(str(output_dir / "figure2_transfer_function.png"), dpi=300, bbox_inches='tight')
