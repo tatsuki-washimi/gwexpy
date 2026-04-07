@@ -45,8 +45,7 @@ from gwpy.timeseries import TimeSeries
 
 
 class MetaData(dict):
-    """
-    A dictionary-like container for metadata describing a single data object.
+    """A dictionary-like container for metadata describing a single data object.
 
     This class serves as the core metadata container for channels, parameters,
     or matrix rows/columns in GWexpy. It ensures type safety and consistency
@@ -89,7 +88,9 @@ class MetaData(dict):
     the `unit` attribute is automatically propagated correctly. For example,
     multiplying two `MetaData` objects will result in a new `MetaData` object
     with the multiplied units.
+
     """
+
     def __init__(self, **kwargs):
         kwargs.setdefault("name", "")
         kwargs.setdefault("channel", "")
@@ -116,6 +117,7 @@ class MetaData(dict):
 
     @property
     def name(self):
+        """Return the name of the metadata."""
         return self["name"]
 
     @name.setter
@@ -124,6 +126,7 @@ class MetaData(dict):
 
     @property
     def channel(self):
+        """Return the channel name of the metadata."""
         return self["channel"]
 
     @channel.setter
@@ -135,6 +138,7 @@ class MetaData(dict):
 
     @property
     def unit(self):
+        """Return the physical unit of the metadata."""
         return self["unit"]
 
     @unit.setter
@@ -151,13 +155,19 @@ class MetaData(dict):
 
     @classmethod
     def from_series(cls, series):
+        """Create a MetaData instance from a GWpy Series object."""
         return cls(
             name=getattr(series, "name", ""),
             channel=getattr(series, "channel", ""),
-            unit=getattr(series, "unit", u.dimensionless_unscaled),
+            unit=get_unit(series),
         )
 
     def as_meta(self, obj):
+        """Coerce an object into a MetaData instance.
+
+        If the object is already a MetaData instance, it is returned as-is.
+        Otherwise, it is converted using the current metadata as a template.
+        """
         if isinstance(obj, MetaData):
             return obj
         return MetaData(name=self.name, channel=self.channel, unit=get_unit(obj))
@@ -398,6 +408,7 @@ class MetaDataDict(OrderedDict[str, MetaData]):
         return [entry.unit for entry in self.values()]
 
     def to_dataframe(self):
+        """Convert the metadata collection to a pandas DataFrame."""
         if pd is None:
             raise ImportError("pandas is required for to_dataframe()")
         data = [{**entry, "key": key} for key, entry in self.items()]
@@ -405,10 +416,12 @@ class MetaDataDict(OrderedDict[str, MetaData]):
         return df
 
     def write(self, path, **kwargs):
+        """Write the metadata collection to a CSV file."""
         self.to_dataframe().to_csv(path, **kwargs)
 
     @classmethod
     def read(cls, path, **kwargs):
+        """Read a metadata collection from a CSV file."""
         if pd is None:
             raise ImportError("pandas is required for read()")
         df = pd.read_csv(path, index_col=0, **kwargs)
@@ -416,6 +429,7 @@ class MetaDataDict(OrderedDict[str, MetaData]):
 
     @classmethod
     def from_series(cls, collection):
+        """Create a MetaDataCollection from a group of series."""
         if isinstance(collection, (list, tuple)):
             return cls(
                 {f"key{i}": MetaData.from_series(s) for i, s in enumerate(collection)}
@@ -505,9 +519,14 @@ class MetaDataDict(OrderedDict[str, MetaData]):
 # MetaDataMatrix: matrix container for unit/name per element
 # =============================
 class MetaDataMatrix(np.ndarray):
+    """A matrix container for multiple MetaData instances.
+
+    This class extends numpy.ndarray to provide a grid-like view of metadata,
+    supporting vectorized attribute access (names, units, channels).
+    """
+
     def __new__(cls, input_array=None, shape=None, default=None):
-        """
-        Create a MetaDataMatrix from an array-like or shape.
+        """Create a MetaDataMatrix from an array-like or shape.
 
         Parameters
         ----------
@@ -521,6 +540,7 @@ class MetaDataMatrix(np.ndarray):
         Returns
         -------
         MetaDataMatrix
+
         """
         if input_array is None:
             if shape is None:
@@ -572,8 +592,7 @@ class MetaDataMatrix(np.ndarray):
         )
 
     def fill(self, value):
-        """
-        Fill the matrix with a single MetaData value.
+        """Fill the matrix with a single MetaData value.
 
         Parameters
         ----------
@@ -583,6 +602,7 @@ class MetaDataMatrix(np.ndarray):
         Notes
         -----
         Each cell receives an independent MetaData copy to avoid shared references.
+
         """
         base = value if isinstance(value, MetaData) else MetaData(**value)
         arr = np.empty(self.shape, dtype=object)
@@ -592,6 +612,7 @@ class MetaDataMatrix(np.ndarray):
 
     @property
     def names(self):
+        """Return a matrix of metadata names."""
         flat = [m.name for m in self.reshape(-1)]
         return np.asarray(flat, dtype=object).reshape(self.shape)
 
@@ -607,6 +628,7 @@ class MetaDataMatrix(np.ndarray):
 
     @property
     def units(self):
+        """Return a matrix of physical units."""
         flat = [m.unit for m in self.reshape(-1)]
         return np.asarray(flat, dtype=object).reshape(self.shape)
 
@@ -622,6 +644,7 @@ class MetaDataMatrix(np.ndarray):
 
     @property
     def channels(self):
+        """Return a matrix of channel names."""
         flat = [m.channel for m in self.reshape(-1)]
         return np.asarray(flat, dtype=object).reshape(self.shape)
 
@@ -637,9 +660,11 @@ class MetaDataMatrix(np.ndarray):
 
     @classmethod
     def from_array(cls, array2d):
+        """Create a MetaDataMatrix from a 2D array of MetaData objects."""
         return cls(array2d)
 
     def to_dataframe(self):
+        """Convert the matrix to a long-format pandas DataFrame (row, col, name, etc.)."""
         rows, cols = self.shape
         data = [
             {
@@ -659,6 +684,7 @@ class MetaDataMatrix(np.ndarray):
 
     @classmethod
     def from_dataframe(cls, df, shape=None):
+        """Create a MetaDataMatrix from a long-format pandas DataFrame."""
         if shape is None:
             shape = (df["row"].max() + 1, df["col"].max() + 1)
         arr = np.empty(shape, dtype=object)
@@ -668,10 +694,12 @@ class MetaDataMatrix(np.ndarray):
         return cls(arr)
 
     def write(self, filepath, **kwargs):
+        """Write the matrix to a CSV file."""
         self.to_dataframe().to_csv(filepath, index=False, **kwargs)
 
     @classmethod
     def read(cls, filepath, **kwargs):
+        """Read a matrix from a CSV file."""
         if pd is None:
             raise ImportError("pandas is required for read()")
         df = pd.read_csv(filepath, **kwargs)
@@ -752,8 +780,7 @@ class MetaDataMatrix(np.ndarray):
 
 
 def get_unit(obj):
-    """
-    Extract or infer the physical unit from a given object.
+    """Extract or infer the physical unit from a given object.
 
     This function attempts to safely extract an `astropy.units.UnitBase`
     object from various types of inputs (numeric, astropy Quantity, GWpy Series,
@@ -782,6 +809,7 @@ def get_unit(obj):
     Unit("m")
     >>> get_unit(3.14)
     Unit(dimensionless)
+
     """
     if isinstance(obj, (int, float, complex, np.number)):
         return u.dimensionless_unscaled

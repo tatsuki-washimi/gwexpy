@@ -17,9 +17,9 @@ def power_law(
     frequencies: np.ndarray | None = None,
     **kwargs: Any,
 ) -> FrequencySeries:
-    """
-    Generate an ASD FrequencySeries following a power law.
-    ASD(f) = amplitude * (f / f_ref) ** (-exponent)
+    """Generate an ASD FrequencySeries following a power law.
+
+    ASD(f) = amplitude * (f / f_ref) ** (-exponent).
     """
     if frequencies is None:
         if "df" in kwargs and (
@@ -75,20 +75,30 @@ def power_law(
 
 
 def white_noise(amplitude: float | u.Quantity, **kwargs: Any) -> FrequencySeries:
-    """
-    Generate White noise ASD (~ f^0).
+    """Generate White noise ASD (~ f^0).
 
     Parameters
     ----------
     amplitude : float or astropy.units.Quantity
-        The noise amplitude.
+        The noise amplitude. If a float is provided, it is assumed to be in the
+        same units as the target spectrum (e.g., [m/rtHz] or [V/rtHz]).
+        If a Quantity is provided, its units are preserved in the output.
     **kwargs : Any
         Additional keyword arguments passed to `power_law`.
+        Typically includes `df`, `fmin`, `fmax`, or `frequencies`.
 
     Returns
     -------
     FrequencySeries
         The generated white noise ASD.
+
+    Examples
+    --------
+    >>> from gwexpy.noise import white_noise
+    >>> asd = white_noise(1e-18, df=1.0, fmin=0, fmax=100)
+    >>> asd.unit
+    Unit(dimensionless)
+
     """
     return power_law(0.0, amplitude=amplitude, **kwargs)
 
@@ -96,8 +106,10 @@ def white_noise(amplitude: float | u.Quantity, **kwargs: Any) -> FrequencySeries
 def pink_noise(
     amplitude: float | u.Quantity, f_ref: float | u.Quantity = 1.0, **kwargs: Any
 ) -> FrequencySeries:
-    """
-    Generate Pink noise ASD (~ f^-0.5).
+    """Generate Pink noise ASD (~ f^-0.5).
+
+    The power spectral density (PSD) follows f^-1, meaning the amplitude
+    spectral density (ASD) follows f^-0.5.
 
     Parameters
     ----------
@@ -112,6 +124,15 @@ def pink_noise(
     -------
     FrequencySeries
         The generated pink noise ASD.
+
+    Examples
+    --------
+    >>> from gwexpy.noise import pink_noise
+    >>> from astropy import units as u
+    >>> asd = pink_noise(10 * u.V / u.Hz**0.5, f_ref=10 * u.Hz, df=1.0, fmin=1, fmax=100)
+    >>> asd.at(10 * u.Hz)
+    <Quantity 10. V / Hz(1/2)>
+
     """
     return power_law(0.5, amplitude=amplitude, f_ref=f_ref, **kwargs)
 
@@ -119,8 +140,10 @@ def pink_noise(
 def red_noise(
     amplitude: float | u.Quantity, f_ref: float | u.Quantity = 1.0, **kwargs: Any
 ) -> FrequencySeries:
-    """
-    Generate Red (Brownian) noise ASD (~ f^-1).
+    """Generate Red (Brownian) noise ASD (~ f^-1).
+
+    The power spectral density (PSD) follows f^-2, meaning the amplitude
+    spectral density (ASD) follows f^-1.
 
     Parameters
     ----------
@@ -135,5 +158,12 @@ def red_noise(
     -------
     FrequencySeries
         The generated red noise ASD.
+
+    Examples
+    --------
+    >>> from gwexpy.noise import red_noise
+    >>> # Generate red noise with 1e-10 unit/rtHz at 1 Hz
+    >>> asd = red_noise(1e-10, f_ref=1.0, df=0.1, fmin=0.1, fmax=10)
+
     """
     return power_law(1.0, amplitude=amplitude, f_ref=f_ref, **kwargs)
