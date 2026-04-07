@@ -54,6 +54,20 @@ class TensorField(FieldDict):
         rank: int | None = None,
         validate: bool = True,
     ):
+        if isinstance(components, np.ndarray):
+            arr = components
+            if arr.ndim != 6:
+                raise ValueError(f"TensorField rank-2 expects 6D array, got {arr.ndim}D")
+            
+            dim_i, dim_j = arr.shape[-2:]
+            new_components = {}
+            for i in range(dim_i):
+                for j in range(dim_j):
+                    new_components[(i, j)] = ScalarField(arr[..., i, j])
+            components = new_components
+            if rank is None:
+                rank = 2
+
         super().__init__(components, validate=validate)
         if rank is None and self:
             first_key = next(iter(self.keys()))

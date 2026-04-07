@@ -53,6 +53,24 @@ class VectorField(FieldDict):
         basis: Literal["cartesian", "custom"] = "cartesian",
         validate: bool = True,
     ):
+        if isinstance(components, np.ndarray):
+            # Extract components assuming last axis is vector dimension
+            # and map to 'x', 'y', 'z' if dim is 2 or 3.
+            arr = components
+            if arr.ndim != 5:
+                raise ValueError(f"VectorField expected 5D array, got {arr.ndim}D")
+            n_comp = arr.shape[-1]
+            labels = ["x", "y", "z"][:n_comp] or [str(i) for i in range(n_comp)]
+            
+            # Use dictionary comprehension to create components
+            # We need valid ScalarField objects. For simplicity, we create them 
+            # with default metadata or inherit from first if possible.
+            # But the simplest is to just create them.
+            new_components = {}
+            for i, label in enumerate(labels):
+                new_components[label] = ScalarField(arr[..., i])
+            components = new_components
+
         super().__init__(components, validate=validate)
         self.basis = basis
 

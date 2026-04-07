@@ -32,9 +32,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0"
           pip install iminuit
-          pip install nbformat nbclient nbconvert pytest
+          pip install nbformat nbclient nbconvert pytest pytest-nbval
           pip install . --no-deps
 
-      - name: Run notebook tests
+      - name: Discover notebooks
         run: |
-          pytest -v tests/docs/test_docs_notebooks.py
+          python - <<'PY'
+          import glob, os
+          nbs = [p for p in glob.glob('examples/**/*.ipynb', recursive=True) if 'interactive' not in p and 'gui' not in p]
+          print("Notebooks to test:", len(nbs))
+          with open('nblist.txt','w') as fh:
+              fh.write('\n'.join(nbs))
+          PY
+
+      - name: Run nbval
+        run: |
+          if [ ! -s nblist.txt ]; then
+            echo "No notebooks to test"
+            exit 0
+          fi
+          # run pytest with nbval on listed notebooks
+          xargs -a nblist.txt -r pytest --nbval -v -q

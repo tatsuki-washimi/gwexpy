@@ -64,6 +64,29 @@ sphinx-build -b html docs docs/_build/html/docs
 
 Then open `docs/_build/html/docs/index.html` (English/Japanese are under `docs/_build/html/docs/web/`).
 
+### Examples and Doctests
+
+Interactive examples in docstrings must be self-contained and stable.
+
+- **Randomness**: If an example uses random numbers, always set a seed:
+
+  ```python
+  >>> import numpy as np
+  >>> np.random.seed(0)
+  ```
+
+- **Optional Dependencies**: If an example requires optional packages (matplotlib, interactive backends, GWpy plotting), annotate the code sample:
+
+  ```python
+  # doctest: +SKIP
+  ```
+
+  or prefer a non-visual minimal example.
+
+- **Approximation**: When comparing numeric output or `repr` values, use `# doctest: +ELLIPSIS` for tolerant matches, or prefer explicit assertions in `pytest` tests (e.g., `np.allclose`).
+
+- **Self-contained**: Include necessary imports and avoid external state (files, servers). If a heavy dataset is required, mark the example `# doctest: +SKIP` and provide a small synthetic example instead.
+
 ## Submitting changes
 
 1. Create a branch for your change.
