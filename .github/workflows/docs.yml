@@ -54,7 +54,7 @@ jobs:
           # Publish docs under /docs/... so URLs become /gwexpy/docs/web/{en,ja}/.
           mkdir -p docs/_build/html
           # -d separates the doctree cache from the published HTML output
-          sphinx-build -b html -d docs/_build/doctrees docs docs/_build/html/docs
+          sphinx-build -b html -W -d docs/_build/doctrees docs docs/_build/html/docs
 
           # Root landing page: redirect / -> /docs/ (GitHub Pages)
           printf "<html><head><meta http-equiv=\"refresh\" content=\"0; url=docs/index.html\"></head><body>Redirecting to documentation...</body></html>" > docs/_build/html/index.html

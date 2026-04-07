@@ -339,6 +339,13 @@ class CouplingFunctionAnalysis:
 
         Examples
         --------
+        >>> from gwexpy.analysis.coupling import CouplingFunctionAnalysis
+        >>> from gwexpy import TimeSeriesDict, TimeSeries
+        >>> import numpy as np
+        >>> t = np.linspace(1000000000, 1000000400, 40000)
+        >>> data = TimeSeriesDict()
+        >>> data['V1:ENV_WIT'] = TimeSeries(np.random.randn(40000), t0=1000000000, sample_rate=100)
+        >>> data['V1:ITM_SIGNAL'] = TimeSeries(np.random.randn(40000), t0=1000000000, sample_rate=100)
         >>> result = CouplingFunctionAnalysis.from_time_windows(
         ...     data,
         ...     bkg_window=(1000000000, 1000000100),
