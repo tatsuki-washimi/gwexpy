@@ -1,6 +1,6 @@
 # gwexpy Agent Skills
 
-**総スキル数**: 35
+**総スキル数**: 38
 
 Agent Skills は AI エージェントに専門知識と実行能力を提供するオープンスタンダード形式のパッケージです。
 
@@ -68,13 +68,16 @@ Agent Skills は AI エージェントに専門知識と実行能力を提供す
 | `visualize_fields` | 多次元フィールドデータの描画API実装、プロット軸の診断・修正を行う                  |
 | `phase1_scale_invariance` | 数値スケール妥当性とスケール不変性の検証手順を自動化する                   |
 
-### ドキュメント (3)
+### ドキュメント (6)
 
 | スキル            | 説明                                                               |
 | ----------------- | ------------------------------------------------------------------ |
 | `manage_docs`     | ドキュメントのビルド、同期、検証を一括管理する（Sphinx対応）       |
 | `make_notebook`   | 機能やテーマについて解説付きのJupyter Notebookを生成する           |
 | `compare_methods` | ライブラリ内の類似した信号処理手法の技術的・物理的な違いを分析する |
+| `web_docs_ia_overhaul` | `docs/web` のトップページ、索引、導線の情報設計を再構成する   |
+| `web_docs_page_rewrite` | `docs/web` の個別ページを要約、早見表、FAQ込みで再設計する |
+| `web_docs_release_gates` | `docs/web` の build、linkcheck、Notebook、ja/en 同期を公開前に確認する |
 
 ### プロジェクト管理 (10)
 
