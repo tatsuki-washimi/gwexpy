@@ -1,98 +1,87 @@
 # ScalarField Slicing Guide
 
-**Overview:** This guide explains how `ScalarField` preserves 4D structure during indexing operations, which differs from NumPy and GWpy behavior. Understanding this behavior is essential for correct domain transformations (time/frequency, space/k-space) and FFT operations.
+This guide explains how `ScalarField` **always maintains its 4-dimensional structure** during indexing and slicing operations. This behavior differs from standard NumPy or GWpy array slicing and is essential for preserving metadata consistency.
 
-**Target Audience:** Intermediate users working with multi-dimensional field data
+## Why Maintain 4 Dimensions?
 
-**Prerequisites:**
+A `ScalarField` is not just an array; it is bound to physical domains such as time, frequency, and spatial coordinates (x, y).
+Slicing in NumPy typically "squeezes" or reduces the rank of the array. If this happened in `ScalarField`, the relationship between data points and their corresponding physical metadata (e.g., sample rate, grid spacing) would be lost, making subsequent FFTs or domain conversions impossible.
 
-- Basic familiarity with NumPy array indexing
-- Understanding of [ScalarField basics](tutorials/field_scalar_intro.ipynb)
+### NumPy vs. GWexpy Behavior Comparison
 
-:::{tip}
-If you're encountering unexpected shapes after slicing operations, jump to the [FAQ section](#frequently-asked-questions-faq) for quick answers.
-:::
+![4D Slicing comparison between NumPy and GWexpy showing dimension maintenance](/home/washimi/.gemini/antigravity/brain/389da455-0c02-483f-928d-e8f3db2746b8/scalarfield_slicing_4d_maintenance_1775634419729.png)
 
-## 4D Structure Preservation in ScalarField
+| Operation | NumPy Behavior | ScalarField Behavior | Reason |
+| :--- | :--- | :--- | :--- |
+| `field[0]` | Dimension reduced (Rank Loss) | **4D Maintained** | Protects axis metadata |
+| `field[:, :, :, 2]` | Becomes 3D | **4D Maintained** | Preserves coordinate mapping |
+| `field + 1.0` | Potential overhead | Optimized vector math | Ensures unit consistency |
 
-`ScalarField` always maintains a 4D structure, even after indexing operations. This differs from the standard behavior of NumPy arrays and GWpy.
+---
 
-### 4D Structure Preservation
+## Advantages of 4D Maintenance
 
-**NumPy array behavior**:
+1.  **Metadata Preservation**: Attributes like `axis0_domain` and `space_domain` remain intact. You can call `.fft()` or `.plot_map()` immediately after slicing.
+2.  **Safety in Physics Calculations**: Prevents "accidental broadcasting errors" caused by unexpected rank reduction.
+3.  **Predictable Pipelines**: Since the shape is always 4D, pipeline components don't need logic to handle variable-rank inputs.
 
-```python
->>> import numpy as np
->>> arr = np.zeros((10, 5, 5, 5))
->>> arr[0].shape
-(5, 5, 5)  # Dimension reduced
-```
+---
 
-**ScalarField behavior**:
+## Practical Examples
 
-```python
->>> from gwexpy.fields import ScalarField
->>> field = ScalarField(np.zeros((10, 5, 5, 5)), ...)
->>> field[0].shape
-(1, 5, 5, 5)  # 4D structure preserved
-```
-
-This behavior provides the following benefits:
-
-1. **Axis metadata retention**: `axis0_domain`, `space_domain`, etc. are preserved
-2. **Broadcast operation consistency**: Always treated as 4D
-3. **FFT operation safety**: Can perform FFT while maintaining domain information
-
-### Reducing Dimensions
-
-To explicitly reduce dimensions, use the `squeeze()` method:
+### 1. Slicing Behavior
 
 ```python
->>> field[0].squeeze().shape
-(5, 5, 5)  # Length-1 axes removed
+from gwexpy.fields import ScalarField
+import numpy as np
+
+# (time, freq, x, y) = (100, 50, 10, 10)
+field = ScalarField(np.zeros((100, 50, 10, 10)), ...)
+
+# Extract a snapshot at a specific time
+snapshot = field[50]
+# Shape is (1, 50, 10, 10). Time axis metadata is preserved.
+
+# Extract a spatial plane (x-y plane)
+plane = field[:, :, :, 2]
+# Shape is (100, 50, 10, 1). Y-axis information is maintained.
 ```
 
-### Slicing Examples
+### 2. Reducing Dimensions (`squeeze`)
+
+If you intentionally need a 1D or 2D array (e.g., for external libraries or simple plotting), explicitly call `.squeeze()`.
 
 ```python
->>> # Extract specific time snapshot
->>> snapshot = field[100]  # shape: (1, 5, 5, 5)
-
->>> # Extract spatial cross-section
->>> plane = field[:, :, :, 2]  # shape: (n_time, 5, 5, 1)
-
->>> # Extract time series at specific spatial point
->>> point_ts = field[:, 2, 2, 2]  # shape: (n_time, 1, 1, 1)
->>> # Use squeeze for TimeSeries-like handling
->>> point_ts_1d = point_ts.squeeze()  # shape: (n_time,)
+# Get time-series at a specific spatial point
+point_ts = field[:, 2, 5, 5]      # (100, 1, 1, 1)
+actual_ts = point_ts.squeeze()    # (100,) - Compatible with TimeSeries
 ```
 
-## Frequently Asked Questions (FAQ)
+### 3. Broadcasting Considerations
 
-### Why preserve 4D structure?
-
-ScalarField represents physical quantities with different domains (time/frequency, real space/k-space) per axis. Reducing dimensions would lose this metadata, causing FFT operations and domain transformations to fail.
-
-### What if I need NumPy-like behavior?
-
-Use the `squeeze()` method. This removes length-1 axes and returns a NumPy-like array.
-
-## Troubleshooting
-
-### Broadcast operations not working as expected
-
-ScalarField is always 4D, so you need to match shapes when operating with other arrays.
+Because `ScalarField` is always 4D, you must reshape NumPy arrays when performing arithmetic operations.
 
 ```python
-# Incorrect: Operation with 1D array
-field + np.array([1, 2, 3])  # Error
+# ❌ Bad: Adding a 1D array directly
+field + np.array([1, 2, 3])  # Shape mismatch
 
-# Correct: Match shape
-field + np.array([1, 2, 3]).reshape(3, 1, 1, 1)
+# ✅ Good: Reshape to match the 4D target
+calibration = np.array([1, 2, 3]).reshape(3, 1, 1, 1) # (freq, 1, 1, 1)
+field + calibration
 ```
+
+---
+
+## FAQ
+
+### Q: Isn't always having 4D inconvenient for 1D calculations?
+**A:** `ScalarField` is designed for "fields" that have extent in space and time. For simple, single-channel time-series analysis, we recommend using the `TimeSeries` class.
+
+### Q: What if I index every dimension, like `ScalarField[0, 0, 0, 0]`?
+**A:** If all indices are scalars, a standard Python or NumPy scalar value is returned.
 
 ## Related Links
 
-- [field_scalar_intro](tutorials/field_scalar_intro.ipynb) - ScalarField Tutorial
-- [ScalarField](../reference/ScalarField.md) - ScalarField API Reference
-- [FieldList](../reference/FieldList.md) - FieldList / FieldDict Collections
+- {doc}`tutorials/field_scalar_intro` - Introduction to ScalarField
+- {doc}`../reference/api/field` - Field Module API Reference
+- {doc}`numerical_stability` - Numerical stability in 4D operations

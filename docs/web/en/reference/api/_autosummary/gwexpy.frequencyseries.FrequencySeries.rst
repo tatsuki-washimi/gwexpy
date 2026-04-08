@@ -25,7 +25,6 @@
       ~FrequencySeries.argsort
       ~FrequencySeries.astype
       ~FrequencySeries.byteswap
-      ~FrequencySeries.check_compatible
       ~FrequencySeries.choose
       ~FrequencySeries.clip
       ~FrequencySeries.compress
@@ -104,6 +103,7 @@
       ~FrequencySeries.put
       ~FrequencySeries.quadrature_sum
       ~FrequencySeries.ravel
+      ~FrequencySeries.read
       ~FrequencySeries.rebin
       ~FrequencySeries.repeat
       ~FrequencySeries.reshape
@@ -158,6 +158,7 @@
       ~FrequencySeries.value_at
       ~FrequencySeries.var
       ~FrequencySeries.view
+      ~FrequencySeries.write
       ~FrequencySeries.zip
       ~FrequencySeries.zpk
    
@@ -194,7 +195,6 @@
       ~FrequencySeries.name
       ~FrequencySeries.nbytes
       ~FrequencySeries.ndim
-      ~FrequencySeries.read
       ~FrequencySeries.real
       ~FrequencySeries.shape
       ~FrequencySeries.si
@@ -202,7 +202,6 @@
       ~FrequencySeries.strides
       ~FrequencySeries.unit
       ~FrequencySeries.value
-      ~FrequencySeries.write
       ~FrequencySeries.x0
       ~FrequencySeries.xindex
       ~FrequencySeries.xspan

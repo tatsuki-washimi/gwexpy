@@ -1,98 +1,87 @@
 # スカラーフィールドのスライス操作ガイド
 
-**概要:** このガイドでは、`ScalarField` がインデクシング操作時に4次元構造を維持する挙動について説明します。これはNumPyやGWpyの挙動とは異なります。この挙動を理解することは、ドメイン変換（時間/周波数、実空間/波数空間）やFFT操作を正しく行うために不可欠です。
+`ScalarField` がインデクシング操作時に**4次元構造を常に維持する**挙動について説明します。これは NumPy や GWpy の標準的な挙動とは異なり、多次元物理データの整合性を保つための重要な設計です。
 
-**対象読者:** 多次元フィールドデータを扱う中級ユーザー
+## なぜ 4次元 を維持するのか？
 
-**前提知識:**
+`ScalarField` は単なる配列ではなく、時間・周波数・空間（x, y）といった物理ドメインと紐付いています。
+NumPy のようにスライス時に次元を削減（squeeze）してしまうと、特定の軸に紐付いたメタデータ（サンプリングレート、グリッド間隔等）との対応関係が壊れ、FFT 操作やドメイン変換が不可能になるためです。
 
-- NumPy配列のインデクシングの基本
-- [ScalarField入門](tutorials/field_scalar_intro.ipynb)の理解
+### NumPy vs GWexpy の挙動比較
 
-:::{tip}
-スライス操作後に予期しない形状になる問題に遭遇している場合は、[FAQセクション](#よくある質問faq)で素早く答えを見つけられます。
-:::
+![4D Slicing comparison between NumPy and GWexpy showing dimension maintenance](/home/washimi/.gemini/antigravity/brain/389da455-0c02-483f-928d-e8f3db2746b8/scalarfield_slicing_4d_maintenance_1775634419729.png)
 
-## ScalarFieldの4次元構造維持の挙動
+| 操作 | NumPy の挙動 | ScalarField の挙動 | 理由 |
+| :--- | :--- | :--- | :--- |
+| `field[0]` | 次元が減る (Rank Loss) | **4次元を維持** | 軸メタデータを保護するため |
+| `field[:, :, :, 2]` | 3次元になる | **4次元を維持** | 座標情報の連続性を保つため |
+| `field + 1.0` | パフォーマンス低下 | 高速演算 | 物理単位の一貫性チェック |
 
-`ScalarField` は、インデクシング操作を行っても常に4次元構造を維持します。これはNumPy配列やGWpyの標準的な挙動とは異なります。
+---
 
-### 4次元構造の維持
+## 4次元構造維持のメリット
 
-**NumPy配列の場合**:
+1.  **軸メタデータの完全保持**: `axis0_domain`, `space_domain` などが欠落しません。スライス後も即座に `fft()` や `plot_map()` が可能です。
+2.  **物理演算の安全性**: 予期せぬ次元削減による「誤ったブロードキャスト演算」を防ぎます。
+3.  **ストリーム処理の容易性**: 常に 4D であるため、パイプラインの途中で形状を気にする必要がありません。
 
-```python
->>> import numpy as np
->>> arr = np.zeros((10, 5, 5, 5))
->>> arr[0].shape
-(5, 5, 5)  # 次元が削減される
-```
+---
 
-**ScalarFieldの場合**:
+## 実践的な操作例
 
-```python
->>> from gwexpy.fields import ScalarField
->>> field = ScalarField(np.zeros((10, 5, 5, 5)), ...)
->>> field[0].shape
-(1, 5, 5, 5)  # 4次元を維持
-```
-
-この挙動により、以下のメリットがあります:
-
-1. **軸メタデータの保持**: `axis0_domain`, `space_domain` などが欠落しません
-2. **ブロードキャスト操作の一貫性**: 常に4次元として扱えます
-3. **FFT操作の安全性**: ドメイン情報を保持したままFFTを実行できます
-
-### 次元を削減したい場合
-
-明示的に次元を削減するには、`squeeze()` メソッドを使用します:
+### 1. スライシングの挙動
 
 ```python
->>> field[0].squeeze().shape
-(5, 5, 5)  # 長さ1の軸が削除される
+from gwexpy.fields import ScalarField
+import numpy as np
+
+# (time, freq, x, y) = (100, 50, 10, 10)
+field = ScalarField(np.zeros((100, 50, 10, 10)), ...)
+
+# 特定の時刻の断面を取得
+snapshot = field[50]
+# shape は (1, 50, 10, 10) となり、時間軸の情報が残ります。
+
+# 空間断面 (x-y 平面) を抽出
+plane = field[:, :, :, 2]
+# shape は (100, 50, 10, 1) となり、y軸情報が維持されます。
 ```
 
-### スライスの例
+### 2. 次元を削減したい場合 (`squeeze`)
+
+意図的に 1次元や 2次元として扱いたい場合（例：プロットや外部ライブラリへの入力）は、明示的に `.squeeze()` を呼び出します。
 
 ```python
->>> # 時間方向の特定の時刻を抽出
->>> snapshot = field[100]  # shape: (1, 5, 5, 5)
-
->>> # 空間的な断面を抽出
->>> plane = field[:, :, :, 2]  # shape: (n_time, 5, 5, 1)
-
->>> # 特定の空間点の時系列
->>> point_ts = field[:, 2, 2, 2]  # shape: (n_time, 1, 1, 1)
->>> # TimeSeries的に扱いたい場合はsqueeze
->>> point_ts_1d = point_ts.squeeze()  # shape: (n_time,)
+# 特定の空間点の時系列を取得してプロット
+point_ts = field[:, 2, 5, 5]      # (100, 1, 1, 1)
+actual_ts = point_ts.squeeze()    # (100,) - これで TimeSeries 互換になります
 ```
 
-## よくある質問（FAQ）
+### 3. ブロードキャスト演算の注意点
 
-### なぜ4次元を維持するのですか？
-
-ScalarFieldは、軸ごとに異なるドメイン（時間/周波数、実空間/波数空間）を持つ物理量を表現します。次元を削減すると、これらのメタデータが失われ、FFT操作やドメイン変換が正しく動作しなくなります。
-
-### NumPyライクな挙動が必要な場合は？
-
-`squeeze()` メソッドを使用してください。これにより、長さ1の軸を削除し、NumPyライクな配列を取得できます。
-
-## トラブルシューティング
-
-### ブロードキャスト操作が期待通り動作しない
-
-ScalarFieldは常に4次元なので、他の配列との演算時には形状を合わせる必要があります。
+`ScalarField` は常に 4次元であるため、NumPy 配列を加減算する場合は形状を合わせる必要があります。
 
 ```python
-# 誤り: 1次元配列との演算
-field + np.array([1, 2, 3])  # エラー
+# ❌ 悪い例: 1次元配列をそのまま足そうとする
+field + np.array([1, 2, 3])  # Shape mismatch
 
-# 正しい: 形状を合わせる
-field + np.array([1, 2, 3]).reshape(3, 1, 1, 1)
+# ✅ 良い例: 正しい次元に拡張する
+calibration = np.array([1, 2, 3]).reshape(3, 1, 1, 1) # (freq, 1, 1, 1)
+field + calibration
 ```
+
+---
+
+## よくある質問 (FAQ)
+
+### Q: 常に 4次元だと、1次元の計算時に不便ではありませんか？
+**A:** `ScalarField` は空間・時間の広がりを持つデータを「場」として扱うためのクラスです。単一チャンネルの単純な時系列を扱う場合は、最初から `TimeSeries` クラスを使用することをお勧めします。
+
+### Q: `ScalarField[0, 0, 0, 0]` とスカラー抽出した場合は？
+**A:** インデックスがすべてスカラーの場合は、通常の Python スカラー値または NumPy スカラーが返されます。
 
 ## 関連リンク
 
-- [field_scalar_intro](tutorials/field_scalar_intro.ipynb) - ScalarField 入門チュートリアル
-- [ScalarField](../reference/ScalarField.md) - ScalarField API リファレンス
-- [FieldList](../reference/FieldList.md) - FieldList / FieldDict コレクション
+- {doc}`tutorials/field_scalar_intro` - ScalarField 入門チュートリアル
+- {doc}`../reference/api/field` - Field モジュール API リファレンス
+- {doc}`numerical_stability` - 数値安定性（4次元演算時の精度管理）
