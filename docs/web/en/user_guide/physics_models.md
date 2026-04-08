@@ -1,33 +1,81 @@
-# Physics Models and Analytical Theory
+# Physics Models and Analysis Theory
 
-This section describes advanced models implemented in `gwexpy` for handling specific physical phenomena and hardware responses.
+This page explains the advanced models and analytical theories implemented in `gwexpy` for handling specific physical phenomena and hardware responses.
 
 ## Response and Coupling Functions
 
-### Automatic Injection Segment Detection
-Detects and extracts stable intervals suitable for analysis from data containing injections (e.g., swept-sines or step-sines). By tracking power in specific frequency bands on a spectrogram, it identifies segments where the excitation is active and stable, removing the need for manual timestamps.
+### Automatic Excitation Detection
 
-### Coupling Function (CF) Estimation
-Estimates coupling functions while accounting for background noise. By comparing signal power during injection and background periods for both target and witness channels, it derives a more accurate estimation of the true coupling strength.
+Extracts stable intervals for analysis from data containing injections (such as swept sine or stepped sine). By tracking power in specific frequency bands on a spectrogram, it identifies segments that exceed thresholds, eliminating the need for manual time-range specification.
+
+### Coupling Function (:term:`Coupling Function`; CF)
+
+Estimates coupling functions while accounting for background noise. By comparing power during injection and background periods for both the target and witness signals, it isolates the true coupling degree.
 
 $$
 \text{CF}(f) = \sqrt{\frac{P_{\text{tgt,inj}}(f) - P_{\text{tgt,bkg}}(f)}{P_{\text{wit,inj}}(f) - P_{\text{wit,bkg}}(f)}}
 $$
 
+| Variable | Definition | Physical Meaning |
+| :--- | :--- | :--- |
+| $f$ | Frequency | Frequency point for analysis |
+| $P_{\text{tgt,inj}}(f)$ | Target signal power (during injection) | Power distribution of the main signal during excitation |
+| $P_{\text{tgt,bkg}}(f)$ | Target signal power (during background) | Noise floor of the main signal without excitation |
+| $P_{\text{wit,inj}}(f)$ | Witness signal power (during injection) | Power of the reference signal (e.g., environmental noise) |
+| $P_{\text{wit,bkg}}(f)$ | Witness signal power (during background) | Noise floor of the reference signal without excitation |
+
+- **Related API**: {doc}`../reference/api/timeseries` (`TimeSeriesDict.calculate_coupling`)
+
 ---
 
 ## Built-in Noise Models
 
-`gwexpy` provides physically-grounded noise generators that can be used for simulations or as initial models for fitting.
+Provides physically motivated noise generators for use as initial models in simulations or fitting.
 
-### 1. Schumann Resonance
-Models magnetic background noise corresponding to the Earth-ionosphere cavity modes. It reproduces the low-frequency geomagnetic background by superimposing multiple independent Lorentzian profiles.
+### 1. Schumann Resonance (:term:`Schumann Resonance`)
+
+Models magnetic noise corresponding to the resonance modes of the Earth-ionosphere cavity. It reproduces the low-frequency magnetic background by superimposing multiple independent Lorentzian profiles.
+
+- **Related API**: {doc}`../reference/api/signal` (`generate_schumann_model`)
 
 ### 2. Voigt Profile
-Generates spectral peak shapes that combine Gaussian (e.g., Doppler broadening) and Lorentzian (e.g., natural or collisional broadening) characteristics, commonly found in atomic physics and high-Q mechanical resonances. Computed efficiently using the Faddeeva function.
+
+Generates peak shapes found in atomic physics or high-Q mechanical resonances, which combine Gaussian (Doppler broadening, etc.) and Lorentzian (collision/natural broadening, etc.) characteristics. It is calculated efficiently using the Faddeeva function.
+
+- **Related API**: {doc}`../reference/api/signal` (`voigt_profile`)
 
 ---
 
+## Advanced Analysis Engines and Algorithms
+
+### 1. Independent and Principal Component Analysis (ICA/PCA)
+
+The ICA/PCA implementation in `gwexpy` is optimized for physical data characteristics:
+
+- **Unit Variance Standardization**: Standardizes data to unit variance internally to improve convergence, then restores (re-scales) the original physical scale after computation.
+- **Spatio-temporal Metadata Inheritance**: Automatically inherits the GPS time conventions from the input data for each statistically extracted component.
+
+- **Related API**: {doc}`../reference/api/signal` (ICA, PCA)
+
+### 2. Fast Correlation Engine (:term:`BruCo`)
+
+The `FastCoherenceEngine` scans thousands of auxiliary channels for contributions to a target signal with extreme speed.
+
+- **FFT Caching**: Reuses FFT results for a common target signal in memory.
+- **Sparse-like Computation**: Skips non-correlated channels early to focus resources on significant contributors.
+
+- **Related API**: {doc}`../reference/api/timeseries` (`TimeSeriesDict.scan_coherence`)
+
+### 3. Bayesian Inference and GLS Fitting
+
+Handles parameter estimation for multidimensional data with complex error structures.
+
+- **GLS (Generalized Least Squares)**: Applies statistically justified weighting when bins at different frequencies have correlated (non-diagonal) covariance.
+- **MCMC Integration**: Uses `emcee` for posterior sampling, enabling robust fitting even for non-linear physical models.
+
+- **Related API**: {doc}`../reference/api/stats`
+
 ## Related Documents
-- {doc}`architecture` — System design and data flow
-- {doc}`validated_algorithms` — Validation reports for numerical formulas
+
+- {doc}`architecture` — Internal data structures and engine design
+- {doc}`validated_algorithms` — Validation reports for mathematical formulas
