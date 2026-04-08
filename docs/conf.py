@@ -73,8 +73,14 @@ rst_prolog = r"""
 .. role:: mpltype(code)
 .. role:: doi(code)
 .. |lal.LIGOTimeGPS| replace:: ``lal.LIGOTimeGPS``
-.. _lal.ligotimegps: https://lscsoft.docs.ligo.org/lalsuite/lal/classlal_1_1_l_i_g_o_time_g_p_s.html
+.. _lal.ligotimegps: https://lscsoft.docs.ligo.org/lalsuite/lal/
 """
+
+# Whitelist internal or temporarily unreachable links
+linkcheck_ignore = [
+    r"https://dtt\.ligo\.org/.*",
+    r"https://lscsoft\.docs\.ligo\.org/lalsuite/lal/classlal_1_1_l_i_g_o_time_g_p_s\.html",
+]
 
 # Ignore nitpick errors for well-known external symbols to keep -n builds manageable.
 nitpick_ignore = []

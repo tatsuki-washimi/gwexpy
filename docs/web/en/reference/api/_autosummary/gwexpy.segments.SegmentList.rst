@@ -29,17 +29,22 @@
       ~SegmentList.intersects_segment
       ~SegmentList.pop
       ~SegmentList.protract
-      ~SegmentList.read
       ~SegmentList.remove
       ~SegmentList.reverse
       ~SegmentList.shift
       ~SegmentList.sort
       ~SegmentList.to_table
       ~SegmentList.value_slice_to_index
-      ~SegmentList.write
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SegmentList.read
+      ~SegmentList.write
    
    

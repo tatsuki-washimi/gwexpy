@@ -50,11 +50,11 @@ def main():
 
     # Collect markdown and rST files
     files = list(DOCS_DIR.rglob('*.md')) + list(DOCS_DIR.rglob('*.rst'))
-    # Skip auto-generated API reference for terminology checks to avoid false positives on standard library names
-    files = [f for f in files if 'reference/api' not in str(f)]
     hits = []
-    
     for p in files:
+        # Skip auto-generated API reference and Glossary (which contains variants as definitions)
+        if 'reference/api' in str(p) or 'glossary' in str(p):
+            continue
         try:
             txt = p.read_text(encoding='utf-8')
             txt_no_code = strip_code(txt)
