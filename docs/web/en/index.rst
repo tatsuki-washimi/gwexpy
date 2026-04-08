@@ -1,26 +1,25 @@
 GWexpy Documentation
 ====================
 
-GWexpy extends GWpy with additional containers and analysis utilities for time and frequency series data analysis.
+.. grid:: 1
+    :gutter: 3
 
-**Key Features:**
+    .. grid-item::
+        :columns: 12
 
-* **Matrix containers**: Efficient multi-channel TimeSeries/FrequencySeries processing
-* **Field API**: 4D spacetime fields (ScalarField, VectorField, TensorField) with time↔frequency and real↔k-space FFT
-* **Enhanced signal processing**: Advanced fitting, HHT, ARIMA, correlation methods
-* **Numerical stability**: Validated algorithms with comprehensive testing
-* **ML/DL integration**: PyTorch, TensorFlow, and scikit-learn interoperability
+        GWexpy extends GWpy with additional containers and analysis utilities for time and frequency series data analysis.
 
-.. admonition:: Quick Start
-   :class: tip
+        .. button-ref:: user_guide/quickstart
+            :ref-type: doc
+            :color: primary
+            :shadow:
+            :expand:
 
-   Start with :doc:`Installation <user_guide/installation>` to set up your environment, then proceed to :doc:`Quick Start <user_guide/quickstart>` to learn the basics.
-
-
-Choose Your Guide
------------------
+            Quick Start (Learn basics in 5 mins)
 
 .. grid:: 3
+    :gutter: 3
+    :class-container: grid-container
 
     .. grid-item-card:: For Beginners
         :link: user_guide/getting_started
@@ -29,155 +28,75 @@ Choose Your Guide
         Learn from the basics
 
         * Installation Guide
-        * Quick Start
         * Basic Tutorials
 
-    .. grid-item-card:: For Experimental Data Analysts
+    .. grid-item-card:: For Analysts
         :link: examples/index
         :link-type: doc
 
-        Learn from case studies
+        Practical examples
 
-        * Basic usage examples
-        * Advanced signal processing
-        * Real-world case studies
+        * Case Studies
+        * Advanced Signal Processing
 
     .. grid-item-card:: For GWpy Users
-        :link: user_guide/getting_started
+        :link: user_guide/gwexpy_for_gwpy_users_en
         :link-type: doc
 
-        Migration & Upgrades
+        Migration and interoperability
 
         * Differences from GWpy
         * New Feature Highlights
-        * Compatibility Information
-
-
-Visual Examples
----------------
-
-.. figure:: ../../_static/images/hero_plot.png
-   :align: center
-   :width: 90%
-   :alt: GWexpy time series visualization example
-
-   Time series visualization example with GWexpy
-
-
-Example Gallery
----------------
-
-Representative case studies:
-
-.. grid:: 3
-
-    .. grid-item-card:: Noise Budget Analysis
-        :link: examples/index
-        :link-type: doc
-        :img-top: ../../_static/images/case_noise_budget_thumb.png
-
-        Multi-channel correlation and noise source identification
-
-    .. grid-item-card:: Transfer Function Measurement
-        :link: examples/index
-        :link-type: doc
-        :img-top: ../../_static/images/case_transfer_function_thumb.png
-
-        Bode plot and model fitting
-
-    .. grid-item-card:: Active Damping Control
-        :link: examples/index
-        :link-type: doc
-        :img-top: ../../_static/images/case_active_damping_thumb.png
-
-        6-DOF MIMO control simulation
-
-
-Learning Path by User Level
----------------------------
-
-.. list-table::
-   :header-rows: 1
-   :widths: 20 40 40
-
-   * - User Level
-     - Start Here
-     - Next Steps
-   * - Beginners
-     - :doc:`Installation <user_guide/installation>`, :doc:`Quick Start <user_guide/quickstart>`
-     - :doc:`Getting Started <user_guide/getting_started>`, :doc:`Tutorials <user_guide/tutorials/index>`
-   * - Researchers
-     - :doc:`Case Studies <examples/index>`
-     - :doc:`Advanced Signal Processing <user_guide/tutorials/index>`, :doc:`API Reference <reference/index>`
-   * - GWpy Users
-     - :doc:`Migration Guide <user_guide/gwexpy_for_gwpy_users_en>`
-     - :doc:`New Feature Tutorials <user_guide/tutorials/index>`
-
-
-Main Documentation
-------------------
 
 .. toctree::
    :maxdepth: 2
-   :caption: User Guide
+   :caption: 🚀 Start
 
    user_guide/installation
    user_guide/quickstart
    user_guide/getting_started
-   user_guide/cli
-   user_guide/gui
+   user_guide/citation
+   user_guide/changelog
    user_guide/license
-   user_guide/io_formats
 
 .. toctree::
    :maxdepth: 2
-   :caption: Tutorials
+   :caption: 📖 Learn
 
    user_guide/tutorials/index
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Case Studies
-
    examples/index
+   user_guide/gwexpy_for_gwpy_users_en
 
 .. toctree::
    :maxdepth: 1
-   :caption: Advanced Guides
+   :caption: 🛠️ Advanced
 
-   user_guide/migration_0.1.1
-   user_guide/gwexpy_for_gwpy_users_en
+   user_guide/io_formats
    user_guide/time_utilities
    user_guide/numerical_stability
    user_guide/scalarfield_slicing
    user_guide/validated_algorithms
    user_guide/architecture
+   user_guide/physics_models
 
 .. toctree::
    :maxdepth: 2
-   :caption: Reference
+   :caption: 📚 Reference
 
    reference/index
 
+.. toctree::
+   :hidden:
 
-Next Steps
-----------
+   user_guide/cli
+   user_guide/gui
 
-To continue learning:
+---
 
-* :doc:`Getting Started <user_guide/getting_started>` - Detailed learning path
-* :doc:`Tutorials <user_guide/tutorials/index>` - All tutorials
-* :doc:`Case Studies <examples/index>` - Real-world case studies
-* :doc:`API Reference <reference/index>` - Class and function details
+.. grid:: 2
 
-**Advanced Topics:**
+    .. grid-item::
+        **Language:** :doc:`日本語 (Japanese) <../ja/index>`
+    .. grid-item::
+        **Support:** :doc:`Troubleshooting <user_guide/troubleshooting>`
 
-* :doc:`ScalarField Slicing <user_guide/scalarfield_slicing>` - Multi-dimensional data manipulation
-* :doc:`Numerical Stability & Accuracy <user_guide/numerical_stability>` - Computational reliability
-* :doc:`Validated Algorithms <user_guide/validated_algorithms>` - Algorithm verification reports
-
-
-Language
---------
-
-* :doc:`日本語 (Japanese) <../ja/index>`

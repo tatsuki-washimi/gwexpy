@@ -1,0 +1,14 @@
+{% extends "!layout.html" %}
+
+{% block sidebartitle %}
+  {{ super() }}
+
+  <div id="language-switcher-box">
+    <small>Language: </small>
+    {% if '/ja/' in pagename or pagename.startswith('web/ja') %}
+      <strong>日本語</strong> | <a href="{{ pathto('../en/' + pagename.split('/ja/')[1] if '/ja/' in pagename else 'index', 1) }}">English</a>
+    {% else %}
+      <a href="{{ pathto('../ja/' + pagename.split('/en/')[1] if '/en/' in pagename else 'index', 1) }}">日本語</a> | <strong>English</strong>
+    {% endif %}
+  </div>
+{% endblock %}
