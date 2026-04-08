@@ -6,6 +6,20 @@
 
 - **fields**: `VectorField` and `TensorField` now support initialization directly from NumPy ndarrays (5D for VectorField, 6D for TensorField), automatically creating the component `ScalarField`s without breaking backward-compatible dictionary initialization.
 
+### Documentation
+
+- **docs**: Unified the Class Index into five major categories (Core, Field, Signal, Analysis, Utilities) with standardized Japanese translations (e.g., "時系列行列" for `TimeSeriesMatrix`).
+- **docs**: Redesigned major guidance pages (`io_formats`, `numerical_stability`, `time_utilities`, `architecture`) using judgment tables and decision-driven structures.
+- **docs**: Refined visual aesthetics with custom CSS for modern typography, responsive tables, and card-based navigation in the Sphinx RTD theme.
+- **docs**: Integrated SEO/OGP metadata, sitemaps, and automated "Last updated" timestamps.
+
+### Infrastructure
+
+- **ci**: Implemented a weekly documentation health check (`docs-weekly-health.yml`) to monitor broken links, terminology consistency, and JA/EN synchronization.
+- **ci**: Standardized notebook testing pipeline with `papermill` for full execution (Light) and `nbval` for syntax validation (Heavy).
+- **ci**: Integrated `nbstripout` into pre-commit hooks to manage repository size and diff clarity.
+- **pre-commit**: Added a GitHub Actions PR template with automated quality gate checklist.
+
 ## [0.1.1] - 2026-04-05
 
 ### Added
