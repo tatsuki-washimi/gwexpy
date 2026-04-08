@@ -2,6 +2,14 @@
 
 Get your first analysis plot with GWexpy as quickly as possible.
 
+## Quick Install
+
+Since GWexpy is currently in development, please install it directly from GitHub:
+
+```bash
+pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+```
+
 ## 3-line Quickstart
 
 GWexpy's `TimeSeries` can be created directly from NumPy arrays and features built-in plotting capabilities.

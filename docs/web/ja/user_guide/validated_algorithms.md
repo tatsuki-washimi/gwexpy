@@ -19,9 +19,9 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **k-space 計算** | `.fft_space()` | 文献・SciPy 比較 | 空間相関、波数解析 | [Field 入門](tutorials/field_scalar_intro.ipynb) |
 | **Transient FFT** | `._fft_transient()` | 文献・NumPy 比較 | 短時間バースト解析 | — |
-| **VIF 補正** | `calculate_correlation_factor()` | 文献 (Percival) | スペクトル誤差推定 | [Bootstrap チュートリアル](tutorials/spectral_bootstrap.ipynb) |
+| **VIF 補正** | `calculate_correlation_factor()` | 文献 (Percival) | スペクトル誤差推定 | [Bootstrap チュートリアル](tutorials/case_bootstrap_gls_fitting.ipynb) |
 | **予測時刻計算** | `ArimaResult.forecast()` | LIGO 時刻規約 | 故障予兆・トレンド予測 | — |
-| **Adaptive Whitening** | `.whiten(eps="auto")` | 数値実験 | 極小信号の安定抽出 | [数値安定性](numerical_stability.md) |
+| **適応ホワイトニング** | `.whiten(eps="auto")` | 数値実験 | 極小信号の安定抽出 | [数値安定性](numerical_stability.md) |
 
 ---
 

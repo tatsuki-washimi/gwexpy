@@ -7,11 +7,11 @@
    時系列 (TimeSeries) <TimeSeries>
    時系列辞書 (TimeSeriesDict) <TimeSeriesDict>
    時系列リスト (TimeSeriesList) <TimeSeriesList>
-   時系列行列 (TimeSeriesMatrix) <TimeSeriesMatrix>
+   TimeSeriesMatrix <TimeSeriesMatrix>
    周波数系列 (FrequencySeries) <FrequencySeries>
    周波数系列辞書 (FrequencySeriesDict) <FrequencySeriesDict>
    周波数系列リスト (FrequencySeriesList) <FrequencySeriesList>
-   周波数系列行列 (FrequencySeriesMatrix) <FrequencySeriesMatrix>
+   FrequencySeriesMatrix <FrequencySeriesMatrix>
    スペクトログラム (Spectrogram) <Spectrogram>
    スペクトログラム辞書 (SpectrogramDict) <SpectrogramDict>
    スペクトログラムリスト (SpectrogramList) <SpectrogramList>

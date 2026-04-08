@@ -25,9 +25,7 @@
       ~DataQualityFlag.protract
       ~DataQualityFlag.query
       ~DataQualityFlag.query_dqsegdb
-      ~DataQualityFlag.read
       ~DataQualityFlag.round
-      ~DataQualityFlag.write
    
    
 
@@ -48,9 +46,11 @@
       ~DataQualityFlag.livetime
       ~DataQualityFlag.name
       ~DataQualityFlag.padding
+      ~DataQualityFlag.read
       ~DataQualityFlag.regular
       ~DataQualityFlag.tag
       ~DataQualityFlag.texname
       ~DataQualityFlag.version
+      ~DataQualityFlag.write
    
    

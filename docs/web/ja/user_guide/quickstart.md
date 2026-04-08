@@ -2,6 +2,14 @@
 
 GWexpy を使って、最初の解析図を最短で作成しましょう。
 
+## クイックインストール (Quick Install)
+
+現在、開発版のため GitHub から直接インストールしてください：
+
+```bash
+pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+```
+
 ## 3行で最初の図を出す (3-line Quickstart)
 
 GWexpy の `TimeSeries` は NumPy 配列から直接作成でき、標準的なプロット機能を備えています。

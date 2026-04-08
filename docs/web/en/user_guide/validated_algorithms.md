@@ -19,7 +19,7 @@ An algorithm labeled as "Validated" meets at least one of the following criteria
 | :--- | :--- | :--- | :--- | :--- |
 | **k-space calculation** | `.fft_space()` | Literature / SciPy | Spatial correlation, wavenumbers | [Field Intro](tutorials/field_scalar_intro.ipynb) |
 | **Transient FFT** | `._fft_transient()` | Literature / NumPy | Short-duration burst analysis | — |
-| **VIF Correction** | `calculate_correlation_factor()` | Literature (Percival) | Spectral error estimation | [Bootstrap Guide](tutorials/spectral_bootstrap.ipynb) |
+| **VIF Correction** | `calculate_correlation_factor()` | Literature (Percival) | Spectral error estimation | [Bootstrap Guide](tutorials/case_bootstrap_gls_fitting.ipynb) |
 | **Forecast Timing** | `ArimaResult.forecast()` | LIGO Timing Convention | Trend prediction | — |
 | **Adaptive Whitening** | `.whiten(eps="auto")` | Numerical Experiment | Robust signal extraction | [Stability](numerical_stability.md) |
 

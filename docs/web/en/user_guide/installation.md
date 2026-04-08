@@ -13,16 +13,16 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
      - Installation Command
      - Features
    * - Minimal
-     - `pip install gwexpy`
+     - `pip install git+https://github.com/tatsuki-washimi/gwexpy.git`
      - Numerical containers and basic arithmetic. Minimal dependencies.
    * - **Recommended**
-     - `pip install "gwexpy[analysis,fitting,plotting]"`
+     - `pip install "gwexpy[analysis,fitting,plotting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`
      - Advanced statistics, curve fitting, and mapping features.
    * - GW Analysis
-     - `pip install "gwexpy[gw,io]"`
+     - `pip install "gwexpy[gw,io] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`
      - Frame file support, NDS2 access, and official GW tools.
    * - Dev / Full
-     - `pip install "gwexpy[all]"`
+     - `pip install "gwexpy[all] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`
      - Enables all optional features.
 
 ## 1. Installation Steps
@@ -34,7 +34,7 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
       For users who want to keep dependencies minimal and only use core containers like `ScalarField`.
 
       ```bash
-      pip install gwexpy
+      pip install git+https://github.com/tatsuki-washimi/gwexpy.git
       ```
 
    .. tab-item:: Conda Environment (Recommended / GW Analysis)
@@ -48,7 +48,7 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
       conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
 
       # 2. Install GWexpy with analysis/fitting options
-      pip install "gwexpy[gw,analysis,fitting]"
+      pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
       ```
 
    .. tab-item:: Developer Mode
