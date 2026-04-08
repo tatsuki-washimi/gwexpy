@@ -1,19 +1,25 @@
 # Numerical Stability and Precision
 
-`gwexpy` is designed to handle data with an extremely wide dynamic range, which is common in gravitational-wave data analysis.
-While gravitational-wave strain signals are typically on the order of $10^{-21}$, intermediate processing may involve values close to 1.
+> [!NOTE]
+> **Who should read this page?**
+> Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to this detailed guide only if:
+> - You see "holes" or "unusual colors" in your plots caused by `NaN` or `Inf`.
+> - You are working with extremely small signals (below $10^{-23}$) or huge signals (above 1) simultaneously.
+> - You want to deeply understand the numerical behavior of algorithms and tune parameters like `eps` or `tol`.
 
-To ensure scientific accuracy and prevent numerical artifacts such as signal loss or :term:`NaN/Inf propagation`, `gwexpy` implements robust numerical stabilization strategies.
+`gwexpy` is designed to handle data with an extremely wide dynamic range without numerical breakdown.
 
-## TL;DR: Why Numerical Stability Matters
+## Impact of Stabilization (Before & After)
 
-- **Prevention of Death Floats (NaN/Inf)**: Avoids computational failures caused by division by zero or log of zero.
-- **Micro-signal Protection**: Prevents gravitational-wave signals ($10^{-21}$) from being rounded to zero by rigid `eps` parameters.
-- **Visual Improvement**: Automatically adjusts dynamic range during plotting to reveal signal details.
+A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexpy`'s robust numerical stabilization algorithms.
 
-### Impact of Stabilization on Visualization
+![Numerical stabilization comparison: Noisy visualization with NaN/Inf artifacts (Left) vs. Clean gravitational-wave signal (Right)](../../../_static/images/numerical_stability_comparison.png)
 
-![Spectral stabilization comparison showing typical NaN artifacts vs clean GWexpy output](/home/washimi/.gemini/antigravity/brain/389da455-0c02-483f-928d-e8f3db2746b8/spectral_stabilization_comparison_1775634367572.png)
+| Item | Standard Implementation (Before) | GWexpy (After) |
+| :--- | :--- | :--- |
+| **Zero Values** | `log10(0)` produces `-inf`, causing blank holes in plots | **:term:`Safe Log`** automatically sets an optimal floor based on the max value |
+| **Micro-signals** | Rounded to zero by fixed `eps=1e-12`, causing signal loss | **:term:`Adaptive Whitening`** (`eps="auto"`) maintains signal sensitivity |
+| **Failures** | `NaN` propagates, making the entire dataset uncomputable | Pre/Post-computation validation protects data integrity |
 
 ---
 

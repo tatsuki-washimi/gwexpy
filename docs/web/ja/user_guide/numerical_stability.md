@@ -1,19 +1,25 @@
 # 数値的安定性と精度
 
-`gwexpy` は、重力波データ解析で頻繁に扱われる極めて広いダイナミックレンジを持つデータを処理できるように設計されています。
-重力波のひずみ信号（strain）は典型的には $10^{-21}$ のオーダーですが、中間処理では 1 に近い値を扱うこともあります。
+> [!NOTE]
+> **このページを読むべき方**:
+> 通常の解析では `gwexpy` のデフォルト設定で十分な安定性が確保されています。以下の状況に該当する場合のみ、この詳細ガイドを参照してください。
+> - プロット結果に `NaN` や `Inf` による「穴」や「異常な色」が現れた場合
+> - 非常に微小な信号（$10^{-23}$以下）や、逆に 1 を超える巨大な信号を同時に扱う場合
+> - 解析アルゴリズムの数値的な挙動を深く理解し、詳細パラメータ（`eps`, `tol`）を調整したい場合
 
-科学的な正確性を保証し、数値的なアーティファクト（:term:`NaN/Inf propagation` や信号消失など）を防ぐため、`gwexpy` は堅牢な数値安定化戦略を実装しています。
+`gwexpy` は、重力波データ解析で頻繁に扱われる極めて広いダイナミックレンジを持つデータを、数値的な破綻なく処理できるように設計されています。
 
-## TL;DR: なぜ数値安定化が必要か
+## 可視化における安定化の効果 (Before & After)
 
-- **:term:`NaN/Inf の伝播（旧: Death Floats）` の防止**: ゼロに近い値での除算や対数計算による計算不能状態（:term:`NaN/Inf propagation`）を防ぎます。
-- **微小信号の保護**: 固定の `eps` (1e-12等) による丸め誤差で、重力波信号 ($10^{-21}$) が消えるのを防ぎます。
-- **可視化の改善**: プロット時に自動でダイナミックレンジを調整し、信号の細部まで見えるようにします。
+標準的な手法（単純な `log10` や 固定 `eps`）と、`gwexpy` の数値安定化アルゴリズムを適用した結果の比較です。
 
-### 可視化における安定化の効果
+![Numerical stabilization comparison: Noisy visualization with NaN/Inf artifacts (Left) vs. Clean gravitational-wave signal (Right)](../../../_static/images/numerical_stability_comparison.png)
 
-![Spectral stabilization comparison showing typical NaN artifacts vs clean GWexpy output](/home/washimi/.gemini/antigravity/brain/389da455-0c02-483f-928d-e8f3db2746b8/spectral_stabilization_comparison_1775634367572.png)
+| 項目 | 一般的な実装 (Before) | GWexpy (After) |
+| :--- | :--- | :--- |
+| **ゼロ値の扱い** | `log10(0)` により `-inf` が発生し、図が白く抜ける | **:term:`Safe Log`** により最大値から適切なフロアを自動設定 |
+| **微小信号** | 固定 `eps=1e-12` 等で丸められ、信号消失 | **:term:`Adaptive Whitening`** (`eps="auto"`) で信号感度を維持 |
+| **計算不能点** | `NaN` が伝播し、全領域が計算不能になる | 演算前後のバリデーションにより属性を保護 |
 
 ---
 
