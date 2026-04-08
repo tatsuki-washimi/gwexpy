@@ -1,8 +1,28 @@
 /* Custom styles for GWexpy documentation */
 
+/* --- 1. Typography & General Layout --- */
+:root {
+    --gw-primary: #2980B9;
+    --gw-secondary: #3498DB;
+    --gw-accent: #E67E22;
+    --gw-bg-dark: #1A1A1B;
+    --gw-text-dark: #D7DADC;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
 /* Sidebar indentation and spacing */
 .wy-menu-vertical li.toctree-l1 > a {
     font-weight: bold;
+    color: #444;
+}
+
+.wy-menu-vertical li.current > a {
+    background: #f0f0f0;
+    color: var(--gw-primary);
+    border-right: 4px solid var(--gw-primary);
 }
 
 .wy-menu-vertical li.toctree-l2 a {
@@ -13,34 +33,100 @@
     padding-left: 3.5em;
 }
 
+/* --- 2. Advanced Interactive Elements --- */
+
 /* Grid card styling tweaks for Sphinx Design */
 .sd-card {
-    border-radius: 8px !important;
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-radius: 12px !important;
+    border: 1px solid #eee !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
 }
 
 .sd-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12) !important;
+    border-color: var(--gw-primary) !important;
 }
 
 /* Hero section spacing */
 .grid-container {
-    margin-top: 2em;
+    margin-top: 3em;
+    margin-bottom: 3em;
+}
+
+/* --- 3. Code Blocks & Tables --- */
+
+/* Code block "premium" look */
+.highlight {
+    border-radius: 8px;
+    padding: 2px;
+    background: #fdfdfd;
+}
+
+/* Table overflow handling & Scroll wrapper style */
+.wy-table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
     margin-bottom: 2em;
 }
 
-/* Table overflow handling */
-.wy-table-responsive table td, .wy-table-responsive table th {
+.wy-table-responsive table td, 
+.wy-table-responsive table th {
     white-space: normal !important;
+    padding: 12px !important;
 }
 
-/* Language switcher box styling */
+.wy-table-responsive table thead th {
+    background-color: #f4f4f4 !important;
+    border-bottom: 2px solid #ddd !important;
+}
+
+/* --- 4. Language Switcher & Utilities --- */
+
 #language-switcher-box {
-    margin: 10px;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #f9f9f9;
-    font-size: 0.9em;
+    margin: 15px;
+    padding: 10px;
+    border: 1px solid #e1e4e6;
+    border-radius: 8px;
+    background-color: #ffffff;
+    font-size: 0.85em;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#language-switcher-box strong {
+    color: var(--gw-primary);
+}
+
+#language-switcher-box a {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+#language-switcher-box a:hover {
+    color: var(--gw-primary);
+    text-decoration: underline;
+}
+
+/* --- 5. Dark Mode Support (Basic) --- */
+@media (prefers-color-scheme: dark) {
+    /* Note: RTD theme doesn't support full dark mode natively yet without heavy hacking,
+       but we can at least adjust our custom components to be less jarring. */
+    #language-switcher-box {
+        background-color: #2c2c2e;
+        border-color: #3a3a3c;
+        color: #efeff4;
+    }
+    #language-switcher-box a {
+        color: #aeaeb2;
+    }
+}
+
+/* External link icons */
+.reference.external:after {
+    content: "\f08e";
+    font-family: FontAwesome;
+    font-size: 0.8em;
+    padding-left: 4px;
+    vertical-align: super;
 }
