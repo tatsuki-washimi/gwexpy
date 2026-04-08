@@ -1,0 +1,46 @@
+/* Custom styles for GWexpy documentation */
+
+/* Sidebar indentation and spacing */
+.wy-menu-vertical li.toctree-l1 > a {
+    font-weight: bold;
+}
+
+.wy-menu-vertical li.toctree-l2 a {
+    padding-left: 2.5em;
+}
+
+.wy-menu-vertical li.toctree-l3 a {
+    padding-left: 3.5em;
+}
+
+/* Grid card styling tweaks for Sphinx Design */
+.sd-card {
+    border-radius: 8px !important;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.sd-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+/* Hero section spacing */
+.grid-container {
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+/* Table overflow handling */
+.wy-table-responsive table td, .wy-table-responsive table th {
+    white-space: normal !important;
+}
+
+/* Language switcher box styling */
+#language-switcher-box {
+    margin: 10px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    font-size: 0.9em;
+}
