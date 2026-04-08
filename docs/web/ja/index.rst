@@ -87,6 +87,7 @@ GWexpy ドキュメント
    :caption: 📚 リファレンス (Reference)
 
    reference/index
+   user_guide/glossary
 
 .. toctree::
    :hidden:
