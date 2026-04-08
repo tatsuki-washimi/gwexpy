@@ -3,39 +3,39 @@
 gwexpy がサポートする全ファイルフォーマットの一覧と、各フォーマットの読み書き方法をまとめたエンドユーザー向けガイドです。
 本ページでは内部実装メソッドは記載せず、ユーザーが直接利用するクラスメソッド `.read()` / `.write()` のみを示します。
 
-> [!CAUTION]
->
-> ## セキュリティ警告: Pickle 形式の取り扱いについて
->
-> **Pickle** (:term:`Pickle`) 形式は Python オブジェクトをそのまま保存するため非常に便利ですが、「信頼できないソースから受け取った Pickle ファイルを読み込む」ことは極めて危険です。悪意のあるファイルにより、PC 上で任意のコードが実行されるリスクがあります。
->
-> 共同研究者からの共有データや長期保存には、**HDF5**、**GWF**、または **Zarr** などの構造化された安全なフォーマットを使用することを強く推奨します。詳しくは用語集の :term:`Pickle` を参照してください。
+.. warning::
+   **セキュリティ警告: Pickle 形式の取り扱いについて**
 
-## 対応フォーマット一覧
+   **Pickle** (:term:`Pickle`) 形式は 非常に便利ですが、「信頼できないソースから受け取った Pickle ファイルを読み込む」ことは極めて危険です。悪意のあるファイルにより、実行環境で任意のコードが実行されるリスクがあります。
+   共同研究者からの共有データや長期保存には、**HDF5**、**GWF**、または **Zarr** などの構造化された安全なフォーマットを使用することを強く推奨します。
 
-| 形式 | 拡張子 | 読 / 写 | 対応クラス | 自動判別 | 必須 extras | 注意点 |
-| :--- | :--- | :---: | :--- | :---: | :--- | :--- |
-| **GWF** | `.gwf` | ○ / ○ | `TimeSeries(Dict)` | ○ | — | 標準。LIGO/KAGRA 解析の基本 |
-| **HDF5** | `.h5`, `.hdf5` | ○ / ○ | `TimeSeries(Dict)`, `Field` | ○ | — | 安全。メタデータ保持に最適 |
-| **Pickle** | `.pkl` | ○ / ○ | 全クラス | ○ | — | **警告あり**。Python 専用 |
-| **LIGO_LW** | `.xml`, `.xml.gz` | ○ / × | `TimeSeries(Dict)` | ○ | — | DTT 形式。`products` 引数が必要 |
-| **CSV / TXT** | `.csv`, `.txt` | ○ / ○ | `TimeSeries(Dict)` | △ | — | ASCII。ディレクトリ一括読込可 |
-| **WAV** | `.wav` | ○ / ○ | `TimeSeries(Dict)` | ○ | `scipy` | 録音データ用。絶対時刻情報なし |
-| **MiniSEED** | `.mseed` | ○ / ○ | `TimeSeries(Dict)` | ○ | `obspy` | 地震波形データの標準 |
-| **SAC** | `.sac` | ○ / ○ | `TimeSeries(Dict)` | ○ | `obspy` | 地震解析用。ヘッダー定義が豊富 |
-| **GSE2** | `.gse2` | ○ / ○ | `TimeSeries(Dict)` | ○ | `obspy` | 地震波形 |
-| **K-NET** | `.knet` | ○ / × | `TimeSeries(Dict)` | ○ | `obspy` | 防災科研 強震計観測網 |
-| **GBD** | `.gbd` | ○ / × | `TimeSeriesDict` | ○ | — | GRAPHTEC。`timezone` 必須 |
-| **WIN / 32** | `.win`, `.cnt` | ○ / × | `TimeSeriesDict` | ○ | `obspy` | NIED 改良版パーサ |
-| **MTH5** | `.h5` | ○ / ○ | `TimeSeries` | × | `mth5` | 磁力計データ（設計上サポート） |
-| **ATS** | `.ats` | ○ / × | `TimeSeriesDict` | ○ | — | Metronix バイナリ |
-| **ROOT** | `.root` | ○ / ○ | `EventTable` | ○ | — | CERN ROOT テーブル (via gwpy) |
-| **SQLite** | `.sdb`, `.sqlite` | ○ / × | `TimeSeriesDict` | ○ | — | WeeWX 気象データ |
-| **NetCDF4** | `.nc` | ○ / ○ | `TimeSeries(Dict)` | ○ | `xarray` | クラウド利用・多次元データ |
-| **Zarr** | `.zarr` | ○ / ○ | 全クラス | ○ | `zarr` | 並列処理・クラウド最適化 |
-| **Audio** | `.mp3`, `.flac` | ○ / ○ | `TimeSeriesDict` | ○ | `pydub` | 圧縮音声（ffmpeg 必要） |
-| **NDS2** | (ネットワーク) | ○ / × | `TimeSeries` | — | — | 遠隔データアクセス |
-| **TDMS** | `.tdms` | ○ / × | `TimeSeriesDict` | ○ | `npTDMS` | National Instruments |
+## 対応フォーマット判断表
+
+データ形式や目的に応じて最適なフォーマットを確認してください。詳細な使い方は各セクションを参照してください。
+
+| フォーマット | 読/写 | 対応クラス | 自動判別 | 必要 extras | 主な用途 | 注意事項 |
+| :--- | :---: | :--- | :---: | :--- | :--- | :--- |
+| **GWF** (.gwf) | ○ / ○ | `TimeSeries(Dict)` | ○ | — | LIGO/KAGRA 解析の標準 | 標準。安定性が高い |
+| **HDF5** (.h5, .hdf5) | ○ / ○ | `TimeSeries(Dict)`, `Field` | ○ | — | 階層構造・メタデータの長期保存 | 安全。推奨される保存形式 |
+| **Pickle** (.pkl) | ○ / ○ | 全クラス | ○ | — | Python オブジェクトのシリアライズ | **セキュリティ警告あり** |
+| **LIGO_LW** (.xml) | ○ / × | `TimeSeries(Dict)` | ○ | — | DTT 診断ツールの出力形式 | `products` 引数が必須 |
+| **CSV / TXT** (.csv, .txt) | ○ / ○ | `TimeSeries(Dict)` | △ | — | プレーンテキスト、汎用 | ディレクトリ一括読込に対応 |
+| **WAV** (.wav) | ○ / ○ | `TimeSeries(Dict)` | ○ | `scipy` | 音声解析、簡易的な解析 | 絶対時刻情報は保持されない |
+| **MiniSEED** (.mseed) | ○ / ○ | `TimeSeries(Dict)` | ○ | `obspy` | 地震観測データの標準形式 | — |
+| **SAC** (.sac) | ○ / ○ | `TimeSeries(Dict)` | ○ | `obspy` | 地震波形解析 | ヘッダー情報が豊富 |
+| **GSE2** (.gse2) | ○ / ○ | `TimeSeries(Dict)` | ○ | `obspy` | 地震波形 | — |
+| **K-NET** (.knet) | ○ / × | `TimeSeries(Dict)` | ○ | `obspy` | 防災科研 強震計観測データ | 読み込み専用 |
+| **GBD** (.gbd) | ○ / × | `TimeSeriesDict` | ○ | — | GRAPHTEC データロガー | `timezone` が必須 |
+| **WIN / 32** (.win) | ○ / × | `TimeSeriesDict` | ○ | `obspy` | 日本の地震観測網の標準 | 独自改良版パーサを使用 |
+| **MTH5** (.h5) | ○ / ○ | `TimeSeries` | × | `mth5` | 磁気・電磁気観測用 | 開発中・設計上のサポート |
+| **ATS** (.ats) | ○ / × | `TimeSeriesDict` | ○ | — | Metronix 電磁気観測 | バイナリパーサ |
+| **ROOT** (.root) | ○ / ○ | `EventTable` | ○ | — | CERN ROOT (イベント解析) | gwpy 経由 |
+| **SQLite** (.sdb) | ○ / × | `TimeSeriesDict` | ○ | — | WeeWX 等の気象データ | — |
+| **NetCDF4** (.nc) | ○ / ○ | `TimeSeries(Dict)` | ○ | `xarray` | クラウド利用、多次元データ | — |
+| **Zarr** (.zarr) | ○ / ○ | 全クラス | ○ | `zarr` | クラウド最適化、並列処理 | 推奨されるモダンな形式 |
+| **Audio** (.mp3等) | ○ / ○ | `TimeSeriesDict` | ○ | `pydub` | 圧縮音声ファイル | 要 ffmpeg、時刻情報なし |
+| **NDS2** | ○ / × | `TimeSeries` | — | — | ネットワークデータサーバ | 遠隔アクセス |
+| **TDMS** (.tdms) | ○ / × | `TimeSeriesDict` | ○ | `npTDMS` | National Instruments 形式 | — |
 
 > **注記**: 「gwpy 標準」と記載したフォーマット（GWF, HDF5, CSV/TXT, Pickle）は gwpy のビルトイン IO 経路で処理されます。gwexpy は gwpy を継承しているため、そのまま利用可能です。
 
@@ -54,9 +54,11 @@ tsd = TimeSeriesDict.read("path/to/logger.gbd", timezone="Asia/Tokyo")
 ```
 
 **必須引数**:
+
 - `timezone` (str or tzinfo) — ロガーのローカルタイムゾーン（IANA 名、例: `"Asia/Tokyo"` または UTC オフセット）。**必須**。省略すると `ValueError` が発生します。
 
 **主な任意引数**:
+
 - `channels` (iterable[str], optional) — 読み込むチャンネルのリスト。省略時は全チャンネル。
 - `digital_channels` (iterable[str], optional) — デジタルチャンネルとして扱うチャンネル名のリスト。省略時は `ALARM`, `ALARMOUT`, `PULSE*`, `LOGIC*` を自動検出。
 - `unit` (str or Unit, optional) — 物理単位の上書き。デフォルト `'V'`。
@@ -126,12 +128,14 @@ tsd = TimeSeriesDict.read("path/to/weewx.sdb")
 **必須引数**: なし
 
 **主な任意引数**:
+
 - `table` (str, optional) — 読み込むテーブル名。デフォルト `'archive'`。
 - `columns` (list[str], optional) — 読み込む列名のリスト。省略時は既知の気象カラム（`barometer`, `outTemp`, `windSpeed` 等）を自動選択。
 
 **外部依存**: なし（標準ライブラリの `sqlite3` + `pandas` を使用）
 
 **注意**:
+
 - Imperial 単位から SI 単位への自動変換が行われます（例: °F → °C、inHg → hPa、mph → m/s、inch → mm）。
 - テーブルには `dateTime` カラムが必須です（UNIX タイムスタンプ）。
 - サンプリングレートは `dateTime` の中央値差分から自動推定されます。
@@ -145,6 +149,7 @@ tsd = TimeSeriesDict.read("path/to/weewx.sdb")
 **拡張子**: `.tdms`
 **Read/Write**: Read ○ / Write ×
 **推奨 API**:
+
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
 
@@ -154,12 +159,14 @@ tsd = TimeSeriesDict.read("path/to/data.tdms")
 **必須引数**: なし
 
 **主な任意引数**:
+
 - `channels` (list[str], optional) — 読み込むチャンネルのリスト。チャンネル名は `"グループ名/チャンネル名"` の形式。省略時は全チャンネル。
 - `unit` (str, optional) — 物理単位の上書き。
 
 **外部依存**: `npTDMS` — 未インストール時は `ImportError` が発生し、`pip install nptdms` を案内するメッセージが表示されます。
 
 **注意**:
+
 - チャンネル名は `"グループ名/チャンネル名"` の形式で格納されます。
 - `wf_increment`（サンプル間隔）と `wf_start_time`（開始時刻）は TDMS プロパティから取得されます。
 - 開始時刻が `numpy.datetime64` や `datetime` の場合、GPS 時刻に自動変換されます。
@@ -623,22 +630,44 @@ tsd.write("output.zarr", format="zarr")
 
 ---
 
-## 設計上サポート（gwexpy 内に専用実装なし）
+---
 
-以下のフォーマットは設計表（`io_support.csv`）に記載されていますが、gwexpy リポジトリ内に専用の reader/writer 実装は現時点でありません。
+## 開発者向け情報 (Developer Guide)
+
+本セクションでは、開発者や内部実装に関心のあるユーザー向けの情報をまとめています。
+
+### 設計上サポート（gwexpy 内に専用実装なし）
+
+以下のフォーマットは設計データ（`io_support.csv`）に記載されていますが、gwexpy リポジトリ内に専用の reader/writer 実装は現時点でありません。
 
 | フォーマット | 拡張子 | 設計上の Read/Write | 備考 |
 |---|---|:---:|---|
 | MTH5 | `.h5` | Read ○ / Write ○ | `mth5` ライブラリ経由。`ats.mth5` で部分対応あり |
 
----
+### 未実装フォーマット (Stubs)
 
-## 未実装（stub）一覧
+以下のフォーマットはプレースホルダ（stub）として IO レジストリに登録されています。`.read()` を呼び出すと未実装例外（`UnimplementedIOError` または `NotImplementedError`）が発生します。
 
-以下のフォーマットはプレースホルダ（stub）として IO レジストリに登録されています。`.read()` を呼び出すと未実装例外（`UnimplementedIOError` または `NotImplementedError`）が発生します。仕様書やサンプルファイルの提供により、将来の実装が予定されています。
+#### 時系列 stub
 
+| 形式 | 登録クラス | 備考 |
+|:---|:---|:---|
+| `orf` | TimeSeries(Dict/Matrix) | ORF 形式 |
+| `mem` | TimeSeries(Dict/Matrix) | MEM 形式 |
+| `wvf` | TimeSeries(Dict/Matrix) | WVF 形式 |
+| `wdf` | TimeSeries(Dict/Matrix) | WDF 形式 |
+| `taffmat` | TimeSeries(Dict/Matrix) | TAFFMAT 形式 |
+| `lsf` | TimeSeries(Dict/Matrix) | LSF 形式 |
+| `li` | TimeSeries(Dict/Matrix) | LI 形式 |
 
----
+#### 周波数系列 stub
+
+| 形式 | 登録クラス | 備考 |
+|:---|:---|:---|
+| `win` | FrequencySeries(Dict/Matrix) | 時系列版は実装済み |
+| `sdb` | FrequencySeries(Dict/Matrix) | 時系列版は実装済み |
+| `orf` | FrequencySeries(Dict/Matrix) | 未実装 |
+| `mem` | FrequencySeries(Dict/Matrix) | 未実装 |
 
 ---
 
@@ -688,32 +717,6 @@ fsd = FrequencySeriesDict.read("path/to/dtt.xml", format="dttxml", products="PSD
 
 ---
 
-## 開発者向け情報 (Developer Guide)
-
-### 未実装フォーマット (Stubs)
-
-現時点で登録のみ行われ、実装が完了していないフォーマットの一覧です。
-
-#### 時系列 stub
-
-| 形式 | 登録クラス | 備考 |
-|:---|:---|:---|
-| `orf` | TimeSeries(Dict/Matrix) | ORF 形式 |
-| `mem` | TimeSeries(Dict/Matrix) | MEM 形式 |
-| `wvf` | TimeSeries(Dict/Matrix) | WVF 形式 |
-| `wdf` | TimeSeries(Dict/Matrix) | WDF 形式 |
-| `taffmat` | TimeSeries(Dict/Matrix) | TAFFMAT 形式 |
-| `lsf` | TimeSeries(Dict/Matrix) | LSF 形式 |
-| `li` | TimeSeries(Dict/Matrix) | LI 形式 |
-
-#### 周波数系列 stub
-
-| 形式 | 登録クラス | 備考 |
-|:---|:---|:---|
-| `win` | FrequencySeries(Dict/Matrix) | 時系列版は実装済み |
-| `sdb` | FrequencySeries(Dict/Matrix) | 時系列版は実装済み |
-| `orf` | FrequencySeries(Dict/Matrix) | 未実装 |
-| `mem` | FrequencySeries(Dict/Matrix) | 未実装 |
 
 ## 参照元ファイル一覧
 
