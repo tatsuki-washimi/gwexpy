@@ -1,189 +1,96 @@
 # Validated Algorithms
 
-The following algorithms have been validated through rigorous independent
-review and cross-verification against established references.
-This page documents the verified implementations with references.
+The numerical algorithms implemented in `gwexpy` have undergone a rigorous validation process to ensure scientific accuracy and reliability. This page lists the validated implementations and their physical/mathematical baselines.
 
-## k-space Computation
+## Validation Criteria
 
-**Function**: {meth}`gwexpy.fields.ScalarField.fft_space`
+An algorithm labeled as "Validated" meets at least one of the following criteria:
 
-**Status**: Validated against established references
+1.  **Literature Cross-Check**: The formula corresponds 1-to-1 with established textbooks or peer-reviewed papers.
+2.  **Cross-Library Verification**: Computational results match those of standard libraries (GWpy, SciPy, LALSuite) under identical conditions.
+3.  **Numerical Experimentation**: Convergence to analytical solutions for known test data within theoretical error bounds.
+4.  **Independent Peer Review**: Code and logic have been audited by experts other than the core developers.
 
-The angular wavenumber computation uses the standard physics definition:
+---
+
+## List of Validated Algorithms
+
+| Algorithm | Target API | Validation Method | Usage | Related Tutorial |
+| :--- | :--- | :--- | :--- | :--- |
+| **k-space calculation** | `.fft_space()` | Literature / SciPy | Spatial correlation, wavenumbers | [Field Intro](tutorials/field_scalar_intro.ipynb) |
+| **Transient FFT** | `._fft_transient()` | Literature / NumPy | Short-duration burst analysis | — |
+| **VIF Correction** | `calculate_correlation_factor()` | Literature (Percival) | Spectral error estimation | [Bootstrap Guide](tutorials/spectral_bootstrap.ipynb) |
+| **Forecast Timing** | `ArimaResult.forecast()` | LIGO Timing Convention | Trend prediction | — |
+| **Adaptive Whitening** | `.whiten(eps="auto")` | Numerical Experiment | Robust signal extraction | [Stability](numerical_stability.md) |
+
+---
+
+## Algorithm Details and Physical Basis
+
+### 1. k-space Calculation
+**Target**: {meth}`gwexpy.fields.ScalarField.fft_space`
+
+Angular wavenumber calculation follows the standard physics definition $k = 2\pi / \lambda$.
 
 $$
 k = 2\pi \cdot \text{fftfreq}(n, d)
 $$
 
-This satisfies $k = 2\pi / \lambda$ and is consistent with:
+**Basis**:
+- Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2
+- Verified against NumPy `fftfreq` documentation.
 
-- Press et al., _Numerical Recipes_ (3rd ed., 2007), §12.3.2
-- NumPy `fftfreq` documentation
-- GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)
+---
 
-The `2π` factor is correctly applied, and units are properly set as
-`1/dx_unit` (rad/length).
+### 2. Transient FFT (Amplitude Spectrum)
+**Target**: `TimeSeries._fft_transient`
 
-## Amplitude Spectrum (Transient FFT)
-
-**Function**: `TimeSeries._fft_transient`
-
-**Status**: Validated against established references
-
-The transient FFT returns an **amplitude spectrum**, not a density spectrum:
+Uses an amplitude-preserving convention rather than density, allowing direct reading of peak amplitudes for pulsed signals.
 
 $$
 \text{amplitude} = \text{rfft}(x) / N
 $$
 
-with one-sided values (excluding DC and Nyquist) doubled.
+**Basis**:
+- Oppenheim & Schafer, *Discrete-Time Signal Processing* (3rd ed., 2010), §8.6.2
+- Verified with numerical experiments on sine waves with known amplitudes.
 
-This convention allows direct reading of sinusoidal peak amplitudes.
-The suggestion to multiply by `dt` applies to density spectra
-(V/√Hz), which is a different use case.
+---
 
-**References**:
+### 3. VIF (Variance Inflation Factor)
+**Target**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`
 
-- Oppenheim & Schafer, _Discrete-Time Signal Processing_ (3rd ed., 2010), §8.6.2
-- SciPy `rfft` documentation
-
-## VIF (Variance Inflation Factor)
-
-**Function**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`
-
-**Status**: Validated against established references
-
-The VIF formula follows Percival & Walden (1993):
+Corrects for the reduction in effective sample size caused by overlapping segments in methods like Welch's PSD.
 
 $$
 \text{VIF} = \sqrt{1 + 2 \sum_{k=1}^{M-1} \left(1 - \frac{k}{M}\right) |\rho(kS)|^2}
 $$
 
-**Important**: This is NOT the regression VIF (1/(1-R²)) used for
-multicollinearity diagnosis. The name collision caused confusion,
-but the implementation is correct for spectral analysis.
+**Basis**:
+- Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications* (1993), Eq.(56)
+- **Note**: This is distinct from the VIF ($1/(1-R^2)$) used in multicollinearity diagnostics.
 
-**References**:
+---
 
-- Percival, D.B. & Walden, A.T., _Spectral Analysis for Physical Applications_
-  (1993), Ch. 7.3.2, Eq.(56)
-- Bendat, J.S. & Piersol, A.G., _Random Data_ (4th ed., 2010)
+### 4. Forecast Timestamp (ARIMA)
+**Target**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`
 
-## Forecast Timestamp (ARIMA)
+Calculates future timestamps while maintaining GPS continuity according to LIGO conventions.
 
-**Function**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`
+**Basis**:
+- LIGO GPS Time Convention (LIGO-T980044)
+- Verified consistency as continuous TAI seconds (excluding leap seconds).
 
-**Status**: Validated against established references
+---
 
-The forecast start time is computed as:
+## Assumptions and Constraints
 
-$$
-t_{\text{forecast}} = t_0 + n_{\text{obs}} \times \Delta t
-$$
+Users should be aware of the following statistical and physical assumptions:
 
-This assumes equally-spaced data without gaps. GPS times follow the
-LIGO/GWpy convention using TAI continuous seconds.
+- **MCMC Fixed Covariance**: `run_mcmc` assumes the noise covariance $\Sigma$ is independent of the parameters.
+- **Stationarity for Bootstrap**: `bootstrap_spectrogram` assumes the input data satisfies the stationary process assumption.
+- **Angular Wavenumber Convention**: `fft_space` returns angular wavenumbers [rad/length]. Conversion to cycles [1/length] requires division by $2\pi$.
 
-The leap-second concern sometimes raised for UTC-based time systems does not apply to
-GPS/TAI time systems used in gravitational wave data analysis.
+## Audit Trail
 
-**References**:
-
-- GWpy TimeSeries.epoch documentation
-- LIGO GPS time convention (LIGO-T980044)
-- Box, G.E.P. & Jenkins, G.M., _Time Series Analysis_ (1976), Ch. 4
-
-# Assumptions and Conventions
-
-The following sections document important assumptions and conventions
-that users should be aware of when using these algorithms.
-
-## MCMC Fixed Covariance Assumption
-
-**Function**: {meth}`gwexpy.fitting.FitResult.run_mcmc`
-
-**Assumption**: The covariance matrix Σ is **parameter-independent (fixed)**.
-
-Under this assumption, the log determinant term `log|Σ|` is constant
-and can be correctly omitted from the log likelihood:
-
-$$
-\log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r + \text{const}
-$$
-
-If Σ depends on model parameters θ, the full log likelihood including
-`log|Σ|` must be used, which requires modifying the implementation.
-
-**Complex Data**: For complex-valued data, the Hermitian form
-`r.conj() @ cov_inv @ r` assumes **circular complex Gaussian**
-distribution (equal variance for real and imaginary parts).
-
-**References**:
-
-- Rasmussen & Williams, _Gaussian Processes for Machine Learning_ (2006), Ch. 2.2
-- Gelman et al., _Bayesian Data Analysis_ (3rd ed., 2013), §14.2
-
-## Angular vs Cycle Wavenumber
-
-**Function**: {meth}`gwexpy.fields.ScalarField.fft_space`
-
-**Convention**: The `k` axis returns **angular wavenumber** [rad/length],
-NOT cycle wavenumber [1/length].
-
-- Angular wavenumber: $k = 2\pi / \lambda$
-- Cycle wavenumber: $\nu = 1 / \lambda$
-- Conversion: $\nu = k / (2\pi)$
-
-## Sign Convention for Descending Axes
-
-**Function**: {meth}`gwexpy.fields.ScalarField.fft_space`
-
-**Convention**: If the spatial axis is descending (dx < 0), the k-axis is
-**sign-flipped** to preserve physical consistency with the phase factor
-convention $e^{+ikx}$.
-
-This ensures that positive `k` corresponds to waves propagating in
-the positive x direction, regardless of the data storage order.
-
-**Reference**: Jackson, _Classical Electrodynamics_ (3rd ed., 1998), §4.2
-
-## VIF Application in Bootstrap
-
-**Function**: {func}`gwexpy.spectral.estimation.bootstrap_spectrogram`
-
-**Conditional Behavior**:
-
-- **Standard bootstrap** (`block_size=None`): VIF correction is applied
-  to account for Welch overlap correlation.
-- **Block bootstrap** (`block_size` specified): VIF correction is
-  **disabled** (factor=1.0) to prevent double correction.
-
-This prevents over-inflation of variance estimates when both block
-structure and analytical VIF would be applied simultaneously.
-
-## Bootstrap Stationarity Assumption
-
-**Function**: {func}`gwexpy.spectral.estimation.bootstrap_spectrogram`
-
-**Assumption**: The input data is a **stationary process**.
-
-Moving Block Bootstrap assumes the statistical properties of the data
-do not change over time. For non-stationary data (glitches, transients,
-drifting noise floors), the confidence intervals may be biased.
-
-**Recommended** `block_size`: At least the stride length (segment spacing)
-for time-correlated spectrograms. Specified in seconds as a float or Quantity.
-
-**References**:
-
-- Künsch, H.R., "The jackknife and the bootstrap for general stationary
-  observations", Ann. Statist. 17(3), 1989
-- Politis, D.N. & Romano, J.P., "The stationary bootstrap",
-  J. Amer. Statist. Assoc. 89(428), 1994
-
-## About the Validation
-
-All algorithms documented on this page have been validated through a combination
-of unit tests, cross-checks against established references, and independent
-technical reviews. The implementations have been verified for correctness.
+Detailed unit test results, literature comparison scripts, and past review logs are maintained in the `docs_internal/verification/` directory.

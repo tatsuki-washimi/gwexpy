@@ -15,9 +15,11 @@ def count_headings(path):
     h2 = 0
     
     if path.suffix == '.md':
+        # Remove code blocks before counting headings
+        clean_txt = re.sub(r'```.*?```', '', txt, flags=re.DOTALL)
         # Markdown headings starting with #
-        h1 = len(re.findall(r'^\s*#\s+.+$', txt, flags=re.MULTILINE))
-        h2 = len(re.findall(r'^\s*##\s+.+$', txt, flags=re.MULTILINE))
+        h1 = len(re.findall(r'^\s*#\s+.+$', clean_txt, flags=re.MULTILINE))
+        h2 = len(re.findall(r'^\s*##\s+.+$', clean_txt, flags=re.MULTILINE))
     elif path.suffix == '.rst':
         # rST headings (simple counting of underline patterns)
         # H1: =================, H2: -----------------

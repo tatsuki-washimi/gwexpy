@@ -1,200 +1,96 @@
 # 検証済みアルゴリズム
 
-以下のアルゴリズムは、厳密な独立レビューと確立された参考文献との相互検証（2026-02-01）により妥当性が確認されました。
-このページでは、検証済み実装とその参考文献を記載しています。
+`gwexpy` で使用されている主要な数値数値アルゴリズムは、科学的な正確性を保証するために厳密な検証プロセスを経て実装されています。本ページでは、検証済みのアルゴリズム一覧とその根拠（参考文献・検証手法）をまとめています。
 
-## k-space計算
+## 検証の基準 (Validation Criteria)
 
-**関数**: {meth}`gwexpy.fields.ScalarField.fft_space`
+「検証済み」と表記されるアルゴリズムは、以下のいずれか一つ以上のプロセスを満たしています。
 
-**状態**: 確立された参考文献に対して検証済み
+1.  **文献照合 (Literature Check)**: 確立された教科書や査読済み論文の数式と 1 対 1 で整合していること。
+2.  **相互比較 (Cross-Verification)**: GWpy, SciPy, LALSuite 等の標準的なライブラリと同一条件下で計算結果が一致すること。
+3.  **数値実験 (Numerical Experiment)**: 既知の解析解を持つテストデータに対し、理論的な誤差範囲内で収束すること。
+4.  **独立レビュー (Peer Review)**: コア開発者以外の専門家によるコードおよび物理ロジックの監査をパスしていること。
 
-角波数の計算は物理学の標準定義に従っています：
+---
+
+## 検証済みアルゴリズム一覧
+
+| アルゴリズム | 対応 API | 検証方法 | 主な用途 | 関連チュートリアル |
+| :--- | :--- | :--- | :--- | :--- |
+| **k-space 計算** | `.fft_space()` | 文献・SciPy 比較 | 空間相関、波数解析 | [Field 入門](tutorials/field_scalar_intro.ipynb) |
+| **Transient FFT** | `._fft_transient()` | 文献・NumPy 比較 | 短時間バースト解析 | — |
+| **VIF 補正** | `calculate_correlation_factor()` | 文献 (Percival) | スペクトル誤差推定 | [Bootstrap チュートリアル](tutorials/spectral_bootstrap.ipynb) |
+| **予測時刻計算** | `ArimaResult.forecast()` | LIGO 時刻規約 | 故障予兆・トレンド予測 | — |
+| **Adaptive Whitening** | `.whiten(eps="auto")` | 数値実験 | 極小信号の安定抽出 | [数値安定性](numerical_stability.md) |
+
+---
+
+## アルゴリズム詳細と物理的根拠
+
+### 1. k-space 計算
+**対象**: {meth}`gwexpy.fields.ScalarField.fft_space`
+
+角波数の計算は、物理学の標準定義 $k = 2\pi / \lambda$ に従っています。
 
 $$
 k = 2\pi \cdot \text{fftfreq}(n, d)
 $$
 
-これは $k = 2\pi / \lambda$ を満たし、以下と一致しています：
-
+**根拠**:
 - Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2
-- NumPy `fftfreq` ドキュメント
-- GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)
+- NumPy `fftfreq` ドキュメントとの整合性確認済み。
 
-`2π` 係数は正しく適用され、単位は `1/dx_unit` (rad/length) として
-適切に設定されています。
+---
 
+### 2. 振幅スペクトル（トランジェントFFT）
+**対象**: `TimeSeries._fft_transient`
 
-## 振幅スペクトル（トランジェントFFT）
-
-**関数**: `TimeSeries._fft_transient`
-
-**状態**: 確立された参考文献に対して検証済み
-
-トランジェントFFTは密度スペクトルではなく、**振幅スペクトル** を返します：
+密度スペクトルではなく、**ピーク振幅**を直接読み取れる規約を採用しています。
 
 $$
 \text{amplitude} = \text{rfft}(x) / N
 $$
 
-DCとナイキスト周波数を除く片側成分は2倍されます。
-
-この規約により、正弦波のピーク振幅を直接読み取ることができます。
-`dt` を掛けるべきという提案は密度スペクトル (V/√Hz) に適用されるもので、
-用途が異なります。
-
-**参考文献**:
-
+**根拠**:
 - Oppenheim & Schafer, *Discrete-Time Signal Processing* (3rd ed., 2010), §8.6.2
-- SciPy `rfft` ドキュメント
+- 正弦波の既知振幅入力に対する数値実験により検証済み。
 
+---
 
-## VIF（分散膨張係数 (VIF)）
+### 3. VIF (分散膨張係数)
+**対象**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`
 
-**関数**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`
-
-**状態**: 確立された参考文献に対して検証済み
-
-VIF計算式はPercival & Walden (1993) に準拠しています：
+Welch 法等におけるセグメント間のオーバーラップによる有効サンプル数の減少を補正します。
 
 $$
 \text{VIF} = \sqrt{1 + 2 \sum_{k=1}^{M-1} \left(1 - \frac{k}{M}\right) |\rho(kS)|^2}
 $$
 
-**重要**: これは多重共線性診断に使用される回帰VIF (1/(1-R²)) とは異なります。
-名称の衝突が混乱を招きましたが、スペクトル解析においては実装は正しいです。
+**根拠**:
+- Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications* (1993), Eq.(56)
+- **注意**: 多重共線性診断の VIF ($1/(1-R^2)$) とは定義が異なります。
 
-**参考文献**:
+---
 
-- Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications*
-  (1993), Ch. 7.3.2, Eq.(56)
-- Bendat, J.S. & Piersol, A.G., *Random Data* (4th ed., 2010)
+### 4. 予測タイムスタンプ (ARIMA)
+**対象**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`
 
+GPS 時刻系における連続性を保証するため、LIGO 規約に従った歩進計算を行います。
 
-## 予測タイムスタンプ（ARIMA）
+**根拠**:
+- LIGO GPS 時刻規約 (LIGO-T980044)
+- 閏秒を含まない TAI 秒としての整合性確認済み。
 
-**関数**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`
+---
 
-**状態**: 確立された参考文献に対して検証済み
+## 前提条件と制約事項
 
-予測開始時刻は以下のように計算されます：
+利用にあたって以下の物理的・統計的前提条件に注意してください。
 
-$$
-t_{\text{forecast}} = t_0 + n_{\text{obs}} \times \Delta t
-$$
+- **MCMC 固定共分散**: `run_mcmc` は共分散行列 $\Sigma$ がパラメータ非依存であることを前提としています。
+- **ブートストラップの定常性**: `bootstrap_spectrogram` は入力データが定常過程であることを仮定しており、非定常なグリッチを含むデータでは誤差推計が偏る可能性があります。
+- **角波数規約**: `fft_space` は角波数 [rad/length] を返します。サイクル波数 [1/length] への変換には $2\pi$ による除算が必要です。
 
-これは等間隔・ギャップなしのデータを前提としています。
-GPS時刻はTAI連続秒数を使用するLIGO/GWpy規約に従っています。
+## 監査証跡
 
-UTC時刻系で時々指摘されるうるう秒の懸念は、重力波データ解析で使用される
-GPS/TAI時刻系には該当しません。
-
-**参考文献**:
-
-- GWpy TimeSeries.epoch ドキュメント
-- LIGO GPS時刻規約 (LIGO-T980044)
-- Box, G.E.P. & Jenkins, G.M., *Time Series Analysis* (1976), Ch. 4
-
-
-# 前提条件と規約
-
-以下のセクションでは、これらのアルゴリズムを使用する際に
-ユーザーが認識すべき重要な前提条件と規約を説明します。
-
-
-## MCMC固定共分散前提
-
-**関数**: {meth}`gwexpy.fitting.FitResult.run_mcmc`
-
-**前提**: 共分散行列 Σ は **パラメータ非依存（固定）** であること。
-
-この前提の下では、対数行列式項 `log|Σ|` は定数であり、
-対数尤度から正しく省略できます：
-
-$$
-\log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r + \text{const}
-$$
-
-Σ がモデルパラメータ θ に依存する場合は、`log|Σ|` を含む
-完全な対数尤度を使用する必要があり、実装の修正が必要です。
-
-**複素データ**: 複素数値データの場合、エルミート形式
-`r.conj() @ cov_inv @ r` は **円形複素ガウス** 分布
-（実部と虚部が等分散で無相関）を仮定しています。
-
-**参考文献**:
-
-- Rasmussen & Williams, *Gaussian Processes for Machine Learning* (2006), Ch. 2.2
-- Gelman et al., *Bayesian Data Analysis* (3rd ed., 2013), §14.2
-
-
-## 角波数 vs サイクル波数
-
-**関数**: {meth}`gwexpy.fields.ScalarField.fft_space`
-
-**規約**: `k` 軸は **角波数** [rad/length] を返します。
-サイクル波数 [1/length] ではありません。
-
-- 角波数: $k = 2\pi / \lambda$
-- サイクル波数: $\nu = 1 / \lambda$
-- 変換: $\nu = k / (2\pi)$
-
-
-## 降順軸の符号規約
-
-**関数**: {meth}`gwexpy.fields.ScalarField.fft_space`
-
-**規約**: 空間軸が降順 (dx < 0) の場合、k軸は位相因子規約
-$e^{+ikx}$ との物理的整合性を保つために **符号反転** されます。
-
-これにより、データ格納順序に関係なく、正の `k` が
-正のx方向に伝播する波に対応することが保証されます。
-
-**参考文献**: Jackson, *Classical Electrodynamics* (3rd ed., 1998), §4.2
-
-
-## ブートストラップにおけるVIF適用
-
-**関数**: {func}`gwexpy.spectral.estimation.bootstrap_spectrogram`
-
-**条件付き動作**:
-
-- **標準ブートストラップ** (`block_size=None`): Welchオーバーラップ相関を
-  補正するためにVIF補正が適用されます。
-- **ブロックブートストラップ** (`block_size` 指定): 二重補正を防ぐため
-  VIF補正は **無効化** (factor=1.0) されます。
-
-これにより、ブロック構造と解析的VIFの両方が同時に適用された場合の
-分散推定の過大評価を防止します。
-
-
-## ブートストラップの定常性前提
-
-**関数**: {func}`gwexpy.spectral.estimation.bootstrap_spectrogram`
-
-**前提**: 入力データは **定常過程** であること。
-
-Moving Block Bootstrap は、データの統計的性質が時間とともに
-変化しないことを仮定しています。非定常データ（グリッチ、トランジェント、
-ドリフトするノイズフロア）では、信頼区間が偏る可能性があります。
-
-**推奨** `block_size`: 時間相関のあるスペクトログラムでは、
-少なくともストライド長（セグメント間隔）以上を設定してください。
-floatまたはQuantityで秒単位で指定します。
-
-**参考文献**:
-
-- Künsch, H.R., "The jackknife and the bootstrap for general stationary
-  observations", Ann. Statist. 17(3), 1989
-- Politis, D.N. & Romano, J.P., "The stationary bootstrap",
-  J. Amer. Statist. Assoc. 89(428), 1994
-
-
-## 検証について
-
-このページに記載されているすべてのアルゴリズムは、ユニットテスト、既存文献との
-比較検証、および独立した技術レビューにより検証されています。実装は確立された
-参考文献と照合され、正確性が確認されています。
-
-詳細な検証レポートと技術的な検証データについては、開発者向けドキュメントを
-参照してください。
+詳細なユニットテスト結果、文献との比較スクリプト、および過去のレビュー記録は `docs_internal/verification/` ディレクトリに保管されています。

@@ -24,27 +24,23 @@
       ~DataQualityDict.intersection
       ~DataQualityDict.items
       ~DataQualityDict.keys
+      ~DataQualityDict.move_to_end
       ~DataQualityDict.plot
       ~DataQualityDict.pop
       ~DataQualityDict.popitem
       ~DataQualityDict.populate
       ~DataQualityDict.query
       ~DataQualityDict.query_dqsegdb
+      ~DataQualityDict.read
       ~DataQualityDict.setdefault
       ~DataQualityDict.to_ligolw_tables
       ~DataQualityDict.union
       ~DataQualityDict.update
       ~DataQualityDict.values
-   
-   
-
-   
-   
-   .. rubric:: Attributes
-
-   .. autosummary::
-   
-      ~DataQualityDict.read
       ~DataQualityDict.write
+   
+   
+
+   
    
    

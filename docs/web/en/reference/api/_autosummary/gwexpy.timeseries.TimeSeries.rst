@@ -35,7 +35,6 @@
       ~TimeSeries.baseband
       ~TimeSeries.byteswap
       ~TimeSeries.cepstrum
-      ~TimeSeries.check_compatible
       ~TimeSeries.choose
       ~TimeSeries.clip
       ~TimeSeries.coherence
@@ -80,7 +79,6 @@
       ~TimeSeries.fit
       ~TimeSeries.fit_arima
       ~TimeSeries.flatten
-      ~TimeSeries.from_arrakis
       ~TimeSeries.from_astropy_timeseries
       ~TimeSeries.from_control
       ~TimeSeries.from_cupy
@@ -114,6 +112,7 @@
       ~TimeSeries.from_zarr
       ~TimeSeries.gate
       ~TimeSeries.gauch
+      ~TimeSeries.get
       ~TimeSeries.getfield
       ~TimeSeries.granger_causality
       ~TimeSeries.heterodyne
@@ -165,6 +164,7 @@
       ~TimeSeries.rayleigh_spectrogram
       ~TimeSeries.rayleigh_spectrum
       ~TimeSeries.rayleigh_test
+      ~TimeSeries.read
       ~TimeSeries.repeat
       ~TimeSeries.resample
       ~TimeSeries.reshape
@@ -242,6 +242,7 @@
       ~TimeSeries.var
       ~TimeSeries.view
       ~TimeSeries.whiten
+      ~TimeSeries.write
       ~TimeSeries.xcorr
       ~TimeSeries.zip
       ~TimeSeries.zpk
@@ -269,7 +270,6 @@
       ~TimeSeries.equivalencies
       ~TimeSeries.flags
       ~TimeSeries.flat
-      ~TimeSeries.get
       ~TimeSeries.imag
       ~TimeSeries.info
       ~TimeSeries.is_regular
@@ -279,7 +279,6 @@
       ~TimeSeries.name
       ~TimeSeries.nbytes
       ~TimeSeries.ndim
-      ~TimeSeries.read
       ~TimeSeries.real
       ~TimeSeries.sample_rate
       ~TimeSeries.shape
@@ -291,7 +290,6 @@
       ~TimeSeries.times
       ~TimeSeries.unit
       ~TimeSeries.value
-      ~TimeSeries.write
       ~TimeSeries.x0
       ~TimeSeries.xindex
       ~TimeSeries.xspan
