@@ -16,7 +16,9 @@ CONCURRENCY = 8
 
 # List of domains that are known to be unstable or should be excluded from Fail
 WHITELIST = [
-    'zenodo.org', # Placeholders/DOIs sometimes take time to resolve
+    'zenodo.org',               # Placeholders/DOIs sometimes take time to resolve
+    'dtt.ligo.org',             # Internal LIGO network domain
+    'lscsoft.docs.ligo.org',    # Requires LIGO authentication or VPN for some paths
 ]
 
 def extract_links():

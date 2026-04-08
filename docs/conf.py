@@ -85,7 +85,9 @@ rst_prolog = r"""
 
 # Whitelist internal or temporarily unreachable links
 linkcheck_ignore = [
+    # LIGO internal DTT documentation (requires internal network access)
     r"https://dtt\.ligo\.org/.*",
+    # LIGO internal LALSuite class documentation (often redirects/requires VPN)
     r"https://lscsoft\.docs\.ligo\.org/lalsuite/lal/classlal_1_1_l_i_g_o_time_g_p_s\.html",
 ]
 
