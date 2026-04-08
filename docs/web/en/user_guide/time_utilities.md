@@ -6,16 +6,31 @@
 from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 ```
 
+## Quick Guide: Important Considerations (FAQ)
+
+It is important to understand these fundamental behaviors before performing conversions.
+
+### Handling Leap Seconds
+- **GPS Time**: Continuous seconds starting from 1980-01-06 00:00:00 UTC. It does not include leap seconds.
+- **Conversion**: When converting to/from UTC, `astropy.time`'s IERS leap second tables are automatically applied.
+- **Note**: For future dates or very recent leap seconds, you may need to update `astropy` data or use the latest IERS table.
+
+### Strings Without Timezones
+- Strings like `"2015-09-14 09:50:45"` without a timezone are treated as **UTC by default** in `to_gps` and `tconvert`.
+- For reliable local time conversion, always include the timezone name (e.g., `"Asia/Tokyo"`) or provide a timezone-aware `datetime` object.
+
 ## Function Selection Quick Reference
 
 Choose the most appropriate function for your goal.
 
-| Goal | Recommended Function | Input Type | Output Type (Scalar / Vector) | Key Args |
+| Goal | Recommended Function | Primary Input Types | Output Type (Scalar / Vector) | Key Args |
 | :--- | :--- | :--- | :--- | :--- |
 | **DateTime → GPS** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | `timezone` |
 | **GPS → DateTime** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `Time (Quantity)` | — |
-| **Convenience** | `tconvert` | All above + `"now"` | Context-dependent | — |
+| **Convenience (Auto)** | `tconvert` | All above + `"now"` | Context-dependent (Scalar pref.) | — |
 | **High Precision** | `LIGOTimeGPS` | `seconds`, `nanoseconds` | `LIGOTimeGPS` (Sec + NanoSec) | — |
+
+---
 
 ---
 
@@ -109,20 +124,7 @@ segment = ts.crop("2015-09-14 09:50:44", "2015-09-14 09:50:50")
 
 ---
 
-## FAQ
-
-### How are leap seconds handled?
-
-`gwexpy` follows the conversion rules provided by `astropy.time` and `gwpy` (using IERS tables).
-
-- **GPS Time**: Continuous seconds from 1980-01-06 00:00:00 UTC.
-- **Leap Seconds**: Automatically applied during UTC conversion using the latest available tables.
-
-### How are strings without timezones treated?
-
-A string like `"2015-09-14 09:50:45"` is treated as **UTC by default**.
-
 ## Related Documents
 
 - {doc}`../reference/api/time` — Complete API reference for `gwexpy.time`
-- {doc}`architecture` — Internal data flow and logic
+- {doc}`gwexpy_for_gwpy_users_en` — Overview of all GWexpy extensions
