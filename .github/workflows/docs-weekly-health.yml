@@ -45,10 +45,13 @@ jobs:
           python scripts/check_docs_sync.py
 
       - name: Check External Links (Script)
+        id: external_links
+        continue-on-error: true
         run: |
           python scripts/check_external_links.py
 
       - name: Sphinx Linkcheck (Internal & External)
+        id: sphinx_linkcheck
         run: |
           cd docs
           # Linkcheck often has flaky external sites, so we log it
@@ -62,22 +65,38 @@ jobs:
             const { owner, repo } = context.repo;
             const run_id = context.runId;
             const run_url = `https://github.com/${owner}/${repo}/actions/runs/${run_id}`;
+            const date = new Date().toISOString();
+            
+            // Determine labels based on which step failed
+            const labels = ["documentation", "automated-report", "needs-triage"];
+            if (process.env.STEP_EXTERNAL_FAILED === 'true') labels.push("link-broken");
+            if (process.env.STEP_SPHINX_FAILED === 'true') labels.push("link-broken");
+            
             const title = "🚨 Weekly Documentation Health Check Failed";
             const body = `The weekly documentation health check has failed. Please review the logs to identify broken links or terminology inconsistencies.
             
             - **Build Log:** ${run_url}
-            - **Detection Date:** ${new Date().toISOString()}
+            - **Detection Date:** ${date}
             
-            ### Checklist:
-            - [ ] Check for broken external links (check_external_links.py output)
-            - [ ] Check for sphinx-build linkcheck output for internal/external broken links
-            - [ ] Check for terminology mismatches (check_terms.py)
-            - [ ] Check for JA/EN synchronization issues (check_docs_sync.py)`;
+            ### Quick Analysis:
+            - External Link Script: ${process.env.STEP_EXTERNAL_FAILED === 'true' ? '❌ Failed' : '✅ Passed'}
+            - Sphinx Linkcheck: ${process.env.STEP_SPHINX_FAILED === 'true' ? '❌ Failed' : '✅ Passed'}
+            
+            ### Checklist & Reproduction:
+            - [ ] **External Links**: Run \`python scripts/check_external_links.py\` locally.
+            - [ ] **Internal Links**: Check Sphinx linkcheck output in the log.
+            - [ ] **Terminology**: Run \`python scripts/check_terms.py\` locally.
+            - [ ] **JA/EN Sync**: Run \`python scripts/check_docs_sync.py\` locally.
+            
+            *Note: If a domain is internal (LIGO/KAGRA), add it to whitelist in scripts/check_external_links.py and docs/conf.py.*`;
             
             await github.rest.issues.create({
               owner,
               repo,
               title,
               body,
-              labels: ["documentation", "bug", "automated-report"]
+              labels: labels
             });
+        env:
+          STEP_EXTERNAL_FAILED: ${{ steps.external_links.outcome == 'failure' }}
+          STEP_SPHINX_FAILED: ${{ steps.sphinx_linkcheck.outcome == 'failure' }}
