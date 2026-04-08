@@ -1,105 +1,75 @@
 # Getting Started
 
-This page provides a **structured learning path** for GWexpy users. Whether you're new to time series analysis or migrating from GWpy, you'll find tailored recommendations for your background.
+We provide a **systematic learning path** for GWexpy users.
+Choose the best starting point based on your background and goals.
 
-**What you'll learn:**
+## Quick Summary
 
-- Installation and setup
-- Core data structures (TimeSeries, FrequencySeries, Spectrogram)
-- Multi-channel analysis and matrix containers
-- Advanced signal processing techniques
-- Real-world application examples
+.. list-table::
+   :widths: 25 75
 
-**Time estimate:** 2-3 hours for beginners, 30-60 minutes for GWpy users
+   * - **Target Audience**
+     - Experimental data analysts, GWpy users, and anyone interested in signal processing with Python.
+   * - **Prerequisites**
+     - Basic Python 3.9+, NumPy array operations, and (recommended) Matplotlib.
+   * - **Time Required**
+     - From 5 minutes (Quick Start) to 30 minutes (Basic Hands-on).
+   * - **Goal**
+     - Load data, visualize results, and perform basic frequency-domain analysis.
 
-:::{tip}
-If you're in a hurry, start with [Quickstart](quickstart.md) for a 5-minute overview.
-:::
+## Choose Your Path
 
-:::{admonition} About This Page
-:class: note
+.. grid:: 3
+    :gutter: 3
 
-This page provides a **detailed learning roadmap**. If you haven't visited the [documentation homepage](../index) yet, start there to understand GWexpy's overall capabilities.
-:::
+    .. grid-item-card:: 🚀 5-min Quick Start
+        :link: quickstart
+        :link-type: doc
 
-## Quick Example
+        For those who want to see results immediately. Get a figure in just 3 lines of code.
 
-Here's the most basic GWexpy workflow:
+    .. grid-item-card:: 📖 30-min Hands-on
+        :link: tutorials/index
+        :link-type: doc
 
-```python
-from gwexpy.timeseries import TimeSeries
-import numpy as np
+        Learn the core data structures and GWexpy-specific matrix operations from scratch.
 
-# Create a time series
-ts = TimeSeries(np.random.randn(1000), sample_rate=100, t0=0)
+    .. grid-item-card:: 🔄 For GWpy Users
+        :link: gwexpy_for_gwpy_users_en
+        :link-type: doc
 
-# Plot it
-plot = ts.plot()
-plot.show()
-```
-
-For more examples, continue to [Quickstart](quickstart.md).
-
-## Prerequisites
-
-- Basic Python 3.9+ knowledge
-- NumPy fundamentals (array operations)
-- (Optional) GWpy experience
+        For current GWpy users. Learn the key differences and how to simplify your code with new features.
 
 ## Learning Path
 
-### 1. Installation
+### 1. Preparation
 
-First, install GWexpy by following [installation](installation.md).
+Set up your environment by following the :doc:`Installation Guide <installation>`.
 
-### 2. Quickstart
+### 2. Core Data Structures
 
-Learn the basics with [quickstart](quickstart.md).
+We recommend learning the primary containers in the following order:
 
-### 3. Basic Data Structures (Recommended Order)
+1. [{doc}`tutorials/intro_timeseries <tutorials/intro_timeseries>`] - Basic Time Series
+2. [{doc}`tutorials/intro_frequencyseries <tutorials/intro_frequencyseries>`] - Basic Frequency Series
+3. [{doc}`tutorials/intro_spectrogram <tutorials/intro_spectrogram>`] - Basic Spectrograms
+4. [{doc}`tutorials/intro_plotting <tutorials/intro_plotting>`] - Plot Customization
 
-**For Beginners**
+### 3. Advanced Analysis
 
-1. [intro_timeseries](tutorials/intro_timeseries.ipynb) - Time series basics
-2. [intro_frequencyseries](tutorials/intro_frequencyseries.ipynb) - Frequency series basics
-3. [intro_spectrogram](tutorials/intro_spectrogram.ipynb) - Spectrogram basics
-4. [intro_plotting](tutorials/intro_plotting.ipynb) - Plotting features
+Refer to these guides based on your needs:
 
-**For GWpy Users**
+* **Multi-channel & Matrix Processing**: :doc:`Using Matrix Containers <tutorials/matrix_timeseries>`
+* **High-dimensional Data**: :doc:`Field API Intro <tutorials/field_scalar_intro>` / :doc:`ScalarField Slicing Guide <scalarfield_slicing>`
+* **Signal Processing**: :doc:`Fitting <tutorials/advanced_fitting>` / :doc:`HHT <tutorials/advanced_hht>` / :doc:`ARIMA <tutorials/advanced_arima>`
 
-- [Migration from GWpy](gwexpy_for_gwpy_users_en.md) - Detailed guide for GWpy users
+### 4. Practical Applications
 
-### 4. Advanced Topics
-
-**Multi-channel & Matrix Containers**
-
-- [matrix_timeseries](tutorials/matrix_timeseries.ipynb) - Time series matrices
-- [matrix_frequencyseries](tutorials/matrix_frequencyseries.ipynb) - Frequency series matrices
-
-**High-dimensional Fields (Field API)**
-
-- [field_scalar_intro](tutorials/field_scalar_intro.ipynb) - ScalarField introduction
-- [scalarfield_slicing](scalarfield_slicing.md) - Slicing guide (Important)
-
-**Advanced Signal Processing**
-
-- [advanced_fitting](tutorials/advanced_fitting.ipynb) - Fitting methods
-- [advanced_peak_detection](tutorials/advanced_peak_detection.ipynb) - Peak detection
-- [advanced_hht](tutorials/advanced_hht.ipynb) - Hilbert-Huang Transform
-- [advanced_arima](tutorials/advanced_arima.ipynb) - ARIMA models
-- [advanced_correlation](tutorials/advanced_correlation.ipynb) - Correlation analysis
-
-### 5. Practical Examples
-
-Browse the {doc}`Examples Gallery <../examples/index>` for real-world applications:
-
-- [case_noise_budget](tutorials/case_noise_budget.ipynb) - Noise budget analysis
-- [case_transfer_function](tutorials/case_transfer_function.ipynb) - Transfer function calculation
-- [case_active_damping](tutorials/case_active_damping.ipynb) - Active damping
+Explore real-world analysis workflows in our :doc:`Case Studies Gallery <../examples/index>`.
 
 ## Next Steps
 
-- {doc}`Examples Gallery <../examples/index>` - Visual examples and case studies
-- Complete tutorial list: {doc}`tutorials/index <tutorials/index>`
-- API Reference: {doc}`Reference <../reference/index>`
-- [validated_algorithms](validated_algorithms.md) - Algorithm validation report
+* [{doc}`Case Studies Gallery <../examples/index>`] - Visual examples and practical workflows.
+* All Tutorials: [{doc}`tutorials/index <tutorials/index>`]
+* API Reference: [{doc}`Reference <../reference/index>`]
+* [{doc}`Validated Algorithms <validated_algorithms>`] - Verification reports for numerical accuracy.
