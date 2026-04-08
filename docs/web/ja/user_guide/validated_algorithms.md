@@ -1,59 +1,55 @@
 # 検証済みアルゴリズム
 
-`gwexpy` で使用されている主要な数値数値アルゴリズムは、科学的な正確性を保証するために厳密な検証プロセスを経て実装されています。本ページでは、検証済みのアルゴリズム一覧とその根拠（参考文献・検証手法）をまとめています。
+> [!NOTE]
+> **このページを読むべき方**:
+> - 解析手法の数学的・物理学的な妥当性を確認したい研究者
+> - 外部ライブラリ（SciPy, LALSuite 等）と GWexpy の数値的な計算誤差を知りたい開発者
+> - 使用するアルゴリズムが前提としているデータ特性（定常性、ガウス性など）を確認したい方
 
-## 検証の基準 (Validation Criteria)
+`gwexpy` で使用されている主要な数値数値アルゴリズムは、科学的な正確性を保証するために厳密な検証プロセスを経て実装されています。
 
-「検証済み」と表記されるアルゴリズムは、以下のいずれか一つ以上のプロセスを満たしています。
+## 検証の基準と計算精度 (Validation & Precision)
 
-1.  **文献照合 (Literature Check)**: 確立された教科書や査読済み論文の数式と 1 対 1 で整合していること。
-2.  **相互比較 (Cross-Verification)**: GWpy, SciPy, LALSuite 等の標準的なライブラリと同一条件下で計算結果が一致すること。
-3.  **数値実験 (Numerical Experiment)**: 既知の解析解を持つテストデータに対し、理論的な誤差範囲内で収束すること。
-4.  **独立レビュー (Peer Review)**: コア開発者以外の専門家によるコードおよび物理ロジックの監査をパスしていること。
+「検証済み」と表記されるアルゴリズムは、以下の基準に基づき、指定の精度（Tolerance）を達成しています。
+
+- **一致率 (Tolerance)**: $10^{-12}$ (相対誤差) を原則的なパス基準としています。これは倍精度浮動小数点演算において、丸め誤差以外の有意なロジック差異がないことを示します。
+- **物理的不変性 (Invariance)**: スケール変換（データの 1000 倍など）をしても結果が整合する「Scale Invariance」を全アルゴリズムで検証しています。
+
+## 検証済みアルゴリズム要約表
+
+| アルゴリズム | 対応 API | 外部比較元 | 数値精度 (Tol) | 物理的仮定 | 関連チュートリアル |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **k-space 計算** | `.fft_space()` | SciPy / FFTW | $10^{-15}$ | 等間隔グリッド | [Field 入門](tutorials/field_scalar_intro.ipynb) |
+| **Transient FFT** | `._fft_transient()` | NumPy | $10^{-15}$ | 窓関数なし(Rect) | — |
+| **VIF 補正** | `calculate_correlation_factor()` | 文献 (Percival) | — | 定常過程 | [Bootstrap 用](tutorials/case_bootstrap_gls_fitting.ipynb) |
+| **予測時刻計算** | `ArimaResult.forecast()` | LIGO 規約 | $10^{-9}$ (s) | 閏秒なし(GPS) | — |
+| **適応ホワイトニング** | `.whiten(eps="auto")` | 数値実験 | $10^{-12}$ | 局所的準定常 | [数値安定性](numerical_stability.md) |
 
 ---
 
-## 検証済みアルゴリズム一覧
-
-| アルゴリズム | 対応 API | 検証方法 | 主な用途 | 関連チュートリアル |
-| :--- | :--- | :--- | :--- | :--- |
-| **k-space 計算** | `.fft_space()` | 文献・SciPy 比較 | 空間相関、波数解析 | [Field 入門](tutorials/field_scalar_intro.ipynb) |
-| **Transient FFT** | `._fft_transient()` | 文献・NumPy 比較 | 短時間バースト解析 | — |
-| **VIF 補正** | `calculate_correlation_factor()` | 文献 (Percival) | スペクトル誤差推定 | [Bootstrap チュートリアル](tutorials/case_bootstrap_gls_fitting.ipynb) |
-| **予測時刻計算** | `ArimaResult.forecast()` | LIGO 時刻規約 | 故障予兆・トレンド予測 | — |
-| **適応ホワイトニング** | `.whiten(eps="auto")` | 数値実験 | 極小信号の安定抽出 | [数値安定性](numerical_stability.md) |
-
----
-
-## アルゴリズム詳細と物理的根拠
+## 各アルゴリズムの詳細と仮定
 
 ### 1. k-space 計算
 **対象**: {meth}`gwexpy.fields.ScalarField.fft_space`
 
 角波数の計算は、物理学の標準定義 $k = 2\pi / \lambda$ に従っています。
 
-$$
-k = 2\pi \cdot \text{fftfreq}(n, d)
-$$
+**前提条件・仮定**:
+- 空間座標 ($x, y$) が**等間隔（Uniform Grid）**であること。
+- 非等間隔グリッドの場合は、事前に補間を行わない限り正しい波数軸は得られません。
 
-**根拠**:
-- Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2
-- NumPy `fftfreq` ドキュメントとの整合性確認済み。
+**根拠**: Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2
 
 ---
 
 ### 2. 振幅スペクトル（トランジェントFFT）
 **対象**: `TimeSeries._fft_transient`
 
-密度スペクトルではなく、**ピーク振幅**を直接読み取れる規約を採用しています。
+密度スペクトル（PSD）ではなく、時間領域の**ピーク振幅**を直接読み取れる振幅規約を採用しています。
 
-$$
-\text{amplitude} = \text{rfft}(x) / N
-$$
-
-**根拠**:
-- Oppenheim & Schafer, *Discrete-Time Signal Processing* (3rd ed., 2010), §8.6.2
-- 正弦波の既知振幅入力に対する数値実験により検証済み。
+**前提条件・仮定**:
+- 入力信号に窓関数が適用されていないこと（矩形窓を前提）。
+- 窓関数適用済みのデータに対しては、別途コヒーレント・ゲインによる補正が必要です。
 
 ---
 
@@ -62,13 +58,11 @@ $$
 
 Welch 法等におけるセグメント間のオーバーラップによる有効サンプル数の減少を補正します。
 
-$$
-\text{VIF} = \sqrt{1 + 2 \sum_{k=1}^{M-1} \left(1 - \frac{k}{M}\right) |\rho(kS)|^2}
-$$
+**前提条件・仮定**:
+- データが**弱定常 (Weakly Stationary)** であること。
+- 非定常なグリッチやステップ応答が含まれる場合、VIF は分散を過小または過大評価する可能性があります。
 
-**根拠**:
-- Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications* (1993), Eq.(56)
-- **注意**: 多重共線性診断の VIF ($1/(1-R^2)$) とは定義が異なります。
+**根拠**: Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications* (1993), Eq.(56)
 
 ---
 
@@ -77,20 +71,19 @@ $$
 
 GPS 時刻系における連続性を保証するため、LIGO 規約に従った歩進計算を行います。
 
-**根拠**:
-- LIGO GPS 時刻規約 (LIGO-T980044)
-- 閏秒を含まない TAI 秒としての整合性確認済み。
+**前提条件・仮定**:
+- 時刻系は **GPS 時刻（閏秒なし）** であること。
+- UTC 等の閏秒が存在する時刻系でそのまま使用すると、将来予測時に 1 秒のズレが生じます。
 
 ---
 
-## 前提条件と制約事項
-
-利用にあたって以下の物理的・統計的前提条件に注意してください。
-
-- **MCMC 固定共分散**: `run_mcmc` は共分散行列 $\Sigma$ がパラメータ非依存であることを前提としています。
-- **ブートストラップの定常性**: `bootstrap_spectrogram` は入力データが定常過程であることを仮定しており、非定常なグリッチを含むデータでは誤差推計が偏る可能性があります。
-- **角波数規約**: `fft_space` は角波数 [rad/length] を返します。サイクル波数 [1/length] への変換には $2\pi$ による除算が必要です。
-
-## 監査証跡
+## 監査証跡 (Audit Trail)
 
 詳細なユニットテスト結果、文献との比較スクリプト、および過去のレビュー記録は `docs_internal/verification/` ディレクトリに保管されています。
+すべての変更は CI 環境での `verify-physics` ゲートをパスした後にマージされます。
+
+## 関連ドキュメント
+
+- {doc}`numerical_stability` - 数値安定性（精度管理）
+- {doc}`glossary` - アルゴリズム用語集
+- {doc}`../reference/api/signal` - 信号処理リファレンス

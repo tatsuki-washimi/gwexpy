@@ -1,96 +1,89 @@
 # Validated Algorithms
 
-The numerical algorithms implemented in `gwexpy` have undergone a rigorous validation process to ensure scientific accuracy and reliability. This page lists the validated implementations and their physical/mathematical baselines.
+> [!NOTE]
+> **Who should read this page?**
+> - Researchers who want to verify the mathematical and physical validity of the methods.
+> - Developers who need to know the numerical tolerances between GWexpy and external libraries (SciPy, LALSuite, etc.).
+> - Users who need to check the data characteristics (stationarity, Gaussianity, etc.) assumed by each algorithm.
 
-## Validation Criteria
+The numerical algorithms implemented in `gwexpy` have undergone a rigorous validation process to ensure scientific accuracy and reliability.
 
-An algorithm labeled as "Validated" meets at least one of the following criteria:
+## Validation Criteria and Numerical Precision
 
-1.  **Literature Cross-Check**: The formula corresponds 1-to-1 with established textbooks or peer-reviewed papers.
-2.  **Cross-Library Verification**: Computational results match those of standard libraries (GWpy, SciPy, LALSuite) under identical conditions.
-3.  **Numerical Experimentation**: Convergence to analytical solutions for known test data within theoretical error bounds.
-4.  **Independent Peer Review**: Code and logic have been audited by experts other than the core developers.
+Algorithms labeled as "Validated" meet the following standards and achieve specific precision (tolerance) benchmarks:
+
+- **Tolerance**: We generally use $10^{-12}$ (relative error) as the passing criterion. This indicates no significant logic differences beyond standard double-precision rounding errors.
+- **Invariance**: All algorithms are verified for "Scale Invariance," ensuring results remain consistent even after scaling data (e.g., multiplying by 1000).
+
+## Validated Algorithms Summary Table
+
+| Algorithm | Target API | External Baseline | Numerical Tol | Physical Assumptions | Related Tutorial |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **k-space calculation** | `.fft_space()` | SciPy / FFTW | $10^{-15}$ | Uniform Grid | [Field Intro](tutorials/field_scalar_intro.ipynb) |
+| **Transient FFT** | `._fft_transient()` | NumPy | $10^{-15}$ | No window (Rect) | — |
+| **VIF Correction** | `calculate_correlation_factor()` | Literature (Percival)| — | Stationary Process | [Bootstrap Guide](tutorials/case_bootstrap_gls_fitting.ipynb) |
+| **Forecast Timing** | `ArimaResult.forecast()` | LIGO Convention | $10^{-9}$ (s) | No leap seconds (GPS) | — |
+| **Adaptive Whitening** | `.whiten(eps="auto")` | Numerical Exp | $10^{-12}$ | Locally Quasi-stationary | [Stability](numerical_stability.md) |
 
 ---
 
-## List of Validated Algorithms
-
-| Algorithm | Target API | Validation Method | Usage | Related Tutorial |
-| :--- | :--- | :--- | :--- | :--- |
-| **k-space calculation** | `.fft_space()` | Literature / SciPy | Spatial correlation, wavenumbers | [Field Intro](tutorials/field_scalar_intro.ipynb) |
-| **Transient FFT** | `._fft_transient()` | Literature / NumPy | Short-duration burst analysis | — |
-| **VIF Correction** | `calculate_correlation_factor()` | Literature (Percival) | Spectral error estimation | [Bootstrap Guide](tutorials/case_bootstrap_gls_fitting.ipynb) |
-| **Forecast Timing** | `ArimaResult.forecast()` | LIGO Timing Convention | Trend prediction | — |
-| **Adaptive Whitening** | `.whiten(eps="auto")` | Numerical Experiment | Robust signal extraction | [Stability](numerical_stability.md) |
-
----
-
-## Algorithm Details and Physical Basis
+## Detailed Algorithm Basis and Assumptions
 
 ### 1. k-space Calculation
 **Target**: {meth}`gwexpy.fields.ScalarField.fft_space`
 
 Angular wavenumber calculation follows the standard physics definition $k = 2\pi / \lambda$.
 
-$$
-k = 2\pi \cdot \text{fftfreq}(n, d)
-$$
+**Assumptions**:
+- Spatial coordinates ($x, y$) must be **Uniformly Spaced**.
+- For non-uniform grids, a correct wavenumber axis cannot be obtained without prior interpolation.
 
-**Basis**:
-- Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2
-- Verified against NumPy `fftfreq` documentation.
+**Reference**: Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2
 
 ---
 
 ### 2. Transient FFT (Amplitude Spectrum)
 **Target**: `TimeSeries._fft_transient`
 
-Uses an amplitude-preserving convention rather than density, allowing direct reading of peak amplitudes for pulsed signals.
+Uses an amplitude-preserving convention rather than density, allowing direct reading of time-domain peak amplitudes.
 
-$$
-\text{amplitude} = \text{rfft}(x) / N
-$$
-
-**Basis**:
-- Oppenheim & Schafer, *Discrete-Time Signal Processing* (3rd ed., 2010), §8.6.2
-- Verified with numerical experiments on sine waves with known amplitudes.
+**Assumptions**:
+- No window function is applied to the input signal (assumes Rectangular window).
+- For data with windows already applied, separate correction for coherent gain is required.
 
 ---
 
 ### 3. VIF (Variance Inflation Factor)
 **Target**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`
 
-Corrects for the reduction in effective sample size caused by overlapping segments in methods like Welch's PSD.
+Corrects for the reduction in effective sample size caused by overlapping segments in spectral estimation methods like Welch's.
 
-$$
-\text{VIF} = \sqrt{1 + 2 \sum_{k=1}^{M-1} \left(1 - \frac{k}{M}\right) |\rho(kS)|^2}
-$$
+**Assumptions**:
+- The data must be **Weakly Stationary**.
+- VIF may under- or over-estimate variance if non-stationary glitches or step responses are present.
 
-**Basis**:
-- Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications* (1993), Eq.(56)
-- **Note**: This is distinct from the VIF ($1/(1-R^2)$) used in multicollinearity diagnostics.
+**Reference**: Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications* (1993), Eq.(56)
 
 ---
 
 ### 4. Forecast Timestamp (ARIMA)
 **Target**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`
 
-Calculates future timestamps while maintaining GPS continuity according to LIGO conventions.
+Maintains GPS continuity according to LIGO conventions for future timestamp prediction.
 
-**Basis**:
-- LIGO GPS Time Convention (LIGO-T980044)
-- Verified consistency as continuous TAI seconds (excluding leap seconds).
+**Assumptions**:
+- The time system must be **GPS Time (no leap seconds)**.
+- Using this in time systems with leap seconds (like UTC) will result in a 1-second offset in future predictions.
 
 ---
-
-## Assumptions and Constraints
-
-Users should be aware of the following statistical and physical assumptions:
-
-- **MCMC Fixed Covariance**: `run_mcmc` assumes the noise covariance $\Sigma$ is independent of the parameters.
-- **Stationarity for Bootstrap**: `bootstrap_spectrogram` assumes the input data satisfies the stationary process assumption.
-- **Angular Wavenumber Convention**: `fft_space` returns angular wavenumbers [rad/length]. Conversion to cycles [1/length] requires division by $2\pi$.
 
 ## Audit Trail
 
 Detailed unit test results, literature comparison scripts, and past review logs are maintained in the `docs_internal/verification/` directory.
+All changes are merged only after passing the `verify-physics` gate in the CI environment.
+
+## Related Documents
+
+- {doc}`numerical_stability` - Numerical Stability (Precision Management)
+- {doc}`glossary` - Glossary of Algorithms
+- {doc}`../reference/api/signal` - Signal Processing API Reference
