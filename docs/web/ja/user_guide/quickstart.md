@@ -1,72 +1,70 @@
-# クイックスタート
+# クイックスタート (Quickstart)
 
-簡単な時系列データの作成と解析を行います。
+GWexpy を使って、最初の解析図を最短で作成しましょう。
 
-:::{note}
-より詳しい学習パスは [getting_started](getting_started.md) を参照してください。
-:::
+## 3行で最初の図を出す (3-line Quickstart)
 
-## GWpyからの移行
-
-GWpyコードをGWexpyで使用するには、importを置き換えるだけです：
+GWexpy の `TimeSeries` は NumPy 配列から直接作成でき、標準的なプロット機能を備えています。
 
 ```python
-# GWpy (従来)
-# from gwpy.timeseries import TimeSeries
-# from gwpy.frequencyseries import FrequencySeries
+import numpy as np
+from gwexpy.timeseries import TimeSeries
 
-# GWexpy（推奨）
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
-from gwexpy.frequencyseries import FrequencySeriesMatrix
+ts = TimeSeries(np.random.randn(4096), sample_rate=4096.0, t0=0)
+ts.plot().show()
 ```
 
-## 複数チャンネル時系列データの生成とプロット
+## 30分で学べるハンズオン (Interactive Tutorial)
 
-複数チャンネルの時系列データを生成します：
+より実践的なワークフローを学びたい場合は、以下のチュートリアルを推奨します。Google Colab ですぐに実行可能です。
+
+.. grid:: 1
+    :gutter: 3
+
+    .. grid-item-card:: 🧪 GWexpy 基本ハンズオン
+        :link: tutorials/index
+        :link-type: doc
+
+        データの読み込みから、周波数解析（ASD/CSD）、最新の ScalarField API による行列操作までを一通り体験します。
+        ^^^
+        .. image:: https://colab.research.google.com/assets/colab-badge.svg
+           :target: https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/intro_timeseries.ipynb
+           :alt: Open In Colab
+
+## 主要概念 (Core Concepts)
+
+GWexpy を使いこなすための 2 つの重要な柱です。
+
+* **TimeSeries / FrequencySeries**: 
+  単一チャンネルのデータを扱う基本クラスです。GWpy と高い互換性があり、既存のコードをそのまま動かすことができます。
+* **TimeSeriesMatrix / ScalarField**:
+  複数チャンネル（行列形式）や多次元データを扱うための新しい API です。100 チャンネルを超えるような大規模な解析も、1 行のコードで安全に処理できます。
+
+## 複数チャンネルの解析例
+
+複数チャンネルの相関（CSD）を計算する例です。
 
 ```python
 import numpy as np
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
-sample_rate = 1024
-duration = 64
-
-# 白色ガウスノイズの時系列を生成
+# データの作成
 tsd = TimeSeriesDict({
-    "H1:STRAIN": TimeSeries(np.random.randn(sample_rate * duration), dt=1/sample_rate, t0=0),
-    "L1:STRAIN": TimeSeries(np.random.randn(sample_rate * duration), dt=1/sample_rate, t0=0),
+    "H1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),
+    "L1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),
 })
 
-# プロット
-plot = tsd.plot()
-plot.show()
+# 行列に変換してクロススペクトル密度 (CSD) を計算
+csm = tsd.to_matrix().csd(fftlength=1)
+csm.plot().show()
 ```
 
-:::{note}
-ピンクノイズや赤色ノイズなどのカラードノイズについては、[ノイズモデルガイド](tutorials/intro_noise) を参照してください。
-:::
+## 困ったときは
 
-## TimeSeriesMatrixから周波数行列への一括変換
+実行時にエラーが発生したり、プロットが表示されない場合は、:doc:`トラブルシューティング <troubleshooting>` を確認してください。
 
-複数チャンネルの時系列データをFrequencySeriesMatrixに変換し、クロススペクトル密度(CSD)を計算します：
+## 次のステップ
 
-```python
-# TimeSeriesDictをmatrixに変換
-ts_matrix = tsd.to_matrix()
-
-# CSD計算（Welch法、重なり50%）
-csm = ts_matrix.csd(
-    fftlength=4,
-    overlap=0.5,
-    window='hann'
-)
-
-# 周波数行列としてプロット
-freq_plot = csm.plot()
-freq_plot.show()
-
-# 具体的な周波数領域の解析
-print(f"周波数範囲: {csm.frequencies[0]:.1f} - {csm.frequencies[-1]:.1f} Hz")
-print(f"H1-L1相互スペクトル (10 Hz): {csm['H1:STRAIN', 'L1:STRAIN'].interpolate(10).value:.2e}")
-```
-
+* :doc:`インストールガイド <installation>` - 環境の構築
+* :doc:`はじめに <getting_started>` - 体系的な学習ロードマップ
+* :doc:`GWpy からの移行 <gwexpy_for_gwpy_users_ja>` - 既存ユーザー向け差分ガイド

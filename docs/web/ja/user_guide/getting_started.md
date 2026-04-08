@@ -1,105 +1,75 @@
 # はじめに (Getting Started)
 
-このページでは、GWexpyユーザー向けに**体系的な学習パス**を提供します。時系列解析の初心者でも、GWpyからの移行者でも、あなたのバックグラウンドに合わせた推奨事項が見つかります。
+GWexpy ユーザー向けに**体系的な学習パス**を提供します。
+あなたのバックグラウンドと目的に合わせて、最適なスタート地点を選択してください。
 
-**学べる内容:**
+## 概要 (Quick Summary)
 
-- インストールとセットアップ
-- 基本データ構造（TimeSeries, FrequencySeries, Spectrogram）
-- 多チャンネル解析と行列コンテナ
-- 高度な信号処理技術
-- 実世界での応用例
+.. list-table::
+   :widths: 25 75
 
-**所要時間:** 初心者は2-3時間、GWpyユーザーは30-60分
+   * - **対象読者**
+     - 物理実験データの解析者、GWpy ユーザー、Python での信号処理に関心がある方
+   * - **前提知識**
+     - Python 3.9+ の基礎、NumPy 配列操作、(推奨) Matplotlib
+   * - **所要時間**
+     - 最短 5 分（クイックスタート）〜 30 分（基本ハンズオン）
+   * - **到達点**
+     - データの読み込み、可視化、基本的な周波数解析の実行
 
-:::{tip}
-お急ぎの場合は、[クイックスタート](quickstart.md)で5分間の概要をご覧ください。
-:::
+## あなたに最適なスタート地点 (Choose Your Path)
 
-:::{admonition} このページについて
-:class: note
+.. grid:: 3
+    :gutter: 3
 
-このページでは**詳細な学習ロードマップ**を提供します。まだ[ドキュメントトップページ](../index)をご覧になっていない場合は、まずそちらでGWexpyの全体像をご確認ください。
-:::
+    .. grid-item-card:: 🚀 5分で最初のプロット
+        :link: quickstart
+        :link-type: doc
 
-## クイック例
+        とにかく動かしてみたい方向け。最短 3 行のコードで解析結果を表示します。
 
-最も基本的なGWexpyワークフローを示します：
+    .. grid-item-card:: 📖 30分で基本操作
+        :link: tutorials/index
+        :link-type: doc
 
-```python
-from gwexpy.timeseries import TimeSeries
-import numpy as np
+        データの構造や、GWexpy ならではの行列操作を基礎からステップバイステップで学びます。
 
-# 時系列データを作成
-ts = TimeSeries(np.random.randn(1000), sample_rate=100, t0=0)
+    .. grid-item-card:: 🔄 GWpy から移行
+        :link: gwexpy_for_gwpy_users_ja
+        :link-type: doc
 
-# プロット
-plot = ts.plot()
-plot.show()
-```
+        既に GWpy を使っている方向け。主な差分と、新機能を活用したコードの簡略化を学びます。
 
-詳細は [クイックスタート](quickstart.md) を参照してください。
+## 学習ロードマップ (Learning Path)
 
-## 前提知識
+### 1. 準備
 
-- Python 3.9+ の基本的な知識
-- NumPy の基本（配列操作）
-- （オプション）GWpy の経験
+まず :doc:`インストールガイド <installation>` で環境を構築してください。
 
-## 学習パス
+### 2. 基本データ構造の習得
 
-### 1. インストール
+主要なコンテナの使い方を以下の順序で学ぶことを推奨します：
 
-まず [installation](installation.md) でGWexpyをインストールしてください。
+1. [{doc}`tutorials/intro_timeseries <tutorials/intro_timeseries>`] - 時系列データの基本
+2. [{doc}`tutorials/intro_frequencyseries <tutorials/intro_frequencyseries>`] - 周波数系列の基本
+3. [{doc}`tutorials/intro_spectrogram <tutorials/intro_spectrogram>`] - スペクトログラムの基本
+4. [{doc}`tutorials/intro_plotting <tutorials/intro_plotting>`] - プロット機能のカスタマイズ
 
-### 2. クイックスタート
+### 3. 高度な解析機能
 
-[quickstart](quickstart.md) で基本的な使い方を学びましょう。
+目的に応じて以下のガイドを参照してください：
 
-### 3. 基本データ構造（推奨順）
+* **多チャンネル・行列処理**: :doc:`行列コンテナ (Matrix) の活用 <tutorials/matrix_timeseries>`
+* **高次元データ**: :doc:`Field API 入門 <tutorials/field_scalar_intro>` / :doc:`スライス操作ガイド <scalarfield_slicing>`
+* **信号処理**: :doc:`フィッティング <tutorials/advanced_fitting>` / :doc:`HHT <tutorials/advanced_hht>` / :doc:`ARIMA <tutorials/advanced_arima>`
 
-**初心者向け**
+### 4. 実践的な活用
 
-1. [intro_timeseries](tutorials/intro_timeseries.ipynb) - 時系列データの基本
-2. [intro_frequencyseries](tutorials/intro_frequencyseries.ipynb) - 周波数系列の基本
-3. [intro_spectrogram](tutorials/intro_spectrogram.ipynb) - スペクトログラムの基本
-4. [intro_plotting](tutorials/intro_plotting.ipynb) - プロット機能
+実際の解析ワークフローは、:doc:`ケーススタディ集 <../examples/index>` で確認できます。
 
-**GWpyユーザー向け**
+## 次のステップ (Next Steps)
 
-- [gwexpy_for_gwpy_users_ja](gwexpy_for_gwpy_users_ja.md) - GWpyからの移行ガイド
-
-### 4. 高度なトピック
-
-**多チャンネル & 行列**
-
-- [matrix_timeseries](tutorials/matrix_timeseries.ipynb) - 時系列行列
-- [matrix_frequencyseries](tutorials/matrix_frequencyseries.ipynb) - 周波数系列行列
-
-**高次元フィールド（Field API）**
-
-- [field_scalar_intro](tutorials/field_scalar_intro.ipynb) - スカラーフィールド入門
-- [scalarfield_slicing](scalarfield_slicing.md) - スライス操作ガイド（重要）
-
-**高度な信号処理**
-
-- [advanced_fitting](tutorials/advanced_fitting.ipynb) - フィッティング
-- [advanced_peak_detection](tutorials/advanced_peak_detection.ipynb) - ピーク検出
-- [advanced_hht](tutorials/advanced_hht.ipynb) - ヒルベルト-黄変換
-- [advanced_arima](tutorials/advanced_arima.ipynb) - ARIMA モデル
-- [advanced_correlation](tutorials/advanced_correlation.ipynb) - 相関解析
-
-### 5. 実践例
-
-[{doc}`実例集ギャラリー <../examples/index>`]で実世界の応用例を参照できます：
-
-- [case_noise_budget](tutorials/case_noise_budget.ipynb) - ノイズバジェット解析
-- [case_transfer_function](tutorials/case_transfer_function.ipynb) - 伝達関数計算
-- [case_active_damping](tutorials/case_active_damping.ipynb) - アクティブダンピング
-
-## 次のステップ
-
-- [{doc}`実例集ギャラリー <../examples/index>`] - 視覚的な使用例とケーススタディ
-- 全チュートリアル一覧: [{doc}`tutorials/index <tutorials/index>`]
-- API リファレンス: [{doc}`リファレンス <../reference/index>`]
-- [validated_algorithms](validated_algorithms.md) - アルゴリズム検証レポート
+* [{doc}`実例集ギャラリー <../examples/index>`] - 視覚的な使用例とケーススタディ
+* 全チュートリアル一覧: [{doc}`tutorials/index <tutorials/index>`]
+* API リファレンス: [{doc}`リファレンス <../reference/index>`]
+* [{doc}`検証済みアルゴリズム <validated_algorithms>`] - 数値的正確性の検証レポート

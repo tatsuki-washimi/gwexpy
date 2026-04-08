@@ -1,93 +1,96 @@
 # Installation
 
-GWexpy requires Python 3.11+ and depends on GWpy, NumPy, SciPy, and Astropy.
+GWexpy supports **Python 3.9 or higher**.
+Choose the installation method that best fits your analysis goals.
 
-## Basic install
+## Supported Environments
 
-GitHub is the recommended method for installation until the package is officially released on PyPI.
+.. list-table:: 
+   :widths: 30 70
 
-```bash
-pip install git+https://github.com/tatsuki-washimi/gwexpy.git
-```
+   * - **OS**
+     - Linux, macOS, Windows (WSL2 recommended)
+   * - **Python**
+     - 3.9, 3.10, 3.11, 3.12
+   * - **Core Dependencies**
+     - GWpy, NumPy, SciPy, Astropy
 
-**Coming soon (PyPI & Conda):**
+## Installation Options
 
-```bash
-# pip install gwexpy
-# conda install -c conda-forge gwexpy
-```
+.. tab-set::
 
-:::{important}
-**For Gravitational Wave Data Analysis (LIGO/Virgo/KAGRA, etc.)**
+    .. tab-item:: 🏁 Minimal
+        :sync: minimal
 
-Some dependencies in the `[gw]` extra, such as `nds2-client` and `python-framel`, are **not available on PyPI** due to complex system-level dependencies.
-To use these features, we strongly recommend installing them via **Conda (Miniforge/Anaconda)** first:
+        For users who only need core features (TimeSeriesMatrix, basic plotting, etc.):
 
-```bash
-# 1. Install external dependencies
-conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
+        ```bash
+        pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+        ```
 
-# 2. Install GWexpy with extras
-pip install "gwexpy[gw] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
-```
+    .. tab-item:: ✨ Recommended
+        :sync: recommended
 
-:::
+        Includes general signal processing, fitting, and mapping features:
 
-## Development install
+        ```bash
+        pip install "gwexpy[analysis,fitting,plotting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+        ```
 
-```bash
-pip install -e ".[dev]"
-```
+    .. tab-item:: 🌌 GW Analysis (LIGO/Virgo/KAGRA, etc.)
+        :sync: gw
 
-## Optional extras
+        For gravitational-wave data analysis (nds2, frames). **Binary dependencies must be installed via Conda first.**
 
-GWexpy exposes optional extras for domain-specific features:
+        ```bash
+        # 1. Install binary dependencies via Conda
+        conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
 
-- `.[gw]` for GW data analysis (nds2, frames, noise models)
-- `.[analysis]` for transforms and time-frequency tools (scikit-learn, statsmodels, ARIMA)
-- `.[fitting]` for advanced fitting (iminuit, emcee, corner)
-- `.[seismic]` for seismological analysis (obspy, mth5, mtpy)
-- `.[audio]` for audio processing (pydub, tinytag)
-- `.[control]` for control engineering (python-control)
-- `.[plotting]` for advanced plotting & mapping (pygmt)
-- `.[io]` for additional I/O formats (nptdms)
-- `.[gui]` for the experimental Qt GUI (PyQt5, pyqtgraph)
-- `.[all]` to install all optional dependencies
+        # 2. Install GWexpy with extras
+        pip install "gwexpy[gw] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+        ```
 
-Combine extras as needed, for example:
+    .. tab-item:: 🛠️ For Developers
+        :sync: developer
 
-```bash
-pip install ".[gw,analysis,plotting]"
-```
+        For modifying code or running tests (editable mode):
 
-You can also install extras directly from GitHub:
+        ```bash
+        git clone https://github.com/tatsuki-washimi/gwexpy.git
+        cd gwexpy
+        pip install -e ".[dev,all]"
+        ```
 
-```bash
-pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
-```
+## OS-specific Notes
 
-:::{note}
-The `[gw]` extra includes dependencies like `nds2-client` which are **not available on PyPI**.
-To use these features, you must install dependencies via **Conda** first:
+.. tab-set::
 
-```bash
-conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
-pip install ".[gw]"
-```
+    .. tab-item:: Linux / WSL2
 
-### Maximal Information Coefficient (MIC)
+        Most features work with standard `pip`. Conda is recommended for `nds2` and frame file support.
 
-Calculation of MIC requires `minepy`. On Python 3.11+, standard installation via `pip` or `conda` may fail. We provide an automated build script in the repository:
+    .. tab-item:: macOS (Intel/Apple Silicon)
 
-```bash
-python scripts/install_minepy.py
-```
+        On Apple Silicon (M1/M2/M3), we strongly recommend installing complex binary packages via Conda (Miniforge/Mamba).
 
-:::
+    .. tab-item:: Windows (Native)
+
+        Basic analysis works, but advanced I/O (e.g., `nds2`) is recommended to be used via **WSL2**.
+
+## PyPI / Conda Status
+
+GWexpy is currently preparing for official registration on PyPI and conda-forge.
+Until the official release, please **install directly from GitHub**.
+
+* **PyPI**: Coming soon (`pip install gwexpy`)
+* **Conda**: Coming soon (`conda install -c conda-forge gwexpy`)
+
+## Troubleshooting
+
+If you encounter errors during installation (especially regarding `nds2`, `minepy`, or `PyQt`), 
+please refer to the :doc:`Troubleshooting Guide <troubleshooting>`.
 
 ## Next Steps
 
-Now that GWexpy is installed, learn the basics with:
-
-- [Quickstart](quickstart.md) - Generate and plot time series data
-- [Getting Started](getting_started.md) - Complete learning path
+* :doc:`Quickstart <quickstart>` - Create your first plot in 5 minutes.
+* :doc:`Getting Started <getting_started>` - Systematic learning roadmap.

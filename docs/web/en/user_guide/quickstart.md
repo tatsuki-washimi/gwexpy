@@ -1,71 +1,70 @@
 # Quickstart
 
-Create and analyze time series data from multiple channels.
+Get your first analysis plot with GWexpy as quickly as possible.
 
-:::{note}
-For a more detailed learning path, see [getting_started](getting_started.md).
-:::
+## 3-line Quickstart
 
-## Migration from GWpy
-
-To use GWpy code with GWexpy, simply replace the imports:
+GWexpy's `TimeSeries` can be created directly from NumPy arrays and features built-in plotting capabilities.
 
 ```python
-# GWpy (legacy)
-# from gwpy.timeseries import TimeSeries
-# from gwpy.frequencyseries import FrequencySeries
+import numpy as np
+from gwexpy.timeseries import TimeSeries
 
-# GWexpy (recommended)
-from gwexpy.timeseries import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
-from gwexpy.frequencyseries import FrequencySeriesMatrix
+ts = TimeSeries(np.random.randn(4096), sample_rate=4096.0, t0=0)
+ts.plot().show()
 ```
 
-## Generate and Plot Multi-channel Time Series
+## 30-min Hands-on (Interactive Tutorial)
 
-Generate multiple channels of time series data:
+For a more practical workflow, we recommend the following tutorial. You can run it immediately on Google Colab.
+
+.. grid:: 1
+    :gutter: 3
+
+    .. grid-item-card:: 🧪 GWexpy Basic Hands-on
+        :link: tutorials/index
+        :link-type: doc
+
+        Experience everything from loading data to frequency analysis (ASD/CSD) and matrix manipulation using the latest ScalarField API.
+        ^^^
+        .. image:: https://colab.research.google.com/assets/colab-badge.svg
+           :target: https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb
+           :alt: Open In Colab
+
+## Core Concepts
+
+The two pillars to mastering GWexpy.
+
+* **TimeSeries / FrequencySeries**: 
+  Basic classes for handling single-channel data. High compatibility with GWpy allows you to run existing code as is.
+* **TimeSeriesMatrix / ScalarField**:
+  New APIs for handling multi-channel (matrix format) or multi-dimensional data. Large-scale analysis with over 100 channels can be handled safely with a single line of code.
+
+## Multi-channel Analysis Example
+
+An example of calculating the cross-spectral density (CSD) between multiple channels.
 
 ```python
 import numpy as np
 from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
-sample_rate = 1024
-duration = 64
-
-# Generate white Gaussian noise time series
+# Create data
 tsd = TimeSeriesDict({
-    "H1:STRAIN": TimeSeries(np.random.randn(sample_rate * duration), dt=1/sample_rate, t0=0),
-    "L1:STRAIN": TimeSeries(np.random.randn(sample_rate * duration), dt=1/sample_rate, t0=0),
+    "H1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),
+    "L1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),
 })
 
-# Plot
-plot = tsd.plot()
-plot.show()
+# Convert to matrix and calculate Cross Spectral Density (CSD)
+csm = tsd.to_matrix().csd(fftlength=1)
+csm.plot().show()
 ```
 
-:::{note}
-For colored noise (pink, red, etc.), see [Noise Model Guide](tutorials/intro_noise).
-:::
+## Need Help?
 
-## Batch CSD Conversion: Time Series to Frequency Matrix
+If you encounter errors or plots do not appear, check the :doc:`Troubleshooting Guide <troubleshooting>`.
 
-Transform multiple channels from time domain to frequency domain, computing cross-spectral densities:
+## Next Steps
 
-```python
-# Convert TimeSeriesDict to matrix
-ts_matrix = tsd.to_matrix()
-
-# Compute CSD (Welch's method, 50% overlap)
-csm = ts_matrix.csd(
-    fftlength=4,
-    overlap=0.5,
-    window='hann'
-)
-
-# Plot frequency matrix
-freq_plot = csm.plot()
-freq_plot.show()
-
-# Analyze specific frequency bins
-print(f"Frequency range: {csm.frequencies[0]:.1f} - {csm.frequencies[-1]:.1f} Hz")
-print(f"H1-L1 cross-spectrum (10 Hz): {csm['H1:STRAIN', 'L1:STRAIN'].interpolate(10).value:.2e}")
-```
+* :doc:`Installation Guide <installation>` - Setting up your environment.
+* :doc:`Getting Started <getting_started>` - Systematic learning roadmap.
+* :doc:`Migration from GWpy <gwexpy_for_gwpy_users_en>` - Difference guide for existing users.

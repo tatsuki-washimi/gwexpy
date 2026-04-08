@@ -1,89 +1,96 @@
-# インストール
+# インストール (Installation)
 
-GWexpy は Python 3.11+ を必要とし、GWpy, NumPy, SciPy, および Astropy に依存します。
+GWexpy は **Python 3.9 以上** をサポートしています。
+解析の目的に合わせて、以下のいずれかの方法でインストールしてください。
 
-## 基本インストール
+## サポート環境
 
-PyPI での正式リリースまでは、GitHub からのインストールを推奨します。
+.. list-table:: 
+   :widths: 30 70
 
-```bash
-pip install git+https://github.com/tatsuki-washimi/gwexpy.git
-```
+   * - **OS**
+     - Linux, macOS, Windows (WSL2 推奨)
+   * - **Python**
+     - 3.9, 3.10, 3.11, 3.12
+   * - **主要な依存関係**
+     - GWpy, NumPy, SciPy, Astropy
 
-**近日対応予定 (PyPI & Conda):**
+## インストール方法の選択
 
-```bash
-# pip install gwexpy
-# conda install -c conda-forge gwexpy
-```
+.. tab-set::
 
-:::{important}
-**重力波データ解析 (LIGO/Virgo/KAGRA等) の機能を使用する場合**
+    .. tab-item:: 🏁 最小インストール
+        :sync: minimal
 
-`[gw]` エクストラに含まれる `nds2-client` や `python-framel` などの一部ライブラリは、システムの依存関係が複雑なため **PyPI では提供されていません**。
-これらの機能を使用するには、まず **Conda (Miniforge/Anaconda)** を用いて依存関係をインストールすることを強く推奨します:
+        GWexpy のコア機能（TimeSeriesMatrix, 基本プロット等）のみを使用する場合：
 
-```bash
-# 1. 外部依存関係のインストール
-conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
+        ```bash
+        pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+        ```
 
-# 2. GWexpy のインストール (エクストラ指定)
-pip install "gwexpy[gw] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
-```
+    .. tab-item:: ✨ 推奨インストール
+        :sync: recommended
 
-:::
+        一般的な信号処理、フィッティング、地図描画機能を含める場合：
 
-## 開発用インストール
+        ```bash
+        pip install "gwexpy[analysis,fitting,plotting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+        ```
 
-```bash
-pip install -e ".[dev]"
-```
+    .. tab-item:: 🌌 GW 解析 (LIGO/Virgo/KAGRA 等)
+        :sync: gw
 
-## オプション機能の追加
+        重力波データ解析（nds2, frames）の機能を使用する場合。**Conda での事前準備が必須です。**
 
-GWexpy はドメイン固有の機能のためにオプションの依存関係を提供しています:
+        ```bash
+        # 1. Conda でバイナリ依存関係をインストール
+        conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
 
-- `.[gw]` : 重力波データ解析 (nds2, frames, noise models)
-- `.[analysis]` : 変換・時間周波数ツール (scikit-learn, statsmodels, ARIMA)
-- `.[fitting]` : 高度なフィッティング (iminuit, emcee, corner)
-- `.[seismic]` : 地震学解析 (obspy, mth5, mtpy)
-- `.[audio]` : 音響処理 (pydub, tinytag)
-- `.[control]` : 制御工学 (python-control)
-- `.[plotting]` : 高度なプロット・地図描画 (pygmt)
-- `.[io]` : 追加 I/O フォーマット (nptdms)
-- `.[gui]` : 実験的 Qt GUI (PyQt5, pyqtgraph)
-- `.[all]` : 全ての依存関係をインストール
+        # 2. GWexpy をインストール
+        pip install "gwexpy[gw] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+        ```
 
-必要に応じて組み合わせてください:
+    .. tab-item:: 🛠️ 開発者向け
+        :sync: developer
 
-```bash
-pip install ".[gw,analysis,plotting]"
-```
+        コードの変更やテストを行う場合（編集可能モード）：
 
-GitHub から直接エクストラを指定してインストールすることもできます:
+        ```bash
+        git clone https://github.com/tatsuki-washimi/gwexpy.git
+        cd gwexpy
+        pip install -e ".[dev,all]"
+        ```
 
-```bash
-pip install "gwexpy[analysis] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
-```
+## OS 別の注意事項
 
-:::{note}
-`[gw]` エクストラを使用する場合は、上記の「基本インストール」セクションの important を参照してください。
-:::
+.. tab-set::
 
-:::{note}
-**Maximal Information Coefficient (MIC) の計算**
+    .. tab-item:: Linux / WSL2
 
-MIC の計算には `minepy` が必要です。Python 3.11+ では標準の `pip` や `conda` でのインストールに失敗することがあります。その場合は、リポジトリに含まれる以下の自動ビルドスクリプトを使用してください：
+        ほとんどの機能は標準的な `pip` で動作します。`nds2` 等を利用する場合は Conda を推奨します。
 
-```bash
-python scripts/install_minepy.py
-```
+    .. tab-item:: macOS (Intel/Apple Silicon)
 
-:::
+        Apple Silicon (M1/M2/M3) 環境では、一部のバイナリパッケージを Conda (Miniforge/Mamba) からインストールすることを強く推奨します。
+
+    .. tab-item:: Windows (Native)
+
+        基本的な解析は動作しますが、高度な入出力機能（`nds2` 等）は **WSL2** 上での利用を推奨します。
+
+## PyPI / Conda での提供状況
+
+現在、GWexpy は PyPI および conda-forge への登録準備中です。
+正式リリースまでは **GitHub からの直接インストール** をご利用ください。
+
+* **PyPI**: 近日対応予定 (`pip install gwexpy`)
+* **Conda**: 近日対応予定 (`conda install -c conda-forge gwexpy`)
+
+## トラブルシューティング
+
+インストール時にエラー（特に `nds2`, `minepy`, `PyQt` 関連）が発生した場合は、
+:doc:`トラブルシューティングガイド <troubleshooting>` を参照してください。
 
 ## 次のステップ
 
-GWexpyのインストールが完了したら、基本的な使い方を学びましょう:
-
-- [クイックスタート](quickstart.md) - 時系列データの生成とプロット
-- [はじめに](getting_started.md) - 完全な学習パス
+* :doc:`クイックスタート <quickstart>` - 5分で最初のプロットを作成
+* :doc:`はじめに <getting_started>` - 体系的な学習ロードマップ

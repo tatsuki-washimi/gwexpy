@@ -1,5 +1,7 @@
+:orphan:
+
 GWexpy Documentation
-====================
+==============================
 
 .. grid:: 1
     :gutter: 3
@@ -7,7 +9,7 @@ GWexpy Documentation
     .. grid-item::
         :columns: 12
 
-        GWexpy extends GWpy with additional containers and analysis utilities for time and frequency series data analysis.
+        GWexpy extends GWpy with new containers and numerical utilities for time-series and frequency-series data analysis.
 
         .. button-ref:: user_guide/quickstart
             :ref-type: doc
@@ -15,20 +17,21 @@ GWexpy Documentation
             :shadow:
             :expand:
 
-            Quick Start (Learn basics in 5 mins)
+            Quick Start (Get started in 5 minutes)
 
 .. grid:: 3
     :gutter: 3
     :class-container: grid-container
 
-    .. grid-item-card:: For Beginners
+    .. grid-item-card:: New to GWexpy?
         :link: user_guide/getting_started
         :link-type: doc
 
-        Learn from the basics
+        Learn the basics
 
         * Installation Guide
         * Basic Tutorials
+        * Troubleshooting
 
     .. grid-item-card:: For Analysts
         :link: examples/index
@@ -43,10 +46,10 @@ GWexpy Documentation
         :link: user_guide/gwexpy_for_gwpy_users_en
         :link-type: doc
 
-        Migration and interoperability
+        Migration and compatibility
 
-        * Differences from GWpy
-        * New Feature Highlights
+        * Key differences
+        * New feature highlights
 
 .. toctree::
    :maxdepth: 2
@@ -55,6 +58,7 @@ GWexpy Documentation
    user_guide/installation
    user_guide/quickstart
    user_guide/getting_started
+   user_guide/troubleshooting
    user_guide/citation
    user_guide/changelog
    user_guide/license
@@ -96,7 +100,6 @@ GWexpy Documentation
 .. grid:: 2
 
     .. grid-item::
-        **Language:** :doc:`日本語 (Japanese) <../ja/index>`
+        **Language:** :doc:`日本語 <../ja/index>`
     .. grid-item::
         **Support:** :doc:`Troubleshooting <user_guide/troubleshooting>`
-

@@ -1,230 +1,98 @@
-# GWexpy 機能一覧 (GWpyユーザー向け)
+# GWpy ユーザー向け移行ガイド (GWpy to GWexpy Migration)
 
-本ドキュメントでは、GWexpy で GWpy に対して拡張・追加された機能を網羅的にリストアップします。
-ここに含まれる機能は、`gwexpy` をインポートすることで利用可能になります。
+GWexpy は、GWpy の基本クラス（TimeSeries 等）を継承しつつ、多チャンネル解析や信号処理の利便性を大幅に強化したライブラリです。
+このガイドでは、GWpy ユーザーが GWexpy に移行する際の主な変更点と、新機能を活用したコードの簡略化例を紹介します。
 
-## 1. GWpy既存クラスの機能拡張 (軽微なもの)
+.. list-table:: クイック対比表 (Quick Comparison)
+   :widths: 30 35 35
+   :header-rows: 1
 
-`TimeSeries`, `FrequencySeries`, `Spectrogram` 等の基本クラスに対する、利便性向上のためのメソッド追加や機能強化です。
+   * - 機能・目的
+     - GWpy スタイル (従来)
+     - GWexpy スタイル (推奨)
+   * - 複数チャンネルの管理
+     - `TimeSeriesDict`
+     - `TimeSeriesMatrix` (Stable)
+   * - 一括解析 (ASD/CSD)
+     - ループ回し or Dict 操作
+     - `.asd()`, `.csd()` (Stable)
+   * - 深いコピー・Pickle
+     - Pickle 不可な場合がある
+     - 高い可搬性 (Pickle compatible)
+   * - 高度な信号処理
+     - `scipy` 等を別途呼び出し
+     - `.hht()`, `.arima()` 等を内蔵 (Experimental)
+   * - 空間・多次元データ
+     - 対応する特殊クラスなし
+     - `ScalarField` (Experimental)
 
-### 基本メソッドの拡張 (TimeSeries / FrequencySeries / Spectrogram)
-*   **位相・角度**:
-    *   `.phase(unwrap=False)`: 位相の計算
-    *   `.angle(unwrap=False)`: `.phase()` のエイリアス
-    *   `.radian(unwrap=False)`: ラジアン単位での位相
-    *   `.degree(unwrap=False)`: 度数法での位相
-    *   `np.unwrap` のサポート
-*   **リサンプリング・補間・編集**:
-    *   `.interpolate(new_times, method='linear')`: データの補間
-    *   `.resample(rate)`: `scipy` または `obspy` (Lanczos) バックエンドを用いたリサンプリングの強化
-    *   `.decimate(factor)`: 間引き
-    *   `.tail(n)`: 末尾 `n` サンプルの抽出
-    *   `.crop(start, end)`: (`gwexpy.time.to_gps` による柔軟な時刻指定をサポート)
-    *   `.append(other)`: 結合処理の強化
-*   **前処理 (Preprocessing)**:
-    *   `.impute(method=...)`: 欠損値補完 (線形補間, ffill, bfill)。`max_gap` 制約なども指定可能。
-    *   `.standardize()`: 標準化 (Z-score normalization)
-    *   `.whiten(method='pca'|'zca')`: 白色化 (Whitening)。`return_model=True` でモデルを取得可能。
-*   **ピーク検出**:
-    *   `.find_peaks(...)`: 信号内のピーク検出 (`scipy.signal.find_peaks` ラッパー)
+## 1. チャンネル管理と一括解析
 
-### GPS Time 関連
-*   GPS時刻のベクトル演算やフォーマット変換をサポートするユーティリティ群 (`gwexpy.time`, `gwexpy.plot.gps` 等で利用可能)。
+GWpy では `TimeSeriesDict` で複数のチャンネルを管理していましたが、GWexpy ではチャンネル情報を「行列の軸」として扱う `TimeSeriesMatrix` を推奨します。これにより、ループを書かずに一括でスペクトル解析が可能になります。
 
-### 描画関連 (Plotting)
-*   **日時軸**: プロット時の横軸を自動的に日時 (datetime) 形式にフォーマットする機能。
-*   **一括描画**: `Spectrogram.plot_summary()` などによる、スペクトログラムと時間平均ASDの同時プロット。
-*   **地図・全天図**: `gwexpy.plot.GeoMap`, `gwexpy.plot.SkyMap` による地図上へのデータプロット機能。
-*   **PairPlot**: `gwexpy.plot.PairPlot` による多変量データのペアプロット（散布図行列/相関図）。
+### コード例: CSD (クロススペクトル密度) の計算
 
-### コレクションクラスの拡張 (TimeSeriesList / TimeSeriesDict)
-GWpyに存在する `TimeSeriesList`, `TimeSeriesDict` に対しても、一括処理機能を追加拡張しています。
-*   一括信号処理: `.fft_time_all()`, `.resample_all(rate)`, `.filter_all(*args)`
-*   一括スライス: `.sel_all(...)`, `.isel_all(...)`
-*   算術演算のブロードキャスト
-
-## 2. 新規クラスの導入
-
-多チャンネルデータ、行列データ、物理場などを扱うための新しいデータ構造です。
-
-### 新規コレクション (New Collections)
-GWpyには標準実装されていない、周波数・時間周波数データのためのコレクションクラスです。GWpyの `TimeSeries` に対する `TimeSeriesList`, `TimeSeriesDict` の立ち位置になります。
-*   `FrequencySeriesList`, `FrequencySeriesDict`
-*   `SpectrogramList`, `SpectrogramDict`
-
-### マトリックス (SeriesMatrix)
-データを「行列」の要素として持つ多次元データ構造です (Row, Col, Axis...)。
-*   `TimeSeriesMatrix`: (Rows, Cols, Time)
-*   `FrequencySeriesMatrix`: (Rows, Cols, Frequency)
-*   `SpectrogramMatrix`: (Rows, Cols, Time, Frequency)
-
-**特徴・機能**:
-*   **行列演算**: 要素ごとの行列積 (`@`)、逆行列 (`.inv()`)、行列式 (`.det()`)、トレース (`.trace()`)、シュア補行列 (`.schur()`)。MIMOシステムの伝達関数解析などに強力。
-*   **統計処理**: 行・列方向の平均・分散演算 (`.mean(axis)`, `.std(axis)` 等) により、センサーアレイ全体の統計量を一括計算。
-*   **バッチ処理**: 各要素に対する信号処理（フィルタリング、リサンプリング、白色化など）の一括適用。
-
-### 物理フィールド (Fields)
-4次元 (時間/周波数 + 3次元空間/波数) の物理場を扱うクラスです。
-*   `ScalarField` / `VectorField` / `TensorField`
-
-**特徴・機能**:
-*   **ドメイン管理**: 時間/周波数軸 (`axis0`) と空間/波数軸 (`space_domain`) の状態を管理し、相互変換 (`.fft_time`, `.fft_space`) をサポート。
-*   **空間抽出**: `.extract_points()` により任意の空間座標での時系列データを抽出・補間。
-*   **ベクトル・テンソル解析**: 内積、外積、発散、回転などの物理演算と、座標変換（デカルト座標系など）。
-*   **シミュレーション**: `gwexpy.noise.field` と連携したノイズ場の生成（等方性ノイズ、平面波など）。
-
-### その他
-*   `BifrequencyMap`: 2つの周波数軸を持つマップデータ (STLTGram等)。
-
-## 3. 高度な解析メソッド (単チャンネル)
-
-### ノイズシミュレーション (`gwexpy.noise`)
-*   `from_asd(asd, ...)`: ASD (振幅スペクトル密度) からの時系列生成
-*   `colored_noise(psd, ...)`: 有色ノイズの生成
-*   `field.simulate(...)`: ノイズ場の生成
-*   `pygwinc` 連携: `gwexpy.noise.gwinc_` を通じた干渉計ノイズバジェットモデルの利用。
-
-### 時系列解析 (TimeSeries)
-*   `.hilbert()`: ヒルベルト変換（解析信号）
-*   `.envelope()`: 包絡線 (`abs(hilbert)`)
-*   `.demodulate(f)`: ロックインアンプ・復調
-*   `.arima(order, ...)`: AR/MA/ARMA/ARIMAモデル解析 (`statsmodels`, `pmdarima` ラッパー)
-*   `.ar(p)`, `.ma(q)`, `.arma(p, q)`: AR/MA/ARMAのショートカット
-*   `.hurst()`: ハースト指数の計算
-*   `.skewness()`: 歪度 (Skewness)
-*   `.kurtosis()`: 尖度 (Kurtosis)
-
-### 周波数スペクトル解析 (FrequencySeries)
-*   `.differentiate()`, `.integrate()`: 周波数ドメインでの微分・積分
-*   `.differentiate_time()`, `.integrate_time()`: 周波数ドメインでの時間微分・積分（Displacement ↔ Velocity ↔ Acceleration 変換等）
-*   `.group_delay()`: 群遅延の計算
-
-### 時間周波数解析 (Spectrogram / Special Transforms)
-GWpyのスペクトログラムとQ変換に加えて、様々な時間周波数解析手法を提供します。
-*   `hht()`: ヒルベルト・ファン変換 (HHT)。EMD (Empirical Mode Decomposition) によるIMF分解と瞬時周波数解析。
-*   `stlt()`: 短時間ラプラス変換 (Short-Time Laplace Transform)。減衰定数 $\sigma$ を考慮した解析。
-*   `cepstrum()`: ケプストラム解析 (倒周波数)。
-*   `cwt()`: 連続ウェーブレット変換 (`pywt` ラッパー)。
-
-### 統計的推定・フィッティング
-*   **Fitting (`gwexpy.fitting`)**:
-    *   `FitResult`, `Model`: iminuitによるchi-square Fitting (実数、複素数) とMCMC解析
-    *   `TimeSeries`, `FrequencySeries` にも `.fit()` 等のメソッドがMixされています。
-*   **Bootstrap**:
-    *   `bootstrap_spectrogram`: スペクトログラムのブートストラップ推定
-
-## 4. 高度な解析メソッド (多チャンネル)
-
-### 成分分析 (`gwexpy.timeseries.decomposition`)
-*   `PCA`: 主成分分析
-*   `ICA`: 独立成分分析
-*   `ZCA`: 白色化 (`.whiten(method='zca')` として利用)
-
-### 相関・統計解析
-*   **相関指標**:
-    *   `dCor`: 距離相関 (Distance Correlation)
-    *   `MIC`: 最大情報係数 (Maximal Information Coefficient)
-    *   `Pearson`, `Kendall`: 基本的な相関係数
-*   **Bruco**:
-    *   多チャンネルコヒーレンス探索によるノイズ源特定ツール (`gwexpy.analysis.bruco`)
-
-### システム解析・制御
-*   **MIMO / 状態空間モデル**:
-    *   `python-control` 連携: `TimeSeries.from_control(response)`, `to_control_frd` などによる制御系設計ライブラリとの相互変換。
-    *   行列クラス (`SeriesMatrix`) を用いたMIMO伝達関数・時系列解析
-*   **雑音注入試験解析**:
-    *   `gwexpy.analysis.response`: 伝達関数推定や結合係数算出のための実験データ解析ツール
-*   **行列演算**:
-    *   逆行列 (`.inv()`)、行列式 (`.det()`)、トレース (`.trace()`)、シュア補行列 (`.schur()`) などの基本操作。
-
-## 5. 外部ツール連携 (Interop)
-
-外部ライブラリとのオブジェクト相互変換機能です (`.to_*()` / `.from_*()`)。
-
-*   **Deep Learning / Array Libraries**:
-    *   `PyTorch` (`Tensor`, `Dataset`/`DataLoader`): `to_torch`, `to_torch_dataset`等
-    *   `TensorFlow` (`Tensor`): `to_tf`
-    *   `JAX` (`Array`): `to_jax`
-    *   `CuPy` (`ndarray`): `to_cupy`
-    *   `Dask` (`dask.array`): `to_dask`
-    *   `Zarr`: `to_zarr` / `from_zarr`
-*   **Data Structures**:
-    *   `pandas` (`Series`/`DataFrame`): `to_pandas`, `to_pandas_dataframe`
-    *   `xarray` (`DataArray`): `to_xarray`
-    *   `polars` (`Series`/`DataFrame`): `to_polars_series`
-    *   `SQLite`, `JSON`: 軽量な保存・読み込み
-*   **Domain Specific**:
-    *   `Obspy` (Seismology): `Trace`, `Stream`
-    *   `MNE` (EEG/MEG): `Raw`, `RawArray` (`to_mne`)
-    *   `Neo` (Electrophysiology): `AnalogSignal` (`to_neo`)
-    *   `Librosa` / `Pydub` (Audio): 音声データ変換
-    *   `SimPEG` (Geophysics): `Data` オブジェクト
-    *   `python-control`: `FrequencyResponseData` (FRD) 等
-    *   `ROOT` (CERN): `TGraph`, `TH1D`, `TH2D`, `TMultiGraph`
-    *   `Specutils`: `Spectrum1D` (`to_specutils`)
-    *   `Pyspeckit`: `Spectrum` (`to_pyspeckit`)
-    *   `Astropy`: `TimeSeries` (`to_astropy_timeseries`)
-    *   `Quantities`: `Quantity` (`to_quantity`)
-
-### データフォーマットI/O拡張
-GWpyが標準サポートする形式に加え、以下に対応（または拡張）しています。
-*   `ATS` (Metronix MTデータ)
-*   `GBD` (GRAPHTEC データロガー)
-    *   アナログCHはヘッダのアンプレンジ（例: `20mV` 等）を用いて `count -> V` に換算します。
-    *   `Alarm` / `AlarmOut` / `Pulse*` / `Logic*` はデジタル/ステータスとして扱い、値を 0/1 に正規化し unit を dimensionless にします。
-    *   必要に応じて `TimeSeriesDict.read(..., format="gbd", digital_channels=[...])` でデジタル扱いするチャンネル名を上書きできます。
-*   `TDMS` (LabVIEW / NI)
-*   `MiniSEED`, `SAC`, `GSE2` (地震波データ, Obspy連携)
-*   `WIN` (地震波データ)
-    *   0.5バイト（4bit差分）/ 3バイト差分の復号について、ObsPyの既知の不具合・注意点を踏まえた実装になっています。
-    *   参考: 中川茂樹・加藤愛太郎「WINフォーマットデータをObsPyで読み込む新しいモジュール」(東京大学地震研究所技術研究報告 No.26, 2020)。
-    *   gwexpyの実装: `gwexpy/timeseries/io/win.py`（4bit差分の下位ニブル処理・奇数差分の末尾ニブルスキップ、24bit差分の符号付き復元など）。
-*   `DTTXML` (LIGO Diagnostic Test Tools)
-*   `SDB` (気象計 Davis データ)
-*   `Midas` (PSI/DAQフォーマット)
-*   `Parquet`, `Feather`, `Pickle` (pandas連携)
-*   `WAV` (Audio, 拡張サポート)
-*   `ROOT` file (.root)
-
-## Pickle / shelve に関する注意
-
-:::{admonition} warning
-:class: warning
-
-信頼できないデータを `pickle` / `shelve` で読み込まないでください。ロード時に任意コード実行が起こり得ます。
-:::
-
-gwexpy の pickle は、可搬性を優先して **unpickle 時に GWpy 型を返す**設計になっています
-（つまり、読み込み側に gwexpy が無くても gwpy があれば復元できます）。
+**GWpy スタイル:**
 
 ```python
-import pickle
-import numpy as np
-from gwexpy.timeseries import TimeSeries
-
-ts = TimeSeries(np.arange(10.0), sample_rate=1.0, t0=0, unit="m")
-obj = pickle.loads(pickle.dumps(ts))
-# obj は gwpy.timeseries.TimeSeries
+from gwpy.timeseries import TimeSeriesDict
+tsd = TimeSeriesDict.read(cache, channels)
+# CSDを計算するには、各ペアに対してループ等が必要
 ```
 
-互換性メモ:
+**GWexpy スタイル (Stable):**
 
-- `TimeSeries` / `FrequencySeries` / `Spectrogram` -> unpickle 時に GWpy オブジェクト
-- `TimeSeriesDict` / `TimeSeriesList` -> unpickle 時に GWpy のコレクション
-- `FrequencySeriesDict/List` / `SpectrogramDict/List` -> unpickle 時に builtins の `dict` / `list`（中身はGWpyオブジェクト）
-- `Matrix` 系や `Field` 系など gwexpy 独自型は、この可搬性契約の対象外です
+```python
+from gwexpy.timeseries import TimeSeriesDict
+tsd = TimeSeriesDict.read(cache, channels)
 
-保持されるもの（ベストエフォート）:
+# 行列に変換
+matrix = tsd.to_matrix()
 
-- 数値データ（`.value`）
-- 軸情報（`times` / `frequencies`）
-- GWpy側で一般的に扱えるメタデータ（`unit`, `name`, `channel`, `epoch`）
+# 全チャンネルペアの CSD を一括計算
+csm = matrix.csd(fftlength=4)
+csm.plot().show()
+```
 
-保持されないもの:
+## 2. 信号処理のシームレスな統合
 
-- gwexpy独自の内部属性（例: `_gwex_*`）や、gwexpyで追加した振る舞い
+GWpy の基本メソッドに加え、SciPy や Statsmodels などの高度なアルゴリズムが基本クラスに Mixin されています。
 
-## 6. GUI アプリケーション
+### 主な拡張メソッド
 
-*   **pyaggui (`gwexpy.gui.pyaggui`)**:
-    *   DTT diaggui (C++, ROOT) を模したpyqt5ベースのGUIアプリケーション。
+* **フィッティング (Stable)**: `.fit()` メソッドで、`iminuit` を用いた最小二乗法や MCMC 解析が直接実行可能です。
+* **ピーク検出 (Stable)**: `.find_peaks()` により、パルストレインや共振の特定が容易。
+* **瞬時周波数解析 (Experimental)**: `.hht()` を呼び出すだけで、Hilbert-Huang 変換による解析が行えます。
+* **統計的予測 (Experimental)**: `.arima()` により、信号の自己相関に基づいた予測やノイズ除去が行えます。
+
+## 3. 拡張された I/O サポート
+
+GWpy がサポートする `gwf`, `hdf5`, `ascii` 等に加え、実験現場で多用される以下のフォーマットを標準サポートしています。
+
+* **GBD (GraphTec)**: デジタル CH の正規化や、レンジ情報に基づく count->V 換算を自動化。
+* **TDMS (LabVIEW)**: NI 製ハードウェアで記録されたデータの直接読み込み。
+* **WIN (地震波)**: 日本の地震観測網で標準的な WIN フォーマットのデコード。
+* **Zarr / Parquet**: 大規模データの高速なクラウド/ディスク I/O。
+
+## 4. 可搬性と互換性 (Pickle)
+
+GWexpy は「解析結果を共有する」ことを重視しています。
+`Pickle` でオブジェクトを保存した場合、**読み込み側に GWexpy がインストールされていなくても、GWpy があれば基本クラスのオブジェクトとして復元できる** 設計（GWexpy 透過 Pickle）を採用しています (Stable)。
+
+.. important::
+   信頼できないソースからの Pickle データのロードは避けてください。
+
+## 5. 高次元データへの展開 (Field API)
+
+空間的な広がり（センサーアレイなど）を扱う場合、`TimeSeries` を拡張した `ScalarField` を使用できます。
+
+* **ドメイン変換 (Experimental)**: `.fft_space()` により、時間・空間ドメインから周波数・波数ドメインへの 2 次元変換が可能です。
+* **空間抽出**: 任意の位置座標における時系列を、補間を含めて 1 行で抽出できます。
+
+---
+
+## 次のステップ
+
+* :doc:`クイックスタート <quickstart>` - 実際のコードを動かしてみる
+* :doc:`はじめに <getting_started>` - ロードマップの確認
+* :doc:`リファレンス <../reference/index>` - 各クラスの全メソッドを確認

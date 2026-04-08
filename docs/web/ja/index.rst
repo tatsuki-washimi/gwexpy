@@ -57,6 +57,7 @@ GWexpy ドキュメント
    user_guide/installation
    user_guide/quickstart
    user_guide/getting_started
+   user_guide/troubleshooting
    user_guide/citation
    user_guide/changelog
    user_guide/license
