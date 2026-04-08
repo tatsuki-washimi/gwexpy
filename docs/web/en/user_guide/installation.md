@@ -1,5 +1,8 @@
 # Installation Guide
 
+.. note::
+   GWexpy is currently in **development**. It has not yet been published to PyPI or Conda. We recommend installing from source via GitHub until the official release is available. The commands below will become available after the official release.
+
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
 
 .. list-table:: Recommended Installation Options
