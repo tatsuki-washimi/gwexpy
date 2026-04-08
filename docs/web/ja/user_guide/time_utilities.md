@@ -1,4 +1,4 @@
-# 時刻ユーティリティ (`gwexpy.time`)
+# :term:`GPS時刻ユーティリティ関数` (`gwexpy.time`)
 
 GWexpy は GWpy の時刻ユーティリティを拡張し、GWpy が対応するスカラーの文字列・datetime に加えて、
 pandas・NumPy・Astropy オブジェクトに対するベクトル演算をサポートします。

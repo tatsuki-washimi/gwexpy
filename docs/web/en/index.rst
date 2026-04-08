@@ -88,6 +88,7 @@ GWexpy Documentation
    :caption: 📚 Reference
 
    reference/index
+   user_guide/glossary
 
 .. toctree::
    :hidden:
