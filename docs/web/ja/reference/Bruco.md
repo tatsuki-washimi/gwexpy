@@ -1,10 +1,10 @@
-# Bruco (Brute force coherence) 
+# BruCo (Brute force coherence) 
 
-`Bruco` は、ターゲットチャンネル（重力波チャンネルなど）と多数の補助チャンネルとの間の**「総当たりコヒーレンス（Brute force coherence）」**を計算し、ノイズ源を特定するためのツールです。
+`BruCo` は、ターゲットチャンネル（重力波チャンネルなど）と多数の補助チャンネルとの間の**「総当たりコヒーレンス（Brute force coherence）」**を計算し、ノイズ源を特定するためのツールです。
 指定された周波数帯域、時間帯において、ターゲットと高いコヒーレンスを持つ補助チャンネルをランキング形式で提示し、そのノイズ寄与（Noise Projection）を推定します。
 
-オリジナルのBruco実装は以下で公開されています。設計詳細やCLIの挙動を確認したい場合はこちらを参照してください。
-- https://github.com/mikelovskij/bruco
+オリジナルのBruCo実装は以下で公開されています。設計詳細やCLIの挙動を確認したい場合はこちらを参照してください。
+- https://github.com/mikelovskij/BruCo
 
 
 ## 主な機能
@@ -21,10 +21,10 @@
 
 ### 1. 初期化
 
-まず、解析対象のターゲットチャンネルと、スキャンしたい補助チャンネルのリストを指定して `Bruco` インスタンスを作成します。
+まず、解析対象のターゲットチャンネルと、スキャンしたい補助チャンネルのリストを指定して `BruCo` インスタンスを作成します。
 
 ```python
-from gwexpy.analysis.bruco import Bruco
+from gwexpy.analysis.BruCo import BruCo
 
 # ターゲットチャンネル名
 target = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
@@ -41,7 +41,7 @@ aux_channels = [
 excluded = ["K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ", "K1:GRD-LSC_LOCK_STATE_N"]
 
 # インスタンス作成
-bruco = Bruco(target, aux_channels, excluded_channels=excluded)
+BruCo = BruCo(target, aux_channels, excluded_channels=excluded)
 ```
 
 ### 2. 解析の実行 (Compute)
@@ -57,7 +57,7 @@ start_gps = 1234567890
 duration = 64  # 秒
 
 # 計算実行
-result = bruco.compute(
+result = BruCo.compute(
     start=start_gps,
     duration=duration,
     batch_size=50,     # 一度に取得するチャンネル数
@@ -72,7 +72,7 @@ result = bruco.compute(
 **A. 辞書で渡す (全データロード済)**
 ```python
 aux_dict = TimeSeriesDict.read(..., channels=my_channels)
-result = bruco.compute(
+result = BruCo.compute(
     aux_data=aux_dict  # 辞書を渡す (start, durationは自動推定)
 )
 ```
@@ -86,7 +86,7 @@ def data_stream(channels):
     for ch in channels:
         yield TimeSeries.get(ch, start, end)
 
-result = bruco.compute(
+result = BruCo.compute(
     start, duration,                   # ジェネレータの場合は指定推奨
     aux_data=data_stream(my_channels), # ジェネレータを渡す
     batch_size=100                     # 100個溜まるごとに並列解析してメモリ解放
@@ -94,7 +94,7 @@ result = bruco.compute(
 ```
 
 #### Case 3: 自動取得 + 前処理 (ハイブリッド)
-データ取得は `Bruco` に任せつつ、解析前にフィルタリングやチャンネル間の演算（掛け算など）を行いたい場合、コールバック関数を利用できます。
+データ取得は `BruCo` に任せつつ、解析前にフィルタリングやチャンネル間の演算（掛け算など）を行いたい場合、コールバック関数を利用できます。
 
 ```python
 def my_preprocessing(batch_data: TimeSeriesDict) -> TimeSeriesDict:
@@ -103,7 +103,7 @@ def my_preprocessing(batch_data: TimeSeriesDict) -> TimeSeriesDict:
         batch_data[ch] = ts.highpass(10)  # 例: 10Hzハイパスフィルター
     return batch_data
 
-result = bruco.compute(
+result = BruCo.compute(
     start, duration,
     preprocess_batch=my_preprocessing  # コールバック指定
 )
@@ -111,19 +111,19 @@ result = bruco.compute(
 これにより、「自動取得の利便性」と「カスタム処理の柔軟性」を両立しつつ、並列処理の恩恵も受けられます。
 
 #### Case 4: 混合モード (NDS + マニュアル)
-`Bruco` 初期化時に指定したチャンネル（自動取得）と、`compute()` で渡す `aux_data`（マニュアル）を **同時に** 解析することも可能です。
+`BruCo` 初期化時に指定したチャンネル（自動取得）と、`compute()` で渡す `aux_data`（マニュアル）を **同時に** 解析することも可能です。
 両方のデータソースが順番に処理され、結果は統合されます。
 
 ```python
 # 1. 自動取得したいチャンネルで初期化
-bruco = Bruco(target, ["K1:NDS-CHANNEL-1", ...])
+BruCo = BruCo(target, ["K1:NDS-CHANNEL-1", ...])
 
 # 2. 手動データの辞書を作成
 manual_dict = TimeSeriesDict(...) 
 
 # 3. 両方を指定して実行
 # 注意: manual_dict の時間は start/duration と一致している必要があります。
-result = bruco.compute(
+result = BruCo.compute(
     start, duration,
     aux_data=manual_dict
 )
@@ -132,7 +132,7 @@ result = bruco.compute(
 
 ### 3. 結果の表示と保存
 
-`compute()` は `BrucoResult` オブジェクトを返します。このオブジェクトを使って結果を可視化したり、レポートを作成したりできます。
+`compute()` は `BruCoResult` オブジェクトを返します。このオブジェクトを使って結果を可視化したり、レポートを作成したりできます。
 
 #### ステップ 3.1 コヒーレンスのプロット
 各周波数で最もコヒーレンスが高かったチャンネルを色分けして表示します。
@@ -163,8 +163,8 @@ fig_proj_psd.show()
 結果をまとめたディレクトリを作成し、HTMLレポートを出力します。
 
 ```python
-# 'bruco_report' ディレクトリに出力
-result.generate_report(output_dir="bruco_report")
+# 'BruCo_report' ディレクトリに出力
+result.generate_report(output_dir="BruCo_report")
 ```
 
 ---
@@ -178,7 +178,7 @@ result.generate_report(output_dir="bruco_report")
 
 ### Top-N更新のブロックサイズ
 
-`BrucoResult` の Top-N 更新は、チャンネルをブロック単位で処理します。  
+`BruCoResult` の Top-N 更新は、チャンネルをブロック単位で処理します。  
 ブロックサイズは以下の順で決まります。
 
 1. `block_size` 引数（`int` または `"auto"`）
@@ -207,10 +207,10 @@ export GWEXPY_BRUCO_BLOCK_BYTES=41760000
 
 ### ベンチマーク
 
-`scripts/bruco_bench.py` で `update_batch` の簡易ベンチが実行できます。
+`scripts/BruCo_bench.py` で `update_batch` の簡易ベンチが実行できます。
 
 ```bash
-python scripts/bruco_bench.py --n-bins 20000 --n-channels 300 --top-n 5 --block-size auto
+python scripts/BruCo_bench.py --n-bins 20000 --n-channels 300 --top-n 5 --block-size auto
 ```
 
 参考値 (環境依存):
@@ -223,14 +223,14 @@ block_size_resolved=414
 
 ## API リファレンス
 
-### `Bruco`
+### `BruCo`
 
 **`__init__(self, target_channel: str, aux_channels: List[str], excluded_channels: List[str] = None)`**
 - `target_channel`: 解析対象のメインチャンネル名。
 - `aux_channels`: 比較対象の補助チャンネル名のリスト。
 - `excluded_channels`: 解析から除外するチャンネル名のリスト。
 
-**`compute(self, start=None, duration=None, fftlength=2.0, overlap=1.0, nproc=4, batch_size=100, top_n=5, block_size=None, ...) -> BrucoResult`**
+**`compute(self, start=None, duration=None, fftlength=2.0, overlap=1.0, nproc=4, batch_size=100, top_n=5, block_size=None, ...) -> BruCoResult`**
 - `start`: GPS開始時刻。データ（`target_data` または `aux_data`辞書）から推定できる場合は省略可能。
 - `duration`: 解析データの長さ（秒）。推定できる場合は省略可能。
 - `fftlength`: スペクトル計算のFFT長（秒）。
@@ -243,7 +243,7 @@ block_size_resolved=414
 - `aux_data`: (`TimeSeriesDict` or `Iterable`) 事前に取得した補助チャンネルデータ。
 - `preprocess_batch`: (`Callable`) バッチ前処理用コールバック関数。
 
-### `BrucoResult`
+### `BruCoResult`
 
 **`plot_coherence(self, asd=True, coherence_threshold=0.0, channels=None, ranks=None)`**
 - コヒーレンススペクトルをプロットします。
@@ -262,5 +262,5 @@ block_size_resolved=414
 - `asd=True`: ASD (振幅スペクトル密度) で表示。 `False` で PSD。
 - `coherence_threshold`: この値以下のコヒーレンスを持つ周波数の寄与を `NaN` としてマスクします（プロット上で途切れます）。
 
-**`generate_report(self, output_dir="bruco_report", asd=True)`**
+**`generate_report(self, output_dir="BruCo_report", asd=True)`**
 - 指定したディレクトリにレポート（HTML, PNG, CSV）を生成します。

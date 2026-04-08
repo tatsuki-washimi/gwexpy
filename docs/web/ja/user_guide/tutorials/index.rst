@@ -89,9 +89,9 @@ V. 特殊ツール
    :maxdepth: 1
    :caption: 特殊ツール
 
-   advanced_bruco
-   Bruco + ICA エンドツーエンド ノイズ削減 <case_bruco_ica_denoising>
-   Bruco 応用編：バイリニアカップリングと AM/FM 復調 <case_bruco_advanced>
+   advanced_BruCo
+   BruCo + ICA エンドツーエンド ノイズ削減 <case_BruCo_ica_denoising>
+   BruCo 応用編：バイリニアカップリングと AM/FM 復調 <case_BruCo_advanced>
    バイオリンモード解析 <case_violin_mode>
    シューマン共鳴解析 <case_schumann_resonance>
 

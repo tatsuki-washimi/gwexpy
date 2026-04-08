@@ -89,9 +89,9 @@ Tools for specific noise hunting and diagnostics tasks.
    :maxdepth: 1
    :caption: Specialized Tools
 
-   Noise Hunting with Bruco <advanced_bruco>
-   Bruco + ICA End-to-End Denoising <case_bruco_ica_denoising>
-   Advanced Bruco: Bilinear Coupling & AM/FM Demodulation <case_bruco_advanced>
+   Noise Hunting with BruCo <advanced_BruCo>
+   BruCo + ICA End-to-End Denoising <case_BruCo_ica_denoising>
+   Advanced BruCo: Bilinear Coupling & AM/FM Demodulation <case_BruCo_advanced>
    Violin Mode Analysis <case_violin_mode>
    Schumann Resonance Analysis <case_schumann_resonance>
 

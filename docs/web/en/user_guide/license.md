@@ -54,4 +54,4 @@ By contributing to GWexpy, you agree that your contributions will be licensed un
 
 ## Questions?
 
-If you have questions about licensing, feel free to open an issue on [GitHub](https://github.com/tatsuki-washimi/gwexpy/issues) or visit [GitHub Discussions](https://github.com/tatsuki-washimi/gwexpy/discussions).
+If you have questions about licensing, feel free to open an issue on [GitHub Issues](https://github.com/tatsuki-washimi/gwexpy/issues).

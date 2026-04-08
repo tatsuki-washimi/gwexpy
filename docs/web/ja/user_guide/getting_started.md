@@ -1,6 +1,5 @@
-# はじめに (Getting Started)
-
-GWexpy ユーザー向けに**体系的な学習パス**を提供します。
+# はじめに (GWexpy は、Python 3.11 以上で動作する重力波データ解析ライブラリです。
+GWpy との高い互換性を維持しつつ、より直感的な API と豊富な解析機能を提供します。
 あなたのバックグラウンドと目的に合わせて、最適なスタート地点を選択してください。
 
 ## 概要 (Quick Summary)
@@ -11,7 +10,7 @@ GWexpy ユーザー向けに**体系的な学習パス**を提供します。
    * - **対象読者**
      - 物理実験データの解析者、GWpy ユーザー、Python での信号処理に関心がある方
    * - **前提知識**
-     - Python 3.9+ の基礎、NumPy 配列操作、(推奨) Matplotlib
+     - Python 3.11+ の基礎、NumPy 配列操作、(推奨) Matplotlib
    * - **所要時間**
      - 最短 5 分（クイックスタート）〜 30 分（基本ハンズオン）
    * - **到達点**
@@ -26,13 +25,15 @@ GWexpy ユーザー向けに**体系的な学習パス**を提供します。
         :link: quickstart
         :link-type: doc
 
-        とにかく動かしてみたい方向け。最短 3 行のコードで解析結果を表示します。
+        対象: Python 3.11 以上の環境が手元にあり、すぐにコードを動かしたい方。
+        内容: 最短 3 行でデータを取得・描画するコードと、Google Colab での実行環境を提供します。
 
     .. grid-item-card:: 📖 30分で基本操作
         :link: tutorials/index
         :link-type: doc
 
-        データの構造や、GWexpy ならではの行列操作を基礎からステップバイステップで学びます。
+        データの構造や、GWexpy is a gravitational-wave data analysis library for Python 3.11+.
+        It maintains high compatibility with GWpy while providing a more intuitive API and rich analysis features.
 
     .. grid-item-card:: 🔄 GWpy から移行
         :link: gwexpy_for_gwpy_users_ja

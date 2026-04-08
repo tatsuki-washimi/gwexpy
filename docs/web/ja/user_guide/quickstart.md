@@ -55,8 +55,8 @@ tsd = TimeSeriesDict({
 })
 
 # 行列に変換してクロススペクトル密度 (CSD) を計算
-csm = tsd.to_matrix().csd(fftlength=1)
-csm.plot().show()
+asd = tsd.to_matrix().asd(fftlength=1)
+asd.plot().show()
 ```
 
 ## 困ったときは

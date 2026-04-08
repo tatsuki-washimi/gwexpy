@@ -49,7 +49,7 @@ DCとナイキスト周波数を除く片側成分は2倍されます。
 - SciPy `rfft` ドキュメント
 
 
-## VIF（分散膨張率）
+## VIF（分散膨張係数 (VIF)）
 
 **関数**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`
 

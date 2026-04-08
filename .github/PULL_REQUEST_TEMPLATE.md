@@ -22,3 +22,10 @@ Please include a summary of the change and which issue is fixed. Please also inc
 - [ ] New and existing unit tests pass locally with my changes
 - [ ] I have checked my code with `ruff` and `mypy` locally
 - [ ] I have updated the `CHANGELOG.md` if necessary
+
+## Acceptance Criteria
+- [ ] `cd docs && make html` (ja/en) で警告が出ないことを確認した
+- [ ] `python scripts/check_terms.py` がパスした (用語揺れなし)
+- [ ] `python scripts/check_docs_sync.py` がパスした (日・英の構造一致)
+- [ ] `python scripts/check_external_links.py` を実行、またはリンク有効性を確認した
+- [ ] Quickstart のコードブロックが正常に動作することを確認した
