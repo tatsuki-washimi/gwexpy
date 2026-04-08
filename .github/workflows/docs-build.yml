@@ -63,7 +63,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           # Core documentation tools
           pip install 'sphinx>=6,<8' 'docutils>=0.18,<0.22' sphinx_rtd_theme myst-parser nbsphinx nbconvert ipykernel
-          pip install sphinx-intl sphinx-design
+          pip install sphinx-intl sphinx-design sphinx-last-updated-by-git sphinx-sitemap
           # Scientific stack
           pip install 'numpy<2.0' 'scipy<1.14' pandas matplotlib astropy h5py
           pip install 'gwpy>=3.0.5' lalsuite
