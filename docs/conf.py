@@ -11,6 +11,12 @@ project = "GWexpy"
 author = "GWexpy contributors"
 copyright = f"{datetime.now():%Y}, GWexpy contributors"
 
+# Sitemap URL
+sitemap_url = "https://tatsuki-washimi.github.io/gwexpy/docs/"
+
+# Date format for last updated
+html_last_updated_fmt = "%Y-%m-%d %H:%M:%S"
+
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",

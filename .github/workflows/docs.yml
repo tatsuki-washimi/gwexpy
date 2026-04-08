@@ -34,9 +34,6 @@ jobs:
       - name: Check ja/en synchronization
         run: python scripts/check_docs_sync.py
 
-      - name: Check external links (Colab/Binder)
-        run: python scripts/check_external_links.py
-
   # Job for building the HTML documentation and link checking
   build-docs:
     runs-on: ubuntu-latest
