@@ -22,6 +22,7 @@ extensions = [
     "nbsphinx",
     "sphinx_design",
     "sphinx_sitemap",
+    "sphinx_last_updated_by_git",
 ]
 
 # nbsphinx configuration
@@ -110,9 +111,24 @@ locale_dirs = ["locales/"]
 gettext_compact = False
 
 html_theme = "sphinx_rtd_theme"
-html_static_path = ['_static']
-html_css_files = ['custom.css']
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
+html_favicon = "images/favicon.ico"
 html_baseurl = "https://tatsuki-washimi.github.io/gwexpy/docs/"
+
+html_theme_options = {
+    "logo_only": False,
+    "prev_next_buttons_location": "bottom",
+    "style_external_links": True,
+    "vcs_pageview_mode": "blob",
+    "style_nav_header_background": "#2980B9",
+    # Toc options
+    "collapse_navigation": True,
+    "sticky_navigation": True,
+    "navigation_depth": 4,
+    "includehidden": True,
+    "titles_only": False,
+}
 
 # User-facing site title/branding (package name remains `gwexpy`).
 html_title = "GWexpy Documentation"
@@ -126,6 +142,13 @@ html_context = {
     "current_language": language,
     # GitHub Pages publishes docs under /gwexpy/; user-facing docs live in /docs/web/{en,ja}/.
     "languages": [("en", "/gwexpy/docs/web/en/"), ("ja", "/gwexpy/docs/web/ja/")],
+    # OGP / Metadata
+    "og_title": "GWexpy: Advanced GH Data Analysis",
+    "og_description": "A comprehensive Python package for Gravitational Wave experimental data analysis.",
+    "og_type": "website",
+    "og_url": "https://tatsuki-washimi.github.io/gwexpy/",
+    "og_image": "https://tatsuki-washimi.github.io/gwexpy/docs/_static/images/ogp.png",
+    "twitter_card": "summary_large_image",
 }
 
 autodoc_mock_imports = [
@@ -169,7 +192,14 @@ try:  # pragma: no cover
 except Exception:
     pass
 
-intersphinx_mapping: dict[str, tuple[str, str | None]] = {}
+intersphinx_mapping: dict[str, tuple[str, str | None]] = {
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy", None),
+    "astropy": ("https://docs.astropy.org/en/stable", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
+    "gwpy": ("https://gwpy.github.io/docs/stable", None),
+}
 
 nitpick_ignore = [
     ("py:class", "u.Quantity"),  # Sphinx sometimes misses the alias

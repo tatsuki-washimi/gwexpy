@@ -4,11 +4,27 @@
   {{ super() }}
 
   <div id="language-switcher-box">
-    <small>Language: </small>
+    <i class="fa fa-language"></i> <strong>Language: </strong>
     {% if '/ja/' in pagename or pagename.startswith('web/ja') %}
       <strong>日本語</strong> | <a href="{{ pathto('../en/' + pagename.split('/ja/')[1] if '/ja/' in pagename else 'index', 1) }}">English</a>
     {% else %}
       <a href="{{ pathto('../ja/' + pagename.split('/en/')[1] if '/en/' in pagename else 'index', 1) }}">日本語</a> | <strong>English</strong>
     {% endif %}
   </div>
+{% endblock %}
+
+{# Override footer to add GitHub links and align styles #}
+{% block footer %}
+  <div class="footer-links" style="border-top: 1px solid #e1e4e6; padding-top: 1em; margin-top: 1em; font-size: 0.9em;">
+    <p>
+      {% if '/ja/' in pagename or pagename.startswith('web/ja') %}
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> | 
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a>
+      {% else %}
+        <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> | 
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a>
+      {% endif %}
+    </p>
+  </div>
+  {{ super() }}
 {% endblock %}
