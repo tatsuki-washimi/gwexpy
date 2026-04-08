@@ -11,7 +11,7 @@ Choose the best starting point based on your background and goals.
    * - **Target Audience**
      - Experimental data analysts, GWpy users, and anyone interested in signal processing with Python.
    * - **Prerequisites**
-     - Basic Python 3.9+, NumPy array operations, and (recommended) Matplotlib.
+     - Basics of Python 3.11+, NumPy array manipulation, (Recommended) Matplotlib.
    * - **Time Required**
      - From 5 minutes (Quick Start) to 30 minutes (Basic Hands-on).
    * - **Goal**
@@ -44,7 +44,8 @@ Choose the best starting point based on your background and goals.
 
 ### 1. Preparation
 
-Set up your environment by following the :doc:`Installation Guide <installation>`.
+GWexpy requires **Python 3.11 or later**.
+Copy the following code and run it in your terminal or Jupyter Notebook.
 
 ### 2. Core Data Structures
 

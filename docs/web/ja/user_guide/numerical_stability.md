@@ -20,7 +20,7 @@ import numpy as np
 # ❌ 悪い例: 適切な正規化なしの手動ホワイトニング
 data = TimeSeries(np.random.randn(1000) * 1e-21, sample_rate=1024)
 asd = data.asd()
-whitened = data / asd  # 危険: ゼロに近い値での除算が発生する可能性
+whitened = data / ASD  # 危険: ゼロに近い値での除算が発生する可能性
 ```
 
 #### 解決策: GWexpyのアダプティブ・ホワイトニングを使用

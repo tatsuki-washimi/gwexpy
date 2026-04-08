@@ -1,10 +1,10 @@
-# Bruco (Brute force coherence)
+# BruCo (Brute force coherence)
 
-`Bruco` computes **brute force coherence** between a target channel (e.g., a gravitational-wave channel) and a large number of auxiliary channels to identify noise sources.
+`BruCo` computes **brute force coherence** between a target channel (e.g., a gravitational-wave channel) and a large number of auxiliary channels to identify noise sources.
 For a given frequency band and time segment, it ranks auxiliary channels by coherence with the target and estimates their noise contribution (Noise Projection).
 
-The original Bruco implementation is available at:
-- https://github.com/mikelovskij/bruco
+The original BruCo implementation is available at:
+- https://github.com/mikelovskij/BruCo
 
 
 ## Key Features
@@ -21,10 +21,10 @@ The original Bruco implementation is available at:
 
 ### 1. Initialization
 
-Create a `Bruco` instance by specifying the target channel and a list of auxiliary channels to scan.
+Create a `BruCo` instance by specifying the target channel and a list of auxiliary channels to scan.
 
 ```python
-from gwexpy.analysis.bruco import Bruco
+from gwexpy.analysis.BruCo import BruCo
 
 # Target channel name
 target = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
@@ -41,7 +41,7 @@ aux_channels = [
 excluded = ["K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ", "K1:GRD-LSC_LOCK_STATE_N"]
 
 # Create instance
-bruco = Bruco(target, aux_channels, excluded_channels=excluded)
+BruCo = BruCo(target, aux_channels, excluded_channels=excluded)
 ```
 
 ### 2. Running the Analysis (Compute)
@@ -57,7 +57,7 @@ start_gps = 1234567890
 duration = 64  # seconds
 
 # Run computation
-result = bruco.compute(
+result = BruCo.compute(
     start=start_gps,
     duration=duration,
     batch_size=50,     # Number of channels to fetch at once
@@ -72,7 +72,7 @@ Since timing information (`t0`, `duration`) is taken from the data, the `start` 
 **A. Pass as a dictionary (all data pre-loaded)**
 ```python
 aux_dict = TimeSeriesDict.read(..., channels=my_channels)
-result = bruco.compute(
+result = BruCo.compute(
     aux_data=aux_dict  # Pass dictionary (start, duration auto-inferred)
 )
 ```
@@ -86,7 +86,7 @@ def data_stream(channels):
     for ch in channels:
         yield TimeSeries.get(ch, start, end)
 
-result = bruco.compute(
+result = BruCo.compute(
     start, duration,                   # Recommended when using generator
     aux_data=data_stream(my_channels), # Pass generator
     batch_size=100                     # Process 100 at a time, then release memory
@@ -94,7 +94,7 @@ result = bruco.compute(
 ```
 
 #### Case 3: Automatic Retrieval + Preprocessing (Hybrid)
-When you want `Bruco` to handle data retrieval but need to apply filtering or inter-channel operations before analysis, use a callback function.
+When you want `BruCo` to handle data retrieval but need to apply filtering or inter-channel operations before analysis, use a callback function.
 
 ```python
 def my_preprocessing(batch_data: TimeSeriesDict) -> TimeSeriesDict:
@@ -103,7 +103,7 @@ def my_preprocessing(batch_data: TimeSeriesDict) -> TimeSeriesDict:
         batch_data[ch] = ts.highpass(10)  # Example: 10 Hz highpass filter
     return batch_data
 
-result = bruco.compute(
+result = BruCo.compute(
     start, duration,
     preprocess_batch=my_preprocessing  # Specify callback
 )
@@ -111,19 +111,19 @@ result = bruco.compute(
 This combines the convenience of automatic retrieval with the flexibility of custom processing, while still benefiting from parallel computation.
 
 #### Case 4: Mixed Mode (NDS + Manual)
-You can analyze channels specified at `Bruco` initialization (automatic retrieval) and data passed to `compute()` via `aux_data` (manual) **simultaneously**.
+You can analyze channels specified at `BruCo` initialization (automatic retrieval) and data passed to `compute()` via `aux_data` (manual) **simultaneously**.
 Both data sources are processed sequentially, and results are merged.
 
 ```python
 # 1. Initialize with channels for automatic retrieval
-bruco = Bruco(target, ["K1:NDS-CHANNEL-1", ...])
+BruCo = BruCo(target, ["K1:NDS-CHANNEL-1", ...])
 
 # 2. Create manual data dictionary
 manual_dict = TimeSeriesDict(...)
 
 # 3. Run with both sources
 # Note: manual_dict timing must match start/duration.
-result = bruco.compute(
+result = BruCo.compute(
     start, duration,
     aux_data=manual_dict
 )
@@ -132,7 +132,7 @@ result = bruco.compute(
 
 ### 3. Viewing and Saving Results
 
-`compute()` returns a `BrucoResult` object. Use this object to visualize results and create reports.
+`compute()` returns a `BruCoResult` object. Use this object to visualize results and create reports.
 
 #### Step 3.1: Plotting Coherence
 Displays the channels with the highest coherence at each frequency, color-coded.
@@ -163,8 +163,8 @@ fig_proj_psd.show()
 Creates a directory and outputs an HTML report summarizing the results.
 
 ```python
-# Output to 'bruco_report' directory
-result.generate_report(output_dir="bruco_report")
+# Output to 'BruCo_report' directory
+result.generate_report(output_dir="BruCo_report")
 ```
 
 ---
@@ -178,7 +178,7 @@ result.generate_report(output_dir="bruco_report")
 
 ### Top-N Update Block Size
 
-`BrucoResult` Top-N updates process channels in blocks.
+`BruCoResult` Top-N updates process channels in blocks.
 The block size is determined in the following order:
 
 1. `block_size` argument (`int` or `"auto"`)
@@ -207,10 +207,10 @@ export GWEXPY_BRUCO_BLOCK_BYTES=41760000
 
 ### Benchmark
 
-Run a simple benchmark of `update_batch` with `scripts/bruco_bench.py`:
+Run a simple benchmark of `update_batch` with `scripts/BruCo_bench.py`:
 
 ```bash
-python scripts/bruco_bench.py --n-bins 20000 --n-channels 300 --top-n 5 --block-size auto
+python scripts/BruCo_bench.py --n-bins 20000 --n-channels 300 --top-n 5 --block-size auto
 ```
 
 Reference values (environment-dependent):
@@ -223,14 +223,14 @@ block_size_resolved=414
 
 ## API Reference
 
-### `Bruco`
+### `BruCo`
 
 **`__init__(self, target_channel: str, aux_channels: List[str], excluded_channels: List[str] = None)`**
 - `target_channel`: The main channel to analyze.
 - `aux_channels`: List of auxiliary channel names for comparison.
 - `excluded_channels`: List of channel names to exclude from analysis.
 
-**`compute(self, start=None, duration=None, fftlength=2.0, overlap=1.0, nproc=4, batch_size=100, top_n=5, block_size=None, ...) -> BrucoResult`**
+**`compute(self, start=None, duration=None, fftlength=2.0, overlap=1.0, nproc=4, batch_size=100, top_n=5, block_size=None, ...) -> BruCoResult`**
 - `start`: GPS start time. Can be omitted if inferable from data (`target_data` or `aux_data` dict).
 - `duration`: Length of analysis data (seconds). Can be omitted if inferable.
 - `fftlength`: FFT length for spectral computation (seconds).
@@ -243,7 +243,7 @@ block_size_resolved=414
 - `aux_data`: (`TimeSeriesDict` or `Iterable`) Pre-fetched auxiliary channel data.
 - `preprocess_batch`: (`Callable`) Callback function for batch preprocessing.
 
-### `BrucoResult`
+### `BruCoResult`
 
 **`plot_coherence(self, asd=True, coherence_threshold=0.0, channels=None, ranks=None)`**
 - Plots the coherence spectrum.
@@ -262,5 +262,5 @@ block_size_resolved=414
 - `asd=True`: Display as ASD (Amplitude Spectral Density). `False` for PSD.
 - `coherence_threshold`: Masks contributions at frequencies with coherence below this value as `NaN` (appears as gaps in the plot).
 
-**`generate_report(self, output_dir="bruco_report", asd=True)`**
+**`generate_report(self, output_dir="BruCo_report", asd=True)`**
 - Generates a report (HTML, PNG, CSV) in the specified directory.

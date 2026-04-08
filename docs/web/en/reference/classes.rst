@@ -38,7 +38,7 @@ Class Index
    fitting
    Spectral
    FFT_Conventions
-   Bruco
+   BruCo
    SeriesMatrix
    SegmentTable
    SegmentCell
