@@ -47,23 +47,23 @@ Definitions of key terms and concepts used throughout the GWexpy documentation.
    VIF
       Variance Inflation Factor. A diagnostic for multicollinearity. It measures how much the variance of an estimated regression coefficient is increased due to correlation between predictors.
 
-   BruCo
-      An analysis method or module implementation for estimating and removing noise in a primary channel using auxiliary channels, often via linear combinations or ICA.
+   ``BruCo``
+      BruCo is a coherence/correlation-based noise analysis framework. Primary uses include multi-channel coherence analysis, noise source back-estimation, and broadband interference identification. The documentation follows the capitalization used in the implementation (`BruCo` or `Bruco`).
 
    GPS時刻ユーティリティ関数
       A suite of functions (e.g., ``tconvert``, ``to_gps``, ``from_gps``) used for interconverting between GPS seconds, UTC, datetime, and ISO strings.
 
    Safe Log
-      A technique used in logarithmic calculations to prevent divergence to negative infinity when the input is close to zero, typically by applying a lower bound (floor).
+      Lower-bound handling during logarithmic transformation. The default floor is 200 dB, which can be overridden by parameters (e.g., `safe_log(level=200)`). Displayed as "Safe Log".
 
    SegmentTable
-      A table structure designed to efficiently manage metadata and status flags for time intervals (segments) target for analysis.
+      A table structure designed to manage time intervals used in analysis. Each row typically contains `t0`, `t1`, `label`, and `quality_flag`. Primary use cases involve segment coalescing and filtering operations.
 
    Time-Plane Transform
       The process of mapping time-series data into a time-frequency plane (e.g., Spectrogram) using methods like Q-transform or CWT.
 
    Pickle
-      A standard Python protocol for serializing and de-serializing objects. Loading pickles from untrusted sources entails security risks.
+      (Pickle — Security Warning) A standard Python protocol for serializing objects. Loading pickles can lead to arbitrary code execution, so loading from untrusted sources must be avoided. Alternatives like HDF5/Zarr are recommended where possible.
 
    GWOSC
       Gravitational Wave Open Science Center. A platform providing public access to LIGO, Virgo, and KAGRA observation data and catalogs.
