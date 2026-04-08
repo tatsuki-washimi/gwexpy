@@ -64,6 +64,16 @@ sphinx-build -b html docs docs/_build/html/docs
 
 Then open `docs/_build/html/docs/index.html` (English/Japanese are under `docs/_build/html/docs/web/`).
 
+### Jupyter Notebooks
+
+Documentation and examples use Jupyter Notebooks (.ipynb). We categorize them to optimize CI performance:
+
+- **Light** (Default): Fast execution. Tested via `papermill`. Cell outputs are stripped on commit.
+- **Heavy**: Resource intensive or requires special env (GPU/LIGO VPN). Syntax-checked via `nbval`. Metadata tag: `"tags": ["ci-heavy"]`.
+- **Display-only**: Pre-rendered results are the goal. CI skips execution. Metadata tag: `"tags": ["display-only"]`. Needs `.gitattributes` entry to keep outputs.
+
+See [NOTEBOOK_POLICY.md](docs/NOTEBOOK_POLICY.md) for details. We use `nbstripout` via `pre-commit` to prevent committing large binary outputs for most notebooks.
+
 ### Examples and Doctests
 
 Interactive examples in docstrings must be self-contained and stable.
