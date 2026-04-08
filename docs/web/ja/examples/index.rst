@@ -42,6 +42,9 @@
         *   **アプローチ**: ``SegmentTable`` を活用したデータクエリと並列処理。
         *   **利用 API**: ``SegmentTable``, ``SegmentList``, ``Fetch``.
 
+.. note::
+   各 API の詳細（引数・戻り値・クラス一覧）は :doc:`../reference/index` を参照してください。
+
 .. toctree::
    :hidden:
 

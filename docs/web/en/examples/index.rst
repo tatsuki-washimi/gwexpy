@@ -42,6 +42,9 @@ Case Study Gallery
         *   **Approach**: Data querying and parallel processing using ``SegmentTable``.
         *   **Key APIs**: ``SegmentTable``, ``SegmentList``, ``Fetch``.
 
+.. note::
+   For full API details (arguments, return values, class listings), see :doc:`../reference/index`.
+
 .. toctree::
    :hidden:
 
