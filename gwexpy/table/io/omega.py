@@ -7,7 +7,6 @@ from gwpy.table.io.omega import (
     OmegaHeader,
     Table,
     core,
-    decorate_registered_reader,
     registry,
 )
 
@@ -18,6 +17,5 @@ __all__ = [
     "OmegaHeader",
     "Table",
     "core",
-    "decorate_registered_reader",
     "registry",
 ]
