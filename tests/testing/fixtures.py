@@ -26,11 +26,16 @@ except ImportError:
     has_tex = False
     usetex = False
     @contextmanager
-    def rc_context(rc=None): yield
+    def rc_context(rc=None):
+        """Context manager for rc params fallback."""
+        yield
     @contextmanager
-    def tmpfile(*args, **kwargs): yield "/tmp/fake"
+    def tmpfile(*args, **kwargs):
+        """Context manager for temporary file fallback."""
+        yield "/tmp/fake"
     @contextmanager
     def TemporaryFilename(prefix="gwpy_"):
+        """Context manager for temporary filename fallback."""
         fd, path = tempfile.mkstemp(prefix=prefix)
         os.close(fd)
         try:
@@ -38,9 +43,15 @@ except ImportError:
         finally:
             if os.path.exists(path):
                 os.remove(path)
-    def noisy_sinusoid(*args, **kwargs): return numpy.zeros(100)
-    def corrupt_noisy_sinusoid(*args, **kwargs): return numpy.zeros(100)
-    def deprecated_function(func): return func
+    def noisy_sinusoid(*args, **kwargs):
+        """Noisy sinusoid generator fallback."""
+        return numpy.zeros(100)
+    def corrupt_noisy_sinusoid(*args, **kwargs):
+        """Corrupt noisy sinusoid generator fallback."""
+        return numpy.zeros(100)
+    def deprecated_function(func):
+        """Deprecated function wrapper fallback."""
+        return func
     from gwexpy.timeseries import TimeSeries
 
 __all__ = [

@@ -21,8 +21,10 @@ except ImportError:
     NETWORK_ERROR = (socket.timeout, requests.RequestException, URLError)
     SSLError = ssl.SSLError
     def pytest_skip_network_error(func):
+        """Skip network tests fallback."""
         return pytest.mark.skipif(True, reason="Network tests skipped")(func)
     def pytest_skip_cvmfs_read_error(func):
+        """Skip CVMFS tests fallback."""
         return pytest.mark.skipif(True, reason="CVMFS tests skipped")(func)
 
 __all__ = [
