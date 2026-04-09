@@ -1,0 +1,44 @@
+name: CI Log Summarizer
+
+on:
+  workflow_run:
+    workflows:
+      - "CI"
+      - "Tests"
+      - "Documentation"
+      - "Docs Quality Check (strict)"
+      - "docs-lint"
+      - "Notebook Tests"
+    types:
+      - completed
+
+jobs:
+  summarize-logs:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    permissions:
+      actions: read
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests
+
+      - name: Run CI Log Summarizer
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          python .github/scripts/ci_log_summarizer.py
