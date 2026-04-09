@@ -5,7 +5,6 @@ Phase 4 統合テスト。
 - Time-window API と collection 集約
 - Wrapper parameter forwarding
 """
-
 from __future__ import annotations
 
 import csv

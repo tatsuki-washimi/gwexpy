@@ -3,7 +3,6 @@
 This is a cleaned-up port of the legacy `gbd2gwf.py` workflow, adapted for
 gwexpy TimeSeries/TimeSeriesDict readers.
 """
-
 from __future__ import annotations
 
 import contextlib

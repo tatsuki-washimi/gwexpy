@@ -5,7 +5,6 @@ Representation of a frequency series.
 This module extends `gwpy.frequencyseries.FrequencySeries` with matrix support,
 enhanced signal analysis, fitting capabilities, and deep metadata propagation.
 """
-
 from __future__ import annotations
 
 from enum import Enum

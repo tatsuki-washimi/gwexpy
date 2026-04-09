@@ -13,7 +13,6 @@ and FrequencySeries via GWpy. This module provides an explicit interop layer
 that ensures GWexpy types are returned and adds ``to_lal`` for FrequencySeries.
 
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeVar

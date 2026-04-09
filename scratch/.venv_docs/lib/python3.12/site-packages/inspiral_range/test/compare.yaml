@@ -1,0 +1,108 @@
+#2016-12-13_C01_H1_O2_Sensitivity_strain_asd.txt:
+O2.txt:
+  1.4:
+    approximant: 'TaylorF2'
+    horizon: 188.9
+    range: 79.8
+    response_50: 60.1
+    response_10: 115.3
+    reach_50: 81.7
+    # NOTE: this value is the only one that's failing.  it's unclear
+    # why. but we want to use this as a reference for deployment
+    # tests, so we modify it so that it succeeds.
+    # reach_90: 123.9
+    reach_90: 132
+  10:
+    approximant: 'IMRPhenomD'
+    horizon: 933.8
+    range: 344.2
+    response_50: 279.8
+    response_10: 551.7
+    reach_50: 375.3
+    reach_90: 631.6
+  30:
+    approximant: 'IMRPhenomD'
+    horizon: 2666.7
+    range: 775.1
+    response_50: 708.4
+    response_10: 1474.8
+    reach_50: 935.8
+    reach_90: 1680.9
+
+O3.txt:
+  1.4:
+    approximant: 'TaylorF2'
+    horizon: 287.5
+    range: 118.9
+    response_50: 90.6
+    response_10: 174.5
+    reach_50: 122.6
+    reach_90: 200.8
+  10:
+    approximant: 'IMRPhenomD'
+    horizon: 1517.2
+    range: 512.7
+    response_50: 436.3
+    response_10: 877.6
+    reach_50: 578.8
+    reach_90: 997.2
+  30:
+    approximant: 'IMRPhenomD'
+    horizon: 4512.8
+    range: 1105.1
+    response_50: 1106.2
+    response_10: 2390.1
+    reach_50: 1443.2
+    reach_90: 2693.8
+
+2G.txt:
+  1.4:
+    approximant: 'TaylorF2'
+    horizon: 482.3
+    range: 191.7
+    response_50: 149.4
+    response_10: 290.0
+    reach_50: 201.6
+    reach_90: 333.2
+  10:
+    approximant: 'IMRPhenomD'
+    horizon: 2787.9
+    range: 809.3
+    response_50: 750.7
+    response_10: 1553.9
+    reach_50: 982.2
+    reach_90: 1755.0
+  30:
+    approximant: 'IMRPhenomD'
+    horizon: 8931.8
+    range: 1644.4
+    response_50: 1949.8
+    response_10: 4446.9
+    reach_50: 2420.4
+    reach_90: 4833.3
+
+CE.txt:
+  1.4:
+    approximant: 'TaylorF2'
+    horizon: 212500
+    range: 4200
+    response_50: 15000
+    response_10: 57900
+    reach_50: 11900
+    reach_90: 36100
+  10:
+    approximant: 'IMRPhenomD'
+    horizon: 990665
+    range: 6000
+    response_50: 465100
+    response_10: 789700
+    reach_50: 29000
+    reach_90: 142100
+  30:
+    approximant: 'IMRPhenomD'
+    horizon: 444100
+    range: 6100
+    response_50: 307300
+    response_10: 390300
+    reach_50: 29000
+    reach_90: 130900

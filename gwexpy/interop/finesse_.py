@@ -6,7 +6,6 @@ Interoperability with Finesse 3 interferometer simulation library.
 Provides conversion from Finesse's ``FrequencyResponseSolution`` and
 ``NoiseProjectionSolution`` to GWexpy FrequencySeries types.
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union

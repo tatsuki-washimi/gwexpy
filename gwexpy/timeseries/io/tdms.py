@@ -1,6 +1,5 @@
 """TDMS (National Instruments) reader for gwexpy.
 """
-
 from __future__ import annotations
 
 import datetime

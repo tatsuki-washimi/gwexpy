@@ -1,5 +1,4 @@
 """Base class for field objects with domain-aware axis metadata."""
-
 from __future__ import annotations
 
 from typing import Any

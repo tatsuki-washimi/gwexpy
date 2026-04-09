@@ -1,6 +1,5 @@
 """Standard Fourier-based spectral transform methods for TimeSeries.
 """
-
 from __future__ import annotations
 
 from collections.abc import Callable

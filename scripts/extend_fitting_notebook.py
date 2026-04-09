@@ -5,7 +5,6 @@ fitting sections.
 Usage:
     python scripts/extend_fitting_notebook.py
 """
-
 from __future__ import annotations
 
 import json

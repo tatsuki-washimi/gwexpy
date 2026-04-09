@@ -1,5 +1,4 @@
 """Tests for ndscope HDF5 I/O (gwexpy.timeseries.io.ndscope_hdf5)."""
-
 from __future__ import annotations
 
 from pathlib import Path

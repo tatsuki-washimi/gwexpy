@@ -16,7 +16,6 @@ References
 https://www.fatiando.org/harmonica/
 
 """
-
 from __future__ import annotations
 
 from typing import Any

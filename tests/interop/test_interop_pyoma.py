@@ -2,7 +2,6 @@
 
 Uses mock result dicts. Does NOT require pyOMA to be installed.
 """
-
 from __future__ import annotations
 
 import numpy as np

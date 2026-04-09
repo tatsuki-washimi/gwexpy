@@ -1,6 +1,5 @@
 """Placeholder readers for unsupported frequency-domain formats.
 """
-
 from __future__ import annotations
 
 from astropy.io import registry as io_registry

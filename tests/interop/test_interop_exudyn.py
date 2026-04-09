@@ -3,7 +3,6 @@
 Uses temporary text files and numpy arrays to simulate Exudyn output.
 Does NOT require Exudyn to be installed.
 """
-
 from __future__ import annotations
 
 import numpy as np

@@ -1,5 +1,4 @@
 """Collections for ScalarField objects in the `gwexpy.fields` namespace."""
-
 from __future__ import annotations
 
 import numpy as np

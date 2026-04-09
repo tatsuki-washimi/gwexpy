@@ -3,7 +3,6 @@
 This module provides functions for converting between physical coordinates
 (with units) and array indices, following the ScalarField slicing convention.
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

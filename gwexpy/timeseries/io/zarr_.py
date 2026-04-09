@@ -10,7 +10,6 @@ inverse of ``dt`` is tried; failing that, 1 Hz is assumed.
 Directory stores, zip stores, and any other backend supported by the
 ``zarr`` library can be used as *source* / *target*.
 """
-
 from __future__ import annotations
 
 import os

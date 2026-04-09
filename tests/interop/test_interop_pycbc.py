@@ -3,7 +3,6 @@
 These tests inject mock pycbc modules into ``sys.modules`` so they run
 without requiring PyCBC to be installed.
 """
-
 from __future__ import annotations
 
 import sys

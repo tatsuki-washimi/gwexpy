@@ -1,5 +1,4 @@
 """Helper functions extracted from Plot.__init__ to reduce complexity."""
-
 from __future__ import annotations
 
 from typing import Any, cast

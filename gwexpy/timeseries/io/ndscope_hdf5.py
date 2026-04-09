@@ -16,7 +16,6 @@ This module registers the ``"ndscope-hdf5"`` format so that
 read these files, and ``.write(..., format="ndscope-hdf5")`` can produce
 ndscope-compatible output.
 """
-
 from __future__ import annotations
 
 from collections.abc import Iterable

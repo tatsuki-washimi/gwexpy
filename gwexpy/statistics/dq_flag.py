@@ -1,5 +1,4 @@
 """gwexpy.statistics.dq_flag - DataQualityFlag generation from statistical results."""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

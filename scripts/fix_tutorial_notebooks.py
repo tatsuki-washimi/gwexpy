@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-"""Apply deterministic quality fixes to tutorial notebooks."""
-
 from __future__ import annotations
 
+#!/usr/bin/env python3
+"""Apply deterministic quality fixes to tutorial notebooks."""
 import json
 from pathlib import Path
 

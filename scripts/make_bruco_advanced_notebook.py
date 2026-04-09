@@ -7,7 +7,6 @@ Patterns covered (distilled from 69 gwexpy-using legacy files):
 Usage:
     python scripts/make_bruco_advanced_notebook.py
 """
-
 from __future__ import annotations
 
 import json

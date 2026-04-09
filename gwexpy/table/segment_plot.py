@@ -4,7 +4,6 @@ All public functions accept a :class:`~gwexpy.table.segment_table.SegmentTable`
 as their first argument and return a :class:`gwpy.plot.Plot`.
 None of the functions call :meth:`matplotlib.figure.Figure.show` internally.
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional

@@ -1,5 +1,4 @@
 """gwexpy.statistics.rayleigh_test - Rayleigh statistic test p-values."""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

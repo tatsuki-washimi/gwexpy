@@ -11,7 +11,6 @@ CouplingResult.plot_rms() および _compute_rms_timeseries() のテスト。
 7. test_compute_rms_preserves_nan        — NaN が極小値に潰れず伝播することを確認
 8. test_plot_rms_ignores_reserved_kwargs — 予約済み plot kwargs を安全に無視
 """
-
 from __future__ import annotations
 
 import matplotlib

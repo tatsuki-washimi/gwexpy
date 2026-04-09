@@ -4,7 +4,6 @@ These tests create temporary HDF5 files with the Meep naming convention
 (``<field>.r`` / ``<field>.i`` pairs, or real-only ``<field>``) using h5py,
 which is available in the test environment.
 """
-
 from __future__ import annotations
 
 from pathlib import Path

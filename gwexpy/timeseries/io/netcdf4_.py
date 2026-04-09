@@ -3,7 +3,6 @@
 Reads variables that have a ``time`` dimension and converts them to
 :class:`~gwexpy.timeseries.TimeSeries`.
 """
-
 from __future__ import annotations
 
 import logging

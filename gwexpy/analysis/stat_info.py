@@ -1,6 +1,5 @@
 """Stat-info utilities: association edge extraction and lightweight graph builder.
 """
-
 from __future__ import annotations
 
 import logging

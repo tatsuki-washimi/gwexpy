@@ -3,7 +3,6 @@
 These tests use mock objects that mimic the pyroomacoustics API,
 so they run without requiring pyroomacoustics to be installed.
 """
-
 from __future__ import annotations
 
 from unittest.mock import MagicMock
