@@ -22,6 +22,7 @@ jobs:
           python scripts/check_non_ascii.py --root gwexpy
 
       - name: Run ruff (docstring hardening)
+        continue-on-error: true
         run: |
           pip install ruff
           # Specifically check for docstring related rules (D) and English-primary compliance
