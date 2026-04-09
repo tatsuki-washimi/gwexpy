@@ -1,5 +1,4 @@
-"""gwexpy.frequencyseries
-----------------------
+"""gwexpy.frequencyseries.
 
 Representation of a frequency series.
 
@@ -35,6 +34,8 @@ try:
 except ImportError:
 
     class SeriesType(Enum):  # type: ignore[no-redef]
+        """Enumeration of series types."""
+
         TIME = "time"
         FREQ = "freq"
 
@@ -169,6 +170,7 @@ class FrequencySeries(
                 self.__dict__[key] = val
 
     def __reduce_ex__(self, protocol: SupportsIndex):
+        """Provide pickle serialization support."""
         from gwexpy.io.pickle_compat import frequencyseries_reduce_args
 
         return frequencyseries_reduce_args(self)
@@ -463,6 +465,7 @@ class FrequencySeries(
     # --- Interop helpers ---
     def filterba(self, *args, **kwargs):
         """Apply a [b, a] filter to this FrequencySeries.
+
         Inherited from gwpy.
         """
         return super().filterba(*args, **kwargs)
@@ -558,15 +561,13 @@ class FrequencySeries(
             return from_polars_series(cls, data, **kwargs)
 
     def to_tgraph(self, error: Any | None = None) -> Any:
-        """Convert to ROOT TGraph or TGraphErrors.
-        """
+        """Convert to ROOT TGraph or TGraphErrors."""
         from gwexpy.interop import to_tgraph
 
         return to_tgraph(self, error=error)
 
     def to_th1d(self, error: Any | None = None) -> Any:
-        """Convert to ROOT TH1D.
-        """
+        """Convert to ROOT TH1D."""
         from gwexpy.interop import to_th1d
 
         return to_th1d(self, error=error)
@@ -575,8 +576,7 @@ class FrequencySeries(
     def from_root(
         cls: type[FrequencySeries], obj: Any, return_error: bool = False, **kwargs: Any
     ) -> Any:
-        """Create FrequencySeries from ROOT TGraph or TH1.
-        """
+        """Create FrequencySeries from ROOT TGraph or TH1."""
         from gwexpy.interop import from_root
 
         return from_root(cls, obj, return_error=return_error, **kwargs)
@@ -646,6 +646,8 @@ class FrequencySeries(
             Explicitly specify the length after restoration (takes priority).
         pad_right, pad_left : int, optional
             Specify padding lengths for transient mode to override defaults.
+        **kwargs : Any
+            Additional arguments passed to parent ifft.
 
         """
         self._check_regular("ifft")
@@ -1455,6 +1457,11 @@ class FrequencySeries(
     def to_obspy(self, **kwargs: Any) -> Any:
         """Convert to Obspy Trace.
 
+        Parameters
+        ----------
+        **kwargs : Any
+            Additional arguments passed to ObsPy Trace constructor.
+
         Returns
         -------
         obspy.Trace
@@ -1497,6 +1504,8 @@ class FrequencySeries(
             Receiver class name. Default "PointElectricField".
         orientation : str, optional
             Receiver orientation ('x', 'y', 'z'). Default 'x'.
+        **kwargs : Any
+            Additional arguments passed to SimPEG Data constructor.
 
         Returns
         -------
@@ -1517,6 +1526,8 @@ class FrequencySeries(
         ----------
         data_obj : simpeg.data.Data
             Input SimPEG Data.
+        **kwargs : Any
+            Additional arguments passed to SimPEG converter.
 
         Returns
         -------
@@ -1532,7 +1543,7 @@ class FrequencySeries(
 
         Parameters
         ----------
-        **kwargs
+        **kwargs : Any
             Arguments passed to Spectrum1D constructor.
 
         Returns
@@ -1552,6 +1563,8 @@ class FrequencySeries(
         ----------
         spectrum : specutils.Spectrum1D
             Input spectrum.
+        **kwargs : Any
+            Additional arguments passed to constructor.
 
         Returns
         -------
@@ -1567,7 +1580,7 @@ class FrequencySeries(
 
         Parameters
         ----------
-        **kwargs
+        **kwargs : Any
             Arguments passed to pyspeckit.Spectrum constructor.
 
         Returns
@@ -1587,6 +1600,8 @@ class FrequencySeries(
         ----------
         spectrum : pyspeckit.Spectrum
             Input spectrum.
+        **kwargs : Any
+            Additional arguments passed to constructor.
 
         Returns
         -------
