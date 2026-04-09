@@ -1,4 +1,4 @@
-"""gwexpy.timeseries.timeseries - Extended TimeSeries class
+"""Extended TimeSeries class for gwexpy.
 
 This module provides the main TimeSeries class for gwexpy, which extends
 gwpy's TimeSeries with additional functionality.
@@ -135,7 +135,7 @@ class TimeSeries(
     """
 
     def _get_meta_for_constructor(self) -> dict[str, Any]:
-        """Helper for SignalAnalysisMixin to reconstruct object."""
+        """Reconstruct the object for SignalAnalysisMixin."""
         return {
             "t0": self.t0,
             "dt": self.dt,
@@ -213,6 +213,7 @@ class TimeSeries(
                 self.__dict__[key] = val
 
     def __reduce_ex__(self, protocol: SupportsIndex):
+        """Provide pickle serialization support."""
         from gwexpy.io.pickle_compat import timeseries_reduce_args
 
         return timeseries_reduce_args(self)
@@ -237,6 +238,8 @@ class TimeSeries(
             Receiver class name. Default "PointElectricField".
         orientation : str, optional
             Receiver orientation ('x', 'y', 'z'). Default 'x'.
+        **kwargs : Any
+            Additional arguments passed to SimPEG converter.
 
         Returns
         -------
@@ -257,6 +260,8 @@ class TimeSeries(
         ----------
         data_obj : simpeg.data.Data
             Input SimPEG Data.
+        **kwargs : Any
+            Additional arguments passed to constructor.
 
         Returns
         -------
@@ -330,18 +335,21 @@ class TimeSeries(
 
     def ar(self, p: int = 1, **kwargs: Any) -> Any:
         """Fit an AutoRegressive AR(p) model.
+
         Shortcut for .arima(order=(p, 0, 0)).
         """
         return self.arima(order=(p, 0, 0), **kwargs)
 
     def ma(self, q: int = 1, **kwargs: Any) -> Any:
         """Fit a Moving Average MA(q) model.
+
         Shortcut for .arima(order=(0, 0, q)).
         """
         return self.arima(order=(0, 0, q), **kwargs)
 
     def arma(self, p: int = 1, q: int = 1, **kwargs: Any) -> Any:
         """Fit an ARMA(p, q) model.
+
         Shortcut for .arima(order=(p, 0, q)).
         """
         return self.arima(order=(p, 0, q), **kwargs)

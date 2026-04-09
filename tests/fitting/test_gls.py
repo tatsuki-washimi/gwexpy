@@ -1,3 +1,4 @@
+import pytest; pytest.importorskip("iminuit")
 """Tests for gwexpy/fitting/gls.py — GLS and GeneralizedLeastSquares."""
 from __future__ import annotations
 

@@ -1,3 +1,4 @@
+import pytest; pytest.importorskip("iminuit")
 """Tests for gwexpy/fitting/highlevel.py - _plot_bootstrap_fit helper."""
 from __future__ import annotations
 

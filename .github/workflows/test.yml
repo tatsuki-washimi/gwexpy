@@ -39,7 +39,15 @@ jobs:
 
       - name: Run ruff
         if: matrix.python-version == '3.12'
-        run: ruff check .
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.base_ref }}" != "" ]; then
+            echo "Linting changed files only (vs ${{ github.base_ref }})"
+            git fetch origin ${{ github.base_ref }}
+            git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.py$' | xargs -r ruff check
+          else
+            echo "Linting entire project"
+            ruff check .
+          fi
 
       - name: Dead code check
         if: matrix.python-version == '3.12'
@@ -58,11 +66,11 @@ jobs:
           PYTHONFAULTHANDLER: "1"
         run: |
           # Use -m "not network" by default to avoid CI timeouts
-          PYTEST_OPTS="-q --doctest-modules --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy --cov-report=xml --ignore=tests/gui/"
+          PYTEST_OPTS=(-q -p no:pytest-qt --doctest-modules --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy --cov-report=xml --ignore=tests/gui/)
           if [[ ! "${{ github.event.head_commit.message }}" =~ "\[network-test\]" ]]; then
-            PYTEST_OPTS="$PYTEST_OPTS -m 'not network'"
+            PYTEST_OPTS+=(-m "not network")
           fi
-          pytest $PYTEST_OPTS tests/ gwexpy/
+          pytest "${PYTEST_OPTS[@]}" tests/ gwexpy/
 
       - name: Run paper notebooks
         if: "!contains(github.event.head_commit.message, '[gui-test]')"
@@ -96,11 +104,11 @@ jobs:
           PYTHONFAULTHANDLER: "1"
           PYTEST_SCREENSHOT_DIR: artifacts/screenshots
         run: |
-          PYTEST_OPTS="-q --doctest-modules --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy --cov-report=xml"
+          PYTEST_OPTS=(-q --doctest-modules --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy --cov-report=xml)
           if [[ ! "${{ github.event.head_commit.message }}" =~ "\[network-test\]" ]]; then
-            PYTEST_OPTS="$PYTEST_OPTS -m 'not network'"
+            PYTEST_OPTS+=(-m "not network")
           fi
-          xvfb-run -a -s "-screen 0 1920x1080x24" pytest $PYTEST_OPTS tests/ gwexpy/
+          xvfb-run -a -s "-screen 0 1920x1080x24" pytest "${PYTEST_OPTS[@]}" tests/ gwexpy/
 
       - name: Run paper notebooks (with GUI)
         if: contains(github.event.head_commit.message, '[gui-test]')
@@ -202,7 +210,15 @@ jobs:
           pip install -e . --no-deps
 
       - name: Run mypy
-        run: mypy gwexpy --ignore-missing-imports
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.base_ref }}" != "" ]; then
+            echo "Type checking changed files only (vs ${{ github.base_ref }})"
+            git fetch origin ${{ github.base_ref }}
+            git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.py$' | xargs -r mypy --ignore-missing-imports || true
+          else
+            echo "Type checking entire project"
+            mypy gwexpy --ignore-missing-imports
+          fi
 
   test-conda-full:
     runs-on: ubuntu-latest
@@ -271,7 +287,7 @@ jobs:
           PYTHONFAULTHANDLER: "1"
         shell: bash -l {0}
         run: |
-          micromamba run -n gwexpy-full pytest -q --doctest-modules --forked --cov=gwexpy --ignore=tests/gui/ tests/ gwexpy/
+          micromamba run -n gwexpy-full pytest -q -p no:pytest-qt --doctest-modules --forked --cov=gwexpy --ignore=tests/gui/ tests/ gwexpy/
 
       - name: Run unit tests (forked, with GUI)
         if: contains(github.event.head_commit.message, '[gui-test]')

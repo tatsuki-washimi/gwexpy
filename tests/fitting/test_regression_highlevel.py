@@ -1,3 +1,4 @@
+import pytest; pytest.importorskip("iminuit")
 import numpy as np
 import pytest
 from gwpy.timeseries import TimeSeries
