@@ -28,7 +28,8 @@ ERROR_PATTERNS = [
     r"Error:",
     r"process exited with code",
 ]
-MAX_LOG_LINES = 300
+MAX_LOG_LINES = 100
+MAX_BODY_CHARS = 60000
 
 
 def filter_sensitive(line):
@@ -100,14 +101,23 @@ def main():
     summary_text = ""
     with zipfile.ZipFile(io.BytesIO(resp.content)) as z:
         for filename in z.namelist():
+            if len(summary_text) >= MAX_BODY_CHARS:
+                break
+
             if filename.endswith(".txt") or filename.endswith(".log"):
                 with z.open(filename) as f:
                     content = f.read().decode("utf-8", errors="ignore")
                     errors = extract_errors_from_log(content)
                     if errors:
-                        summary_text += (
-                            f"### File: {filename}\n\n```text\n{errors}\n```\n\n"
-                        )
+                        entry = f"### File: {filename}\n\n```text\n{errors}\n```\n\n"
+                        if len(summary_text) + len(entry) > MAX_BODY_CHARS:
+                            summary_text += (
+                                f"### File: {filename}\n\n"
+                                "```text\n(Log truncated due to size limit)\n```\n\n"
+                            )
+                            summary_text += "\n**... [Total Log Size Exceeded Limit - Truncated] ...**\n"
+                            break
+                        summary_text += entry
 
     if not summary_text:
         summary_text = "No explicit error patterns found in the logs."
