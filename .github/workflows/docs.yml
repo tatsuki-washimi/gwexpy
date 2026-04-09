@@ -62,7 +62,7 @@ jobs:
       - name: Install documentation dependencies
         shell: bash -l {0}
         run: |
-          conda install -y "numpy<2" "scipy<1.14" pandas matplotlib h5py gwpy nds2-client lalsuite framel \
+          conda install -y -c conda-forge "numpy<2" "scipy<1.14" pandas matplotlib h5py gwpy nds2-client lalsuite framel \
             sphinx sphinx_rtd_theme myst-parser nbsphinx pandoc ipykernel
           pip install -r docs/requirements.txt
           pip install sphinx-sitemap pytest-forked nbval
@@ -111,7 +111,7 @@ jobs:
       - name: Install project with dependencies
         shell: bash -l {0}
         run: |
-          conda install -y "numpy<2" "scipy<1.14" pandas matplotlib h5py gwpy
+          conda install -y -c conda-forge "numpy<2" "scipy<1.14" pandas matplotlib h5py gwpy
           pip install pytest-forked nbval
           pip install -e .
 
