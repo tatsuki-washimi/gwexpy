@@ -1,4 +1,4 @@
-"""gwexpy.signal.preprocessing.whitening
+"""gwexpy.signal.preprocessing.whitening.
 --------------------------------------
 
 Whitening algorithms for signal processing.

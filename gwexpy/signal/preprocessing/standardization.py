@@ -1,4 +1,4 @@
-"""gwexpy.signal.preprocessing.standardization
+"""gwexpy.signal.preprocessing.standardization.
 --------------------------------------------
 
 Standardization algorithms for signal processing.
@@ -29,7 +29,7 @@ class StandardizationModel:
         self.axis = axis
 
     def inverse_transform(self, X_std):
-        """Undo standardization: X = X_std * scale + mean
+        """Undo standardization: X = X_std * scale + mean.
 
         Parameters
         ----------
