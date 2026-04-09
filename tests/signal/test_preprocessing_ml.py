@@ -218,7 +218,7 @@ class TestMLPreprocessorFitTransform:
 
         preprocessor = MLPreprocessor(sample_rate=1000)
 
-        with pytest.raises(RuntimeError, match="fit\\(\\)を先に呼び出してください"):
+        with pytest.raises(RuntimeError, match="(fit\\(\\)を先に呼び出してください|fit\\(\\) must be called first|Call fit\\(\\) first)"):
             preprocessor.transform(X)
 
     def test_output_is_standardized(self):
@@ -503,5 +503,5 @@ class TestMLPreprocessorEdgeCases:
         preprocessor.fit(X, y=None)
 
         # transform時にyを指定するとエラー
-        with pytest.raises(RuntimeError, match="yが指定されましたが、fit\\(\\)でyを使用していません"):
+        with pytest.raises(RuntimeError, match="(yが指定されましたが、fit\\(\\)でyを使用していません|y was specified, but fit\\(\\) did not use y)"):
             preprocessor.transform(X, y)
