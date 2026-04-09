@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -70,6 +72,10 @@ jobs:
           # Optional dependencies for notebook examples
           pip install control statsmodels pmdarima iminuit PyWavelets EMD-signal
           pip install ligo.skymap astropy-healpix gwinc inspiral-range
+          # Install requirements from file (allow failure for numpy-stubs)
+          pip install -r docs/requirements.txt || true
+          # Ensure pytest plugins available
+          pip install pytest-forked nbval
           # Install gwexpy from source with all extras
           pip install -e ".[all]"
 

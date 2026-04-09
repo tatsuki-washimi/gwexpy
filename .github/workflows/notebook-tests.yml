@@ -22,6 +22,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -32,7 +34,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0"
-          pip install iminuit papermill nbformat nbclient nbconvert pytest pytest-nbval
+          pip install iminuit papermill nbformat nbclient nbconvert pytest nbval pytest-forked
           pip install -e "."
 
       - name: Discover and Categorize notebooks
