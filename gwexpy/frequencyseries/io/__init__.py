@@ -3,7 +3,6 @@
 
 Registrations for FrequencySeries readers.
 """
-
 from __future__ import annotations
 
 from . import (

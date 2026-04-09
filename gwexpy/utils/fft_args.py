@@ -9,7 +9,6 @@ The API follows GWpy conventions:
 - Quantity must have time-like units (convertible to seconds)
 - Default values match GWpy behavior
 """
-
 from __future__ import annotations
 
 from typing import Optional, Union

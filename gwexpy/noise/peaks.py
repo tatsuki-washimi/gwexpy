@@ -1,5 +1,4 @@
 """gwexpy.noise.peaks - Generic peak generation functions."""
-
 from __future__ import annotations
 
 from typing import Any

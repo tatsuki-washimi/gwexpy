@@ -28,7 +28,6 @@ See Also
 docs/developers/guides/coding_standards.md : Section 6 for full guidelines.
 
 """
-
 from __future__ import annotations
 
 import warnings

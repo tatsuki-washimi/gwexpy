@@ -3,7 +3,6 @@
 These tests use mock objects that mimic the scikit-rf Network API,
 so they run without requiring scikit-rf to be installed.
 """
-
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch

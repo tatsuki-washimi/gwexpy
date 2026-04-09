@@ -1,5 +1,4 @@
 """4D Array with explicit axis management."""
-
 from __future__ import annotations
 
 import numpy as np

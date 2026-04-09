@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 Benchmark driver for three coherence-ranking implementations.
@@ -15,9 +17,6 @@ Single-point example (gwexpy_native):
 Parameter sweep (all three implementations, generates CSV + figures):
   python scripts/benchmarks/bruco_bench.py --sweep --output-dir docs_internal/publications/paper_softwarex
 """
-
-from __future__ import annotations
-
 import argparse
 import csv
 import platform

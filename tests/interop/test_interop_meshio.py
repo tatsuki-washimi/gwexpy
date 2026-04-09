@@ -2,7 +2,6 @@
 
 Uses synthetic meshio.Mesh objects (no dolfinx or real mesh files needed).
 """
-
 from __future__ import annotations
 
 from unittest.mock import MagicMock

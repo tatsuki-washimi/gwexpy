@@ -7,7 +7,6 @@ This module provides preprocessing utilities (data splitting, band-pass
 filtering, standardization) used in noise removal tasks like DeepClean,
 implemented as a generic scikit-learn-style Transformer API.
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional

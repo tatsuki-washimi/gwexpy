@@ -3,7 +3,6 @@
 These tests use mock objects to simulate the gwinc Budget / BudgetTrace API,
 so they run without requiring pygwinc to be installed.
 """
-
 from __future__ import annotations
 
 from types import SimpleNamespace

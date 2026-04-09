@@ -1,5 +1,4 @@
 """gwexpy.timeseries - Time series data containers and operations."""
-
 from __future__ import annotations
 
 from .collections import TimeSeriesDict, TimeSeriesList

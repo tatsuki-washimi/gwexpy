@@ -1,6 +1,5 @@
 """Placeholder readers for unsupported formats (WIN/WIN32, SDB, vendor loggers).
 """
-
 from __future__ import annotations
 
 from gwpy.io.registry import default_registry as io_registry

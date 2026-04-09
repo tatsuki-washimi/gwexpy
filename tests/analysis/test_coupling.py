@@ -1,12 +1,11 @@
+from __future__ import annotations
+
 #!/usr/bin/env python
 """
 Unit tests for coupling function analysis module.
 
 Tests threshold strategies for coupling function estimation.
 """
-
-from __future__ import annotations
-
 import matplotlib
 
 matplotlib.use("Agg")

@@ -3,7 +3,6 @@
 This module supports a minimal XML parser and will use an external
 `dttxml_source.txt` parser if it is available next to the project root.
 """
-
 from __future__ import annotations
 
 from collections.abc import Iterable

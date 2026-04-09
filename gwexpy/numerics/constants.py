@@ -18,7 +18,6 @@ Machine precision reference
 * ``float64``: ``eps ≈ 2.22e-16``
 * ``float32``: ``eps ≈ 1.19e-07``
 """
-
 from __future__ import annotations
 
 from typing import Union

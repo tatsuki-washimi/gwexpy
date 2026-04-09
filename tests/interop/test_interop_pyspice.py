@@ -3,7 +3,6 @@
 These tests use mock objects that mimic the PySpice Analysis API,
 so they run without requiring PySpice to be installed.
 """
-
 from __future__ import annotations
 
 from collections import OrderedDict

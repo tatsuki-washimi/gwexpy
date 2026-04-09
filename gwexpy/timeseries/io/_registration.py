@@ -4,7 +4,6 @@ This module provides utilities to register TimeSeries I/O handlers
 with automatic adapter generation for TimeSeriesDict, TimeSeries,
 and TimeSeriesMatrix types.
 """
-
 from __future__ import annotations
 
 from collections.abc import Callable

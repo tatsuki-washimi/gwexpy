@@ -3,7 +3,6 @@
 Uses mock objects to simulate SDynPy data structures.
 Does NOT require SDynPy to be installed.
 """
-
 from __future__ import annotations
 
 from types import SimpleNamespace

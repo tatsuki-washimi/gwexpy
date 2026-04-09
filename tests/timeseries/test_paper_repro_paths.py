@@ -1,5 +1,4 @@
 """Smoke tests for manuscript-facing reproduction paths."""
-
 from __future__ import annotations
 
 import numpy as np
