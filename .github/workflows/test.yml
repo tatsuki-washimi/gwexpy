@@ -38,7 +38,7 @@ import sys, nbformat
 from pathlib import Path
 errs=0
 for p in Path('docs').rglob('*.ipynb'):
-    if '.ipynb_checkpoints' in str(p): continue
+    if '.ipynb_checkpoints' in str(p) or '_build' in str(p): continue
     try:
         nbformat.read(p, as_version=4)
     except Exception as e:
