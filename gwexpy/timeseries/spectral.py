@@ -1,6 +1,5 @@
 """Spectral matrix calculation helpers for TimeSeries collections.
 """
-
 from __future__ import annotations
 
 import numpy as np

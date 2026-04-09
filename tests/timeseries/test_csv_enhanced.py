@@ -1,5 +1,4 @@
 """Tests for the enhanced CSV reader (csv_enhanced.py / csv_config.py)."""
-
 from __future__ import annotations
 
 import textwrap

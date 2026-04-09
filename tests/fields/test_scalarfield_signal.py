@@ -1,5 +1,4 @@
 """Tests for ScalarField signal processing utilities (PSD, XCorr, coherence)."""
-
 from __future__ import annotations
 
 import numpy as np

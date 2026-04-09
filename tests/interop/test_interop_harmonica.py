@@ -3,7 +3,6 @@
 Uses mock xarray DataArrays/Datasets with Harmonica-style coordinates.
 Does NOT require Harmonica to be installed.
 """
-
 from __future__ import annotations
 
 import numpy as np

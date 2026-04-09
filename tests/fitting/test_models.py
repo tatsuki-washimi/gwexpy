@@ -8,7 +8,6 @@ Targets the uncovered lines reported at 60% coverage:
   L144-146 - get_model with non-string, non-callable argument
   L153-157 - get_model with polN (N>=10) and unknown name
 """
-
 from __future__ import annotations
 
 import numpy as np

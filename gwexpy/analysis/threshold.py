@@ -6,7 +6,6 @@ This module provides excess-detection strategies used by CouplingFunctionAnalysi
 - SigmaThreshold: Gaussian significance test
 - PercentileThreshold: Empirical percentile (Appendix B)
 """
-
 from __future__ import annotations
 
 import logging

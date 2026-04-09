@@ -3,7 +3,6 @@
 Usage:
     python scripts/make_schumann_notebook.py
 """
-
 from __future__ import annotations
 
 import json

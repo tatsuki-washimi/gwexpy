@@ -1,5 +1,4 @@
 """Tests for colored noise, peaks, magnetic models, and wave synthesis."""
-
 from __future__ import annotations
 
 import numpy as np

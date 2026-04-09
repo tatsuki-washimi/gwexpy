@@ -1,5 +1,4 @@
 """gwexpy.statistics.student_t_indicator - Student-t indicator for non-Gaussianity."""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

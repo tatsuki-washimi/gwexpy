@@ -3,7 +3,6 @@
 pydub requires ffmpeg or libav for most formats.
 FLAC decoding may work without ffmpeg if the audioop module is available.
 """
-
 from __future__ import annotations
 
 from collections.abc import Iterable

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 A2 Inventory Check Tool for gwexpy/timeseries
@@ -13,9 +15,6 @@ Usage:
         --csv tests/timeseries_all_defs_classified.csv \
         --package gwexpy/timeseries
 """
-
-from __future__ import annotations
-
 import argparse
 import ast
 import csv

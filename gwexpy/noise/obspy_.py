@@ -3,7 +3,6 @@
 This module provides functions to generate Amplitude Spectral Density (ASD)
 from ObsPy seismic and infrasound noise models.
 """
-
 from __future__ import annotations
 
 from typing import Any, Literal

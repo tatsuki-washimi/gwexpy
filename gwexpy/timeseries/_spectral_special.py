@@ -1,6 +1,5 @@
 """Special spectral transform methods for TimeSeries (HHT, EMD, Laplace, CWT).
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any

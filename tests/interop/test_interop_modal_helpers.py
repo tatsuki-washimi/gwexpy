@@ -2,7 +2,6 @@
 
 Does NOT require any external modal analysis library.
 """
-
 from __future__ import annotations
 
 import numpy as np

@@ -1,5 +1,4 @@
 """gwexpy.statistics - Statistical analysis tools for gravitational wave data."""
-
 from __future__ import annotations
 
 from .dq_flag import to_segments

@@ -1,7 +1,7 @@
-import pytest; pytest.importorskip("iminuit")
-"""Tests for gwexpy/fitting/gls.py — GLS and GeneralizedLeastSquares."""
 from __future__ import annotations
 
+import pytest; pytest.importorskip("iminuit")
+"""Tests for gwexpy/fitting/gls.py — GLS and GeneralizedLeastSquares."""
 import numpy as np
 import pytest
 

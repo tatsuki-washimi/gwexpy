@@ -3,7 +3,6 @@
 Each cell holds either a concrete *value* or a *loader* callable (or both).
 Accessing :meth:`get` resolves the cell on demand and optionally caches the result.
 """
-
 from __future__ import annotations
 
 from collections.abc import Callable

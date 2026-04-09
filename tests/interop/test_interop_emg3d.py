@@ -4,7 +4,6 @@ These tests use mock emg3d objects to avoid requiring the emg3d package in the
 test environment.  The staggered-grid interpolation helpers are tested with
 plain NumPy arrays.
 """
-
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch

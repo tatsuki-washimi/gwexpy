@@ -20,7 +20,6 @@ References
 https://emg3d.emsig.xyz/
 
 """
-
 from __future__ import annotations
 
 from pathlib import Path

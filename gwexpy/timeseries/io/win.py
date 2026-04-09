@@ -18,7 +18,6 @@ edge-cases described in the paper above:
 We also provide regression tests using a sample WIN file under ``tests/sample-data/gui/``.
 
 """
-
 from __future__ import annotations
 
 import struct

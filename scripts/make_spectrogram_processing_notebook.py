@@ -8,7 +8,6 @@ Covers:
 Usage:
     python scripts/make_spectrogram_processing_notebook.py
 """
-
 from __future__ import annotations
 
 import json

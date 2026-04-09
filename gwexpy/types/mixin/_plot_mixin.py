@@ -1,5 +1,4 @@
 """PlotMixin — centralised deferred import for plot()."""
-
 from __future__ import annotations
 
 from typing import Any

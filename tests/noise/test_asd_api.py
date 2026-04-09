@@ -1,5 +1,4 @@
 """Tests for gwexpy.noise ASD API using gwinc/obspy stubs."""
-
 from __future__ import annotations
 
 import importlib

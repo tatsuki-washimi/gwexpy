@@ -6,7 +6,6 @@ values or heavy *payload* objects such as :class:`~gwpy.timeseries.TimeSeries`.
 Payload columns are stored as :class:`~gwexpy.table.segment_cell.SegmentCell`
 instances that support lazy loading and optional caching.
 """
-
 from __future__ import annotations
 
 import copy

@@ -10,7 +10,6 @@ Gravitational-wave strain is O(1e-21), so a fixed ``eps`` can be
 :func:`safe_epsilon` and :class:`AutoScaler` solve this by computing
 an epsilon *relative to the data's own scale*.
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

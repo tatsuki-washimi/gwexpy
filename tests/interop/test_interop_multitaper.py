@@ -3,7 +3,6 @@
 Uses mock objects and synthetic numpy arrays to simulate MTSpec / MTSine /
 mtspec output.  Does NOT require multitaper or mtspec to be installed.
 """
-
 from __future__ import annotations
 
 from types import SimpleNamespace

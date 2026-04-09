@@ -7,7 +7,6 @@ Provides conversion from pyroomacoustics Room simulation results (RIR,
 microphone signals, source signals, STFT) and ScalarField grid data
 to GWexpy TimeSeries, Spectrogram, and ScalarField types.
 """
-
 from __future__ import annotations
 
 import math
