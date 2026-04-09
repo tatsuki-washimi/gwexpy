@@ -1,9 +1,9 @@
-"""gwexpy.signal.preprocessing.ml
+"""Preprocessing pipeline for machine learning.
+
+gwexpy.signal.preprocessing.ml
 -------------------------------
 
-Preprocessing pipeline for machine learning.
-
-This module provides preprocessing utilities (data splitting, band-pass 
+This module provides preprocessing utilities (data splitting, band-pass
 filtering, standardization) used in noise removal tasks like DeepClean,
 implemented as a generic scikit-learn-style Transformer API.
 """
@@ -321,6 +321,10 @@ class MLPreprocessor:
         return X_proc
 
     # Helper methods (private)
+
+    def _get_sample_rate_hz(self) -> float:
+        """Get the sample rate in Hz as a float."""
+        return self._to_float_rate(self.sample_rate)
 
     def _to_float_rate(self, sample_rate: Any) -> float:
         """Convert sample_rate to a float in Hz."""

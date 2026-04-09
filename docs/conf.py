@@ -177,6 +177,7 @@ autodoc_mock_imports = [
     "elephant",
     "cupy",
     "pygmt",
+    "PyQt5",
 ]
 
 source_suffix = {

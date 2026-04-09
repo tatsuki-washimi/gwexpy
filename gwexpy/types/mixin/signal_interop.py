@@ -17,8 +17,7 @@ class SignalAnalysisMixin:
     def smooth(
         self, width: Any, method: str = "amplitude", ignore_nan: bool = True
     ) -> Any:
-        """
-        Smooth the series.
+        """Smooth the series.
 
         Parameters
         ----------
@@ -33,6 +32,7 @@ class SignalAnalysisMixin:
         -------
         Series
             Smoothed series.
+
         """
         from typing import cast
 
@@ -146,7 +146,7 @@ class SignalAnalysisMixin:
         )
 
     def _get_meta_for_constructor(self):
-        """Helper to extract metadata for reconstruction. Override in subclasses."""
+        """Extract metadata for reconstruction."""
         # Default fallback
         meta = {}
         if hasattr(self, "epoch"):
@@ -169,8 +169,7 @@ class SignalAnalysisMixin:
         method: str = "amplitude",
         **kwargs: Any,
     ) -> Any:
-        """
-        Find peaks in the series.
+        """Find peaks in the series.
 
         Wraps `scipy.signal.find_peaks` with support for unit quantities.
         """

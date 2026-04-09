@@ -32,10 +32,6 @@ from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 
 ---
 
----
-
----
-
 ## `to_gps` — 日時 → GPS 秒
 
 **Signature**: `to_gps(t, *args, **kwargs)`
@@ -167,8 +163,6 @@ ts = gwexpy.TimeSeries.fetch("H1:GDS-CALIB_STRAIN",
 # .crop() は to_gps() が対応するあらゆる形式を受け付けます
 segment = ts.crop("2015-09-14 09:50:44", "2015-09-14 09:50:50")
 ```
-
----
 
 ---
 

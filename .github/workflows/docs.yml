@@ -16,7 +16,10 @@ jobs:
   docs-quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -38,7 +41,10 @@ jobs:
   build-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
@@ -58,7 +64,8 @@ jobs:
         run: |
           conda install -y "numpy<2" "scipy<1.14" pandas matplotlib h5py gwpy nds2-client lalsuite framel \
             sphinx sphinx_rtd_theme myst-parser nbsphinx pandoc ipykernel
-          pip install sphinx-intl sphinx-design sphinx-sitemap
+          pip install -r docs/requirements.txt
+          pip install sphinx-sitemap pytest-forked nbval
           pip install --no-deps .
 
       - name: Build documentation (Strict)
@@ -89,7 +96,10 @@ jobs:
   quickstart-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v3
@@ -102,6 +112,7 @@ jobs:
         shell: bash -l {0}
         run: |
           conda install -y "numpy<2" "scipy<1.14" pandas matplotlib h5py gwpy
+          pip install pytest-forked nbval
           pip install -e .
 
       - name: Run Quickstart integration tests (JA)
