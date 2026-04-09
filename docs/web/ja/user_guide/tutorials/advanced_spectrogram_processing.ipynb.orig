@@ -3,45 +3,42 @@
   {
    "cell_type": "code",
    "execution_count": null,
-   "id": "cdf2dbd3",
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n",
-    "\n",
+    "# Install gwexpy with pinned versions of core dependencies for reproducibility on Colab\n\n",
     "%pip install -q \"gwexpy[all]\" \"gwpy<5.0.0\" \"numpy<2.0.0\" \"scipy<1.13.0\" \"astropy<7.0.0\""
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "14bc9558",
+   "id": "018d8173",
    "metadata": {},
    "source": [
-    "# Spectrogram Processing: Normalization and Cleaning\n",
+    "# スペクトログラム処理：正規化とクリーニング\n",
     "\n",
     "[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/advanced_spectrogram_processing.ipynb)\n",
     "\n",
-    "This tutorial demonstrates two groups of spectrogram post-processing tools\n",
-    "available in **gwexpy**:\n",
+    "このチュートリアルでは **gwexpy** が提供するスペクトログラム後処理ツール 2 種類を解説します：\n",
     "\n",
-    "| API | Purpose |\n",
-    "|-----|---------|\n",
-    "| `Spectrogram.normalize()` | Convert raw power to SNR or relative units |\n",
-    "| `Spectrogram.clean()` | Remove glitches, trends, and persistent lines |\n",
+    "| API | 目的 |\n",
+    "|-----|------|\n",
+    "| `Spectrogram.normalize()` | 生パワーを SNR や相対単位に変換 |\n",
+    "| `Spectrogram.clean()` | グリッチ・トレンド・持続的ラインの除去 |\n",
     "\n",
-    "**Prerequisites:** [Spectrogram Basics](intro_spectrogram.ipynb)"
+    "**前提:** [スペクトログラム入門](intro_spectrogram.ipynb)"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "da79577b",
+   "id": "b0fc5c3e",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T23:53:25.241994Z",
-     "iopub.status.busy": "2026-04-05T23:53:25.241877Z",
-     "iopub.status.idle": "2026-04-05T23:53:27.561877Z",
-     "shell.execute_reply": "2026-04-05T23:53:27.561025Z"
+     "iopub.execute_input": "2026-04-05T23:53:25.239718Z",
+     "iopub.status.busy": "2026-04-05T23:53:25.239210Z",
+     "iopub.status.idle": "2026-04-05T23:53:27.520643Z",
+     "shell.execute_reply": "2026-04-05T23:53:27.519889Z"
     }
    },
    "outputs": [],
@@ -56,28 +53,28 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1fbcbf06",
+   "id": "7a2fc246",
    "metadata": {},
    "source": [
-    "## 1. Synthetic Data\n",
+    "## 1. 合成データの準備\n",
     "\n",
-    "We build a 2-minute strain time series containing:\n",
+    "以下を含む 2 分間の strain 時系列を生成します：\n",
     "\n",
-    "- **Stationary Gaussian noise** with a slowly drifting amplitude (non-stationarity)\n",
-    "- **Persistent narrowband line** at 60 Hz (power-line coupling)\n",
-    "- **Transient glitches** at 15 s, 45 s, and 90 s\n"
+    "- **定常ガウスノイズ**（ゆっくり変化する振幅 → 非定常）\n",
+    "- **60 Hz 持続ライン**（電源ハム）\n",
+    "- **過渡グリッチ**（15 s, 45 s, 90 s）\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "79105d48",
+   "id": "a006568a",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T23:53:27.565462Z",
-     "iopub.status.busy": "2026-04-05T23:53:27.565051Z",
-     "iopub.status.idle": "2026-04-05T23:53:27.590437Z",
-     "shell.execute_reply": "2026-04-05T23:53:27.589796Z"
+     "iopub.execute_input": "2026-04-05T23:53:27.523912Z",
+     "iopub.status.busy": "2026-04-05T23:53:27.523544Z",
+     "iopub.status.idle": "2026-04-05T23:53:27.553065Z",
+     "shell.execute_reply": "2026-04-05T23:53:27.552237Z"
     }
    },
    "outputs": [
@@ -128,25 +125,25 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d7a392bc",
+   "id": "9dbcbf51",
    "metadata": {},
    "source": [
-    "## 2. Baseline Spectrogram\n",
+    "## 2. ベースライン スペクトログラム\n",
     "\n",
-    "The raw spectrogram already shows glitches (bright vertical stripes),\n",
-    "the 60 Hz line (bright horizontal stripe), and the time-varying noise floor."
+    "生スペクトログラムには、グリッチ（明るい縦縞）、60 Hz ライン（明るい横縞）、\n",
+    "時間変動するノイズフロアがすでに見えています。"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "0c6f6db2",
+   "id": "a32ff539",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T23:53:27.592534Z",
-     "iopub.status.busy": "2026-04-05T23:53:27.592410Z",
-     "iopub.status.idle": "2026-04-05T23:54:03.868223Z",
-     "shell.execute_reply": "2026-04-05T23:54:03.867299Z"
+     "iopub.execute_input": "2026-04-05T23:53:27.555071Z",
+     "iopub.status.busy": "2026-04-05T23:53:27.554941Z",
+     "iopub.status.idle": "2026-04-05T23:54:03.784010Z",
+     "shell.execute_reply": "2026-04-05T23:54:03.783438Z"
     }
    },
    "outputs": [
@@ -169,46 +166,47 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "_plt5 = spec.plot(norm=\"log\", figsize=(12, 4))\n",
+    "ax = _plt5.gca()\n",
+    "ax.set_title(\"Raw spectrogram\")\n",
+    "_plt5.colorbar(label=\"Power [strain²/Hz]\")\n",
     "with warnings.catch_warnings():\n",
-    "    warnings.simplefilter('ignore')\n",
-    "\n",
-    "    import warnings\n",
-    "    _plt5 = spec.plot(norm=\"log\", figsize=(12, 4))\n",
-    "    ax = _plt5.gca()\n",
-    "    ax.set_title(\"Raw spectrogram\")\n",
-    "    _plt5.colorbar(label=\"Power [strain²/Hz]\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        plt.tight_layout()\n",
-    "    plt.show()\n"
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    plt.tight_layout()\n",
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "4caf8095",
+   "id": "b1daafcc",
    "metadata": {},
    "source": [
-    "## 3. Normalization\n",
+    "## 3. 正規化\n",
     "\n",
-    "### 3a. SNR Spectrogram (`method='snr'`)\n",
+    "### 3a. SNR スペクトログラム (`method='snr'`)\n",
     "\n",
-    "The most common normalization for transient searches: divide each time slice by\n",
-    "the **median PSD** along the time axis.  \n",
-    "Result is a dimensionless **SNR²** map where the stationary background ≈ 1."
+    "過渡現象探索で最もよく使われる正規化：各時刻スライスを時間軸方向の\n",
+    "**中央値 PSD** で割ります。  \n",
+    "結果は無次元の **SNR²** マップで、定常背景 ≈ 1 になります。"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "a33824d3",
+   "id": "459a90c6",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T23:54:03.870315Z",
-     "iopub.status.busy": "2026-04-05T23:54:03.870161Z",
-     "iopub.status.idle": "2026-04-05T23:54:45.606501Z",
-     "shell.execute_reply": "2026-04-05T23:54:45.605494Z"
+     "iopub.execute_input": "2026-04-05T23:54:03.785462Z",
+     "iopub.status.busy": "2026-04-05T23:54:03.785339Z",
+     "iopub.status.idle": "2026-04-05T23:54:45.581613Z",
+     "shell.execute_reply": "2026-04-05T23:54:45.580867Z"
     }
    },
    "outputs": [
@@ -241,55 +239,56 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "# ── SNR normalization ─────────────────────────────────────────────────────────\n",
+    "# Each time slice is divided by the median PSD along the time axis.\n",
+    "# Result: dimensionless SNR² (≈ 1 for stationary background).\n",
+    "spec_snr = spec.normalize(method=\"snr\")\n",
+    "\n",
+    "fig, axes = plt.subplots(1, 2, figsize=(14, 4))\n",
+    "_pc0 = axes[0].pcolormesh(spec.times.value, spec.frequencies.value, spec.value.T, norm=__import__(\"matplotlib.colors\", fromlist=[\"LogNorm\"]).LogNorm(), cmap=\"viridis\", shading=\"auto\")\n",
+    "fig.colorbar(_pc0, ax=axes[0], label=\"Power [strain²/Hz]\")\n",
+    "\n",
+    "spec_snr.plot(ax=axes[1], norm=\"log\", vmin=0.1, vmax=100)\n",
+    "axes[1].set_title(\"SNR spectrogram  (normalize='snr')\")\n",
+    "fig.colorbar(next((c for c in axes[1].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[1], label=\"SNR² [dimensionless]\")\n",
+    "\n",
     "with warnings.catch_warnings():\n",
-    "    warnings.simplefilter('ignore')\n",
-    "\n",
-    "    import warnings\n",
-    "    # ── SNR normalization ─────────────────────────────────────────────────────────\n",
-    "    # Each time slice is divided by the median PSD along the time axis.\n",
-    "    # Result: dimensionless SNR² (≈ 1 for stationary background).\n",
-    "    spec_snr = spec.normalize(method=\"snr\")\n",
-    "\n",
-    "    fig, axes = plt.subplots(1, 2, figsize=(14, 4))\n",
-    "    _pc0 = axes[0].pcolormesh(spec.times.value, spec.frequencies.value, spec.value.T, norm=__import__(\"matplotlib.colors\", fromlist=[\"LogNorm\"]).LogNorm(), cmap=\"viridis\", shading=\"auto\")\n",
-    "    fig.colorbar(_pc0, ax=axes[0], label=\"Power [strain²/Hz]\")\n",
-    "\n",
-    "    spec_snr.plot(ax=axes[1], norm=\"log\", vmin=0.1, vmax=100)\n",
-    "    axes[1].set_title(\"SNR spectrogram  (normalize='snr')\")\n",
-    "    fig.colorbar(next((c for c in axes[1].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[1], label=\"SNR² [dimensionless]\")\n",
-    "\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        plt.tight_layout()\n",
-    "    plt.show()\n"
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    plt.tight_layout()\n",
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "7c403414",
+   "id": "b1fac5ee",
    "metadata": {},
    "source": [
-    "### 3b. Other Normalization Methods\n",
+    "### 3b. その他の正規化メソッド\n",
     "\n",
-    "| `method=` | Denominator |\n",
-    "|-----------|-------------|\n",
-    "| `'median'` | Median PSD per frequency bin (identical to `'snr'`) |\n",
-    "| `'mean'` | Mean PSD per frequency bin |\n",
-    "| `'percentile'` | Nth-percentile PSD (controlled by `percentile=`) |\n"
+    "| `method=` | 分母 |\n",
+    "|-----------|------|\n",
+    "| `'median'` | 周波数ビン毎の中央値 PSD（`'snr'` と同一） |\n",
+    "| `'mean'` | 周波数ビン毎の平均 PSD |\n",
+    "| `'percentile'` | 第 N パーセンタイル PSD（`percentile=` で指定） |\n"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "5634336d",
+   "id": "53ad29e7",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T23:54:45.610181Z",
-     "iopub.status.busy": "2026-04-05T23:54:45.610063Z",
-     "iopub.status.idle": "2026-04-05T23:56:01.713515Z",
-     "shell.execute_reply": "2026-04-05T23:56:01.712424Z"
+     "iopub.execute_input": "2026-04-05T23:54:45.583142Z",
+     "iopub.status.busy": "2026-04-05T23:54:45.583019Z",
+     "iopub.status.idle": "2026-04-05T23:56:01.829626Z",
+     "shell.execute_reply": "2026-04-05T23:56:01.828547Z"
     }
    },
    "outputs": [
@@ -342,50 +341,51 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "# ── Compare normalization methods ─────────────────────────────────────────────\n",
+    "methods = [\"median\", \"mean\", \"percentile\"]\n",
+    "fig, axes = plt.subplots(1, 3, figsize=(18, 4))\n",
+    "for ax, m in zip(axes, methods):\n",
+    "    kw = {\"percentile\": 75.0} if m == \"percentile\" else {}\n",
+    "    spec_n = spec.normalize(method=m, **kw)\n",
+    "    spec_n.plot(ax=ax, norm=\"log\", vmin=0.1, vmax=100)\n",
+    "    label = f\"percentile=75\" if m == \"percentile\" else \"\"\n",
+    "    ax.set_title(f\"method='{m}' {label}\")\n",
+    "    fig.colorbar(next((c for c in ax.get_children() if hasattr(c, \"get_clim\")), None), ax=ax, label=\"SNR² []\")\n",
+    "plt.suptitle(\"Normalization methods comparison\", fontsize=13)\n",
     "with warnings.catch_warnings():\n",
-    "    warnings.simplefilter('ignore')\n",
-    "\n",
-    "    import warnings\n",
-    "    # ── Compare normalization methods ─────────────────────────────────────────────\n",
-    "    methods = [\"median\", \"mean\", \"percentile\"]\n",
-    "    fig, axes = plt.subplots(1, 3, figsize=(18, 4))\n",
-    "    for ax, m in zip(axes, methods):\n",
-    "        kw = {\"percentile\": 75.0} if m == \"percentile\" else {}\n",
-    "        spec_n = spec.normalize(method=m, **kw)\n",
-    "        spec_n.plot(ax=ax, norm=\"log\", vmin=0.1, vmax=100)\n",
-    "        label = f\"percentile=75\" if m == \"percentile\" else \"\"\n",
-    "        ax.set_title(f\"method='{m}' {label}\")\n",
-    "        fig.colorbar(next((c for c in ax.get_children() if hasattr(c, \"get_clim\")), None), ax=ax, label=\"SNR² []\")\n",
-    "    plt.suptitle(\"Normalization methods comparison\", fontsize=13)\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        plt.tight_layout()\n",
-    "    plt.show()\n"
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    plt.tight_layout()\n",
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "3b4bd4da",
+   "id": "902c9c40",
    "metadata": {},
    "source": [
-    "### 3c. Reference Normalization (`method='reference'`)\n",
+    "### 3c. 参照スペクトル正規化 (`method='reference'`)\n",
     "\n",
-    "Supply your own reference spectrum — useful when you want to compare\n",
-    "against a specific quiet period or an independently measured noise floor."
+    "独自の参照スペクトルを渡して正規化します。  \n",
+    "特定の静粛期間や独立計測したノイズフロアとの比較に有用です。"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "9f46163a",
+   "id": "b919d35c",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T23:56:01.715359Z",
-     "iopub.status.busy": "2026-04-05T23:56:01.715229Z",
-     "iopub.status.idle": "2026-04-05T23:56:39.538846Z",
-     "shell.execute_reply": "2026-04-05T23:56:39.538151Z"
+     "iopub.execute_input": "2026-04-05T23:56:01.832447Z",
+     "iopub.status.busy": "2026-04-05T23:56:01.832328Z",
+     "iopub.status.idle": "2026-04-05T23:56:39.569793Z",
+     "shell.execute_reply": "2026-04-05T23:56:39.568875Z"
     }
    },
    "outputs": [
@@ -418,56 +418,55 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "# ── Reference normalization ───────────────────────────────────────────────────\n",
+    "# Use the first 30 s as a quiet reference segment.\n",
+    "quiet_ts = ts.crop(0, 30)\n",
+    "ref_spec = quiet_ts.spectrogram2(FFTLEN, overlap=FFTLEN / 2)\n",
+    "reference_psd = np.median(ref_spec.value, axis=0)   # median over the 30-s window\n",
+    "\n",
+    "spec_ref = spec.normalize(method=\"reference\", reference=reference_psd)\n",
+    "\n",
+    "fig, ax = plt.subplots(figsize=(12, 4))\n",
+    "spec_ref.plot(ax=ax, norm=\"log\", vmin=0.1, vmax=100)\n",
+    "ax.set_title(\"Reference-normalized spectrogram (30-s quiet baseline)\")\n",
+    "fig.colorbar(next((c for c in ax.get_children() if hasattr(c, \"get_clim\")), None), ax=ax, label=\"SNR² []\")\n",
     "with warnings.catch_warnings():\n",
-    "    warnings.simplefilter('ignore')\n",
-    "\n",
-    "    import warnings\n",
-    "    # ── Reference normalization ───────────────────────────────────────────────────\n",
-    "    # Use the first 30 s as a quiet reference segment.\n",
-    "    quiet_ts = ts.crop(0, 30)\n",
-    "    ref_spec = quiet_ts.spectrogram2(FFTLEN, overlap=FFTLEN / 2)\n",
-    "    reference_psd = np.median(ref_spec.value, axis=0)   # median over the 30-s window\n",
-    "\n",
-    "    spec_ref = spec.normalize(method=\"reference\", reference=reference_psd)\n",
-    "\n",
-    "    fig, ax = plt.subplots(figsize=(12, 4))\n",
-    "    spec_ref.plot(ax=ax, norm=\"log\", vmin=0.1, vmax=100)\n",
-    "    ax.set_title(\"Reference-normalized spectrogram (30-s quiet baseline)\")\n",
-    "    fig.colorbar(next((c for c in ax.get_children() if hasattr(c, \"get_clim\")), None), ax=ax, label=\"SNR² []\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        plt.tight_layout()\n",
-    "    plt.show()\n"
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    plt.tight_layout()\n",
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "af5ed2d0",
+   "id": "11387925",
    "metadata": {},
    "source": [
-    "## 4. Cleaning\n",
+    "## 4. クリーニング\n",
     "\n",
-    "### 4a. Threshold Cleaning (`method='threshold'`)\n",
+    "### 4a. 閾値クリーニング (`method='threshold'`)\n",
     "\n",
-    "Pixels that exceed `median + threshold × MAD` (per frequency bin) are\n",
-    "flagged as outliers and replaced.  Replacement strategy is controlled by\n",
-    "`fill=` (`'median'`, `'nan'`, `'zero'`, or `'interpolate'`).\n",
-    "\n",
-    "This removes short-duration **glitches** that appear as bright vertical streaks."
+    "周波数ビン毎に `中央値 + threshold × MAD` を超えるピクセルを外れ値として検出し、\n",
+    "`fill=` で指定した方法で置換します。  \n",
+    "短時間の**グリッチ**（明るい縦縞）を除去するのに適しています。"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "bb80c7e9",
+   "id": "0f1d3819",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T23:56:39.541030Z",
-     "iopub.status.busy": "2026-04-05T23:56:39.540888Z",
-     "iopub.status.idle": "2026-04-05T23:57:46.518895Z",
-     "shell.execute_reply": "2026-04-05T23:57:46.518123Z"
+     "iopub.execute_input": "2026-04-05T23:56:39.572659Z",
+     "iopub.status.busy": "2026-04-05T23:56:39.572538Z",
+     "iopub.status.idle": "2026-04-05T23:57:46.546429Z",
+     "shell.execute_reply": "2026-04-05T23:57:46.544743Z"
     }
    },
    "outputs": [
@@ -517,55 +516,56 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "# ── threshold cleaning ────────────────────────────────────────────────────────\n",
+    "# Pixels exceeding  median + threshold × MAD  are replaced.\n",
+    "spec_thr, mask = spec_snr.clean(method=\"threshold\", threshold=5.0, return_mask=True)\n",
+    "\n",
+    "print(f\"Flagged pixels: {mask.sum()} / {mask.size}\"\n",
+    "      f\"  ({100 * mask.mean():.2f} %)\")\n",
+    "\n",
+    "fig, axes = plt.subplots(1, 2, figsize=(14, 4))\n",
+    "spec_snr.plot(ax=axes[0], norm=\"log\", vmin=0.1, vmax=100)\n",
+    "axes[0].set_title(\"SNR spectrogram (before threshold clean)\")\n",
+    "fig.colorbar(next((c for c in axes[0].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[0], label=\"SNR²\")\n",
+    "\n",
+    "spec_thr.plot(ax=axes[1], norm=\"log\", vmin=0.1, vmax=100)\n",
+    "axes[1].set_title(\"After threshold clean  (threshold=5 MAD)\")\n",
+    "fig.colorbar(next((c for c in axes[1].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[1], label=\"SNR²\")\n",
+    "\n",
     "with warnings.catch_warnings():\n",
-    "    warnings.simplefilter('ignore')\n",
-    "\n",
-    "    import warnings\n",
-    "    # ── threshold cleaning ────────────────────────────────────────────────────────\n",
-    "    # Pixels exceeding  median + threshold × MAD  are replaced.\n",
-    "    spec_thr, mask = spec_snr.clean(method=\"threshold\", threshold=5.0, return_mask=True)\n",
-    "\n",
-    "    print(f\"Flagged pixels: {mask.sum()} / {mask.size}\"\n",
-    "          f\"  ({100 * mask.mean():.2f} %)\")\n",
-    "\n",
-    "    fig, axes = plt.subplots(1, 2, figsize=(14, 4))\n",
-    "    spec_snr.plot(ax=axes[0], norm=\"log\", vmin=0.1, vmax=100)\n",
-    "    axes[0].set_title(\"SNR spectrogram (before threshold clean)\")\n",
-    "    fig.colorbar(next((c for c in axes[0].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[0], label=\"SNR²\")\n",
-    "\n",
-    "    spec_thr.plot(ax=axes[1], norm=\"log\", vmin=0.1, vmax=100)\n",
-    "    axes[1].set_title(\"After threshold clean  (threshold=5 MAD)\")\n",
-    "    fig.colorbar(next((c for c in axes[1].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[1], label=\"SNR²\")\n",
-    "\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        plt.tight_layout()\n",
-    "    plt.show()\n"
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    plt.tight_layout()\n",
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "48335caf",
+   "id": "43b45aff",
    "metadata": {},
    "source": [
-    "### 4b. Rolling-Median Detrending (`method='rolling_median'`)\n",
+    "### 4b. ローリング中央値デトレンド (`method='rolling_median'`)\n",
     "\n",
-    "Divide each column by a running median along the time axis.  \n",
-    "This removes **slow non-stationary trends** without distorting short-duration features."
+    "時間軸に沿ったローリング中央値で各列を割ります。  \n",
+    "短時間特徴を歪めずに**ゆっくりとした非定常トレンド**を除去します。"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "9e6de790",
+   "id": "7ea712b5",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T23:57:46.520662Z",
-     "iopub.status.busy": "2026-04-05T23:57:46.520455Z",
-     "iopub.status.idle": "2026-04-05T23:58:47.383378Z",
-     "shell.execute_reply": "2026-04-05T23:58:47.382702Z"
+     "iopub.execute_input": "2026-04-05T23:57:46.547931Z",
+     "iopub.status.busy": "2026-04-05T23:57:46.547812Z",
+     "iopub.status.idle": "2026-04-05T23:58:47.400262Z",
+     "shell.execute_reply": "2026-04-05T23:58:47.399396Z"
     }
    },
    "outputs": [
@@ -608,54 +608,53 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "# ── rolling-median cleaning ───────────────────────────────────────────────────\n",
+    "# Divide by a rolling median along the time axis to remove slow trends.\n",
+    "spec_roll = spec.clean(method=\"rolling_median\", window_size=10)\n",
+    "\n",
+    "fig, axes = plt.subplots(1, 2, figsize=(14, 4))\n",
+    "spec.plot(ax=axes[0], norm=\"log\")\n",
+    "axes[0].set_title(\"Raw spectrogram\")\n",
+    "fig.colorbar(next((c for c in axes[0].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[0], label=\"Power\")\n",
+    "\n",
+    "spec_roll.plot(ax=axes[1], norm=\"log\")\n",
+    "axes[1].set_title(\"After rolling-median detrend  (window=10 bins)\")\n",
+    "fig.colorbar(next((c for c in axes[1].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[1], label=\"Normalised power []\")\n",
+    "\n",
     "with warnings.catch_warnings():\n",
-    "    warnings.simplefilter('ignore')\n",
-    "\n",
-    "    import warnings\n",
-    "    # ── rolling-median cleaning ───────────────────────────────────────────────────\n",
-    "    # Divide by a rolling median along the time axis to remove slow trends.\n",
-    "    spec_roll = spec.clean(method=\"rolling_median\", window_size=10)\n",
-    "\n",
-    "    fig, axes = plt.subplots(1, 2, figsize=(14, 4))\n",
-    "    spec.plot(ax=axes[0], norm=\"log\")\n",
-    "    axes[0].set_title(\"Raw spectrogram\")\n",
-    "    fig.colorbar(next((c for c in axes[0].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[0], label=\"Power\")\n",
-    "\n",
-    "    spec_roll.plot(ax=axes[1], norm=\"log\")\n",
-    "    axes[1].set_title(\"After rolling-median detrend  (window=10 bins)\")\n",
-    "    fig.colorbar(next((c for c in axes[1].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[1], label=\"Normalised power []\")\n",
-    "\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        plt.tight_layout()\n",
-    "    plt.show()\n"
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    plt.tight_layout()\n",
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "0e6b8bd8",
+   "id": "6c749cff",
    "metadata": {},
    "source": [
-    "### 4c. Persistent Line Removal (`method='line_removal'`)\n",
+    "### 4c. 持続ライン除去 (`method='line_removal'`)\n",
     "\n",
-    "A frequency bin is flagged as a persistent line if it exceeds\n",
-    "`amplitude_threshold × global_median` for more than\n",
-    "`persistence_threshold` fraction of time bins.  \n",
-    "Detected bins are replaced with their time-median."
+    "時間ビンの `persistence_threshold` 割以上で `amplitude_threshold × 全体中央値` を\n",
+    "超える周波数ビンを持続ラインとして検出し、時間方向の中央値で置換します。"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "47376fae",
+   "id": "a1f9aec1",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T23:58:47.385160Z",
-     "iopub.status.busy": "2026-04-05T23:58:47.385044Z",
-     "iopub.status.idle": "2026-04-05T23:59:50.980243Z",
-     "shell.execute_reply": "2026-04-05T23:59:50.979730Z"
+     "iopub.execute_input": "2026-04-05T23:58:47.402300Z",
+     "iopub.status.busy": "2026-04-05T23:58:47.402085Z",
+     "iopub.status.idle": "2026-04-05T23:59:51.142256Z",
+     "shell.execute_reply": "2026-04-05T23:59:51.141642Z"
     }
    },
    "outputs": [
@@ -705,65 +704,66 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "# ── line-removal cleaning ─────────────────────────────────────────────────────\n",
+    "# Detect persistent narrowband lines and replace with column median.\n",
+    "spec_noline, line_indices = spec_snr.clean(\n",
+    "    method=\"line_removal\",\n",
+    "    persistence_threshold=0.8,\n",
+    "    amplitude_threshold=3.0,\n",
+    "    return_mask=True,\n",
+    ")\n",
+    "\n",
+    "# line_indices is a bool mask here; retrieve actual frequency values\n",
+    "freq_axis = spec.frequencies.value\n",
+    "if hasattr(line_indices, \"sum\"):   # ndarray mask\n",
+    "    flagged_freqs = freq_axis[np.any(line_indices, axis=0)]\n",
+    "else:\n",
+    "    flagged_freqs = freq_axis[line_indices]\n",
+    "print(\"Detected line frequencies [Hz]:\", np.round(flagged_freqs, 1))\n",
+    "\n",
+    "fig, axes = plt.subplots(1, 2, figsize=(14, 4))\n",
+    "spec_snr.plot(ax=axes[0], norm=\"log\", vmin=0.1, vmax=100)\n",
+    "axes[0].set_title(\"SNR spectrogram (with 60 Hz power line)\")\n",
+    "fig.colorbar(next((c for c in axes[0].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[0], label=\"SNR²\")\n",
+    "\n",
+    "spec_noline.plot(ax=axes[1], norm=\"log\", vmin=0.1, vmax=100)\n",
+    "axes[1].set_title(\"After line-removal clean\")\n",
+    "fig.colorbar(next((c for c in axes[1].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[1], label=\"SNR²\")\n",
+    "\n",
     "with warnings.catch_warnings():\n",
-    "    warnings.simplefilter('ignore')\n",
-    "\n",
-    "    import warnings\n",
-    "    # ── line-removal cleaning ─────────────────────────────────────────────────────\n",
-    "    # Detect persistent narrowband lines and replace with column median.\n",
-    "    spec_noline, line_indices = spec_snr.clean(\n",
-    "        method=\"line_removal\",\n",
-    "        persistence_threshold=0.8,\n",
-    "        amplitude_threshold=3.0,\n",
-    "        return_mask=True,\n",
-    "    )\n",
-    "\n",
-    "    # line_indices is a bool mask here; retrieve actual frequency values\n",
-    "    freq_axis = spec.frequencies.value\n",
-    "    if hasattr(line_indices, \"sum\"):   # ndarray mask\n",
-    "        flagged_freqs = freq_axis[np.any(line_indices, axis=0)]\n",
-    "    else:\n",
-    "        flagged_freqs = freq_axis[line_indices]\n",
-    "    print(\"Detected line frequencies [Hz]:\", np.round(flagged_freqs, 1))\n",
-    "\n",
-    "    fig, axes = plt.subplots(1, 2, figsize=(14, 4))\n",
-    "    spec_snr.plot(ax=axes[0], norm=\"log\", vmin=0.1, vmax=100)\n",
-    "    axes[0].set_title(\"SNR spectrogram (with 60 Hz power line)\")\n",
-    "    fig.colorbar(next((c for c in axes[0].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[0], label=\"SNR²\")\n",
-    "\n",
-    "    spec_noline.plot(ax=axes[1], norm=\"log\", vmin=0.1, vmax=100)\n",
-    "    axes[1].set_title(\"After line-removal clean\")\n",
-    "    fig.colorbar(next((c for c in axes[1].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[1], label=\"SNR²\")\n",
-    "\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        plt.tight_layout()\n",
-    "    plt.show()\n"
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    plt.tight_layout()\n",
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "b8fe9db8",
+   "id": "14dd9ee0",
    "metadata": {},
    "source": [
-    "### 4d. Full Cleaning Pipeline (`method='combined'`)\n",
+    "### 4d. 完全クリーニングパイプライン (`method='combined'`)\n",
     "\n",
-    "Runs threshold → rolling-median → line-removal in sequence.  \n",
-    "Recommended as a one-stop solution for commissioning-style data quality checks."
+    "threshold → rolling-median → line-removal を順に適用します。  \n",
+    "コミッショニングスタイルのデータ品質チェックに推奨のワンストップ解法です。"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "ed00ccfa",
+   "id": "7894d3bb",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-05T23:59:50.983608Z",
-     "iopub.status.busy": "2026-04-05T23:59:50.983493Z",
-     "iopub.status.idle": "2026-04-06T00:01:00.529323Z",
-     "shell.execute_reply": "2026-04-06T00:01:00.528612Z"
+     "iopub.execute_input": "2026-04-05T23:59:51.143761Z",
+     "iopub.status.busy": "2026-04-05T23:59:51.143643Z",
+     "iopub.status.idle": "2026-04-06T00:01:00.867927Z",
+     "shell.execute_reply": "2026-04-06T00:01:00.867077Z"
     }
    },
    "outputs": [
@@ -806,57 +806,58 @@
     }
    ],
    "source": [
+    "import warnings\n",
+    "# ── combined pipeline ─────────────────────────────────────────────────────────\n",
+    "# threshold → rolling_median → line_removal in one call.\n",
+    "spec_clean = spec.clean(\n",
+    "    method=\"combined\",\n",
+    "    threshold=5.0,\n",
+    "    window_size=10,\n",
+    "    persistence_threshold=0.8,\n",
+    "    amplitude_threshold=3.0,\n",
+    ")\n",
+    "\n",
+    "fig, axes = plt.subplots(1, 2, figsize=(14, 4))\n",
+    "spec.plot(ax=axes[0], norm=\"log\")\n",
+    "axes[0].set_title(\"Raw spectrogram\")\n",
+    "fig.colorbar(next((c for c in axes[0].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[0], label=\"Power\")\n",
+    "\n",
+    "spec_clean.plot(ax=axes[1], norm=\"log\")\n",
+    "axes[1].set_title(\"Fully cleaned spectrogram  (method='combined')\")\n",
+    "fig.colorbar(next((c for c in axes[1].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[1], label=\"Normalised power []\")\n",
+    "\n",
     "with warnings.catch_warnings():\n",
-    "    warnings.simplefilter('ignore')\n",
-    "\n",
-    "    import warnings\n",
-    "    # ── combined pipeline ─────────────────────────────────────────────────────────\n",
-    "    # threshold → rolling_median → line_removal in one call.\n",
-    "    spec_clean = spec.clean(\n",
-    "        method=\"combined\",\n",
-    "        threshold=5.0,\n",
-    "        window_size=10,\n",
-    "        persistence_threshold=0.8,\n",
-    "        amplitude_threshold=3.0,\n",
-    "    )\n",
-    "\n",
-    "    fig, axes = plt.subplots(1, 2, figsize=(14, 4))\n",
-    "    spec.plot(ax=axes[0], norm=\"log\")\n",
-    "    axes[0].set_title(\"Raw spectrogram\")\n",
-    "    fig.colorbar(next((c for c in axes[0].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[0], label=\"Power\")\n",
-    "\n",
-    "    spec_clean.plot(ax=axes[1], norm=\"log\")\n",
-    "    axes[1].set_title(\"Fully cleaned spectrogram  (method='combined')\")\n",
-    "    fig.colorbar(next((c for c in axes[1].get_children() if hasattr(c, \"get_clim\")), None) or __import__(\"matplotlib.cm\", fromlist=[\"ScalarMappable\"]).ScalarMappable(), ax=axes[1], label=\"Normalised power []\")\n",
-    "\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
-    "        plt.tight_layout()\n",
-    "    plt.show()\n"
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    with warnings.catch_warnings():\n",
+    "    warnings.filterwarnings(\"ignore\", message=\"This figure includes Axes that are not compatible with tight_layout\")\n",
+    "    plt.tight_layout()\n",
+    "plt.show()\n"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "587dacef",
+   "id": "790ab6f1",
    "metadata": {},
    "source": [
-    "## 5. Summary\n",
+    "## 5. まとめ\n",
     "\n",
-    "All methods and their purposes:"
+    "全メソッドと目的の一覧："
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "8ca8a052",
+   "id": "9d6195a5",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2026-04-06T00:01:00.531238Z",
-     "iopub.status.busy": "2026-04-06T00:01:00.531116Z",
-     "iopub.status.idle": "2026-04-06T00:01:00.534425Z",
-     "shell.execute_reply": "2026-04-06T00:01:00.533966Z"
+     "iopub.execute_input": "2026-04-06T00:01:00.870036Z",
+     "iopub.status.busy": "2026-04-06T00:01:00.869795Z",
+     "iopub.status.idle": "2026-04-06T00:01:00.873533Z",
+     "shell.execute_reply": "2026-04-06T00:01:00.873095Z"
     }
    },
    "outputs": [
