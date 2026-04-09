@@ -296,7 +296,7 @@ exclude = "gwexpy/gui/reference-dtt/.*|gwexpy/gui/reference_ndscope/.*|tests/.*"
 addopts = "--import-mode=importlib"
 testpaths = ["tests"]
 pythonpath = ["."]
-norecursedirs = ["gwexpy/gui/reference-dtt"]
+norecursedirs = ["gwexpy/gui", "gwexpy/gui/reference-dtt"]
 markers = [
     "gui: GUI integration tests",
     "nds: NDS server connection tests",

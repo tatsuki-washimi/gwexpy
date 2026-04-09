@@ -1,3 +1,4 @@
+import pytest; pytest.importorskip("xarray")
 """Tests for xarray ↔ ScalarField / VectorField bridge.
 
 These tests do NOT require MetPy or wrf-python; only xarray is needed.
