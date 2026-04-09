@@ -1,5 +1,4 @@
-"""gwexpy: GWpy Expansions for Experiments
-========================================
+"""gwexpy: GWpy Expansions for Experiments.
 
 This package extends GWpy with additional functionality for
 gravitational wave and time-series data analysis.
