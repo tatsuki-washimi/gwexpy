@@ -178,7 +178,11 @@ autodoc_mock_imports = [
     "cupy",
     "pygmt",
     "PyQt5",
+    "qtpy",
 ]
+
+# Allow notebook errors during documentation build (temporary for heavy notebooks)
+nbsphinx_allow_errors = True
 
 source_suffix = {
     ".rst": "restructuredtext",

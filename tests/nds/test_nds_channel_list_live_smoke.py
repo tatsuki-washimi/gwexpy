@@ -21,6 +21,7 @@ def _default_channel_pattern() -> str:
 
 
 @pytest.mark.nds
+@pytest.mark.network
 def test_channel_list_worker_fetches_live_channels(nds_backend):
     """
     Live smoke test for ChannelListWorker.

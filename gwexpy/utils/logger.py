@@ -5,9 +5,7 @@ import sys
 
 
 def get_logger(name="gwexpy"):
-    """
-    Get a logger with a default configuration.
-    """
+    """Get a logger with a default configuration."""
     logger = logging.getLogger(name)
     if not logger.handlers:
         handler = logging.StreamHandler(sys.stdout)

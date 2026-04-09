@@ -303,6 +303,7 @@ markers = [
     "freeze_time: tests that use freezegun to mock time",
     "long: long running tests",
     "flaky: mark test as flaky (used by gwpy)",
+    "network: tests requiring external network access (GWOSC, DataFind, etc.)",
 ]
 filterwarnings = [
     "ignore:Module already imported so cannot be rewritten. gwpy.testing.fixtures:pytest.PytestAssertRewriteWarning",

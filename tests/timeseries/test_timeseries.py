@@ -22,16 +22,19 @@ class TestTimeSeries(gwpy_test_module.TestTimeSeries):  # noqa: F405
         except OSError:
             pytest.skip(reason)
 
+    @pytest.mark.network
     def test_find_datafind_runtimeerror(self, *args, **kwargs):
         self._require_host(
             "datafind.gwosc.org", "network unavailable for datafind tests"
         )
         return super().test_find_datafind_runtimeerror(*args, **kwargs)
 
+    @pytest.mark.network
     def test_fetch_open_data_error(self, *args, **kwargs):
         self._require_host("gwosc.org", "network unavailable for GWOSC tests")
         return super().test_fetch_open_data_error(*args, **kwargs)
 
+    @pytest.mark.network
     def test_find_datafind_httperror(self, *args, **kwargs):
         self._require_host(
             "datafind.gwosc.org", "network unavailable for datafind tests"

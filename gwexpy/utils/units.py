@@ -1,8 +1,7 @@
-"""
+"""Bidirectional conversion between Pint and astropy unit systems.
+
 gwexpy.utils.units
 ------------------
-
-Bidirectional conversion between Pint and astropy unit systems.
 
 MetPy and several other scientific Python packages use Pint for unit handling,
 while GWexpy uses ``astropy.units``.  This module provides thin wrappers that
@@ -76,6 +75,7 @@ def pint_unit_to_astropy_unit(pint_unit: Any) -> u.UnitBase:
     ------
     ValueError
         If the unit string cannot be parsed by astropy.
+
     """
     raw = str(pint_unit)
 
@@ -119,6 +119,7 @@ def astropy_unit_to_pint_unit(astropy_unit: u.UnitBase | str) -> Any:
         If the unit string cannot be parsed by Pint.
     ImportError
         If ``pint`` is not installed.
+
     """
     pint = require_optional("pint")
     ureg = pint.UnitRegistry()
@@ -155,6 +156,7 @@ def pint_to_astropy(pint_quantity: Any) -> u.Quantity:
     -------
     astropy.units.Quantity
         Equivalent astropy quantity with the same magnitude and unit.
+
     """
     magnitude = pint_quantity.magnitude
     astropy_unit = pint_unit_to_astropy_unit(pint_quantity.units)
@@ -178,6 +180,7 @@ def astropy_to_pint(astropy_quantity: u.Quantity) -> Any:
     ------
     ImportError
         If ``pint`` is not installed.
+
     """
     pint = require_optional("pint")
     ureg = pint.UnitRegistry()
