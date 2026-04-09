@@ -54,7 +54,12 @@ jobs:
         env:
           PYTHONFAULTHANDLER: "1"
         run: |
-          pytest -q --doctest-modules --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy --cov-report=xml --ignore=tests/gui/ tests/ gwexpy/
+          # Use -m "not network" by default to avoid CI timeouts
+          PYTEST_OPTS="-q --doctest-modules --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy --cov-report=xml --ignore=tests/gui/"
+          if [[ ! "${{ github.event.head_commit.message }}" =~ "\[network-test\]" ]]; then
+            PYTEST_OPTS="$PYTEST_OPTS -m 'not network'"
+          fi
+          pytest $PYTEST_OPTS tests/ gwexpy/
 
       - name: Run paper notebooks
         if: "!contains(github.event.head_commit.message, '[gui-test]')"
@@ -88,7 +93,11 @@ jobs:
           PYTHONFAULTHANDLER: "1"
           PYTEST_SCREENSHOT_DIR: artifacts/screenshots
         run: |
-          xvfb-run -a -s "-screen 0 1920x1080x24" pytest -q --doctest-modules --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy --cov-report=xml tests/ gwexpy/
+          PYTEST_OPTS="-q --doctest-modules --forked --nbmake --nbmake-timeout=600 --nbmake-kernel=python3 --cov=gwexpy --cov-report=xml"
+          if [[ ! "${{ github.event.head_commit.message }}" =~ "\[network-test\]" ]]; then
+            PYTEST_OPTS="$PYTEST_OPTS -m 'not network'"
+          fi
+          xvfb-run -a -s "-screen 0 1920x1080x24" pytest $PYTEST_OPTS tests/ gwexpy/
 
       - name: Run paper notebooks (with GUI)
         if: contains(github.event.head_commit.message, '[gui-test]')

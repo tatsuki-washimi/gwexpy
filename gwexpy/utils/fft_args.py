@@ -23,8 +23,7 @@ def parse_fftlength_or_overlap(
     sample_rate: Optional[float] = None,
     arg_name: str = "fftlength",
 ) -> tuple[Optional[float], Optional[int]]:
-    """
-    Parse fftlength or overlap argument for gwexpy public API.
+    """Parse fftlength or overlap argument for gwexpy public API.
 
     This function converts user-provided values (in seconds or time-like
     Quantity) into both seconds and sample counts for internal use.
@@ -76,6 +75,7 @@ def parse_fftlength_or_overlap(
     >>> # None input
     >>> parse_fftlength_or_overlap(None, sample_rate=256)
     (None, None)
+
     """
     if value is None:
         return (None, None)
@@ -126,8 +126,7 @@ def parse_fftlength_or_overlap(
 
 
 def check_deprecated_kwargs(**kwargs):
-    """
-    Check for deprecated nperseg usage and raise TypeError.
+    """Check for deprecated nperseg usage and raise TypeError.
 
     Note: noverlap is now supported as a valid parameter when used with nfft.
 
@@ -149,6 +148,7 @@ def check_deprecated_kwargs(**kwargs):
     Traceback (most recent call last):
         ...
     TypeError: nperseg is removed from the public API. Use fftlength (seconds) or nfft (samples) instead.
+
     """
     if "nperseg" in kwargs:
         raise TypeError(
@@ -169,8 +169,7 @@ def validate_and_convert_fft_params(
     noverlap: Optional[int] = None,
     sample_rate: Optional[float] = None,
 ) -> tuple[Optional[float], Optional[float]]:
-    """
-    Validate and convert FFT parameters from either time-based or sample-based specification.
+    """Validate and convert FFT parameters from either time-based or sample-based specification.
 
     This function supports two mutually exclusive parameter sets:
     1. Time-based (high-level): fftlength (seconds) and overlap (seconds)
@@ -220,6 +219,7 @@ def validate_and_convert_fft_params(
     Traceback (most recent call last):
         ...
     ValueError: Cannot use noverlap (samples) with fftlength (seconds). Use overlap instead.
+
     """
     # Check for mutually exclusive parameters
     if fftlength is not None and nfft is not None:
@@ -285,8 +285,7 @@ def validate_and_convert_fft_params(
 def get_default_overlap(
     fftlength: Optional[float], window: str = "hann"
 ) -> Optional[float]:
-    """
-    Get the recommended overlap for a given window function (GWpy-compatible).
+    """Get the recommended overlap for a given window function (GWpy-compatible).
 
     Parameters
     ----------
@@ -316,6 +315,7 @@ def get_default_overlap(
     >>> get_default_overlap(2.0, window='boxcar')
     0.0
     >>> get_default_overlap(None, window='hann')
+
     """
     if fftlength is None:
         return None
