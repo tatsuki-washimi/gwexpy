@@ -72,6 +72,7 @@ def _reconstruct_timestamps(
     -------
     gps_times : ndarray, shape (N,)
         GPS timestamps.
+
     """
     nrows = raw_data.shape[0]
     gps = np.empty(nrows, dtype=float)
@@ -154,6 +155,7 @@ def _resample_uniform(
     -------
     new_times, new_values : ndarray
         Uniformly sampled arrays.
+
     """
     dt = 1.0 / sample_rate
     t_start = times[0]
@@ -212,6 +214,7 @@ def read_timeseriesdict_csv(
         Overrides config.sample_rate if both are given.
     resample_method : str
         Resampling method: ``"interpolate"`` or ``"asfreq"``.
+
     """
     from .. import TimeSeriesDict
 

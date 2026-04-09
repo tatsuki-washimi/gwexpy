@@ -1,5 +1,4 @@
-"""
-TDMS (National Instruments) reader for gwexpy.
+"""TDMS (National Instruments) reader for gwexpy.
 """
 
 from __future__ import annotations
@@ -40,8 +39,7 @@ def read_timeseriesdict_tdms(
     epoch: float | datetime.datetime | None = None,
     **kwargs,
 ) -> TimeSeriesDict:
-    """
-    Read a TDMS file into a TimeSeriesDict.
+    """Read a TDMS file into a TimeSeriesDict.
 
     Parameters
     ----------
@@ -54,6 +52,7 @@ def read_timeseriesdict_tdms(
     epoch : float or datetime, optional
         Override the start time (GPS seconds or datetime).
         If not provided, uses the timestamp from the TDMS file properties.
+
     """
     TdmsFile = _import_nptdms()
     tdms_file = TdmsFile.read(source)

@@ -19,8 +19,7 @@ T = TypeVar("T", bound="TimeSeries")
 def to_xarray(
     ts: TimeSeries, time_coord: Literal["datetime", "seconds", "gps"] = "datetime"
 ) -> xr.DataArray:
-    """
-    TimeSeries -> xarray.DataArray
+    """TimeSeries -> xarray.DataArray
     """
     xr = require_optional("xarray")
 
@@ -199,6 +198,7 @@ def from_xarray_field(
         When *da* is a DataArray or *cls* is ScalarField.
     VectorField
         When *da* is a Dataset or *cls* is VectorField with a DataArray.
+
     """
     xr = require_optional("xarray")
     from gwexpy.fields import ScalarField, VectorField  # noqa: PLC0415
@@ -312,6 +312,7 @@ def to_xarray_field(
         When *field* is a ScalarField.
     xarray.Dataset
         When *field* is a VectorField.
+
     """
     xr = require_optional("xarray")
     from gwexpy.fields import VectorField  # noqa: PLC0415

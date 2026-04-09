@@ -16,6 +16,7 @@ Examples
 
 >>> # Or equivalently, just import the top-level package:
 >>> import gwexpy  # register_all() is called automatically
+
 """
 
 from __future__ import annotations
@@ -35,6 +36,7 @@ def register_all(*, include_io: bool = True) -> None:
         If ``True`` (default), also trigger I/O format registration
         (readers, writers, identifiers).  Set to ``False`` to register
         only constructors.
+
     """
     global _bootstrapped
     if _bootstrapped:

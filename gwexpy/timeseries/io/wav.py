@@ -1,5 +1,4 @@
-"""
-WAV format reader for gwexpy.
+"""WAV format reader for gwexpy.
 Wrapper around scipy.io.wavfile to support TimeSeriesDict and metadata.
 """
 
@@ -33,8 +32,7 @@ def read_timeseriesdict_wav(
     extract_metadata: bool = False,
     **kwargs,
 ):
-    """
-    Read a WAV file into a TimeSeriesDict.
+    """Read a WAV file into a TimeSeriesDict.
 
     Parameters
     ----------
@@ -64,6 +62,7 @@ def read_timeseriesdict_wav(
     Notes
     -----
     Channels are named 'channel_0', 'channel_1', etc.
+
     """
     # Filter kwargs for wavfile.read
     scipy_kwargs = {
@@ -132,8 +131,7 @@ def read_timeseriesdict_wav(
 
 
 def read_timeseries_wav(source, **kwargs):
-    """
-    Read a WAV file into a TimeSeries.
+    """Read a WAV file into a TimeSeries.
     If multiple channels are present, returns the first one.
     """
     tsd = read_timeseriesdict_wav(source, **kwargs)

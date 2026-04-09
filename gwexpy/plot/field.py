@@ -6,16 +6,14 @@ __all__ = ["FieldPlot"]
 
 
 class FieldPlot(Plot):
-    """
-    Enhanced plot class for visualizing ScalarField, VectorField, and TensorField.
+    """Enhanced plot class for visualizing ScalarField, VectorField, and TensorField.
 
     Provides methods to slice 4D fields and render them as 2D maps (pcolormesh),
     vector plots (quiver/streamplot), or component grids.
     """
 
     def __init__(self, *args, **kwargs):
-        """
-        Initialize FieldPlot.
+        """Initialize FieldPlot.
 
         If a field is passed as the first argument, it initializes the plot
         but does not automatically render it (unless method is implicit).
@@ -34,8 +32,7 @@ class FieldPlot(Plot):
         super().__init__(*args, **kwargs)
 
     def add_scalar(self, field, x=None, y=None, slice_kwargs=None, **kwargs):
-        """
-        Add a scalar field slice to the plot.
+        """Add a scalar field slice to the plot.
 
         Parameters
         ----------
@@ -49,6 +46,7 @@ class FieldPlot(Plot):
             Fixed coordinates for slicing (e.g. {'z': 0, 't': 10}).
         **kwargs
             Arguments passed to pcolormesh (cmap, vmin, vmax, alpha, etc.)
+
         """
         if slice_kwargs is None:
             slice_kwargs = {}
@@ -92,8 +90,7 @@ class FieldPlot(Plot):
     def add_vector(
         self, field, x=None, y=None, mode="quiver", slice_kwargs=None, **kwargs
     ):
-        """
-        Add a vector field slice to the plot.
+        """Add a vector field slice to the plot.
 
         Parameters
         ----------
@@ -101,6 +98,7 @@ class FieldPlot(Plot):
             The field to plot.
         mode : {'quiver', 'streamline'}
             Plotting mode.
+
         """
         if slice_kwargs is None:
             slice_kwargs = {}

@@ -1,5 +1,4 @@
-"""
-gwexpy.timeseries.io
+"""gwexpy.timeseries.io
 --------------------
 
 Registrations for additional TimeSeries readers.

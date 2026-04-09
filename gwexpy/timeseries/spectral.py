@@ -1,5 +1,4 @@
-"""
-Spectral matrix calculation helpers for TimeSeries collections.
+"""Spectral matrix calculation helpers for TimeSeries collections.
 """
 
 from __future__ import annotations
@@ -77,8 +76,7 @@ def csd_matrix_from_collection(
     include_diagonal=True,
     **kwargs,
 ):
-    """
-    Compute Cross-Spectral Density (CSD) matrix for a TimeSeries collection.
+    """Compute Cross-Spectral Density (CSD) matrix for a TimeSeries collection.
 
     For self-matrices (other is None), the diagonal is always the PSD (auto PSD)
     and must be computed; include_diagonal=False is not allowed.
@@ -213,8 +211,7 @@ def coherence_matrix_from_collection(
     diagonal_value=1.0,
     **kwargs,
 ):
-    """
-    Compute coherence matrix for a TimeSeries collection.
+    """Compute coherence matrix for a TimeSeries collection.
 
     If include_diagonal is True and diagonal_value is not None, the diagonal is
     filled with that value without computing coherence. If diagonal_value is

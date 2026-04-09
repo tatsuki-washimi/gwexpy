@@ -224,6 +224,7 @@ class HistogramDict(DictMapMixin, HistogramBaseDict[Histogram]):
     >>> hd['H1'] = h
     >>> hd
     HistogramDict([('H1', <Histogram (nbins=2, unit=)>)])
+
     """
 
     EntryClass = Histogram
@@ -409,6 +410,7 @@ class HistogramList(ListMapMixin, HistogramBaseList[Histogram]):
     >>> hl = HistogramList([h])
     >>> hl
     [<Histogram (nbins=2, unit=)>]
+
     """
 
     EntryClass = Histogram

@@ -2,8 +2,7 @@ from __future__ import annotations
 
 
 def to_astropy_timeseries(ts, column="value", time_format="gps"):
-    """
-    ts: TimeSeries
+    """ts: TimeSeries
     """
     # astropy is hard requirement for gwpy, but TimeSeries class might be separate.
     # We can import directly usually.
@@ -26,8 +25,7 @@ def to_astropy_timeseries(ts, column="value", time_format="gps"):
 
 
 def from_astropy_timeseries(cls, ap_ts, column="value", unit=None):
-    """
-    ap_ts: astropy.timeseries.TimeSeries
+    """ap_ts: astropy.timeseries.TimeSeries
     """
     data = ap_ts[column].value  # Quantity or value?
     if hasattr(ap_ts[column], "unit") and unit is None:

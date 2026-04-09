@@ -152,6 +152,7 @@ def _detect_time_units(
         The dt for each series.
     has_time_dt : bool
         True if any dt has physical_type == 'time'.
+
     """
     dts: list[u.Quantity] = []
     has_time_dt = False
@@ -215,6 +216,7 @@ def _standardize_time_units(
         The common unit for time axes.
     is_time_based : bool
         Whether alignment is time-based.
+
     """
     # Check if we should operate in physical time (seconds)
     is_time_based = has_time_dt
@@ -331,6 +333,7 @@ def _extract_spans(
         Start times in common_time_unit.
     ends : list of float
         End times in common_time_unit.
+
     """
 
     def _get_span_val(ts: "TimeSeries") -> tuple[float, float]:  # noqa: UP037
@@ -422,6 +425,7 @@ def _compute_common_bounds(
         Common start time.
     common_end : float
         Common end time.
+
     """
     if how == "intersection":
         common_t0 = max(starts)
@@ -457,6 +461,7 @@ def _generate_time_grid(
         Number of samples in the grid.
     target_dt_s : float
         Target dt in common_time_unit.
+
     """
     out_unit = common_time_unit
 
@@ -499,6 +504,7 @@ def _align_series_to_grid(
     -------
     values : np.ndarray
         Shape (n_samples, n_channels).
+
     """
     n_channels = len(series_list)
     # Determine output dtype (promote if needed)
@@ -578,8 +584,7 @@ def align_timeseries_collection(
     method: str | None = None,
     tolerance: float | None = None,
 ) -> tuple[npt.NDArray[Any], u.Quantity, dict[str, Any]]:
-    """
-    Align a collection of TimeSeries to a common time axis.
+    """Align a collection of TimeSeries to a common time axis.
 
     All time spans are treated as semi-open intervals [start, end) (end exclusive).
     The common time grid uses ``n_samples = ceil((end - start) / dt)``, so samples
@@ -615,6 +620,7 @@ def align_timeseries_collection(
       raises ``ValueError`` if the intersection is empty.
     - ``how="union"`` spans the semi-open union of all series and uses
       ``fill_value`` outside each series' coverage.
+
     """
     # 1. Validate input
     _validate_alignment_input(series_list)
@@ -671,7 +677,6 @@ def _impute_1d(
     limit: int | None = None,
 ) -> NumericArray:
     """Internal 1D imputation core."""
-
     nans_1d = np.isnan(val_1d)
     if not np.any(nans_1d):
         return val_1d
@@ -807,6 +812,7 @@ def impute_timeseries(
     - When a ``TimeSeries`` is provided, metadata (times/t0/dt/name/unit/channel)
       are preserved. If imputation promotes integer data to float, a new
       ``TimeSeries`` is constructed with the same metadata.
+
     """
     from gwexpy.timeseries.timeseries import TimeSeries
 
@@ -1015,8 +1021,7 @@ def standardize_timeseries(
     ddof: int = 0,
     robust: bool | None = None,
 ) -> tuple[TimeSeries, StandardizationModel]:
-    """
-    Standardize a TimeSeries.
+    """Standardize a TimeSeries.
 
     This function standardizes the input time series data by removing the
     location (mean or median) and scaling by a dispersion measure (standard
@@ -1070,6 +1075,7 @@ def standardize_timeseries(
     >>> ts = TimeSeries([1, 2, 3, 4, 5], dt=1)
     >>> ts_std, model = standardize_timeseries(ts, method='zscore')
     >>> print(ts_std.unit)  # dimensionless
+
     """
     if robust is True:
         method = "robust"
@@ -1137,8 +1143,7 @@ def standardize_matrix(
     ddof: int = 0,
     robust: bool | None = None,
 ) -> TimeSeriesMatrix:
-    """
-    Standardize a TimeSeriesMatrix.
+    """Standardize a TimeSeriesMatrix.
 
     This function standardizes the input matrix data by removing the location
     (mean or median) and scaling by a dispersion measure (standard deviation
@@ -1203,6 +1208,7 @@ def standardize_matrix(
     >>> from gwexpy.timeseries.preprocess import standardize_matrix
     >>> mat = TimeSeriesMatrix(np.random.randn(2, 3, 100), dt=0.01)
     >>> mat_std = standardize_matrix(mat, axis='time')
+
     """
     # Validate axis strictly
     if axis not in ("time", "channel"):
@@ -1278,8 +1284,7 @@ def whiten_matrix(
     eps: float | str | None = "auto",
     n_components: int | None = None,
 ) -> tuple[TimeSeriesMatrix, WhiteningModel]:
-    """
-    Whiten a TimeSeriesMatrix using PCA or ZCA whitening.
+    """Whiten a TimeSeriesMatrix using PCA or ZCA whitening.
 
     Whitening transforms the data so that the covariance matrix becomes the
     identity matrix. This is useful for decorrelating features before machine
@@ -1348,6 +1353,7 @@ def whiten_matrix(
     >>> mat_w, model = whiten_matrix(mat, method='pca')
     >>> # PCA output is flattened
     >>> print(mat_w.shape)  # (6, 1, 100)
+
     """
     from gwexpy.numerics import SAFE_FLOOR_STRAIN
 

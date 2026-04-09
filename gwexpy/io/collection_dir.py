@@ -58,6 +58,7 @@ def write_collection_dir(
         Callback: writer(value, filepath, entry_format).
     overwrite
         If False and the directory exists and is non-empty, raise.
+
     """
     dp = Path(dirpath)
     if dp.exists() and dp.is_file():

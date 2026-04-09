@@ -108,8 +108,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         figsize: Any | None = None,
         **kwargs: Any,
     ):
-        """
-        Plot data.
+        """Plot data.
 
         Parameters
         ----------
@@ -124,6 +123,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
             (width, height) tuple in inches
         **kwargs
             other keyword arguments passed to the plot method
+
         """
         from gwexpy.interop._registry import ConverterRegistry
 
@@ -177,8 +177,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
 
     @classmethod
     def read(cls, source, *args, **kwargs):
-        """
-        Read data into a `FrequencySeriesDict`.
+        """Read data into a `FrequencySeriesDict`.
 
         Parameters
         ----------
@@ -193,6 +192,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         -------
         FrequencySeriesDict
             A new dict containing the data read from the source.
+
         """
         fmt = kwargs.get("format")
         try:
@@ -307,6 +307,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
                      epoch=None,
                      name=None,
                      channel=None)>)])
+
     """
 
     EntryClass = FrequencySeries
@@ -316,8 +317,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
     # ===============================
 
     def crop(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Crop each FrequencySeries in the dict.
+        """Crop each FrequencySeries in the dict.
         In-place operation (GWpy-compatible). Returns self.
         """
         super().crop(*args, **kwargs)
@@ -331,8 +331,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
     # --- In-place Element Operations ---
 
     def append(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Append to each FrequencySeries in the dict (in-place).
+        """Append to each FrequencySeries in the dict (in-place).
         Returns self.
         """
         for fs in self.values():
@@ -340,8 +339,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
         return self
 
     def prepend(self, *args, **kwargs) -> FrequencySeriesDict:
-        """
-        Prepend to each FrequencySeries in the dict (in-place).
+        """Prepend to each FrequencySeries in the dict (in-place).
         Returns self.
         """
         for fs in self.values():
@@ -428,8 +426,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
     # ===============================
 
     def to_pandas(self, **kwargs):
-        """
-        Convert to pandas.DataFrame.
+        """Convert to pandas.DataFrame.
         Keys become columns.
         """
         import pandas as pd
@@ -452,8 +449,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
         return pd.DataFrame(data)
 
     def to_xarray(self):
-        """
-        Convert to xarray.Dataset.
+        """Convert to xarray.Dataset.
         Keys become data variables.
         """
         import xarray as xr
@@ -522,6 +518,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
             The frequency response solution from a Finesse 3 simulation.
         unit : str or astropy.units.Unit, optional
             Unit to assign to the data.
+
         """
         from typing import cast
 
@@ -545,6 +542,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
             Output node name. If *None*, all outputs are included.
         unit : str or astropy.units.Unit, optional
             Unit to assign to the data (e.g., ``"m/sqrt(Hz)"``).
+
         """
         from typing import cast
 
@@ -570,6 +568,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
             The AC analysis result from a PySpice simulation.
         unit : str or astropy.units.Unit, optional
             Unit to assign to the data.
+
         """
         from typing import cast
 
@@ -591,6 +590,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
             The noise analysis result from a PySpice simulation.
         unit : str or astropy.units.Unit, optional
             Unit to assign to the data.
+
         """
         from typing import cast
 
@@ -623,6 +623,7 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
             ``"a"``, ``"t"``, or ``"h"``).
         unit : str or astropy.units.Unit, optional
             Unit to assign to the data.
+
         """
         from typing import cast
 
@@ -750,8 +751,7 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
 
     @classmethod
     def read(cls, source, *args, **kwargs):
-        """
-        Read data into a `FrequencySeriesList`.
+        """Read data into a `FrequencySeriesList`.
 
         Parameters
         ----------
@@ -766,6 +766,7 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
         -------
         FrequencySeriesList
             A new list containing the data read from the source.
+
         """
         fmt = kwargs.get("format")
         try:
@@ -864,6 +865,7 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
                      epoch=None,
                      name=None,
                      channel=None)>]
+
     """
 
     EntryClass = FrequencySeries
@@ -940,36 +942,31 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
     # ===============================
 
     def to_control_frd(self, *args, **kwargs) -> list:
-        """
-        Convert each item to control.FRD.
+        """Convert each item to control.FRD.
         Returns a list of FRD objects.
         """
         return [fs.to_control_frd(*args, **kwargs) for fs in self]
 
     def to_torch(self, *args, **kwargs) -> list:
-        """
-        Convert each item to torch.Tensor.
+        """Convert each item to torch.Tensor.
         Returns a list of Tensors.
         """
         return [fs.to_torch(*args, **kwargs) for fs in self]
 
     def to_tensorflow(self, *args, **kwargs) -> list:
-        """
-        Convert each item to tensorflow.Tensor.
+        """Convert each item to tensorflow.Tensor.
         Returns a list of Tensors.
         """
         return [fs.to_tensorflow(*args, **kwargs) for fs in self]
 
     def to_jax(self, *args, **kwargs) -> list:
-        """
-        Convert each item to jax.Array.
+        """Convert each item to jax.Array.
         Returns a list of Arrays.
         """
         return [fs.to_jax(*args, **kwargs) for fs in self]
 
     def to_cupy(self, *args, **kwargs) -> list:
-        """
-        Convert each item to cupy.ndarray.
+        """Convert each item to cupy.ndarray.
         Returns a list of Arrays.
         """
         return [fs.to_cupy(*args, **kwargs) for fs in self]
@@ -979,8 +976,7 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
     # ===============================
 
     def to_pandas(self, **kwargs):
-        """
-        Convert to pandas.DataFrame.
+        """Convert to pandas.DataFrame.
         Columns are named by channel name or index.
         """
         import pandas as pd
@@ -1001,8 +997,7 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
         return pd.DataFrame(data)
 
     def to_xarray(self):
-        """
-        Convert to xarray.DataArray.
+        """Convert to xarray.DataArray.
         Concatenates along a new dimension 'channel'.
         """
         import xarray as xr

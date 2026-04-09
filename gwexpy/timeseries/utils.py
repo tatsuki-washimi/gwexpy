@@ -1,5 +1,4 @@
-"""
-gwexpy.timeseries.utils
+"""gwexpy.timeseries.utils
 -----------------------
 
 Utility functions for time series axis validation and extraction.
@@ -42,8 +41,7 @@ class FreqAxisInfo(TypedDict):
 
 
 def _coerce_t0_gps(t0: Any) -> Optional[u.Quantity]:
-    """
-    Normalize t0 to LIGO GPS seconds (Quantity, u.s).
+    """Normalize t0 to LIGO GPS seconds (Quantity, u.s).
 
     Rules:
     - int/float (dimensionless) -> seconds
@@ -78,8 +76,7 @@ def _coerce_t0_gps(t0: Any) -> Optional[u.Quantity]:
 
 
 def _extract_axis_info(ts: Any) -> AxisInfo:
-    """
-    Extract axis information for a TimeSeries-like object.
+    """Extract axis information for a TimeSeries-like object.
 
     Parameters
     ----------
@@ -90,6 +87,7 @@ def _extract_axis_info(ts: Any) -> AxisInfo:
     -------
     dict
         Dictionary with keys: 'regular', 'dt', 't0', 'n', 'times'.
+
     """
     axis = getattr(ts, "times", None)
     if axis is None:
@@ -142,8 +140,7 @@ def _extract_axis_info(ts: Any) -> AxisInfo:
 def _validate_common_axis(
     axis_infos: Sequence[AxisInfo], method_name: str
 ) -> tuple[Optional[Any], int]:
-    """
-    Validate that a list of axis infos share a common axis.
+    """Validate that a list of axis infos share a common axis.
 
     Parameters
     ----------
@@ -158,6 +155,7 @@ def _validate_common_axis(
         Common time axis.
     n : int
         Number of samples.
+
     """
     if not axis_infos:
         return None, 0
@@ -209,8 +207,7 @@ def _validate_common_axis(
 
 
 def _extract_freq_axis_info(fs: Any) -> FreqAxisInfo:
-    """
-    Extract frequency-axis information from a FrequencySeries-like object.
+    """Extract frequency-axis information from a FrequencySeries-like object.
 
     Parameters
     ----------
@@ -221,6 +218,7 @@ def _extract_freq_axis_info(fs: Any) -> FreqAxisInfo:
     -------
     dict
         Dictionary with keys: 'regular', 'df', 'f0', 'n', 'freqs'.
+
     """
     freqs = getattr(fs, "frequencies", None)
     if freqs is None:
@@ -271,8 +269,7 @@ def _extract_freq_axis_info(fs: Any) -> FreqAxisInfo:
 def _validate_common_frequency_axis(
     axis_infos: Sequence[FreqAxisInfo], method_name: str
 ) -> tuple[Optional[Any], Optional[Any], Optional[Any], int]:
-    """
-    Validate common frequency axis across FrequencySeries results.
+    """Validate common frequency axis across FrequencySeries results.
 
     Parameters
     ----------
@@ -291,6 +288,7 @@ def _validate_common_frequency_axis(
         Starting frequency.
     n : int
         Number of frequency bins.
+
     """
     if not axis_infos:
         return None, None, None, 0
@@ -342,8 +340,7 @@ def _validate_common_frequency_axis(
 
 
 def _validate_common_epoch(epochs: Sequence[Any], method_name: str) -> Optional[Any]:
-    """
-    Validate that all epochs are identical.
+    """Validate that all epochs are identical.
 
     Parameters
     ----------
@@ -356,6 +353,7 @@ def _validate_common_epoch(epochs: Sequence[Any], method_name: str) -> Optional[
     -------
     epoch
         The common epoch value, or None if list is empty.
+
     """
     if not epochs:
         return None

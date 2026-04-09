@@ -4,8 +4,7 @@ from ._optional import require_optional
 
 
 def to_neo(obj, units=None):
-    """
-    Convert TimeSeries or TimeSeriesMatrix to neo.AnalogSignal.
+    """Convert TimeSeries or TimeSeriesMatrix to neo.AnalogSignal.
     """
     neo = require_optional("neo")
     import quantities as pq  # neo uses quantities
@@ -88,8 +87,7 @@ def to_neo(obj, units=None):
 
 
 def from_neo(cls, sig):
-    """
-    Create TimeSeriesMatrix from neo.AnalogSignal.
+    """Create TimeSeriesMatrix from neo.AnalogSignal.
     """
     # sig shape: (time, ch)
     data = sig.magnitude.T  # (ch, time)

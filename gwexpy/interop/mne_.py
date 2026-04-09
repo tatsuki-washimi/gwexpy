@@ -102,8 +102,7 @@ def _select_items(
 
 
 def to_mne_rawarray(tsd, info=None, picks=None):
-    """
-    Convert a TimeSeries-like object to an ``mne.io.RawArray``.
+    """Convert a TimeSeries-like object to an ``mne.io.RawArray``.
 
     Parameters
     ----------
@@ -113,6 +112,7 @@ def to_mne_rawarray(tsd, info=None, picks=None):
         Optional MNE ``Info``. If omitted, a minimal ``Info`` is created.
     picks
         Optional channel selection (names or indices). Only supported for mapping inputs.
+
     """
     mne = require_optional("mne")
 
@@ -187,8 +187,7 @@ def to_mne_rawarray(tsd, info=None, picks=None):
 
 
 def from_mne_raw(cls, raw, unit_map=None):
-    """
-    raw: mne.io.Raw
+    """raw: mne.io.Raw
     """
     data, times = raw.get_data(return_times=True)
     # data: (n_ch, n_times)
@@ -215,8 +214,7 @@ def from_mne_raw(cls, raw, unit_map=None):
 
 
 def to_mne(data, info=None, **kwargs):
-    """
-    Convert a gwexpy object to an MNE object.
+    """Convert a gwexpy object to an MNE object.
 
     Parameters
     ----------
@@ -231,8 +229,8 @@ def to_mne(data, info=None, **kwargs):
     -------
     mne_object
         The converted MNE object (e.g. RawArray, SpectrumArray, EpochsTFRArray).
-    """
 
+    """
     require_optional("mne")
 
     # Check for Spectrogram (or dict) first because it has both time and freq
@@ -264,8 +262,7 @@ def to_mne(data, info=None, **kwargs):
 
 
 def from_mne(cls, data, **kwargs):
-    """
-    Convert an MNE object to a gwexpy object.
+    """Convert an MNE object to a gwexpy object.
 
     Parameters
     ----------
@@ -279,6 +276,7 @@ def from_mne(cls, data, **kwargs):
     Returns
     -------
     gwexpy object
+
     """
     require_optional("mne")
 

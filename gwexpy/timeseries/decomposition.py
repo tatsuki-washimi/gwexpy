@@ -223,8 +223,7 @@ def pca_fit(
     impute_kwargs=None,
     random_state=None,
 ):
-    """
-    Fit a PCA model to the TimeSeriesMatrix.
+    """Fit a PCA model to the TimeSeriesMatrix.
 
     Parameters
     ----------
@@ -253,6 +252,7 @@ def pca_fit(
     -------
     PCAResult
         Object containing the fitted PCA model and metadata.
+
     """
     _check_sklearn()
 
@@ -303,8 +303,7 @@ def pca_fit(
 
 
 def pca_transform(pca_res, matrix, n_components=None):
-    """
-    Apply PCA dimensionality reduction to the matrix.
+    """Apply PCA dimensionality reduction to the matrix.
 
     Parameters
     ----------
@@ -319,6 +318,7 @@ def pca_transform(pca_res, matrix, n_components=None):
     -------
     TimeSeriesMatrix
         Transformed matrix (components, 1, time).
+
     """
     _check_sklearn()
 
@@ -358,8 +358,7 @@ def pca_transform(pca_res, matrix, n_components=None):
 
 
 def pca_inverse_transform(pca_res, scores_matrix):
-    """
-    Transform data back to its original space.
+    """Transform data back to its original space.
 
     Parameters
     ----------
@@ -372,6 +371,7 @@ def pca_inverse_transform(pca_res, scores_matrix):
     -------
     TimeSeriesMatrix
         Reconstructed matrix in original space (channels, cols, time).
+
     """
     _check_sklearn()
 
@@ -448,8 +448,7 @@ def ica_fit(
     nan_policy="raise",
     impute_kwargs=None,
 ):
-    """
-    Fit an ICA model to the TimeSeriesMatrix.
+    """Fit an ICA model to the TimeSeriesMatrix.
 
     Parameters
     ----------
@@ -484,6 +483,7 @@ def ica_fit(
     -------
     ICAResult
         Fitted ICA result object.
+
     """
     _check_sklearn()
 
@@ -556,8 +556,7 @@ def ica_fit(
 
 
 def ica_transform(ica_res, matrix):
-    """
-    Recover the sources from the matrix (apply ICA).
+    """Recover the sources from the matrix (apply ICA).
 
     Parameters
     ----------
@@ -570,6 +569,7 @@ def ica_transform(ica_res, matrix):
     -------
     TimeSeriesMatrix
         Recovered sources (components, 1, time).
+
     """
     _check_sklearn()
 
@@ -615,8 +615,7 @@ def ica_transform(ica_res, matrix):
 
 
 def ica_inverse_transform(ica_res, sources):
-    """
-    Transform sources back to the mixed signal space.
+    """Transform sources back to the mixed signal space.
 
     Parameters
     ----------
@@ -629,6 +628,7 @@ def ica_inverse_transform(ica_res, sources):
     -------
     TimeSeriesMatrix
         Reconstructed matrix in mixed space.
+
     """
     _check_sklearn()
 

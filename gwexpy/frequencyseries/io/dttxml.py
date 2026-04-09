@@ -1,5 +1,4 @@
-"""
-Frequency-domain dttxml reader.
+"""Frequency-domain dttxml reader.
 """
 
 from __future__ import annotations
@@ -58,6 +57,7 @@ def read_frequencyseriesdict_dttxml(
         If True, use gwexpy's native XML parser instead of the dttxml package.
         Use this to correctly handle complex TF data (subtype 6 phase loss fix).
         Default is False.
+
     """
     if products is None:
         raise ValueError("products must be specified for dttxml")
@@ -122,6 +122,7 @@ def read_frequencyseriesmatrix_dttxml(
         If True, use gwexpy's native XML parser instead of the dttxml package.
         Use this to correctly handle complex TF data (subtype 6 phase loss fix).
         Default is False.
+
     """
     if products is None:
         raise ValueError("products must be specified for dttxml")

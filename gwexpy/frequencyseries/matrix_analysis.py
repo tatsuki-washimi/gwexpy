@@ -29,8 +29,7 @@ class FrequencySeriesMatrixAnalysisMixin:
     """Analysis methods for FrequencySeriesMatrix (FFT, Filtering, Smoothing)."""
 
     def ifft(self: _FrequencySeriesMatrixLike) -> Any:
-        """
-        Compute the inverse FFT of this frequency-domain matrix.
+        """Compute the inverse FFT of this frequency-domain matrix.
 
         Matches GWpy FrequencySeries.ifft normalization.
 
@@ -38,6 +37,7 @@ class FrequencySeriesMatrixAnalysisMixin:
         -------
         TimeSeriesMatrix
             The time-domain matrix resulting from the inverse FFT.
+
         """
         import numpy.fft as fft
 
@@ -71,8 +71,7 @@ class FrequencySeriesMatrixAnalysisMixin:
         )
 
     def filter(self: _FrequencySeriesMatrixLike, *filt: Any, **kwargs: Any) -> Any:
-        """
-        Apply a filter to the FrequencySeriesMatrix.
+        """Apply a filter to the FrequencySeriesMatrix.
 
         Matches GWpy FrequencySeries.filter behavior (magnitude-only response)
         by delegating to gwpy.frequencyseries._fdcommon.fdfilter.
@@ -91,6 +90,7 @@ class FrequencySeriesMatrixAnalysisMixin:
         -------
         FrequencySeriesMatrix
             Filtered matrix.
+
         """
         from gwpy.frequencyseries._fdcommon import _fdfilter
 
@@ -99,8 +99,7 @@ class FrequencySeriesMatrixAnalysisMixin:
     def apply_response(
         self: _FrequencySeriesMatrixLike, response: Any, inplace: bool = False
     ) -> Any:
-        """
-        Apply a complex frequency response to the matrix.
+        """Apply a complex frequency response to the matrix.
 
         Extension method (not in GWpy) to support complex filtering/calibration.
 
@@ -110,6 +109,7 @@ class FrequencySeriesMatrixAnalysisMixin:
             Complex frequency response array aligned with self.frequencies.
         inplace : bool, optional
             If True, modify in-place.
+
         """
         if isinstance(response, u.Quantity):
             h = response
@@ -128,8 +128,7 @@ class FrequencySeriesMatrixAnalysisMixin:
         method: str = "amplitude",
         ignore_nan: bool = True,
     ) -> Any:
-        """
-        Smooth the frequency series matrix along the frequency axis.
+        """Smooth the frequency series matrix along the frequency axis.
 
         Parameters
         ----------
@@ -140,6 +139,7 @@ class FrequencySeriesMatrixAnalysisMixin:
             Default is 'amplitude'.
         ignore_nan : bool, optional
             If True, ignore NaNs during smoothing. Default is True.
+
         """
         from scipy.ndimage import uniform_filter1d
 

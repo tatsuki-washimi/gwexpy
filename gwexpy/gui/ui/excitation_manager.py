@@ -1,5 +1,4 @@
-"""
-gwexpy.gui.ui.excitation_manager - Signal generation and injection management.
+"""gwexpy.gui.ui.excitation_manager - Signal generation and injection management.
 
 This module provides the ExcitationManager class which handles signal generation
 from Excitation panels and injection into the data stream. It follows the DTT
@@ -21,8 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class ExcitationManager:
-    """
-    Manages signal generation and injection for the GUI excitation panels.
+    """Manages signal generation and injection for the GUI excitation panels.
 
     This class is responsible for:
     - Reading excitation panel configurations
@@ -36,13 +34,13 @@ class ExcitationManager:
         The signal generator instance to use for waveform creation.
     exc_controls : dict or None
         Reference to the UI excitation controls dictionary.
+
     """
 
     def __init__(
         self, sig_gen: SignalGenerator, exc_controls: dict[str, Any] | None = None
     ) -> None:
-        """
-        Initialize the ExcitationManager.
+        """Initialize the ExcitationManager.
 
         Parameters
         ----------
@@ -50,6 +48,7 @@ class ExcitationManager:
             The signal generator instance.
         exc_controls : dict, optional
             Reference to the UI excitation controls.
+
         """
         self.sig_gen = sig_gen
         self.exc_controls = exc_controls
@@ -70,8 +69,7 @@ class ExcitationManager:
     def inject_signals(
         self, data_map: dict[str, Any], times: np.ndarray | None, sample_rate: float
     ) -> np.ndarray | None:
-        """
-        Generate and inject signals from all active excitation panels.
+        """Generate and inject signals from all active excitation panels.
 
         This method reads the configuration from each active excitation panel,
         generates the corresponding waveform, and either injects it into an
@@ -91,6 +89,7 @@ class ExcitationManager:
         total_excitation : ndarray or None
             The sum of all generated excitation signals, or None if no signals
             were generated. This can be used for calculating transfer functions.
+
         """
         if times is None or len(times) == 0:
             return None
@@ -160,8 +159,7 @@ class ExcitationManager:
         times: np.ndarray | None,
         sample_rate: float,
     ) -> None:
-        """
-        Publish the total excitation as a dedicated 'Excitation' channel.
+        """Publish the total excitation as a dedicated 'Excitation' channel.
 
         Parameters
         ----------
@@ -173,6 +171,7 @@ class ExcitationManager:
             Time array.
         sample_rate : float
             Sample rate in Hz.
+
         """
         if (
             total_excitation is not None

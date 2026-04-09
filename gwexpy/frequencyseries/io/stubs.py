@@ -1,5 +1,4 @@
-"""
-Placeholder readers for unsupported frequency-domain formats.
+"""Placeholder readers for unsupported frequency-domain formats.
 """
 
 from __future__ import annotations

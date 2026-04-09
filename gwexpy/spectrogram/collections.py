@@ -141,6 +141,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
                  y0=<Quantity 0. Hz>,
                  dy=<Quantity 1. Hz>,
                  yindex=<Index [0., 1.] Hz>)>]
+
     """
 
     def __init__(self, initlist=None):
@@ -276,6 +277,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
             Deprecated: ``t0``/``t1``/``inplace`` and positional ``inplace``
             are accepted for backwards compatibility but will be removed in
             a future release.
+
         """
         start, end, copy = _resolve_crop_compat_args(*args, **kwargs)
 
@@ -368,8 +370,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         return Plot(self, **kwargs)
 
     def plot_summary(self, **kwargs):
-        """
-        Plot List as side-by-side Spectrograms and percentile summaries.
+        """Plot List as side-by-side Spectrograms and percentile summaries.
         """
         from gwexpy.plot.plot import plot_summary
 
@@ -396,6 +397,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         ------
         ValueError
             If shape or axes differ after unit conversion.
+
         """
         import numpy as np
 
@@ -550,6 +552,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
                  y0=<Quantity 0. Hz>,
                  dy=<Quantity 1. Hz>,
                  yindex=<Index [0., 1.] Hz>)>}
+
     """
 
     def __init__(self, dict=None, **kwargs):
@@ -683,6 +686,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         Returns
         -------
         SpectrogramDict
+
         """
         start, end, copy = _resolve_crop_compat_args(*args, **kwargs)
 
@@ -709,6 +713,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         Returns
         -------
         SpectrogramDict
+
         """
         if inplace:
             target = self
@@ -747,6 +752,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         Returns
         -------
         SpectrogramDict
+
         """
         if inplace:
             target = self
@@ -780,6 +786,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         Returns
         -------
         SpectrogramDict
+
         """
         if inplace:
             target = self
@@ -799,8 +806,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         return target
 
     def plot_summary(self, **kwargs):
-        """
-        Plot Dictionary as side-by-side Spectrograms and percentile summaries.
+        """Plot Dictionary as side-by-side Spectrograms and percentile summaries.
         """
         from gwexpy.plot.plot import plot_summary
 
@@ -827,6 +833,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         ------
         ValueError
             If shape or axes differ after unit conversion.
+
         """
         import numpy as np
 

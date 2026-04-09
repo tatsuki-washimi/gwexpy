@@ -7,8 +7,7 @@ from .base import to_plain_array
 
 
 def to_pyspeckit(data, **kwargs):
-    """
-    Convert a gwexpy object to a pyspeckit Spectrum.
+    """Convert a gwexpy object to a pyspeckit Spectrum.
 
     Parameters
     ----------
@@ -20,6 +19,7 @@ def to_pyspeckit(data, **kwargs):
     Returns
     -------
     pyspeckit.Spectrum
+
     """
     pyspeckit = require_optional("pyspeckit")
 
@@ -39,8 +39,7 @@ def to_pyspeckit(data, **kwargs):
 
 
 def from_pyspeckit(cls, spectrum, **kwargs):
-    """
-    Convert a pyspeckit Spectrum to a gwexpy object.
+    """Convert a pyspeckit Spectrum to a gwexpy object.
 
     Parameters
     ----------
@@ -52,6 +51,7 @@ def from_pyspeckit(cls, spectrum, **kwargs):
     Returns
     -------
     FrequencySeries
+
     """
     # Extract data
     data = spectrum.data

@@ -1,5 +1,4 @@
-"""
-Stat-info utilities: association edge extraction and lightweight graph builder.
+"""Stat-info utilities: association edge extraction and lightweight graph builder.
 """
 
 from __future__ import annotations
@@ -24,8 +23,7 @@ def association_edges(
     topk: int | None = None,
     return_dataframe: bool = True,
 ) -> Any:
-    """
-    Compute association edges between a target TimeSeries and a TimeSeriesMatrix.
+    """Compute association edges between a target TimeSeries and a TimeSeriesMatrix.
 
     Returns a DataFrame (default) with columns:
     ["source", "target", "score", "row", "col", "channel"].
@@ -71,8 +69,7 @@ def build_graph(
     directed: bool = False,
     weight: str = "score",
 ) -> Any:
-    """
-    Build a graph object from association edges.
+    """Build a graph object from association edges.
 
     If backend="none", returns edges unchanged.
     """

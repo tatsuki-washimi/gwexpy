@@ -180,8 +180,7 @@ def rolling_mean(
     backend: str = "auto",
     ignore_nan: bool | None = None,
 ):
-    """
-    Rolling mean over the time axis.
+    """Rolling mean over the time axis.
     """
     if ignore_nan is not None:
         nan_policy = "omit" if ignore_nan else "propagate"
@@ -221,8 +220,7 @@ def rolling_std(
     ddof: int = 0,
     ignore_nan: bool | None = None,
 ):
-    """
-    Rolling standard deviation over the time axis.
+    """Rolling standard deviation over the time axis.
     """
     if ignore_nan is not None:
         nan_policy = "omit" if ignore_nan else "propagate"
@@ -262,8 +260,7 @@ def rolling_median(
     backend: str = "auto",
     ignore_nan: bool | None = None,
 ):
-    """
-    Rolling median over the time axis.
+    """Rolling median over the time axis.
     """
     if ignore_nan is not None:
         nan_policy = "omit" if ignore_nan else "propagate"
@@ -302,8 +299,7 @@ def rolling_min(
     backend: str = "auto",
     ignore_nan: bool | None = None,
 ):
-    """
-    Rolling minimum over the time axis.
+    """Rolling minimum over the time axis.
     """
     if ignore_nan is not None:
         nan_policy = "omit" if ignore_nan else "propagate"
@@ -342,8 +338,7 @@ def rolling_max(
     backend: str = "auto",
     ignore_nan: bool | None = None,
 ):
-    """
-    Rolling maximum over the time axis.
+    """Rolling maximum over the time axis.
     """
     if ignore_nan is not None:
         nan_policy = "omit" if ignore_nan else "propagate"

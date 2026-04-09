@@ -88,11 +88,11 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
                  y0=<Quantity 0. Hz>,
                  dy=<Quantity 1. Hz>,
                  yindex=<Index [0., 1.] Hz>)>
+
     """
 
     def __getitem__(self, item: Any) -> Any:
-        """
-        Custom getitem to handle 1D views safely.
+        """Custom getitem to handle 1D views safely.
 
         In some environments (e.g. newer matplotlib/astropy), iterating over a
         2D Spectrogram yields 1D Spectrogram views. GWpy's Array2D.__getitem__
@@ -128,8 +128,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         ignore_nan=True,
         **kwargs,
     ):
-        """
-        Estimate robust ASD from this spectrogram using bootstrap resampling.
+        """Estimate robust ASD from this spectrogram using bootstrap resampling.
 
         This is a convenience wrapper around `gwexpy.spectral.bootstrap_spectrogram`.
 
@@ -183,6 +182,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         ... )
         >>> print(result.value.shape)
         (50,)
+
         """
         from gwexpy.spectral import bootstrap_spectrogram
         from gwexpy.utils.fft_args import check_deprecated_kwargs
@@ -225,8 +225,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         ignore_nan=True,
         **kwargs,
     ):
-        """
-        Convenience wrapper for bootstrap ASD estimation.
+        """Convenience wrapper for bootstrap ASD estimation.
 
         Parameters
         ----------
@@ -270,6 +269,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         ... )
         >>> print(result.value.shape)
         (50,)
+
         """
         return self.bootstrap(
             n_boot=n_boot,
@@ -288,16 +288,14 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         )
 
     def to_th2d(self, error=None):
-        """
-        Convert to ROOT TH2D.
+        """Convert to ROOT TH2D.
         """
         from gwexpy.interop import to_th2d
 
         return to_th2d(self, error=error)
 
     def to_quantities(self, units=None):
-        """
-        Convert to quantities.Quantity (Elephant/Neo compatible).
+        """Convert to quantities.Quantity (Elephant/Neo compatible).
         """
         from gwexpy.interop import to_quantity
 
@@ -305,8 +303,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
     @classmethod
     def from_quantities(cls, q, times, frequencies):
-        """
-        Create Spectrogram from quantities.Quantity.
+        """Create Spectrogram from quantities.Quantity.
 
         Parameters
         ----------
@@ -316,6 +313,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             Time axis.
         frequencies : array-like
             Frequency axis.
+
         """
         from gwexpy.interop import from_quantity
 
@@ -323,16 +321,14 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
     @classmethod
     def from_root(cls, obj, return_error=False):
-        """
-        Create Spectrogram from ROOT TH2D.
+        """Create Spectrogram from ROOT TH2D.
         """
         from gwexpy.interop import from_root
 
         return from_root(cls, obj, return_error=return_error)
 
     def to_mne(self, info: Any | None = None) -> Any:
-        """
-        Convert to MNE-Python object.
+        """Convert to MNE-Python object.
 
         Parameters
         ----------
@@ -342,6 +338,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Returns
         -------
         mne.time_frequency.EpochsTFRArray
+
         """
         from gwexpy.interop import to_mne
 
@@ -349,8 +346,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
     @classmethod
     def from_mne(cls, tfr: Any, **kwargs: Any) -> Any:
-        """
-        Create Spectrogram from MNE-Python TFR object.
+        """Create Spectrogram from MNE-Python TFR object.
 
         Parameters
         ----------
@@ -362,18 +358,19 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Returns
         -------
         Spectrogram or SpectrogramDict
+
         """
         from gwexpy.interop import from_mne
 
         return from_mne(cls, tfr, **kwargs)
 
     def to_obspy(self, **kwargs: Any) -> Any:
-        """
-        Convert to Obspy Stream.
+        """Convert to Obspy Stream.
 
         Returns
         -------
         obspy.Stream
+
         """
         from gwexpy.interop import to_obspy
 
@@ -381,8 +378,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
     @classmethod
     def from_obspy(cls, stream: Any, **kwargs: Any) -> Any:
-        """
-        Create Spectrogram from Obspy Stream.
+        """Create Spectrogram from Obspy Stream.
 
         Parameters
         ----------
@@ -394,6 +390,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Returns
         -------
         Spectrogram
+
         """
         from gwexpy.interop import from_obspy
 
@@ -412,8 +409,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         fs: float | None = None,
         unit: Any | None = None,
     ) -> Any:
-        """
-        Create from a pyroomacoustics STFT object.
+        """Create from a pyroomacoustics STFT object.
 
         Parameters
         ----------
@@ -430,6 +426,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Returns
         -------
         Spectrogram or SpectrogramDict
+
         """
         from gwexpy.interop import from_pyroomacoustics_stft
 
@@ -443,8 +440,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         hop: int | None = None,
         analysis_window: Any | None = None,
     ) -> Any:
-        """
-        Export as a pyroomacoustics STFT object.
+        """Export as a pyroomacoustics STFT object.
 
         Parameters
         ----------
@@ -457,6 +453,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Returns
         -------
         pyroomacoustics.stft.STFT
+
         """
         from gwexpy.interop import to_pyroomacoustics_stft
 
@@ -467,8 +464,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     def rebin(
         self, dt: float | u.Quantity | None = None, df: float | u.Quantity | None = None
     ) -> Spectrogram:
-        """
-        Rebin the spectrogram in time and/or frequency.
+        """Rebin the spectrogram in time and/or frequency.
 
         Parameters
         ----------
@@ -481,6 +477,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         -------
         Spectrogram
             The rebinned spectrogram.
+
         """
         data = self.value
         times = self.times
@@ -557,8 +554,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         return super().pcolormesh(**kwargs)
 
     def radian(self, unwrap: bool = False) -> Spectrogram:
-        """
-        Calculate the phase of this Spectrogram in radians.
+        """Calculate the phase of this Spectrogram in radians.
 
         Parameters
         ----------
@@ -571,6 +567,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Spectrogram
             A new Spectrogram containing the phase in radians.
             All other metadata (times, frequencies, channel, epoch, etc.) are preserved.
+
         """
         # Copy to preserve all metadata (times, frequencies, channel, epoch, metadata dict, etc.)
         new = self.copy()
@@ -597,8 +594,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         return new
 
     def degree(self, unwrap: bool = False) -> Spectrogram:
-        """
-        Calculate the phase of this Spectrogram in degrees.
+        """Calculate the phase of this Spectrogram in degrees.
 
         Parameters
         ----------
@@ -611,6 +607,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Spectrogram
             A new Spectrogram containing the phase in degrees.
             All other metadata (times, frequencies, channel, epoch, etc.) are preserved.
+
         """
         # Re-use radian() implementation which handles unwrap and metadata preservation
         p = self.radian(unwrap=unwrap)
@@ -637,8 +634,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         *,
         percentile: float = 50.0,
     ) -> Spectrogram:
-        """
-        Normalize the spectrogram along the time axis.
+        """Normalize the spectrogram along the time axis.
 
         Parameters
         ----------
@@ -669,6 +665,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         Spectrogram
             Normalized spectrogram. Unit is set to dimensionless for ratio
             methods.
+
         """
         data = self.value.copy()
 
@@ -729,8 +726,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         amplitude_threshold: float = 3.0,
         return_mask: bool = False,
     ) -> Spectrogram | tuple[Spectrogram, np.ndarray]:
-        """
-        Clean the spectrogram by removing artifacts.
+        """Clean the spectrogram by removing artifacts.
 
         Parameters
         ----------
@@ -767,6 +763,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         mask : ndarray, optional
             Boolean mask where True = pixel was cleaned. Only returned when
             *return_mask* is True.
+
         """
         from .cleaning import (
             line_removal_clean,
@@ -825,8 +822,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         return result
 
     def to_timeseries_list(self) -> tuple[TimeSeriesList, Quantity]:
-        """
-        Convert this Spectrogram to a list of TimeSeries, one per frequency bin.
+        """Convert this Spectrogram to a list of TimeSeries, one per frequency bin.
 
         For a Spectrogram with shape ``(ntimes, nfreqs)``, this extracts each
         column (frequency bin) as a TimeSeries with the same time axis.
@@ -856,6 +852,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         5
         >>> ts_list[0].name
         'test_f10.0 Hz'
+
         """
         from gwexpy.interop._registry import ConverterRegistry
 
@@ -902,8 +899,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         return ts_list, frequencies
 
     def to_frequencyseries_list(self) -> tuple[FrequencySeriesList, Quantity]:
-        """
-        Convert this Spectrogram to a list of FrequencySeries, one per time bin.
+        """Convert this Spectrogram to a list of FrequencySeries, one per time bin.
 
         For a Spectrogram with shape ``(ntimes, nfreqs)``, this extracts each
         row (time bin) as a FrequencySeries with the same frequency axis.
@@ -933,6 +929,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         10
         >>> fs_list[0].name
         'test_t0.0 s'
+
         """
         from gwexpy.interop._registry import ConverterRegistry
 

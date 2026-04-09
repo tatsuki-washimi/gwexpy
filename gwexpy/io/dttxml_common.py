@@ -1,5 +1,4 @@
-"""
-Shared utilities for parsing dttxml (Diag GUI XML) files.
+"""Shared utilities for parsing dttxml (Diag GUI XML) files.
 """
 
 from __future__ import annotations
@@ -17,8 +16,7 @@ class ChannelInfo(TypedDict):
 
 
 def extract_xml_channels(filename: str) -> list[ChannelInfo]:
-    """
-    Parse DTT XML to extract channel names and their Active status.
+    """Parse DTT XML to extract channel names and their Active status.
     Returns: list of dict {'name': str, 'active': bool}
     """
     channels: list[ChannelInfo] = []
@@ -96,8 +94,7 @@ def extract_xml_channels(filename: str) -> list[ChannelInfo]:
 
 
 def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.ndarray:
-    """
-    Decode a DTT XML <Stream> element directly.
+    """Decode a DTT XML <Stream> element directly.
 
     This function provides a fallback for cases where dttxml package
     may incorrectly parse complex data (e.g., subtype 6 issue where
@@ -122,6 +119,7 @@ def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.nd
     DTT XML complex format:
     - "floatComplex": interleaved float32 pairs (real, imag)
     - "doubleComplex": interleaved float64 pairs (real, imag)
+
     """
     import base64
 
@@ -165,8 +163,7 @@ def _decode_dtt_stream(stream_text: str, encoding: str, dtype_str: str) -> np.nd
 
 
 def load_dttxml_native(source: str) -> dict:
-    """
-    Parse DTT XML file directly without using dttxml package.
+    """Parse DTT XML file directly without using dttxml package.
 
     This function provides an alternative parser that correctly handles
     complex data types (floatComplex, doubleComplex) which may be
@@ -195,6 +192,7 @@ def load_dttxml_native(source: str) -> dict:
     - 4: Transfer Function real/imag (complex)
     - 5: Response (real)
     - 6: Response complex (floatComplex) - **correctly parsed here**
+
     """
     try:
         tree = ET.parse(source)  # nosec B314
@@ -386,8 +384,7 @@ SUPPORTED_MATRIX = {"TF", "STF", "CSD", "COH"}
 
 
 def load_dttxml_products(source, *, native: bool = False):
-    """
-    Load products from a dttxml file into a normalized mapping.
+    """Load products from a dttxml file into a normalized mapping.
 
     Parameters
     ----------
@@ -415,6 +412,7 @@ def load_dttxml_products(source, *, native: bool = False):
     --------
     >>> # Use native parser to correctly handle complex TF data
     >>> products = load_dttxml_products("measurement.xml", native=True)
+
     """
     # Use native parser if requested or if dttxml is not available
     if native or dttxml is None:

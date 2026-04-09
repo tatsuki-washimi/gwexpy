@@ -1,5 +1,4 @@
-"""
-Data buffer management for NDS data.
+"""Data buffer management for NDS data.
 Adapted from ndscope reference implementation.
 """
 
@@ -17,8 +16,7 @@ class DataBuffer:
         self.step = 0
 
     def update(self, new_data, trend="raw"):
-        """
-        Append new data to the buffer and trim old data.
+        """Append new data to the buffer and trim old data.
         new_data: dict with 'data', 'gps_start', 'step'
         """
         incoming = new_data["data"]
@@ -86,8 +84,7 @@ class DataBufferDict(dict):
         self.lookback = lookback
 
     def update_buffers(self, payload):
-        """
-        payload: dict of {channel: {data:..., gps_start:..., step:...}, ...}
+        """payload: dict of {channel: {data:..., gps_start:..., step:...}, ...}
         trend: 'raw' (fixed for Phase 1)
         """
         for channel, packet in payload.items():

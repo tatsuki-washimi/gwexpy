@@ -1,5 +1,4 @@
-"""
-gwexpy.interop._modal_helpers
+"""gwexpy.interop._modal_helpers
 ------------------------------
 
 Shared helper functions for modal analysis interop modules
@@ -55,6 +54,7 @@ def infer_unit_from_response_type(response_type: str) -> Any:
     -------
     astropy.units.Unit or None
         The inferred unit, or *None* if the response type is unrecognised.
+
     """
     from astropy import units as u
 
@@ -103,6 +103,7 @@ def build_mode_dataframe(
     pandas.DataFrame
         Columns vary depending on supplied arguments.  Always includes
         ``frequency_Hz`` and ``damping_ratio``.
+
     """
     from ._optional import require_optional
 
@@ -201,6 +202,7 @@ def build_frf_matrix(
     Returns
     -------
     FrequencySeriesMatrix
+
     """
     frf_data = np.asarray(frf_data)
     frequencies = np.asarray(frequencies, dtype=float)

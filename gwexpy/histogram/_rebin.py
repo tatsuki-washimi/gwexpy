@@ -53,8 +53,7 @@ def _compute_A_matrix_cached(
 
 
 def compute_A_matrix(old_edges: Any, new_edges: Any) -> np.ndarray:
-    """
-    Compute intersection fraction matrix A for rebinning.
+    """Compute intersection fraction matrix A for rebinning.
 
     A[i, j] represents the fraction of old bin `j` that falls into new bin `i`.
     Assuming `values` represents the *total amount* in each bin (not density),
@@ -73,6 +72,7 @@ def compute_A_matrix(old_edges: Any, new_edges: Any) -> np.ndarray:
     -------
     np.ndarray
         Matrix A of shape (M, N).
+
     """
     # Convert to plain array and then to tuple for hashing
     old_arr = np.asarray(old_edges, dtype=float)
@@ -93,8 +93,7 @@ class HistogramRebinMixin:
     """Mixin to provide rebinning and integration functionality using the A matrix."""
 
     def rebin(self, new_edges: Any, xunit: Any = None, **kwargs: Any) -> Any:
-        """
-        Rebin the histogram into new bins using a fraction intersection matrix.
+        """Rebin the histogram into new bins using a fraction intersection matrix.
 
         Values and covariances are scaled proportionally, maintaining the physical
         summed quantities. Assumes the internal values represent bin totals.
@@ -115,6 +114,7 @@ class HistogramRebinMixin:
         -----
         If `new_edges` extend beyond the current histogram range, the regions
         outside are assumed to have zero content and a warning is issued.
+
         """
         from typing import cast
 
@@ -181,8 +181,7 @@ class HistogramRebinMixin:
         xunit: Any = None,
         return_error: bool = False,
     ) -> Any:
-        """
-        Integrate the histogram over the interval [start, end].
+        """Integrate the histogram over the interval [start, end].
 
         If start or end is None, the boundaries of the histogram are used.
         The result is calculated by identifying the fraction of each bin that
@@ -203,6 +202,7 @@ class HistogramRebinMixin:
         -------
         Quantity or (Quantity, Quantity)
             The integral value, and optionally its uncertainty.
+
         """
         from typing import cast
 

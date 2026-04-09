@@ -4,8 +4,7 @@ from ._optional import require_optional
 
 
 def to_quantity(series, units=None):
-    """
-    Convert a series (TimeSeries, FrequencySeries, etc) to a quantities.Quantity.
+    """Convert a series (TimeSeries, FrequencySeries, etc) to a quantities.Quantity.
 
     Parameters
     ----------
@@ -18,6 +17,7 @@ def to_quantity(series, units=None):
     -------
     quantities.Quantity
         The data wrapped as a Quantity.
+
     """
     pq = require_optional("quantities")
 
@@ -75,8 +75,7 @@ def to_quantity(series, units=None):
 
 
 def from_quantity(cls, q, **kwargs):
-    """
-    Create a GWpy/GWexpy Series from a quantities.Quantity.
+    """Create a GWpy/GWexpy Series from a quantities.Quantity.
 
     Parameters
     ----------
@@ -90,6 +89,7 @@ def from_quantity(cls, q, **kwargs):
     Returns
     -------
     instance of cls
+
     """
     # Extract magnitude (numpy array)
     val = q.magnitude

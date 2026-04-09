@@ -1,5 +1,4 @@
-"""
-Statistical analysis methods for TimeSeries.
+"""Statistical analysis methods for TimeSeries.
 
 This module provides statistical analysis functionality as a mixin class:
 - Imputation: impute
@@ -21,8 +20,7 @@ if TYPE_CHECKING:
 
 
 class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
-    """
-    Mixin class providing statistical analysis methods for TimeSeries.
+    """Mixin class providing statistical analysis methods for TimeSeries.
 
     This mixin is designed to be combined with TimeSeriesCore to create
     the full TimeSeries class.
@@ -41,8 +39,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         max_gap: float | u.Quantity | None = None,
         **kwargs: Any,
     ) -> TimeSeries:
-        """
-        Impute missing values.
+        """Impute missing values.
 
         Parameters
         ----------
@@ -65,6 +62,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         See Also
         --------
         gwexpy.timeseries.preprocess.impute_timeseries
+
         """
         from gwexpy.timeseries.preprocess import impute_timeseries
 
@@ -76,8 +74,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
     def standardize(
         self, *, method: str = "zscore", ddof: int = 0, robust: bool = False
     ) -> TimeSeries:
-        """
-        Standardize the series.
+        """Standardize the series.
 
         Parameters
         ----------
@@ -96,6 +93,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         See Also
         --------
         gwexpy.timeseries.preprocess.standardize_timeseries
+
         """
         from gwexpy.timeseries.preprocess import standardize_timeseries
         from gwexpy.timeseries.timeseries import TimeSeries
@@ -110,8 +108,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
     # ===============================
 
     def fit_arima(self, order: tuple = (1, 0, 0), **kwargs: Any) -> Any:
-        """
-        Fit ARIMA model to the series.
+        """Fit ARIMA model to the series.
 
         Parameters
         ----------
@@ -128,6 +125,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         See Also
         --------
         gwexpy.timeseries.arima.fit_arima
+
         """
         from gwexpy.timeseries.arima import fit_arima
         from gwexpy.timeseries.timeseries import TimeSeries
@@ -135,8 +133,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         return fit_arima(cast(TimeSeries, self), order=order, **kwargs)
 
     def hurst(self, **kwargs: Any) -> Any:
-        """
-        Compute Hurst exponent.
+        """Compute Hurst exponent.
 
         The Hurst exponent is a measure of long-term memory of a time series.
         H < 0.5: anti-persistent (mean-reverting)
@@ -151,14 +148,14 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         See Also
         --------
         gwexpy.timeseries.hurst.hurst
+
         """
         from gwexpy.timeseries.hurst import hurst
 
         return hurst(self, **kwargs)
 
     def local_hurst(self, window: Any, **kwargs: Any) -> TimeSeries:
-        """
-        Compute local Hurst exponent over a sliding window.
+        """Compute local Hurst exponent over a sliding window.
 
         Parameters
         ----------
@@ -175,6 +172,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         See Also
         --------
         gwexpy.timeseries.hurst.local_hurst
+
         """
         from gwexpy.timeseries.hurst import local_hurst
 
@@ -194,8 +192,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> TimeSeries:
-        """
-        Rolling mean over time.
+        """Rolling mean over time.
 
         Parameters
         ----------
@@ -216,6 +213,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         -------
         TimeSeries
             Rolling mean.
+
         """
         from gwexpy.timeseries.rolling import rolling_mean
 
@@ -240,8 +238,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         ddof: int = 0,
         ignore_nan: bool | None = None,
     ) -> TimeSeries:
-        """
-        Rolling standard deviation over time.
+        """Rolling standard deviation over time.
 
         Parameters
         ----------
@@ -264,6 +261,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         -------
         TimeSeries
             Rolling standard deviation.
+
         """
         from gwexpy.timeseries.rolling import rolling_std
 
@@ -288,8 +286,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> TimeSeries:
-        """
-        Rolling median over time.
+        """Rolling median over time.
 
         Parameters
         ----------
@@ -310,6 +307,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         -------
         TimeSeries
             Rolling median.
+
         """
         from gwexpy.timeseries.rolling import rolling_median
 
@@ -333,8 +331,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> TimeSeries:
-        """
-        Rolling minimum over time.
+        """Rolling minimum over time.
 
         Parameters
         ----------
@@ -355,6 +352,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         -------
         TimeSeries
             Rolling minimum.
+
         """
         from gwexpy.timeseries.rolling import rolling_min
 
@@ -378,8 +376,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> TimeSeries:
-        """
-        Rolling maximum over time.
+        """Rolling maximum over time.
 
         Parameters
         ----------
@@ -400,6 +397,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         -------
         TimeSeries
             Rolling maximum.
+
         """
         from gwexpy.timeseries.rolling import rolling_max
 

@@ -1,5 +1,4 @@
-"""
-NetCDF4 reader/writer for gwexpy (via xarray).
+"""NetCDF4 reader/writer for gwexpy (via xarray).
 
 Reads variables that have a ``time`` dimension and converts them to
 :class:`~gwexpy.timeseries.TimeSeries`.
@@ -69,6 +68,7 @@ def read_timeseriesdict_netcdf4(
         Physical unit override applied to every channel.
     time_coord : str, optional
         Name of the time coordinate.  Auto-detected if *None*.
+
     """
     xr = _import_xarray()
 

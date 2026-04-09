@@ -12,8 +12,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class HurstResult:
-    """
-    Result of a Hurst exponent calculation.
+    """Result of a Hurst exponent calculation.
 
     Attributes
     ----------
@@ -25,6 +24,7 @@ class HurstResult:
         Backend library used ('hurst', 'hurst-exponent', 'exp-hurst').
     details : dict
         Additional details from the backend (e.g., 'c', 'data', 'fit').
+
     """
 
     H: float
@@ -105,8 +105,7 @@ def hurst(
     impute_kwargs=None,
     **kwargs,
 ) -> float | HurstResult:
-    """
-    Calculate the Hurst exponent of a time series.
+    """Calculate the Hurst exponent of a time series.
 
     Parameters
     ----------
@@ -129,8 +128,8 @@ def hurst(
     -------
     float or HurstResult
         Estimated Hurst exponent or detailed result object.
-    """
 
+    """
     x = timeseries.value
 
     # NaN Handling
@@ -200,8 +199,7 @@ def local_hurst(
     impute_kwargs=None,
     **kwargs,
 ):
-    """
-    Compute local Hurst exponent using a sliding window.
+    """Compute local Hurst exponent using a sliding window.
 
     Parameters
     ----------
@@ -224,6 +222,7 @@ def local_hurst(
     -------
     TimeSeries
         A new TimeSeries containing the local Hurst exponents.
+
     """
     from .timeseries import TimeSeries
 

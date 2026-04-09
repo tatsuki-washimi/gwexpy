@@ -20,8 +20,7 @@ def plot_gauch_dashboard(
     rayleigh_spec: Spectrogram | None = None,
     **kwargs: Any,
 ) -> plt.Figure:
-    """
-    Plot a composite dashboard for GauCh/Rayleigh analysis.
+    """Plot a composite dashboard for GauCh/Rayleigh analysis.
 
     Parameters
     ----------
@@ -37,6 +36,7 @@ def plot_gauch_dashboard(
     Returns
     -------
     matplotlib.figure.Figure
+
     """
     figsize = kwargs.pop("figsize", (12, 14))
     fig = plt.figure(figsize=figsize)

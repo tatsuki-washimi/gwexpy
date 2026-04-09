@@ -22,8 +22,7 @@ class Model:
 
 
 class Polynomial(Model):
-    """
-    Polynomial model: f(x) = c0 + c1*x + ... + cn*x^n
+    """Polynomial model: f(x) = c0 + c1*x + ... + cn*x^n
     """
 
     def __init__(self, degree: int):
@@ -50,53 +49,48 @@ class Polynomial(Model):
 
 
 def gaussian(x, A, mu, sigma):
-    """
-    Gaussian distribution.
+    """Gaussian distribution.
     f(x) = A * exp(-0.5 * ((x - mu) / sigma)^2)
     """
     return A * np.exp(-0.5 * ((x - mu) / sigma) ** 2)
 
 
 def exponential(x, A, tau):
-    """
-    Exponential decay.
+    """Exponential decay.
     f(x) = A * exp(-x / tau)
     """
     return A * np.exp(-x / tau)
 
 
 def power_law(x, A, alpha):
-    """
-    Power law.
+    """Power law.
     f(x) = A * x^alpha
     """
     return A * x**alpha
 
 
 def damped_oscillation(x, A, tau, f, phi=0):
-    """
-    Damped oscillation.
+    """Damped oscillation.
     f(x) = A * exp(-x / tau) * sin(2 * pi * f * x + phi)
     """
     return A * np.exp(-x / tau) * np.sin(2 * np.pi * f * x + phi)
 
 
 def landau(x, A, mu, sigma):
-    """
-    Landau distribution approximation (Moyal distribution).
+    """Landau distribution approximation (Moyal distribution).
     f(x) = A * exp(-0.5 * (lambda + exp(-lambda))), where lambda = (x - mu) / sigma
 
     Note:
         A is a scaling factor, not the peak amplitude.
         The peak height occurs at lambda=0 and is equal to A * exp(-0.5) ≈ 0.607 * A.
+
     """
     lam = (x - mu) / sigma
     return A * np.exp(-0.5 * (lam + np.exp(-lam)))
 
 
 def lorentzian(x, A, x0, gamma):
-    """
-    Lorentzian (Cauchy) distribution.
+    """Lorentzian (Cauchy) distribution.
 
     f(x) = A * gamma^2 / ((x - x0)^2 + gamma^2)
 
@@ -112,13 +106,13 @@ def lorentzian(x, A, x0, gamma):
         Center position.
     gamma : float
         Half-width at half-maximum (HWHM).
+
     """
     return A * gamma**2 / ((x - x0) ** 2 + gamma**2)
 
 
 def lorentzian_q(x, A, x0, Q):
-    """
-    Lorentzian with Q-factor parameterization.
+    """Lorentzian with Q-factor parameterization.
 
     gamma = x0 / (2 * Q), then:
     f(x) = A * gamma^2 / ((x - x0)^2 + gamma^2)
@@ -133,14 +127,14 @@ def lorentzian_q(x, A, x0, Q):
         Center frequency.
     Q : float
         Quality factor (Q = x0 / (2 * gamma)).
+
     """
     gamma = x0 / (2 * Q)
     return A * gamma**2 / ((x - x0) ** 2 + gamma**2)
 
 
 def voigt(x, A, x0, sigma, gamma):
-    """
-    Voigt profile (convolution of Gaussian and Lorentzian).
+    """Voigt profile (convolution of Gaussian and Lorentzian).
 
     Uses the Faddeeva function (``scipy.special.wofz``) for efficient
     computation.  Normalized so that the peak value equals *A*.
@@ -162,6 +156,7 @@ def voigt(x, A, x0, sigma, gamma):
     ------
     ImportError
         If ``scipy`` is not installed.
+
     """
     if not _SCIPY_AVAILABLE:
         raise ImportError(
@@ -182,8 +177,7 @@ def voigt(x, A, x0, sigma, gamma):
 
 
 def make_pol_func(n):
-    """
-    Create a polynomial function of degree n with signature (x, p0, p1, ..., pn).
+    """Create a polynomial function of degree n with signature (x, p0, p1, ..., pn).
     f(x) = p0 + p1*x + ... + pn*x^n
     """
     param_names = [f"p{i}" for i in range(n + 1)]
@@ -236,8 +230,7 @@ for i in range(10):
 
 
 def get_model(name: str | Any) -> Any:
-    """
-    Retrieve a model function or object by name (case-insensitive).
+    """Retrieve a model function or object by name (case-insensitive).
     """
     if not isinstance(name, str):
         if callable(name):

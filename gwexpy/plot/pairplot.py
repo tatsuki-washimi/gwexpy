@@ -1,5 +1,4 @@
-"""
-gwexpy.plot.pairplot
+"""gwexpy.plot.pairplot
 --------------------
 
 Pair plot for Series collections.
@@ -80,8 +79,7 @@ def _align_series(series_list: list) -> list:
 
 
 def _normalize_input(data: Any) -> tuple[list, list[str]]:
-    """
-    Normalize input data to a list of series with labels.
+    """Normalize input data to a list of series with labels.
 
     Accepts: list, tuple, dict, TimeSeriesDict, TimeSeriesList, etc.
     """
@@ -119,8 +117,7 @@ def _normalize_input(data: Any) -> tuple[list, list[str]]:
 
 
 class PairPlot:
-    """
-    Pair plot for Series collections.
+    """Pair plot for Series collections.
 
     Visualizes pairwise relationships between series in a collection.
 
@@ -146,6 +143,7 @@ class PairPlot:
     >>> from gwexpy.plot import PairPlot
     >>> plot = PairPlot(timeseries_dict)
     >>> plot.show()
+
     """
 
     def __init__(

@@ -62,6 +62,7 @@ class Histogram(
     >>> h = Histogram([1, 2], [0, 1, 2])
     >>> h
     <Histogram (nbins=2, unit=)>
+
     """
 
     def __init__(
@@ -79,8 +80,7 @@ class Histogram(
         name: str | None = None,
         channel: Any | None = None,
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         values : array-like or Quantity
             Total events or integrated quantity in each bin (Length: n_bins).
@@ -106,6 +106,7 @@ class Histogram(
             Name of this histogram.
         channel : any, optional
             Linked data channel.
+
         """
         # Validate values
         values_q = u.Quantity(values, unit=unit) if unit else u.Quantity(values)
@@ -210,6 +211,7 @@ class Histogram(
         >>> h = h.fill([0.5, 1.5, 1.5])
         >>> h.values
         <Quantity [2., 4.]>
+
         """
         import numpy as np
 

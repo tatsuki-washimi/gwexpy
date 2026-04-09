@@ -48,8 +48,7 @@ class ArimaForecastResult:
 
 
 class ArimaResult:
-    """
-    Result object for ARIMA/SARIMAX modeling on TimeSeries.
+    """Result object for ARIMA/SARIMAX modeling on TimeSeries.
     Wraps statsmodels results and provides TimeSeries-aware methods.
     """
 
@@ -74,8 +73,7 @@ class ArimaResult:
         return default
 
     def predict(self, start=None, end=None, *, dynamic=False) -> TimeSeries:
-        """
-        In-sample prediction using GPS times or steps.
+        """In-sample prediction using GPS times or steps.
 
         Parameters
         ----------
@@ -90,6 +88,7 @@ class ArimaResult:
         -------
         TimeSeries
             Predicted values.
+
         """
         from .timeseries import TimeSeries
 
@@ -112,8 +111,7 @@ class ArimaResult:
     def forecast(
         self, steps: int, *, alpha: float = 0.05
     ) -> tuple[TimeSeries, dict[str, TimeSeries]]:
-        """
-        Out-of-sample forecasts.
+        """Out-of-sample forecasts.
 
         Parameters
         ----------
@@ -155,6 +153,7 @@ class ArimaResult:
         .. [1] GWpy TimeSeries.epoch documentation
         .. [2] LIGO GPS time convention (LIGO-T980044)
         .. [3] Box, G.E.P. & Jenkins, G.M., Time Series Analysis (1976), Ch. 4
+
         """
         from .timeseries import TimeSeries
 
@@ -201,14 +200,14 @@ class ArimaResult:
         )
 
     def params_dict(self) -> dict:
-        """
-        Return model parameters as a dictionary.
+        """Return model parameters as a dictionary.
 
         Returns
         -------
         dict
             Dictionary containing 'params' (parameter values), 'param_names'
             (parameter names), and 'aic', 'bic' if available.
+
         """
         result = {
             "params": self.res.params,
@@ -230,8 +229,7 @@ class ArimaResult:
         return self.res.summary()
 
     def plot(self, forecast_steps=None, alpha=0.05, ax=None, **kwargs):
-        """
-        Plot original data, in-sample fit, and (optional) out-of-sample forecast.
+        """Plot original data, in-sample fit, and (optional) out-of-sample forecast.
 
         Parameters
         ----------
@@ -243,6 +241,7 @@ class ArimaResult:
             Axes to plot on.
         **kwargs
             Passed to plot methods.
+
         """
         from matplotlib import pyplot as plt
 
@@ -306,8 +305,7 @@ def fit_arima(
     impute_kwargs: Optional[dict] = None,
     **kwargs,
 ) -> ArimaResult:
-    """
-    Fit an ARIMA or SARIMAX model to a TimeSeries.
+    """Fit an ARIMA or SARIMAX model to a TimeSeries.
 
     Parameters
     ----------
@@ -328,6 +326,7 @@ def fit_arima(
     -----
     Common upstream warnings from pmdarima/statsmodels are suppressed to keep
     notebook output clean (e.g., convergence and verbose/disp deprecations).
+
     """
     if not STATSMODELS_AVAILABLE:
         raise ImportError(

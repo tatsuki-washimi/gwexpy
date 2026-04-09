@@ -53,13 +53,13 @@ class FrequencySeriesMatrixCoreMixin:
 
     @property
     def xunit(self: _FrequencySeriesMatrixCoreLike) -> u.Unit | None:
-        """
-        The physical unit of the frequency axis.
+        """The physical unit of the frequency axis.
 
         Returns
         -------
         ~astropy.units.Unit
             The unit of the frequencies.
+
         """
         return getattr(self.xindex, "unit", u.dimensionless_unscaled)
 

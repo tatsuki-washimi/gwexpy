@@ -1,5 +1,4 @@
-"""
-GBD (GRAPHTEC data logger) reader.
+"""GBD (GRAPHTEC data logger) reader.
 
 This is a cleaned-up port of the legacy `gbd2gwf.py` workflow, adapted for
 gwexpy TimeSeries/TimeSeriesDict readers.
@@ -34,8 +33,7 @@ GBD_FULL_SCALE = 20000.0
 
 
 def identify_gbd(origin, filepath, fileobj, *args, **kwargs):
-    """
-    Identify GBD file by ASCII header pattern.
+    """Identify GBD file by ASCII header pattern.
 
     GBD files have a unique "HeaderSiz[e]" keyword in the first 4KB.
     This pattern is exclusive to GRAPHTEC data loggers.
@@ -59,6 +57,7 @@ def identify_gbd(origin, filepath, fileobj, *args, **kwargs):
     Notes
     -----
     Reliability: High (★★★) - False positive rate < 0.01%
+
     """
     if filepath is None:
         return False
@@ -96,8 +95,7 @@ def read_timeseriesdict_gbd(
     pad=np.nan,
     **kwargs,
 ) -> TimeSeriesDict:
-    """
-    Read a GRAPHTEC .GBD file into a TimeSeriesDict.
+    """Read a GRAPHTEC .GBD file into a TimeSeriesDict.
 
     Parameters
     ----------
@@ -113,6 +111,7 @@ def read_timeseriesdict_gbd(
         Override the epoch (GPS seconds). If datetime, it will be converted to GPS.
     pad : float, optional
         Padding value (unused, accepted for API symmetry).
+
     """
     if timezone is None:
         raise ValueError("timezone is required for GBD files")
@@ -179,8 +178,7 @@ def read_timeseriesdict_gbd(
 
 
 def read_timeseries_gbd(*args, channels=None, **kwargs) -> TimeSeries:
-    """
-    Adapter to always return a single TimeSeries.
+    """Adapter to always return a single TimeSeries.
     """
     tsd = read_timeseriesdict_gbd(*args, channels=channels, **kwargs)
     if not tsd:
@@ -193,8 +191,7 @@ def read_timeseries_gbd(*args, channels=None, **kwargs) -> TimeSeries:
 
 
 def read_timeseriesmatrix_gbd(*args, channels=None, **kwargs) -> TimeSeriesMatrix:
-    """
-    Build a TimeSeriesMatrix from a GBD file.
+    """Build a TimeSeriesMatrix from a GBD file.
     """
     tsd = read_timeseriesdict_gbd(*args, channels=channels, **kwargs)
     return tsd.to_matrix()

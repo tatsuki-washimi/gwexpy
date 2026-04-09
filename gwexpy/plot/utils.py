@@ -4,8 +4,7 @@ import numpy as np
 
 
 def adaptive_decimate(ts, target_points=10000):
-    """
-    Decimate a TimeSeries object using a min-max algorithm to preserve peaks.
+    """Decimate a TimeSeries object using a min-max algorithm to preserve peaks.
 
     Parameters
     ----------
@@ -18,6 +17,7 @@ def adaptive_decimate(ts, target_points=10000):
     -------
     TimeSeries
         The decimated time series.
+
     """
     if len(ts) <= target_points:
         return ts

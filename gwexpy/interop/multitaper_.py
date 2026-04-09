@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.multitaper_
+"""gwexpy.interop.multitaper_
 --------------------------
 
 Interoperability with multitaper spectral estimation packages.
@@ -21,6 +20,7 @@ Prieto, G. A. (2022). *The multitaper spectrum analysis package in Python*.
 Seismological Research Letters.
 
 Krischer, L. et al. — https://github.com/krischer/mtspec
+
 """
 
 from __future__ import annotations
@@ -80,6 +80,7 @@ def from_mtspec(
     ValueError
         If ``quantity`` is not ``"psd"`` or ``"asd"``, or if the frequency
         axis is empty.
+
     """
     quantity_lower = quantity.lower()
     if quantity_lower not in ("psd", "asd"):
@@ -197,6 +198,7 @@ def from_mtspec_array(
     ValueError
         If ``quantity`` is not ``"psd"`` or ``"asd"``, if *freq* is not
         equally spaced, or if shapes are inconsistent.
+
     """
     quantity_lower = quantity.lower()
     if quantity_lower not in ("psd", "asd"):

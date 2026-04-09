@@ -1,5 +1,4 @@
-"""
-I/O registration helpers for reducing boilerplate code.
+"""I/O registration helpers for reducing boilerplate code.
 
 This module provides utilities to register TimeSeries I/O handlers
 with automatic adapter generation for TimeSeriesDict, TimeSeries,
@@ -35,8 +34,7 @@ def register_timeseries_format(
     auto_adapt: bool = True,
     force: bool = True,
 ) -> None:
-    """
-    Register TimeSeries I/O handlers for a format.
+    """Register TimeSeries I/O handlers for a format.
 
     This helper automatically creates adapters for TimeSeries and TimeSeriesMatrix
     from TimeSeriesDict reader/writer functions when auto_adapt=True, reducing
@@ -107,6 +105,7 @@ def register_timeseries_format(
     ...     writer_dict=write_timeseriesdict_wav,
     ...     extension="wav",
     ... )
+
     """
     # Import here to avoid circular dependencies
     import functools

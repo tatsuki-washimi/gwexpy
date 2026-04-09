@@ -1,5 +1,4 @@
-"""
-Signal processing methods for TimeSeries.
+"""Signal processing methods for TimeSeries.
 
 This module provides signal processing functionality as a mixin class:
 - Hilbert transform: hilbert, envelope
@@ -54,8 +53,7 @@ def _extract_axis_info(ts: Any) -> dict[str, Any]:
 
 
 class TimeSeriesSignalMixin(TimeSeriesAttrs):
-    """
-    Mixin class providing signal processing methods for TimeSeries.
+    """Mixin class providing signal processing methods for TimeSeries.
 
     This mixin is designed to be combined with TimeSeriesCore to create
     the full TimeSeries class.
@@ -73,8 +71,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         nan_policy: Literal["raise", "propagate"] = "raise",
         copy: bool = True,
     ) -> TimeSeriesSignalMixin:
-        """
-        Compute the analytic signal via Hilbert transform.
+        """Compute the analytic signal via Hilbert transform.
 
         For a real input x(t), returns the complex analytic signal::
 
@@ -132,6 +129,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         ...                 dt=0.001, unit='V')
         >>> analytic = ts.hilbert()
         >>> envelope = np.abs(analytic.value)
+
         """
         # 1. Complex check
         if np.iscomplexobj(self.value):
@@ -199,8 +197,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
     def instantaneous_phase(
         self, deg: bool = False, unwrap: bool = False, **kwargs: Any
     ) -> TimeSeriesSignalMixin:
-        """
-        Compute the instantaneous phase of the TimeSeries via Hilbert transform.
+        """Compute the instantaneous phase of the TimeSeries via Hilbert transform.
 
         This method first computes the analytic signal using Hilbert transform,
         then extracts the phase using np.angle(). Use this for real-valued
@@ -248,6 +245,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         ...                 dt=0.001, unit='V')
         >>> phase = ts.instantaneous_phase(unwrap=True)  # rad, unwrapped
         >>> phase_deg = ts.instantaneous_phase(deg=True, unwrap=True)  # degrees
+
         """
         analytic = self.hilbert(**kwargs)
         phi = np.asarray(np.angle(analytic.value, deg=deg))
@@ -265,8 +263,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         return out
 
     def radian(self, unwrap: bool = False) -> TimeSeriesSignalMixin:
-        """
-        Calculate the phase angle of the TimeSeries in radians.
+        """Calculate the phase angle of the TimeSeries in radians.
 
         Computes np.angle(self.value) directly. Works for both real and complex
         time series. For real signals, this will return 0 or π depending on sign.
@@ -283,6 +280,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         -------
         TimeSeries
             Phase angle in radians.
+
         """
         phi = np.asarray(np.angle(self.value))
 
@@ -296,8 +294,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         return out
 
     def degree(self, unwrap: bool = False) -> TimeSeriesSignalMixin:
-        """
-        Calculate the phase angle of the TimeSeries in degrees.
+        """Calculate the phase angle of the TimeSeries in degrees.
 
         Computes np.angle(self.value) directly. Works for both real and complex
         time series. For real signals, this will return 0 or 180 depending on sign.
@@ -314,6 +311,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         -------
         TimeSeries
             Phase angle in degrees.
+
         """
         phi = np.asarray(np.angle(self.value, deg=True))
 
@@ -336,8 +334,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         smooth: Optional[Union[NumberLike, u.Quantity]] = None,
         **kwargs: Any,
     ) -> TimeSeriesSignalMixin:
-        """
-        Compute the instantaneous frequency of the TimeSeries.
+        """Compute the instantaneous frequency of the TimeSeries.
 
         The instantaneous frequency is derived from the time derivative of
         the unwrapped instantaneous phase obtained via Hilbert transform.
@@ -393,6 +390,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         >>> # Central region should be close to 50 Hz
         >>> np.median(f_inst.value[100:-100])  # doctest: +SKIP
         50.0
+
         """
         # Force radians for calculation
         phi_ts = self.instantaneous_phase(deg=False, unwrap=unwrap, **kwargs)
@@ -528,8 +526,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         singlesided: bool = False,
         copy: bool = True,
     ) -> TimeSeriesSignalMixin:
-        """
-        Mix the TimeSeries with a complex oscillator.
+        """Mix the TimeSeries with a complex oscillator.
         """
         phase_series = self._build_phase_series(
             phase=phase,  # type: ignore[arg-type]
@@ -573,8 +570,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         *,
         singlesided: bool = False,
     ) -> TimeSeriesSignalMixin:
-        """
-        Compute the average magnitude and phase of the TimeSeries after
+        """Compute the average magnitude and phase of the TimeSeries after
         heterodyning with a given phase series.
 
         This method replicates the GWpy ``TimeSeries.heterodyne()`` algorithm
@@ -628,6 +624,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             for heterodyning at a fixed frequency (GWpy)
         TimeSeries.lock_in
             for a higher-level lock-in amplifier interface
+
         """
         # --- Phase validation (GWpy-compatible) ---
         try:
@@ -679,8 +676,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         deg: bool = True,
         exp: bool = False,
     ) -> Any:
-        r"""
-        Compute the average magnitude and phase of the TimeSeries at a
+        r"""Compute the average magnitude and phase of the TimeSeries at a
         given frequency (GWpy-compatible).
 
         This method replicates the GWpy ``TimeSeries.demodulate()`` algorithm.
@@ -722,6 +718,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             for the underlying heterodyne method with arbitrary phase.
         TimeSeries.lock_in
             for a more flexible lock-in amplifier interface.
+
         """
         # Build phase for a fixed frequency
         from astropy.units import Quantity
@@ -772,8 +769,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         resample_kwargs: Optional[dict[str, Any]] = None,
         singlesided: bool = False,
     ) -> TimeSeriesSignalMixin:
-        r"""
-        Demodulate the TimeSeries to baseband with optional lowpass and resampling.
+        r"""Demodulate the TimeSeries to baseband with optional lowpass and resampling.
 
         This method performs frequency mixing (heterodyning) to shift a carrier
         frequency to baseband (DC), optionally followed by lowpass filtering
@@ -874,6 +870,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         With both:
 
         >>> z = ts.baseband(f0=100, lowpass=10, output_rate=50)
+
         """
         # === Input validation ===
 
@@ -992,8 +989,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         deg: bool = True,
         **kwargs: Any,
     ) -> Any:
-        r"""
-        Perform lock-in amplification (demodulation + filtering/averaging).
+        r"""Perform lock-in amplification (demodulation + filtering/averaging).
 
         This method extracts the complex amplitude (or magnitude and phase) of
         a specific frequency component from the TimeSeries. It supports two
@@ -1103,6 +1099,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         Using LPF mode for higher time resolution:
 
         >>> complex_ts = ts.lock_in(f0=100, bandwidth=5.0, output='complex')
+
         """
         self._check_regular("lock_in")
 
@@ -1231,8 +1228,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         epsilon: Optional[float] = None,
         **kwargs: Any,
     ) -> Any:
-        r"""
-        Compute the transfer function between this TimeSeries and another.
+        r"""Compute the transfer function between this TimeSeries and another.
 
         This TimeSeries (`self`) is the 'A-channel' (reference, denominator),
         while `other` is the 'B-channel' (test, numerator).
@@ -1316,6 +1312,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         Transient transfer function::
 
             >>> tf = input_signal.transfer_function(output_signal, mode="transient")
+
         """
         import warnings
 
@@ -1518,8 +1515,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         mode: str = "full",
         demean: bool = True,
     ) -> TimeSeriesSignalMixin:
-        """
-        Compute time-domain cross-correlation between two TimeSeries.
+        """Compute time-domain cross-correlation between two TimeSeries.
         """
         from scipy import signal
 

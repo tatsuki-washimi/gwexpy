@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.meep_
+"""gwexpy.interop.meep_
 --------------------
 
 Interoperability with Meep FDTD simulation output files.
@@ -15,6 +14,7 @@ This module reads those HDF5 files and reconstructs GWexpy ``ScalarField`` or
 References
 ----------
 https://meep.readthedocs.io/en/latest/Python_User_Interface/#output-functions
+
 """
 
 from __future__ import annotations
@@ -71,6 +71,7 @@ def _parse_meep_datasets(h5file: Any) -> dict[str, dict[str, str | None]]:
 
     File with ``ez`` →
     ``{"ez": {"real": "ez", "imag": None}}``
+
     """
     keys = list(h5file.keys())
     result: dict[str, dict[str, str | None]] = {}
@@ -114,6 +115,7 @@ def _build_complex_array(
     -------
     ndarray
         Complex array if *imag_key* is given, otherwise real float64 array.
+
     """
     real = np.asarray(h5file[real_key], dtype=np.float64)
     if imag_key is None:
@@ -147,6 +149,7 @@ def _build_spatial_coords(
     -------
     tuple of ndarray
         One 1-D coordinate array per spatial dimension.
+
     """
     coords = []
     for n, orig in zip(shape, origin):
@@ -237,6 +240,7 @@ def from_meep_hdf5(
 
     >>> from gwexpy.fields import VectorField
     >>> vf = VectorField.from_meep_hdf5("fields.h5")
+
     """
     h5py = require_optional("h5py")
 

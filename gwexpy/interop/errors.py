@@ -8,8 +8,7 @@ class IoNotImplementedError(NotImplementedError):
 
 
 def raise_unimplemented_io(format_name, hint=None, refs=None, plugin_help=None):
-    """
-    Raise a standardized NotImplementedError for missing I/O readers.
+    """Raise a standardized NotImplementedError for missing I/O readers.
 
     Parameters
     ----------
@@ -21,6 +20,7 @@ def raise_unimplemented_io(format_name, hint=None, refs=None, plugin_help=None):
         References to external tools or scripts.
     plugin_help : str, optional
         Instructions on how to add a plugin.
+
     """
     msg = [
         f"The reader for format '{format_name}' is currently unimplemented in gwexpy."

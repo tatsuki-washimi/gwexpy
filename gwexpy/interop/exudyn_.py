@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.exudyn_
+"""gwexpy.interop.exudyn_
 -----------------------
 
 Interoperability with Exudyn sensor output.
@@ -11,6 +10,7 @@ sensor data can be exported to text files via ``exu.SensorExport``.
 References
 ----------
 https://github.com/jgerstmayr/EXUDYN
+
 """
 
 from __future__ import annotations
@@ -53,6 +53,7 @@ def from_exudyn_sensor(
     Returns
     -------
     TimeSeries or TimeSeriesMatrix
+
     """
     if isinstance(data, (str, Path)):
         arr = np.loadtxt(data)

@@ -137,8 +137,7 @@ class HistogramCoreMixin:
         return cls_any(**kwargs)
 
     def crop(self, start: Any | None = None, end: Any | None = None) -> Any:
-        """
-        Crop the histogram to a specific range [start, end].
+        """Crop the histogram to a specific range [start, end].
 
         Returns a new Histogram containing only the bins that fall entirely
         within the specified range.
@@ -154,6 +153,7 @@ class HistogramCoreMixin:
         -------
         Histogram
             A new Histogram object containing the subset of bins.
+
         """
         from astropy import units as u
 
@@ -210,6 +210,7 @@ class HistogramCoreMixin:
         -------
         Quantity or Histogram
             The density values or a new Histogram object.
+
         """
         density = self.values / self.bin_widths
         if as_histogram:
@@ -231,6 +232,7 @@ class HistogramCoreMixin:
         -------
         Quantity
             The mean value with xunit.
+
         """
         w = self.values.value
         x = self.bin_centers.value
@@ -251,6 +253,7 @@ class HistogramCoreMixin:
         -------
         Quantity
             The variance value with xunit**2.
+
         """
         w = self.values.value
         x = self.bin_centers.value
@@ -273,6 +276,7 @@ class HistogramCoreMixin:
         -------
         Quantity
             The standard deviation value with xunit.
+
         """
         return np.sqrt(self.var(ddof=ddof))
 
@@ -293,6 +297,7 @@ class HistogramCoreMixin:
         -------
         Quantity
             The quantile value(s) with xunit.
+
         """
         q_arr = np.atleast_1d(q)
         if np.any((q_arr < 0) | (q_arr > 1)):
@@ -349,6 +354,7 @@ class HistogramCoreMixin:
         -------
         Quantity
             The median value with xunit.
+
         """
         return self.quantile(0.5)
 
@@ -359,6 +365,7 @@ class HistogramCoreMixin:
         -------
         Quantity
             The lower boundary with xunit. Returns NaN if the histogram is empty.
+
         """
         w = self.values.value
         idx = np.where(w > 0)[0]
@@ -373,6 +380,7 @@ class HistogramCoreMixin:
         -------
         Quantity
             The upper boundary with xunit. Returns NaN if the histogram is empty.
+
         """
         w = self.values.value
         idx = np.where(w > 0)[0]

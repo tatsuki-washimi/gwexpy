@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
 
 def _log_db(data: np.ndarray, factor: float) -> np.ndarray:
-    """dB conversion with data-adaptive floor to avoid Death Floats."""
+    """DB conversion with data-adaptive floor to avoid Death Floats."""
     return safe_log_scale(data, factor=factor)
 
 
@@ -302,8 +302,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self._preload_worker = None  # Release ref
 
     def update_x_link_logic(self) -> None:
-        """
-        Dynamically link/unlink X-axes based on graph types AND range mode.
+        """Dynamically link/unlink X-axes based on graph types AND range mode.
         - Time-based graphs (Time Series, Spectrogram) should be linked.
         - Frequency-based graphs (ASD, Coherence, TF) should be linked.
         - Mixed types should NOT be linked.
@@ -698,8 +697,7 @@ class MainWindow(QtWidgets.QMainWindow):
         return p
 
     def update_graphs(self) -> None:
-        """
-        Main update loop for streaming mode.
+        """Main update loop for streaming mode.
 
         This method orchestrates the data pipeline:
         1. Collect data from source (NDS/Simulation)
@@ -740,14 +738,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def _collect_data_map(
         self,
     ) -> tuple[dict[str, TimeSeries] | None, np.ndarray | None, float]:
-        """
-        Collect data from the current source into a data_map.
+        """Collect data from the current source into a data_map.
 
         Returns
         -------
         tuple
             (data_map, current_times, current_fs) where data_map may be empty
             or None if no data is available.
+
         """
         data_map: dict[str, TimeSeries] = {}
         current_times: np.ndarray | None = None
@@ -816,8 +814,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _apply_time_cropping(
         self, data_map: dict[str, TimeSeries], current_times: np.ndarray | None
     ) -> None:
-        """
-        Crop data to measurement start time and remove stale data.
+        """Crop data to measurement start time and remove stale data.
 
         Parameters
         ----------
@@ -825,6 +822,7 @@ class MainWindow(QtWidgets.QMainWindow):
             Dictionary of channel data. Modified in place.
         current_times : array_like or None
             Current time array (used to initialize meas_start_gps if needed).
+
         """
         if not data_map:
             return
@@ -851,13 +849,13 @@ class MainWindow(QtWidgets.QMainWindow):
                         del data_map[k]
 
     def _check_stop_condition(self, data_map: dict[str, TimeSeries]) -> None:
-        """
-        Check if Fixed Averaging stop condition is met.
+        """Check if Fixed Averaging stop condition is met.
 
         Parameters
         ----------
         data_map : dict
             Dictionary of channel data.
+
         """
         ui_params = self.get_ui_params()
 
@@ -890,8 +888,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _render_graphs(
         self, data_map: dict[str, TimeSeries], current_times: np.ndarray | None
     ) -> None:
-        """
-        Render analysis results to both graph panels.
+        """Render analysis results to both graph panels.
 
         Parameters
         ----------
@@ -899,6 +896,7 @@ class MainWindow(QtWidgets.QMainWindow):
             Dictionary of channel data.
         current_times : array_like or None
             Current time array.
+
         """
         for plot_idx, info_root in enumerate([self.graph_info1, self.graph_info2]):
             # Update meta info in Param tab
@@ -961,8 +959,7 @@ class MainWindow(QtWidgets.QMainWindow):
         data_map: dict[str, TimeSeries],
         g_type: str,
     ) -> list[Any]:
-        """
-        Get analysis results from accumulator or engine.
+        """Get analysis results from accumulator or engine.
 
         Parameters
         ----------
@@ -979,6 +976,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         list
             List of results for each trace.
+
         """
         # Decide source of results
         use_accumulator = (
@@ -1027,8 +1025,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _get_start_time_gps(
         self, is_time_axis: bool, current_times: np.ndarray | None, results: list[Any]
     ) -> float | None:
-        """
-        Determine the GPS start time for time-axis graphs.
+        """Determine the GPS start time for time-axis graphs.
 
         Parameters
         ----------
@@ -1043,6 +1040,7 @@ class MainWindow(QtWidgets.QMainWindow):
         -------
         float or None
             GPS start time.
+
         """
         if not is_time_axis:
             return None

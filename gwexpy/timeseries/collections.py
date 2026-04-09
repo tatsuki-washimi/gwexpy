@@ -114,6 +114,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
                 dt=<Quantity 1. s>,
                 name=None,
                 channel=None)>}
+
     """
 
     @classmethod
@@ -195,8 +196,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     )
 
     def resample(self, rate, **kwargs):
-        """
-        Resample items in the TimeSeriesDict.
+        """Resample items in the TimeSeriesDict.
         In-place operation (updates the dict contents).
 
         If rate is time-like, performs time-bin resampling.
@@ -248,8 +248,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     @classmethod
     def from_control(cls, response: Any, **kwargs) -> TimeSeriesDict:
-        """
-        Create TimeSeriesDict from python-control TimeResponseData.
+        """Create TimeSeriesDict from python-control TimeResponseData.
 
         Parameters
         ----------
@@ -262,6 +261,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         -------
         TimeSeriesDict
             The converted time-domain data.
+
         """
         from gwexpy.interop import from_control_response
 
@@ -296,8 +296,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     )
 
     def lock_in(self, *args, **kwargs):
-        """
-        Apply lock_in to each item.
+        """Apply lock_in to each item.
         Returns TimeSeriesDict (if output='complex') or tuple of TimeSeriesDicts.
         """
         # We need to know the output structure (tuple vs single)
@@ -366,6 +365,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         uncomputed elements are represented as complex NaN. The frequency axis
         is taken from the first computed element without alignment/truncation;
         dt and fftlength consistency is enforced before computation.
+
         """
         fftlength, overlap = _parse_fft_positional_args(
             args,
@@ -428,6 +428,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         elements are represented as NaN. The frequency axis is taken from the
         first computed element without alignment/truncation; dt and fftlength
         consistency is enforced before computation.
+
         """
         fftlength, overlap = _parse_fft_positional_args(
             args,
@@ -458,8 +459,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         include_diagonal=True,
         **kwargs,
     ):
-        """
-        Compute CSD for each element or as a matrix depending on `other`.
+        """Compute CSD for each element or as a matrix depending on `other`.
         """
         fftlength, overlap = _parse_fft_positional_args(
             args,
@@ -516,8 +516,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         diagonal_value=1.0,
         **kwargs,
     ):
-        """
-        Compute coherence for each element or as a matrix depending on `other`.
+        """Compute coherence for each element or as a matrix depending on `other`.
         """
         fftlength, overlap = _parse_fft_positional_args(
             args,
@@ -803,8 +802,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         )
 
     def to_matrix(self, *, align="intersection", **kwargs):
-        """
-        Convert dictionary to TimeSeriesMatrix with alignment.
+        """Convert dictionary to TimeSeriesMatrix with alignment.
         """
         from gwexpy.timeseries.preprocess import align_timeseries_collection
 
@@ -845,8 +843,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     # --- Waveform Operations ---
 
     def crop(self, start=None, end=None, copy=False) -> TimeSeriesDict:
-        """
-        Crop each TimeSeries in the dict.
+        """Crop each TimeSeries in the dict.
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         Returns a new TimeSeriesDict.
         """
@@ -864,8 +861,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         return new_dict
 
     def append(self, other, copy=True, **kwargs) -> TimeSeriesDict:
-        """
-        Append another mapping of TimeSeries or a single TimeSeries to each item.
+        """Append another mapping of TimeSeries or a single TimeSeries to each item.
         """
         if isinstance(other, BaseTimeSeries):
             for ts in self.values():
@@ -889,8 +885,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         return super().append(other, copy=copy, **kwargs)
 
     def prepend(self, *args, **kwargs) -> TimeSeriesDict:
-        """
-        Prepend to each TimeSeries in the dict (in-place).
+        """Prepend to each TimeSeries in the dict (in-place).
         Returns self.
         """
         for ts in self.values():
@@ -936,8 +931,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     # --- Statistics & Measurements ---
 
     def _apply_scalar_or_map(self, method_name, *args, **kwargs):
-        """
-        Internal: apply a method that can return TimeSeries or scalar.
+        """Internal: apply a method that can return TimeSeries or scalar.
         If TimeSeries -> return TimeSeriesDict.
         If scalar -> return pandas.Series.
         """
@@ -1079,6 +1073,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
                 dt=<Quantity 1. s>,
                 name=None,
                 channel=None)>]
+
     """
 
     def csd_matrix(
@@ -1092,8 +1087,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         include_diagonal=True,
         **kwargs,
     ):
-        """
-        Compute Cross Spectral Density Matrix.
+        """Compute Cross Spectral Density Matrix.
 
         Parameters
         ----------
@@ -1117,6 +1111,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         uncomputed elements are represented as complex NaN. The frequency axis
         is taken from the first computed element without alignment/truncation;
         dt and fftlength consistency is enforced before computation.
+
         """
         fftlength, overlap = _parse_fft_positional_args(
             args,
@@ -1147,8 +1142,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         diagonal_value=1.0,
         **kwargs,
     ):
-        """
-        Compute Coherence Matrix.
+        """Compute Coherence Matrix.
 
         Parameters
         ----------
@@ -1175,6 +1169,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         elements are represented as NaN. The frequency axis is taken from the
         first computed element without alignment/truncation; dt and fftlength
         consistency is enforced before computation.
+
         """
         fftlength, overlap = _parse_fft_positional_args(
             args,
@@ -1205,8 +1200,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         include_diagonal=True,
         **kwargs,
     ):
-        """
-        Compute CSD for each element or as a matrix depending on `other`.
+        """Compute CSD for each element or as a matrix depending on `other`.
         """
         fftlength, overlap = _parse_fft_positional_args(
             args,
@@ -1270,8 +1264,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         diagonal_value=1.0,
         **kwargs,
     ):
-        """
-        Compute coherence for each element or as a matrix depending on `other`.
+        """Compute coherence for each element or as a matrix depending on `other`.
         """
         fftlength, overlap = _parse_fft_positional_args(
             args,
@@ -1346,6 +1339,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         Returns
         -------
         TimeSeriesList
+
         """
         new_list = self.__class__()
         for ts in self:
@@ -1488,6 +1482,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         -------
         TimeSeriesMatrix
             Matrix with all series aligned to common time axis.
+
         """
         from gwexpy.timeseries.matrix import TimeSeriesMatrix
         from gwexpy.timeseries.preprocess import align_timeseries_collection
@@ -1513,8 +1508,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     # --- Waveform Operations ---
 
     def crop(self, start=None, end=None, copy=False) -> TimeSeriesList:
-        """
-        Crop each TimeSeries in the list.
+        """Crop each TimeSeries in the list.
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         Returns a new TimeSeriesList.
         """
@@ -1633,8 +1627,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     # --- Statistics & Measurements ---
 
     def _apply_scalar_or_map(self, method_name, *args, **kwargs):
-        """
-        Internal: apply a method that can return TimeSeries or scalar.
+        """Internal: apply a method that can return TimeSeries or scalar.
         If TimeSeries -> return TimeSeriesList.
         If scalar -> return list.
         """
@@ -1712,8 +1705,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     # --- Multivariate ---
 
     def to_pandas(self, **kwargs):
-        """
-        Convert TimeSeriesList to pandas DataFrame.
+        """Convert TimeSeriesList to pandas DataFrame.
         Each element becomes a column.
         ASSUMES common time axis.
         """

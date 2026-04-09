@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.lal_
+"""gwexpy.interop.lal_
 -------------------
 
 Interoperability with LALSuite (LIGO Algorithmic Library).
@@ -12,6 +11,7 @@ Notes
 GWpy already inherits ``from_lal`` / ``to_lal`` classmethods for TimeSeries
 and FrequencySeries via GWpy. This module provides an explicit interop layer
 that ensures GWexpy types are returned and adds ``to_lal`` for FrequencySeries.
+
 """
 
 from __future__ import annotations
@@ -67,6 +67,7 @@ def from_lal_timeseries(
     >>> from gwexpy.timeseries import TimeSeries
     >>> lalts = lal.CreateREAL8TimeSeries("test", lal.LIGOTimeGPS(0), 0, 1/1024, lal.DimensionlessUnit, 1024)
     >>> ts = TimeSeries.from_lal(lalts)
+
     """
     require_optional("lal")
     from gwexpy.utils.lal import from_lal_unit
@@ -108,6 +109,7 @@ def to_lal_timeseries(
     >>> import numpy as np
     >>> ts = TimeSeries(np.zeros(1024), t0=0, dt=1/1024, name="test")
     >>> lalts = ts.to_lal()
+
     """
     require_optional("lal")
     from gwexpy.utils.lal import (  # noqa: PLC0415
@@ -155,6 +157,7 @@ def from_lal_frequencyseries(
     -------
     FrequencySeries
         GWexpy FrequencySeries with f0, df, epoch and unit from the LAL struct.
+
     """
     require_optional("lal")
     from gwexpy.utils.lal import from_lal_unit
@@ -188,6 +191,7 @@ def to_lal_frequencyseries(
     -------
     lal.REAL8FrequencySeries or similar
         LAL frequency series struct.
+
     """
     require_optional("lal")
     from gwexpy.utils.lal import (  # noqa: PLC0415

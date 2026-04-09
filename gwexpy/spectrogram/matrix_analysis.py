@@ -29,8 +29,7 @@ class SpectrogramMatrixAnalysisMixin:
     """Analysis methods for SpectrogramMatrix (Phase calculations)."""
 
     def radian(self: _SpectrogramMatrixLike, unwrap: bool = False) -> Any:
-        """
-        Calculate the phase of the matrix in radians.
+        """Calculate the phase of the matrix in radians.
 
         Parameters
         ----------
@@ -41,6 +40,7 @@ class SpectrogramMatrixAnalysisMixin:
         -------
         SpectrogramMatrix
             A new matrix with phase in radians.
+
         """
         # Copy to preserve all attributes (times, frequencies, rows, cols, epoch, etc.)
         new = self.copy()
@@ -91,8 +91,7 @@ class SpectrogramMatrixAnalysisMixin:
         return new
 
     def degree(self: _SpectrogramMatrixLike, unwrap: bool = False) -> Any:
-        """
-        Calculate the phase of the matrix in degrees.
+        """Calculate the phase of the matrix in degrees.
 
         Parameters
         ----------
@@ -103,6 +102,7 @@ class SpectrogramMatrixAnalysisMixin:
         -------
         SpectrogramMatrix
             A new matrix with phase in degrees.
+
         """
         # Reuse radian implementation which handles unwrap, metadata preservation and real-casting
         p = self.radian(unwrap=unwrap)

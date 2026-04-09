@@ -20,8 +20,7 @@ def to_hdf5(
     compression: Optional[str] = None,
     compression_opts: Any = None,
 ) -> None:
-    """
-    Write TimeSeries to HDF5 group.
+    """Write TimeSeries to HDF5 group.
     wrapper for ts.write(..., format='hdf5') usually, but here we implement direct
     low-level if strict control is needed, OR delegate.
     """

@@ -1,5 +1,4 @@
-"""
-Standard Fourier-based spectral transform methods for TimeSeries.
+"""Standard Fourier-based spectral transform methods for TimeSeries.
 """
 
 from __future__ import annotations
@@ -44,8 +43,7 @@ def _get_next_fast_len() -> Callable[[int], int]:
 
 
 class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
-    """
-    Mixin class providing standard Fourier-based spectral transform methods.
+    """Mixin class providing standard Fourier-based spectral transform methods.
     """
 
     def _super_ts(self) -> TimeSeriesAttrs:
@@ -93,8 +91,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         other_length: NumberLike | None = None,
         **kwargs: Any,
     ) -> FrequencySeries:
-        """
-        Compute the Discrete Fourier Transform (DFT).
+        """Compute the Discrete Fourier Transform (DFT).
 
         Parameters
         ----------
@@ -115,6 +112,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         Returns
         -------
         `FrequencySeries`
+
         """
         self._check_regular("fft")
 
@@ -184,6 +182,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         .. [1] Oppenheim & Schafer, Discrete-Time Signal Processing
                (3rd ed., 2010), §8.6.2
         .. [2] SciPy rfft documentation
+
         """
         x = self.value
 
@@ -311,6 +310,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         >>> fft = ts.rfft()
         >>> print(fft.size)
         3
+
         """
         self._check_regular("rfft")
         return self._super_ts().rfft(*args, **kwargs)
@@ -351,8 +351,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         return res.view(FrequencySeries)
 
     def spectrogram(self, *args: Any, **kwargs: Any) -> Spectrogram:
-        """
-        Compute the average power spectrogram.
+        """Compute the average power spectrogram.
 
         This method overrides the base gwpy implementation to return
         gwexpy.spectrogram.Spectrogram instead of gwpy.spectrogram.Spectrogram.
@@ -361,6 +360,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         -------
         Spectrogram
             gwexpy.spectrogram.Spectrogram instance
+
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
@@ -368,8 +368,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         return res.view(Spectrogram)
 
     def spectrogram2(self, *args: Any, **kwargs: Any) -> Spectrogram:
-        """
-        Compute an alternative spectrogram (spectrogram2).
+        """Compute an alternative spectrogram (spectrogram2).
         Returns Spectrogram.
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
@@ -378,8 +377,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         return res.view(Spectrogram)
 
     def rayleigh_spectrogram(self, *args: Any, **kwargs: Any) -> Spectrogram:
-        """
-        Compute the Rayleigh statistic spectrogram.
+        """Compute the Rayleigh statistic spectrogram.
 
         This method overrides the base gwpy implementation to return
         gwexpy.spectrogram.Spectrogram instead of gwpy.spectrogram.Spectrogram.
@@ -388,6 +386,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         -------
         Spectrogram
             gwexpy.spectrogram.Spectrogram instance
+
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")
 
@@ -402,8 +401,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         window: WindowLike | None = None,
         detrend: bool = False,
     ) -> FrequencySeries:
-        """
-        Compute the Discrete Cosine Transform (DCT).
+        """Compute the Discrete Cosine Transform (DCT).
 
         The DCT expresses the signal as a sum of cosine functions at
         different frequencies. It is widely used in signal compression
@@ -436,6 +434,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         --------
         >>> ts = TimeSeries(data, sample_rate=1024)
         >>> dct_coeffs = ts.dct()
+
         """
         self._check_regular("dct")
 
@@ -482,8 +481,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         eps: float | None = None,
         fft_mode: str = "gwpy",
     ) -> FrequencySeries:
-        """
-        Compute the cepstrum of the time series.
+        """Compute the cepstrum of the time series.
 
         The cepstrum is the inverse Fourier transform of the log spectrum.
         It is useful for detecting periodicity in the spectrum, such as
@@ -521,6 +519,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         >>> ts = TimeSeries(data, sample_rate=1024)
         >>> ceps = ts.cepstrum(kind='real')
         >>> # Find fundamental period from peak in cepstrum
+
         """
         try:
             import scipy.fft

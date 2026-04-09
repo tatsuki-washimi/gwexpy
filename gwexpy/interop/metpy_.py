@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.metpy_
+"""gwexpy.interop.metpy_
 ---------------------
 
 Interoperability with MetPy xarray DataArrays.
@@ -12,6 +11,7 @@ delegates to :func:`gwexpy.interop.xarray_.from_xarray_field`.
 References
 ----------
 https://unidata.github.io/MetPy/latest/
+
 """
 
 from __future__ import annotations
@@ -61,6 +61,7 @@ def from_metpy_dataarray(
     MetPy must be installed for full functionality, but the converter also
     works with plain xarray DataArrays that have ``"units"`` and
     ``"_metpy_axis"`` attributes.
+
     """
     require_optional("xarray")
 

@@ -1,5 +1,4 @@
-"""
-Threshold strategies for Coupling Function Analysis.
+"""Threshold strategies for Coupling Function Analysis.
 
 This module provides excess-detection strategies used by CouplingFunctionAnalysis:
 - ThresholdStrategy: Abstract base class
@@ -53,6 +52,7 @@ def _align_psd_values_to_reference(
     -------
     np.ndarray or None
         Aligned values, or None if alignment is not possible under the given policy.
+
     """
     if np.array_equal(freqs, ref_freqs):
         return np.asarray(values, dtype=float)
@@ -101,8 +101,7 @@ class ThresholdStrategy(ABC):
         raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
-        """
-        Return a boolean mask where P_inj is considered 'excess'.
+        """Return a boolean mask where P_inj is considered 'excess'.
 
         Parameters
         ----------
@@ -113,6 +112,7 @@ class ThresholdStrategy(ABC):
         raw_bkg : TimeSeries, optional
             Raw background time series data. Required for PercentileThreshold
             to calculate the distribution of PSDs across segments.
+
         """
         pass
 
@@ -129,8 +129,7 @@ class ThresholdStrategy(ABC):
 
 
 class RatioThreshold(ThresholdStrategy):
-    """
-    Checks if P_inj > ratio * P_bkg_mean.
+    """Checks if P_inj > ratio * P_bkg_mean.
 
     Statistical Assumptions:
         - No specific statistical distribution is assumed.
@@ -166,8 +165,7 @@ class RatioThreshold(ThresholdStrategy):
 
 
 class SigmaThreshold(ThresholdStrategy):
-    """
-    Checks if P_inj > P_bkg + sigma * std_error.
+    """Checks if P_inj > P_bkg + sigma * std_error.
 
     Statistical Assumptions
     -----------------------
@@ -193,12 +191,12 @@ class SigmaThreshold(ThresholdStrategy):
     - Using `PercentileThreshold` (empirical distribution, no Gaussian assumption)
     - Increasing FFT averaging by using longer data or shorter fftlength
 
-    References
+    References:
     ----------
     - Welch, P.D. (1967): PSD estimation via overlapped segment averaging
     - Bendat & Piersol, Random Data (4th ed., 2010), Ch. 11
 
-    Warning
+    Warning:
     -------
     This method relies heavily on the Gaussian and stationary assumptions.
     It may be unreliable if:
@@ -208,6 +206,7 @@ class SigmaThreshold(ThresholdStrategy):
 
     In such cases, `PercentileThreshold` is recommended as it uses the
     empirical distribution.
+
     """
 
     # Minimum n_avg for reliable Gaussian approximation
@@ -263,8 +262,7 @@ class SigmaThreshold(ThresholdStrategy):
 
 
 class PercentileThreshold(ThresholdStrategy):
-    """
-    Threshold strategy based on empirical percentile of background distribution.
+    """Threshold strategy based on empirical percentile of background distribution.
 
     This strategy follows Appendix B of the PEM injection paper, using the
     99.7th percentile of background segments and a correction factor
@@ -280,6 +278,7 @@ class PercentileThreshold(ThresholdStrategy):
         The value 2.6 is recommended in Appendix B.1 to set reduced χ² ≈ 1.
     freq_align : {'clip', 'interpolate'}, default='clip'
         Frequency alignment strategy for background segments.
+
     """
 
     def __init__(

@@ -1,5 +1,4 @@
-"""
-gwexpy.signal.preprocessing.standardization
+"""gwexpy.signal.preprocessing.standardization
 --------------------------------------------
 
 Standardization algorithms for signal processing.
@@ -21,6 +20,7 @@ class StandardizationModel:
         Scale (std or MAD) of the original data.
     axis : int or str
         Axis along which standardization was performed.
+
     """
 
     def __init__(self, mean, scale, axis):
@@ -29,8 +29,7 @@ class StandardizationModel:
         self.axis = axis
 
     def inverse_transform(self, X_std):
-        """
-        Undo standardization: X = X_std * scale + mean
+        """Undo standardization: X = X_std * scale + mean
 
         Parameters
         ----------
@@ -41,6 +40,7 @@ class StandardizationModel:
         -------
         X : ndarray
             Original-scale data.
+
         """
         if hasattr(X_std, "value"):
             val = X_std.value
@@ -51,8 +51,7 @@ class StandardizationModel:
 
 
 def standardize(X, *, method="zscore", ddof=0, axis=-1, return_model=True):
-    """
-    Standardize an array using z-score or robust standardization.
+    """Standardize an array using z-score or robust standardization.
 
     Parameters
     ----------
@@ -90,6 +89,7 @@ def standardize(X, *, method="zscore", ddof=0, axis=-1, return_model=True):
 
     If the scale (std or MAD) is zero, a value of 1.0 is used to avoid
     division by zero.
+
     """
     if method in ("robust", "mad"):
         center = np.nanmedian(X, axis=axis, keepdims=True)

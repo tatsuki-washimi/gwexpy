@@ -10,12 +10,12 @@ class TimeSeriesMatrixInteropMixin:
     """Interoperability methods for TimeSeriesMatrix (Neo, MNE, etc.)."""
 
     def to_neo(self, units: Any = None) -> Any:
-        """
-        Convert to neo.AnalogSignal.
+        """Convert to neo.AnalogSignal.
 
         Returns
         -------
         neo.core.AnalogSignal
+
         """
         from gwexpy.interop import to_neo
 
@@ -23,8 +23,7 @@ class TimeSeriesMatrixInteropMixin:
 
     @classmethod
     def from_neo(cls, sig: Any) -> Any:
-        """
-        Create TimeSeriesMatrix from neo.AnalogSignal.
+        """Create TimeSeriesMatrix from neo.AnalogSignal.
 
         Parameters
         ----------
@@ -34,6 +33,7 @@ class TimeSeriesMatrixInteropMixin:
         Returns
         -------
         TimeSeriesMatrix
+
         """
         from gwexpy.interop import from_neo
 

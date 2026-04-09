@@ -14,8 +14,7 @@ __all__ = ["Plot"]
 
 
 def plot_mmm(median, min_s, max_s, ax=None, **kwargs):
-    """
-    Plot Median, Min, and Max series with a filled area between Min and Max.
+    """Plot Median, Min, and Max series with a filled area between Min and Max.
 
     Parameters
     ----------
@@ -25,6 +24,7 @@ def plot_mmm(median, min_s, max_s, ax=None, **kwargs):
     ax : Axes, optional
     **kwargs
         Passed to ax.plot for the median line.
+
     """
     if ax is None:
         from matplotlib import pyplot as plt
@@ -58,8 +58,7 @@ def plot_mmm(median, min_s, max_s, ax=None, **kwargs):
 
 
 class Plot(BasePlot):
-    """
-    An extension of :class:`gwpy.plot.Plot` that automatically handles
+    """An extension of :class:`gwpy.plot.Plot` that automatically handles
     :class:`gwexpy.types.SeriesMatrix` arguments by expanding them into
     individual :class:`gwpy.types.Series` objects, while preserving
     matrix layout and metadata where possible.
@@ -236,6 +235,7 @@ class Plot(BasePlot):
         -------
         list
             The list of Line2D objects returned by ``ax.plot``.
+
         """
         if ax is None:
             ax = self.gca()
@@ -274,6 +274,7 @@ class Plot(BasePlot):
 
         In script mode, ``plt.show()`` blocks by default until the window
         is closed. Use ``block=False`` if you need to save after showing.
+
         """
         import matplotlib.pyplot as plt
 
@@ -291,6 +292,7 @@ class Plot(BasePlot):
         -------
         bytes or None
             PNG image data, or None if the figure has been closed.
+
         """
         from io import BytesIO
 
@@ -305,8 +307,7 @@ class Plot(BasePlot):
 
 
 def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
-    """
-    Plot a grid of Spectrograms and their percentile summaries side-by-side.
+    """Plot a grid of Spectrograms and their percentile summaries side-by-side.
 
     Suitable for ASD, PSD, Coherence, and other spectrograms.
 
@@ -318,6 +319,7 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
     title : str, optional
     **kwargs
         Passed to Plot constructor for global settings.
+
     """
     from matplotlib import pyplot as plt
 

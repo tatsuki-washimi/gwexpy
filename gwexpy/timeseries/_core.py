@@ -1,5 +1,4 @@
-"""
-Core TimeSeries class definition and basic operations.
+"""Core TimeSeries class definition and basic operations.
 
 This module contains the base TimeSeries class with essential functionality:
 - Basic operations (tail, crop, append)
@@ -30,8 +29,7 @@ if TYPE_CHECKING:
 
 
 class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
-    """
-    Core Ti meSeries class with basic operations.
+    """Core Ti meSeries class with basic operations.
 
     This is the base class that other mixins will extend.
     Inherits from gwpy.timeseries.TimeSeries for compatibility.
@@ -57,8 +55,7 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
     def crop(
         self, start: Any | None = None, end: Any | None = None, copy: bool = False
     ) -> TimeSeriesCore:
-        """
-        Crop this series to the given GPS start and end times.
+        """Crop this series to the given GPS start and end times.
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
         from gwexpy.time import to_gps
@@ -86,8 +83,7 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
         gap: Any = None,
         resize: bool = True,
     ) -> TimeSeriesCore:
-        """
-        Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.
+        """Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.
         """
         res = super().append(other, inplace=inplace, pad=pad, gap=gap, resize=resize)
         if inplace:

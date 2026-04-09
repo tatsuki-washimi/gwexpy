@@ -57,6 +57,7 @@ def nearest_index(axis_index: Quantity, value: Quantity) -> int:
     2
     >>> nearest_index(axis, 2.5 * u.m)  # tie-break: smaller index
     2
+
     """
     from astropy import units as u
 
@@ -125,6 +126,7 @@ def slice_from_index(i: int) -> slice:
     --------
     >>> slice_from_index(5)
     slice(5, 6, None)
+
     """
     return slice(i, i + 1)
 
@@ -165,6 +167,7 @@ def slice_from_value(
     >>> axis = np.array([0, 1, 2, 3, 4]) * u.m
     >>> slice_from_value(axis, 2.3 * u.m)
     slice(2, 3, None)
+
     """
     if method != "nearest":
         raise ValueError(f"Unsupported method '{method}'. Only 'nearest' is available.")
@@ -214,6 +217,7 @@ def select_value(
     array([2.23606798, 5.        ])
     >>> select_value(data, 'power')
     array([ 5., 25.])
+
     """
     from astropy import units as u
 

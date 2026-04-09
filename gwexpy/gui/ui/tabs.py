@@ -322,8 +322,7 @@ def create_measurement_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
             ref[2].blockSignals(False)
 
     def set_all_channels(new_channels):
-        """
-        External method to bulk update channel states.
+        """External method to bulk update channel states.
         new_channels: list of dict {'name': str, 'active': bool}
         """
         nonlocal channel_states

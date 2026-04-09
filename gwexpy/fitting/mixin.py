@@ -1,5 +1,4 @@
-"""
-Mixin for fitting functionality.
+"""Mixin for fitting functionality.
 """
 
 from __future__ import annotations
@@ -9,8 +8,7 @@ from typing import Any
 
 
 class FittingMixin:
-    """
-    Mixin class that adds .fit() method to Series objects.
+    """Mixin class that adds .fit() method to Series objects.
     """
 
     def fit(
@@ -23,8 +21,7 @@ class FittingMixin:
         fixed: Iterable[str] | None = None,
         **kwargs: Any,
     ) -> Any:
-        """
-        Fit the data to a model using iminuit.
+        """Fit the data to a model using iminuit.
 
         Parameters
         ----------
@@ -49,6 +46,7 @@ class FittingMixin:
         FitResult
             An object containing the fit results, including best-fit parameters,
             errors, and plotting methods.
+
         """
         from gwexpy.fitting import fit_series
 

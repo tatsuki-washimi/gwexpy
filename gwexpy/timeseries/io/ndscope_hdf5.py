@@ -1,5 +1,4 @@
-"""
-ndscope HDF5 format reader/writer for gwexpy.
+"""ndscope HDF5 format reader/writer for gwexpy.
 
 ndscope (https://git.ligo.org/cds/software/ndscope) saves time-series data
 in HDF5 files with a specific schema:
@@ -117,6 +116,7 @@ def read_timeseriesdict_ndscope_hdf5(
     Returns
     -------
     TimeSeriesDict
+
     """
     wanted = set(channels) if channels is not None else None
     out = TimeSeriesDict()
@@ -197,6 +197,7 @@ def write_timeseriesdict_ndscope_hdf5(
         Output file path.
     overwrite : bool, optional
         If ``True``, overwrite an existing file.  Default: ``False``.
+
     """
     mode = "w" if overwrite else "w-"
     # group_meta tracks the first-seen metadata for each group so that

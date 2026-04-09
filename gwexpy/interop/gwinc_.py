@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.gwinc_
+"""gwexpy.interop.gwinc_
 ---------------------
 
 Interoperability with pygwinc (gravitational wave interferometer noise budget).
@@ -11,6 +10,7 @@ Notes
 -----
 The simpler ``gwexpy.noise.gwinc_.from_pygwinc`` helper (strain/DARM only) is
 preserved unchanged. This module adds the richer trace-expansion API.
+
 """
 
 from __future__ import annotations
@@ -44,6 +44,7 @@ def _collect_traces(trace: Any, prefix: str = "") -> dict[str, Any]:
     -------
     dict[str, BudgetTrace]
         Flat mapping of trace name → trace object.
+
     """
     result: dict[str, Any] = {}
     # gwinc traces expose sub-traces via dict-like access
@@ -120,6 +121,7 @@ def from_gwinc_budget(
     >>> asd = FrequencySeries.from_gwinc_budget("aLIGO")
     >>> noise_budget = FrequencySeriesDict.from_gwinc_budget("aLIGO")
     >>> quantum = FrequencySeries.from_gwinc_budget("aLIGO", trace_name="Quantum")
+
     """
     gwinc = require_optional("gwinc")
 

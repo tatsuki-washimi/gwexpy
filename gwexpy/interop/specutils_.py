@@ -6,8 +6,7 @@ from ._optional import require_optional
 
 
 def to_specutils(data, **kwargs):
-    """
-    Convert a gwexpy object to a specutils object.
+    """Convert a gwexpy object to a specutils object.
 
     Parameters
     ----------
@@ -19,6 +18,7 @@ def to_specutils(data, **kwargs):
     Returns
     -------
     specutils.Spectrum1D
+
     """
     specutils = require_optional("specutils")
     astropy_units = require_optional("astropy.units")
@@ -60,8 +60,7 @@ def to_specutils(data, **kwargs):
 
 
 def from_specutils(cls, spectrum, **kwargs):
-    """
-    Convert a specutils object to a gwexpy object.
+    """Convert a specutils object to a gwexpy object.
 
     Parameters
     ----------
@@ -73,6 +72,7 @@ def from_specutils(cls, spectrum, **kwargs):
     Returns
     -------
     FrequencySeries
+
     """
     # Extract data
     flux = spectrum.flux

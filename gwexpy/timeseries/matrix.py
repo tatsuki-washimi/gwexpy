@@ -98,6 +98,7 @@ class TimeSeriesMatrix(  # type: ignore[misc]
     >>> tsm = TimeSeriesMatrix(data, sample_rate=1, unit='m')
     >>> tsm
     <SeriesMatrix shape=(2, 2, 3) rows=('row0', 'row1') cols=('col0', 'col1')>
+
     """
 
     series_class = TimeSeries

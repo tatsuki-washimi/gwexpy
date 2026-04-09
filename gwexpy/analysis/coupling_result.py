@@ -996,6 +996,7 @@ class CouplingResultCollection(dict):
     True
     >>> # results['WIT-TGT'] = coupling_result_1
     >>> # results.to_summary_csv("summary.csv")
+
     """
 
     def __init__(self, mapping: dict[str, Any] | None = None) -> None:

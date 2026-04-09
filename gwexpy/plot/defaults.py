@@ -7,8 +7,7 @@ from gwpy.spectrogram import Spectrogram
 
 
 def calculate_default_figsize(geometry, nrow, ncol):
-    """
-    Calculate a default figure size based on the grid geometry.
+    """Calculate a default figure size based on the grid geometry.
     """
     if geometry is not None:
         nrow, ncol = geometry
@@ -278,8 +277,7 @@ def determine_xlabel(data_list, current_value=None):
 
 
 def _format_unit_label(unit):
-    """
-    Format a label based on Physical Type and Unit, e.g. "Length [m]".
+    """Format a label based on Physical Type and Unit, e.g. "Length [m]".
     Ignores unit.name or data name in favor of Physical Type as requested.
     """
     if unit is None:
@@ -360,8 +358,7 @@ def determine_ylabel(data_list, current_value=None):
 
 
 def determine_clabel(data_list, current_value=None):
-    """
-    Determine colorbar label for Spectrograms (Z-axis).
+    """Determine colorbar label for Spectrograms (Z-axis).
     """
     if current_value is not None:
         return current_value

@@ -9,8 +9,7 @@ from .base import to_plain_array
 def to_simpeg(
     data, location=None, rx_type="PointElectricField", orientation="x", **kwargs
 ):
-    """
-    Convert gwexpy object to simpeg.data.Data.
+    """Convert gwexpy object to simpeg.data.Data.
 
     Parameters
     ----------
@@ -27,6 +26,7 @@ def to_simpeg(
     -------
     simpeg.data.Data
         SimPEG Data object containing the survey and observed data.
+
     """
     require_optional("simpeg")
     from simpeg import data as simpeg_data
@@ -120,8 +120,7 @@ def to_simpeg(
 
 
 def from_simpeg(cls, data_obj, **kwargs):
-    """
-    Convert SimPEG Data object to gwexpy object.
+    """Convert SimPEG Data object to gwexpy object.
 
     Parameters
     ----------
@@ -133,6 +132,7 @@ def from_simpeg(cls, data_obj, **kwargs):
     Returns
     -------
     Object of type cls.
+
     """
     simpeg = require_optional("simpeg")
 

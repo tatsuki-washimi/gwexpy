@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.mt_
+"""gwexpy.interop.mt_
 ------------------
 
 Interoperability with MTH5 (Magnetotelluric HDF5) format.
@@ -29,8 +28,7 @@ def to_mth5(
     run: str | None = None,
     channel_type: str = "electric",
 ) -> None:
-    """
-    Write a TimeSeries to an MTH5 file.
+    """Write a TimeSeries to an MTH5 file.
 
     Parameters
     ----------
@@ -56,6 +54,7 @@ def to_mth5(
     >>> from gwexpy.interop.mt_ import to_mth5
     >>> ts = TimeSeries([1, 2, 3], dt=0.001, name="Ex")
     >>> to_mth5(ts, "data.h5", station="Site01", run="Run01")
+
     """
     require_optional("mth5")
 
@@ -166,8 +165,7 @@ def from_mth5(
     channel: str,
     survey: str | None = None,
 ):
-    """
-    Read a channel from MTH5 to TimeSeries.
+    """Read a channel from MTH5 to TimeSeries.
 
     Parameters
     ----------
@@ -196,6 +194,7 @@ def from_mth5(
     --------
     >>> from gwexpy.interop.mt_ import from_mth5
     >>> ts = from_mth5("data.h5", "Site01", "Run01", "Ex")
+
     """
     require_optional("mth5")
     import astropy.units as u

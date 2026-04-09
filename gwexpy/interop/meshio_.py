@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.meshio_
+"""gwexpy.interop.meshio_
 ----------------------
 
 Interoperability with meshio for unstructured-mesh field data.
@@ -15,6 +14,7 @@ interpolates unstructured mesh data to a regular grid using
 References
 ----------
 https://github.com/nschloe/meshio
+
 """
 
 from __future__ import annotations
@@ -88,6 +88,7 @@ def _build_regular_grid(
         ``(nx, ny)`` for 2D or ``(nx, ny, nz)`` for 3D.
     axes : tuple of ndarray
         Coordinate arrays for each spatial axis.
+
     """
     griddata = require_optional("scipy").interpolate.griddata
 
@@ -125,6 +126,7 @@ def _get_field_data(
     points : ndarray, shape (N, 2 or 3)
     values : ndarray, shape (N,) or (N, ncomp)
     all_data : dict  (all point_data or cell_data entries)
+
     """
     points = np.asarray(mesh.points, dtype=np.float64)
 
@@ -217,6 +219,7 @@ def from_meshio(
     only ``cell_data`` and no ``point_data``, a ``ValueError`` is raised.
     To use cell data, first convert it to point data
     (e.g. meshio's ``cell_data_to_point_data`` utility).
+
     """
     require_optional("scipy")
 
@@ -317,6 +320,7 @@ def from_fenics_xdmf(
     Returns
     -------
     ScalarField or VectorField
+
     """
     meshio = require_optional("meshio")
     mesh = meshio.read(str(filepath))
@@ -355,6 +359,7 @@ def from_fenics_vtk(
     Returns
     -------
     ScalarField or VectorField
+
     """
     meshio = require_optional("meshio")
     mesh = meshio.read(str(filepath))

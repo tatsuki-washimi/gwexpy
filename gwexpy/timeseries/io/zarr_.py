@@ -1,5 +1,4 @@
-"""
-Zarr reader/writer for gwexpy.
+"""Zarr reader/writer for gwexpy.
 
 Convention
 ----------
@@ -61,6 +60,7 @@ def read_timeseriesdict_zarr(
         are loaded.
     unit : str, optional
         Physical unit override applied to every channel.
+
     """
     zarr = _import_zarr()
 

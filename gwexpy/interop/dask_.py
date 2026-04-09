@@ -4,16 +4,14 @@ from ._optional import require_optional
 
 
 def to_dask(ts, chunks="auto"):
-    """
-    Convert TimeSeries to dask.array.Array.
+    """Convert TimeSeries to dask.array.Array.
     """
     da = require_optional("dask.array")
     return da.from_array(ts.value, chunks=chunks)
 
 
 def from_dask(cls, array, t0, dt, unit=None, compute=True):
-    """
-    Create TimeSeries from dask array.
+    """Create TimeSeries from dask array.
 
     Parameters
     ----------
@@ -22,6 +20,7 @@ def from_dask(cls, array, t0, dt, unit=None, compute=True):
         If False, TimeSeries will hold the dask array (if underlying class supports it,
         gwpy TimeSeries usually expects numpy, so caution).
         Default True for safety.
+
     """
     if compute:
         data = array.compute()

@@ -4,8 +4,7 @@ from ._optional import require_optional
 
 
 def is_cupy_available():
-    """
-    Check if cupy is installed and functionally usable (CUDA environment is working).
+    """Check if cupy is installed and functionally usable (CUDA environment is working).
     """
     try:
         import cupy

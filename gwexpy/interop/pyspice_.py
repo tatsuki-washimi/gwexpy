@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.pyspice_
+"""gwexpy.interop.pyspice_
 ------------------------
 
 Interoperability with PySpice circuit simulation library.
@@ -35,8 +34,7 @@ def from_pyspice_transient(
     branch: str | None = None,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create TimeSeries or TimeSeriesDict from a PySpice TransientAnalysis.
+    """Create TimeSeries or TimeSeriesDict from a PySpice TransientAnalysis.
 
     Parameters
     ----------
@@ -67,6 +65,7 @@ def from_pyspice_transient(
     >>> from gwexpy.timeseries import TimeSeries
     >>> # analysis = simulator.transient(...)
     >>> ts = TimeSeries.from_pyspice_transient(analysis, node="out")
+
     """
     require_optional("PySpice")
 
@@ -124,8 +123,7 @@ def from_pyspice_ac(
     branch: str | None = None,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create FrequencySeries or FrequencySeriesDict from a PySpice AcAnalysis.
+    """Create FrequencySeries or FrequencySeriesDict from a PySpice AcAnalysis.
 
     AC analysis waveforms contain complex-valued frequency responses (transfer
     functions, impedances, etc.) with the frequency axis given by
@@ -157,6 +155,7 @@ def from_pyspice_ac(
     >>> from gwexpy.frequencyseries import FrequencySeries
     >>> # analysis = simulator.ac(...)
     >>> fs = FrequencySeries.from_pyspice_ac(analysis, node="out")
+
     """
     require_optional("PySpice")
     return _from_pyspice_frequency(cls, analysis, node=node, branch=branch, unit=unit)
@@ -169,8 +168,7 @@ def from_pyspice_noise(
     node: str | None = None,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create FrequencySeries or FrequencySeriesDict from a PySpice NoiseAnalysis.
+    """Create FrequencySeries or FrequencySeriesDict from a PySpice NoiseAnalysis.
 
     Noise analysis waveforms contain real-valued noise spectral densities
     (e.g. V²/Hz or A²/Hz) as a function of frequency.
@@ -199,6 +197,7 @@ def from_pyspice_noise(
     >>> from gwexpy.frequencyseries import FrequencySeries
     >>> # analysis = simulator.noise(...)
     >>> fs = FrequencySeries.from_pyspice_noise(analysis, node="onoise")
+
     """
     require_optional("PySpice")
     return _from_pyspice_frequency(cls, analysis, node=node, branch=None, unit=unit)
@@ -211,8 +210,7 @@ def from_pyspice_distortion(
     node: str | None = None,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create FrequencySeries or FrequencySeriesDict from a PySpice DistortionAnalysis.
+    """Create FrequencySeries or FrequencySeriesDict from a PySpice DistortionAnalysis.
 
     Distortion analysis waveforms contain harmonic/intermodulation distortion
     components as a function of frequency.
@@ -240,6 +238,7 @@ def from_pyspice_distortion(
     >>> from gwexpy.frequencyseries import FrequencySeries
     >>> # analysis = simulator.distortion(...)
     >>> fs = FrequencySeries.from_pyspice_distortion(analysis, node="out")
+
     """
     require_optional("PySpice")
     return _from_pyspice_frequency(cls, analysis, node=node, branch=None, unit=unit)

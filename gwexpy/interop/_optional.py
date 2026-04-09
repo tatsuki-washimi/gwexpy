@@ -54,8 +54,7 @@ _OPTIONAL_DEPENDENCIES = {
 
 
 def require_optional(name: str) -> Any:
-    """
-    Import an optional dependency or raise an informative ImportError.
+    """Import an optional dependency or raise an informative ImportError.
 
     Parameters
     ----------
@@ -71,6 +70,7 @@ def require_optional(name: str) -> Any:
     ------
     ImportError
         If the package is not installed.
+
     """
     if name not in _OPTIONAL_DEPENDENCIES:
         # Fallback: assume package name matches request if not in map

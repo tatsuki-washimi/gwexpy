@@ -1,5 +1,4 @@
-"""
-High-level fitting pipeline for spectral analysis.
+"""High-level fitting pipeline for spectral analysis.
 
 This module provides integrated workflows for common analysis patterns,
 combining bootstrap estimation, GLS fitting, and MCMC in a single API.
@@ -48,8 +47,7 @@ def fit_bootstrap_spectrum(
     progress: bool = True,
     **kwargs,
 ) -> FitResult:
-    """
-    Integrated spectral analysis pipeline with bootstrap, GLS fitting, and MCMC.
+    """Integrated spectral analysis pipeline with bootstrap, GLS fitting, and MCMC.
 
     This function provides a unified workflow for:
     1. Converting TimeSeries to Spectrogram (if needed)
@@ -162,6 +160,7 @@ def fit_bootstrap_spectrum(
     gwexpy.spectral.bootstrap_spectrogram : Bootstrap resampling function
     gwexpy.fitting.fit_series : Lower-level fitting function
     gwexpy.fitting.GeneralizedLeastSquares : GLS cost function
+
     """
     if "stride" in kwargs:
         raise TypeError(
