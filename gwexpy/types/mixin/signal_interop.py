@@ -176,17 +176,17 @@ class SignalAnalysisMixin:
         """
         import scipy.signal
 
-        h = cast(Any, self)
+        this = cast(Any, self)
 
         # Prepare target array based on method
         if method == "amplitude":
-            target = np.abs(h.value)
-            current_unit = h.unit
+            target = np.abs(this.value)
+            current_unit = this.unit
         elif method == "power":
-            target = np.abs(h.value) ** 2
-            current_unit = h.unit**2 if h.unit else None
+            target = np.abs(this.value) ** 2
+            current_unit = this.unit**2 if this.unit else None
         elif method == "db":
-            target = 20 * np.log10(np.abs(h.value))
+            target = 20 * np.log10(np.abs(this.value))
             current_unit = None  # dB is unitless-ish
         else:
             raise ValueError(f"Unknown method {method}")
@@ -203,16 +203,16 @@ class SignalAnalysisMixin:
 
         # Unit support for distance and width
         # This requires knowing the 'dx' (dt or df)
-        dx = getattr(h, "dt", None)
+        dx = getattr(this, "dt", None)
         if dx is None:
-            dx = getattr(h, "df", None)
+            dx = getattr(this, "df", None)
 
         if dx is not None:
             dx_val = dx.value if hasattr(dx, "value") else dx
             dx_unit = getattr(dx, "unit", None)
 
-            if dx_unit is None and hasattr(h, "xunit"):
-                dx_unit = getattr(h, "xunit", None)
+            if dx_unit is None and hasattr(this, "xunit"):
+                dx_unit = getattr(this, "xunit", None)
 
             if dx_unit is None or (
                 hasattr(dx_unit, "physical_type")
@@ -220,7 +220,7 @@ class SignalAnalysisMixin:
             ):
                 # Fallback based on class type if unit is missing or dimensionless
                 # meticulous heuristic checks
-                cls_name = h.__class__.__name__
+                cls_name = this.__class__.__name__
                 if "Time" in cls_name:
                     from astropy import units as u
 
@@ -270,13 +270,12 @@ class SignalAnalysisMixin:
 
         if len(peaks_indices) == 0:
             # Return empty container of same type
-            series = cast(Any, self)
-            return series[[]], props
+            return this[[]], props
 
         # Use slicing to return subset (preserves type and metadata)
-        out = h[peaks_indices]
-        if h.name:
-            out.name = f"{h.name}_peaks"
+        out = this[peaks_indices]
+        if this.name:
+            out.name = f"{this.name}_peaks"
         return out, props
 
 
