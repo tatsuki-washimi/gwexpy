@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Infrastructure & CI
+
+- **ci**: Comprehensive stabilization of the CI pipeline, resolving all `ModuleNotFoundError` and `SyntaxError` regressions.
+- **ci**: Added mandatory **Notebook syntax validation** to the primary test workflow to proactively catch corrupted `.ipynb` files.
+- **ci**: Restored and standardized scientific dependencies (`control`, `statsmodels`, `scikit-learn`, etc.) across all GitHub Actions environments.
+- **docs**: Performed a global "reset-and-rewrap" of tutorial notebooks to fix indentation errors in `warnings.catch_warnings()` blocks.
+
 ### Added
 
 - **fields**: `VectorField` and `TensorField` now support initialization directly from NumPy ndarrays (5D for VectorField, 6D for TensorField), automatically creating the component `ScalarField`s without breaking backward-compatible dictionary initialization.

@@ -22,6 +22,7 @@ Please include a summary of the change and which issue is fixed. Please also inc
 - [ ] New and existing unit tests pass locally with my changes
 - [ ] I have checked my code with `ruff` and `mypy` locally
 - [ ] I have updated the `CHANGELOG.md` if necessary
+- [ ] I have verified that any modified Jupyter Notebooks (.ipynb) have valid syntax and correct indentation (especially for `warnings` blocks)
 
 ## Acceptance Criteria
 - [ ] `cd docs && make html` (ja/en) で警告が出ないことを確認した

@@ -74,6 +74,13 @@ Documentation and examples use Jupyter Notebooks (.ipynb). We categorize them to
 
 See [NOTEBOOK_POLICY.md](docs/NOTEBOOK_POLICY.md) for details. We use `nbstripout` via `pre-commit` to prevent committing large binary outputs for most notebooks.
 
+#### Syntax & Indentation
+To ensure notebooks are compatible with Sphinx/nbsphinx and the CI pipeline:
+- **Avoid indentation errors**: Ensure all cells have valid Python syntax.
+- **Warnings Blocks**: When using `with warnings.catch_warnings():`, ensure the entire cell content is correctly indented. Avoid mixing multiple warnings blocks or leaving trailing imports inside the block.
+- **Automated Checks**: The `Notebook syntax check` in CI will block PRs with corrupted JSON or major syntax regressions. Run `nbformat` locally to verify if you suspect issues.
+- **Dependencies**: Any new dependency used in a tutorial MUST be added to `requirements-dev.txt` and the relevant CI workflows (`test.yml`, `docs.yml`).
+
 ### Examples and Doctests
 
 Interactive examples in docstrings must be self-contained and stable.
