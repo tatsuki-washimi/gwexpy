@@ -112,6 +112,7 @@ suppress_warnings = [
     "toc.not_included",
     "toc.not_readable",
     "nbsphinx.localfile",
+    "ref.intersphinx",
 ]
 
 language = "en"
@@ -210,7 +211,7 @@ intersphinx_mapping: dict[str, tuple[str, str | None]] = {
     "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "astropy": ("https://docs.astropy.org/en/stable", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
-    "gwpy": ("https://gwpy.github.io/docs/stable", None),
+    "gwpy": ("https://gwpy.readthedocs.io/en/stable/", "https://gwpy.readthedocs.io/en/stable/objects.inv"),
 }
 
 nitpick_ignore = [
