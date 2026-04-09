@@ -246,6 +246,10 @@ jobs:
           create-args: >-
             python=3.11
             pip
+            iminuit
+            control
+            statsmodels
+            scikit-learn
 
       - name: Install system dependencies (conditional)
         if: contains(github.event.head_commit.message, '[gui-test]')
