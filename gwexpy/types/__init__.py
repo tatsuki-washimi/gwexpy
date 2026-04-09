@@ -1,5 +1,4 @@
 """gwexpy.types - Data type definitions and utilities."""
-
 from __future__ import annotations
 
 from .array import Array

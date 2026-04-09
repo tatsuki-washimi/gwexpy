@@ -3,7 +3,6 @@
 NOTE: The CLI is currently a placeholder. Main functionality is provided
 through the Python API. Subcommands will be implemented in future versions.
 """
-
 from __future__ import annotations
 
 import sys

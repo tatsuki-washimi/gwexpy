@@ -1,6 +1,5 @@
 """Utility functions for NDS connectivity.
 """
-
 from __future__ import annotations
 
 import logging

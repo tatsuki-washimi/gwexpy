@@ -3,7 +3,6 @@
 Creates temporary text files to simulate OpenSeesPy recorder output.
 Does NOT require OpenSeesPy to be installed.
 """
-
 from __future__ import annotations
 
 import numpy as np

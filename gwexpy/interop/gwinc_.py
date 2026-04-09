@@ -12,7 +12,6 @@ The simpler ``gwexpy.noise.gwinc_.from_pygwinc`` helper (strain/DARM only) is
 preserved unchanged. This module adds the richer trace-expansion API.
 
 """
-
 from __future__ import annotations
 
 from typing import Any, Literal

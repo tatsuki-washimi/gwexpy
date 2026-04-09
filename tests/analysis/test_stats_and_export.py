@@ -6,7 +6,6 @@ Phase 2 統計レポート機能テスト
 - test_coupling_result_to_txt_roundtrip
 - test_coupling_result_collection_summary_csv
 """
-
 from __future__ import annotations
 
 import numpy as np

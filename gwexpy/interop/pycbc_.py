@@ -6,7 +6,6 @@ Interoperability with PyCBC (Python gravitational-wave data analysis library).
 Provides bidirectional conversion between PyCBC time/frequency series
 types and GWexpy TimeSeries / FrequencySeries.
 """
-
 from __future__ import annotations
 
 from typing import Any

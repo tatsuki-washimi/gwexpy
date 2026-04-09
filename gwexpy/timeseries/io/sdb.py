@@ -1,6 +1,5 @@
 """SDB (Davis Vantage Pro2 Weather Station / WeeWX SQLite) format reader.
 """
-
 from __future__ import annotations
 
 import sqlite3

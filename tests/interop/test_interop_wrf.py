@@ -3,7 +3,6 @@
 Uses mock xarray DataArrays with WRF dimension names.
 Does NOT require wrf-python to be installed.
 """
-
 from __future__ import annotations
 
 import numpy as np

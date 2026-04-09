@@ -6,7 +6,6 @@ order, and that error messages guide users toward the fix.
 
 Several tests run in a **subprocess** to guarantee a clean import state.
 """
-
 from __future__ import annotations
 
 import subprocess

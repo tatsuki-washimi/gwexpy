@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 #!/usr/bin/env python3
 """
 Legacy GWpy SampleCodes カタログ生成スクリプト
@@ -12,9 +14,6 @@ Python 標準ライブラリのみで動作（外部依存なし）。
     python scripts/dev_tools/catalog_legacy_codes.py --root docs_internal/references/SampleCodes_GWpy
     python scripts/dev_tools/catalog_legacy_codes.py --verbose
 """
-
-from __future__ import annotations
-
 import argparse
 import ast
 import hashlib

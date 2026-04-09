@@ -7,7 +7,6 @@ Only warnings that carry no actionable information for the user are suppressed
 here. Warnings that indicate potential issues with user data or parameters are
 left in place (with appropriate stacklevel so they point to user code).
 """
-
 from __future__ import annotations
 
 import warnings

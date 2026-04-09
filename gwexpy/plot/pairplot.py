@@ -3,7 +3,6 @@
 
 Pair plot for Series collections.
 """
-
 from __future__ import annotations
 
 from typing import Any

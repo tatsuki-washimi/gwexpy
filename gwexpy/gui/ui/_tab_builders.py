@@ -4,7 +4,6 @@ Each function takes a ``panel`` (GraphPanel instance) as its first argument
 and sets the required attributes on it.  All functions return the
 top-level QWidget for the tab (or, for the setup helpers, nothing).
 """
-
 from __future__ import annotations
 
 from collections.abc import Callable

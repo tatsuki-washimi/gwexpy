@@ -5,7 +5,6 @@ This module contains the base TimeSeries class with essential functionality:
 - Regularity checking (is_regular, _check_regular)
 - Peak finding
 """
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Union

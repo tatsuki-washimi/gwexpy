@@ -12,7 +12,6 @@ https://github.com/ladisk/pyuff
 https://sdypy.readthedocs.io/
 
 """
-
 from __future__ import annotations
 
 from typing import Any

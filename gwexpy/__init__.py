@@ -3,7 +3,6 @@
 This package extends GWpy with additional functionality for
 gravitational wave and time-series data analysis.
 """
-
 from __future__ import annotations
 
 import warnings

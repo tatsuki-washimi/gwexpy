@@ -1,11 +1,10 @@
+from __future__ import annotations
+
 import pytest; pytest.importorskip("xarray")
 """Tests for xarray ↔ ScalarField / VectorField bridge.
 
 These tests do NOT require MetPy or wrf-python; only xarray is needed.
 """
-
-from __future__ import annotations
-
 import numpy as np
 import pytest
 import xarray as xr

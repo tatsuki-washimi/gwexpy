@@ -1,5 +1,4 @@
 """Mixins and factories for eliminating dict/list delegation boilerplate."""
-
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator

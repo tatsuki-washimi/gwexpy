@@ -1,5 +1,4 @@
 """gwexpy.noise.non_gaussian - Non-Gaussian noise simulators."""
-
 from __future__ import annotations
 
 from typing import Any

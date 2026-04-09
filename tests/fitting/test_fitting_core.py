@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest; pytest.importorskip("iminuit")
 """
 Comprehensive tests for gwexpy.fitting.core.
@@ -11,9 +13,6 @@ Tests cover:
               limits, fixed, p0 (list/dict), cov (2D ndarray), complex data,
               custom cost_function, error cases
 """
-
-from __future__ import annotations
-
 import numpy as np
 import pytest
 from gwpy.frequencyseries import FrequencySeries

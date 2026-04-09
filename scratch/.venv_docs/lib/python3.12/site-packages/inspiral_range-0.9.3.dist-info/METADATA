@@ -1,0 +1,206 @@
+Metadata-Version: 2.2
+Name: inspiral_range
+Version: 0.9.3
+Summary: GW detector inspiral range calculation tools
+Home-page: https://git.ligo.org/gwinc/inspiral_range
+Author: Jameson Graef Rollins
+Author-email: jameson.rollins@ligo.org
+License: GPL-3.0-or-later
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python
+Description-Content-Type: text/markdown
+License-File: COPYING
+License-File: COPYING-GPL-3
+Requires-Dist: astropy
+Requires-Dist: gpstime
+Requires-Dist: numpy
+Requires-Dist: pyyaml
+Requires-Dist: scipy>=1.8.0
+Provides-Extra: lal
+Requires-Dist: lalsuite; extra == "lal"
+Provides-Extra: plot
+Requires-Dist: matplotlib; extra == "plot"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: summary
+
+# GW detector inspiral range calculation tools
+
+The `inspiral_range` package provides tools for calculating various
+binary inspiral range measures useful as figures of merit for
+gravitational wave detectors characterized by a strain noise spectral
+density.
+
+It includes a command-line tool for calculating various inspiral
+ranges from a supplied file of detector noise spectral density (either
+ASD or PSD).
+
+See the following references for more information:
+
+* https://arxiv.org/abs/1709.08079
+* https://dcc.ligo.org/LIGO-T1500491
+* https://dcc.ligo.org/LIGO-T1100338
+* https://dcc.ligo.org/LIGO-T030276
+
+Authors:
+
+* Jameson Rollins <jameson.rollins@ligo.org>
+* Jolien Creighton <jolien.creighton@ligo.org>
+
+
+## Installation
+
+`inspiral_range` is available via
+[pip](https://pypi.org/project/inspiral-range/) and
+[conda](https://anaconda.org/conda-forge/inspiral-range).
+
+    $ pip install inspiral_range
+
+`inspiral_range` depends on `scipy` for various optimization routines,
+and `astropy` for cosmology calculations.  The [LSC Algorithm Library
+(LAL)](https://wiki.ligo.org/Computing/LALSuite) can also be used for
+faster versions of some calculations.  The LAL dependencies (both
+`lal` and `lalsimulation`) can be found in the `lalsuite` package in
+pip or conda, or in native packaging available for the various
+[IGWN supported operating
+systems](https://computing.docs.ligo.org/guide/software/installation/).
+Use the `lal` extra flag during pip installation to pull in the LAL
+dependencies:
+
+    $ pip install inspiral_range[lal]
+
+Note the following caveats:
+
+
+### cosmology
+
+`inspiral_range` needs to calculate luminosity distance and
+differential comoving volume as a function of redshift, which requires
+specifying a cosmology model.  Two different packages are supported
+for these cosmological calculations:
+
+* `astropy` (default): pure python and widely available, but slow
+* `lal`: not pure python so not as accessible, but much faster
+
+
+### waveform generation
+
+`inspiral_range` needs the amplitude of strain waveforms of binary
+inspiral signals in order to calculate the detection SNR for a given
+detector noise spectrum.  Included in the package is a cached
+interpolant for equal mass, non-spinning BBH systems.  For range
+calculations for other systems (non-equal masses, including spin) the
+`lalsimulation` package is required for waveform calculations.
+
+
+### other requirements
+
+Other python package requirements:
+
+* numpy
+* scipy
+* gpstime (CLI)
+* gwpy (CLI LIGO data fetching)
+* nds2-client (CLI LIGO data fetching)
+* yaml (CLI output)
+* matplotlib (CLI plotting)
+
+
+## Usage
+
+### library usage
+
+The package includes multiple functions for calculating various range
+measures for a given PSD.
+
+Analytical methods:
+
+* sensemon_range
+* sensemon_horizon
+* int73
+
+Cosmologically-corrected measures (see
+[arxiv:1709.08079](https://arxiv.org/abs/1709.08079)):
+
+* horizon (Mpc)
+* horizon_redshift (z)
+* volume (Mpc^3)
+* range (Mpc)
+* response_frac (Mpc)
+* response_frac_redshift (z)
+* reach_frac (Mpc)
+* reach_frac_redshift (z)
+
+By default, all functions calculate measures for 1.4/1.4 M_sol BNS
+inspirals:
+
+    >>> import inspiral_range
+    >>> freq, psd = np.loadtxt('PSD.txt')
+    >>> range_bns = inspiral_range.range(freq, psd)
+
+But other masses can be used as well:
+
+    >>> range_bbh = inspiral_range.range(freq, psd, m1=30, m2=30)
+
+When calculating multiple measures together it is more efficient to
+generate the fiducial waveform first and then pass it to the various
+functions:
+
+    >>> H = inspiral_range.CBCWaveform(freq, m1=30, m2=30)
+    >>> horizon = inspiral_range.horizon(freq, psd, H=H)
+    >>> range = inspiral_range.range(freq, psd, H=H)
+
+The cosmology being used can be modified with the Cosmology class:
+
+    >>> cosmo = inspiral_range.Cosmology(h=70.0)
+    >>> H = inspiral_range.CBCWaveform(freq, cosmo=cosmo)
+
+The 'cosmo' parameter can also be supplied directly to the range
+calculator:
+
+    >>> range = inspiral_range.range(freq, psd, cosmo=cosmo)
+
+A convenience function `all_ranges` is included that calculates most
+of the range metrics together in an efficient way (all return values
+in Mpc):
+
+* range
+* horizon
+* response_50
+* response_10
+* reach_50
+* reach_90
+* sensemon_range
+* sensemon_horizon
+
+e.g.:
+
+    >>> metrics, H = inspiral_range.all_ranges(freq, psd)
+
+
+### command line interface
+
+The package also include a command line interface for easily
+calculating ranges for a given ASD or PSD specified in a two-column
+text file:
+
+    $ python3 -m inspiral_range -p PSD.txt m1=30 m2=30
+
+#### LIGO "official" range from calibrated strain data
+
+The CLI can also calculate the range from LIGO's calibrated strain
+data using the `--ligo` option and a time specified in either GPS or
+natural language, e.g.:
+
+    $ python3 -m inspiral_range --ligo '2017-08-17 12:41:04 UTC'
+
+This requires [gwpy](https://gwpy.github.io/) with
+[NDS](https://git.ligo.org/nds/nds2-client) to retrieve the data.

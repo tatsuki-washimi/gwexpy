@@ -7,7 +7,6 @@ Provides bidirectional conversion between scikit-rf ``Network`` objects and
 GWexpy FrequencySeries types, plus one-way conversion of time-domain
 impulse/step responses to TimeSeries.
 """
-
 from __future__ import annotations
 
 from typing import Any

@@ -1,6 +1,5 @@
 """Shared utilities for parsing dttxml (Diag GUI XML) files.
 """
-
 from __future__ import annotations
 
 import warnings

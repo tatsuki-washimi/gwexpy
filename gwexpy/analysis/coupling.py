@@ -4,7 +4,6 @@ Estimates the coupling function (CF) with flexible threshold strategies.
 Threshold strategies are defined in :mod:`gwexpy.analysis.threshold`.
 The result container is defined in :mod:`gwexpy.analysis.coupling_result`.
 """
-
 from __future__ import annotations
 
 import logging

@@ -3,7 +3,6 @@
 Uses mock xarray DataArrays with _metpy_axis attributes. Does NOT require
 MetPy to be installed.
 """
-
 from __future__ import annotations
 
 import numpy as np

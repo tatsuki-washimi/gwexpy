@@ -11,7 +11,6 @@ for known naming mismatches.
 Only ``pint`` is imported lazily (optional dependency); ``astropy`` is always
 available in GWexpy.
 """
-
 from __future__ import annotations
 
 from typing import Any

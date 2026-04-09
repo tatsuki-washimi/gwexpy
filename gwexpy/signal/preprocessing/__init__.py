@@ -3,7 +3,6 @@
 
 Signal preprocessing algorithms.
 """
-
 from __future__ import annotations
 
 from .imputation import impute

@@ -16,7 +16,6 @@ References
 https://meep.readthedocs.io/en/latest/Python_User_Interface/#output-functions
 
 """
-
 from __future__ import annotations
 
 from pathlib import Path

@@ -1,6 +1,5 @@
 """Readers/Writers for ObsPy-supported seismic formats (miniSEED, SAC, GSE2, KNET).
 """
-
 from __future__ import annotations
 
 import numpy as np

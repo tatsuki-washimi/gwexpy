@@ -11,7 +11,6 @@ Covers:
 Usage:
     python scripts/make_peak_tracking_notebook.py
 """
-
 from __future__ import annotations
 
 import json

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 #!/usr/bin/env python
 """
 Unit tests for SeriesMatrixMathMixin operations.
@@ -10,9 +12,6 @@ Tests linear algebra operations:
 - inverse (inv)
 - eigenvalues (eigvals)
 """
-
-from __future__ import annotations
-
 import numpy as np
 import pytest
 from astropy import units as u

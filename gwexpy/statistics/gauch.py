@@ -1,5 +1,4 @@
 """gwexpy.statistics.gauch - GauCh (Modified Kolmogorov-Smirnov test)."""
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any

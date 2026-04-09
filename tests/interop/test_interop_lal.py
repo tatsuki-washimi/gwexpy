@@ -3,7 +3,6 @@
 These tests inject a mock ``gwexpy.utils.lal`` into ``sys.modules`` so they
 run without requiring LALSuite to be installed.
 """
-
 from __future__ import annotations
 
 import sys

@@ -7,7 +7,6 @@ Phase 3 可視化拡張テスト。
 - ResponseFunctionResult.plot_projection_summary()
 - ResponseFunctionResult.plot_response_matrix()
 """
-
 from __future__ import annotations
 
 import matplotlib

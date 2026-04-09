@@ -22,7 +22,6 @@ Seismological Research Letters.
 Krischer, L. et al. — https://github.com/krischer/mtspec
 
 """
-
 from __future__ import annotations
 
 from typing import Any, Literal

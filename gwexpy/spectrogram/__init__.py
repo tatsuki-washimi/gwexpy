@@ -1,5 +1,4 @@
 """gwexpy.spectrogram - Spectrogram data containers and operations."""
-
 from __future__ import annotations
 
 from .collections import SpectrogramDict, SpectrogramList

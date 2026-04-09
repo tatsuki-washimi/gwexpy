@@ -8,7 +8,6 @@ Phase 1 時間ウィンドウ API テスト
 - test_estimate_coupling_bkg_window
 - test_response_bkg_window
 """
-
 from __future__ import annotations
 
 import numpy as np

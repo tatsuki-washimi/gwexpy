@@ -1,5 +1,4 @@
 """Tests for SegmentCell."""
-
 from __future__ import annotations
 
 import pytest

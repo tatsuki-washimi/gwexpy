@@ -1,5 +1,4 @@
 """gwexpy.statistics.roc - Receiver Operating Characteristic (ROC) evaluation."""
-
 from __future__ import annotations
 
 from collections.abc import Callable

@@ -1,5 +1,4 @@
 """CouplingResult: result container for a single Witness -> Target pair."""
-
 from __future__ import annotations
 
 import csv

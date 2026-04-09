@@ -9,7 +9,6 @@ Provides:
 - ``build_frf_matrix``: assemble FRF data into a FrequencySeriesMatrix
 - ``infer_unit_from_response_type``: map response-type strings to astropy units
 """
-
 from __future__ import annotations
 
 from typing import Any
