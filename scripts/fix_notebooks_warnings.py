@@ -1,52 +1,55 @@
 #!/usr/bin/env python3
-import nbformat
-from nbformat import v4
+"""Notebook warnings fix script.
+
+Cleanup corrupted warnings.catch_warnings() blocks in notebooks.
+"""
+
+import argparse
 from pathlib import Path
-import textwrap
-import sys
+
+import nbformat
+
 
 def get_indent(line):
+    """Return indentation level of a line."""
     return len(line) - len(line.lstrip())
 
 def cell_needs_fix(src):
-    # 判定ルール：
-    # - セルに "with warnings.catch_warnings()" を含むが、
-    #   次の非空行がインデントを深めていない（壊れている） -> 修正対象
+    """Check if a cell needs fixing based on indentation after warnings block."""
     lines = src.splitlines()
-    for i,l in enumerate(lines):
-        if "with warnings.catch_warnings()" in l:
-            current_indent = get_indent(l)
+    for i, line in enumerate(lines):
+        if "with warnings.catch_warnings()" in line:
+            current_indent = get_indent(line)
             # find next non-empty
-            for j in range(i+1, len(lines)):
+            for j in range(i + 1, len(lines)):
                 if lines[j].strip() == "":
                     continue
                 next_indent = get_indent(lines[j])
-                # if next non-empty line is not more indented than the 'with' line, treat as broken
+                # if next non-empty line is not more indented, treat as broken
                 if next_indent <= current_indent:
                     return True
                 break
     return False
 
 def fix_cell(src):
-    # Wrap entire cell in a single correct context manager.
-    # If cell already contains "with warnings.catch_warnings()", remove existing occurrences to avoid nested duplicates.
+    """Wrap cell content in a single warnings.catch_warnings() block."""
     lines = src.splitlines()
     # Remove any bare occurrences of the with line to avoid duplication
     filtered = []
-    for idx,l in enumerate(lines):
-        if "with warnings.catch_warnings()" in l:
+    for _idx, line in enumerate(lines):
+        if "with warnings.catch_warnings()" in line:
             continue
         # Also remove redundant filter lines if they were added multiply
-        if "warnings.filterwarnings" in l and "tight_layout" in l:
-             # we will add a single simplefilter('ignore') or keep one
-             continue
-        filtered.append(l)
-    
+        if "warnings.filterwarnings" in line and "tight_layout" in line:
+            continue
+        filtered.append(line)
+
     body = "\n".join(filtered).strip()
     if not body:
-        return src # should not happen if cell_needs_fix was True
-        
-    indented = "\n".join("    "+ln if ln.strip() != "" else "" for ln in body.splitlines())
+        return src
+
+    indented = "\n".join("    " + ln if ln.strip() != "" else ""
+                         for ln in body.splitlines())
     wrapped = ("import warnings\n"
                "with warnings.catch_warnings():\n"
                "    warnings.simplefilter('ignore')\n\n"
@@ -54,6 +57,7 @@ def fix_cell(src):
     return wrapped
 
 def process_notebook(nbpath: Path, dry_run=True):
+    """Process a single notebook file."""
     try:
         nb = nbformat.read(nbpath, as_version=4)
     except Exception as e:
@@ -70,14 +74,15 @@ def process_notebook(nbpath: Path, dry_run=True):
             if not dry_run:
                 cell.source = fix_cell(src)
             changed = True
-    
+
     if changed and not dry_run:
         nbformat.write(nb, nbpath)
         print(f"Wrote modified notebook to {nbpath}")
-    
+
     return changed
 
 def discover_and_process(root="docs/web", dry_run=True):
+    """Discover notebooks and process them."""
     nb_paths = list(Path(root).rglob("*.ipynb"))
     changed_any = []
     for p in nb_paths:
@@ -91,22 +96,20 @@ def discover_and_process(root="docs/web", dry_run=True):
     return changed_any
 
 if __name__ == "__main__":
-    import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("files", nargs="*", help="Files to process")
-    parser.add_argument("--dry-run", action="store_true", help="Do not write changes")
-    parser.add_argument("--fix", action="store_true", help="Apply fixes (opposite of dry-run)")
+    parser.add_argument("--dry-run", action="store_true", help="Do not write")
+    parser.add_argument("--fix", action="store_true", help="Apply fixes")
     args = parser.parse_args()
 
-    # Default to dry-run unless --fix is specified
     is_dry_run = not args.fix
 
     if args.files:
         for t in args.files:
             process_notebook(Path(t), dry_run=is_dry_run)
     else:
-        changed = discover_and_process(dry_run=is_dry_run)
+        changed_notebooks = discover_and_process(dry_run=is_dry_run)
         if is_dry_run:
-            print("\n[DRY RUN] Notebooks that would be changed:", changed)
+            print("\n[DRY RUN] Notebooks that would be changed:", changed_notebooks)
         else:
-            print("\n[DONE] Changed notebooks:", changed)
+            print("\n[DONE] Changed notebooks:", changed_notebooks)
