@@ -159,8 +159,8 @@ html_context = {
     "twitter_card": "summary_large_image",
 }
 
-autodoc_mock_imports = [
-    # Core external deps (those NOT in docs/requirements.txt or CI/docs environment)
+# docs/conf.py (add near top or appropriate section)
+autodoc_mock_imports = getattr(globals(), "autodoc_mock_imports", []) + [
     "mictools",
     "dcor",
     "hurst",
@@ -180,8 +180,7 @@ autodoc_mock_imports = [
     "PyQt5",
     "qtpy",
 ]
-
-# Allow notebook errors during documentation build (temporary for heavy notebooks)
+# Allow nbsphinx not to fail the build on heavy notebook errors (temporary)
 nbsphinx_allow_errors = True
 
 source_suffix = {
