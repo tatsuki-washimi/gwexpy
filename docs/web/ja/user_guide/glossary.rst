@@ -6,6 +6,7 @@
 GWexpy のドキュメントで使用される主要な用語や概念の定義です。
 
 .. glossary::
+   :noindex:
 
    ScalarField
       (スカラー場) GWexpy の 4 次元フィールドコンテナ（time, x, y, z）。ドメイン情報と軸メタデータを保持する主要データ構造です。

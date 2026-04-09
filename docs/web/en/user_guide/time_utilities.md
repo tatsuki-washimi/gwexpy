@@ -32,8 +32,6 @@ Choose the most appropriate function for your goal.
 
 ---
 
----
-
 ## `to_gps` — DateTime → GPS Seconds
 
 **Signature**: `to_gps(t, *args, **kwargs)`
