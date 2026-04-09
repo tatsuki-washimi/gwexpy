@@ -1,4 +1,4 @@
-"""gwexpy.signal.preprocessing.imputation
+"""gwexpy.signal.preprocessing.imputation.
 ---------------------------------------
 
 Missing value imputation algorithms for signal processing.
