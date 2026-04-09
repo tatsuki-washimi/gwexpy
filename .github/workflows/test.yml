@@ -27,7 +27,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
-          pip install pytest-forked nbval
+          pip install pytest-forked nbval iminuit
           pip install -e . --no-deps
 
       - name: Install GUI dependencies (conditional)
@@ -258,8 +258,7 @@ jobs:
         run: |
           micromamba run -n gwexpy-full python -m pip install --upgrade pip
           micromamba run -n gwexpy-full pip install -r requirements-dev.txt
-          pip install pytest-forked nbval
-          micromamba run -n gwexpy-full pip install pytest-forked nbval
+          micromamba run -n gwexpy-full pip install pytest-forked nbval iminuit
           micromamba run -n gwexpy-full pip install -e . --no-deps
 
       - name: Install GUI dependencies (conditional)
