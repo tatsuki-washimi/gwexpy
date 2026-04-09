@@ -6,8 +6,7 @@ from ._optional import require_optional
 
 
 def to_librosa(ts, y_dtype=np.float32):
-    """
-    Export to librosa-compatible numpy array and sampling rate.
+    """Export to librosa-compatible numpy array and sampling rate.
     Returns (y, sr).
     """
     y = ts.value.astype(y_dtype)
@@ -16,8 +15,7 @@ def to_librosa(ts, y_dtype=np.float32):
 
 
 def to_pydub(ts, sample_width=2, channels=1):
-    """
-    Export to pydub.AudioSegment.
+    """Export to pydub.AudioSegment.
     """
     pydub = require_optional("pydub")
 
@@ -54,8 +52,7 @@ def to_pydub(ts, sample_width=2, channels=1):
 
 
 def from_pydub(cls, seg, unit=None):
-    """
-    Create TimeSeries from AudioSegment.
+    """Create TimeSeries from AudioSegment.
     """
     # get samples
     data = np.array(seg.get_array_of_samples())

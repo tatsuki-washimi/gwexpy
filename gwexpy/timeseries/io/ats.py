@@ -1,5 +1,4 @@
-"""
-Metronix ATS format reader for gwexpy.
+"""Metronix ATS format reader for gwexpy.
 Based on binary header parsing logic provided by user (ats2gwf.py).
 """
 
@@ -31,8 +30,7 @@ ATS_SUPPORTED_VERSIONS = frozenset({80, 81, 1080})  # Metronix ATS header versio
 
 
 def identify_ats(origin, filepath, fileobj, *args, **kwargs):
-    """
-    Identify ATS file by Metronix header signature.
+    """Identify ATS file by Metronix header signature.
 
     ATS files have a distinctive binary header:
     - Bytes 0-2: header_size (little-endian uint16, always >= 1024)
@@ -64,6 +62,7 @@ def identify_ats(origin, filepath, fileobj, *args, **kwargs):
     - 1080: CEA/sliced header (not yet supported for reading)
 
     If you encounter a new version, please report it as an issue.
+
     """
     if filepath is None:
         return False
@@ -89,13 +88,13 @@ def _decode_fixed_ascii(raw: bytes) -> str:
 
 
 def _read_ats_header(fh) -> dict[str, Any]:
-    """
-    Read the ATS binary header.
+    """Read the ATS binary header.
 
     Notes
     -----
     Metronix "ATSHeader_80" (and related) fields are stored in Intel byte order
     (little endian). LSB is stored in mV/count.
+
     """
     header_len_bytes = fh.read(2)
     if len(header_len_bytes) != 2:
@@ -157,8 +156,7 @@ def _read_ats_header(fh) -> dict[str, Any]:
 
 
 def read_timeseriesdict_ats(source, **kwargs):
-    """
-    Read a Metronix ATS file into a TimeSeriesDict.
+    """Read a Metronix ATS file into a TimeSeriesDict.
     """
     ts = read_timeseries_ats(source, **kwargs)
     return TimeSeriesDict({ts.name: ts})
@@ -171,8 +169,7 @@ def read_timeseries_ats(
     epoch: float | datetime.datetime | None = None,
     **kwargs,
 ):
-    """
-    Read a Metronix ATS file into a TimeSeries.
+    """Read a Metronix ATS file into a TimeSeries.
 
     Parameters
     ----------
@@ -185,6 +182,7 @@ def read_timeseries_ats(
         If not provided, uses the timestamp from the ATS header.
     **kwargs
         Additional keyword arguments.
+
     """
     if hasattr(source, "read"):
         return _read_timeseries_ats_file(source, unit=unit, epoch=epoch, **kwargs)
@@ -271,8 +269,7 @@ def _read_timeseries_ats_file(f, *, unit=None, epoch=None, **kwargs):
 
 
 def read_timeseries_ats_mth5(source, **kwargs):
-    """
-    Read Metronix ATS/ATSS file using mth5 library.
+    """Read Metronix ATS/ATSS file using mth5 library.
 
     This function uses `mth5.io.metronix.metronix_atss.read_atss`.
     Note that mth5 enforces strict filename conventions (e.g. extension .atss, specific underscores)

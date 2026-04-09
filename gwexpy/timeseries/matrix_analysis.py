@@ -62,8 +62,7 @@ class TimeSeriesMatrixAnalysisMixin:
     def skewness(
         self: Any, axis: Any = "time", nan_policy: str = "propagate", **kwargs: Any
     ) -> np.ndarray:
-        """
-        Compute the skewness of the matrix along the specified axis.
+        """Compute the skewness of the matrix along the specified axis.
 
         Parameters
         ----------
@@ -71,6 +70,7 @@ class TimeSeriesMatrixAnalysisMixin:
             'time' (default), 'channel', or integer axis.
         nan_policy : str
             How to handle NaNs: 'propagate', 'raise', or 'omit'.
+
         """
         from scipy import stats
 
@@ -84,8 +84,7 @@ class TimeSeriesMatrixAnalysisMixin:
         nan_policy: str = "propagate",
         **kwargs: Any,
     ) -> np.ndarray:
-        """
-        Compute the kurtosis of the matrix along the specified axis.
+        """Compute the kurtosis of the matrix along the specified axis.
 
         Parameters
         ----------
@@ -95,6 +94,7 @@ class TimeSeriesMatrixAnalysisMixin:
             If True, Fisher's definition (normal ==> 0.0).
         nan_policy : str
             How to handle NaNs: 'propagate', 'raise', or 'omit'.
+
         """
         from scipy import stats
 
@@ -214,8 +214,7 @@ class TimeSeriesMatrixAnalysisMixin:
         )
 
     def _vectorized_detrend(self: Any, detrend: str = "linear", **kwargs: Any) -> Any:
-        """
-        Vectorized implementation of detrend.
+        """Vectorized implementation of detrend.
         """
         from scipy.signal import detrend as scipy_detrend
 
@@ -234,8 +233,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def _vectorized_taper(self: Any, side: str = "leftright", **kwargs: Any) -> Any:
-        """
-        Semi-vectorized implementation of taper to ensure consistency with GWpy.
+        """Semi-vectorized implementation of taper to ensure consistency with GWpy.
         """
         # GWpy's taper implementation is complex (zero-crossing detection etc.)
         # To ensure exact match, we apply it per channel but avoid TimeSeriesMatrix overhead.
@@ -261,14 +259,12 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def hilbert(self: Any, **kwargs: Any) -> Any:
-        """
-        Compute the analytic signal (Hilbert transform).
+        """Compute the analytic signal (Hilbert transform).
         """
         return self._apply_timeseries_method("hilbert", **kwargs)
 
     def _vectorized_filter(self: Any, *filt: Any, **kwargs: Any) -> Any:
-        """
-        Vectorized implementation of filter (and bandpass, lowpass, etc.).
+        """Vectorized implementation of filter (and bandpass, lowpass, etc.).
         """
         from scipy.signal import filtfilt, sosfiltfilt
 
@@ -298,8 +294,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def _vectorized_hilbert(self: Any, **kwargs: Any) -> Any:
-        """
-        Vectorized implementation of Hilbert transform (analytic signal).
+        """Vectorized implementation of Hilbert transform (analytic signal).
         """
         from scipy.signal import hilbert
 
@@ -311,8 +306,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def _vectorized_radian(self: Any, unwrap: bool = False) -> Any:
-        """
-        Vectorized implementation of radian (phase angle via np.angle).
+        """Vectorized implementation of radian (phase angle via np.angle).
         """
         phi = np.angle(self.value)
 
@@ -325,8 +319,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def _vectorized_degree(self: Any, unwrap: bool = False) -> Any:
-        """
-        Vectorized implementation of degree (phase angle via np.angle).
+        """Vectorized implementation of degree (phase angle via np.angle).
         """
         phi = np.angle(self.value, deg=True)
 
@@ -339,8 +332,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def radian(self: Any, unwrap: bool = False) -> Any:
-        """
-        Calculate the phase angle of the matrix in radians.
+        """Calculate the phase angle of the matrix in radians.
 
         Computes np.angle(self.value) directly. Works for both real and complex
         matrices. For real data, returns 0 or π depending on sign.
@@ -354,12 +346,12 @@ class TimeSeriesMatrixAnalysisMixin:
         -------
         TimeSeriesMatrix
             Phase angle in radians.
+
         """
         return self._vectorized_radian(unwrap=unwrap)
 
     def degree(self: Any, unwrap: bool = False) -> Any:
-        """
-        Calculate the phase angle of the matrix in degrees.
+        """Calculate the phase angle of the matrix in degrees.
 
         Computes np.angle(self.value) directly. Works for both real and complex
         matrices. For real data, returns 0 or 180 depending on sign.
@@ -373,12 +365,12 @@ class TimeSeriesMatrixAnalysisMixin:
         -------
         TimeSeriesMatrix
             Phase angle in degrees.
+
         """
         return self._vectorized_degree(unwrap=unwrap)
 
     def resample(self: Any, rate: Any, *args: Any, **kwargs: Any) -> Any:
-        """
-        Resample the TimeSeriesMatrix.
+        """Resample the TimeSeriesMatrix.
 
         If 'rate' is a time-string (e.g. '1s') or time Quantity, performs time-bin aggregation.
         Otherwise, performs signal processing resampling.
@@ -426,8 +418,7 @@ class TimeSeriesMatrixAnalysisMixin:
         ddof: int = 0,
         **kwargs: Any,
     ) -> Any:
-        """
-        Standardize the matrix.
+        """Standardize the matrix.
         See gwexpy.timeseries.preprocess.standardize_matrix.
         """
         return standardize_matrix(
@@ -446,8 +437,7 @@ class TimeSeriesMatrixAnalysisMixin:
         n_components: int | None = None,
         return_model: bool = True,
     ) -> Any:
-        """
-        Whiten the matrix (channels/components).
+        """Whiten the matrix (channels/components).
         Returns (whitened_matrix, WhiteningModel) by default.
         Set return_model=False to return only the whitened matrix.
         See gwexpy.timeseries.preprocess.whiten_matrix.
@@ -580,8 +570,7 @@ class TimeSeriesMatrixAnalysisMixin:
         )
 
     def crop(self: Any, start: Any = None, end: Any = None, copy: bool = False) -> Any:
-        """
-        Crop this matrix to the given GPS start and end times.
+        """Crop this matrix to the given GPS start and end times.
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
         from gwexpy.time import to_gps
@@ -646,8 +635,7 @@ class TimeSeriesMatrixAnalysisMixin:
     def correlation(
         self: Any, other: Any = None, method: str = "pearson", **kwargs: Any
     ) -> Any:
-        """
-        Calculate correlation coefficients.
+        """Calculate correlation coefficients.
 
         - If `other` is None: Returns (N, M) x (N, M) pairwise correlation ndarray.
         - If `other` is a TimeSeries: Returns correlation with target as a DataFrame (via correlation_vector).
@@ -670,26 +658,22 @@ class TimeSeriesMatrixAnalysisMixin:
         )
 
     def mic(self: Any, other: Any, **kwargs: Any) -> Any:
-        """
-        Calculate Maximal Information Coefficient (MIC).
+        """Calculate Maximal Information Coefficient (MIC).
         """
         return self.correlation(other, method="mic", **kwargs)
 
     def distance_correlation(self: Any, other: Any, **kwargs: Any) -> Any:
-        """
-        Calculate Distance Correlation.
+        """Calculate Distance Correlation.
         """
         return self.correlation(other, method="distance", **kwargs)
 
     def pcc(self: Any, other: Any, **kwargs: Any) -> Any:
-        """
-        Calculate Pearson Correlation Coefficient.
+        """Calculate Pearson Correlation Coefficient.
         """
         return self.correlation(other, method="pearson", **kwargs)
 
     def ktau(self: Any, other: Any, **kwargs: Any) -> Any:
-        """
-        Calculate Kendall's Rank Correlation Coefficient.
+        """Calculate Kendall's Rank Correlation Coefficient.
         """
         return self.correlation(other, method="kendall", **kwargs)
 
@@ -699,8 +683,7 @@ class TimeSeriesMatrixAnalysisMixin:
         method: str = "mic",
         parallel: int | None = None,
     ) -> Any:
-        """
-        Calculate correlation between a target TimeSeries and all channels in this Matrix.
+        """Calculate correlation between a target TimeSeries and all channels in this Matrix.
         """
         import os
         from concurrent.futures import ProcessPoolExecutor
@@ -816,8 +799,7 @@ class TimeSeriesMatrixAnalysisMixin:
         eps: float = 1e-8,
         return_precision: bool = False,
     ) -> Any:
-        """
-        Compute partial correlation matrix across all channels.
+        """Compute partial correlation matrix across all channels.
         """
         data = self.value.reshape(-1, self.shape[-1])
         n_channels, n_samples = data.shape
@@ -866,8 +848,7 @@ class TimeSeriesMatrixAnalysisMixin:
         overlap: float | None = None,
         parallel: int = 4,
     ) -> Any:
-        """
-        Compute pairwise Welch coherence between *target* and all other
+        """Compute pairwise Welch coherence between *target* and all other
         channels in the matrix, and return a ranked summary.
 
         Internally delegates to :class:`~gwexpy.analysis.bruco.Bruco` (lazy
@@ -903,6 +884,7 @@ class TimeSeriesMatrixAnalysisMixin:
         ------
         KeyError
             If *target* is not among the channel names of this matrix.
+
         """
         from gwpy.timeseries import TimeSeriesDict as _TimeSeriesDict
 

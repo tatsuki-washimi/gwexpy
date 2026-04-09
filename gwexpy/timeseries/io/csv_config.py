@@ -33,6 +33,7 @@ class ColumnSpec:
         ``'second'``.
     scale_factor : float
         Multiplicative factor applied to the raw values. Default 1.0.
+
     """
 
     name: str
@@ -69,6 +70,7 @@ class CSVFormatConfig:
         ``"interpolate"`` or ``"asfreq"``. ``None`` = no resampling.
     comment_char : str
         Character(s) marking comment lines. Default ``"#"``.
+
     """
 
     columns: list[ColumnSpec] = field(default_factory=list)

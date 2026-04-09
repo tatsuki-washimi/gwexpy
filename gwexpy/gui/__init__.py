@@ -12,7 +12,6 @@ def _patch_pyqtgraph_axisitem_deleted_guard() -> None:
     leading to a segfault. We defensively no-op the update when sip reports the
     underlying C++ object is gone.
     """
-
     try:
         import sip  # type: ignore[import-not-found]
         from pyqtgraph.graphicsItems.AxisItem import AxisItem

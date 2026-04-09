@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.pyoma_
+"""gwexpy.interop.pyoma_
 ----------------------
 
 Interoperability with pyOMA (Operational Modal Analysis).
@@ -10,6 +9,7 @@ frequencies), ``"Zeta"`` (damping ratios), and ``"Phi"`` (mode shapes).
 References
 ----------
 https://github.com/dagghe/pyOMA
+
 """
 
 from __future__ import annotations
@@ -54,6 +54,7 @@ def from_pyoma_results(
     Returns
     -------
     pandas.DataFrame or FrequencySeriesMatrix
+
     """
     pd = require_optional("pandas")
 

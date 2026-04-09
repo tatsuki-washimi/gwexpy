@@ -19,8 +19,7 @@ def to_zarr(
     compressor: Any = None,
     overwrite: bool = False,
 ) -> None:
-    """
-    Write to Zarr array.
+    """Write to Zarr array.
     """
     zarr = require_optional("zarr")
 
@@ -62,8 +61,7 @@ def to_zarr(
 
 
 def from_zarr(cls: type[T], store: Any, path: str) -> T:
-    """
-    Read from Zarr array.
+    """Read from Zarr array.
     """
     zarr = require_optional("zarr")
 

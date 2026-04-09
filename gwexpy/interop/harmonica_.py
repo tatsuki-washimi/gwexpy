@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.harmonica_
+"""gwexpy.interop.harmonica_
 -------------------------
 
 Interoperability with Harmonica gravity/magnetic grids.
@@ -15,6 +14,7 @@ by delegating to :func:`gwexpy.interop.xarray_.from_xarray_field`.
 References
 ----------
 https://www.fatiando.org/harmonica/
+
 """
 
 from __future__ import annotations
@@ -59,6 +59,7 @@ def from_harmonica_grid(
         When *ds* is a DataArray or *data_name* is given.
     VectorField
         When *ds* is a Dataset and *data_name* is not given.
+
     """
     xr = require_optional("xarray")
 

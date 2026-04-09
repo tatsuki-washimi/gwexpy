@@ -1,5 +1,4 @@
-"""
-gwexpy.signal.preprocessing
+"""gwexpy.signal.preprocessing
 ----------------------------
 
 Signal preprocessing algorithms.

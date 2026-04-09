@@ -13,8 +13,7 @@ class LeapSecondConversionError(ValueError):
 
 
 def gps_to_datetime_utc(gps, *, leap="raise") -> datetime:
-    """
-    Convert GPS time to UTC datetime.
+    """Convert GPS time to UTC datetime.
 
     Parameters
     ----------
@@ -30,6 +29,7 @@ def gps_to_datetime_utc(gps, *, leap="raise") -> datetime:
     -------
     datetime
         UTC aware datetime.
+
     """
     # Use astropy for robust conversion including leap seconds
     # verify input is LIGOTimeGPS compatible
@@ -86,8 +86,7 @@ def gps_to_datetime_utc(gps, *, leap="raise") -> datetime:
 
 
 def datetime_utc_to_gps(dt: datetime) -> LIGOTimeGPS:
-    """
-    Convert UTC datetime to LIGOTimeGPS.
+    """Convert UTC datetime to LIGOTimeGPS.
 
     Assumes explicit UTC timezone if aware, or UTC if naive (per specification).
     """

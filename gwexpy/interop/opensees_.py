@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.opensees_
+"""gwexpy.interop.opensees_
 -------------------------
 
 Interoperability with OpenSeesPy recorder output.
@@ -12,6 +11,7 @@ References
 ----------
 https://opensees.berkeley.edu/
 https://openseespydoc.readthedocs.io/
+
 """
 
 from __future__ import annotations
@@ -61,6 +61,7 @@ def from_opensees_recorder(
     Returns
     -------
     TimeSeriesMatrix or TimeSeriesDict
+
     """
     raw = np.loadtxt(filepath)
     if raw.ndim == 1:

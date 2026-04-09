@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.openems_
+"""gwexpy.interop.openems_
 -----------------------
 
 Interoperability with openEMS field dump HDF5 files.
@@ -37,6 +36,7 @@ absent.
 References
 ----------
 https://openems.de/index.php/HDF5_Field_Dumps.html
+
 """
 
 from __future__ import annotations
@@ -100,6 +100,7 @@ def _read_openems_mesh(
     ------
     KeyError
         If the ``/Mesh`` group or any coordinate dataset is absent.
+
     """
     mesh = h5file["Mesh"]
     x = np.asarray(mesh["x"], dtype=np.float64)
@@ -129,6 +130,7 @@ def _read_openems_td(
     times : ndarray
         Time values (1-D, length ``n_time``), taken from dataset names or
         sequential integers when attributes are unavailable.
+
     """
     td = h5file["FieldData/TD"]
     # Sort keys numerically
@@ -184,6 +186,7 @@ def _read_openems_fd(
         ``(1, Nx, Ny, Nz, 3)``.
     freqs : ndarray
         Frequency index values (1-D).
+
     """
     fd = h5file["FieldData/FD"]
     # Collect frequency indices from dataset names like "f0_real", "f1_real"
@@ -311,6 +314,7 @@ def from_openems_hdf5(
 
     >>> from gwexpy.fields import ScalarField
     >>> sf = ScalarField.from_openems_hdf5("e_dump.h5", component="z")
+
     """
     h5py = require_optional("h5py")
 

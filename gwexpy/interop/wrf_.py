@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.wrf_
+"""gwexpy.interop.wrf_
 -------------------
 
 Interoperability with wrf-python (``wrf.getvar()``) output.
@@ -12,6 +11,7 @@ possible and delegates to :func:`gwexpy.interop.xarray_.from_xarray_field`.
 References
 ----------
 https://wrf-python.readthedocs.io/
+
 """
 
 from __future__ import annotations
@@ -103,6 +103,7 @@ def from_wrf_variable(
     Returns
     -------
     ScalarField
+
     """
     require_optional("xarray")
 

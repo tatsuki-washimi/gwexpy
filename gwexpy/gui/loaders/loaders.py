@@ -12,8 +12,7 @@ from gwexpy.timeseries import TimeSeries, TimeSeriesDict
 
 
 def load_products(filename: str) -> dict:
-    """
-    Load data products from various file formats.
+    """Load data products from various file formats.
     Supported extensions: .xml (DTT XML), .gwf, .h5, .hdf5, .ffl, and generic formats supported by gwexpy.
     """
     if not isinstance(filename, str):

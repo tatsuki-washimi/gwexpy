@@ -15,8 +15,7 @@ from gwpy.time import to_gps
 
 
 def parse_timezone(tz: Any) -> _dt.tzinfo:
-    """
-    Convert a timezone specifier into a tzinfo.
+    """Convert a timezone specifier into a tzinfo.
 
     Accepts IANA zone names (\"Asia/Tokyo\") or numeric offsets like \"+09:00\".
     """
@@ -56,8 +55,7 @@ def parse_timezone(tz: Any) -> _dt.tzinfo:
 
 
 def datetime_to_gps(dt: _dt.datetime) -> float:
-    """
-    Convert an aware datetime (or date) into a LIGO GPS float.
+    """Convert an aware datetime (or date) into a LIGO GPS float.
     """
     if isinstance(dt, _dt.date) and not isinstance(dt, _dt.datetime):
         dt = _dt.datetime.combine(dt, _dt.time(0, 0), tzinfo=_dt.UTC)
@@ -67,8 +65,7 @@ def datetime_to_gps(dt: _dt.datetime) -> float:
 
 
 def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetime:
-    """
-    Parse a timestamp into a timezone-aware datetime.
+    """Parse a timestamp into a timezone-aware datetime.
 
     Tries common formats like ``YYYY/MM/DD HH:MM:SS(.fff)``.
     """
@@ -100,8 +97,7 @@ def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetim
 
 
 def apply_unit(series: Any, unit: Any | None) -> Any:
-    """
-    Override the unit on a series-like object, if requested.
+    """Override the unit on a series-like object, if requested.
     """
     if unit is None:
         return series
@@ -153,8 +149,7 @@ def apply_unit(series: Any, unit: Any | None) -> Any:
 
 
 def set_provenance(obj: Any, info: dict[str, Any]) -> None:
-    """
-    Attach provenance metadata to a gwexpy/gwpy object.
+    """Attach provenance metadata to a gwexpy/gwpy object.
     """
     try:
         if hasattr(obj, "attrs") and isinstance(obj.attrs, dict):
@@ -167,8 +162,7 @@ def set_provenance(obj: Any, info: dict[str, Any]) -> None:
 
 
 def filter_by_channels(mapping: dict[str, Any], channels: Iterable[str] | None):
-    """
-    Return a filtered dictionary by selected channel names.
+    """Return a filtered dictionary by selected channel names.
     """
     if channels is None:
         return mapping
@@ -177,8 +171,7 @@ def filter_by_channels(mapping: dict[str, Any], channels: Iterable[str] | None):
 
 
 def maybe_pad_timeseries(ts, pad_value=np.nan, start=None, end=None, gap="pad"):
-    """
-    Pad or raise for gaps using gwpy's join semantics.
+    """Pad or raise for gaps using gwpy's join semantics.
     """
     if gap not in ("pad", "raise"):
         return ts
@@ -198,8 +191,7 @@ def ensure_dependency(
     extra: str | None = None,
     import_name: str | None = None,
 ) -> Any:
-    """
-    Import a package or raise a standardized ImportError.
+    """Import a package or raise a standardized ImportError.
 
     Parameters
     ----------
@@ -224,6 +216,7 @@ def ensure_dependency(
     --------
     >>> xarray = ensure_dependency("xarray")  # doctest: +SKIP
     >>> nptdms = ensure_dependency("nptdms", import_name="nptdms")  # doctest: +SKIP
+
     """
     try:
         name = import_name or package_name
@@ -237,8 +230,7 @@ def ensure_dependency(
 
 
 def extract_audio_metadata(source: str | Path) -> dict[str, Any]:
-    """
-    Extract audio metadata using tinytag.
+    """Extract audio metadata using tinytag.
 
     Attempts to read common audio metadata fields (title, artist, album, genre,
     duration, bitrate, etc.) from audio files. Returns an empty dictionary if
@@ -272,6 +264,7 @@ def extract_audio_metadata(source: str | Path) -> dict[str, Any]:
     >>> metadata = extract_audio_metadata("song.mp3")  # doctest: +SKIP
     >>> print(metadata.get("title"))  # doctest: +SKIP
     'Song Title'
+
     """
     try:
         from tinytag import TinyTag

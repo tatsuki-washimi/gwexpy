@@ -1,5 +1,4 @@
-"""
-Audio format reader/writer for gwexpy (MP3, FLAC, OGG, M4A via pydub).
+"""Audio format reader/writer for gwexpy (MP3, FLAC, OGG, M4A via pydub).
 
 pydub requires ffmpeg or libav for most formats.
 FLAC decoding may work without ffmpeg if the audioop module is available.
@@ -70,6 +69,7 @@ def read_timeseriesdict_audio(
         optional ``tinytag`` package (``pip install tinytag``).
         (Note: ``pip install gwexpy[audio]`` is coming soon. For now, use GitHub version.)
         Default: False (for backward compatibility).
+
     """
     AudioSegment = _import_pydub()
 
@@ -173,6 +173,7 @@ def write_timeseriesdict_audio(tsd, target, *, format_hint=None, **kwargs):
     format_hint : str, optional
         Audio format (e.g. ``"mp3"``, ``"flac"``).  Inferred from
         extension if *None*.
+
     """
     AudioSegment = _import_pydub()
 
@@ -226,32 +227,27 @@ _AUDIO_EXTENSIONS = {
 
 def _register_audio_format(name, extension):
     def reader_dict(src, **kw):
-        """
-        Read audio data into a TimeSeriesDict.
+        """Read audio data into a TimeSeriesDict.
         """
         return read_timeseriesdict_audio(src, format_hint=name, **kw)
 
     def reader_single(src, **kw):
-        """
-        Read audio data into a TimeSeries.
+        """Read audio data into a TimeSeries.
         """
         return read_timeseries_audio(src, format_hint=name, **kw)
 
     def reader_matrix(src, **kw):
-        """
-        Read audio data into a TimeSeriesMatrix.
+        """Read audio data into a TimeSeriesMatrix.
         """
         return read_timeseriesmatrix_audio(src, format_hint=name, **kw)
 
     def writer_dict(tsd, tgt, **kw):
-        """
-        Write TimeSeriesDict to an audio file.
+        """Write TimeSeriesDict to an audio file.
         """
         return write_timeseriesdict_audio(tsd, tgt, format_hint=name, **kw)
 
     def writer_single(ts, tgt, **kw):
-        """
-        Write TimeSeries to an audio file.
+        """Write TimeSeries to an audio file.
         """
         return write_timeseries_audio(ts, tgt, format_hint=name, **kw)
 

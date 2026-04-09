@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.sdynpy_
+"""gwexpy.interop.sdynpy_
 -----------------------
 
 Interoperability with SDynPy (Structural Dynamics in Python).
@@ -12,6 +11,7 @@ SDynPy represents modal data via NumPy structured arrays:
 References
 ----------
 https://github.com/sandialabs/sdynpy
+
 """
 
 from __future__ import annotations
@@ -49,6 +49,7 @@ def from_sdynpy_shape(shape_array: Any) -> Any:
         Columns include DOF labels, optional node coordinates, and
         ``mode_1 ... mode_N`` columns.  ``frequency_Hz`` and
         ``damping_ratio`` are stored in ``df.attrs``.
+
     """
     frequencies = np.asarray(shape_array.frequency, dtype=float)
     damping = np.asarray(shape_array.damping, dtype=float)
@@ -116,6 +117,7 @@ def from_sdynpy_frf(
     Returns
     -------
     FrequencySeriesMatrix
+
     """
     # TransferFunctionArray stores ordinate (complex) and abscissa (freq)
     ordinate = np.asarray(tfa.ordinate)  # shape varies
@@ -182,6 +184,7 @@ def from_sdynpy_timehistory(
     Returns
     -------
     TimeSeriesMatrix or TimeSeriesDict
+
     """
     ordinate = np.asarray(tha.ordinate)
     abscissa = np.asarray(tha.abscissa)

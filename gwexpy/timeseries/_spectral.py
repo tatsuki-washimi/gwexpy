@@ -1,5 +1,4 @@
-"""
-Spectral transform methods for TimeSeries.
+"""Spectral transform methods for TimeSeries.
 
 This module integrates modular spectral analysis functionality:
 - Fourier transforms (FFT, PSD, etc.)
@@ -15,8 +14,7 @@ from ._spectral_special import TimeSeriesSpectralSpecialMixin
 class TimeSeriesSpectralMixin(
     TimeSeriesSpectralFourierMixin, TimeSeriesSpectralSpecialMixin
 ):
-    """
-    Mixin class providing spectral transform methods for TimeSeries.
+    """Mixin class providing spectral transform methods for TimeSeries.
 
     Inherits from:
     - TimeSeriesSpectralFourierMixin: Standard Fourier transforms

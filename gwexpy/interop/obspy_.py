@@ -71,8 +71,7 @@ def from_obspy_trace(cls, tr, unit=None, name_policy="id"):
 
 
 def _fs_to_obspy_trace(fs, stats_extra=None, **kwargs):
-    """
-    Convert FrequencySeries to Obspy Trace.
+    """Convert FrequencySeries to Obspy Trace.
     Treats frequency axis as time axis.
     """
     obspy = require_optional("obspy")
@@ -98,8 +97,7 @@ def _fs_to_obspy_trace(fs, stats_extra=None, **kwargs):
 
 
 def _trace_to_fs(cls, tr, unit=None, name_policy="id", **kwargs):
-    """
-    Convert Obspy Trace to FrequencySeries.
+    """Convert Obspy Trace to FrequencySeries.
     Assumes Trace contains spectral data where delta = df.
     """
     data = tr.data
@@ -124,8 +122,7 @@ def _trace_to_fs(cls, tr, unit=None, name_policy="id", **kwargs):
 
 
 def _spec_to_obspy_stream(spec, **kwargs):
-    """
-    Convert Spectrogram to Obspy Stream (Filter Bank).
+    """Convert Spectrogram to Obspy Stream (Filter Bank).
     Each frequency bin becomes a Trace.
     """
     obspy = require_optional("obspy")
@@ -227,8 +224,7 @@ def _stream_to_spec(cls, st, unit=None, name_policy="id", **kwargs):
 
 
 def to_obspy(data, **kwargs):
-    """
-    Convert gwexpy object to Obspy object.
+    """Convert gwexpy object to Obspy object.
 
     FrequencySeries -> Trace (Spectrum mode)
     Spectrogram     -> Stream (Filter Bank mode)
@@ -272,8 +268,7 @@ def to_obspy(data, **kwargs):
 
 
 def from_obspy(cls, data, **kwargs):
-    """
-    Convert Obspy object to gwexpy object of type cls.
+    """Convert Obspy object to gwexpy object of type cls.
     """
     obspy = require_optional("obspy")
 

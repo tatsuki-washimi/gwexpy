@@ -57,8 +57,7 @@ class GeoMap:
     """A PyGMT wrapper that provides a Cartopy-like interface."""
 
     def __init__(self, projection="Robinson", center_lon=0, width="15c", **kwargs):
-        """
-        Initialize a new GeoMap.
+        """Initialize a new GeoMap.
 
         Parameters
         ----------
@@ -72,6 +71,7 @@ class GeoMap:
             Additional arguments:
             region: GMT region (default 'd' for global).
             frame: GMT frame (default 'afg').
+
         """
         if not HAS_PYGMT:
             message = "pygmt is required for GeoMap. Install with: pip install pygmt"
@@ -148,6 +148,7 @@ class GeoMap:
             Manual latitude offset for the label. If None, it's calculated dynamically.
         **kwargs
             Additional arguments for GeoMap.plot (e.g., color, markersize).
+
         """
         if name not in DETECTORS:
             raise ValueError(f"Unknown detector: {name}")
@@ -201,6 +202,7 @@ class GeoMap:
             Offset from the anchor (e.g., '0.5c/0.5c').
         fancy : bool, optional
             If True, use a fancy scale bar.
+
         """
         spec = f"{position}+w{width}+o{offset}"
         if fancy:

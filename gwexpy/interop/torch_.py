@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.torch_
+"""gwexpy.interop.torch_
 ----------------------
 
 Interoperability with PyTorch tensors.
@@ -28,8 +27,7 @@ def to_torch(
     requires_grad: bool = False,
     copy: bool = False,
 ) -> torch.Tensor:
-    """
-    Convert a series to a PyTorch tensor.
+    """Convert a series to a PyTorch tensor.
 
     Parameters
     ----------
@@ -48,6 +46,7 @@ def to_torch(
     -------
     torch.Tensor
         The converted tensor.
+
     """
     torch = require_optional("torch")
 
@@ -74,8 +73,7 @@ def from_torch(
     dt: Any,
     unit: Optional[str] = None,
 ) -> T:
-    """
-    Create a TimeSeries from a PyTorch tensor.
+    """Create a TimeSeries from a PyTorch tensor.
 
     Parameters
     ----------
@@ -94,6 +92,7 @@ def from_torch(
     -------
     TimeSeries
         The created time series.
+
     """
     # Safe handle for conjugate and negative resolving which might not be present in all versions
     # or relevant for all tensor types.

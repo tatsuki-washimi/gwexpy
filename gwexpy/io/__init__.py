@@ -1,5 +1,4 @@
-"""
-gwexpy.io helpers and registration hooks.
+"""gwexpy.io helpers and registration hooks.
 """
 
 from __future__ import annotations

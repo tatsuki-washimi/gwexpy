@@ -54,6 +54,7 @@ class BifrequencyMap(Array2D):
                     name=None,
                     frequency2=[10.0 Hz, ..., 30.0 Hz],
                     frequency1=[10.0 Hz, ..., 30.0 Hz])>
+
     """
 
     @property

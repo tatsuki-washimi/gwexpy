@@ -1,5 +1,4 @@
-"""
-gwexpy.signal.normalization - Spectral normalization and ENBW utilities.
+"""gwexpy.signal.normalization - Spectral normalization and ENBW utilities.
 
 This module provides utilities to handle window normalization and Equivalent Noise
 Bandwidth (ENBW) calculations, supporting both standard scientific approaches
@@ -13,8 +12,7 @@ from scipy.signal import get_window
 
 
 def get_enbw(window, fs, mode="standard"):
-    """
-    Calculate the Equivalent Noise Bandwidth (ENBW) of a window.
+    """Calculate the Equivalent Noise Bandwidth (ENBW) of a window.
 
     Parameters
     ----------
@@ -31,6 +29,7 @@ def get_enbw(window, fs, mode="standard"):
     -------
     enbw : float
         The calculated ENBW in Hz.
+
     """
     w = np.asarray(window)
     n = len(w)
@@ -50,8 +49,7 @@ def get_enbw(window, fs, mode="standard"):
 
 
 def get_psd_normalization_factor(window, fs, mode="standard"):
-    """
-    Calculate the normalization factor to convert squared FFT magnitude to PSD.
+    """Calculate the normalization factor to convert squared FFT magnitude to PSD.
 
     Parameters
     ----------
@@ -66,6 +64,7 @@ def get_psd_normalization_factor(window, fs, mode="standard"):
     -------
     factor : float
         The multiplier to apply to |FFT|^2.
+
     """
     w = np.asarray(window)
     n = len(w)
@@ -86,8 +85,7 @@ def get_psd_normalization_factor(window, fs, mode="standard"):
 
 
 def convert_scipy_to_dtt(psd, window, is_one_sided=True):
-    """
-    Convert a PSD calculated with scipy.signal.welch to DTT compatible normalization.
+    """Convert a PSD calculated with scipy.signal.welch to DTT compatible normalization.
 
     Parameters
     ----------
@@ -103,6 +101,7 @@ def convert_scipy_to_dtt(psd, window, is_one_sided=True):
     -------
     psd_dtt : array_like
         The PSD adjusted to DTT scale.
+
     """
     w = np.asarray(window)
     n = len(w)
@@ -132,8 +131,7 @@ def convert_scipy_to_dtt(psd, window, is_one_sided=True):
 
 
 def get_window_normalized(window_name, n, mode="standard"):
-    """
-    Get a window and its ENBW.
+    """Get a window and its ENBW.
 
     Parameters
     ----------
@@ -148,6 +146,7 @@ def get_window_normalized(window_name, n, mode="standard"):
     -------
     w : ndarray
     enbw : float
+
     """
     w = get_window(window_name, n)
     # Most windows in DTT/LIGO are assumed to be used with specific scaling.

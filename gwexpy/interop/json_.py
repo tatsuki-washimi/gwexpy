@@ -6,8 +6,7 @@ import numpy as np
 
 
 def to_json(ts):
-    """
-    Convert TimeSeries to a JSON string.
+    """Convert TimeSeries to a JSON string.
     Includes data and basic metadata.
     """
     data_dict = to_dict(ts)
@@ -15,8 +14,7 @@ def to_json(ts):
 
 
 def to_dict(ts):
-    """
-    Convert TimeSeries to a dictionary.
+    """Convert TimeSeries to a dictionary.
     """
     from .base import to_plain_array
 
@@ -33,16 +31,14 @@ def to_dict(ts):
 
 
 def from_json(cls, json_str):
-    """
-    Create TimeSeries from a JSON string.
+    """Create TimeSeries from a JSON string.
     """
     data_dict = json.loads(json_str)
     return from_dict(cls, data_dict)
 
 
 def from_dict(cls, data_dict):
-    """
-    Create TimeSeries from a dictionary.
+    """Create TimeSeries from a dictionary.
     """
     data = np.array(data_dict["data"])
     t0 = data_dict.get("t0", 0)

@@ -1,5 +1,4 @@
-"""
-gwexpy.frequencyseries.io
+"""gwexpy.frequencyseries.io
 -------------------------
 
 Registrations for FrequencySeries readers.

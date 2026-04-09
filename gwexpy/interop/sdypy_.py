@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.sdypy_
+"""gwexpy.interop.sdypy_
 -----------------------
 
 Interoperability with SDyPy / pyuff (Universal File Format).
@@ -11,6 +10,7 @@ References
 ----------
 https://github.com/ladisk/pyuff
 https://sdypy.readthedocs.io/
+
 """
 
 from __future__ import annotations
@@ -57,6 +57,7 @@ def from_uff_dataset58(
     Returns
     -------
     TimeSeries or FrequencySeries
+
     """
     x = np.asarray(uff_data["x"], dtype=float)
     data = np.asarray(uff_data["data"])
@@ -110,6 +111,7 @@ def from_uff_dataset55(uff_data: dict) -> Any:
     Returns
     -------
     pandas.DataFrame
+
     """
     frequencies = np.atleast_1d(uff_data.get("modal_freq", uff_data.get("freq", [])))
     damping = np.atleast_1d(uff_data.get("modal_damp", uff_data.get("damping", [])))

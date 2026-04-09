@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.pyroomacoustics_
+"""gwexpy.interop.pyroomacoustics_
 -------------------------------
 
 Interoperability with pyroomacoustics room acoustics simulation library.
@@ -45,8 +44,7 @@ def from_pyroomacoustics_rir(
     mic: int | None = None,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create TimeSeries or TimeSeriesDict from pyroomacoustics room impulse responses.
+    """Create TimeSeries or TimeSeriesDict from pyroomacoustics room impulse responses.
 
     Parameters
     ----------
@@ -76,6 +74,7 @@ def from_pyroomacoustics_rir(
     ------
     ValueError
         If RIR has not been computed yet.
+
     """
     require_optional("pyroomacoustics")
 
@@ -143,8 +142,7 @@ def from_pyroomacoustics_mic_signals(
     mic: int | None = None,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create TimeSeries or TimeSeriesDict from pyroomacoustics microphone signals.
+    """Create TimeSeries or TimeSeriesDict from pyroomacoustics microphone signals.
 
     Parameters
     ----------
@@ -168,6 +166,7 @@ def from_pyroomacoustics_mic_signals(
     ------
     ValueError
         If signals have not been computed yet.
+
     """
     require_optional("pyroomacoustics")
 
@@ -213,8 +212,7 @@ def from_pyroomacoustics_source(
     source: int = 0,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create TimeSeries from a pyroomacoustics sound source signal.
+    """Create TimeSeries from a pyroomacoustics sound source signal.
 
     Parameters
     ----------
@@ -230,6 +228,7 @@ def from_pyroomacoustics_source(
     Returns
     -------
     TimeSeries
+
     """
     require_optional("pyroomacoustics")
 
@@ -252,8 +251,7 @@ def from_pyroomacoustics_stft(
     fs: float | None = None,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create Spectrogram or SpectrogramDict from a pyroomacoustics STFT object.
+    """Create Spectrogram or SpectrogramDict from a pyroomacoustics STFT object.
 
     Parameters
     ----------
@@ -276,6 +274,7 @@ def from_pyroomacoustics_stft(
         When a single channel is selected or the STFT is single-channel.
     SpectrogramDict
         When multiple channels are present and no channel is selected.
+
     """
     require_optional("pyroomacoustics")
 
@@ -349,8 +348,7 @@ def from_pyroomacoustics_field(
     mode: str = "rir",
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create ScalarField from pyroomacoustics room with grid-placed microphones.
+    """Create ScalarField from pyroomacoustics room with grid-placed microphones.
 
     When microphones are placed on a regular spatial grid, this function
     converts the RIR or microphone signals into a 4D ScalarField with
@@ -385,6 +383,7 @@ def from_pyroomacoustics_field(
     ValueError
         If ``prod(grid_shape)`` does not match the number of microphones,
         or if the requested data has not been computed.
+
     """
     require_optional("pyroomacoustics")
 
@@ -483,8 +482,7 @@ def from_pyroomacoustics_field(
 
 
 def to_pyroomacoustics_source(ts: Any) -> tuple[np.ndarray, int]:
-    """
-    Export TimeSeries as a signal and sample rate tuple for pyroomacoustics.
+    """Export TimeSeries as a signal and sample rate tuple for pyroomacoustics.
 
     The returned tuple can be used to add a source to a pyroomacoustics room::
 
@@ -503,6 +501,7 @@ def to_pyroomacoustics_source(ts: Any) -> tuple[np.ndarray, int]:
         1D float64 array of the signal samples.
     fs : int
         Sample rate in Hz.
+
     """
     signal = ts.value.astype(np.float64)
     fs = int(ts.sample_rate.value)
@@ -515,8 +514,7 @@ def to_pyroomacoustics_stft(
     hop: int | None = None,
     analysis_window: np.ndarray | None = None,
 ) -> Any:
-    """
-    Export Spectrogram as a pyroomacoustics STFT object.
+    """Export Spectrogram as a pyroomacoustics STFT object.
 
     Parameters
     ----------
@@ -532,6 +530,7 @@ def to_pyroomacoustics_stft(
     -------
     pyroomacoustics.stft.STFT
         STFT object with ``.X`` set to the spectrogram data.
+
     """
     pra = require_optional("pyroomacoustics")
 

@@ -1,5 +1,4 @@
-"""
-WIN (NIED) format reader for gwexpy (Fixed implementation based on ObsPy patch).
+"""WIN (NIED) format reader for gwexpy (Fixed implementation based on ObsPy patch).
 
 References:
     - http://www.eri.u-tokyo.ac.jp/people/nakagawa/win/
@@ -17,6 +16,7 @@ edge-cases described in the paper above:
   - Apply correct operator precedence and sign-preserving unpack/shift.
 
 We also provide regression tests using a sample WIN file under ``tests/sample-data/gui/``.
+
 """
 
 from __future__ import annotations
@@ -53,8 +53,7 @@ def s4(v):
 
 
 def _apply_4bit_deltas(output: list[int], sdata: bytes, n_deltas: int) -> None:
-    """
-    Apply n_deltas 4-bit signed deltas to the last value in ``output``.
+    """Apply n_deltas 4-bit signed deltas to the last value in ``output``.
 
     WIN 0.5-byte compression stores two signed 4-bit deltas per byte: upper nibble
     then lower nibble. When the number of deltas is odd (e.g. even sampling rate),
@@ -73,8 +72,7 @@ def _apply_4bit_deltas(output: list[int], sdata: bytes, n_deltas: int) -> None:
 
 
 def _read_win_fixed(filename: str | Path, century="20"):
-    """
-    Reads a WIN file and returns a Stream object.
+    """Reads a WIN file and returns a Stream object.
     Based on obspy.io.win.core._read_win but with patches applied.
 
     Parameters
@@ -83,6 +81,7 @@ def _read_win_fixed(filename: str | Path, century="20"):
         Path to the WIN file.
     century : str, optional
         Century prefix (default: "20").
+
     """
     output: dict[str, list[int]] = {}
     srates: dict[str, int] = {}
@@ -199,8 +198,7 @@ def _read_win_fixed(filename: str | Path, century="20"):
 
 
 def read_win_file(source, **kwargs) -> TimeSeriesDict:
-    """
-    Read a WIN/WIN32 format file using fixed ObsPy-based reader.
+    """Read a WIN/WIN32 format file using fixed ObsPy-based reader.
     """
     if not HAS_OBSPY:
         raise ImportError("obspy is required to read WIN format files")

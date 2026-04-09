@@ -1,5 +1,4 @@
-"""
-gwexpy.signal.preprocessing.whitening
+"""gwexpy.signal.preprocessing.whitening
 --------------------------------------
 
 Whitening algorithms for signal processing.
@@ -54,6 +53,7 @@ class WhiteningModel:
         Mean of the original data.
     W : ndarray
         Whitening matrix.
+
     """
 
     def __init__(self, mean, W):
@@ -62,8 +62,7 @@ class WhiteningModel:
         self.W_inv = np.linalg.pinv(W)
 
     def inverse_transform(self, X_w):
-        """
-        Project whitened data back to original space.
+        """Project whitened data back to original space.
 
         Parameters
         ----------
@@ -74,6 +73,7 @@ class WhiteningModel:
         -------
         X_rec : ndarray
             Reconstructed data.
+
         """
         if hasattr(X_w, "value"):
             val = X_w.value
@@ -85,8 +85,7 @@ class WhiteningModel:
 
 
 def whiten(X, *, method="pca", eps=None, n_components=None, return_model=True):
-    """
-    Whiten an array using PCA or ZCA whitening.
+    """Whiten an array using PCA or ZCA whitening.
 
     Parameters
     ----------
@@ -131,6 +130,7 @@ def whiten(X, *, method="pca", eps=None, n_components=None, return_model=True):
 
     The inverse_transform method uses the pseudo-inverse of the whitening matrix
     to project back to the original space.
+
     """
     mean = np.mean(X, axis=0)
     X_centered = X - mean

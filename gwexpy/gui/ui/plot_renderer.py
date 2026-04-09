@@ -1,5 +1,4 @@
-"""
-gwexpy.gui.ui.plot_renderer - Plot rendering abstraction layer.
+"""gwexpy.gui.ui.plot_renderer - Plot rendering abstraction layer.
 
 This module provides the PlotRenderer class which handles all plot rendering
 logic, abstracting away the details of Spectrogram vs Series drawing,
@@ -26,13 +25,12 @@ logger = logging.getLogger(__name__)
 
 
 def _log_db(data: np.ndarray, factor: float) -> np.ndarray:
-    """dB conversion with data-adaptive floor to avoid Death Floats."""
+    """DB conversion with data-adaptive floor to avoid Death Floats."""
     return safe_log_scale(data, factor=factor)
 
 
 class PlotRenderer:
-    """
-    Handles rendering of analysis results to pyqtgraph plot items.
+    """Handles rendering of analysis results to pyqtgraph plot items.
 
     This class abstracts the rendering logic from MainWindow, providing:
     - Type-based dispatching (Spectrogram vs 1D Series)
@@ -44,16 +42,17 @@ class PlotRenderer:
     ----------
     main_window : MainWindow
         Reference to the main window for accessing UI state.
+
     """
 
     def __init__(self, main_window: MainWindow) -> None:
-        """
-        Initialize the PlotRenderer.
+        """Initialize the PlotRenderer.
 
         Parameters
         ----------
         main_window : MainWindow
             Reference to the main window instance.
+
         """
         self.mw = main_window
 
@@ -66,8 +65,7 @@ class PlotRenderer:
         start_time_gps: float | None = None,
         is_time_axis: bool = False,
     ) -> None:
-        """
-        Render all traces for a single graph panel.
+        """Render all traces for a single graph panel.
 
         Parameters
         ----------
@@ -83,6 +81,7 @@ class PlotRenderer:
             GPS time to use as t=0 reference.
         is_time_axis : bool
             Whether the X axis represents time.
+
         """
         traces_items = [self.mw.traces1, self.mw.traces2][plot_idx]
 
@@ -140,8 +139,7 @@ class PlotRenderer:
         graph_type: str,
         is_spectrogram: bool = False,
     ) -> np.ndarray:
-        """
-        Apply unit conversion to data based on display settings.
+        """Apply unit conversion to data based on display settings.
 
         Parameters
         ----------
@@ -158,6 +156,7 @@ class PlotRenderer:
         -------
         ndarray
             The converted data.
+
         """
         if display_unit == "dB":
             if is_spectrogram:
@@ -191,8 +190,7 @@ class PlotRenderer:
         start_time_gps: float | None,
         graph_type: str,
     ) -> None:
-        """
-        Render a spectrogram result to an ImageItem.
+        """Render a spectrogram result to an ImageItem.
 
         Parameters
         ----------
@@ -210,6 +208,7 @@ class PlotRenderer:
             GPS time reference for t=0.
         graph_type : str
             The graph type string.
+
         """
         curve.setData([], [])  # Hide curve
         if bar.isVisible():
@@ -288,8 +287,7 @@ class PlotRenderer:
         is_time_axis: bool,
         graph_type: str,
     ) -> None:
-        """
-        Render a 1D series result to a curve or bar graph.
+        """Render a 1D series result to a curve or bar graph.
 
         Parameters
         ----------
@@ -309,6 +307,7 @@ class PlotRenderer:
             Whether X axis is time-based.
         graph_type : str
             The graph type string.
+
         """
         img.setVisible(False)
 
@@ -344,8 +343,7 @@ class PlotRenderer:
     def update_axis_labels(
         self, info_root: dict[str, Any], start_time_gps: float, start_time_utc: str
     ) -> None:
-        """
-        Update axis labels with time information.
+        """Update axis labels with time information.
 
         Parameters
         ----------
@@ -355,6 +353,7 @@ class PlotRenderer:
             GPS time value.
         start_time_utc : str
             UTC time string.
+
         """
         label_text = f"Time [s] (Start: {start_time_utc} / GPS: {start_time_gps})"
         info_root["plot"].setLabel("bottom", label_text)
@@ -366,8 +365,7 @@ class PlotRenderer:
         is_time_axis: bool,
         nds_window: float,
     ) -> None:
-        """
-        Stabilize plot range during streaming mode.
+        """Stabilize plot range during streaming mode.
 
         Parameters
         ----------
@@ -379,6 +377,7 @@ class PlotRenderer:
             Whether X axis is time-based.
         nds_window : float
             NDS window duration in seconds.
+
         """
         if "range_updater" not in info_root:
             return

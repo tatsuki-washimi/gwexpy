@@ -1,5 +1,4 @@
-"""
-Special spectral transform methods for TimeSeries (HHT, EMD, Laplace, CWT).
+"""Special spectral transform methods for TimeSeries (HHT, EMD, Laplace, CWT).
 """
 
 from __future__ import annotations
@@ -31,6 +30,7 @@ def _resolve_stlt_params(stride, window, fftlength, overlap, self):
     dict with keys:
         nperseg, step, noverlap, win_dur, str_dur, ov_dur,
         dt_s, window_func
+
     """
     import scipy.signal  # noqa: F401 - availability check
 
@@ -120,6 +120,7 @@ def _chunk_data(data, chunk_size, stride_samples):
     -------
     chunks : ndarray
         View of shape ``(n_chunks, chunk_size)``.
+
     """
     from numpy.lib.stride_tricks import sliding_window_view
 
@@ -144,6 +145,7 @@ def _prepare_sigma(sigmas, n_freqs):
     Returns
     -------
     sigmas_vals : ndarray of float
+
     """
     if np.isscalar(sigmas) or (isinstance(sigmas, u.Quantity) and sigmas.isscalar):
         sigmas_arr = [sigmas]
@@ -167,6 +169,7 @@ def _configure_frequency_domain(frequencies, onesided, dt, n_fft):
     dict with keys:
         freqs_val, freqs_q, freq_mode, fft_indices, use_zoom, zoom_info,
         reverse_zoom, custom_method, cached_phase, t_rel_for_phase
+
     """
     nperseg = n_fft
     fs_val = 1.0 / dt
@@ -306,6 +309,7 @@ def _prepare_decay(sigma, time_ref, dt, n_fft):
     -------
     dict with keys:
         t_rel, decay_matrix, win_base (None — caller sets this)
+
     """
     nperseg = n_fft
     if time_ref == "start":
@@ -358,6 +362,7 @@ def _stlt_main_loop(chunks, decay, freq_config):
     Returns
     -------
     out_cube : ndarray of shape ``(n_chunks, n_sigmas, n_freqs)``
+
     """
     import scipy.signal as _scipy_signal
 
@@ -452,6 +457,7 @@ def _apply_stlt_scaling(result, scaling, dt):
         'dt' or 'none'.
     dt : float
         Sample interval in seconds.
+
     """
     if scaling == "dt":
         result *= dt
@@ -481,6 +487,7 @@ def _create_stlt_container(result, times, frequencies, sigma, metadata):
     Returns
     -------
     LaplaceGram
+
     """
     from gwexpy.types.array3d import Array3D
     from gwexpy.types.time_plane_transform import LaplaceGram
@@ -514,8 +521,7 @@ def _create_stlt_container(result, times, frequencies, sigma, metadata):
 
 
 class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
-    """
-    Mixin class providing special spectral transform methods.
+    """Mixin class providing special spectral transform methods.
     """
 
     def laplace(
@@ -532,8 +538,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         chunk_size: int | None = None,
         **kwargs: Any,
     ) -> Any:
-        """
-        Compute the Laplace Transform.
+        """Compute the Laplace Transform.
 
         Parameters
         ----------
@@ -557,6 +562,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         Returns
         -------
         `FrequencySeries`
+
         """
         self._check_regular("laplace")
 
@@ -687,8 +693,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         legacy: bool = False,
         **kwargs: Any,
     ) -> Any:
-        """
-        Compute Short-Time Laplace Transform (STLT).
+        """Compute Short-Time Laplace Transform (STLT).
 
         Chunk the time series, apply window w[n] * exp(-sigma * t_rel[n]), and compute FFT.
 
@@ -735,6 +740,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         Notes
         -----
         This method uses a fully vectorized implementation for performance, broadcasting over sigmas and time chunks.
+
         """
         if legacy:
             return self._stlt_legacy(stride, window, **kwargs)
@@ -880,8 +886,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         chunk_size: int | None = None,
         **kwargs: Any,
     ) -> Any:
-        """
-        Compute the Continuous Wavelet Transform (CWT).
+        """Compute the Continuous Wavelet Transform (CWT).
 
         The CWT provides a time-frequency representation of the signal
         using a wavelet basis. Unlike STFT, CWT uses wavelets of varying
@@ -940,6 +945,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         >>> ts = TimeSeries(data, sample_rate=1024)
         >>> spec = ts.cwt(frequencies=np.logspace(0, 2, 50))
         >>> power = np.abs(spec.value)**2  # Time-frequency power
+
         """
         self._check_regular("cwt")
 
@@ -1022,8 +1028,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         eemd_processes: int | None = None,
         eemd_noise_kind: str | None = None,
     ) -> Any:
-        """
-        Decompose the TimeSeries using Empirical Mode Decomposition (EMD).
+        """Decompose the TimeSeries using Empirical Mode Decomposition (EMD).
 
         This method applies EMD or Ensemble EMD (EEMD) to decompose the signal
         into Intrinsic Mode Functions (IMFs) and a residual.
@@ -1092,6 +1097,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         >>> imfs = ts.emd(method='eemd', eemd_trials=50, random_state=42)
         >>> for key, imf in imfs.items():
         ...     print(f"{key}: {imf.shape}")
+
         """
         PyEMD = require_optional("PyEMD")
 
@@ -1262,8 +1268,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         if_smooth: int | u.Quantity | None = None,
         **hilbert_kwargs: Any,
     ) -> dict[str, Any]:
-        """
-        Perform Hilbert analysis to extract instantaneous amplitude, phase, and frequency.
+        """Perform Hilbert analysis to extract instantaneous amplitude, phase, and frequency.
 
         This method computes the analytic signal via Hilbert transform and extracts
         the instantaneous amplitude (IA), phase, and frequency (IF).
@@ -1323,6 +1328,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         >>> result = ts.hilbert_analysis(pad=100, if_smooth=10)
         >>> amplitude = result['amplitude']
         >>> frequency = result['frequency']
+
         """
         analytic = self.hilbert(**hilbert_kwargs)
         amp = np.abs(analytic.value)
@@ -1409,8 +1415,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         if_policy: str = "drop",
         finite_only: bool = True,
     ) -> Any:
-        """
-        Perform Hilbert-Huang Transform (HHT) on the TimeSeries.
+        """Perform Hilbert-Huang Transform (HHT) on the TimeSeries.
 
         HHT combines Empirical Mode Decomposition (EMD) with Hilbert Spectral
         Analysis to create a time-frequency representation of non-stationary
@@ -1507,6 +1512,7 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
         See Also
         --------
         :doc:`Tutorial: Hilbert-Huang Transform <../../../user_guide/tutorials/advanced_hht>`
+
         """
         if emd_kwargs is None:
             emd_kwargs = {}

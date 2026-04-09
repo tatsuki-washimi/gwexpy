@@ -1,5 +1,4 @@
-"""
-Legacy TimeSeries class - Minimal base for gwexpy.
+"""Legacy TimeSeries class - Minimal base for gwexpy.
 
 This module provides a minimal TimeSeries class that serves as the base
 for the modular gwexpy TimeSeries implementation. Most functionality has
@@ -30,8 +29,7 @@ from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
 
 class TimeSeries(BaseTimeSeries):
-    """
-    Minimal TimeSeries base class.
+    """Minimal TimeSeries base class.
 
     This class provides the basic GWpy TimeSeries functionality.
     All extended gwexpy functionality is provided by Mixin classes

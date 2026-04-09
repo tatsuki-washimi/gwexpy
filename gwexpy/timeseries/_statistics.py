@@ -1,5 +1,4 @@
-"""
-Statistical analysis and correlation mixin for TimeSeries.
+"""Statistical analysis and correlation mixin for TimeSeries.
 Provides skewed, kurtosis, Granger causality, distance correlation,
 and classic correlations (Pearson, Kendall, MIC).
 """
@@ -19,8 +18,7 @@ from ._typing import TimeSeriesAttrs
 
 
 class GrangerResult(float):
-    """
-    Subclass of float that holds Granger causality test results.
+    """Subclass of float that holds Granger causality test results.
     Inheriting from float allows p-value formatting like `f"{result:.4f}"`.
     Dictionary-like access is also supported for backward compatibility.
     """
@@ -57,8 +55,7 @@ class GrangerResult(float):
 
 
 class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
-    """
-    Mixin class to add statistical analysis and correlation methods to TimeSeries.
+    """Mixin class to add statistical analysis and correlation methods to TimeSeries.
 
     Inherits basic statistics (mean, std, skewness, kurtosis, etc.) from
     StatisticalMethodsMixin and adds correlation and causality methods.
@@ -71,8 +68,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     # ===============================
 
     def correlation(self, other, method="pearson", **kwargs):
-        """
-        Calculate correlation coefficient with another TimeSeries.
+        """Calculate correlation coefficient with another TimeSeries.
 
         Args:
             other (TimeSeries): The series to compare with.
@@ -81,6 +77,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
         Returns:
             float: The correlation coefficient.
+
         """
         # Data preparation: align length and strip units
         x, y = self._prep_stat_data(other)
@@ -99,8 +96,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             raise ValueError(f"Unknown correlation method: {method}")
 
     def mic(self, other, alpha=0.6, c=15, est="mic_approx"):
-        """
-        Calculate Maximal Information Coefficient (MIC) using minepy.
+        """Calculate Maximal Information Coefficient (MIC) using minepy.
 
         Note: On Python 3.11+, minepy must be built from source.
         Use `python scripts/install_minepy.py` provided in the gwexpy repository.
@@ -108,26 +104,22 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         return self.correlation(other, method="mic", alpha=alpha, c=c, est=est)
 
     def pcc(self, other):
-        """
-        Calculate Pearson Correlation Coefficient.
+        """Calculate Pearson Correlation Coefficient.
         """
         return self.correlation(other, method="pearson")
 
     def ktau(self, other):
-        """
-        Calculate Kendall's Rank Correlation Coefficient.
+        """Calculate Kendall's Rank Correlation Coefficient.
         """
         return self.correlation(other, method="kendall")
 
     def fastmi(self, other, **kwargs):
-        """
-        Estimate mutual information using a fast copula/probit + FFT-based estimator.
+        """Estimate mutual information using a fast copula/probit + FFT-based estimator.
         """
         return self.correlation(other, method="fastmi", **kwargs)
 
     def distance_correlation(self, other):
-        """
-        Calculate Distance Correlation (dCor).
+        """Calculate Distance Correlation (dCor).
 
         Distance correlation is a measure of dependence between two random vectors
         that is 0 if and only if the random vectors are independent.
@@ -138,6 +130,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
         Returns:
             float: The distance correlation (0 to 1).
+
         """
         return self.correlation(other, method="distance")
 
@@ -149,8 +142,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         method: str = "residual",
         **kwargs,
     ):
-        """
-        Calculate partial correlation between self and other, controlling for controls.
+        """Calculate partial correlation between self and other, controlling for controls.
 
         Parameters
         ----------
@@ -163,6 +155,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             - "precision": compute partial correlation via precision matrix.
         **kwargs
             Extra arguments for the underlying solver (e.g., rcond for pinv).
+
         """
         x, y, controls_mat = self._prep_partial_data(other, controls)
 
@@ -189,8 +182,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
             raise ValueError(f"Unknown partial correlation method: {method}")
 
     def granger_causality(self, other, maxlag=10, test="ssr_ftest", verbose=False):
-        """
-        Check if 'other' Granger-causes 'self'.
+        """Check if 'other' Granger-causes 'self'.
 
         Null Hypothesis: The past values of 'other' do NOT help in predicting 'self'.
 
@@ -203,6 +195,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         Returns:
             float: The minimum p-value across all lags up to maxlag.
                    A small p-value (e.g., < 0.05) indicates Granger causality.
+
         """
         try:
             from statsmodels.tsa.stattools import grangercausalitytests
@@ -254,12 +247,12 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     # ===============================
 
     def gauch(self, fftlength, window=40, stride=None, overlap=None, **kwargs):
-        """
-        Compute GauCh (Modified KS test) for non-Gaussianity detection.
+        """Compute GauCh (Modified KS test) for non-Gaussianity detection.
 
         Returns
         -------
         GauChResult
+
         """
         from ..statistics.gauch import compute_gauch
 
@@ -273,12 +266,12 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         )
 
     def rayleigh_test(self, fftlength, stride, n_samples=39, **kwargs):
-        """
-        Compute Rayleigh statistic p-value spectrogram.
+        """Compute Rayleigh statistic p-value spectrogram.
 
         Returns
         -------
         Spectrogram
+
         """
         from ..statistics.rayleigh_test import rayleigh_pvalue
 
@@ -288,12 +281,12 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         return rayleigh_pvalue(rs, n_samples=n_samples, **kwargs)
 
     def student_t_spectrogram(self, fftlength, stride=None, window=40, overlap=None, frange=None):
-        """
-        Compute Student-t degree of freedom (nu) spectrogram.
+        """Compute Student-t degree of freedom (nu) spectrogram.
 
         Returns
         -------
         Spectrogram
+
         """
         from ..statistics.student_t_indicator import compute_student_t_nu
 
@@ -307,8 +300,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         )
 
     def histogram(self, bins=None, range=None, weights=None, density=False, **kwargs):
-        """
-        Compute a histogram of the values in this TimeSeries.
+        """Compute a histogram of the values in this TimeSeries.
 
         Parameters
         ----------
@@ -327,6 +319,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         -------
         Histogram
             A gwexpy.histogram.Histogram object.
+
         """
         from gwexpy.histogram import Histogram
 
@@ -443,14 +436,14 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         quantile: float = 0.001,
         eps: float = 1e-12,
     ) -> float:
-        """
-        Copula-based mutual information estimator inspired by "fastMI" (Purkayastha & Song, 2023).
+        """Copula-based mutual information estimator inspired by "fastMI" (Purkayastha & Song, 2023).
 
         Notes
         -----
         - Intended for 1D continuous arrays.
         - Uses empirical CDF -> probit transform -> self-consistent FFT density estimates.
         - Returns MI in nats (natural log), non-negative.
+
         """
         x = np.asarray(x, dtype=float).flatten()
         y = np.asarray(y, dtype=float).flatten()
@@ -520,8 +513,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
     @staticmethod
     def _fastmi_connected_component(mask: np.ndarray) -> np.ndarray:
-        """
-        Keep only the connected component of mask that contains the zero-frequency bin.
+        """Keep only the connected component of mask that contains the zero-frequency bin.
         """
         if mask.ndim == 1:
             ms = np.fft.fftshift(mask)
@@ -572,8 +564,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         quantile: float,
         eps: float,
     ) -> np.ndarray:
-        """
-        Estimate PDF of v (n,d) at sample points using SC FFT estimator on a regular grid.
+        """Estimate PDF of v (n,d) at sample points using SC FFT estimator on a regular grid.
         """
         v = np.asarray(v, dtype=float)
         if v.ndim != 2:

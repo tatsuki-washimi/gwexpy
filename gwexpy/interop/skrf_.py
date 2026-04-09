@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.skrf_
+"""gwexpy.interop.skrf_
 ---------------------
 
 Interoperability with scikit-rf (skrf) for RF/microwave network analysis.
@@ -55,8 +54,7 @@ def from_skrf_network(
     port_pair: tuple[int, int] | None = None,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create FrequencySeries, FrequencySeriesDict, or FrequencySeriesMatrix
+    """Create FrequencySeries, FrequencySeriesDict, or FrequencySeriesMatrix
     from a scikit-rf Network.
 
     Parameters
@@ -100,6 +98,7 @@ def from_skrf_network(
     >>> ntwk = skrf.Network("myfilter.s2p")
     >>> fs_s21 = FrequencySeries.from_skrf_network(ntwk, port_pair=(1, 0))
     >>> matrix = FrequencySeries.from_skrf_network(ntwk)
+
     """
     require_optional("skrf")
 
@@ -189,8 +188,7 @@ def to_skrf_network(
     port_names: list[str] | None = None,
     name: str | None = None,
 ) -> Any:
-    """
-    Create a scikit-rf Network from a FrequencySeries or FrequencySeriesMatrix.
+    """Create a scikit-rf Network from a FrequencySeries or FrequencySeriesMatrix.
 
     Parameters
     ----------
@@ -220,6 +218,7 @@ def to_skrf_network(
     >>> import numpy as np
     >>> fs = FrequencySeries(np.array([0.1+0j, 0.2+0j]), frequencies=[1e9, 2e9])
     >>> ntwk = fs.to_skrf_network()
+
     """
     skrf = require_optional("skrf")
 
@@ -274,8 +273,7 @@ def from_skrf_impulse_response(
     pad: int = 0,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create TimeSeries or TimeSeriesDict from a scikit-rf Network impulse response.
+    """Create TimeSeries or TimeSeriesDict from a scikit-rf Network impulse response.
 
     Computes the time-domain impulse response via IFFT on the S-parameters
     (or the selected port pair) and wraps the result in a :class:`TimeSeries`.
@@ -313,6 +311,7 @@ def from_skrf_impulse_response(
     >>> import skrf
     >>> ntwk = skrf.Network("myfilter.s2p")
     >>> ts = TimeSeries.from_skrf_impulse_response(ntwk, port_pair=(1, 0))
+
     """
     require_optional("skrf")
     return _from_skrf_time_response(
@@ -335,8 +334,7 @@ def from_skrf_step_response(
     pad: int = 0,
     unit: Any | None = None,
 ) -> Any:
-    """
-    Create TimeSeries or TimeSeriesDict from a scikit-rf Network step response.
+    """Create TimeSeries or TimeSeriesDict from a scikit-rf Network step response.
 
     Computes the time-domain step response via IFFT on the S-parameters
     (or the selected port pair) and wraps the result in a :class:`TimeSeries`.
@@ -374,6 +372,7 @@ def from_skrf_step_response(
     >>> import skrf
     >>> ntwk = skrf.Network("myfilter.s2p")
     >>> ts = TimeSeries.from_skrf_step_response(ntwk, port_pair=(1, 0))
+
     """
     require_optional("skrf")
     return _from_skrf_time_response(

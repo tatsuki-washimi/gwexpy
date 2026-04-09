@@ -18,8 +18,7 @@ class Engine:
         logger.info("Engine state reset.")
 
     def configure(self, params):
-        """
-        Update local parameters from the GUI.
+        """Update local parameters from the GUI.
         params expected keys:
           - 'start_freq'
           - 'stop_freq'
@@ -32,8 +31,7 @@ class Engine:
         self.params = params
 
     def _get_fft_kwargs(self, sample_rate):
-        """
-        Calculate gwpy-compatible FFT arguments from DTT parameters.
+        """Calculate gwpy-compatible FFT arguments from DTT parameters.
         DTT defines Resolution BW = fs / N_fft (roughly, window dependent).
         gwpy .asd() takes 'fftlength' in seconds.
         fftlength = 1 / bw
@@ -58,8 +56,7 @@ class Engine:
         }
 
     def compute(self, data_map, graph_type, active_traces):
-        """
-        Perform spectral calculations.
+        """Perform spectral calculations.
 
         data_map: { channel_name: TimeSeries }
         graph_type: str (e.g., "Amplitude Spectral Density", "Coherence")

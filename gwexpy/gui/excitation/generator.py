@@ -9,8 +9,7 @@ from .params import GeneratorParams
 
 
 class SignalGenerator:
-    """
-    Generates simulation waveforms based on GeneratorParams.
+    """Generates simulation waveforms based on GeneratorParams.
     Read-Only: Does not interact with hardware.
     """
 

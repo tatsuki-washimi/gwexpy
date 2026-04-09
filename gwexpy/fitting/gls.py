@@ -1,5 +1,4 @@
-"""
-Generalized Least Squares (GLS) cost function for iminuit.
+"""Generalized Least Squares (GLS) cost function for iminuit.
 
 This module provides a cost function class for fitting with a full
 covariance matrix, enabling χ² minimization that properly accounts
@@ -26,8 +25,7 @@ __all__ = ["GeneralizedLeastSquares", "GLS"]
 
 
 class GLS:
-    """
-    Direct solver for Generalized Least Squares problems (Linear).
+    """Direct solver for Generalized Least Squares problems (Linear).
 
     Parameters
     ----------
@@ -39,6 +37,7 @@ class GLS:
         Covariance matrix (n_samples, n_samples).
     cov_inv : array-like, optional
         Inverse covariance matrix (n_samples, n_samples).
+
     """
 
     def __init__(
@@ -59,8 +58,7 @@ class GLS:
             self.cov_inv = np.eye(len(y))
 
     def solve(self) -> np.ndarray:
-        """
-        Solve the linear GLS problem: beta = (X.T @ W @ X)^-1 @ X.T @ W @ y
+        """Solve the linear GLS problem: beta = (X.T @ W @ X)^-1 @ X.T @ W @ y
         where W = cov_inv.
         """
         W = self.cov_inv
@@ -71,8 +69,7 @@ class GLS:
 
 
 class GeneralizedLeastSquares:
-    """
-    Generalized Least Squares (GLS) cost function.
+    """Generalized Least Squares (GLS) cost function.
 
     Minimizes χ² = r.T @ cov_inv @ r where r = y - ``model(x, **params)``.
 
@@ -106,6 +103,7 @@ class GeneralizedLeastSquares:
     >>> gls = GeneralizedLeastSquares(x, y, cov_inv, linear)
     >>> m = Minuit(gls, a=1, b=0)
     >>> m.migrad()
+
     """
 
     errordef = Minuit.LEAST_SQUARES
@@ -146,8 +144,7 @@ class GeneralizedLeastSquares:
         self._parameters = {name: None for name in params}
 
     def __call__(self, *args) -> float:
-        """
-        Compute χ² for given parameter values.
+        """Compute χ² for given parameter values.
 
         Parameters
         ----------
@@ -158,6 +155,7 @@ class GeneralizedLeastSquares:
         -------
         float
             χ² value: r.T @ cov_inv @ r
+
         """
         # Model prediction
         ym = self.model(self.x, *args)

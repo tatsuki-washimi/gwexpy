@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.pycbc_
+"""gwexpy.interop.pycbc_
 ---------------------
 
 Interoperability with PyCBC (Python gravitational-wave data analysis library).
@@ -55,6 +54,7 @@ def from_pycbc_timeseries(
     >>> pycbc_ts = PyCBCTimeSeries(np.zeros(1024), delta_t=1/1024, epoch=0)
     >>> from gwexpy.timeseries import TimeSeries
     >>> ts = TimeSeries.from_pycbc(pycbc_ts)
+
     """
     require_optional("pycbc")
 
@@ -91,6 +91,7 @@ def to_pycbc_timeseries(
     >>> import numpy as np
     >>> ts = TimeSeries(np.zeros(1024), t0=0, dt=1/1024)
     >>> pycbc_ts = ts.to_pycbc()
+
     """
     require_optional("pycbc")
     from pycbc.types import TimeSeries as PyCBCTimeSeries  # noqa: PLC0415
@@ -131,6 +132,7 @@ def from_pycbc_frequencyseries(
     >>> pycbc_fs = PyCBCFrequencySeries(np.zeros(512, dtype=complex), delta_f=1.0, epoch=0)
     >>> from gwexpy.frequencyseries import FrequencySeries
     >>> fs = FrequencySeries.from_pycbc(pycbc_fs)
+
     """
     require_optional("pycbc")
 
@@ -168,6 +170,7 @@ def to_pycbc_frequencyseries(
     >>> import numpy as np
     >>> fs = FrequencySeries(np.zeros(512, dtype=complex), frequencies=np.arange(512))
     >>> pycbc_fs = fs.to_pycbc()
+
     """
     require_optional("pycbc")
     from pycbc.types import FrequencySeries as PyCBCFrequencySeries

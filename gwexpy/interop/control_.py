@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.control_
+"""gwexpy.interop.control_
 ------------------------
 
 Interoperability with the python-control library for control systems analysis.
@@ -32,8 +31,7 @@ T_ts = TypeVar("T_ts", bound="TimeSeries")
 def to_control_frd(
     fs: FrequencySeries, frequency_unit: Literal["rad/s", "Hz"] = "rad/s"
 ) -> control.FRD:
-    """
-    Convert FrequencySeries to control.FRD.
+    """Convert FrequencySeries to control.FRD.
 
     Parameters
     ----------
@@ -55,6 +53,7 @@ def to_control_frd(
     >>> from gwexpy.interop.control_ import to_control_frd
     >>> fs = FrequencySeries([1+0j, 0.5+0.5j], f0=1, df=1)
     >>> frd = to_control_frd(fs)
+
     """
     ctl = require_optional("control")
 
@@ -85,8 +84,7 @@ def to_control_frd(
 def from_control_frd(
     cls: type[T_fs], frd: control.FRD, frequency_unit: Literal["Hz", "rad/s"] = "Hz"
 ) -> Union[T_fs, FrequencySeriesMatrix]:
-    """
-    Create FrequencySeries from control.FRD.
+    """Create FrequencySeries from control.FRD.
 
     Parameters
     ----------
@@ -111,6 +109,7 @@ def from_control_frd(
     >>> from gwexpy.interop.control_ import from_control_frd
     >>> # frd = control.frd(data, omega)
     >>> # fs = from_control_frd(FrequencySeries, frd)
+
     """
     omega = np.asarray(frd.omega)
 
@@ -169,8 +168,7 @@ def from_control_response(
     response: control.TimeResponseData,
     **kwargs: Any,
 ) -> Union[TimeSeries, TimeSeriesDict]:
-    """
-    Create TimeSeries or TimeSeriesDict from control.TimeResponseData.
+    """Create TimeSeries or TimeSeriesDict from control.TimeResponseData.
 
     Parameters
     ----------
@@ -185,6 +183,7 @@ def from_control_response(
     -------
     TimeSeries or TimeSeriesDict
         The converted time-domain data.
+
     """
     # response is a TimeResponseData object
     # It has attributes: time, outputs, inputs, states

@@ -28,8 +28,7 @@ def _lazy_series_fit(self: Series, *args: Any, **kwargs: Any) -> Any:
 
 
 def enable_series_fit() -> None:
-    """
-    Opt-in monkeypatch for gwpy.types.Series.fit.
+    """Opt-in monkeypatch for gwpy.types.Series.fit.
 
     Note: standard gwexpy classes (TimeSeries, FrequencySeries) already have the .fit() method
     via inheritance. This function is generally not needed unless you are using base gwpy objects

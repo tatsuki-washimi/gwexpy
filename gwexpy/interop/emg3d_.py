@@ -1,5 +1,4 @@
-"""
-gwexpy.interop.emg3d_
+"""gwexpy.interop.emg3d_
 ---------------------
 
 Interoperability with emg3d electromagnetic modelling fields.
@@ -19,6 +18,7 @@ beyond those already installed with emg3d.
 References
 ----------
 https://emg3d.emsig.xyz/
+
 """
 
 from __future__ import annotations
@@ -60,6 +60,7 @@ def _interp_edge_to_cell(arr: np.ndarray, axis: int) -> np.ndarray:
     -------
     ndarray
         Array with ``nN - 1`` values along *axis*.
+
     """
     slc_lo = [slice(None)] * arr.ndim
     slc_hi = [slice(None)] * arr.ndim
@@ -86,6 +87,7 @@ def _interp_face_to_cell(arr: np.ndarray, axis: int) -> np.ndarray:
     -------
     ndarray
         Array with ``nN - 1`` values along *axis*.
+
     """
     return _interp_edge_to_cell(arr, axis)  # same averaging formula
 
@@ -104,6 +106,7 @@ def _build_cell_center_coords(
     -------
     tuple of ndarray
         ``(cell_centers_x, cell_centers_y, cell_centers_z)``
+
     """
     return (
         np.asarray(mesh.cell_centers_x, dtype=np.float64),
@@ -176,6 +179,7 @@ def from_emg3d_field(
 
     >>> from gwexpy.fields import ScalarField
     >>> sf = ScalarField.from_emg3d_field(field, component="z")
+
     """
     mesh = field.grid
     electric: bool = bool(field.electric)
@@ -303,6 +307,7 @@ def to_emg3d_field(
         If ``emg3d`` is not installed.
     ValueError
         If the VectorField does not contain exactly 3 components.
+
     """
     emg3d = require_optional("emg3d")
 
@@ -449,6 +454,7 @@ def from_emg3d_h5(
     Returns
     -------
     ScalarField or VectorField
+
     """
     emg3d = require_optional("emg3d")
 

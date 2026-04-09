@@ -18,8 +18,7 @@ class TimeSeriesMatrixSpectralMixin:
     """Spectral analysis methods for TimeSeriesMatrix."""
 
     def _vectorized_fft(self, **kwargs: Any) -> Any:
-        """
-        Vectorized implementation of FFT.
+        """Vectorized implementation of FFT.
         """
         FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
@@ -56,8 +55,7 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def _vectorized_psd(self, **kwargs: Any) -> Any:
-        """
-        Vectorized implementation of PSD (Welch).
+        """Vectorized implementation of PSD (Welch).
         """
         from scipy.signal import welch
 
@@ -105,8 +103,7 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def _vectorized_asd(self, **kwargs: Any) -> Any:
-        """
-        Vectorized implementation of ASD.
+        """Vectorized implementation of ASD.
         """
         psd = self._vectorized_psd(**kwargs)
         asd_data = np.sqrt(psd.value)
@@ -118,8 +115,7 @@ class TimeSeriesMatrixSpectralMixin:
         return psd
 
     def _vectorized_csd(self, other: Any, **kwargs: Any) -> Any:
-        """
-        Vectorized implementation of CSD.
+        """Vectorized implementation of CSD.
         """
         from scipy.signal import csd
 
@@ -174,8 +170,7 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def _vectorized_coherence(self, other: Any, **kwargs: Any) -> Any:
-        """
-        Vectorized implementation of Coherence.
+        """Vectorized implementation of Coherence.
         """
         from scipy.signal import coherence
 
@@ -230,14 +225,14 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def lock_in(self, **kwargs: Any) -> Any:
-        """
-        Apply lock-in amplification element-wise.
+        """Apply lock-in amplification element-wise.
 
         Returns
         -------
         TimeSeriesMatrix or tuple of TimeSeriesMatrix
             If output='amp_phase' (default) or 'iq', returns (matrix1, matrix2).
             If output='complex', returns a single complex TimeSeriesMatrix.
+
         """
         output = kwargs.get("output", "amp_phase")
         expect_tuple = output in ["amp_phase", "iq"]
@@ -330,29 +325,25 @@ class TimeSeriesMatrixSpectralMixin:
         return m1
 
     def fft(self, **kwargs: Any) -> Any:
-        """
-        Compute FFT of each element.
+        """Compute FFT of each element.
         Returns FrequencySeriesMatrix.
         """
         return self._run_spectral_method("fft", **kwargs)
 
     def psd(self, **kwargs: Any) -> Any:
-        """
-        Compute PSD of each element.
+        """Compute PSD of each element.
         Returns FrequencySeriesMatrix.
         """
         return self._run_spectral_method("psd", **kwargs)
 
     def asd(self, **kwargs: Any) -> Any:
-        """
-        Compute ASD of each element.
+        """Compute ASD of each element.
         Returns FrequencySeriesMatrix.
         """
         return self._run_spectral_method("asd", **kwargs)
 
     def spectrogram(self, *args: Any, **kwargs: Any) -> Any:
-        """
-        Compute spectrogram of each element.
+        """Compute spectrogram of each element.
         Returns SpectrogramMatrix.
         """
         return cast("TimeSeriesMatrix", self)._apply_spectrogram_method(
@@ -360,8 +351,7 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def spectrogram2(self, *args: Any, **kwargs: Any) -> Any:
-        """
-        Compute spectrogram2 of each element.
+        """Compute spectrogram2 of each element.
         Returns SpectrogramMatrix.
         """
         return cast("TimeSeriesMatrix", self)._apply_spectrogram_method(
@@ -369,8 +359,7 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def q_transform(self, *args: Any, **kwargs: Any) -> Any:
-        """
-        Compute Q-transform of each element.
+        """Compute Q-transform of each element.
         Returns SpectrogramMatrix.
         """
         return cast("TimeSeriesMatrix", self)._apply_spectrogram_method(
@@ -378,8 +367,7 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def _run_spectral_method(self, method_name: str, **kwargs: Any) -> Any:
-        """
-        Helper for fft, psd, asd.
+        """Helper for fft, psd, asd.
         """
         FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 

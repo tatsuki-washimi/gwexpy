@@ -73,6 +73,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
     >>> sm = SpectrogramMatrix(data, times=[0, 1], frequencies=[10, 20])
     >>> sm
     <SeriesMatrix shape=(1, 2, 2) rows=('batch0',) cols=('col0',)>
+
     """
 
     series_class = Spectrogram
@@ -216,8 +217,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
             self._value = self.view(np.ndarray)
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
-        """
-        Override SeriesMatrix.__array_ufunc__ to correctly handle SpectrogramMatrix structure
+        """Override SeriesMatrix.__array_ufunc__ to correctly handle SpectrogramMatrix structure
         (Batch, Time, Freq) or (Row, Col, Time, Freq).
 
         Per-element units are preserved in MetaDataMatrix:
@@ -452,8 +452,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         return tuple(self.cols.keys()) if self.cols else tuple()
 
     def is_compatible(self, other: Any) -> bool:
-        """
-        Check compatibility with another SpectrogramMatrix/object.
+        """Check compatibility with another SpectrogramMatrix/object.
         Overrides SeriesMatrix.is_compatible to avoid loop range issues due to
         mismatch between data shape (Time axis) and metadata shape (Batch/Col).
         """
@@ -809,16 +808,14 @@ class SpectrogramMatrix(  # type: ignore[misc]
         return self.shape
 
     def plot_summary(self, **kwargs):
-        """
-        Plot Matrix as side-by-side Spectrograms and percentile summaries.
+        """Plot Matrix as side-by-side Spectrograms and percentile summaries.
         """
         from gwexpy.plot.plot import plot_summary
 
         return plot_summary(self, **kwargs)
 
     def __reduce__(self):
-        """
-        Customize pickle serialization to ensure metadata preservation.
+        """Customize pickle serialization to ensure metadata preservation.
 
         Returns standard numpy reduce tuple but appends __dict__ only if not automatically handled.
         """
@@ -833,8 +830,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         return tuple(picked)
 
     def __setstate__(self, state):
-        """
-        Restore state from pickle.
+        """Restore state from pickle.
         """
         # The last element contains our __dict__
         my_dict = state[-1]

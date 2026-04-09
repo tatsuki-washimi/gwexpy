@@ -66,8 +66,7 @@ def _extract_error_array(series, error):
 
 
 def to_tgraph(series: Any, error: Optional[Any] = None) -> ROOT.TGraph:
-    """
-    Convert 1D Series to ROOT TGraph or TGraphErrors.
+    """Convert 1D Series to ROOT TGraph or TGraphErrors.
     """
     ROOT = require_optional("ROOT")
 
@@ -97,8 +96,7 @@ def to_tgraph(series: Any, error: Optional[Any] = None) -> ROOT.TGraph:
 
 
 def to_th1d(series: Any, error: Optional[Any] = None) -> ROOT.TH1D:
-    """
-    Convert 1D Series to ROOT TH1D.
+    """Convert 1D Series to ROOT TH1D.
     """
     ROOT = require_optional("ROOT")
 
@@ -206,8 +204,7 @@ def to_th1d(series: Any, error: Optional[Any] = None) -> ROOT.TH1D:
 
 
 def to_th2d(spec: Spectrogram, error: Optional[Any] = None) -> ROOT.TH2D:
-    """
-    Convert Spectrogram to ROOT TH2D.
+    """Convert Spectrogram to ROOT TH2D.
     """
     ROOT = require_optional("ROOT")
 
@@ -274,8 +271,7 @@ def to_th2d(spec: Spectrogram, error: Optional[Any] = None) -> ROOT.TH2D:
 def from_root(
     cls: type[T_s], obj: Union[ROOT.TGraph, ROOT.TH1], return_error: bool = False
 ) -> Union[T_s, tuple[T_s, T_s]]:
-    """
-    Create Series (TimeSeries or FrequencySeries) from ROOT TGraph or TH1.
+    """Create Series (TimeSeries or FrequencySeries) from ROOT TGraph or TH1.
     """
     ROOT = require_optional("ROOT")
 
@@ -475,8 +471,7 @@ def from_root(
 
 
 def to_tmultigraph(collection, name: Optional[str] = None) -> Any:
-    """
-    Convert a collection of Series to a ROOT TMultiGraph.
+    """Convert a collection of Series to a ROOT TMultiGraph.
     """
     ROOT = require_optional("ROOT")
     mg = ROOT.TMultiGraph()
@@ -513,8 +508,7 @@ def to_tmultigraph(collection, name: Optional[str] = None) -> Any:
 
 
 def write_root_file(collection, filename: str, **kwargs: Any) -> None:
-    """
-    Write a collection of Series to a ROOT TFile.
+    """Write a collection of Series to a ROOT TFile.
     """
     ROOT = require_optional("ROOT")
     mode = kwargs.get("mode", "recreate")

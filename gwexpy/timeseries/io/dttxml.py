@@ -1,5 +1,4 @@
-"""
-dttxml reader (Diag GUI XML).
+"""dttxml reader (Diag GUI XML).
 
 This module supports a minimal XML parser and will use an external
 `dttxml_source.txt` parser if it is available next to the project root.

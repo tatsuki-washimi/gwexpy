@@ -23,8 +23,7 @@ def to_pandas_series(
     name: Optional[str] = None,
     copy: bool = False,
 ) -> pd.Series:
-    """
-    Convert TimeSeries to pandas.Series.
+    """Convert TimeSeries to pandas.Series.
 
     Parameters
     ----------
@@ -36,6 +35,7 @@ def to_pandas_series(
     Returns
     -------
     pandas.Series
+
     """
     pd = require_optional("pandas")
     from .base import to_plain_array
@@ -86,8 +86,7 @@ def from_pandas_series(
     t0: Optional[float] = None,
     dt: Optional[float] = None,
 ) -> T:
-    """
-    Create TimeSeries from pandas.Series.
+    """Create TimeSeries from pandas.Series.
     """
     pd = require_optional("pandas")
     from .base import to_plain_array

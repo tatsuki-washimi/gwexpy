@@ -1,5 +1,4 @@
-"""
-gwexpy.timeseries.timeseries - Extended TimeSeries class
+"""gwexpy.timeseries.timeseries - Extended TimeSeries class
 
 This module provides the main TimeSeries class for gwexpy, which extends
 gwpy's TimeSeries with additional functionality.
@@ -132,6 +131,7 @@ class TimeSeries(
                 dt=<Quantity 0.001 s>,
                 name=None,
                 channel=None)>
+
     """
 
     def _get_meta_for_constructor(self) -> dict[str, Any]:
@@ -198,8 +198,7 @@ class TimeSeries(
         return super().__new__(cls, data, *args, **kwargs)
 
     def __array_finalize__(self, obj: Any) -> None:
-        """
-        Finalize the array after creation (slicing, view casting).
+        """Finalize the array after creation (slicing, view casting).
 
         Ensures that attributes starting with `_gwex_` are propagated
         from the parent object to the new view/instance.
@@ -228,8 +227,7 @@ class TimeSeries(
         orientation: str = "x",
         **kwargs: Any,
     ) -> Any:
-        """
-        Convert to SimPEG Data object.
+        """Convert to SimPEG Data object.
 
         Parameters
         ----------
@@ -243,6 +241,7 @@ class TimeSeries(
         Returns
         -------
         simpeg.data.Data
+
         """
         from gwexpy.interop import to_simpeg
 
@@ -252,8 +251,7 @@ class TimeSeries(
 
     @classmethod
     def from_simpeg(cls, data_obj: Any, **kwargs: Any) -> TimeSeries:
-        """
-        Create TimeSeries from SimPEG Data object.
+        """Create TimeSeries from SimPEG Data object.
 
         Parameters
         ----------
@@ -263,6 +261,7 @@ class TimeSeries(
         Returns
         -------
         TimeSeries
+
         """
         from gwexpy.interop import from_simpeg
 
@@ -270,8 +269,7 @@ class TimeSeries(
 
     @classmethod
     def from_control(cls, response: Any, **kwargs: Any) -> TimeSeries | TimeSeriesDict:
-        """
-        Create TimeSeries from python-control TimeResponseData.
+        """Create TimeSeries from python-control TimeResponseData.
 
         Parameters
         ----------
@@ -284,6 +282,7 @@ class TimeSeries(
         -------
         TimeSeries or TimeSeriesDict
             The converted time-domain data.
+
         """
         from gwexpy.interop import from_control_response
 
@@ -301,8 +300,7 @@ class TimeSeries(
         auto: bool = False,
         **kwargs: Any,
     ) -> Any:
-        """
-        Fit an ARIMA or SARIMAX model to this TimeSeries.
+        """Fit an ARIMA or SARIMAX model to this TimeSeries.
 
         This method wraps `statsmodels.tsa.arima.model.ARIMA` (or SARIMAX).
         If `auto=True`, it uses `pmdarima` to automatically find the best parameters.
@@ -322,6 +320,7 @@ class TimeSeries(
         -------
         ArimaResult
             Object containing the fitted model, with methods .predict(), .forecast(), .plot().
+
         """
         from .arima import fit_arima
 
@@ -330,22 +329,19 @@ class TimeSeries(
         )
 
     def ar(self, p: int = 1, **kwargs: Any) -> Any:
-        """
-        Fit an AutoRegressive AR(p) model.
+        """Fit an AutoRegressive AR(p) model.
         Shortcut for .arima(order=(p, 0, 0)).
         """
         return self.arima(order=(p, 0, 0), **kwargs)
 
     def ma(self, q: int = 1, **kwargs: Any) -> Any:
-        """
-        Fit a Moving Average MA(q) model.
+        """Fit a Moving Average MA(q) model.
         Shortcut for .arima(order=(0, 0, q)).
         """
         return self.arima(order=(0, 0, q), **kwargs)
 
     def arma(self, p: int = 1, q: int = 1, **kwargs: Any) -> Any:
-        """
-        Fit an ARMA(p, q) model.
+        """Fit an ARMA(p, q) model.
         Shortcut for .arima(order=(p, 0, q)).
         """
         return self.arima(order=(p, 0, q), **kwargs)

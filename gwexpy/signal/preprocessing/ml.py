@@ -1,5 +1,4 @@
-"""
-gwexpy.signal.preprocessing.ml
+"""gwexpy.signal.preprocessing.ml
 -------------------------------
 
 Preprocessing pipeline for machine learning.
@@ -23,8 +22,7 @@ if TYPE_CHECKING:
 
 
 class MLPreprocessor:
-    """
-    Preprocessing pipeline for machine learning.
+    """Preprocessing pipeline for machine learning.
 
     A scikit-learn-style Transformer that performs data splitting,
     band-pass filtering, and per-channel standardization. Can be used for
@@ -96,6 +94,7 @@ class MLPreprocessor:
     Important notes:
     - **X is not filtered** (reference channels are standardized as raw data).
     - **y is filtered before standardization** (target channel is band-limited).
+
     """
 
     def __init__(
@@ -125,8 +124,7 @@ class MLPreprocessor:
         X: TimeSeriesMatrix,
         y: TimeSeries,
     ) -> tuple[TimeSeriesMatrix, TimeSeries, TimeSeriesMatrix, TimeSeries]:
-        """
-        Split data into training and validation sets.
+        """Split data into training and validation sets.
 
         Parameters
         ----------
@@ -145,6 +143,7 @@ class MLPreprocessor:
             Validation reference channels
         y_valid : TimeSeries
             Validation target channel
+
         """
         if self.valid_frac == 0.0:
             # No split: use crop() to create zero-length validation data
@@ -176,8 +175,7 @@ class MLPreprocessor:
         X: TimeSeriesMatrix,
         y: TimeSeries | None = None,
     ) -> MLPreprocessor:
-        """
-        Learn statistics and filter coefficients.
+        """Learn statistics and filter coefficients.
 
         Parameters
         ----------
@@ -191,6 +189,7 @@ class MLPreprocessor:
         -------
         self : MLPreprocessor
             Fitted preprocessor
+
         """
         from scipy.signal import butter
 
@@ -247,8 +246,7 @@ class MLPreprocessor:
         X: TimeSeriesMatrix,
         y: TimeSeries | None = None,
     ) -> tuple[TimeSeriesMatrix, TimeSeries] | TimeSeriesMatrix:
-        """
-        Apply filtering and standardization.
+        """Apply filtering and standardization.
 
         Parameters
         ----------
@@ -264,6 +262,7 @@ class MLPreprocessor:
             Processed X (dimensionless_unscaled unit)
         y_proc : TimeSeries (if y is specified)
             Processed y (dimensionless_unscaled unit)
+
         """
         if not self.is_fitted_:
             raise RuntimeError("Call fit() first")

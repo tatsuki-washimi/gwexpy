@@ -26,6 +26,7 @@ Usage
 See Also
 --------
 docs/developers/guides/coding_standards.md : Section 6 for full guidelines.
+
 """
 
 from __future__ import annotations
@@ -49,6 +50,7 @@ class ConverterRegistry:
       which is serialized by the GIL. Lookups are dict reads and are safe.
     * **Error messages**: ``get_constructor`` / ``get_converter`` list all
       available keys on ``KeyError`` for easy debugging.
+
     """
 
     _constructors: dict[str, type] = {}
@@ -64,6 +66,7 @@ class ConverterRegistry:
             Lookup key (e.g., ``"TimeSeries"``, ``"FrequencySeriesDict"``).
         klass : type
             The concrete class to register.
+
         """
         existing = cls._constructors.get(name)
         if existing is not None and existing is not klass:
@@ -92,6 +95,7 @@ class ConverterRegistry:
         ------
         KeyError
             If *name* has not been registered.
+
         """
         try:
             return cls._constructors[name]

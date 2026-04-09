@@ -47,6 +47,7 @@ class SkyMap(Plot):
         Parameters
         ----------
         *args, **kwargs : passed to :class:`gwexpy.plot.Plot`.
+
         """
         # Default projection: Mollweide in hour angle (RA) units
         if "projection" not in kwargs and "geometry" not in kwargs:
@@ -69,6 +70,7 @@ class SkyMap(Plot):
         map_data : array‑like
             HEALPix map data (e.g., a ``numpy`` array of probabilities).
         **kwargs : additional keyword arguments passed to ``ligo.skymap.plot.imshow_hpx``.
+
         """
         if not HAS_LIGO_SKYMAP:
             # Try once more to patch and import if it was not successful initially
@@ -103,6 +105,7 @@ class SkyMap(Plot):
             Text label to place next to the marker.
         **kwargs : additional arguments passed to the underlying Matplotlib ``scatter``
             or ``plot_coord`` call.
+
         """
         # Ensure astropy quantities
         if not isinstance(ra, u.Quantity):
@@ -161,6 +164,7 @@ class SkyMap(Plot):
         values : 2‑D array
             Data values corresponding to each (ra, dec) point.
         **kwargs : additional arguments passed to ``pcolormesh``.
+
         """
         # Convert to radians for the Mollweide projection
         ra = np.asarray(ra)

@@ -31,8 +31,7 @@ Payload = dict[str, PayloadPacket]
 
 
 class BaseDataSource(QObject):
-    """
-    Minimal data-source interface used by the GUI.
+    """Minimal data-source interface used by the GUI.
 
     Implementations must emit:
       - signal_data(DataBufferDict)
@@ -67,8 +66,7 @@ class BaseDataSource(QObject):
 
 
 class SyntheticDataSource(BaseDataSource):
-    """
-    Deterministic data source for tests and offline runs.
+    """Deterministic data source for tests and offline runs.
     """
 
     def __init__(
@@ -140,8 +138,7 @@ class SyntheticDataSource(BaseDataSource):
 
 
 class StubDataSource(SyntheticDataSource):
-    """
-    Synthetic data source that can inject failure modes.
+    """Synthetic data source that can inject failure modes.
     """
 
     def __init__(

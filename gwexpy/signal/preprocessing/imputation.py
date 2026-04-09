@@ -1,5 +1,4 @@
-"""
-gwexpy.signal.preprocessing.imputation
+"""gwexpy.signal.preprocessing.imputation
 ---------------------------------------
 
 Missing value imputation algorithms for signal processing.
@@ -106,8 +105,7 @@ def impute(
     max_gap=None,
     fill_value=np.nan,
 ):
-    """
-    Impute missing values in an array.
+    """Impute missing values in an array.
 
     Parameters
     ----------
@@ -155,6 +153,7 @@ def impute(
     1. Interpolation fills all internal NaNs.
     2. Consecutive NaN runs longer than ``limit`` have their excess positions
        restored to NaN (forward direction).
+
     """
     val = np.asarray(values).copy()
     nans = np.isnan(val)

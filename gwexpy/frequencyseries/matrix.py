@@ -67,6 +67,7 @@ class FrequencySeriesMatrix(  # type: ignore[misc]
     >>> fsm = FrequencySeriesMatrix(data, df=1, unit='V/Hz')
     >>> fsm
     <SeriesMatrix shape=(2, 2, 100) rows=('row0', 'row1') cols=('col0', 'col1')>
+
     """
 
     series_class = FrequencySeries

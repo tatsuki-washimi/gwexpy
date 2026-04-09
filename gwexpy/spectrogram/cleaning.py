@@ -17,8 +17,7 @@ def threshold_clean(
     threshold: float = 5.0,
     fill: str = "median",
 ) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Remove outlier pixels using MAD-based threshold.
+    """Remove outlier pixels using MAD-based threshold.
 
     For each frequency bin, compute the median and MAD (Median Absolute
     Deviation). Pixels exceeding ``median + threshold * MAD`` are flagged
@@ -39,6 +38,7 @@ def threshold_clean(
         Cleaned data array.
     mask : ndarray (bool)
         True where pixels were flagged as outliers.
+
     """
     cleaned = data.copy()
     med = np.median(data, axis=0)
@@ -86,8 +86,7 @@ def rolling_median_clean(
     data: np.ndarray,
     window_size: int,
 ) -> np.ndarray:
-    """
-    Normalize slow trends using a rolling median along the time axis.
+    """Normalize slow trends using a rolling median along the time axis.
 
     Parameters
     ----------
@@ -100,6 +99,7 @@ def rolling_median_clean(
     -------
     normalized : ndarray
         Data divided by the rolling median trend.
+
     """
     # Apply 1D median filter along time axis for each frequency bin
     trend = median_filter(data, size=(window_size, 1), mode="reflect")
@@ -114,8 +114,7 @@ def line_removal_clean(
     persistence_threshold: float = 0.8,
     amplitude_threshold: float = 3.0,
 ) -> tuple[np.ndarray, list[int]]:
-    """
-    Detect and remove persistent narrowband lines.
+    """Detect and remove persistent narrowband lines.
 
     A frequency bin is flagged as a persistent line if it exceeds
     ``amplitude_threshold * global_median`` for more than
@@ -137,6 +136,7 @@ def line_removal_clean(
         Data with persistent lines replaced by column median.
     line_indices : list of int
         Frequency bin indices that were identified as lines.
+
     """
     cleaned = data.copy()
     global_med = np.median(data)

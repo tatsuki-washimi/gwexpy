@@ -9,8 +9,7 @@ if TYPE_CHECKING:
 
 
 def write_hdf5_dataset(hist: Histogram, f: h5py.Group | h5py.File, path: str | None = "data") -> None:
-    """
-    Write a Histogram to an HDF5 group or file.
+    """Write a Histogram to an HDF5 group or file.
 
     Parameters
     ----------
@@ -20,6 +19,7 @@ def write_hdf5_dataset(hist: Histogram, f: h5py.Group | h5py.File, path: str | N
         The target HDF5 object.
     path : str or None
         The path within the HDF5 file to store the data. If None, write directly to f.
+
     """
     # Create the internal group to store the arrays and attributes
     group = f.require_group(path) if path else f
@@ -45,8 +45,7 @@ def write_hdf5_dataset(hist: Histogram, f: h5py.Group | h5py.File, path: str | N
 
 
 def read_hdf5_dataset(cls: type[Histogram], f: h5py.Group | h5py.File, path: str | None = "data") -> Histogram:
-    """
-    Read a Histogram from an HDF5 group or file.
+    """Read a Histogram from an HDF5 group or file.
 
     Parameters
     ----------
@@ -61,6 +60,7 @@ def read_hdf5_dataset(cls: type[Histogram], f: h5py.Group | h5py.File, path: str
     -------
     Histogram
         The loaded Histogram object.
+
     """
     import h5py
 

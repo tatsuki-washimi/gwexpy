@@ -48,8 +48,7 @@ def _restore_collection(result, original):
 
 
 class Transform:
-    """
-    Minimal transform interface for TimeSeries-like objects.
+    """Minimal transform interface for TimeSeries-like objects.
     """
 
     supports_inverse = False
@@ -75,8 +74,7 @@ class Transform:
 
 
 class Pipeline:
-    """
-    Sequentially apply a list of transforms.
+    """Sequentially apply a list of transforms.
     """
 
     def __init__(self, steps: Sequence[tuple[str, Transform]]):
@@ -86,6 +84,7 @@ class Pipeline:
         ----------
         steps : list of (name, Transform) tuples
             Sequence of transforms to apply.
+
         """
         self.steps: list[tuple[str, Transform]] = []
         for name, step in steps:
@@ -123,6 +122,7 @@ class Pipeline:
             Transformed data.
         strict : bool, optional
             If True, raise error if any step doesn't support inverse.
+
         """
         data = y
         for name, step in reversed(self.steps):
@@ -137,8 +137,7 @@ class Pipeline:
 
 
 class ImputeTransform(Transform):
-    """
-    Impute missing values using existing lower-level helpers.
+    """Impute missing values using existing lower-level helpers.
     """
 
     def __init__(self, method: str = "interpolate", **kwargs):
@@ -163,8 +162,7 @@ class ImputeTransform(Transform):
 
 
 class StandardizeTransform(Transform):
-    """
-    Standardize TimeSeries/Matrix objects with optional robust scaling.
+    """Standardize TimeSeries/Matrix objects with optional robust scaling.
     """
 
     supports_inverse = True
@@ -351,8 +349,7 @@ class StandardizeTransform(Transform):
 
 
 class WhitenTransform(Transform):
-    """
-    Whitening using PCA or ZCA on TimeSeriesMatrix-like data.
+    """Whitening using PCA or ZCA on TimeSeriesMatrix-like data.
     """
 
     supports_inverse = True
@@ -456,8 +453,7 @@ class WhitenTransform(Transform):
 
 
 class PCATransform(Transform):
-    """
-    PCA wrapper using existing decomposition helpers.
+    """PCA wrapper using existing decomposition helpers.
     """
 
     supports_inverse = True
@@ -523,8 +519,7 @@ class PCATransform(Transform):
 
 
 class ICATransform(Transform):
-    """
-    ICA wrapper using existing decomposition helpers.
+    """ICA wrapper using existing decomposition helpers.
     """
 
     supports_inverse = True

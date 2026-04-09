@@ -1,5 +1,4 @@
-"""
-Resampling and time-axis operations for TimeSeries.
+"""Resampling and time-axis operations for TimeSeries.
 
 This module provides resampling functionality as a mixin class:
 - asfreq: Reindex to a new fixed-interval grid
@@ -427,8 +426,7 @@ def _construct_result(
 
 
 class TimeSeriesResamplingMixin(TimeSeriesAttrs):
-    """
-    Mixin class providing resampling methods for TimeSeries.
+    """Mixin class providing resampling methods for TimeSeries.
 
     This mixin is designed to be combined with TimeSeriesCore to create
     the full TimeSeries class.
@@ -451,8 +449,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         max_gap: float | u.Quantity | None = None,
         copy: bool = True,
     ) -> TimeSeriesResamplingMixin:
-        """
-        Reindex the TimeSeries to a new fixed-interval grid associated with the given rule.
+        """Reindex the TimeSeries to a new fixed-interval grid associated with the given rule.
 
         Parameters
         ----------
@@ -479,6 +476,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         -------
         TimeSeries
             Reindexed series.
+
         """
         # 1. Parse rule to target dt (Quantity)
         target_dt = _parse_rule_to_dt(rule)
@@ -555,8 +553,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         ignore_nan: bool | None = None,
         **kwargs: Any,
     ) -> TimeSeriesResamplingMixin:
-        """
-        Resample the TimeSeries.
+        """Resample the TimeSeries.
 
         If 'rate' is a time-string (e.g. '1s') or time Quantity, performs time-bin aggregation.
         Otherwise, performs signal processing resampling (gwpy standard).

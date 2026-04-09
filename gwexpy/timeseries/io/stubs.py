@@ -1,5 +1,4 @@
-"""
-Placeholder readers for unsupported formats (WIN/WIN32, SDB, vendor loggers).
+"""Placeholder readers for unsupported formats (WIN/WIN32, SDB, vendor loggers).
 """
 
 from __future__ import annotations

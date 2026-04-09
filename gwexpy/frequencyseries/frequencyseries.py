@@ -1,5 +1,4 @@
-"""
-gwexpy.frequencyseries
+"""gwexpy.frequencyseries
 ----------------------
 
 Representation of a frequency series.
@@ -130,6 +129,7 @@ class FrequencySeries(
                      epoch=None,
                      name=None,
                      channel=None)>
+
     """
 
     def __new__(cls, *args: Any, **kwargs: Any) -> FrequencySeries:
@@ -157,6 +157,7 @@ class FrequencySeries(
         obj : object or None
             The object from which this instance was created. None if called
             from __new__.
+
         """
         super().__array_finalize__(obj)
         if obj is None:
@@ -175,8 +176,7 @@ class FrequencySeries(
     # --- Phase and Angle ---
 
     def phase(self, unwrap: bool = False) -> FrequencySeries:
-        """
-        Calculate the phase of this FrequencySeries.
+        """Calculate the phase of this FrequencySeries.
 
         Parameters
         ----------
@@ -188,6 +188,7 @@ class FrequencySeries(
         -------
         `FrequencySeries`
             The phase of the series, in radians.
+
         """
         val = np.angle(np.asarray(self.value))
         if unwrap:
@@ -205,8 +206,7 @@ class FrequencySeries(
         )
 
     def angle(self, unwrap: bool = False) -> FrequencySeries:
-        """
-        Calculate the phase angle of this FrequencySeries.
+        """Calculate the phase angle of this FrequencySeries.
 
         Alias for `phase(unwrap=unwrap)`.
 
@@ -220,12 +220,12 @@ class FrequencySeries(
         -------
         `FrequencySeries`
             The phase of the series, in radians.
+
         """
         return self.phase(unwrap=unwrap)
 
     def histogram(self, bins=None, range=None, weights=None, density=False, **kwargs):
-        """
-        Compute a histogram of the values in this FrequencySeries.
+        """Compute a histogram of the values in this FrequencySeries.
 
         Useful for analyzing the distribution of spectral density levels.
 
@@ -246,6 +246,7 @@ class FrequencySeries(
         -------
         Histogram
             A gwexpy.histogram.Histogram object.
+
         """
         from gwexpy.histogram import Histogram
 
@@ -279,8 +280,7 @@ class FrequencySeries(
             )
 
     def degree(self, unwrap: bool = False) -> FrequencySeries:
-        """
-        Calculate the phase of this FrequencySeries in degrees.
+        """Calculate the phase of this FrequencySeries in degrees.
 
         Parameters
         ----------
@@ -291,6 +291,7 @@ class FrequencySeries(
         -------
         `FrequencySeries`
             The phase of the series, in degrees.
+
         """
         p = self.phase(unwrap=unwrap)
         val = np.rad2deg(p.value)
@@ -309,8 +310,7 @@ class FrequencySeries(
     # --- Calculus ---
 
     def differentiate(self, order: int = 1) -> FrequencySeries:
-        """
-        Differentiate the FrequencySeries in the frequency domain.
+        """Differentiate the FrequencySeries in the frequency domain.
 
         Multiplies by (i * 2 * pi * f)^order.
 
@@ -323,6 +323,7 @@ class FrequencySeries(
         -------
         `FrequencySeries`
             The differentiated series.
+
         """
         if order == 0:
             return self.copy()
@@ -360,8 +361,7 @@ class FrequencySeries(
         )
 
     def integrate(self, order: int = 1) -> FrequencySeries:
-        """
-        Integrate the FrequencySeries in the frequency domain.
+        """Integrate the FrequencySeries in the frequency domain.
 
         Divides by (i * 2 * pi * f)^order.
 
@@ -374,6 +374,7 @@ class FrequencySeries(
         -------
         `FrequencySeries`
             The integrated series.
+
         """
         if order == 0:
             return self.copy()
@@ -417,8 +418,7 @@ class FrequencySeries(
     # --- dB / Logarithmic ---
 
     def to_db(self, ref: Any = 1.0, amplitude: bool = True) -> FrequencySeries:
-        """
-        Convert this series to decibels.
+        """Convert this series to decibels.
 
         Parameters
         ----------
@@ -432,6 +432,7 @@ class FrequencySeries(
         -------
         `FrequencySeries`
             The series in dB.
+
         """
         val = self.value
         if isinstance(ref, u.Quantity):
@@ -495,8 +496,7 @@ class FrequencySeries(
         as_dataframe: bool = True,
         frequencies: str = "frequency",
     ) -> Any:
-        """
-        Convert this series to a polars.DataFrame or polars.Series.
+        """Convert this series to a polars.DataFrame or polars.Series.
 
         Parameters
         ----------
@@ -511,6 +511,7 @@ class FrequencySeries(
         Returns
         -------
         polars.DataFrame or polars.Series
+
         """
         require_optional("polars")
         if as_dataframe:
@@ -529,8 +530,7 @@ class FrequencySeries(
         frequencies: str | None = "frequency",
         **kwargs: Any,
     ) -> Any:
-        """
-        Create a FrequencySeries from a polars.DataFrame or polars.Series.
+        """Create a FrequencySeries from a polars.DataFrame or polars.Series.
 
         Parameters
         ----------
@@ -544,6 +544,7 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries
+
         """
         pl = require_optional("polars")
         if isinstance(data, pl.DataFrame):
@@ -557,16 +558,14 @@ class FrequencySeries(
             return from_polars_series(cls, data, **kwargs)
 
     def to_tgraph(self, error: Any | None = None) -> Any:
-        """
-        Convert to ROOT TGraph or TGraphErrors.
+        """Convert to ROOT TGraph or TGraphErrors.
         """
         from gwexpy.interop import to_tgraph
 
         return to_tgraph(self, error=error)
 
     def to_th1d(self, error: Any | None = None) -> Any:
-        """
-        Convert to ROOT TH1D.
+        """Convert to ROOT TH1D.
         """
         from gwexpy.interop import to_th1d
 
@@ -576,8 +575,7 @@ class FrequencySeries(
     def from_root(
         cls: type[FrequencySeries], obj: Any, return_error: bool = False, **kwargs: Any
     ) -> Any:
-        """
-        Create FrequencySeries from ROOT TGraph or TH1.
+        """Create FrequencySeries from ROOT TGraph or TH1.
         """
         from gwexpy.interop import from_root
 
@@ -636,8 +634,7 @@ class FrequencySeries(
         pad_right: int | None = None,
         **kwargs: Any,
     ) -> Any:
-        """
-        Inverse FFT returning a gwexpy TimeSeries, supporting transient round-trip.
+        """Inverse FFT returning a gwexpy TimeSeries, supporting transient round-trip.
 
         Parameters
         ----------
@@ -649,6 +646,7 @@ class FrequencySeries(
             Explicitly specify the length after restoration (takes priority).
         pad_right, pad_left : int, optional
             Specify padding lengths for transient mode to override defaults.
+
         """
         self._check_regular("ifft")
         TimeSeries = ConverterRegistry.get_constructor("TimeSeries")
@@ -728,8 +726,7 @@ class FrequencySeries(
         )
 
     def idct(self, type: int = 2, norm: str = "ortho", *, n: int | None = None) -> Any:
-        """
-        Compute the Inverse Discrete Cosine Transform (IDCT).
+        """Compute the Inverse Discrete Cosine Transform (IDCT).
 
         Reconstructs a time-domain signal from DCT coefficients.
 
@@ -761,6 +758,7 @@ class FrequencySeries(
         >>> import numpy as np
         >>> fs = FrequencySeries(np.ones(10), df=1.0)
         >>> ts = fs.idct(n=10)
+
         """
         self._check_regular("idct")
 
@@ -807,8 +805,7 @@ class FrequencySeries(
         )
 
     def differentiate_time(self) -> Any:
-        """
-        Apply time differentiation in frequency domain.
+        """Apply time differentiation in frequency domain.
 
         Multiplies by (2 * pi * i * f).
         Converting Displacement -> Velocity -> Acceleration.
@@ -816,6 +813,7 @@ class FrequencySeries(
         Returns
         -------
         `FrequencySeries`
+
         """
         f = self.frequencies.to("Hz").value
         omega = 2 * np.pi * f
@@ -840,8 +838,7 @@ class FrequencySeries(
         )
 
     def integrate_time(self) -> Any:
-        """
-        Apply time integration in frequency domain.
+        """Apply time integration in frequency domain.
 
         Divides by (2 * pi * i * f).
         Converting Acceleration -> Velocity -> Displacement.
@@ -849,6 +846,7 @@ class FrequencySeries(
         Returns
         -------
         `FrequencySeries`
+
         """
         f = self.frequencies.to("Hz").value
         omega = 2 * np.pi * f
@@ -882,8 +880,7 @@ class FrequencySeries(
     # smooth() and find_peaks() are now inherited from SignalAnalysisMixin
 
     def quadrature_sum(self, other: Any) -> Any:
-        """
-        Compute sqrt(self^2 + other^2) assuming checking independence.
+        """Compute sqrt(self^2 + other^2) assuming checking independence.
 
         Operates on magnitude. Phase information is lost (returns real).
 
@@ -896,6 +893,7 @@ class FrequencySeries(
         -------
         `FrequencySeries`
             Magnitude combined series.
+
         """
         mag_self = np.abs(self.value)
         mag_other = np.abs(other.value)
@@ -913,8 +911,7 @@ class FrequencySeries(
         )
 
     def group_delay(self) -> Any:
-        """
-        Calculate the group delay of the series.
+        """Calculate the group delay of the series.
 
         Group delay is defined as -d(phase)/d(omega), where omega = 2 * pi * f.
         It represents the time delay of the envelope of a signal at a given frequency.
@@ -923,6 +920,7 @@ class FrequencySeries(
         -------
         `FrequencySeries`
             A new FrequencySeries representing the group delay in seconds.
+
         """
         # Gradient of unwrapped phase w.r.t frequency
         orig_phase = self.phase(unwrap=True).value
@@ -945,8 +943,7 @@ class FrequencySeries(
         )
 
     def rebin(self, width: float | u.Quantity) -> FrequencySeries:
-        """
-        Rebin the FrequencySeries to a new resolution.
+        """Rebin the FrequencySeries to a new resolution.
 
         Parameters
         ----------
@@ -957,6 +954,7 @@ class FrequencySeries(
         -------
         `FrequencySeries`
             The rebinned series.
+
         """
         if isinstance(width, u.Quantity):
             width = width.to("Hz").value
@@ -1041,6 +1039,7 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries or FrequencySeriesMatrix
+
         """
         from gwexpy.interop import from_finesse_frequency_response
 
@@ -1073,6 +1072,7 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries or FrequencySeriesDict
+
         """
         from gwexpy.interop import from_finesse_noise
 
@@ -1106,6 +1106,7 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries or FrequencySeriesDict
+
         """
         from gwexpy.interop import from_pyspice_ac
 
@@ -1134,6 +1135,7 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries or FrequencySeriesDict
+
         """
         from gwexpy.interop import from_pyspice_noise
 
@@ -1162,6 +1164,7 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries or FrequencySeriesDict
+
         """
         from gwexpy.interop import from_pyspice_distortion
 
@@ -1197,6 +1200,7 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries or FrequencySeriesMatrix
+
         """
         from gwexpy.interop import from_skrf_network
 
@@ -1228,6 +1232,7 @@ class FrequencySeries(
         Returns
         -------
         skrf.Network
+
         """
         from gwexpy.interop import to_skrf_network
 
@@ -1244,8 +1249,7 @@ class FrequencySeries(
         requires_grad: bool = False,
         copy: bool = False,
     ) -> Any:
-        """
-        Convert to torch.Tensor.
+        """Convert to torch.Tensor.
 
         Parameters
         ----------
@@ -1261,6 +1265,7 @@ class FrequencySeries(
         Returns
         -------
         `torch.Tensor`
+
         """
         from gwexpy.interop.torch_ import to_torch
 
@@ -1275,8 +1280,7 @@ class FrequencySeries(
         frequencies: Any,
         unit: Any | None = None,
     ) -> Any:
-        """
-        Create FrequencySeries from torch.Tensor.
+        """Create FrequencySeries from torch.Tensor.
 
         Parameters
         ----------
@@ -1290,6 +1294,7 @@ class FrequencySeries(
         Returns
         -------
         `FrequencySeries`
+
         """
         # Wrapper to adapt signature (from_torch calls cls(data, t0, dt) for TimeSeries)
         # We need a custom implementation for FrequencySeries or adapt from_torch logic.
@@ -1300,12 +1305,12 @@ class FrequencySeries(
         return cls(data, frequencies=frequencies, unit=unit)
 
     def to_tensorflow(self, dtype: Any = None) -> Any:
-        """
-        Convert to tensorflow.Tensor.
+        """Convert to tensorflow.Tensor.
 
         Returns
         -------
         `tensorflow.Tensor`
+
         """
         from gwexpy.interop.tensorflow_ import to_tf
 
@@ -1323,12 +1328,12 @@ class FrequencySeries(
         return cls(data, frequencies=frequencies, unit=unit)
 
     def to_jax(self, dtype: Any = None) -> Any:
-        """
-        Convert to JAX array.
+        """Convert to JAX array.
 
         Returns
         -------
         `jax.Array`
+
         """
         from gwexpy.interop.jax_ import to_jax
 
@@ -1348,12 +1353,12 @@ class FrequencySeries(
         return cls(data, frequencies=frequencies, unit=unit)
 
     def to_cupy(self, dtype: Any = None) -> Any:
-        """
-        Convert to CuPy array.
+        """Convert to CuPy array.
 
         Returns
         -------
         `cupy.ndarray`
+
         """
         from gwexpy.interop.cupy_ import to_cupy
 
@@ -1374,8 +1379,7 @@ class FrequencySeries(
     # --- Domain Specific Interop ---
 
     def to_quantities(self, units: str | None = None) -> Any:
-        """
-        Convert to quantities.Quantity (Elephant/Neo compatible).
+        """Convert to quantities.Quantity (Elephant/Neo compatible).
 
         Parameters
         ----------
@@ -1385,6 +1389,7 @@ class FrequencySeries(
         Returns
         -------
         quantities.Quantity
+
         """
         from gwexpy.interop import to_quantity
 
@@ -1392,8 +1397,7 @@ class FrequencySeries(
 
     @classmethod
     def from_quantities(cls: type[FrequencySeries], q: Any, frequencies: Any) -> Any:
-        """
-        Create FrequencySeries from quantities.Quantity.
+        """Create FrequencySeries from quantities.Quantity.
 
         Parameters
         ----------
@@ -1405,14 +1409,14 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries
+
         """
         from gwexpy.interop import from_quantity
 
         return from_quantity(cls, q, frequencies=frequencies)
 
     def to_mne(self, info: Any | None = None) -> Any:
-        """
-        Convert to MNE-Python object.
+        """Convert to MNE-Python object.
 
         Parameters
         ----------
@@ -1422,6 +1426,7 @@ class FrequencySeries(
         Returns
         -------
         mne.time_frequency.SpectrumArray
+
         """
         from gwexpy.interop import to_mne
 
@@ -1429,8 +1434,7 @@ class FrequencySeries(
 
     @classmethod
     def from_mne(cls: type[FrequencySeries], spectrum: Any, **kwargs: Any) -> Any:
-        """
-        Create FrequencySeries from MNE-Python Spectrum object.
+        """Create FrequencySeries from MNE-Python Spectrum object.
 
         Parameters
         ----------
@@ -1442,18 +1446,19 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries or FrequencySeriesDict
+
         """
         from gwexpy.interop import from_mne
 
         return from_mne(cls, spectrum, **kwargs)
 
     def to_obspy(self, **kwargs: Any) -> Any:
-        """
-        Convert to Obspy Trace.
+        """Convert to Obspy Trace.
 
         Returns
         -------
         obspy.Trace
+
         """
         from gwexpy.interop import to_obspy
 
@@ -1461,8 +1466,7 @@ class FrequencySeries(
 
     @classmethod
     def from_obspy(cls, trace: Any, **kwargs: Any) -> Any:
-        """
-        Create FrequencySeries from Obspy Trace.
+        """Create FrequencySeries from Obspy Trace.
 
         Parameters
         ----------
@@ -1474,6 +1478,7 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries
+
         """
         from gwexpy.interop import from_obspy
 
@@ -1482,8 +1487,7 @@ class FrequencySeries(
     def to_simpeg(
         self, location=None, rx_type="PointElectricField", orientation="x", **kwargs
     ) -> Any:
-        """
-        Convert to SimPEG Data object.
+        """Convert to SimPEG Data object.
 
         Parameters
         ----------
@@ -1497,6 +1501,7 @@ class FrequencySeries(
         Returns
         -------
         simpeg.data.Data
+
         """
         from gwexpy.interop import to_simpeg
 
@@ -1506,8 +1511,7 @@ class FrequencySeries(
 
     @classmethod
     def from_simpeg(cls, data_obj: Any, **kwargs: Any) -> Any:
-        """
-        Create FrequencySeries from SimPEG Data object.
+        """Create FrequencySeries from SimPEG Data object.
 
         Parameters
         ----------
@@ -1517,14 +1521,14 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries
+
         """
         from gwexpy.interop import from_simpeg
 
         return from_simpeg(cls, data_obj, **kwargs)
 
     def to_specutils(self, **kwargs):
-        """
-        Convert to specutils.Spectrum1D.
+        """Convert to specutils.Spectrum1D.
 
         Parameters
         ----------
@@ -1534,6 +1538,7 @@ class FrequencySeries(
         Returns
         -------
         specutils.Spectrum1D
+
         """
         from gwexpy.interop import to_specutils
 
@@ -1541,8 +1546,7 @@ class FrequencySeries(
 
     @classmethod
     def from_specutils(cls, spectrum, **kwargs):
-        """
-        Create FrequencySeries from specutils.Spectrum1D.
+        """Create FrequencySeries from specutils.Spectrum1D.
 
         Parameters
         ----------
@@ -1552,14 +1556,14 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries
+
         """
         from gwexpy.interop import from_specutils
 
         return from_specutils(cls, spectrum, **kwargs)
 
     def to_pyspeckit(self, **kwargs):
-        """
-        Convert to pyspeckit.Spectrum.
+        """Convert to pyspeckit.Spectrum.
 
         Parameters
         ----------
@@ -1569,6 +1573,7 @@ class FrequencySeries(
         Returns
         -------
         pyspeckit.Spectrum
+
         """
         from gwexpy.interop import to_pyspeckit
 
@@ -1576,8 +1581,7 @@ class FrequencySeries(
 
     @classmethod
     def from_pyspeckit(cls, spectrum, **kwargs):
-        """
-        Create FrequencySeries from pyspeckit.Spectrum.
+        """Create FrequencySeries from pyspeckit.Spectrum.
 
         Parameters
         ----------
@@ -1587,6 +1591,7 @@ class FrequencySeries(
         Returns
         -------
         FrequencySeries
+
         """
         from gwexpy.interop import from_pyspeckit
 

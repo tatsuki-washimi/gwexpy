@@ -4,8 +4,7 @@ from ._optional import require_optional
 
 
 def to_tf(ts, dtype=None):
-    """
-    Convert TimeSeries to tensorflow.Tensor.
+    """Convert TimeSeries to tensorflow.Tensor.
     """
     tf = require_optional("tensorflow")
     from .base import to_plain_array
@@ -14,8 +13,7 @@ def to_tf(ts, dtype=None):
 
 
 def from_tf(cls, tensor, t0, dt, unit=None):
-    """
-    Create TimeSeries from tensorflow.Tensor.
+    """Create TimeSeries from tensorflow.Tensor.
     """
     # Eager execution assumed
     data = tensor.numpy()

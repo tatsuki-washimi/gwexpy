@@ -31,8 +31,7 @@ RELATIVE_JITTER = 1e-4
 
 
 class ParameterValue(float):
-    """
-    Representation of a fit parameter value, supporting .value and .error attributes.
+    """Representation of a fit parameter value, supporting .value and .error attributes.
     Inherits from float for backward compatibility with numeric operations.
     """
 
@@ -45,8 +44,7 @@ class ParameterValue(float):
 
 
 class Fitter:
-    """
-    High-level fitter class that wraps the fit_series function.
+    """High-level fitter class that wraps the fit_series function.
     """
 
     def __init__(self, model: Any):
@@ -67,8 +65,7 @@ except ImportError:
 
 
 class ComplexLeastSquares:
-    """
-    Least Squares cost function for complex-valued data.
+    """Least Squares cost function for complex-valued data.
     Minimizes the sum of squared residuals for both Real and Imaginary parts.
     """
 
@@ -106,8 +103,7 @@ class ComplexLeastSquares:
 
 
 class RealLeastSquares:
-    """
-    Least Squares cost function for real-valued data.
+    """Least Squares cost function for real-valued data.
 
     This is a small, dependency-light replacement for `iminuit.cost.LeastSquares`
     to avoid optional JIT/caching side effects in some environments.
@@ -181,8 +177,7 @@ class FitResult:
 
     @property
     def model(self):
-        """
-        Fitted model function.
+        """Fitted model function.
         Can be called as model(x) to use best-fit parameters,
         or as ``model(x, **params)`` to use specific parameters.
         Returns a Quantity with units if the original data had units.
@@ -259,8 +254,7 @@ class FitResult:
         return self.minuit._repr_html_()
 
     def plot(self, ax=None, num_points=1000, **kwargs):
-        """
-        Plot data and best-fit curve.
+        """Plot data and best-fit curve.
         For complex data, delegates to bode_plot().
         """
         is_complex = np.iscomplexobj(self.y)
@@ -398,12 +392,12 @@ class FitResult:
         return ax.figure
 
     def bode_plot(self, ax=None, num_points=1000, **kwargs):
-        """
-        Create a Bode plot (Magnitude and Phase) for the fit result.
+        """Create a Bode plot (Magnitude and Phase) for the fit result.
 
         See Also
         --------
         :doc:`Tutorial: Transfer Function <../../../user_guide/tutorials/case_transfer_function>`
+
         """
         show_errorbar = kwargs.pop("show_errorbar", None)
         if show_errorbar is None:
@@ -574,8 +568,7 @@ class FitResult:
         return (ax_mag, ax_phase)
 
     def run_mcmc(self, n_walkers=32, n_steps=3000, burn_in=500, progress=True):
-        """
-        Run MCMC using emcee starting from the best-fit parameters.
+        """Run MCMC using emcee starting from the best-fit parameters.
 
         This method supports both standard least squares and GLS (Generalized
         Least Squares) error structures. If `cov_inv` is available, the log
@@ -637,6 +630,7 @@ class FitResult:
         .. [1] Rasmussen & Williams, Gaussian Processes for Machine Learning
                (2006), Ch. 2.2
         .. [2] Gelman et al., Bayesian Data Analysis (3rd ed., 2013), §14.2
+
         """
         if emcee is None:
             raise ImportError(
@@ -766,8 +760,7 @@ class FitResult:
 
     @property
     def parameter_intervals(self):
-        """
-        Get parameter confidence intervals from MCMC samples.
+        """Get parameter confidence intervals from MCMC samples.
 
         Returns 16th, 50th, and 84th percentiles for each parameter,
         corresponding to median and ±1σ bounds.
@@ -781,6 +774,7 @@ class FitResult:
         ------
         RuntimeError
             If run_mcmc() has not been called.
+
         """
         if self.samples is None:
             raise RuntimeError("Run .run_mcmc() first.")
@@ -796,21 +790,20 @@ class FitResult:
 
     @property
     def mcmc_chain(self):
-        """
-        Get the full MCMC chain (not flattened, not discarded).
+        """Get the full MCMC chain (not flattened, not discarded).
 
         Returns
         -------
         ndarray
             Shape (n_steps, n_walkers, n_params). Returns None if MCMC not run.
+
         """
         if self.sampler is None:
             return None
         return self.sampler.get_chain()
 
     def plot_corner(self, show_titles=True, quantiles=None, **kwargs):
-        """
-        Plot corner plot of MCMC samples.
+        """Plot corner plot of MCMC samples.
 
         Parameters
         ----------
@@ -825,6 +818,7 @@ class FitResult:
         -------
         figure : matplotlib.figure.Figure
             The corner plot figure.
+
         """
         if corner is None:
             raise ImportError("Please install 'corner' to use plot_corner.")
@@ -865,8 +859,7 @@ class FitResult:
     def plot_fit_band(
         self, ax=None, num_points=200, n_samples=100, alpha=0.3, **kwargs
     ):
-        """
-        Plot the fit with uncertainty band from MCMC samples.
+        """Plot the fit with uncertainty band from MCMC samples.
 
         Parameters
         ----------
@@ -885,6 +878,7 @@ class FitResult:
         -------
         ax : matplotlib.axes.Axes
             The axes with the plot.
+
         """
         if self.samples is None:
             raise RuntimeError("Run .run_mcmc() first.")
@@ -977,8 +971,7 @@ def fit_series(
     fixed=None,
     **kwargs,
 ):
-    """
-    Fit a Series object using iminuit.
+    """Fit a Series object using iminuit.
     Supports real and complex valued Series (simultaneous Re/Im fit).
 
     Parameters
@@ -1014,6 +1007,7 @@ def fit_series(
     -------
     FitResult
         Object containing fit results, parameters, and plotting methods.
+
     """
     # 0. Resolve model
     if isinstance(model, str):
