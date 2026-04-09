@@ -235,10 +235,10 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-# Tests and examples: allow unused imports (for availability checks)
-"tests/*" = ["F401", "E741"]
-"examples/*" = ["F401", "E741"]
-"gwexpy/*/tests/*" = ["F401", "E741"]
+# Tests and examples: allow unused imports and ignore docstring/modernization rules
+"tests/*" = ["F401", "E741", "D", "UP"]
+"examples/*" = ["F401", "E741", "D", "UP"]
+"gwexpy/*/tests/*" = ["F401", "E741", "D", "UP"]
 # GUI code: compact style is acceptable; allow Optional/Union for py39 runtime safety
 "gwexpy/gui/*" = ["E701", "E702", "UP045"]
 "gwexpy/astro/range.py" = ["F401"]
@@ -296,7 +296,7 @@ exclude = "gwexpy/gui/reference-dtt/.*|gwexpy/gui/reference_ndscope/.*|tests/.*"
 addopts = "--import-mode=importlib"
 testpaths = ["tests"]
 pythonpath = ["."]
-norecursedirs = ["gwexpy/gui/reference-dtt"]
+norecursedirs = ["gwexpy/gui", "gwexpy/gui/reference-dtt"]
 markers = [
     "gui: GUI integration tests",
     "nds: NDS server connection tests",

@@ -1,3 +1,4 @@
+import pytest; pytest.importorskip("iminuit")
 """
 Comprehensive tests for gwexpy.fitting.core.
 

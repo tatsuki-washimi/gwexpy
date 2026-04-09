@@ -1,5 +1,4 @@
-"""gwexpy: GWpy Expansions for Experiments
-========================================
+"""gwexpy: GWpy Expansions for Experiments.
 
 This package extends GWpy with additional functionality for
 gravitational wave and time-series data analysis.
@@ -10,9 +9,9 @@ from __future__ import annotations
 import warnings
 from typing import TYPE_CHECKING, Any
 
-from . import _warnings  # noqa: F401 – registers package-level warning filters
-
 from astropy.utils.exceptions import AstropyWarning
+
+from . import _warnings  # noqa: F401 – registers package-level warning filters
 
 # Keep docs/tutorial output readable by suppressing known noisy warnings.
 # This must run before importing GWpy/LAL (which can emit warnings at import time).

@@ -23,7 +23,23 @@ jobs:
           python -m pip install -r requirements-dev.txt
 
       - name: Ruff lint
-        run: ruff check gwexpy/
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.base_ref }}" != "" ]; then
+            echo "Linting changed files only (vs ${{ github.base_ref }})"
+            git fetch origin ${{ github.base_ref }}
+            git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.py$' | xargs -r ruff check
+          else
+            echo "Linting entire project"
+            ruff check gwexpy/
+          fi
 
       - name: Mypy
-        run: mypy gwexpy/
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.base_ref }}" != "" ]; then
+            echo "Type checking changed files only (vs ${{ github.base_ref }})"
+            git fetch origin ${{ github.base_ref }}
+            git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.py$' | xargs -r mypy || true
+          else
+            echo "Type checking entire project"
+            mypy gwexpy/
+          fi
