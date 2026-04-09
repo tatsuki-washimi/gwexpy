@@ -7,7 +7,6 @@ from gwpy.table.io.cwb import (
     EventTable,
     Table,
     core,
-    decorate_registered_reader,
     registry,
     table_from_cwb,
 )
@@ -19,7 +18,6 @@ __all__ = [
     "EventTable",
     "Table",
     "core",
-    "decorate_registered_reader",
     "registry",
     "table_from_cwb",
 ]
