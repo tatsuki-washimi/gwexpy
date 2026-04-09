@@ -630,8 +630,6 @@ tsd.write("output.zarr", format="zarr")
 
 ---
 
----
-
 ## 開発者向け情報 (Developer Guide)
 
 本セクションでは、開発者や内部実装に関心のあるユーザー向けの情報をまとめています。
