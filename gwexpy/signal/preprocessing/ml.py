@@ -319,12 +319,13 @@ class MLPreprocessor:
             return X_proc, y_proc
 
         return X_proc
+    def _get_sample_rate_hz(self, data: Any = None) -> float:
+        """Extract sample rate in Hz from input data or self."""
+        if data is not None and hasattr(data, "sample_rate"):
+            return float(data.sample_rate.to("Hz").value)
+        return self._to_float_rate(self.sample_rate)
 
     # Helper methods (private)
-
-    def _get_sample_rate_hz(self) -> float:
-        """Get the sample rate in Hz as a float."""
-        return self._to_float_rate(self.sample_rate)
 
     def _to_float_rate(self, sample_rate: Any) -> float:
         """Convert sample_rate to a float in Hz."""
