@@ -12,6 +12,8 @@ __all__ = ["AxisApiMixin"]
 
 
 class AxisApiMixin(ABC):
+    """Mixin that exposes axis-aware selection and permutation helpers."""
+
     @property
     @abstractmethod
     def axes(self) -> tuple[AxisDescriptor, ...]:
@@ -21,6 +23,7 @@ class AxisApiMixin(ABC):
         -------
         tuple of AxisDescriptor
             Each descriptor contains the axis name and index values.
+
         """
         pass
 
@@ -32,6 +35,7 @@ class AxisApiMixin(ABC):
         -------
         tuple of str
             The name of each axis in order.
+
         """
         return tuple(ax.name for ax in self.axes)
 
@@ -54,6 +58,7 @@ class AxisApiMixin(ABC):
             If axis name not found.
         TypeError
             If key is not int or str.
+
         """
         if isinstance(key, int):
             return self.axes[key]
@@ -95,6 +100,7 @@ class AxisApiMixin(ABC):
         Returns
         -------
         self or copy
+
         """
         if not inplace:
             new_obj = self.copy()
@@ -136,6 +142,7 @@ class AxisApiMixin(ABC):
         -------
         subset
             Sliced array.
+
         """
         if indexers is None:
             indexers = {}
@@ -166,6 +173,7 @@ class AxisApiMixin(ABC):
         -------
         subset
             Sliced array at nearest coordinate values.
+
         """
         if indexers is None:
             indexers = {}
@@ -185,6 +193,7 @@ class AxisApiMixin(ABC):
         return self.isel(isel_indexers)
 
     def swapaxes(self: AxisApiHost, axis1: int | str, axis2: int | str) -> Any:
+        """Swap two axes by index or name."""
         idx1 = self._get_axis_index(axis1)
         idx2 = self._get_axis_index(axis2)
         if idx1 == idx2:
@@ -211,6 +220,7 @@ class AxisApiMixin(ABC):
 
     @property
     def T(self):
+        """Return the transposed view using reversed axis order."""
         return self.transpose()
 
     @abstractmethod
@@ -222,8 +232,9 @@ class AxisApiMixin(ABC):
         pass
 
     def _transpose_int(self, axes: tuple[int, ...]):
-        """Default transpose implementation using mixin hooks if subclass handles simple swaps?
-        Or delegate to super().transpose then fix metadata.
+        """Apply transpose through the base implementation and restore axis names.
+
+        Subclasses can override this if they need a custom transpose path.
         """
         # Since we are mixin, we expect 'super()' to be the numpy array usually.
         # But calling super().transpose() might call generic object implementation?

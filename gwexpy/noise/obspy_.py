@@ -117,6 +117,7 @@ def from_obspy(
     Traceback (most recent call last):
         ...
     ValueError: quantity='strain' is not supported for seismic noise models...
+
     """
     try:
         from obspy.signal import spectral_estimation
@@ -219,6 +220,7 @@ def _convert_seismic_quantity(
     Notes
     -----
     At f=0, the result is NaN to avoid infinity from division by zero.
+
     """
     f = fs.frequencies.to("Hz").value
     omega = 2 * np.pi * f

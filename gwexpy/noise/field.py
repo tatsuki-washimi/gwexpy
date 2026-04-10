@@ -85,6 +85,7 @@ def gaussian(
     Returns
     -------
     ScalarField
+
     """
     from ..fields.scalar import ScalarField
 
@@ -138,6 +139,7 @@ def plane_wave(
         CONVENTION: k_vector input is in standard wavenumbers (1/length), NOT angular.
         So phase = 2*pi * (f*t - k*r).
     ...
+
     """
     from ..fields.scalar import ScalarField
 

@@ -676,7 +676,7 @@ def _impute_1d(
     gap_threshold: float | None,
     limit: int | None = None,
 ) -> NumericArray:
-    """Internal 1D imputation core."""
+    """Run the internal 1D imputation core."""
     nans_1d = np.isnan(val_1d)
     if not np.any(nans_1d):
         return val_1d

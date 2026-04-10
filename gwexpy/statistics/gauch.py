@@ -12,8 +12,7 @@ if TYPE_CHECKING:
 
 
 class GauChResult:
-    """
-    Result of the GauCh test.
+    """Result of the GauCh test.
     """
 
     def __init__(
@@ -40,8 +39,7 @@ def compute_gauch(
     overlap: float | None = None,
     n_monte_carlo: int = 1000,
 ) -> GauChResult:
-    """
-    Compute GauCh (Modified KS test) for the given TimeSeries using a sliding window.
+    """Compute GauCh (Modified KS test) for the given TimeSeries using a sliding window.
 
     Parameters
     ----------
@@ -60,6 +58,7 @@ def compute_gauch(
     Returns
     -------
     GauChResult
+
     """
     if stride is None:
         if overlap is None:

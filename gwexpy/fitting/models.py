@@ -18,12 +18,12 @@ class Model:
     """Base class for models to support unit propagation and iminuit interoperability."""
 
     def __call__(self, x, *args, **kwargs):
+        """Evaluate the model for the supplied independent variable and parameters."""
         raise NotImplementedError
 
 
 class Polynomial(Model):
-    """Polynomial model: f(x) = c0 + c1*x + ... + cn*x^n
-    """
+    """Polynomial model: f(x) = c0 + c1*x + ... + cn*x^n."""
 
     def __init__(self, degree: int):
         self.degree = degree
@@ -36,6 +36,7 @@ class Polynomial(Model):
         self.__signature__ = signature(lambda: None).replace(parameters=params)
 
     def __call__(self, x: Any, *args: Any, **kwargs: Any) -> Any:
+        """Evaluate the polynomial using positional or keyword coefficients."""
         # Handle both positional and keyword arguments from iminuit
         if kwargs:
             p_vals = [kwargs[name] for name in self.param_names]
@@ -50,6 +51,7 @@ class Polynomial(Model):
 
 def gaussian(x, A, mu, sigma):
     """Gaussian distribution.
+
     f(x) = A * exp(-0.5 * ((x - mu) / sigma)^2)
     """
     return A * np.exp(-0.5 * ((x - mu) / sigma) ** 2)
@@ -57,6 +59,7 @@ def gaussian(x, A, mu, sigma):
 
 def exponential(x, A, tau):
     """Exponential decay.
+
     f(x) = A * exp(-x / tau)
     """
     return A * np.exp(-x / tau)
@@ -64,6 +67,7 @@ def exponential(x, A, tau):
 
 def power_law(x, A, alpha):
     """Power law.
+
     f(x) = A * x^alpha
     """
     return A * x**alpha
@@ -71,6 +75,7 @@ def power_law(x, A, alpha):
 
 def damped_oscillation(x, A, tau, f, phi=0):
     """Damped oscillation.
+
     f(x) = A * exp(-x / tau) * sin(2 * pi * f * x + phi)
     """
     return A * np.exp(-x / tau) * np.sin(2 * np.pi * f * x + phi)
@@ -78,6 +83,7 @@ def damped_oscillation(x, A, tau, f, phi=0):
 
 def landau(x, A, mu, sigma):
     """Landau distribution approximation (Moyal distribution).
+
     f(x) = A * exp(-0.5 * (lambda + exp(-lambda))), where lambda = (x - mu) / sigma
 
     Note:
@@ -178,6 +184,7 @@ def voigt(x, A, x0, sigma, gamma):
 
 def make_pol_func(n):
     """Create a polynomial function of degree n with signature (x, p0, p1, ..., pn).
+
     f(x) = p0 + p1*x + ... + pn*x^n
     """
     param_names = [f"p{i}" for i in range(n + 1)]
@@ -230,8 +237,7 @@ for i in range(10):
 
 
 def get_model(name: str | Any) -> Any:
-    """Retrieve a model function or object by name (case-insensitive).
-    """
+    """Retrieve a model function or object by name, case-insensitively."""
     if not isinstance(name, str):
         if callable(name):
             return name

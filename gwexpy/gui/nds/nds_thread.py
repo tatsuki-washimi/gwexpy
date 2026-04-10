@@ -26,6 +26,8 @@ _QThread: Any = getattr(QtCore, "QThread", object)
 
 
 class NDSThread(_QThread):
+    """Stream live channel data from an NDS server."""
+
     # Signal to emit received data: (data_dict, trend_type, is_online)
     dataReceived = QtCore.Signal(object, str, bool)
     finished = QtCore.Signal()
@@ -39,6 +41,7 @@ class NDSThread(_QThread):
         self.conn = None
 
     def run(self):
+        """Open the NDS connection and emit incoming buffers."""
         if nds2 is None:
             logger.error("NDSThread Error: %s", _nds2_missing_message())
             return
@@ -79,6 +82,7 @@ class NDSThread(_QThread):
             self.finished.emit()
 
     def stop(self):
+        """Stop iteration and close the active NDS connection."""
         self.running = False
         # nds2.iterate is blocking. Closing the connection from another thread
         # is the standard way to unblock it in nds2-client.
@@ -95,6 +99,8 @@ class NDSThread(_QThread):
 
 
 class ChannelListWorker(_QThread):
+    """Fetch channel metadata from an NDS server in the background."""
+
     finished = QtCore.Signal(list, str)  # results (list of tuples), error
 
     def __init__(self, server, port, pattern="*"):
@@ -104,6 +110,7 @@ class ChannelListWorker(_QThread):
         self.pattern = pattern
 
     def run(self):
+        """Query available channels and emit the sorted result list."""
         if nds2 is None:
             self.finished.emit([], _nds2_missing_message())
             return

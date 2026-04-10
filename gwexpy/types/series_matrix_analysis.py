@@ -29,26 +29,26 @@ class SeriesMatrixAnalysisMixin:
         shape: tuple[int, ...]
 
         @property
-        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...  # noqa: D102
 
         @xindex.setter
-        def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
+        def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...  # noqa: D102
 
         @property
-        def xunit(self) -> u.Unit | None: ...
+        def xunit(self) -> u.Unit | None: ...  # noqa: D102
 
         @property
         def _x_axis_index(self) -> int: ...
 
-        def row_index(self, key: Any) -> int: ...
-        def col_index(self, key: Any) -> int: ...
-        def is_contiguous(self, other: Any, tol: float = ...) -> int: ...
+        def row_index(self, key: Any) -> int: ...  # noqa: D102
+        def col_index(self, key: Any) -> int: ...  # noqa: D102
+        def is_contiguous(self, other: Any, tol: float = ...) -> int: ...  # noqa: D102
         def _get_meta_for_constructor(
             self, data: np.ndarray, xindex: Any
         ) -> dict[str, Any]: ...
 
     def _get_axis_slice(self, axis, sl):
-        """Helper to create a slice tuple for a specific axis."""
+        """Create a slice tuple for a specific axis."""
         s = [slice(None)] * self.ndim
         s[axis] = sl
         return tuple(s)
@@ -334,7 +334,6 @@ class SeriesMatrixAnalysisMixin:
 
     def pad(self, pad_width, **kwargs):
         """Pad the matrix along the sample axis."""
-
         axis = self._x_axis_norm
 
         if isinstance(pad_width, int):

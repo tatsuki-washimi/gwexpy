@@ -39,6 +39,15 @@ def _freq_values(series: Any) -> np.ndarray:
     return np.asarray(getattr(series.xindex, "value", series.xindex), dtype=float)
 
 
+def _freq_grids_match(lhs: Any, rhs: Any, *, rtol: float = 1e-10, atol: float = 1e-12) -> bool:
+    """Return True when two frequency grids match within numerical tolerance."""
+    lhs_freqs = _freq_values(lhs)
+    rhs_freqs = _freq_values(rhs)
+    return lhs_freqs.shape == rhs_freqs.shape and np.allclose(
+        lhs_freqs, rhs_freqs, rtol=rtol, atol=atol
+    )
+
+
 def _estimate_response_row_bytes(
     witness: TimeSeries,
     target: TimeSeries,
@@ -52,6 +61,24 @@ def _estimate_response_row_bytes(
     return int(bytes_est * 1.5)
 
 
+def _stabilize_cropped_series(
+    series: TimeSeries,
+    *,
+    sample_rate: Any,
+    start: Any,
+) -> TimeSeries:
+    """Rebuild a cropped series with an exact sample rate and start time."""
+    return TimeSeries(
+        np.asarray(series.value),
+        sample_rate=sample_rate,
+        t0=start,
+        unit=series.unit,
+        name=series.name,
+        channel=series.channel,
+        copy=False,
+    )
+
+
 def _compute_response_row(
     witness: TimeSeries,
     target: TimeSeries,
@@ -63,8 +90,16 @@ def _compute_response_row(
     master_asd_wit_bkg: Any = None,
     master_asd_tgt_bkg: Any = None,
 ) -> dict[str, Any]:
-    wit_inj = witness.crop(segment[0], segment[1])
-    tgt_inj = target.crop(segment[0], segment[1])
+    wit_inj = _stabilize_cropped_series(
+        witness.crop(segment[0], segment[1]),
+        sample_rate=witness.sample_rate,
+        start=segment[0],
+    )
+    tgt_inj = _stabilize_cropped_series(
+        target.crop(segment[0], segment[1]),
+        sample_rate=target.sample_rate,
+        start=segment[0],
+    )
     wit_asd_inj = wit_inj.asd(fftlength=fftlength, overlap=overlap, **kwargs)
     tgt_asd_inj = tgt_inj.asd(fftlength=fftlength, overlap=overlap, **kwargs)
 
@@ -77,7 +112,12 @@ def _compute_response_row(
         if (t_b_e - t_b_s) < fftlength:
             t_b_s = max(witness.span[0], t_b_e - fftlength)
             t_b_e = min(witness.span[1], t_b_s + fftlength)
-        wit_asd_bkg = witness.crop(t_b_s, t_b_e).asd(
+        wit_bkg = _stabilize_cropped_series(
+            witness.crop(t_b_s, t_b_e),
+            sample_rate=witness.sample_rate,
+            start=t_b_s,
+        )
+        wit_asd_bkg = wit_bkg.asd(
             fftlength=fftlength, overlap=overlap, **kwargs
         )
 
@@ -90,7 +130,12 @@ def _compute_response_row(
         if (t_b_e - t_b_s) < fftlength:
             t_b_s = max(target.span[0], t_b_e - fftlength)
             t_b_e = min(target.span[1], t_b_s + fftlength)
-        tgt_asd_bkg = target.crop(t_b_s, t_b_e).asd(
+        tgt_bkg = _stabilize_cropped_series(
+            target.crop(t_b_s, t_b_e),
+            sample_rate=target.sample_rate,
+            start=t_b_s,
+        )
+        tgt_asd_bkg = tgt_bkg.asd(
             fftlength=fftlength, overlap=overlap, **kwargs
         )
 
@@ -774,7 +819,7 @@ class ResponseFunctionAnalysis:
             base_freqs = _freq_values(row_series[0])
             compatible_within_row = all(
                 len(series.value) == len(row_series[0].value)
-                and np.array_equal(_freq_values(series), base_freqs)
+                and _freq_grids_match(series, row_series[0])
                 for series in row_series[1:]
             )
             if not compatible_within_row:
@@ -787,7 +832,7 @@ class ResponseFunctionAnalysis:
 
             if ref_freqs is None:
                 ref_freqs = base_freqs
-            elif not np.array_equal(base_freqs, ref_freqs):
+            elif not np.allclose(base_freqs, ref_freqs, rtol=1e-10, atol=1e-12):
                 warnings.warn(
                     f"Skipping response row {row_index} due to incompatible ASD frequency grids.",
                     UserWarning,

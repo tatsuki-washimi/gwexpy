@@ -113,6 +113,7 @@ suppress_warnings = [
     "toc.not_readable",
     "nbsphinx.localfile",
     "ref.intersphinx",
+    "intersphinx.broken_domain",
 ]
 
 language = "en"
@@ -180,6 +181,7 @@ autodoc_mock_imports = getattr(globals(), "autodoc_mock_imports", []) + [
     "pygmt",
     "PyQt5",
     "qtpy",
+    "pyqtgraph",
 ]
 # Allow nbsphinx not to fail the build on heavy notebook errors (temporary)
 nbsphinx_allow_errors = True

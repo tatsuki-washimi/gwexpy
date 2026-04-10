@@ -60,6 +60,7 @@ def _create_group(
 
 
 def create_input_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
+    """Create the input-source configuration tab and its control map."""
     tab = QtWidgets.QWidget()
     vbox = QtWidgets.QVBoxLayout(tab)
     vbox.setSpacing(10)
@@ -221,6 +222,7 @@ def create_input_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
 
 
 def create_measurement_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
+    """Create the measurement configuration tab and its control map."""
     tab = QtWidgets.QWidget()
     outer = QtWidgets.QVBoxLayout(tab)
     outer.setContentsMargins(10, 10, 10, 10)
@@ -322,7 +324,8 @@ def create_measurement_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
             ref[2].blockSignals(False)
 
     def set_all_channels(new_channels):
-        """External method to bulk update channel states.
+        """Bulk-update the stored channel state model.
+
         new_channels: list of dict {'name': str, 'active': bool}
         """
         nonlocal channel_states
@@ -640,6 +643,7 @@ def create_measurement_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
 
 
 def create_excitation_tab() -> tuple[QtWidgets.QWidget, dict[str, Any]]:
+    """Create the excitation tab and its per-channel control set."""
     tab = QtWidgets.QWidget()
     scroll = QtWidgets.QScrollArea()
     scroll.setWidgetResizable(True)
@@ -818,6 +822,7 @@ def create_result_tab(
     list[dict[str, Any]],
     list[dict[str, Any]],
 ]:
+    """Create the result tab, plot panels, and graph metadata handles."""
     tab = QtWidgets.QWidget()
     hsplit = QtWidgets.QSplitter(cast(Any, QtCore).Qt.Horizontal)
     left_panel = QtWidgets.QWidget()

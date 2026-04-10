@@ -1,9 +1,4 @@
-"""
-gwexpy.types.mixin
-------------------
-
-Common mixins for gwexpy types.
-"""
+"""Common legacy mixins for gwexpy types."""
 from __future__ import annotations
 
 from typing import Any
@@ -47,7 +42,7 @@ class RegularityMixin:
             return False
 
     def _check_regular(self, method_name: str | None = None):
-        """Helper to ensure the series is regular before applying certain transforms."""
+        """Ensure the series is regular before applying certain transforms."""
         if not self.is_regular:
             method = method_name or "This method"
             # Try to identify if it is Time or Frequency via class name or properties
@@ -67,8 +62,7 @@ class PhaseMethodsMixin:
     """Mixin to provide unified phase and angle methods."""
 
     def phase(self, unwrap: bool = False, deg: bool = False, **kwargs: Any) -> Any:
-        """
-        Calculate the phase of the data.
+        """Calculate the phase of the data.
 
         Parameters
         ----------
@@ -85,6 +79,7 @@ class PhaseMethodsMixin:
         -------
         `Series` or `Matrix` or `Collection`
             The phase of the data.
+
         """
         if deg:
             return self.degree(unwrap=unwrap, **kwargs)  # type: ignore[attr-defined]

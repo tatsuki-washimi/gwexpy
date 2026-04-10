@@ -9,18 +9,15 @@ __all__ = ["TimePlaneTransform", "LaplaceGram"]
 
 
 class TimePlaneTransform:
-    """
-    A container for 3D data with a preferred (time, axis1, axis2) structure,
-    commonly produced by time-frequency or similar transforms.
+    """Wrap 3D data with a preferred `(time, axis1, axis2)` structure.
 
-    This class wraps an Array3D to enforce semantic structure:
+    This class wraps an `Array3D` to enforce semantic structure:
     - Axis 0 is "time"
     - Axis 1 and 2 are symmetric spatial/frequency dimensions.
     """
 
     def __init__(self, data3d, *, kind="custom", meta=None):
-        """
-        Initialize a TimePlaneTransform.
+        """Initialize a TimePlaneTransform.
 
         Parameters
         ----------
@@ -32,6 +29,7 @@ class TimePlaneTransform:
             A string describing the type of transform (e.g., "stlt", "bispectrum"). Default is "custom".
         meta : dict, optional
             Additional metadata dictionary. Default is None (stored as empty dict).
+
         """
         self._kind = str(kind)
         self._meta = meta if meta is not None else {}
@@ -107,9 +105,7 @@ class TimePlaneTransform:
 
     @property
     def axes(self):
-        """
-        Return the 3 AxisDescriptors: (time, axis1, axis2).
-        """
+        """Return the three axis descriptors: `(time, axis1, axis2)`."""
         return self._data.axes
 
     @property
@@ -128,9 +124,7 @@ class TimePlaneTransform:
         return self.axes[2]
 
     def _axis_id(self, key):
-        """
-        Resolve axis key (int or str) to integer index (0, 1, 2).
-        """
+        """Resolve an axis key to the integer index `0`, `1`, or `2`."""
         if isinstance(key, int):
             if key < 0:
                 key += 3
@@ -154,8 +148,7 @@ class TimePlaneTransform:
         raise TypeError(f"Invalid axis key type: {type(key)}")
 
     def plane(self, drop_axis, drop_index, *, axis1=None, axis2=None):
-        """
-        Extract a 2D plane by slicing at a specific index along one axis.
+        """Extract a 2D plane by slicing at a specific index along one axis.
 
         Parameters
         ----------
@@ -171,6 +164,7 @@ class TimePlaneTransform:
         Returns
         -------
         Plane2D
+
         """
         # Resolve drop_axis to int to pass to Array3D (or let Array3D handle it if it handles names)
         # Array3D.plane is internal-ish? No, public. It calls _get_axis_index.
@@ -190,8 +184,7 @@ class TimePlaneTransform:
         return self._data.plane(idx, drop_index, axis1=axis1, axis2=axis2)
 
     def at_time(self, t, *, method="nearest"):
-        """
-        Extract a Plane2D at the specific time `t`.
+        """Extract a Plane2D at the specific time `t`.
 
         Parameters
         ----------
@@ -203,6 +196,7 @@ class TimePlaneTransform:
         Returns
         -------
         Plane2D
+
         """
         # 1. Resolve time index
         time_ax = self.axes[0]
@@ -282,9 +276,7 @@ class TimePlaneTransform:
         # 2. Slice (nearest case handled above)
 
     def at_sigma(self, sigma):
-        """
-        Extract a 2D plane (Spectrogram-like) at a specific sigma index (if axis1 is sigma)
-        or value.
+        """Extract a 2D plane at a specific sigma index or value.
 
         This assumes axis 1 is sigma.
         """
@@ -333,10 +325,7 @@ class TimePlaneTransform:
 
 
 class LaplaceGram(TimePlaneTransform):
-    """
-    3D container for Short-Time Laplace Transform data.
-    Structure: (time, sigma, frequency).
-    """
+    """Wrap short-time Laplace transform data with `(time, sigma, frequency)` axes."""
 
     def __init__(self, data3d, **kwargs):
         # Enforce axis names if Array3D is created here?
@@ -362,8 +351,8 @@ class LaplaceGram(TimePlaneTransform):
         return self.axis2.index
 
     def normalize_per_sigma(self, eps=1e-30):
-        """
-        Normalize the magnitude of the transform along the frequency axis (last axis).
+        """Normalize the transform magnitude along the frequency axis.
+
         Each (time, sigma) slice is normalized such that the sum over frequency bins is 1.
         This helps in identifying poles by equalizing the energy contribution across different damping values.
 
@@ -376,6 +365,7 @@ class LaplaceGram(TimePlaneTransform):
         -------
         LaplaceGram
             A new LaplaceGram instance containing the normalized magnitude.
+
         """
         # Calculate magnitude
         mag = np.abs(self.value)

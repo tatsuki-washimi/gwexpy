@@ -32,10 +32,12 @@ RELATIVE_JITTER = 1e-4
 
 class ParameterValue(float):
     """Representation of a fit parameter value, supporting .value and .error attributes.
+
     Inherits from float for backward compatibility with numeric operations.
     """
 
     def __new__(cls, value, error=None):
+        """Create a float-like parameter wrapper with optional error metadata."""
         return super().__new__(cls, value)
 
     def __init__(self, value, error=None):
@@ -44,8 +46,7 @@ class ParameterValue(float):
 
 
 class Fitter:
-    """High-level fitter class that wraps the fit_series function.
-    """
+    """Wrap `fit_series` in a small stateful helper class."""
 
     def __init__(self, model: Any):
         self.model = model
@@ -66,6 +67,7 @@ except ImportError:
 
 class ComplexLeastSquares:
     """Least Squares cost function for complex-valued data.
+
     Minimizes the sum of squared residuals for both Real and Imaginary parts.
     """
 
@@ -85,6 +87,7 @@ class ComplexLeastSquares:
         self._parameters = {name: None for name in params}
 
     def __call__(self, *args):
+        """Evaluate the complex least-squares cost for the given parameters."""
         # Calculate model prediction
         ym = self.model(self.x, *args)
 
@@ -98,6 +101,7 @@ class ComplexLeastSquares:
 
     @property
     def ndata(self):
+        """Return the effective number of real-valued data points."""
         # Effectively 2 * len(x) data points
         return 2 * len(self.x)
 
@@ -121,16 +125,20 @@ class RealLeastSquares:
         self._parameters = {name: None for name in params}
 
     def __call__(self, *args):
+        """Evaluate the real-valued least-squares cost for the given parameters."""
         ym = self.model(self.x, *args)
         res = (self.y - ym) / self.dy
         return np.sum(res**2)
 
     @property
     def ndata(self):
+        """Return the number of data points used by the fit."""
         return len(self.x)
 
 
 class FitResult:
+    """Store fit outputs, metadata, and plotting helpers for a completed fit."""
+
     def __init__(
         self,
         minuit_obj,
@@ -178,6 +186,7 @@ class FitResult:
     @property
     def model(self):
         """Fitted model function.
+
         Can be called as model(x) to use best-fit parameters,
         or as ``model(x, **params)`` to use specific parameters.
         Returns a Quantity with units if the original data had units.
@@ -255,6 +264,7 @@ class FitResult:
 
     def plot(self, ax=None, num_points=1000, **kwargs):
         """Plot data and best-fit curve.
+
         For complex data, delegates to bode_plot().
         """
         is_complex = np.iscomplexobj(self.y)
@@ -568,7 +578,7 @@ class FitResult:
         return (ax_mag, ax_phase)
 
     def run_mcmc(self, n_walkers=32, n_steps=3000, burn_in=500, progress=True):
-        """Run MCMC using emcee starting from the best-fit parameters.
+        r"""Run MCMC using emcee starting from the best-fit parameters.
 
         This method supports both standard least squares and GLS (Generalized
         Least Squares) error structures. If `cov_inv` is available, the log
@@ -605,15 +615,15 @@ class FitResult:
 
         .. math::
 
-            \\log p(y|\\theta) = -\\frac{1}{2} r^T \\Sigma^{-1} r + \\text{const}
+            \log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r + \text{const}
 
         If Σ depends on the model parameters θ, the full log likelihood including
         the log|Σ| term must be used:
 
         .. math::
 
-            \\log p(y|\\theta) = -\\frac{1}{2} r^T \\Sigma^{-1} r
-            - \\frac{1}{2} \\log|\\Sigma| - \\frac{N}{2}\\log 2\\pi
+            \log p(y|\theta) = -\frac{1}{2} r^T \Sigma^{-1} r
+            - \frac{1}{2} \log|\Sigma| - \frac{N}{2}\log 2\pi
 
         This assumption has been validated through unit tests and independent technical review.
         All models agreed that the current implementation is correct for
@@ -972,6 +982,7 @@ def fit_series(
     **kwargs,
 ):
     """Fit a Series object using iminuit.
+
     Supports real and complex valued Series (simultaneous Re/Im fit).
 
     Parameters

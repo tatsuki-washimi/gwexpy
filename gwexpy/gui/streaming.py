@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class SpectralAccumulator:
-    """Accumulates spectral data from streaming TimeSeries chunks.
+    """Accumulate spectral data from streaming ``TimeSeries`` chunks.
+
     Supports Fixed, Infinite, and Exponential averaging.
     """
 
@@ -46,7 +47,9 @@ class SpectralAccumulator:
         self.is_done = False
 
     def configure(self, params, active_traces, available_channels=None):
-        """params: dict containing:
+        """Configure averaging, FFT, and channel expectations.
+
+        params: dict containing:
           - 'bw': Resolution Bandwidth
           - 'averages': Number of averages (for Fixed)
           - 'avg_type': 'Fixed', 'Infinite', 'Exponential'
@@ -91,7 +94,8 @@ class SpectralAccumulator:
         )
 
     def add_chunk(self, data_dict):
-        """Ingest new data.
+        """Ingest a new chunk of streaming data.
+
         data_dict: { channel_name: { 'data': np.array, 'step': dt, 'gps_start': t0 } }
         """
         try:
@@ -145,6 +149,7 @@ class SpectralAccumulator:
 
     def _process_buffers(self):
         """Process buffers synchronously.
+
         Only proceed if ALL available channels have enough data for a segment.
         """
         try:
@@ -396,7 +401,8 @@ class SpectralAccumulator:
                 self.state[key] = current_val + (new_val - current_val) / count
 
     def get_results(self):
-        """Return list of result tuples/dicts matching the active_traces structure.
+        """Return results matching the ``active_traces`` structure.
+
         Compatible with Engine.compute output format.
         """
         results: list[Optional[tuple[Any, Any] | dict[str, Any]]] = []

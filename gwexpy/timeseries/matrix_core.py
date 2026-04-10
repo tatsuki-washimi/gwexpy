@@ -103,8 +103,7 @@ class TimeSeriesMatrixCoreMixin:
     def _apply_timeseries_method(
         self: Any, method_name: str, *args: Any, **kwargs: Any
     ) -> Any:
-        """Apply a TimeSeries method element-wise and rebuild a TimeSeriesMatrix.
-        """
+        """Apply a ``TimeSeries`` method element-wise and rebuild a matrix."""
         # Vectorized implementation hook
         vectorized_name = f"_vectorized_{method_name}"
         if hasattr(self, vectorized_name):
@@ -210,8 +209,7 @@ class TimeSeriesMatrixCoreMixin:
         return new_mat
 
     def _coerce_other_timeseries_input(self, other: Any, method_name: str) -> Any:
-        """Normalize 'other' input for bivariate spectral methods.
-        """
+        """Normalize ``other`` input for bivariate spectral methods."""
 
         def _getter_factory(obj):
             if isinstance(obj, type(self)):
@@ -232,8 +230,7 @@ class TimeSeriesMatrixCoreMixin:
     def _apply_bivariate_spectral_method(
         self: Any, method_name: str, other: Any, *args: Any, **kwargs: Any
     ) -> Any:
-        """Apply a bivariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
-        """
+        """Apply a bivariate spectral method element-wise and return a matrix."""
         FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
         if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
@@ -307,8 +304,7 @@ class TimeSeriesMatrixCoreMixin:
     def _apply_univariate_spectral_method(
         self: Any, method_name: str, *args: Any, **kwargs: Any
     ) -> Any:
-        """Apply a univariate TimeSeries spectral method element-wise and return FrequencySeriesMatrix.
-        """
+        """Apply a univariate spectral method element-wise and return a matrix."""
         FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
         if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):
@@ -379,8 +375,7 @@ class TimeSeriesMatrixCoreMixin:
     def _apply_spectrogram_method(
         self: Any, method_name: str, *args: Any, **kwargs: Any
     ) -> Any:
-        """Apply a TimeSeries spectrogram method element-wise and return SpectrogramMatrix.
-        """
+        """Apply a spectrogram method element-wise and return a matrix."""
         SpectrogramMatrix = ConverterRegistry.get_constructor("SpectrogramMatrix")
 
         if not hasattr(cast("TimeSeriesMatrix", self).series_class, method_name):

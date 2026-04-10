@@ -100,6 +100,7 @@ def from_pygwinc(
     >>> darm_asd = from_pygwinc("aLIGO", quantity="darm")
     >>> darm_asd.unit
     Unit("m / Hz(1/2)")
+
     """
     try:
         import gwinc

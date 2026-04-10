@@ -28,13 +28,13 @@ class SeriesMatrixMathMixin:
         series_class: type[Any] | None
 
         @property
-        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...  # noqa: D102
 
         @xindex.setter
         def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
 
-        def row_index(self, key: Any) -> int: ...
-        def col_index(self, key: Any) -> int: ...
+        def row_index(self, key: Any) -> int: ...  # noqa: D102
+        def col_index(self, key: Any) -> int: ...  # noqa: D102
 
     def _all_element_units_equivalent(self) -> tuple[bool, u.Unit | None]:
         """Check whether all element units are mutually equivalent."""
@@ -105,9 +105,7 @@ class SeriesMatrixMathMixin:
         return inv_stack
 
     def __matmul__(self, other):
-        """
-        Matrix multiplication (broadcasting over sample axis).
-        """
+        """Perform matrix multiplication while broadcasting over the sample axis."""
         if not isinstance(other, type(self)):
             # If other is not a SeriesMatrix, try to use ndarray matmul
             return np.matmul(cast(Any, self), other)
@@ -463,14 +461,14 @@ class SeriesMatrixMathMixin:
         return np.abs(cast(Any, self))
 
     def angle(self, unwrap: bool = False, deg: bool = False, **kwargs: Any):
-        """
-        Return the element-wise complex phase angle of the matrix.
+        """Return the element-wise complex phase angle of the matrix.
 
         Notes
         -----
         - The phase is computed from the stored numeric values (not including units).
         - Output units are radians by default, or degrees if ``deg=True``.
         - If ``unwrap=True``, phase unwrapping is applied along the sample axis (axis=2).
+
         """
         if kwargs:
             raise TypeError(f"Unexpected keyword arguments: {list(kwargs)}")

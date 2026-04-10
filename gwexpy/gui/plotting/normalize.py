@@ -6,8 +6,7 @@ import numpy as np
 
 
 def normalize_series(val) -> Optional[tuple[np.ndarray, np.ndarray]]:
-    """Normalize various data types (TimeSeries, FrequencySeries, dict) into (x, y) ndarrays.
-    """
+    """Normalize supported series-like inputs into ``(x, y)`` arrays."""
     if val is None:
         return None
 

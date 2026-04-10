@@ -25,6 +25,8 @@ def coerce_1d_quantity(index, unit=None) -> Quantity:
 
 @dataclass
 class AxisDescriptor:
+    """Describe a named one-dimensional axis and its coordinate values."""
+
     name: str
     index: Quantity  # 1D
 
@@ -34,6 +36,7 @@ class AxisDescriptor:
 
     @property
     def unit(self):
+        """Return the axis unit."""
         return self.index.unit
 
     def __eq__(self, other):
@@ -50,10 +53,12 @@ class AxisDescriptor:
 
     @property
     def size(self):
+        """Return the number of axis samples."""
         return self.index.size
 
     @property
     def regular(self) -> bool:
+        """Return whether the axis spacing is regular."""
         if hasattr(self.index, "regular"):
             return self.index.regular
         if self.size <= 1:
@@ -63,6 +68,7 @@ class AxisDescriptor:
 
     @property
     def delta(self) -> Quantity | None:
+        """Return the constant axis spacing when the axis is regular."""
         if self.size > 1 and self.regular:
             return self.index[1] - self.index[0]
         return None

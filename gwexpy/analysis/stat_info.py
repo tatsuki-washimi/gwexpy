@@ -1,5 +1,4 @@
-"""Stat-info utilities: association edge extraction and lightweight graph builder.
-"""
+"""Stat-info utilities: association edge extraction and lightweight graph builder."""
 from __future__ import annotations
 
 import logging
@@ -24,8 +23,8 @@ def association_edges(
 ) -> Any:
     """Compute association edges between a target TimeSeries and a TimeSeriesMatrix.
 
-    Returns a DataFrame (default) with columns:
-    ["source", "target", "score", "row", "col", "channel"].
+    Returns a DataFrame (default) with columns
+    ``["source", "target", "score", "row", "col", "channel"]``.
     """
     if not hasattr(matrix, "correlation_vector"):
         raise TypeError("matrix must provide correlation_vector().")
@@ -70,7 +69,7 @@ def build_graph(
 ) -> Any:
     """Build a graph object from association edges.
 
-    If backend="none", returns edges unchanged.
+    If ``backend="none"``, return ``edges`` unchanged.
     """
     if backend in {"none", None}:
         return edges

@@ -1,5 +1,4 @@
-"""Frequency-domain dttxml reader.
-"""
+"""Frequency-domain DTT XML reader."""
 from __future__ import annotations
 
 from datetime import UTC
@@ -52,12 +51,27 @@ def read_frequencyseriesdict_dttxml(
 
     Parameters
     ----------
+    source
+        Input DTT XML source.
+    products
+        DTT product name to load.
+    channels
+        Optional channel filter.
+    unit
+        Optional unit override.
+    epoch
+        Optional epoch override.
+    timezone
+        Time zone used when parsing datetime-like epochs.
     native : bool, optional
         If True, use gwexpy's native XML parser instead of the dttxml package.
         Use this to correctly handle complex TF data (subtype 6 phase loss fix).
         Default is False.
+    **kwargs
+        Additional unused compatibility arguments.
 
     """
+    del kwargs
     if products is None:
         raise ValueError("products must be specified for dttxml")
     prod = str(products).upper()
@@ -117,12 +131,31 @@ def read_frequencyseriesmatrix_dttxml(
 
     Parameters
     ----------
+    source
+        Input DTT XML source.
+    products
+        DTT product name to load.
+    rows
+        Optional row labels to include.
+    cols
+        Optional column labels to include.
+    pairs
+        Optional `(row, col)` pairs to include.
+    unit
+        Optional unit override.
+    epoch
+        Optional epoch override.
+    timezone
+        Time zone used when parsing datetime-like epochs.
     native : bool, optional
         If True, use gwexpy's native XML parser instead of the dttxml package.
         Use this to correctly handle complex TF data (subtype 6 phase loss fix).
         Default is False.
+    **kwargs
+        Additional unused compatibility arguments.
 
     """
+    del kwargs
     if products is None:
         raise ValueError("products must be specified for dttxml")
     prod = str(products).upper()

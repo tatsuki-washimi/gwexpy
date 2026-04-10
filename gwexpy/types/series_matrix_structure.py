@@ -27,12 +27,12 @@ class SeriesMatrixStructureMixin:
         attrs: dict[str, Any] | None
 
         @property
-        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...  # noqa: D102
 
         @xindex.setter
         def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
 
-        def view(self, dtype: Any = ..., type: type[Any] | None = ...) -> Any: ...
+        def view(self, dtype: Any = ..., type: type[Any] | None = ...) -> Any: ...  # noqa: D102
 
     def copy(self, order="C"):
         """Create a deep copy of this matrix."""

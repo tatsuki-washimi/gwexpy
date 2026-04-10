@@ -4,8 +4,7 @@ from gwpy.spectrogram import Spectrogram
 
 
 class HHTSpectrogram(Spectrogram):
-    """
-    A Spectrogram specifically for Hilbert-Huang Transform results.
+    """A Spectrogram specifically for Hilbert-Huang Transform results.
 
     This class overrides the default plotting behavior to be suitable for
     Hilbert Spectra:
@@ -23,6 +22,7 @@ class HHTSpectrogram(Spectrogram):
             Plotting method, default 'pcolormesh'.
         **kwargs
             Additional keyword arguments passed to the plotter.
+
         """
         import matplotlib.colors as mcolors
         import matplotlib.pyplot as plt

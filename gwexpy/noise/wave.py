@@ -16,6 +16,7 @@ Examples
 >>> sine_wave = sine(duration=1.0, sample_rate=1024, frequency=10.0)
 >>> noise = gaussian(duration=1.0, sample_rate=1024, std=0.1)
 >>> sweep = chirp(duration=1.0, sample_rate=1024, f0=10, f1=100)
+
 """
 from __future__ import annotations
 
@@ -82,8 +83,7 @@ def gaussian(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate Gaussian (normal) white noise.
+    """Generate Gaussian (normal) white noise.
 
     Parameters
     ----------
@@ -115,6 +115,7 @@ def gaussian(
     --------
     >>> from gwexpy.noise.wave import gaussian
     >>> noise = gaussian(duration=1.0, sample_rate=1024, std=0.1)
+
     """
     if rng is None:
         rng = np.random.default_rng(seed)
@@ -137,8 +138,7 @@ def uniform(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate uniform white noise.
+    """Generate uniform white noise.
 
     Parameters
     ----------
@@ -165,6 +165,7 @@ def uniform(
     -------
     TimeSeries
         Uniform noise time-series.
+
     """
     if rng is None:
         rng = np.random.default_rng(seed)
@@ -188,8 +189,7 @@ def colored(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate colored (power-law) noise.
+    """Generate colored (power-law) noise.
 
     The noise follows a power-law spectrum: ASD(f) ~ f^(-exponent).
 
@@ -228,6 +228,7 @@ def colored(
     --------
     >>> from gwexpy.noise.wave import colored
     >>> pink = colored(duration=1.0, sample_rate=1024, exponent=0.5)
+
     """
     from .asd import power_law
 
@@ -275,8 +276,7 @@ def white_noise(
     amplitude: float = 1.0,
     **kwargs: Any,
 ) -> TimeSeries:
-    """
-    Generate white noise (flat spectrum).
+    """Generate white noise (flat spectrum).
 
     Shortcut for colored(exponent=0).
 
@@ -295,6 +295,7 @@ def white_noise(
     -------
     TimeSeries
         White noise time-series.
+
     """
     return colored(duration, sample_rate, exponent=0.0, amplitude=amplitude, **kwargs)
 
@@ -305,8 +306,7 @@ def pink_noise(
     amplitude: float = 1.0,
     **kwargs: Any,
 ) -> TimeSeries:
-    """
-    Generate pink noise (1/f^0.5 spectrum).
+    """Generate pink noise (1/f^0.5 spectrum).
 
     Shortcut for colored(exponent=0.5).
 
@@ -325,6 +325,7 @@ def pink_noise(
     -------
     TimeSeries
         Pink noise time-series.
+
     """
     return colored(duration, sample_rate, exponent=0.5, amplitude=amplitude, **kwargs)
 
@@ -335,8 +336,7 @@ def red_noise(
     amplitude: float = 1.0,
     **kwargs: Any,
 ) -> TimeSeries:
-    """
-    Generate red/Brownian noise (1/f spectrum).
+    """Generate red/Brownian noise (1/f spectrum).
 
     Shortcut for colored(exponent=1.0).
 
@@ -355,6 +355,7 @@ def red_noise(
     -------
     TimeSeries
         Red noise time-series.
+
     """
     return colored(duration, sample_rate, exponent=1.0, amplitude=amplitude, **kwargs)
 
@@ -375,8 +376,7 @@ def sine(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate a sine wave.
+    """Generate a sine wave.
 
     Parameters
     ----------
@@ -408,6 +408,7 @@ def sine(
     --------
     >>> from gwexpy.noise.wave import sine
     >>> wave = sine(duration=1.0, sample_rate=1024, frequency=10.0)
+
     """
     t = _get_times(duration, sample_rate)
     data = amplitude * np.sin(2 * np.pi * frequency * t + phase)
@@ -427,8 +428,7 @@ def square(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate a square wave.
+    """Generate a square wave.
 
     Parameters
     ----------
@@ -457,6 +457,7 @@ def square(
     -------
     TimeSeries
         Square wave time-series.
+
     """
     t = _get_times(duration, sample_rate)
     data = amplitude * scipy_signal.square(2 * np.pi * frequency * t + phase, duty=duty)
@@ -476,8 +477,7 @@ def sawtooth(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate a sawtooth wave.
+    """Generate a sawtooth wave.
 
     Parameters
     ----------
@@ -507,6 +507,7 @@ def sawtooth(
     -------
     TimeSeries
         Sawtooth wave time-series.
+
     """
     t = _get_times(duration, sample_rate)
     data = amplitude * scipy_signal.sawtooth(
@@ -527,8 +528,7 @@ def triangle(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate a triangle wave.
+    """Generate a triangle wave.
 
     This is a sawtooth with width=0.5.
 
@@ -557,6 +557,7 @@ def triangle(
     -------
     TimeSeries
         Triangle wave time-series.
+
     """
     return sawtooth(
         duration,
@@ -586,8 +587,7 @@ def chirp(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate a swept-frequency cosine (chirp) signal.
+    """Generate a swept-frequency cosine (chirp) signal.
 
     Parameters
     ----------
@@ -626,6 +626,7 @@ def chirp(
     --------
     >>> from gwexpy.noise.wave import chirp
     >>> sweep = chirp(duration=1.0, sample_rate=1024, f0=10, f1=100)
+
     """
     if t1 is None:
         t1 = duration
@@ -653,8 +654,7 @@ def step(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate a step (Heaviside) function.
+    """Generate a step (Heaviside) function.
 
     Parameters
     ----------
@@ -684,6 +684,7 @@ def step(
     --------
     >>> from gwexpy.noise.wave import step
     >>> s = step(duration=1.0, sample_rate=1024, t_step=0.5)
+
     """
     t = _get_times(duration, sample_rate)
     data = np.where(t >= t_step, amplitude, 0.0)
@@ -701,8 +702,7 @@ def impulse(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate an impulse (delta-like) signal.
+    """Generate an impulse (delta-like) signal.
 
     The impulse is placed at the sample closest to t_impulse.
 
@@ -734,6 +734,7 @@ def impulse(
     --------
     >>> from gwexpy.noise.wave import impulse
     >>> i = impulse(duration=1.0, sample_rate=1024, t_impulse=0.5)
+
     """
     n_samples = int(duration * sample_rate)
     data = np.zeros(n_samples)
@@ -758,8 +759,7 @@ def exponential(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """
-    Generate an exponential signal.
+    """Generate an exponential signal.
 
     Parameters
     ----------
@@ -794,6 +794,7 @@ def exponential(
     --------
     >>> from gwexpy.noise.wave import exponential
     >>> decay_signal = exponential(duration=1.0, sample_rate=1024, tau=0.2)
+
     """
     t = _get_times(duration, sample_rate)
     t_rel = t - t_start
@@ -820,8 +821,7 @@ def from_asd(
     seed: int | None = None,
     **kwargs: Any,
 ) -> TimeSeries:
-    """
-    Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).
+    """Generate colored noise TimeSeries from an ASD (Amplitude Spectral Density).
 
     Uses FFT-based colored noise synthesis to produce a time-series with the
     spectral characteristics defined by the input ASD.
@@ -854,6 +854,7 @@ def from_asd(
     >>> from gwexpy.noise.wave import from_asd
     >>> asd = from_pygwinc('aLIGO', fmin=4.0, fmax=1024.0, df=0.01)
     >>> noise = from_asd(asd, duration=128, sample_rate=2048, t0=0)
+
     """
     if rng is None:
         rng = np.random.default_rng(seed)

@@ -18,8 +18,7 @@ class TimeSeriesMatrixSpectralMixin:
     """Spectral analysis methods for TimeSeriesMatrix."""
 
     def _vectorized_fft(self, **kwargs: Any) -> Any:
-        """Vectorized implementation of FFT.
-        """
+        """Compute a vectorized FFT."""
         FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
         # We assume regular sampling for vectorized FFT
@@ -55,8 +54,7 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def _vectorized_psd(self, **kwargs: Any) -> Any:
-        """Vectorized implementation of PSD (Welch).
-        """
+        """Compute a vectorized Welch PSD."""
         from scipy.signal import welch
 
         FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
@@ -103,8 +101,7 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def _vectorized_asd(self, **kwargs: Any) -> Any:
-        """Vectorized implementation of ASD.
-        """
+        """Compute a vectorized ASD."""
         psd = self._vectorized_psd(**kwargs)
         asd_data = np.sqrt(psd.value)
         psd.value[:] = asd_data
@@ -115,8 +112,7 @@ class TimeSeriesMatrixSpectralMixin:
         return psd
 
     def _vectorized_csd(self, other: Any, **kwargs: Any) -> Any:
-        """Vectorized implementation of CSD.
-        """
+        """Compute a vectorized CSD."""
         from scipy.signal import csd
 
         FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
@@ -170,8 +166,7 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def _vectorized_coherence(self, other: Any, **kwargs: Any) -> Any:
-        """Vectorized implementation of Coherence.
-        """
+        """Compute vectorized coherence."""
         from scipy.signal import coherence
 
         FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
@@ -325,25 +320,29 @@ class TimeSeriesMatrixSpectralMixin:
         return m1
 
     def fft(self, **kwargs: Any) -> Any:
-        """Compute FFT of each element.
+        """Compute the FFT of each element.
+
         Returns FrequencySeriesMatrix.
         """
         return self._run_spectral_method("fft", **kwargs)
 
     def psd(self, **kwargs: Any) -> Any:
-        """Compute PSD of each element.
+        """Compute the PSD of each element.
+
         Returns FrequencySeriesMatrix.
         """
         return self._run_spectral_method("psd", **kwargs)
 
     def asd(self, **kwargs: Any) -> Any:
-        """Compute ASD of each element.
+        """Compute the ASD of each element.
+
         Returns FrequencySeriesMatrix.
         """
         return self._run_spectral_method("asd", **kwargs)
 
     def spectrogram(self, *args: Any, **kwargs: Any) -> Any:
-        """Compute spectrogram of each element.
+        """Compute a spectrogram of each element.
+
         Returns SpectrogramMatrix.
         """
         return cast("TimeSeriesMatrix", self)._apply_spectrogram_method(
@@ -351,7 +350,8 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def spectrogram2(self, *args: Any, **kwargs: Any) -> Any:
-        """Compute spectrogram2 of each element.
+        """Compute ``spectrogram2`` for each element.
+
         Returns SpectrogramMatrix.
         """
         return cast("TimeSeriesMatrix", self)._apply_spectrogram_method(
@@ -359,7 +359,8 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def q_transform(self, *args: Any, **kwargs: Any) -> Any:
-        """Compute Q-transform of each element.
+        """Compute the Q-transform of each element.
+
         Returns SpectrogramMatrix.
         """
         return cast("TimeSeriesMatrix", self)._apply_spectrogram_method(
@@ -367,8 +368,7 @@ class TimeSeriesMatrixSpectralMixin:
         )
 
     def _run_spectral_method(self, method_name: str, **kwargs: Any) -> Any:
-        """Helper for fft, psd, asd.
-        """
+        """Run a shared spectral method implementation."""
         FrequencySeriesMatrix = ConverterRegistry.get_constructor("FrequencySeriesMatrix")
 
         N, M, K = cast("TimeSeriesMatrix", self).shape

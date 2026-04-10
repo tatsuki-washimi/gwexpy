@@ -37,8 +37,7 @@ def lorentzian_line(
     frequencies: np.ndarray | None = None,
     **kwargs: Any,
 ) -> FrequencySeries:
-    """
-    Generate a Lorentzian peak (ASD form, Peak Normalization).
+    """Generate a Lorentzian peak (ASD form, Peak Normalization).
 
     Formula: ASD(f) = A * gamma / sqrt( (f-f0)^2 + gamma^2 )
 
@@ -61,6 +60,7 @@ def lorentzian_line(
         HWHM (Half Width at Half Maximum).
     frequencies : array-like, optional
         Target frequency array.
+
     """
     f_vals = _get_freqs(frequencies, kwargs)
 
@@ -106,8 +106,7 @@ def gaussian_line(
     frequencies: np.ndarray | None = None,
     **kwargs: Any,
 ) -> FrequencySeries:
-    """
-    Generate a Gaussian peak (ASD).
+    """Generate a Gaussian peak (ASD).
     Formula: ASD(f) = A * exp( - (f-f0)^2 / (2*sigma^2) )
     """
     f_vals = _get_freqs(frequencies, kwargs)
@@ -134,8 +133,7 @@ def voigt_line(
     frequencies: np.ndarray | None = None,
     **kwargs: Any,
 ) -> FrequencySeries:
-    """
-    Generate a Voigt peak (ASD) using Faddeeva function.
+    """Generate a Voigt peak (ASD) using Faddeeva function.
     Normalized to have peak value = 'amplitude'.
     """
     f_vals = _get_freqs(frequencies, kwargs)

@@ -42,6 +42,8 @@ def _log_db(data: np.ndarray, factor: float) -> np.ndarray:
 
 
 class MainWindow(QtWidgets.QMainWindow):
+    """Coordinate the gwexpy desktop GUI, data flow, and plotting."""
+
     def __init__(
         self, enable_preload: bool = True, data_backend: NDSDataCache | None = None
     ) -> None:
@@ -302,7 +304,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self._preload_worker = None  # Release ref
 
     def update_x_link_logic(self) -> None:
-        """Dynamically link/unlink X-axes based on graph types AND range mode.
+        """Dynamically link or unlink X-axes based on graph mode and range mode.
+
         - Time-based graphs (Time Series, Spectrogram) should be linked.
         - Frequency-based graphs (ASD, Coherence, TF) should be linked.
         - Mixed types should NOT be linked.
@@ -342,6 +345,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self._x_axes_linked = False
 
     def on_measurement_channel_changed(self) -> None:
+        """Refresh dependent channel selectors after measurement changes."""
         # Update Result tab comboboxes based on active Measurement channels
         active_channels = []
         states = self.meas_controls["channel_states"]
@@ -422,6 +426,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         combo.blockSignals(False)
 
     def show_channel_browser(self, start_slot: int | None = None) -> None:
+        """Open the channel browser and apply the selected channels."""
         # Determine which server/port to use based on current selection in Input tab
         use_pc_audio = self.input_controls["pcaudio"].isChecked()
         ds_mode = self.input_controls["ds_combo"].currentText()
@@ -489,6 +494,7 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.info(f"Added {count} channels from {server}:{port}")
 
     def on_source_changed(self, text: str) -> None:
+        """Track the selected data source and clear stale NDS data."""
         self.data_source = text
         if text == "NDS":
             self.nds_latest_raw = None
@@ -498,15 +504,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.accumulator.add_chunk(payload)
 
     def on_nds_data(self, buffers: dict[str, TimeSeries]) -> None:
+        """Cache the latest normalized NDS buffers for plotting."""
         logger.debug("MainWindow received NDS data with %d channels", len(buffers))
         self.nds_latest_raw = buffers
 
     def on_data_error(self, message: str) -> None:
+        """Display backend data errors in the status area."""
         logger.warning("Data backend error: %s", message)
         if hasattr(self, "status_label"):
             self.status_label.setText(message)
 
     def start_animation(self) -> None:
+        """Start streaming acquisition and periodic graph updates."""
         # Prevention: Do not start if already running
         if (
             self.timer.isActive()
@@ -637,6 +646,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timer.start(50)
 
     def pause_animation(self) -> None:
+        """Pause streaming updates without resetting accumulated state."""
         self.timer.stop()
         self.btn_start.setEnabled(False)
         self.btn_pause.setEnabled(False)
@@ -645,6 +655,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.nds_cache.online_stop()
 
     def resume_animation(self) -> None:
+        """Resume streaming updates after a pause."""
         self.timer.start(50)
         self.btn_start.setEnabled(False)
         self.btn_pause.setEnabled(True)
@@ -654,6 +665,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.nds_cache.online_start(lookback=win)
 
     def stop_animation(self) -> None:
+        """Stop streaming updates and clear transient runtime state."""
         self.timer.stop()
         self.btn_start.setEnabled(True)
         self.btn_pause.setEnabled(False)
@@ -675,6 +687,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.time_counter = 0.0
 
     def get_ui_params(self) -> dict[str, Any]:
+        """Collect the current measurement parameters from the UI."""
         p = {}
         c = self.meas_controls
         p.update(
@@ -697,7 +710,7 @@ class MainWindow(QtWidgets.QMainWindow):
         return p
 
     def update_graphs(self) -> None:
-        """Main update loop for streaming mode.
+        """Run the main update loop for streaming mode.
 
         This method orchestrates the data pipeline:
         1. Collect data from source (NDS/Simulation)
@@ -1075,10 +1088,12 @@ class MainWindow(QtWidgets.QMainWindow):
             return "?"
 
     def on_trace_channel_changed(self) -> None:
+        """Refresh file-mode plots when a trace channel selection changes."""
         if not self.is_loading_file and self.is_file_mode:
             self.update_file_plot()
 
     def update_file_plot(self) -> None:
+        """Render loaded file products into the result plots."""
         if not self.loaded_products:
             return
         for graph_idx in [0, 1]:
@@ -1515,6 +1530,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     }
 
     def open_file_dialog(self) -> None:
+        """Prompt for a data file and open it if one is chosen."""
         filters = ["Data Files (*.xml *.gwf *.h5 *.hdf5 *.csv *.txt)", "All Files (*)"]
         f, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, "Open Data File", "", ";;".join(filters)
@@ -1555,6 +1571,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.is_loading_file = False
 
     def open_file(self, filename: str) -> None:
+        """Load a data file into the GUI and refresh related state."""
         try:
             # Prepare fresh state
             self.reset_state()

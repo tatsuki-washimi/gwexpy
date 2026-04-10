@@ -41,6 +41,7 @@ class Array4D(Array):
     ------
     ValueError
         If the input data is not 4-dimensional.
+
     """
 
     _metadata_slots = Array._metadata_slots + (

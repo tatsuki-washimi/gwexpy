@@ -1,5 +1,4 @@
-"""
-Spectral estimation helpers for PSD and bootstrap statistics.
+"""Spectral estimation helpers for PSD and bootstrap statistics.
 
 PSD estimation in this module delegates to GWpy's Welch-style estimator with
 one-sided density normalization. For a regularly sampled series x[n] with
@@ -104,8 +103,7 @@ def estimate_psd(
     method="median",
     **kwargs,
 ):
-    """
-    Estimate the one-sided PSD for a regular TimeSeries.
+    """Estimate the one-sided PSD for a regular TimeSeries.
 
     This wraps ``TimeSeries.psd`` without changing the underlying algorithm.
     It enforces NaN-free input and checks that fftlength does not exceed the
@@ -128,6 +126,7 @@ def estimate_psd(
     -------
     FrequencySeries
         One-sided PSD with unit (input unit)**2 / Hz.
+
     """
     data = np.asarray(getattr(timeseries, "value", timeseries))
     if np.isnan(data).any():
@@ -167,8 +166,7 @@ def estimate_psd(
 
 
 def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
-    """
-    Calculate the variance inflation factor for Welch's method with overlap.
+    """Calculate the variance inflation factor for Welch's method with overlap.
 
     This computes the correction factor by numerically calculating the normalized
     squared autocorrelation of the window function. The correction accounts for
@@ -215,6 +213,7 @@ def calculate_correlation_factor(window, nperseg, noverlap, n_blocks):
     -------
     float
         Multiplicative correction factor for the standard error.
+
     """
     if window is None or nperseg is None or noverlap is None or n_blocks <= 1:
         return 1.0
@@ -291,8 +290,7 @@ def bootstrap_spectrogram(
     ignore_nan=True,
     **kwargs,
 ):
-    """
-    Estimate robust ASD from a spectrogram using bootstrap resampling.
+    """Estimate robust ASD from a spectrogram using bootstrap resampling.
 
     Error bars are corrected for correlation between overlapping segments
     based on the window function's autocorrelation.
@@ -422,6 +420,7 @@ def bootstrap_spectrogram(
     See Also
     --------
     :doc:`Tutorial: Bootstrap Spectrogram Analysis <../../../user_guide/tutorials/case_bootstrap_gls_fitting>`
+
     """
     from ..utils.fft_args import (
         check_deprecated_kwargs,

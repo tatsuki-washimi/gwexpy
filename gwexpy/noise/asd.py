@@ -31,6 +31,7 @@ Examples
 
 # Get displacement ASD from ObsPy NLNM
 >>> disp_asd = from_obspy("NLNM", quantity="displacement")
+
 """
 from __future__ import annotations
 

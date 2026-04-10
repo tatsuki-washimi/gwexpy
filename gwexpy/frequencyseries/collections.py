@@ -75,6 +75,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         super().__setitem__(key, value)
 
     def setdefault(self, key: str, default: _FS | None = None) -> _FS:  # type: ignore[override]
+        """Set a default entry after validating its type."""
         if key in self:
             return self[key]
         if default is None:
@@ -89,6 +90,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         return default
 
     def copy(self) -> FrequencySeriesBaseDict[_FS]:
+        """Return a deep copy of the mapping values."""
         new = self.__class__()
         for key, val in self.items():
             new[key] = val.copy()
@@ -97,6 +99,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
     def crop(
         self, start: Any = None, end: Any = None, copy: bool = False
     ) -> FrequencySeriesBaseDict[_FS]:
+        """Crop each contained series in place and return `self`."""
         for key, val in list(self.items()):
             self[key] = val.crop(start=start, end=end, copy=copy)
         return self
@@ -254,6 +257,7 @@ class FrequencySeriesBaseDict(OrderedDict[str, _FS]):
         return (dict, (dict(self),))
 
     def write(self, target, *args, **kwargs):
+        """Write the mapping through the Astropy I/O registry."""
         from astropy.io import registry
 
         return registry.write(self, target, *args, **kwargs)
@@ -317,8 +321,9 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
     # ===============================
 
     def crop(self, *args, **kwargs) -> FrequencySeriesDict:
-        """Crop each FrequencySeries in the dict.
-        In-place operation (GWpy-compatible). Returns self.
+        """Crop each `FrequencySeries` in the dict.
+
+        This is an in-place, GWpy-compatible operation that returns `self`.
         """
         super().crop(*args, **kwargs)
         return self
@@ -331,16 +336,18 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
     # --- In-place Element Operations ---
 
     def append(self, *args, **kwargs) -> FrequencySeriesDict:
-        """Append to each FrequencySeries in the dict (in-place).
-        Returns self.
+        """Append to each `FrequencySeries` in the dict in place.
+
+        Return `self`.
         """
         for fs in self.values():
             fs.append(*args, **kwargs)
         return self
 
     def prepend(self, *args, **kwargs) -> FrequencySeriesDict:
-        """Prepend to each FrequencySeries in the dict (in-place).
-        Returns self.
+        """Prepend to each `FrequencySeries` in the dict in place.
+
+        Return `self`.
         """
         for fs in self.values():
             fs.prepend(*args, **kwargs)
@@ -426,7 +433,8 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
     # ===============================
 
     def to_pandas(self, **kwargs):
-        """Convert to pandas.DataFrame.
+        """Convert the dict to a `pandas.DataFrame`.
+
         Keys become columns.
         """
         import pandas as pd
@@ -449,7 +457,8 @@ class FrequencySeriesDict(DictMapMixin, FrequencySeriesBaseDict[FrequencySeries]
         return pd.DataFrame(data)
 
     def to_xarray(self):
-        """Convert to xarray.Dataset.
+        """Convert the dict to an `xarray.Dataset`.
+
         Keys become data variables.
         """
         import xarray as xr
@@ -710,15 +719,18 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
             )
 
     def append(self, item: _FS):  # type: ignore[override]
+        """Append one validated item and return `self`."""
         self._validate(item, op="append")
         super().append(item)
         return self
 
     def extend(self, items: Iterable[_FS]) -> None:  # type: ignore[override]
+        """Extend the list with validated items."""
         validated = self.__class__(*items)
         super().extend(validated)
 
     def insert(self, index: int, item: _FS) -> None:  # type: ignore[override]
+        """Insert one validated item at the requested position."""
         self._validate(item, op="insert")
         super().insert(index, item)
 
@@ -743,6 +755,7 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
         return Plot(self, **kwargs)
 
     def copy(self) -> FrequencySeriesBaseList[_FS]:
+        """Return a deep copy of the list values."""
         return self.__class__(*(item.copy() for item in self))
 
     def plot_all(self, *args: Any, **kwargs: Any):
@@ -824,6 +837,7 @@ class FrequencySeriesBaseList(PlotMixin, list[_FS]):
         return (list, (list(self),))
 
     def write(self, target, *args, **kwargs):
+        """Write the list through the Astropy I/O registry."""
         from astropy.io import registry
 
         return registry.write(self, target, *args, **kwargs)
@@ -942,32 +956,37 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
     # ===============================
 
     def to_control_frd(self, *args, **kwargs) -> list:
-        """Convert each item to control.FRD.
-        Returns a list of FRD objects.
+        """Convert each item to `control.FRD`.
+
+        Return a list of FRD objects.
         """
         return [fs.to_control_frd(*args, **kwargs) for fs in self]
 
     def to_torch(self, *args, **kwargs) -> list:
-        """Convert each item to torch.Tensor.
-        Returns a list of Tensors.
+        """Convert each item to `torch.Tensor`.
+
+        Return a list of tensors.
         """
         return [fs.to_torch(*args, **kwargs) for fs in self]
 
     def to_tensorflow(self, *args, **kwargs) -> list:
-        """Convert each item to tensorflow.Tensor.
-        Returns a list of Tensors.
+        """Convert each item to `tensorflow.Tensor`.
+
+        Return a list of tensors.
         """
         return [fs.to_tensorflow(*args, **kwargs) for fs in self]
 
     def to_jax(self, *args, **kwargs) -> list:
-        """Convert each item to jax.Array.
-        Returns a list of Arrays.
+        """Convert each item to `jax.Array`.
+
+        Return a list of arrays.
         """
         return [fs.to_jax(*args, **kwargs) for fs in self]
 
     def to_cupy(self, *args, **kwargs) -> list:
-        """Convert each item to cupy.ndarray.
-        Returns a list of Arrays.
+        """Convert each item to `cupy.ndarray`.
+
+        Return a list of arrays.
         """
         return [fs.to_cupy(*args, **kwargs) for fs in self]
 
@@ -976,7 +995,8 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
     # ===============================
 
     def to_pandas(self, **kwargs):
-        """Convert to pandas.DataFrame.
+        """Convert the list to a `pandas.DataFrame`.
+
         Columns are named by channel name or index.
         """
         import pandas as pd
@@ -997,8 +1017,9 @@ class FrequencySeriesList(ListMapMixin, FrequencySeriesBaseList[FrequencySeries]
         return pd.DataFrame(data)
 
     def to_xarray(self):
-        """Convert to xarray.DataArray.
-        Concatenates along a new dimension 'channel'.
+        """Convert the list to an `xarray.DataArray`.
+
+        Concatenate items along a new `channel` dimension.
         """
         import xarray as xr
 

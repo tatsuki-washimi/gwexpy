@@ -34,6 +34,7 @@ except ImportError:
 
 
 def main():
+    """Launch the gwexpy desktop GUI."""
     import argparse
 
     parser = argparse.ArgumentParser(description="gwexpy GUI tool")

@@ -15,9 +15,10 @@ except ImportError:
     import socket
     import ssl
     from functools import wraps
-    import requests
-    import pytest
     from urllib.error import URLError
+
+    import pytest
+    import requests
     NETWORK_ERROR = (socket.timeout, requests.RequestException, URLError)
     SSLError = ssl.SSLError
     def pytest_skip_network_error(func):

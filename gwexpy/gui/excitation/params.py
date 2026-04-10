@@ -5,7 +5,8 @@ from dataclasses import dataclass
 
 @dataclass
 class GeneratorParams:
-    """UI Parameters for Signal Generator.
+    """Store UI parameters for the signal generator.
+
     Acts as a bridge between Qt UI and SignalGenerator logic.
     """
 

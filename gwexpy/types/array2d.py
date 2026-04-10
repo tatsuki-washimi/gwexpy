@@ -12,13 +12,12 @@ __all__ = ["Array2D"]
 
 
 class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
-    """
-    2D Array with unified axis API.
-    """
+    """2D array with a unified axis API."""
 
     _metadata_slots = GwpyArray2D._metadata_slots + ("_axis0_name", "_axis1_name")
 
     def __new__(cls, data, axis_names=None, **kwargs):
+        """Create a 2D array with explicit axis naming."""
         # We enforce y->axis0, x->axis1 convention if defaults missing
         # This keeps properties consistent across Array2D wrappers
 
@@ -72,6 +71,7 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
 
     @property
     def axes(self):
+        """Return axis descriptors for both dimensions."""
         return (
             AxisDescriptor(self._axis0_name, self.xindex),
             AxisDescriptor(self._axis1_name, self.yindex),
@@ -123,13 +123,15 @@ class Array2D(AxisApiMixin, StatisticalMethodsMixin, GwpyArray2D):
             raise ValueError(f"Invalid transpose axes for 2D: {axes}")
 
     def imshow(self, **kwargs):
-        """Plot this array using matplotlib.axes.Axes.imshow.
-        Inherited from gwpy.
+        """Plot this array with `matplotlib.axes.Axes.imshow`.
+
+        Inherited from GWpy.
         """
         return super().imshow(**kwargs)
 
     def pcolormesh(self, **kwargs):
-        """Plot this array using matplotlib.axes.Axes.pcolormesh.
-        Inherited from gwpy.
+        """Plot this array with `matplotlib.axes.Axes.pcolormesh`.
+
+        Inherited from GWpy.
         """
         return super().pcolormesh(**kwargs)

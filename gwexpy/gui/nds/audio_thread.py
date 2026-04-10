@@ -1,5 +1,4 @@
-"""Thread for capturing PC Audio using sounddevice.
-"""
+"""Capture PC audio with a Qt worker thread."""
 from __future__ import annotations
 
 import logging
@@ -21,6 +20,8 @@ _QThread: Any = getattr(QtCore, "QThread", object)
 
 
 class AudioThread(_QThread):
+    """Capture microphone audio and emit streaming payloads."""
+
     # Signal to emit received data: (data_dict, trend_type, is_online)
     dataReceived = QtCore.Signal(object, str, bool)
     finished = QtCore.Signal()
@@ -36,6 +37,7 @@ class AudioThread(_QThread):
         self.skip_blocks = 5  # Discard first 5 blocks to avoid transients (approx 0.5s)
 
     def run(self):
+        """Start the audio capture loop for the configured device."""
         if sd is None:
             logger.info("AudioThread: sounddevice not found.")
             self.finished.emit()
@@ -196,4 +198,5 @@ class AudioThread(_QThread):
             self.finished.emit()
 
     def stop(self):
+        """Stop the capture loop on the next polling cycle."""
         self.running = False

@@ -1,9 +1,10 @@
-import pytest; pytest.importorskip("iminuit")
 import numpy as np
 import pytest
 from gwpy.timeseries import TimeSeries
 
 from gwexpy.fitting import fit_bootstrap_spectrum
+
+pytest.importorskip("iminuit")
 
 
 def test_fit_bootstrap_spectrum_alignment_regression():
@@ -46,6 +47,7 @@ def test_fit_bootstrap_spectrum_alignment_regression():
 
     # Verify covariance matrix matches PSD size
     assert cov.shape == (len(psd), len(psd))
+
 
 def test_fit_bootstrap_spectrum_stride_removal():
     # Synthetic data

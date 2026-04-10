@@ -17,6 +17,31 @@ if TYPE_CHECKING:
 __all__ = ["register_timeseries_format"]
 
 
+def _ensure_registry_docstring(data_class: type[Any], method_name: str) -> None:
+    """Ensure Astropy registry doc updates see a multi-line method docstring."""
+    method = getattr(data_class, method_name, None)
+    if method is None:
+        return
+
+    doc = getattr(method, "__doc__", None)
+    if isinstance(doc, str):
+        lines = doc.splitlines()
+        has_indented_content = any(line.strip() and line[:1].isspace() for line in lines[1:])
+        if len(lines) >= 2 and has_indented_content:
+            return
+        summary = lines[0].strip() if lines and lines[0].strip() else f"{data_class.__name__}.{method_name}"
+    else:
+        summary = f"{data_class.__name__}.{method_name}"
+
+    normalized = f"{summary}\n\n    Registry-generated format documentation follows."
+    try:
+        method.__doc__ = normalized
+    except AttributeError:
+        func = getattr(method, "__func__", None)
+        if func is not None:
+            func.__doc__ = normalized
+
+
 def register_timeseries_format(
     format_name: str,
     *,
@@ -110,6 +135,10 @@ def register_timeseries_format(
     import functools
 
     from .. import TimeSeries, TimeSeriesDict, TimeSeriesMatrix
+
+    for data_class in (TimeSeriesDict, TimeSeries, TimeSeriesMatrix):
+        _ensure_registry_docstring(data_class, "read")
+        _ensure_registry_docstring(data_class, "write")
 
     # Register TimeSeriesDict reader
     if reader_dict is not None:

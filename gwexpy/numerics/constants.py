@@ -1,5 +1,4 @@
-"""
-Dtype-aware numerical constants for gwexpy.
+"""Dtype-aware numerical constants for gwexpy.
 
 Why not just ``1e-12``?
 -----------------------
@@ -43,6 +42,7 @@ def eps_for_dtype(dtype: DTypeLike = np.float64) -> float:
     float
         Machine epsilon — the smallest representable positive number such
         that ``1.0 + eps != 1.0``.
+
     """
     return float(np.finfo(np.dtype(dtype)).eps)
 

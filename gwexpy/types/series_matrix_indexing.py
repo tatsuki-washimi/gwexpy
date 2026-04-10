@@ -28,18 +28,18 @@ class SeriesMatrixIndexingMixin:
         shape: tuple[int, ...]
 
         @property
-        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...  # noqa: D102
 
         @xindex.setter
         def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...
 
-        def row_index(self, key: Any) -> int: ...
-        def col_index(self, key: Any) -> int: ...
-        def view(self, dtype: Any = ..., type: type[Any] | None = ...) -> Any: ...
+        def row_index(self, key: Any) -> int: ...  # noqa: D102
+        def col_index(self, key: Any) -> int: ...  # noqa: D102
+        def view(self, dtype: Any = ..., type: type[Any] | None = ...) -> Any: ...  # noqa: D102
 
     def _get_series_kwargs(self, xindex, meta):
-        """
-        Return keyword arguments for Series constructor.
+        """Return keyword arguments for Series constructor.
+
         Override in subclasses to use specific keys (e.g., 'times' or 'frequencies').
         """
         kwargs = {
@@ -53,9 +53,7 @@ class SeriesMatrixIndexingMixin:
         return kwargs
 
     def __getitem__(self, key):
-        """
-        Label-based or position-based indexing with metadata preservation.
-        """
+        """Apply label-based or position-based indexing with metadata preservation."""
         # 1. Expand key to full 3D coordinates
         expanded_key = _expand_key(key, 3)
         r, c, s = expanded_key
@@ -174,9 +172,7 @@ class SeriesMatrixIndexingMixin:
         return result
 
     def __setitem__(self, key, value):
-        """
-        Assign values or Series to the matrix.
-        """
+        """Assign values or Series objects into the matrix."""
 
         def _to_base(x):
             if hasattr(x, "value"):

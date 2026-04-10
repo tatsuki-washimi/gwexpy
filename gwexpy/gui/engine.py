@@ -7,7 +7,10 @@ logger = logging.getLogger(__name__)
 
 
 class Engine:
+    """Compute GUI-facing spectral products from buffered time-series data."""
+
     def __init__(self):
+        """Initialize the engine state."""
         self.params = {}
         # Stores accumulation buffers or state if needed
 
@@ -19,7 +22,8 @@ class Engine:
 
     def configure(self, params):
         """Update local parameters from the GUI.
-        params expected keys:
+
+        Expected keys:
           - 'start_freq'
           - 'stop_freq'
           - 'bw' (Resolution Bandwidth)
@@ -32,9 +36,10 @@ class Engine:
 
     def _get_fft_kwargs(self, sample_rate):
         """Calculate gwpy-compatible FFT arguments from DTT parameters.
+
         DTT defines Resolution BW = fs / N_fft (roughly, window dependent).
-        gwpy .asd() takes 'fftlength' in seconds.
-        fftlength = 1 / bw
+        `gwpy` `.asd()` takes `fftlength` in seconds.
+        `fftlength = 1 / bw`.
         """
         bw = self.params.get("bw", 1.0)
         window = self.params.get("window", "hanning")

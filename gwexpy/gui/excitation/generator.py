@@ -9,7 +9,8 @@ from .params import GeneratorParams
 
 
 class SignalGenerator:
-    """Generates simulation waveforms based on GeneratorParams.
+    """Generate simulation waveforms from ``GeneratorParams``.
+
     Read-Only: Does not interact with hardware.
     """
 
@@ -18,6 +19,7 @@ class SignalGenerator:
         self.filter_states = {}
 
     def generate(self, times: np.ndarray, params: GeneratorParams) -> np.ndarray:
+        """Generate a waveform array for the requested time samples."""
         if not params.enabled:
             return np.zeros_like(times)
 
