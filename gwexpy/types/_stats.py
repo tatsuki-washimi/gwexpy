@@ -11,8 +11,7 @@ except ImportError as _exc:
 
 
 class StatisticalMethodsMixin:
-    """
-    Mixin class providing statistical methods with ignore_nan support.
+    """Mixin class providing statistical methods with ignore_nan support.
 
     This mixin works for both 1D (TimeSeries) and N-D (Matrix) data.
     For matrices, use axis parameter to specify the reduction axis.
@@ -181,6 +180,7 @@ class StatisticalMethodsMixin:
         Any
             The median value(s). If the object carries a unit, the result is
             returned with the same unit where applicable.
+
         """
         ignore_nan = kwargs.pop("ignore_nan", True)
         # overwrite_input is only in median/nanmedian
@@ -191,8 +191,7 @@ class StatisticalMethodsMixin:
         return self._apply_stat_func(np.nanmedian, np.median, ignore_nan, **base_kwargs)
 
     def rms(self, axis=None, keepdims=False, ignore_nan=True):
-        """
-        Compute the Root Mean Square (RMS) value.
+        """Compute the Root Mean Square (RMS) value.
 
         Parameters
         ----------
@@ -207,6 +206,7 @@ class StatisticalMethodsMixin:
         -------
         Quantity or float
             The RMS value(s). Returns `~astropy.units.Quantity` if the object has a unit.
+
         """
         func = np.nanmean if ignore_nan else np.mean
         data = np.asarray(self)
@@ -219,8 +219,7 @@ class StatisticalMethodsMixin:
         return val
 
     def skewness(self, axis=None, nan_policy="propagate"):
-        """
-        Compute the skewness of the data.
+        """Compute the skewness of the data.
 
         Skewness is a measure of the asymmetry of the probability distribution
         of a real-valued random variable about its mean.
@@ -237,13 +236,13 @@ class StatisticalMethodsMixin:
         -------
         float or ndarray
             The skewness value(s).
+
         """
         data = np.asarray(self)
         return scipy_stats.skew(data, axis=axis, nan_policy=nan_policy)
 
     def kurtosis(self, axis=None, fisher=True, nan_policy="propagate"):
-        """
-        Compute the kurtosis (Fisher or Pearson) of the data.
+        """Compute the kurtosis (Fisher or Pearson) of the data.
 
         Kurtosis is a measure of the "tailedness" of the probability distribution.
 
@@ -262,6 +261,7 @@ class StatisticalMethodsMixin:
         -------
         float or ndarray
             The kurtosis value(s).
+
         """
         data = np.asarray(self)
         return scipy_stats.kurtosis(

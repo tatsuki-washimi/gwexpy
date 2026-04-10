@@ -1,12 +1,14 @@
 # tests/fields/test_repr.py
 import re
+
 import numpy as np
+
 from gwexpy.fields import (
-    ScalarField,
-    VectorField,
-    TensorField,
-    FieldList,
     FieldDict,
+    FieldList,
+    ScalarField,
+    TensorField,
+    VectorField,
 )
 
 RE_SHAPE = r"\(\s*\d+(?:\s*,\s*\d+)*\s*\)"

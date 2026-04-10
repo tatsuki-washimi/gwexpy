@@ -111,6 +111,8 @@ class ThresholdStrategy(ABC):
         raw_bkg : TimeSeries, optional
             Raw background time series data. Required for PercentileThreshold
             to calculate the distribution of PSDs across segments.
+        **kwargs
+            Strategy-specific options forwarded by the caller.
 
         """
         pass
@@ -149,6 +151,7 @@ class RatioThreshold(ThresholdStrategy):
         raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
+        """Return the mask where injection PSD exceeds the ratio threshold."""
         del raw_bkg, kwargs
         return psd_inj.value > (psd_bkg.value * self.ratio)
 
@@ -159,6 +162,7 @@ class RatioThreshold(ThresholdStrategy):
         raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
+        """Return the PSD threshold implied by the fixed ratio."""
         del psd_inj, raw_bkg, kwargs
         return psd_bkg.value * self.ratio
 
@@ -232,6 +236,7 @@ class SigmaThreshold(ThresholdStrategy):
         raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
+        """Return the mask where injection PSD exceeds the sigma threshold."""
         del raw_bkg
         n_avg = kwargs.get("n_avg", 1.0)
         if not isinstance(n_avg, (int, float)):
@@ -250,6 +255,7 @@ class SigmaThreshold(ThresholdStrategy):
         raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
+        """Return the PSD threshold implied by the Gaussian approximation."""
         del psd_inj, raw_bkg
         n_avg = kwargs.get("n_avg", 1.0)
         if not isinstance(n_avg, (int, float)):
@@ -297,6 +303,7 @@ class PercentileThreshold(ThresholdStrategy):
         raw_bkg: TimeSeries | None = None,
         **kwargs: object,
     ) -> np.ndarray:
+        """Return the mask where injection PSD exceeds the percentile threshold."""
         threshold = self.threshold(
             psd_inj,
             psd_bkg,
@@ -312,6 +319,7 @@ class PercentileThreshold(ThresholdStrategy):
         raw_bkg: TimeSeries | None = None,
         **kwargs: Any,
     ) -> np.ndarray:
+        """Return the PSD threshold from the empirical background distribution."""
         del psd_bkg
         fftlength = kwargs.get("fftlength")
         overlap = kwargs.get("overlap")

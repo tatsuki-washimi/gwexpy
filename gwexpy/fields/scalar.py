@@ -71,12 +71,23 @@ class ScalarField(FieldBase):
                  axis0_domain='time',
                  space_domains={'x': 'real', 'y': 'real', 'z': 'real'},
                  axis0_offset=None)>
+
     """
 
     _axis0_index: IndexLike
     _axis1_index: IndexLike
     _axis2_index: IndexLike
     _axis3_index: IndexLike
+
+    def __repr__(self) -> str:
+        """Return a compact repr with shape and domain information."""
+        unit = self.unit if self.unit is not None else u.dimensionless_unscaled
+        try:
+            unit_value = float(unit.to_value(u.dimensionless_unscaled))
+        except Exception:
+            unit_value = 1.0
+        shape = ", ".join(str(dim) for dim in self.shape)
+        return f"<ScalarField({shape})@{self.axis0_domain}, {unit_value}>"
 
     def __getitem__(self, item: Any) -> ScalarField:
         """Get item, always returning ScalarField (4D maintained).
@@ -191,7 +202,7 @@ class ScalarField(FieldBase):
         return result
 
     def _isel_tuple(self, item_tuple: tuple[Any, ...]) -> ScalarField:
-        """Internal isel using ScalarField getitem logic."""
+        """Apply internal `isel` logic using ScalarField indexing semantics."""
         forced_item = self._force_4d_item(item_tuple)
         return self._getitem_scalarfield(forced_item)
 
@@ -217,6 +228,7 @@ class ScalarField(FieldBase):
         ------
         ValueError
             If axis length < 2 or axis is not regularly spaced.
+
         """
         if len(axis_index) < 2:
             raise ValueError(
@@ -257,6 +269,7 @@ class ScalarField(FieldBase):
         See Also
         --------
         gwpy.timeseries.TimeSeries.fft : The underlying transformation.
+
         """
         if self._axis0_domain != "time":
             raise ValueError(
@@ -351,6 +364,7 @@ class ScalarField(FieldBase):
         See Also
         --------
         gwpy.frequencyseries.FrequencySeries.ifft : Reference implementation.
+
         """
         if self._axis0_domain != "frequency":
             raise ValueError(
@@ -483,6 +497,7 @@ class ScalarField(FieldBase):
         .. [3] GWpy FrequencySeries (Duncan Macleod et al., SoftwareX 13, 2021)
         .. [4] Jackson, Classical Electrodynamics (3rd ed., 1998), §4.2:
                Fourier transform sign conventions
+
         """
         # Default: all real-domain spatial axes
         if axes is None:
@@ -627,6 +642,7 @@ class ScalarField(FieldBase):
         ------
         ValueError
             If any specified axis is not in 'k' domain.
+
         """
         # Default: all k-domain spatial axes
         if axes is None:
@@ -734,7 +750,7 @@ class ScalarField(FieldBase):
         return result
 
     def wavelength(self, axis: str | int) -> u.Quantity:
-        """Compute wavelength from wavenumber axis.
+        r"""Compute wavelength from wavenumber axis.
 
         Parameters
         ----------
@@ -744,12 +760,13 @@ class ScalarField(FieldBase):
         Returns
         -------
         `~astropy.units.Quantity`
-            Wavelength values (:math:`\\lambda = 2\\pi / |k|`). k=0 returns inf.
+            Wavelength values (:math:`\lambda = 2\pi / |k|`). k=0 returns inf.
 
         Raises
         ------
         ValueError
             If the axis is not in 'k' domain.
+
         """
         ax_name = self.axis_names[self._get_axis_index(axis)]
         domain = self._space_domains.get(ax_name)
@@ -798,6 +815,7 @@ class ScalarField(FieldBase):
         Returns
         -------
         ScalarField
+
         """
         from gwexpy.interop import from_pyroomacoustics_field
 
@@ -830,6 +848,7 @@ class ScalarField(FieldBase):
         --------
         >>> from gwexpy.fields import ScalarField
         >>> field = ScalarField.simulate('gaussian', shape=(100, 10, 10, 10))
+
         """
         from gwexpy.noise import field
 
@@ -865,6 +884,7 @@ class ScalarField(FieldBase):
         -------
         TimeSeriesList
             List of time series, one per point.
+
         """
         if self._axis0_domain != "time":
             raise ValueError("extract_points requires axis0_domain='time'")
@@ -962,6 +982,7 @@ class ScalarField(FieldBase):
             (axis_index, values): Both are `~astropy.units.Quantity` arrays.
             axis_index is the coordinate along the extraction axis,
             values is the data values along that axis.
+
         """
         from gwexpy.plot._coord import nearest_index, slice_from_index
 
@@ -1069,6 +1090,7 @@ class ScalarField(FieldBase):
         >>> # Extract xy plane at a specific time and z
         >>> field_2d = field.slice_map2d('xy', at={'t': 0.5 * u.s, 'z': 0.0 * u.m})
         >>> field_2d.plot_map2d()
+
         """
         from gwexpy.plot._coord import nearest_index, slice_from_index
 
@@ -1196,6 +1218,7 @@ class ScalarField(FieldBase):
         >>> from gwexpy.fields import ScalarField
         >>> sf = ScalarField(np.ones((1, 10, 10, 1)))
         >>> fig, ax = sf.plot_map2d('xy', at={'z': 0.0}) # doctest: +SKIP
+
         """
         import matplotlib.pyplot as plt
 
@@ -1330,6 +1353,7 @@ class ScalarField(FieldBase):
         >>> from gwexpy.fields import ScalarField
         >>> sf = ScalarField(np.ones((1024, 1, 1, 1)))
         >>> psd = sf.compute_psd((0, 0, 0)) # doctest: +SKIP
+
         """
         import matplotlib.pyplot as plt
 
@@ -1393,6 +1417,7 @@ class ScalarField(FieldBase):
         >>> from gwexpy.fields import ScalarField
         >>> sf = ScalarField(np.ones((2, 4, 4, 1)))
         >>> fig, ax = sf.plot_profile('x', at={'t': 0.5 * u.s, 'y': 0.0 * u.m, 'z': 0.0 * u.m}) # doctest: +SKIP
+
         """
         import matplotlib.pyplot as plt
 
@@ -1464,6 +1489,7 @@ class ScalarField(FieldBase):
         >>> sf = ScalarField(np.ones((2, 2, 2, 2)))
         >>> sf # doctest: +ELLIPSIS
         <ScalarField(2, 2, 2, 2)@time, 1.0>
+
         """
         from astropy import units as u
 
@@ -1534,6 +1560,7 @@ class ScalarField(FieldBase):
         >>> sf = ScalarField(np.ones((100, 2, 2, 2)), axis0=np.arange(100)*u.s)
         >>> sf.zscore(baseline_t=(0 * u.s, 1 * u.s)) # doctest: +ELLIPSIS
         <ScalarField(100, 2, 2, 2)@time, ...>
+
         """
         from astropy import units as u
 
@@ -1615,6 +1642,7 @@ class ScalarField(FieldBase):
         >>> from astropy import units as u
         >>> sf = ScalarField(np.ones((100, 2, 2, 2)), axis0=np.arange(100)*u.s)
         >>> mean_map = sf.time_stat_map('mean', t_range=(0 * u.s, 1 * u.s))
+
         """
         from gwexpy.plot._coord import nearest_index
 
@@ -1710,6 +1738,7 @@ class ScalarField(FieldBase):
         >>> from gwexpy.fields import ScalarField
         >>> sf = ScalarField(np.ones((100, 10, 1, 1)))
         >>> t, x, data = sf.time_space_map('x', at={'y': 0 * u.m, 'z': 0 * u.m})
+
         """
         from gwexpy.plot._coord import nearest_index, select_value, slice_from_index
 
@@ -1820,6 +1849,7 @@ class ScalarField(FieldBase):
         >>> from astropy import units as u
         >>> sf = ScalarField(np.ones((100, 4, 1, 1)), axis1=np.arange(4)*u.m)
         >>> fig, ax = sf.plot_time_space_map('x') # doctest: +SKIP
+
         """
         import matplotlib.pyplot as plt
 
@@ -1903,6 +1933,7 @@ class ScalarField(FieldBase):
         See Also
         --------
         gwexpy.fields.signal.compute_psd : Full documentation.
+
         """
         from .signal import compute_psd
 
@@ -1931,6 +1962,7 @@ class ScalarField(FieldBase):
         See Also
         --------
         gwexpy.fields.signal.freq_space_map : Full documentation.
+
         """
         from .signal import freq_space_map
 
@@ -1950,6 +1982,7 @@ class ScalarField(FieldBase):
         -------
         ScalarField
             Resampled field.
+
         """
         if self._axis0_domain != "time":
             raise ValueError("resample requires axis0_domain='time'")
@@ -2008,6 +2041,7 @@ class ScalarField(FieldBase):
         -------
         ScalarField
             Filtered field.
+
         """
         if self._axis0_domain != "time":
             raise ValueError("filter requires axis0_domain='time'")
@@ -2101,6 +2135,7 @@ class ScalarField(FieldBase):
         See Also
         --------
         gwexpy.fields.signal.compute_xcorr : Full documentation.
+
         """
         from .signal import compute_xcorr
 
@@ -2131,6 +2166,7 @@ class ScalarField(FieldBase):
         See Also
         --------
         gwexpy.fields.signal.time_delay_map : Full documentation.
+
         """
         from .signal import time_delay_map
 
@@ -2161,6 +2197,7 @@ class ScalarField(FieldBase):
         See Also
         --------
         gwexpy.fields.signal.coherence_map : Full documentation.
+
         """
         from .signal import coherence_map
 
@@ -2204,6 +2241,7 @@ class ScalarField(FieldBase):
         --------
         gwexpy.fields.signal.spectral_density : Full documentation.
         psd : Convenience alias for time-axis PSD.
+
         """
         from .signal import spectral_density
 
@@ -2254,6 +2292,7 @@ class ScalarField(FieldBase):
         See Also
         --------
         spectral_density : Generalized spectral density for any axis.
+
         """
         if "point_or_region" in kwargs:
             from .signal import compute_psd

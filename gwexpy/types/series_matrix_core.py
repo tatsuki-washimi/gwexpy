@@ -33,7 +33,7 @@ class SeriesMatrixCoreMixin:
         list_class: type[Any]
         series_class: type[Any] | None
 
-        def view(self, dtype: Any = ..., type: type[Any] | None = ...) -> Any: ...
+        def view(self, dtype: Any = ..., type: type[Any] | None = ...) -> Any: ...  # noqa: D102
         def __getitem__(self, key: Any) -> Any: ...
         def __setitem__(self, key: Any, value: Any) -> None: ...
 
@@ -45,6 +45,7 @@ class SeriesMatrixCoreMixin:
     @property
     def shape3D(self) -> tuple[int, ...]:
         """Shape of the matrix as a 3-tuple (n_rows, n_cols, n_samples).
+
         For 4D matrices (spectrograms), the last dimension is likely frequency,
         so n_samples is determined by _x_axis_index.
         """
@@ -290,8 +291,8 @@ class SeriesMatrixCoreMixin:
         return dict(zip(names, items))
 
     def to_dict(self) -> Any:
-        """
-        Convert matrix to an appropriate collection dict (e.g. TimeSeriesDict).
+        """Convert matrix to an appropriate collection dict (e.g. TimeSeriesDict).
+
         Follows the matrix structure (row, col) unless it's a 1-column matrix.
         """
         r_keys = self.row_keys()
@@ -313,9 +314,7 @@ class SeriesMatrixCoreMixin:
     def _get_meta_for_constructor(
         self, data: np.ndarray, xindex: IndexLike | None
     ) -> dict[str, Any]:
-        """
-        Prepare arguments for constructing a new instance of the same class.
-        """
+        """Prepare constructor arguments for a new instance of the same class."""
         return {
             "data": data,
             "xindex": xindex,

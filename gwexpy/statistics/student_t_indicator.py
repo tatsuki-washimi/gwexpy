@@ -26,8 +26,7 @@ def compute_student_t_nu(
     overlap: float | None = None,
     frange: tuple[float, float] | None = None,
 ) -> Spectrogram:
-    """
-    Compute Student-t degree of freedom (nu) for non-Gaussianity detection.
+    """Compute Student-t degree of freedom (nu) for non-Gaussianity detection.
     Nu -> infinity for Gaussian, small nu (e.g., < 10) for non-Gaussian.
 
     Parameters
@@ -43,6 +42,7 @@ def compute_student_t_nu(
     Returns
     -------
     Spectrogram (nu values)
+
     """
     if stride is None:
         if overlap is None:

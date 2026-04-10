@@ -1,5 +1,4 @@
-"""Utility functions for NDS connectivity.
-"""
+"""Provide small helpers for NDS connectivity."""
 from __future__ import annotations
 
 import logging
@@ -10,7 +9,8 @@ logger = logging.getLogger(__name__)
 
 
 def parse_server_string(server: Optional[str]) -> tuple[str, int]:
-    """Parse 'host:port' string into (host, port).
+    """Parse a ``host:port`` string into host and port values.
+
     Handles comma-separated lists (takes first).
     Default port is 31200 if not specified.
     """
@@ -43,7 +43,8 @@ def parse_server_string(server: Optional[str]) -> tuple[str, int]:
 
 
 def gps_now() -> float:
-    """Return current GPS time.
+    """Return the current GPS time.
+
     Falls back to system time converted to GPS epoch if gpstime is unavailable.
     GPS epoch is 1980-01-06 00:00:00 UTC.
     """

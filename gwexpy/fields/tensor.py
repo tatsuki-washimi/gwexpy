@@ -46,6 +46,7 @@ class TensorField(FieldDict):
     <TensorField(2, 2, 2, 2, 3, 3)@time, 1.0>
     >>> t.trace()
     <ScalarField(...), axis0_domain='time', ...>
+
     """
 
     def __init__(
@@ -58,7 +59,7 @@ class TensorField(FieldDict):
             arr = components
             if arr.ndim != 6:
                 raise ValueError(f"TensorField rank-2 expects 6D array, got {arr.ndim}D")
-            
+
             dim_i, dim_j = arr.shape[-2:]
             new_components = {}
             for i in range(dim_i):
@@ -83,6 +84,17 @@ class TensorField(FieldDict):
         new_components = {k: v.copy() for k, v in self.items()}
         return TensorField(new_components, rank=self.rank, validate=False)
 
+    def __repr__(self) -> str:
+        """Return a compact repr with array shape and time-domain marker."""
+        if not self:
+            return "<TensorField(empty)>"
+        first = next(iter(self.values()))
+        max_i = max(key[0] for key in self.keys()) + 1
+        max_j = max(key[1] for key in self.keys()) + 1
+        shape = (*first.shape, max_i, max_j)
+        shape_str = ", ".join(str(dim) for dim in shape)
+        return f"<TensorField({shape_str})@{first.axis0_domain}, 1.0>"
+
     def trace(self) -> ScalarField:
         """Compute the trace of a rank-2 tensor.
 
@@ -95,6 +107,7 @@ class TensorField(FieldDict):
         ------
         ValueError
             If the tensor rank is not 2.
+
         """
         if self.rank != 2:
             raise ValueError(
@@ -226,6 +239,7 @@ class TensorField(FieldDict):
         ndarray
             Shape (dim1, dim2, N0, N1, N2, N3) if order='first'.
             Shape (N0, N1, N2, N3, dim1, dim2) if order='last'.
+
         """
         if self.rank != 2:
             raise NotImplementedError("to_array only implemented for rank-2 tensors")
@@ -258,6 +272,7 @@ class TensorField(FieldDict):
         -------
         ScalarField
             The determinant field.
+
         """
         if self.rank != 2:
             raise ValueError(
@@ -294,6 +309,7 @@ class TensorField(FieldDict):
         ------
         ValueError
             If the tensor rank is not 2.
+
         """
         if self.rank != 2:
             raise ValueError(
@@ -366,6 +382,7 @@ class TensorField(FieldDict):
             Y-axis name.
         **kwargs
             Fixed coordinates and arguments passed to FieldPlot.add_scalar.
+
         """
         if self.rank != 2:
             raise NotImplementedError("plot_components only supports rank-2 tensors")

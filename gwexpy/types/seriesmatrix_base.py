@@ -68,6 +68,8 @@ class SeriesMatrix(  # type: ignore[misc]
     StatisticalMethodsMixin,
     np.ndarray,
 ):
+    """N-dimensional matrix of aligned series values with per-cell metadata."""
+
     def __new__(
         cls,
         data: Any = None,
@@ -88,10 +90,7 @@ class SeriesMatrix(  # type: ignore[misc]
         epoch: float = 0.0,
         attrs: dict[str, Any] | None = None,
     ) -> SeriesMatrix:
-        """
-        Create a SeriesMatrix with normalized inputs and metadata.
-        """
-
+        """Create a SeriesMatrix with normalized inputs and metadata."""
         if unit is not None:
             if units is not None:
                 raise ValueError("give only one of unit or units")

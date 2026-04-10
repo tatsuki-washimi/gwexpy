@@ -51,6 +51,7 @@ class RowProxy:
         The parent :class:`SegmentTable`.
     index:
         0-based row index.
+
     """
 
     __slots__ = ("_table", "_index")
@@ -120,6 +121,7 @@ class SegmentTable:
     >>> st = SegmentTable(pd.DataFrame({"span": segs}))
     >>> len(st)
     2
+
     """
 
     # ------------------------------------------------------------------
@@ -195,6 +197,7 @@ class SegmentTable:
         >>> from gwpy.segments import Segment
         >>> segs = [Segment(0, 4), Segment(4, 8)]
         >>> st = SegmentTable.from_segments(segs, label=["a", "b"])
+
         """
         n = len(segments)
         for name, data in meta_columns.items():
@@ -230,6 +233,7 @@ class SegmentTable:
         ------
         ValueError
             If *span* column is not found in *table*.
+
         """
         if hasattr(table, "to_pandas"):
             df = table.to_pandas()
@@ -267,6 +271,7 @@ class SegmentTable:
         Returns
         -------
         SegmentTable
+
         """
         import pandas as pd
         from gwpy.segments import Segment
@@ -306,6 +311,7 @@ class SegmentTable:
         ValueError
             If *name* already exists, length mismatch, or *kind* is not
             ``"meta"`` or ``"object"``.
+
         """
         if name in self._schema:
             raise ValueError(f"Column {name!r} already exists.")
@@ -354,6 +360,7 @@ class SegmentTable:
             If both *data* and *loader* are ``None``, or if length mismatches.
         ValueError
             If *kind* is not a valid payload kind.
+
         """
         if name in self._schema:
             raise ValueError(f"Column {name!r} already exists.")
@@ -448,6 +455,7 @@ class SegmentTable:
         ------
         IndexError
             If *i* is out of range.
+
         """
         n = len(self)
         if i < -n or i >= n:
@@ -499,6 +507,7 @@ class SegmentTable:
             If *func* does not return a ``dict``.
         ValueError
             If ``out_cols`` is given and the actual keys do not match.
+
         """
         # parallel is intentionally ignored (v0.1: sequential fallback)
         results: list[dict[str, Any]] = []
@@ -562,6 +571,7 @@ class SegmentTable:
         Returns
         -------
         SegmentTable
+
         """
         if column not in self._schema:
             raise KeyError(f"Column {column!r} not found.")
@@ -599,6 +609,7 @@ class SegmentTable:
         ------
         TypeError
             If the payload is not ``TimeSeries`` or ``TimeSeriesDict``.
+
         """
         try:
             from gwpy.timeseries import TimeSeries, TimeSeriesDict
@@ -658,6 +669,7 @@ class SegmentTable:
         Returns
         -------
         SegmentTable
+
         """
         if out_col is None:
             out_col = column + "_asd"
@@ -711,6 +723,7 @@ class SegmentTable:
             If *mask* length is not equal to ``len(self)``.
         KeyError
             If a condition column does not exist.
+
         """
         bool_mask: pd.Series[bool] = pd.Series([True] * len(self), dtype=bool)
 
@@ -754,6 +767,7 @@ class SegmentTable:
         ----------
         columns:
             List of payload column names to load.  ``None`` loads all.
+
         """
         cols = columns if columns is not None else list(self._payload.keys())
         for col in cols:
@@ -781,6 +795,7 @@ class SegmentTable:
         -------
         SegmentTable or None
             *None* if ``inplace=True``; new table if ``inplace=False``.
+
         """
         target = self if inplace else self.copy(deep=True)
         target.fetch(columns=columns)
@@ -801,6 +816,7 @@ class SegmentTable:
         Returns
         -------
         pandas.DataFrame
+
         """
         df = self._meta.copy()
         if not meta_only:
@@ -821,6 +837,7 @@ class SegmentTable:
         Returns
         -------
         SegmentTable
+
         """
         new_meta = self._meta.copy(deep=True)
         new_table = SegmentTable(new_meta)
@@ -1053,6 +1070,7 @@ class SegmentTable:
         Returns
         -------
         pandas.DataFrame
+
         """
         df = self._meta.copy()
 

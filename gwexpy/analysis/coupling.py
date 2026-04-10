@@ -71,8 +71,7 @@ def _build_bkg_segment_table(
     memory_limit: int = 2 * 1024**3,  # Default 2GB
     **kwargs: Any,
 ) -> SegmentTable:
-    """Helper to convert a background TimeSeries into a SegmentTable of PSDs.
-    """
+    """Build a background SegmentTable of PSDs from a TimeSeries."""
     from gwpy.segments import Segment
 
     from ..table.segment_table import SegmentTable
@@ -175,6 +174,7 @@ def _process_single_target(
     bkg_table: SegmentTable | None = None,
 ) -> tuple[str, CouplingResult] | None:
     """Process a single target channel.
+
     This function is defined at module level to ensuring picklability for multiprocessing.
     """
     # Target PSDs
@@ -281,8 +281,7 @@ def _process_single_target(
 
 
 class CouplingFunctionAnalysis:
-    """Analysis class to estimate Coupling Functions (CF).
-    """
+    """Estimate Coupling Functions (CFs)."""
 
     @classmethod
     def from_time_windows(
@@ -330,6 +329,8 @@ class CouplingFunctionAnalysis:
             Maximum memory in bytes for the background SegmentTable (default 2 GB).
         n_jobs : int, optional
             Number of parallel jobs. None means 1; -1 uses all cores.
+        **kwargs
+            Additional keyword arguments forwarded to PSD computation.
 
         Returns
         -------
@@ -444,6 +445,8 @@ class CouplingFunctionAnalysis:
             Maximum memory in bytes for the background SegmentTable (default 2 GB).
         n_jobs : int, optional
             Number of parallel jobs. None means 1; -1 uses all cores.
+        **kwargs
+            Additional keyword arguments forwarded to PSD computation.
 
         Returns
         -------
@@ -561,9 +564,17 @@ class CouplingFunctionAnalysis:
             Strategy to determine if Witness is excited.
         threshold_target : ThresholdStrategy
             Strategy to determine if Target is excited.
+        percentile_factor : float, optional
+            Correction factor used by :class:`PercentileThreshold`.
+        bkg_stride : float, optional
+            Stride in seconds for background SegmentTable construction.
+        memory_limit : int, optional
+            Maximum background SegmentTable memory budget in bytes.
         n_jobs : int, optional
             Number of jobs for parallel processing. None means 1 unless in a joblib.parallel_config context.
             -1 means using all processors.
+        **kwargs
+            Additional keyword arguments forwarded to PSD computation.
 
         """
         # --- 1. Identify Witness Channel ---
@@ -802,7 +813,7 @@ def estimate_coupling(
     inj_window: tuple[float, float] | None = None,
     **kwargs: Any,
 ) -> CouplingResult | dict[str, CouplingResult]:
-    """Helper function to estimate CF.
+    """Estimate CF from injection and background data.
 
     Parameters
     ----------

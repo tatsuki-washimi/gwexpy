@@ -1,15 +1,18 @@
 from __future__ import annotations
 
-import pytest; pytest.importorskip("iminuit")
 """Tests for gwexpy/fitting/gls.py — GLS and GeneralizedLeastSquares."""
+
 import numpy as np
 import pytest
 
 from gwexpy.fitting.gls import GLS, GeneralizedLeastSquares
 
+pytest.importorskip("iminuit")
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _linear(x, a, b):
     return a * x + b

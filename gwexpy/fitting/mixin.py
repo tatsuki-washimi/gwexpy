@@ -1,5 +1,4 @@
-"""Mixin for fitting functionality.
-"""
+"""Mixin for fitting functionality."""
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -7,8 +6,7 @@ from typing import Any
 
 
 class FittingMixin:
-    """Mixin class that adds .fit() method to Series objects.
-    """
+    """Mixin class that adds `.fit()` to series objects."""
 
     def fit(
         self,

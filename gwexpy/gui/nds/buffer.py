@@ -1,12 +1,12 @@
-"""Data buffer management for NDS data.
-Adapted from ndscope reference implementation.
-"""
+"""Manage NDS data buffers adapted from ndscope."""
 from __future__ import annotations
 
 import numpy as np
 
 
 class DataBuffer:
+    """Store recent samples for a single channel."""
+
     def __init__(self, lookback=30.0):
         self.lookback = lookback
         self.tarray = np.array([])
@@ -15,7 +15,8 @@ class DataBuffer:
         self.step = 0
 
     def update(self, new_data, trend="raw"):
-        """Append new data to the buffer and trim old data.
+        """Append new data to the buffer and trim old samples.
+
         new_data: dict with 'data', 'gps_start', 'step'
         """
         incoming = new_data["data"]
@@ -70,6 +71,7 @@ class DataBuffer:
                 self.gps_start = self.tarray[0]
 
     def reset(self):
+        """Clear buffered data and timing metadata."""
         self.tarray = np.array([])
         self.data_map = {}
         self.gps_start = 0
@@ -83,7 +85,9 @@ class DataBufferDict(dict):
         self.lookback = lookback
 
     def update_buffers(self, payload):
-        """payload: dict of {channel: {data:..., gps_start:..., step:...}, ...}
+        """Update per-channel buffers from a payload mapping.
+
+        payload: dict of {channel: {data:..., gps_start:..., step:...}, ...}
         trend: 'raw' (fixed for Phase 1)
         """
         for channel, packet in payload.items():
@@ -92,6 +96,7 @@ class DataBufferDict(dict):
             self[channel].update(packet, trend="raw")
 
     def reset(self):
+        """Reset all child buffers and remove channel entries."""
         for buf in self.values():
             buf.reset()
         self.clear()

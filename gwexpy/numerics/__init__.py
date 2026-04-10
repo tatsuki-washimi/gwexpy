@@ -1,5 +1,4 @@
-"""
-gwexpy.numerics — Single source of truth for numerical stability.
+"""gwexpy.numerics — Single source of truth for numerical stability.
 
 This module centralises all numerical constants and scaling utilities
 used throughout gwexpy, replacing ad-hoc "Death Floats" (``1e-12``,

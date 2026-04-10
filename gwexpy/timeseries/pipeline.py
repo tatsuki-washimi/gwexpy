@@ -48,8 +48,7 @@ def _restore_collection(result, original):
 
 
 class Transform:
-    """Minimal transform interface for TimeSeries-like objects.
-    """
+    """Minimal transform interface for TimeSeries-like objects."""
 
     supports_inverse = False
 
@@ -74,8 +73,7 @@ class Transform:
 
 
 class Pipeline:
-    """Sequentially apply a list of transforms.
-    """
+    """Sequentially apply a list of transforms."""
 
     def __init__(self, steps: Sequence[tuple[str, Transform]]):
         """Initialize pipeline with named transform steps.
@@ -137,8 +135,7 @@ class Pipeline:
 
 
 class ImputeTransform(Transform):
-    """Impute missing values using existing lower-level helpers.
-    """
+    """Impute missing values using existing lower-level helpers."""
 
     def __init__(self, method: str = "interpolate", **kwargs):
         super().__init__()
@@ -162,8 +159,7 @@ class ImputeTransform(Transform):
 
 
 class StandardizeTransform(Transform):
-    """Standardize TimeSeries/Matrix objects with optional robust scaling.
-    """
+    """Standardize TimeSeries or matrix objects with optional robust scaling."""
 
     supports_inverse = True
 
@@ -349,8 +345,7 @@ class StandardizeTransform(Transform):
 
 
 class WhitenTransform(Transform):
-    """Whitening using PCA or ZCA on TimeSeriesMatrix-like data.
-    """
+    """Whiten TimeSeriesMatrix-like data with PCA or ZCA."""
 
     supports_inverse = True
 
@@ -453,8 +448,7 @@ class WhitenTransform(Transform):
 
 
 class PCATransform(Transform):
-    """PCA wrapper using existing decomposition helpers.
-    """
+    """Wrap PCA using existing decomposition helpers."""
 
     supports_inverse = True
 
@@ -519,8 +513,7 @@ class PCATransform(Transform):
 
 
 class ICATransform(Transform):
-    """ICA wrapper using existing decomposition helpers.
-    """
+    """Wrap ICA using existing decomposition helpers."""
 
     supports_inverse = True
 

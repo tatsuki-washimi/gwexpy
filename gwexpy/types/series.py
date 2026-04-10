@@ -8,9 +8,7 @@ __all__ = ["Series"]
 
 
 class Series(StatisticalMethodsMixin, GwpySeries):
-    """
-    1D Series with unified statistical methods.
-    """
+    """1D series with unified statistical methods."""
 
     pass
 

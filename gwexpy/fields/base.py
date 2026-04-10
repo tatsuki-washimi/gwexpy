@@ -170,6 +170,7 @@ class FieldBase(Array4D):
             The sliced data.
         x_index, y_index
             Coordinate arrays for the slice axes.
+
         """
         # 1. Determine which axes are free (x, y) vs fixed
         all_axes = [
@@ -289,6 +290,7 @@ class FieldBase(Array4D):
             Useful to resolve conflicts when an axis name matches a parameter name.
         **kwargs
             Fixed coordinates (e.g. z=0) and plotting keyword arguments.
+
         """
         from gwexpy.interop._registry import ConverterRegistry
 
@@ -344,6 +346,7 @@ class FieldBase(Array4D):
         -------
         matplotlib.animation.FuncAnimation
             The animation object.
+
         """
         from matplotlib.animation import FuncAnimation
 
@@ -435,7 +438,6 @@ class FieldBase(Array4D):
     # ------------------------------------------------------------------
     def _validate_domain_units(self) -> None:
         """Validate that axis units are consistent with declared domains."""
-
         # Axis 0: time or frequency
         axis0 = getattr(self, "_axis0_index", None)
         if isinstance(axis0, u.Quantity):

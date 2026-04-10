@@ -14,6 +14,8 @@ _QThread: Any = getattr(QtCore, "QThread", object)
 
 
 class SimulationThread(_QThread):
+    """Emit synthetic channel data for streaming simulations."""
+
     dataReceived = QtCore.Signal(object, object, bool)
 
     def __init__(self, channels, fs=16384, chunk_sec=1.0):
@@ -27,9 +29,11 @@ class SimulationThread(_QThread):
         logger.info(f"SimulationThread initialized for channels: {self.channels}")
 
     def stop(self):
+        """Request termination of the simulation loop."""
         self._stop = True
 
     def run(self):
+        """Generate chunks until the thread is asked to stop."""
         logger.info("SimulationThread run() started")
         while not self._stop:
             start_t = time.time()

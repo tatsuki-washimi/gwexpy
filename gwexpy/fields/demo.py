@@ -83,6 +83,7 @@ def make_demo_scalar_field(
 
     >>> # White noise for PSD testing
     >>> noise_field = make_demo_scalar_field('noise', seed=123)
+
     """
     if dy is None:
         dy = dx

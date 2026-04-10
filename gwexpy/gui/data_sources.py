@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 
 class PayloadPacket(TypedDict):
+    """Per-channel payload emitted by GUI data sources."""
+
     data: np.ndarray
     gps_start: float
     step: float
@@ -50,24 +52,28 @@ class BaseDataSource(QObject):
         self.lookback: float = 30.0
 
     def set_channels(self, channels: list[str]) -> None:
+        """Set the active channel list, removing empty values and duplicates."""
         self.channels = list(dict.fromkeys([c for c in channels if c]))
 
     def set_server(self, server_env: str) -> None:
+        """Set the configured server identifier."""
         self.server = server_env
 
     def online_start(self, lookback: float = 30.0) -> None:
+        """Start online acquisition with the requested lookback window."""
         self.lookback = lookback
 
     def online_stop(self) -> None:
+        """Stop online acquisition."""
         return None
 
     def reset(self) -> None:
+        """Reset data-source state."""
         return None
 
 
 class SyntheticDataSource(BaseDataSource):
-    """Deterministic data source for tests and offline runs.
-    """
+    """Deterministic data source for tests and offline runs."""
 
     def __init__(
         self,
@@ -91,6 +97,7 @@ class SyntheticDataSource(BaseDataSource):
         self._timer: Optional[QTimer] = None
 
     def online_start(self, lookback: float = 30.0) -> None:
+        """Start emitting synthetic data, optionally via a timer."""
         super().online_start(lookback)
         self.buffers.lookback = self.lookback
         if self.auto_emit:
@@ -105,15 +112,18 @@ class SyntheticDataSource(BaseDataSource):
                 self._timer.start(self.emit_interval_ms)
 
     def online_stop(self) -> None:
+        """Stop timed synthetic emission."""
         if self._timer and self._timer.isActive():
             self._timer.stop()
 
     def reset(self) -> None:
+        """Reset buffers and synthetic time state."""
         self.online_stop()
         self.buffers.reset()
         self._current_time = 0.0
 
     def emit_next(self) -> Payload:
+        """Generate, buffer, emit, and return the next synthetic payload."""
         payload = self._generate_payload()
         self.buffers.update_buffers(payload)
         self.signal_data.emit(self.buffers)
@@ -138,8 +148,7 @@ class SyntheticDataSource(BaseDataSource):
 
 
 class StubDataSource(SyntheticDataSource):
-    """Synthetic data source that can inject failure modes.
-    """
+    """Synthetic data source that can inject failure modes."""
 
     def __init__(
         self,
@@ -160,12 +169,15 @@ class StubDataSource(SyntheticDataSource):
         self._next_failure: Optional[str] = None
 
     def set_failure_mode(self, mode: Optional[str]) -> None:
+        """Set the default failure mode."""
         self.failure_mode = mode
 
     def fail_next(self, mode: str) -> None:
+        """Inject a failure mode for the next emission only."""
         self._next_failure = mode
 
     def emit_next(self) -> Payload:
+        """Emit the next payload after applying the configured failure mode."""
         mode = self._next_failure or self.failure_mode
         self._next_failure = None
         try:

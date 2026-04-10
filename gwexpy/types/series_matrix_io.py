@@ -33,30 +33,28 @@ class SeriesMatrixIOMixin:
         ndim: int
 
         @property
-        def xindex(self) -> IndexLike | None: ...
+        def xindex(self) -> IndexLike | None: ...  # noqa: D102
 
         @xindex.setter
         def xindex(self, value: IndexLike | None) -> None: ...
 
         @property
-        def xunit(self) -> u.Unit | None: ...
+        def xunit(self) -> u.Unit | None: ...  # noqa: D102
 
         @property
-        def N_samples(self) -> int: ...
+        def N_samples(self) -> int: ...  # noqa: D102
 
         @property
-        def shape3D(self) -> tuple[int, ...]: ...
+        def shape3D(self) -> tuple[int, ...]: ...  # noqa: D102
 
-        def row_keys(self) -> tuple[Any, ...]: ...
-        def col_keys(self) -> tuple[Any, ...]: ...
-        def row_index(self, key: Any) -> int: ...
-        def col_index(self, key: Any) -> int: ...
+        def row_keys(self) -> tuple[Any, ...]: ...  # noqa: D102
+        def col_keys(self) -> tuple[Any, ...]: ...  # noqa: D102
+        def row_index(self, key: Any) -> int: ...  # noqa: D102
+        def col_index(self, key: Any) -> int: ...  # noqa: D102
 
     # -- I/O (HDF5) -------------------------------------------------
     def to_pandas(self, format="wide"):
-        """
-        Convert matrix to a pandas DataFrame.
-        """
+        """Convert the matrix to a pandas DataFrame."""
         pd = require_optional("pandas")
         if format == "wide":
             N, M, K = self._value.shape
@@ -107,9 +105,7 @@ class SeriesMatrixIOMixin:
             raise ValueError(f"Unknown format: {format}")
 
     def write(self, target, format=None, **kwargs):
-        """
-        Write matrix to file.
-        """
+        """Write the matrix to a file."""
         from pathlib import Path
 
         from gwpy.io.registry import default_registry as io_registry
@@ -260,6 +256,7 @@ class SeriesMatrixIOMixin:
         -------
         SeriesMatrix
             The loaded matrix.
+
         """
         from pathlib import Path
 

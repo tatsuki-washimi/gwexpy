@@ -15,11 +15,12 @@ try:
     )
 except ImportError:
     # Handle missing items in newer/different gwpy versions
-    import pytest
-    import numpy
-    from contextlib import contextmanager
-    import tempfile
     import os
+    import tempfile
+    from contextlib import contextmanager
+
+    import numpy
+    import pytest
 
     # Mock/Fallback implementations
     SKIP_TEX = "skip_tex"

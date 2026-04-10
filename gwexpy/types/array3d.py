@@ -12,9 +12,7 @@ __all__ = ["Array3D"]
 
 
 class Array3D(Array):
-    """
-    3D Array with explicit axis management.
-    """
+    """3D array with explicit axis management."""
 
     _metadata_slots = Array._metadata_slots + (
         "_axis0_name",
@@ -35,6 +33,7 @@ class Array3D(Array):
         axis_names=None,
         **kwargs,
     ):
+        """Create a 3D array with named axes and axis indices."""
         obj = super().__new__(cls, data, unit=unit, **kwargs)
         if obj.ndim != 3:
             raise ValueError(f"Array3D must be 3-dimensional, got {obj.ndim}D")
@@ -114,6 +113,7 @@ class Array3D(Array):
 
     @property
     def axes(self):
+        """Return axis descriptors for all three dimensions."""
         return (
             AxisDescriptor(self._axis0_name, self._axis0_index),
             AxisDescriptor(self._axis1_name, self._axis1_index),
@@ -279,6 +279,7 @@ class Array3D(Array):
         return new_data
 
     def plane(self, drop_axis, drop_index, *, axis1=None, axis2=None):
+        """Extract a 2D plane by dropping one axis at a single index."""
         drop_axis_idx = self._get_axis_index(drop_axis)
         remaining = [i for i in range(3) if i != drop_axis_idx]
         target_indices = list(remaining)

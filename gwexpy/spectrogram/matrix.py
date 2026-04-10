@@ -720,7 +720,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
 
             if self.meta is not None:
                 try:
-                    sliced = self.meta[r_idx, c_idx]
+                    sliced = self.meta[r_idx, col_idx]
                     if isinstance(sliced, np.ndarray):
                         # Ensure meta for 3D is (N, 1)
                         ret.meta = sliced.reshape(-1, 1).view(MetaDataMatrix)

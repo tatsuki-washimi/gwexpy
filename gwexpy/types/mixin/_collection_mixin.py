@@ -54,6 +54,7 @@ def _make_dict_map_method(
         (e.g. ``"gwexpy.frequencyseries.FrequencySeriesDict"``).
         Uses deferred import to avoid circular dependencies.
         If empty, uses ``self.__class__()`` (same type as input).
+
     """
     if result_class_path:
 
@@ -107,6 +108,7 @@ def _make_list_map_method(
         Dotted import path for the result collection class.
         Uses deferred import to avoid circular dependencies.
         If empty, uses ``self.__class__()`` (same type as input).
+
     """
     if result_class_path:
 

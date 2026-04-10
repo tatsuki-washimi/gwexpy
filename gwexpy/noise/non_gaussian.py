@@ -176,5 +176,6 @@ def inject_noise(clean_ts: TimeSeries, noise_ts: TimeSeries) -> TimeSeries:
     >>> noisy = inject_noise(clean_ts, noise_ts)
     >>> isinstance(noisy, TimeSeries)
     True
+
     """
     return clean_ts + noise_ts

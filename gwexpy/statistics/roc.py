@@ -15,8 +15,7 @@ def calculate_roc(
     y_score: np.ndarray,
     n_points: int = 100,
 ) -> tuple[np.ndarray, np.ndarray, float]:
-    """
-    Calculate ROC curve (FPR, TPR) and AUC.
+    """Calculate ROC curve (FPR, TPR) and AUC.
     y_score: probability or statistic where HIGH value means glitch.
     If using p-values, pass 1 - p-value.
     """
@@ -56,8 +55,7 @@ def evaluate_detection_performance(
     n_trials: int = 50,
     **kwargs: Any,
 ) -> tuple[np.ndarray, np.ndarray, float]:
-    """
-    Evaluate detection performance (ROC) by comparing clean vs glitchy data.
+    """Evaluate detection performance (ROC) by comparing clean vs glitchy data.
     """
     y_true = []
     y_score = []

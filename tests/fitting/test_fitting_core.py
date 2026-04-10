@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pytest; pytest.importorskip("iminuit")
 """
 Comprehensive tests for gwexpy.fitting.core.
 
@@ -13,10 +12,13 @@ Tests cover:
               limits, fixed, p0 (list/dict), cov (2D ndarray), complex data,
               custom cost_function, error cases
 """
+
 import numpy as np
 import pytest
 from gwpy.frequencyseries import FrequencySeries
 from gwpy.timeseries import TimeSeries as GwpyTimeSeries
+
+pytest.importorskip("iminuit")
 
 try:
     from gwexpy.fitting.core import (

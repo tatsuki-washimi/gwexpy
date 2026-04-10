@@ -51,6 +51,7 @@ def _validate_regular_time_axis(field: ScalarField) -> tuple[float, u.Unit]:
     ------
     ValueError
         If axis0_domain is not 'time' or axis is irregular.
+
     """
     if field.axis0_domain != "time":
         raise ValueError(
@@ -91,6 +92,7 @@ def _validate_axis_for_spectral(
     tuple
         (axis_int, delta_value, delta_unit, domain): axis index, sample spacing,
         spacing unit, and current domain ('time' or 'real').
+
     """
     from ..types.axis import AxisDescriptor
 
@@ -253,6 +255,7 @@ def spectral_density(
 
     The wavenumber definition follows the convention k = 1/λ (not angular).
     To get angular wavenumber (2π/λ), multiply the output axis by 2π.
+
     """
     from scipy.signal import welch
 
@@ -404,6 +407,7 @@ def _extract_timeseries_1d(
     -------
     tuple
         (data_1d, fs, data_unit): 1D array, sampling frequency, and unit.
+
     """
     from gwexpy.plot._coord import nearest_index
 
@@ -459,6 +463,10 @@ def compute_psd(
         Segment length in seconds. Default is min(256, len(time_axis)) samples.
     overlap : float, optional
         Overlap in seconds. Default is fftlength / 2.
+    nfft : int, optional
+        FFT segment length in samples. Alternative to ``fftlength``.
+    noverlap : int, optional
+        Overlap in samples. Alternative to ``overlap``.
     window : str
         Window function name. Default is 'hann'.
     detrend : str or bool
@@ -494,6 +502,7 @@ def compute_psd(
     >>> # Multiple points
     >>> points = [(0*u.m, 0*u.m, 0*u.m), (1*u.m, 0*u.m, 0*u.m)]
     >>> psd_list = compute_psd(field, points)
+
     """
     from scipy.signal import welch
 
@@ -605,9 +614,12 @@ def _extract_region_average(
 
     Parameters
     ----------
+    field : ScalarField
+        Input 4D field with a time axis on axis 0.
     region : dict
         Dictionary with keys 'x', 'y', 'z' specifying slices or values.
         Use slice(None) for full axis, or a single Quantity for a point.
+
     """
     from gwexpy.plot._coord import nearest_index, slice_from_index
 
@@ -676,6 +688,10 @@ def freq_space_map(
         Segment length in seconds. Default is min(256, nt) samples.
     overlap : float, optional
         Overlap in seconds. Default is fftlength / 2.
+    nfft : int, optional
+        FFT segment length in samples. Alternative to ``fftlength``.
+    noverlap : int, optional
+        Overlap in samples. Alternative to ``overlap``.
     window : str
         Window function. Default is 'hann'.
     detrend : str or bool
@@ -704,6 +720,7 @@ def freq_space_map(
     --------
     compute_psd : Single-point PSD computation.
     compute_freq_space : Alias for this function.
+
     """
     from scipy.signal import welch
 
@@ -916,6 +933,7 @@ def compute_xcorr(
     -----
     The correlation is computed as ``correlate(a, b, mode)``, where
     positive values in the output correspond to ``b`` leading ``a``.
+
     """
     from scipy.signal import correlate, get_window
 
@@ -1042,6 +1060,7 @@ def time_delay_map(
     Notes
     -----
     Positive delay means the point leads the reference.
+
     """
     from scipy.signal import correlate
 
@@ -1288,6 +1307,7 @@ def coherence_map(
     ...     noverlap=512,     # samples
     ...     stride=0.1*u.m    # spatial stride in meters
     ... )
+
     """
     from scipy.signal import coherence
 

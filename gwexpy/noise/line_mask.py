@@ -25,8 +25,7 @@ def create_line_mask(
     detector: str = "KAGRA",
     custom_lines: list[tuple[float, float]] | None = None,
 ) -> np.ndarray:
-    """
-    Create a boolean mask for line noise exclusion.
+    """Create a boolean mask for line noise exclusion.
     True = clean frequency, False = masked frequency.
     """
     mask = np.ones(len(frequencies), dtype=bool)
@@ -48,8 +47,7 @@ def apply_line_mask(
     custom_lines: list[tuple[float, float]] | None = None,
     fill_value: float = np.nan,
 ) -> Spectrogram:
-    """
-    Apply a line mask to a spectrogram.
+    """Apply a line mask to a spectrogram.
     Masked frequencies are replaced with fill_value.
     """
     mask = create_line_mask(spectrogram.frequencies.value, detector, custom_lines)

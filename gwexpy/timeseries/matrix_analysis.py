@@ -70,6 +70,8 @@ class TimeSeriesMatrixAnalysisMixin:
             'time' (default), 'channel', or integer axis.
         nan_policy : str
             How to handle NaNs: 'propagate', 'raise', or 'omit'.
+        **kwargs : Any
+            Additional keyword arguments passed to ``scipy.stats.skew``.
 
         """
         from scipy import stats
@@ -94,6 +96,8 @@ class TimeSeriesMatrixAnalysisMixin:
             If True, Fisher's definition (normal ==> 0.0).
         nan_policy : str
             How to handle NaNs: 'propagate', 'raise', or 'omit'.
+        **kwargs : Any
+            Additional keyword arguments passed to ``scipy.stats.kurtosis``.
 
         """
         from scipy import stats
@@ -214,8 +218,7 @@ class TimeSeriesMatrixAnalysisMixin:
         )
 
     def _vectorized_detrend(self: Any, detrend: str = "linear", **kwargs: Any) -> Any:
-        """Vectorized implementation of detrend.
-        """
+        """Run a vectorized detrend operation."""
         from scipy.signal import detrend as scipy_detrend
 
         inplace = kwargs.pop("inplace", False)
@@ -233,8 +236,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def _vectorized_taper(self: Any, side: str = "leftright", **kwargs: Any) -> Any:
-        """Semi-vectorized implementation of taper to ensure consistency with GWpy.
-        """
+        """Run a semi-vectorized taper compatible with GWpy."""
         # GWpy's taper implementation is complex (zero-crossing detection etc.)
         # To ensure exact match, we apply it per channel but avoid TimeSeriesMatrix overhead.
         from gwpy.timeseries import TimeSeries as BaseTimeSeries
@@ -259,13 +261,11 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def hilbert(self: Any, **kwargs: Any) -> Any:
-        """Compute the analytic signal (Hilbert transform).
-        """
+        """Compute the analytic signal via the Hilbert transform."""
         return self._apply_timeseries_method("hilbert", **kwargs)
 
     def _vectorized_filter(self: Any, *filt: Any, **kwargs: Any) -> Any:
-        """Vectorized implementation of filter (and bandpass, lowpass, etc.).
-        """
+        """Run a vectorized filter operation when possible."""
         from scipy.signal import filtfilt, sosfiltfilt
 
         data = np.asarray(self.value)
@@ -294,8 +294,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def _vectorized_hilbert(self: Any, **kwargs: Any) -> Any:
-        """Vectorized implementation of Hilbert transform (analytic signal).
-        """
+        """Run a vectorized Hilbert transform."""
         from scipy.signal import hilbert
 
         data = np.asarray(self.value)
@@ -306,8 +305,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def _vectorized_radian(self: Any, unwrap: bool = False) -> Any:
-        """Vectorized implementation of radian (phase angle via np.angle).
-        """
+        """Compute phase in radians with a vectorized implementation."""
         phi = np.angle(self.value)
 
         if unwrap:
@@ -319,8 +317,7 @@ class TimeSeriesMatrixAnalysisMixin:
         return new_mat
 
     def _vectorized_degree(self: Any, unwrap: bool = False) -> Any:
-        """Vectorized implementation of degree (phase angle via np.angle).
-        """
+        """Compute phase in degrees with a vectorized implementation."""
         phi = np.angle(self.value, deg=True)
 
         if unwrap:
@@ -419,6 +416,7 @@ class TimeSeriesMatrixAnalysisMixin:
         **kwargs: Any,
     ) -> Any:
         """Standardize the matrix.
+
         See gwexpy.timeseries.preprocess.standardize_matrix.
         """
         return standardize_matrix(
@@ -437,7 +435,8 @@ class TimeSeriesMatrixAnalysisMixin:
         n_components: int | None = None,
         return_model: bool = True,
     ) -> Any:
-        """Whiten the matrix (channels/components).
+        """Whiten the matrix across channels or components.
+
         Returns (whitened_matrix, WhiteningModel) by default.
         Set return_model=False to return only the whitened matrix.
         See gwexpy.timeseries.preprocess.whiten_matrix.
@@ -462,7 +461,7 @@ class TimeSeriesMatrixAnalysisMixin:
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> Any:
-        """Rolling mean along the time axis."""
+        """Compute a rolling mean along the time axis."""
         from gwexpy.timeseries.rolling import rolling_mean
 
         return rolling_mean(
@@ -486,7 +485,7 @@ class TimeSeriesMatrixAnalysisMixin:
         ddof: int = 0,
         ignore_nan: bool | None = None,
     ) -> Any:
-        """Rolling standard deviation along the time axis."""
+        """Compute a rolling standard deviation along the time axis."""
         from gwexpy.timeseries.rolling import rolling_std
 
         return rolling_std(
@@ -510,7 +509,7 @@ class TimeSeriesMatrixAnalysisMixin:
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> Any:
-        """Rolling median along the time axis."""
+        """Compute a rolling median along the time axis."""
         from gwexpy.timeseries.rolling import rolling_median
 
         return rolling_median(
@@ -533,7 +532,7 @@ class TimeSeriesMatrixAnalysisMixin:
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> Any:
-        """Rolling minimum along the time axis."""
+        """Compute a rolling minimum along the time axis."""
         from gwexpy.timeseries.rolling import rolling_min
 
         return rolling_min(
@@ -556,7 +555,7 @@ class TimeSeriesMatrixAnalysisMixin:
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> Any:
-        """Rolling maximum along the time axis."""
+        """Compute a rolling maximum along the time axis."""
         from gwexpy.timeseries.rolling import rolling_max
 
         return rolling_max(
@@ -571,6 +570,7 @@ class TimeSeriesMatrixAnalysisMixin:
 
     def crop(self: Any, start: Any = None, end: Any = None, copy: bool = False) -> Any:
         """Crop this matrix to the given GPS start and end times.
+
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
         from gwexpy.time import to_gps
@@ -658,23 +658,19 @@ class TimeSeriesMatrixAnalysisMixin:
         )
 
     def mic(self: Any, other: Any, **kwargs: Any) -> Any:
-        """Calculate Maximal Information Coefficient (MIC).
-        """
+        """Calculate the maximal information coefficient (MIC)."""
         return self.correlation(other, method="mic", **kwargs)
 
     def distance_correlation(self: Any, other: Any, **kwargs: Any) -> Any:
-        """Calculate Distance Correlation.
-        """
+        """Calculate distance correlation."""
         return self.correlation(other, method="distance", **kwargs)
 
     def pcc(self: Any, other: Any, **kwargs: Any) -> Any:
-        """Calculate Pearson Correlation Coefficient.
-        """
+        """Calculate the Pearson correlation coefficient."""
         return self.correlation(other, method="pearson", **kwargs)
 
     def ktau(self: Any, other: Any, **kwargs: Any) -> Any:
-        """Calculate Kendall's Rank Correlation Coefficient.
-        """
+        """Calculate Kendall's rank correlation coefficient."""
         return self.correlation(other, method="kendall", **kwargs)
 
     def correlation_vector(
@@ -683,8 +679,7 @@ class TimeSeriesMatrixAnalysisMixin:
         method: str = "mic",
         parallel: int | None = None,
     ) -> Any:
-        """Calculate correlation between a target TimeSeries and all channels in this Matrix.
-        """
+        """Calculate correlation between a target series and all channels."""
         import os
         from concurrent.futures import ProcessPoolExecutor
 
@@ -799,8 +794,7 @@ class TimeSeriesMatrixAnalysisMixin:
         eps: float = 1e-8,
         return_precision: bool = False,
     ) -> Any:
-        """Compute partial correlation matrix across all channels.
-        """
+        """Compute a partial-correlation matrix across all channels."""
         data = self.value.reshape(-1, self.shape[-1])
         n_channels, n_samples = data.shape
         if n_samples < 2:
@@ -848,8 +842,9 @@ class TimeSeriesMatrixAnalysisMixin:
         overlap: float | None = None,
         parallel: int = 4,
     ) -> Any:
-        """Compute pairwise Welch coherence between *target* and all other
-        channels in the matrix, and return a ranked summary.
+        """Compute pairwise Welch coherence between *target* and all other channels.
+
+        Return a ranked summary of the resulting coherence values.
 
         Internally delegates to :class:`~gwexpy.analysis.bruco.Bruco` (lazy
         import) so that the heavy coherence computation is isolated from the

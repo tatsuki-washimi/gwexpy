@@ -87,6 +87,7 @@ def plot_segment_table(
     ValueError
         If *column* and *row* are not both specified, or the payload is not
         a plottable GWpy object.
+
     """
     if column is None or row is None:
         raise ValueError(
@@ -138,6 +139,7 @@ def scatter_segment_table(
     Returns
     -------
     gwpy.plot.Plot
+
     """
     _require_scalar_column(st, x)
     _require_scalar_column(st, y)
@@ -193,6 +195,7 @@ def hist_segment_table(
     Returns
     -------
     gwpy.plot.Plot
+
     """
     _require_scalar_column(st, column)
 
@@ -240,8 +243,8 @@ def segments_segment_table(
     Returns
     -------
     gwpy.plot.Plot
-    """
 
+    """
     df = st.to_pandas(meta_only=True)
     if ax is not None:
         _ax = ax
@@ -316,6 +319,7 @@ def overlay_segment_table(
     Returns
     -------
     gwpy.plot.Plot
+
     """
     _require_column(st, column)
 
@@ -433,6 +437,7 @@ def overlay_spectra_segment_table(
     ...     color_by="t0",
     ...     cmap="plasma",
     ... )
+
     """
     import matplotlib.cm as _cm
     import matplotlib.colors as _mcolors

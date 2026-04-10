@@ -1,19 +1,21 @@
 from __future__ import annotations
 
-import pytest; pytest.importorskip("iminuit")
 """Tests for gwexpy/fitting/highlevel.py - _plot_bootstrap_fit helper."""
+
 import matplotlib
+import numpy as np
+import pytest
 
 matplotlib.use("Agg")
 
 from unittest.mock import patch
 
-import numpy as np
-import pytest
 from gwpy.frequencyseries import FrequencySeries
 
 from gwexpy.fitting import fit_series
 from gwexpy.fitting.highlevel import _plot_bootstrap_fit
+
+pytest.importorskip("iminuit")
 
 
 def _linear(x, a, b):

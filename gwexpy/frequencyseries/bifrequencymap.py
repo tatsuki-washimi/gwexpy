@@ -13,7 +13,7 @@ class BifrequencyMap(Array2D):
     """A map class with two distinct frequency axes.
 
     `BifrequencyMap` represents a 2-dimensional frequency-frequency mapping,
-    typically used for response functions, correlation matrices, or 
+    typically used for response functions, correlation matrices, or
     coupling kernels between different frequency bins.
 
     Data is stored with mapping: `(rows, columns) = (frequency2, frequency1)`.
@@ -79,6 +79,8 @@ class BifrequencyMap(Array2D):
             Frequency axis 2 (Y-axis/Rows).
         f1 : array-like
             Frequency axis 1 (X-axis/Columns).
+        **kwargs
+            Additional keyword arguments passed to the constructor.
 
         """
         # Default to Hz if no units are specified
@@ -305,7 +307,7 @@ class BifrequencyMap(Array2D):
         return f"{self.__class__.__name__}({data_str}\n{indent}{meta_str})"
 
     def plot(self, method="imshow", **kwargs):
-        """Plots the data.
+        """Plot the data.
 
         Parameters
         ----------
@@ -478,7 +480,7 @@ class BifrequencyMap(Array2D):
         return FrequencySeries(data, frequencies=result_axis, unit=self.unit, name=name)
 
     def diagonal(self, method="mean", bins=None, absolute=False, **kwargs):
-        """Calculates statistics along the diagonal axis (f2 - f1).
+        """Calculate statistics along the diagonal axis `(f2 - f1)`.
 
         Parameters
         ----------

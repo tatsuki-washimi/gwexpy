@@ -3,6 +3,7 @@ from __future__ import annotations
 
 def extract_channels(products: dict) -> list[str]:
     """Extract unique channel names from a dictionary of products.
+
     Handles both single channel keys and tuple keys (chB, chA).
     """
     all_channels = set()

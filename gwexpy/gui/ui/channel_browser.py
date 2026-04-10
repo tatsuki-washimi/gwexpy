@@ -15,6 +15,8 @@ except ImportError:
 
 
 class ChannelBrowserDialog(QtWidgets.QDialog):
+    """Browse and select channels from NDS or local audio inputs."""
+
     def __init__(
         self,
         server: str,
@@ -84,10 +86,12 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         QtCore.QTimer.singleShot(100, self.reload_channel_list)
 
     def on_source_changed(self, idx: int | None = None) -> None:
+        """Reload the browser when the selected source changes."""
         self.current_source = self.cb_source.currentData()
         self.reload_channel_list()
 
     def reload_channel_list(self) -> None:
+        """Refresh the channel list from cache, NDS, or local audio."""
         self.full_channel_list = []
         try:
             self.search_tree.clear()
@@ -124,6 +128,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             self.worker.start()
 
     def load_audio_devices(self) -> None:
+        """Enumerate audio input devices and expose them as channels."""
         if sd is None:
             QtWidgets.QMessageBox.warning(
                 self, "Error", "sounddevice module not found."
@@ -150,6 +155,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
 
     # ... rest of methods ...
     def setup_search_tab(self) -> None:
+        """Build the searchable flat-list tab."""
         layout = QtWidgets.QVBoxLayout(self.tab_search)
 
         self.search_edit = QtWidgets.QLineEdit()
@@ -165,6 +171,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         layout.addWidget(self.search_tree)
 
     def setup_tree_tab(self) -> None:
+        """Build the hierarchical tree tab."""
         layout = QtWidgets.QVBoxLayout(self.tab_tree)
         self.hier_tree = QtWidgets.QTreeWidget()
         self.hier_tree.setHeaderLabels(["name", "rate"])
@@ -174,6 +181,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         layout.addWidget(self.hier_tree)
 
     def setup_bottom_controls(self, parent_layout: QtWidgets.QVBoxLayout) -> None:
+        """Create filter controls and dialog action buttons."""
         # Filtering Radios
         h_filter = QtWidgets.QHBoxLayout()
 
@@ -226,6 +234,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         parent_layout.addLayout(h_btns)
 
     def load_data(self) -> None:
+        """Load channel data using the legacy cache-or-fetch path."""
         cache = ChannelListCache()
         data = cache.get_channels(self.server_key)
 
@@ -247,6 +256,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
     def on_worker_finished(
         self, results: list[tuple[str, float, str]], error: str | None
     ) -> None:
+        """Handle completion of the background channel fetch."""
         if error:
             # Only show error if we are still expecting NDS
             if self.current_source == "NDS":
@@ -269,15 +279,18 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             self.populate_ui()
 
     def populate_ui(self) -> None:
+        """Populate both tabs from the current channel list."""
         # Build Tree
         self.build_hierarchy_tree(self.full_channel_list)
         # Initial Search Filter (All)
         self.apply_filter()
 
     def on_filter_changed(self) -> None:
+        """Re-apply the current search and rate filters."""
         self.apply_filter()
 
     def apply_filter(self) -> None:
+        """Update the search tab with the active filter settings."""
         pattern = self.search_edit.text()
         mode = "all"
         if self.rb_slow.isChecked():
@@ -340,6 +353,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
             self.lbl_status.setText(f"Found {count} matches.")
 
     def build_hierarchy_tree(self, channels: list[tuple[str, float, str]]) -> None:
+        """Build the hierarchical channel tree from flat channel metadata."""
         self.hier_tree.clear()
 
         # A simple tree builder: split by ':' then '-' or '_'
@@ -426,6 +440,7 @@ class ChannelBrowserDialog(QtWidgets.QDialog):
         self.hier_tree.addTopLevelItems(top_items)
 
     def accept(self) -> None:
+        """Collect selected channels from the active tab and close."""
         # Gather selected from ACTIVE tab
         selected = []
         current_widget = self.tabs.currentWidget()

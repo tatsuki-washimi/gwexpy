@@ -1,5 +1,4 @@
-"""
-Data-adaptive scaling utilities for gwexpy.
+"""Data-adaptive scaling utilities for gwexpy.
 
 The core problem
 ----------------
@@ -51,6 +50,7 @@ def safe_epsilon(
     -------
     float
         A positive epsilon scaled to the data.
+
     """
     arr = np.asarray(data, dtype=float)
     scale = float(np.std(arr))
@@ -95,6 +95,7 @@ class AutoScaler:
     ...     output = sc.denormalize(result)  # back to original scale
     >>> np.allclose(output, x * 2)
     True
+
     """
 
     def __init__(

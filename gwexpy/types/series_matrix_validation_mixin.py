@@ -25,7 +25,7 @@ class SeriesMatrixValidationMixin:
         xspan: Any
 
         @property
-        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...
+        def xindex(self) -> np.ndarray | u.Quantity | Index | None: ...  # noqa: D102
 
         @xindex.setter
         def xindex(self, value: np.ndarray | u.Quantity | Index | None) -> None: ...

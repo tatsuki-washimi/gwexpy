@@ -35,6 +35,7 @@ class FieldList(list):
     >>> fl = FieldList([sf])
     >>> fl
     [<ScalarField(2, 2, 2, 2)@time, 1.0>]
+
     """
 
     def __init__(self, items=None, validate=False):
@@ -177,6 +178,7 @@ class FieldDict(dict):
     >>> fd = FieldDict({'E': f})
     >>> fd
     {'E': <ScalarField(2, 2, 2, 2)@time, 1.0>}
+
     """
 
     def __init__(self, items=None, validate=False):

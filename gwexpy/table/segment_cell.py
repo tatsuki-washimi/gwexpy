@@ -34,6 +34,7 @@ class SegmentCell:
     42
     >>> cell.is_loaded()
     True
+
     """
 
     value: Optional[Any] = field(default=None)
@@ -60,6 +61,7 @@ class SegmentCell:
         ------
         ValueError
             If both *value* and *loader* are ``None``.
+
         """
         if self._loaded:
             return self.value

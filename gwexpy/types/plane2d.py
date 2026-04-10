@@ -10,14 +10,13 @@ __all__ = ["Plane2D"]
 
 
 class Plane2D(FittingMixin, Array2D):
-    """
-    2D Array wrapper where the two axes are semantically significant as Axis 1 and Axis 2.
-    """
+    """2D array wrapper with semantically significant axis names."""
 
     # Do NOT add _axis1_name/_axis2_name to slots, as they duplicate Array2D slots or cause confusion.
     # We rely on Array2D's _axis0_name/_axis1_name for storage.
 
     def __new__(cls, data, axis1_name="axis1", axis2_name="axis2", **kwargs):
+        """Create a plane with explicit names for both axes."""
         if "axis_names" in kwargs:
             axis1_name, axis2_name = kwargs.pop("axis_names")
         obj = super().__new__(cls, data, axis_names=(axis1_name, axis2_name), **kwargs)

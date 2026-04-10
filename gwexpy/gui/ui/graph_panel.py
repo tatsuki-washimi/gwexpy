@@ -33,6 +33,8 @@ def _small_spin_dbl(
 
 
 class GraphPanel(QtWidgets.QFrame):
+    """Contain plot controls and widgets for a single graph pane."""
+
     def __init__(
         self,
         plot_idx: int,
@@ -137,6 +139,7 @@ class GraphPanel(QtWidgets.QFrame):
         self.update_range_logic()
 
     def to_graph_info(self) -> dict[str, Any]:
+        """Return the UI handles consumed by the main window logic."""
         return {
             "graph_combo": self.graph_combo,
             "traces": self.trace_controls,

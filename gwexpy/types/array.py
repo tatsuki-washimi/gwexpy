@@ -14,13 +14,12 @@ __all__ = ["Array"]
 
 
 class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
-    """
-    N-dimensional array with axis unified API.
-    """
+    """N-dimensional array with a unified axis API."""
 
     _metadata_slots = getattr(GwpyArray, "_metadata_slots", ()) + ("_axis_names",)
 
     def __new__(cls, data, axis_names=None, **kwargs):
+        """Create an array and initialize axis names."""
         obj = super().__new__(cls, data, **kwargs)
         if axis_names is None:
             axis_names = [f"axis{i}" for i in range(obj.ndim)]
@@ -47,6 +46,7 @@ class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
 
     @property
     def axes(self):
+        """Return axis descriptors for each dimension."""
         if len(self._axis_names) != self.ndim:
             self._axis_names = [f"axis{i}" for i in range(self.ndim)]
         return tuple(
@@ -70,6 +70,7 @@ class Array(AxisApiMixin, StatisticalMethodsMixin, GwpyArray):
         return new_obj
 
     def rms(self, axis=None, keepdims=False, ignore_nan=True):
+        """Return the RMS value along the requested axis."""
         func = np.nanmean if ignore_nan else np.mean
         val = np.sqrt(func(np.square(self.value), axis=axis, keepdims=keepdims))
         return val * self.unit

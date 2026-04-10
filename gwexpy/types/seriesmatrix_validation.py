@@ -21,6 +21,7 @@ from .metadata import MetaData, MetaDataDict, MetaDataMatrix
 
 # --- Common utilities ---
 def to_series(val, xindex, name="s", epoch=0.0):
+    """Convert a supported scalar/array-like value into a GWpy Series."""
     if isinstance(val, Series):
         return val
     elif isinstance(val, Array):
@@ -181,6 +182,7 @@ def check_no_nan_inf(seriesmatrix):
 
 
 def check_epoch_and_sampling(seriesmatrix1, seriesmatrix2):
+    """Validate that two series matrices share epoch and sampling step."""
     if hasattr(seriesmatrix1, "epoch") and hasattr(seriesmatrix2, "epoch"):
         if seriesmatrix1.epoch != seriesmatrix2.epoch:
             raise ValueError("Epoch mismatch")
@@ -191,9 +193,7 @@ def check_epoch_and_sampling(seriesmatrix1, seriesmatrix2):
 
 
 def _broadcast_attr(attr, shape2d, name):
-    """
-    Broadcast user-supplied units/names/channels to the expected 2D shape.
-    """
+    """Broadcast user-supplied units, names, or channels to a 2D shape."""
     if attr is None:
         return None
     arr = np.asarray(attr, dtype=object)
@@ -206,9 +206,7 @@ def _broadcast_attr(attr, shape2d, name):
 
 
 def _expand_key(key, ndim):
-    """
-    Expand indexing keys with ellipsis to full ndim elements and pad with slice(None).
-    """
+    """Expand an indexing key to `ndim` elements, resolving ellipses as needed."""
     if not isinstance(key, tuple):
         key = (key,)
     key_list = list(key)
@@ -224,9 +222,7 @@ def _expand_key(key, ndim):
 
 
 def _slice_metadata_dict(meta_dict, key, prefix):
-    """
-    Slice MetaDataDict to align with ndarray slicing on rows/cols.
-    """
+    """Slice a MetaDataDict to match ndarray row or column slicing."""
     items = list(meta_dict.items())
     if isinstance(key, slice):
         subset = items[key]
@@ -260,11 +256,19 @@ def _make_attr_arrays(
 
     Parameters
     ----------
-    units, names, channels : user-supplied overrides (or None)
-    shape2d : (N, M) tuple
-    unit_default, name_default, channel_default : default value when the
+    units : Any
+        User-supplied unit overrides, or None.
+    names : Any
+        User-supplied name overrides, or None.
+    channels : Any
+        User-supplied channel overrides, or None.
+    shape2d : tuple[int, int]
+        Target `(N, M)` shape for the broadcast attribute arrays.
+    unit_default, name_default, channel_default : Any
+        Default value when the
         corresponding user override is None.  Can be a scalar (broadcast)
         or a pre-built ndarray.
+
     """
 
     def _resolve(user_val, attr_name, default):
@@ -286,10 +290,10 @@ def _pack_attrs(unit_arr, name_arr, channel_arr):
 
 
 def _convert_units_loop(arr, unit_arr, base_unit, N, M, err_prefix=""):
-    """Convert *arr* in-place so that ``arr[i,j]`` is expressed in
-    ``unit_arr[i,j]``, assuming the original data is in *base_unit*.
+    """Convert `arr` in-place so each cell matches the requested unit array.
 
     If *err_prefix* is given it is prepended to the error message.
+
     """
     for i in range(N):
         for j in range(M):
@@ -791,14 +795,14 @@ def _normalize_input(
     x0=None,
     xunit=None,
 ) -> tuple:
-    """
-    Normalize heterogeneous inputs into a 3D value array and attribute arrays.
+    """Normalize heterogeneous inputs into a 3D value array and attribute arrays.
 
     Returns
     -------
     tuple
         (value_array, attr_dict, detected_xindex)
         where attr_dict contains per-cell unit/name/channel arrays.
+
     """
     type_key = _detect_input_type(data)
 
@@ -817,9 +821,7 @@ def _normalize_input(
 
 
 def _check_attribute_consistency(data_attrs: dict, meta: MetaDataMatrix) -> None:
-    """
-    Validate that overlapping attributes between data_attrs and meta match.
-    """
+    """Validate that overlapping attributes between `data_attrs` and `meta` match."""
     for attr in ["unit", "name", "channel"]:
         data_arr = data_attrs.get(attr, None)
         if data_arr is not None:
@@ -865,9 +867,7 @@ def _check_attribute_consistency(data_attrs: dict, meta: MetaDataMatrix) -> None
 def _fill_missing_attributes(
     data_attrs: dict, meta: MetaDataMatrix
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """
-    Fill missing unit/name/channel attributes from a MetaDataMatrix.
-    """
+    """Fill missing unit, name, and channel attributes from a MetaDataMatrix."""
     N, M = meta.shape
     # units
     data_units = data_attrs.get("unit", None)

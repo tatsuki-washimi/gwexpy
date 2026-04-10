@@ -54,7 +54,7 @@ class XIndex(Protocol):
         ...
 
     def __len__(self) -> int:
-        """Number of elements in the index."""
+        """Return the number of elements in the index."""
         ...
 
     @property
@@ -119,7 +119,7 @@ class MetaDataDictLike(Protocol):
         ...
 
     def __len__(self) -> int:
-        """Number of metadata entries."""
+        """Return the number of metadata entries."""
         ...
 
 

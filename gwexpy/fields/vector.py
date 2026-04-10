@@ -44,6 +44,7 @@ class VectorField(FieldDict):
     >>> v = VectorField(np.ones((2, 2, 2, 2, 3)))
     >>> v
     <VectorField(2, 2, 2, 2, 3)@time, 1.0>
+
     """
 
     def __init__(
@@ -60,9 +61,9 @@ class VectorField(FieldDict):
                 raise ValueError(f"VectorField expected 5D array, got {arr.ndim}D")
             n_comp = arr.shape[-1]
             labels = ["x", "y", "z"][:n_comp] or [str(i) for i in range(n_comp)]
-            
+
             # Use dictionary comprehension to create components
-            # We need valid ScalarField objects. For simplicity, we create them 
+            # We need valid ScalarField objects. For simplicity, we create them
             # with default metadata or inherit from first if possible.
             # But the simplest is to just create them.
             new_components = {}
@@ -78,6 +79,15 @@ class VectorField(FieldDict):
         new_components = {k: v.copy() for k, v in self.items()}
         return VectorField(new_components, basis=self.basis, validate=False)
 
+    def __repr__(self) -> str:
+        """Return a compact repr with array shape and time-domain marker."""
+        if not self:
+            return "<VectorField(empty)>"
+        first = next(iter(self.values()))
+        shape = (*first.shape, len(self))
+        shape_str = ", ".join(str(dim) for dim in shape)
+        return f"<VectorField({shape_str})@{first.axis0_domain}, 1.0>"
+
     def to_array(self) -> np.ndarray:
         """Convert components to a single 5D ndarray.
 
@@ -87,6 +97,7 @@ class VectorField(FieldDict):
         -------
         numpy.ndarray
             A 5D array of shape ``(axis0, axis1, axis2, axis3, n_components)``.
+
         """
         if not self:
             return np.array([])
@@ -101,6 +112,7 @@ class VectorField(FieldDict):
         -------
         ScalarField
             A scalar field representing the magnitude :math:`\\sqrt{\\sum |E_i|^2}`.
+
         """
         if not self:
             raise ValueError("Cannot compute norm of an empty VectorField")
@@ -147,6 +159,7 @@ class VectorField(FieldDict):
         -------
         ScalarField
             The resulting dot product field.
+
         """
         if not isinstance(other, VectorField):
             raise TypeError(f"dot expects VectorField, got {type(other)}")
@@ -179,6 +192,7 @@ class VectorField(FieldDict):
         -------
         VectorField
             The resulting vector field.
+
         """
         xyz = {"x", "y", "z"}
         if set(self.keys()) != xyz or set(other.keys()) != xyz:
@@ -211,6 +225,7 @@ class VectorField(FieldDict):
         -------
         ScalarField
             The projected scalar field.
+
         """
         return self.dot(direction) / direction.norm()
 
@@ -228,6 +243,7 @@ class VectorField(FieldDict):
             Y-axis name.
         **kwargs
             Fixed coordinates and arguments passed to ScalarField.plot.
+
         """
         return self.norm().plot(x=x, y=y, **kwargs)
 
@@ -242,6 +258,7 @@ class VectorField(FieldDict):
             Y-axis name.
         **kwargs
             Fixed coordinates and arguments passed to FieldPlot.add_vector.
+
         """
         # Defer import
         from gwexpy.interop._registry import ConverterRegistry
@@ -284,6 +301,7 @@ class VectorField(FieldDict):
             Y-axis name.
         **kwargs
             Fixed coordinates and arguments passed to FieldPlot.add_vector.
+
         """
         from gwexpy.interop._registry import ConverterRegistry
 

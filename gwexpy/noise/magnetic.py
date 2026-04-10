@@ -20,8 +20,7 @@ def schumann_resonance(
     amplitude_scale: float = 1.0,
     **kwargs: Any,
 ) -> FrequencySeries:
-    """
-    Generate Schumann Resonance ASD by combining Lorentzians in PSD space.
+    """Generate Schumann Resonance ASD by combining Lorentzians in PSD space.
 
     Parameters
     ----------
@@ -34,6 +33,7 @@ def schumann_resonance(
         Scaling factor for amplitude.
     **kwargs
         Additional arguments for FrequencySeries.
+
     """
     if frequencies is None:
         # Need valid frequencies to sum over
@@ -97,8 +97,7 @@ def geomagnetic_background(
     exponent: float = 1.0,
     **kwargs: Any,
 ) -> FrequencySeries:
-    """
-    Generate 1/f^alpha magnetic background noise.
+    """Generate 1/f^alpha magnetic background noise.
     Wrapper for colored.power_law.
 
     Parameters
@@ -107,8 +106,8 @@ def geomagnetic_background(
         Amplitude at 1Hz, typically in pT/rtHz (default 10e-12 = 10pT).
         Note: The user provided example says 10e-12 (10pT), assumed unit of result.
         However, if user passes unit='pT...', amplitude should be consistent.
-    """
 
+    """
     if "unit" not in kwargs:
         # Default to pT/rtHz if not specified, assuming input implies T?
         # Actually usually inputs are in same unit base.

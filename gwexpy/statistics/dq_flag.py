@@ -17,8 +17,7 @@ def to_segments(
     fmin: float | None = None,
     fmax: float | None = None,
 ) -> DataQualityFlag:
-    """
-    Generate DataQualityFlag (segments) from a p-value map.
+    """Generate DataQualityFlag (segments) from a p-value map.
     A segment is created when p < alpha.
 
     Parameters
@@ -35,6 +34,7 @@ def to_segments(
     Returns
     -------
     DataQualityFlag
+
     """
     # 1. Filter by frequency if requested
     if fmin is not None or fmax is not None:
