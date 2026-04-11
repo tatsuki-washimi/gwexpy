@@ -689,7 +689,9 @@ Expected: Step 8–12 の変更を含んだ状態でビルドおよび linkcheck
 **Files:**
 
 - Modify: `docs_internal/analysis/2026-04-08_github_pages_improvement_action_plan.md`
-- Optional Create: `docs_internal/analysis/2026-04-08_github_pages_release_blockers.md`
+- Modify: `examples/paper-figures/02_coherence_ranking.py`（Step 3）
+- Modify: `examples/paper-figures/03_gwosc_case_study.py`（Step 3）
+- Modify: `CODE_OF_CONDUCT.md`, `SECURITY.md`（Step 7）
 
 **Owner:** Release / CI Owner
 **Reviewer:** Project Maintainer
@@ -716,84 +718,109 @@ Expected: Step 8–12 の変更を含んだ状態でビルドおよび linkcheck
 
 > 以下 Step 3–8 は Quality Audit (`GWexpy_Quality_Audit_Consolidated_Report.md` §4, §7) と
 > `2026-04-08_validation_report.md` で確認された未対応項目を追加したものです。
+>
+> **2026-04-11 現状調査メモ:**
+>
+> | Step | 状態 | 調査結果 |
+> |------|------|---------|
+> | Step 3 | ❌ 要修正 | `02_coherence_ranking.py` と `03_gwosc_case_study.py` の出力先が `examples/docs/gwexpy-paper/` で不統一。`01_transfer_function_workflow.py` は `docs_internal/publications/paper_softwarex/` で正しい。また `02`, `03` の `_repo_root` は `parent.parent.parent` で正しいが、出力先パスが別ディレクトリを向いている。 |
+> | Step 4 | ✅ 完了済み | `license = {text = "MIT"}` ✅、`numpy>=1.23.2` ✅、`scipy>=1.10.0` ✅。追加作業不要。 |
+> | Step 5 | ✅ 完了済み | `all` extra はすでにフラットなパッケージ列挙に展開済み（自己参照なし）。追加作業不要。 |
+> | Step 6 | ✅ 完了済み | `intro_noise.ipynb`, `intro_fitting.ipynb`, `intro_table.ipynb` は JA ディレクトリに存在し、`index.rst` の toctree にも接続済み。追加作業不要。 |
+> | Step 7 | ❌ 要修正 | プレースホルダなし。ただし両ファイル内の GitHub URL が旧リポジトリ `tatsuki-washimi/gwexpy` のまま残存（グローバル置換からの漏れ）。`gwexpy/gwexpy` へ修正が必要。 |
+> | Step 8 | ⏳ 未確認 | Step 3, 7 完了後に全項目を再確認する。 |
 
-- [ ] **Step 3: `examples/paper-figures/` のパス不備を修正【Critical】**
-
-対象ファイル: `examples/paper-figures/` 配下の全スクリプト
-
-具体化:
-
-- `_repo_root` の検出ロジックを確認し、現状 `parents[N]` が誤っている場合は `parents[2]` に修正する。
-- 出力先ディレクトリを `docs_internal/publications/` に統一する（スクリプト内のハードコードパスを変数化）。
-- クリーンな仮想環境で `python examples/paper-figures/<script>.py` が正常完了することを確認する。
-
-受け入れ基準:
-
-- 出力ファイルが `docs_internal/publications/` に生成されること
-- スクリプト内に `/home/washimi/` 等の絶対個人パスが残っていないこと
-
-- [ ] **Step 4: `pyproject.toml` メタデータの整合【Medium】**
-
-対象ファイル: `pyproject.toml`
-
-具体化:
-
-- `license` フィールドを文字列形式（`license = "MIT"`）から PEP 621 準拠の辞書形式（`license = {text = "MIT"}`）へ変更する。
-- NumPy の下限を `>=1.23.2`、SciPy の下限を `>=1.10.0` に引き上げ（Python 3.11 を必須とする実態と整合させる）。
-- `pip install -e .` が通ることを確認する。
-
-受け入れ基準:
-
-- `python -c "import tomllib; d=tomllib.load(open('pyproject.toml','rb')); assert isinstance(d['project']['license'], dict)"` が通ること
-- 依存解決エラーが出ないこと
-
-- [ ] **Step 5: `all` extra の自己参照解消【Medium】**
-
-対象ファイル: `pyproject.toml`
-
-具体化:
-
-- `[project.optional-dependencies]` の `all` キーが自身の他 extra を再帰参照している場合は、それをフラットな依存リスト（全パッケージ名の直接列挙）に展開する。
-- `pip install -e ".[all]"` が警告なしで通ることを確認する。
-
-受け入れ基準:
-
-- `all` extra が自己参照サイクルを含まないこと
-- `pip install -e ".[all]"` が正常終了すること
-
-- [ ] **Step 6: 日本語チュートリアルの欠落補完【High】**
+- [ ] **Step 3: `examples/paper-figures/` の出力先パスを統一【Critical】**
 
 対象ファイル:
 
-- `docs/web/ja/user_guide/tutorials/intro_noise.ipynb`（新規または翻訳）
-- `docs/web/ja/user_guide/tutorials/intro_fitting.ipynb`（新規または翻訳）
-- `docs/web/ja/user_guide/tutorials/intro_table.ipynb`（新規または翻訳）
-- `docs/web/ja/user_guide/tutorials/index.rst`（toctree への追記）
+- `examples/paper-figures/02_coherence_ranking.py`
+- `examples/paper-figures/03_gwosc_case_study.py`
 
-具体化:
+現状の問題:
 
-- 英語版 `docs/web/en/user_guide/tutorials/intro_noise.ipynb`, `intro_fitting.ipynb`, `intro_table.ipynb` の構成を確認する。
-- 各ノートブックを日本語に翻訳するか、日本語 wrapper ページ（`.md` または `.rst`）から英語版へ誘導する構成を選択する。
-- いずれの場合も `docs/web/ja/user_guide/tutorials/index.rst` の toctree に接続する。
-- `cd docs && make html` でビルドが通ることを確認する。
+- `02_coherence_ranking.py:108`: `Path(__file__).parent.parent / "docs" / "gwexpy-paper"` → リポジトリ外の `docs/gwexpy-paper/` を向いている
+- `03_gwosc_case_study.py:188`: 同上
+
+修正内容:
+
+- 両スクリプトの `output_dir` を `Path(__file__).resolve().parents[2] / "docs_internal" / "publications" / "paper_softwarex"` に変更する（`01_transfer_function_workflow.py` と統一）。
+- `_repo_root` は `parent.parent.parent`（= `parents[2]`）で正しいため変更不要。
 
 受け入れ基準:
 
-- 日本語チュートリアル索引から `intro_noise`, `intro_fitting`, `intro_table` に辿れること
-- リンク切れがないこと
+- 出力ファイルが `docs_internal/publications/paper_softwarex/` に生成されること
+- 3スクリプトの出力先が完全に統一されていること
+- スクリプト内に絶対個人パスが残っていないこと
 
-- [ ] **Step 7: CODE_OF_CONDUCT / SECURITY の連絡先確認【Low】**
+検証コマンド:
+
+```bash
+# ドライランで構文・パスエラーがないことを確認
+python -c "import ast, pathlib; [ast.parse(pathlib.Path(f).read_text()) for f in [
+  'examples/paper-figures/01_transfer_function_workflow.py',
+  'examples/paper-figures/02_coherence_ranking.py',
+  'examples/paper-figures/03_gwosc_case_study.py'
+]]"
+# 出力先パスが全て同一かを確認
+grep -n "output_dir" examples/paper-figures/0*.py
+```
+
+- [x] **Step 4: `pyproject.toml` メタデータの整合【完了済み】**
+
+2026-04-11 確認結果:
+
+- `license = {text = "MIT"}` ✅ PEP 621 準拠の辞書形式に既に設定済み
+- `numpy>=1.23.2,<2.0.0` ✅ 下限 1.23.2 設定済み
+- `scipy>=1.10.0` ✅ 下限 1.10.0 設定済み
+- `requires-python = ">=3.11"` ✅ 設定済み
+
+追加作業なし。
+
+- [x] **Step 5: `all` extra の自己参照解消【完了済み】**
+
+2026-04-11 確認結果:
+
+- `[project.optional-dependencies]` の `all` キーはフラットなパッケージ列挙に展開済み（`scikit-learn`, `statsmodels` ... と直接列挙）。
+- 他の extra (`analysis`, `fitting`, `gw` 等) を参照する自己参照サイクルなし。
+
+追加作業なし。
+
+- [x] **Step 6: 日本語チュートリアルの欠落補完【完了済み】**
+
+2026-04-11 確認結果:
+
+- `docs/web/ja/user_guide/tutorials/intro_noise.ipynb` ✅ 存在
+- `docs/web/ja/user_guide/tutorials/intro_fitting.ipynb` ✅ 存在
+- `docs/web/ja/user_guide/tutorials/intro_table.ipynb` ✅ 存在
+- `docs/web/ja/user_guide/tutorials/index.rst` の toctree に3ファイルとも接続済み ✅
+
+追加作業なし。
+
+- [ ] **Step 7: CODE_OF_CONDUCT / SECURITY の旧リポジトリ URL 修正【Low】**
 
 対象ファイル: `CODE_OF_CONDUCT.md`, `SECURITY.md`
 
-具体化:
+現状の問題:
 
-- プレースホルダ（`[INSERT CONTACT METHOD]`, `[INSERT EMAIL ADDRESS]` 等）が残っていないかを確認する。
-- 残っている場合は実連絡先（GitHub Issues URL または公開メールアドレス）を設定する。
+- `CODE_OF_CONDUCT.md:63`: `https://github.com/tatsuki-washimi/gwexpy/discussions` → `gwexpy/gwexpy` に要修正
+- `SECURITY.md:28`: `https://github.com/tatsuki-washimi/gwexpy/discussions` → `gwexpy/gwexpy` に要修正
+
+（プレースホルダは存在しない。リポジトリ URL 置換の漏れのみ。）
+
+修正内容:
+
+- 両ファイルの `tatsuki-washimi/gwexpy` を `gwexpy/gwexpy` に置換する。
 
 受け入れ基準:
 
-- 両ファイルにプレースホルダ文字列が残っていないこと
+- 両ファイルに `tatsuki-washimi` の文字列が残っていないこと
+
+検証コマンド:
+
+```bash
+grep -r "tatsuki-washimi" CODE_OF_CONDUCT.md SECURITY.md
+```
 
 - [ ] **Step 8: リリースチェックリスト全項目の最終確認**
 
@@ -802,11 +829,12 @@ Expected: Step 8–12 の変更を含んだ状態でビルドおよび linkcheck
 達成確認項目:
 
 - [ ] インストールガイドの Python 要件が `3.11+` で extras 名が正確であること
-- [ ] `paper-figures` がクリーン環境で実行でき、指定パスに出力されること
-- [ ] `pyproject.toml` の `license` と `requires-python` が仕様通りであること
-- [ ] 日本語索引に「基礎」チュートリアルが含まれリンク切れがないこと
-- [ ] `gwexpy.time` や主要 Matrix クラスが Reference 索引に含まれること
-- [ ] `CODE_OF_CONDUCT.md` と `SECURITY.md` の連絡先がプレースホルダでないこと
+- [ ] `paper-figures` の全スクリプトが統一された出力先（`docs_internal/publications/paper_softwarex/`）を向いていること
+- [x] `pyproject.toml` の `license = {text = "MIT"}` と `requires-python = ">=3.11"` が仕様通りであること
+- [x] `all` extra がフラットに展開されており自己参照がないこと
+- [x] 日本語索引に `intro_noise`, `intro_fitting`, `intro_table` が含まれリンク切れがないこと
+- [ ] `CODE_OF_CONDUCT.md` と `SECURITY.md` に `tatsuki-washimi` 等の旧 URL が残っていないこと
+- [ ] `gwexpy.time` や主要 Matrix クラスが Reference 索引に含まれること（Task 5 で確認済みの可能性あり）
 
 ## 3. 推奨実施順
 
@@ -915,8 +943,8 @@ Expected: Step 8–12 の変更を含んだ状態でビルドおよび linkcheck
 - **Task 5 (Reference & クリーンアップ)**:
   - 欠落していた `SegmentTable`, `SegmentCell`, `gwexpy.segments` 等の API リファレンスを追加・同期。
   - チュートリアルノートブックから `UserWarning` や個人環境パス (`/home/washimi/`) を完全に除去。
-  - `en/` ツリーに残っていた日本語ノートブック (`case_arima_burst_search.ipynb`) を英語へ翻訳。
-  - 英語ノートブックにのみ存在した Tips セクションを日本語版にも翻訳して同期。
+  - `en/` ツリー内の `case_arima_burst_search.ipynb` を完全英語化（マークダウンだけでなくコード内コメント・print 文も置換）。
+  - `en/` 版 `advanced_hht.ipynb` に JA 版にのみ存在した §5〜§6、Hints、Summary セクションを翻訳して追加し、構造を同期。
 - **インフラ・リンク**:
   - リポジトリ URL を `tatsuki-washimi/gwexpy` から組織リポジトリ `gwexpy/gwexpy` へグローバル置換。
   - `linkcheck` の検証を行い、URL 移転に伴う 404（リポジトリ公開待ち）を除きエラーがないことを確認。
@@ -925,4 +953,24 @@ Expected: Step 8–12 の変更を含んだ状態でビルドおよび linkcheck
 ### 次のステップ
 
 - **リポジトリ公開**: `gwexpy/gwexpy` がパブリックになり次第、GitHub Pages の最終デプロイを確認。
-- **Task 6 (残項目)**: パッケージメタデータ (`pyproject.toml`) の整合性修正および `CODE_OF_CONDUCT.md` 等の最終チェック。
+- **Task 6 Step 3**: `02_coherence_ranking.py`, `03_gwosc_case_study.py` の出力先を `docs_internal/publications/paper_softwarex/` に統一。
+- **Task 6 Step 7**: `CODE_OF_CONDUCT.md`, `SECURITY.md` の旧 URL `tatsuki-washimi/gwexpy` → `gwexpy/gwexpy` に修正。
+- **Task 6 Step 8**: 上記完了後にリリースチェックリスト全項目を最終確認。
+
+## 9. 作業報告 (2026-04-11 Task 5 完了)
+
+Task 5 の全残件が完了した（commit `15a51ee4`）。
+
+### 実施内容
+
+- `case_arima_burst_search.ipynb` のコードセル 4, 10, 12 に残存していた日本語コメント（`# === パラメータ ===`、`# トリガー検出` 等）をすべて英語化した。
+- `advanced_hht.ipynb` の EN 版を JA 版に合わせて 10 → 15 セルに拡張（§5–§6 + Hints + Summary を翻訳追加）し、EN/JA のセル数を同期した。
+
+### Task 6 現状調査結果
+
+2026-04-11 時点での各 Step の状態を確認した詳細は Task 6 の調査メモを参照。
+
+- Step 3（Critical）: `02_coherence_ranking.py`, `03_gwosc_case_study.py` の出力先パスが `01_transfer_function_workflow.py` と不統一。要修正。
+- Step 4, 5, 6: 調査の結果すでに完了済みと確認。追加作業不要。
+- Step 7（Low）: プレースホルダなし。旧リポジトリ URL の漏れのみ残存。要修正。
+- Step 8: Step 3, 7 完了後に実施。
