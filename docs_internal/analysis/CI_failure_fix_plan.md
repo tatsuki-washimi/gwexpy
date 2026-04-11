@@ -123,5 +123,32 @@ L301 以降の CI 安定化用 optional dependency（`control`, `statsmodels`, `
 - `ruff`: ✅ pass
 - `mypy`: ✅ pass
 - `sphinx-build`: ✅ pass
-- `pytest`: ✅ pass 実績あり
-  - フルスイート通過時の確認結果: `5840 passed, 197 skipped, 3 xfailed`
+- `pytest`: ✅ pass
+  - フルスイート確認結果: `5840 passed, 197 skipped, 3 xfailed, 223 warnings in 444.86s`
+
+---
+
+## 完了報告
+
+本計画で対象としていた CI failure 対応は完了した。
+
+### 完了条件の達成状況
+
+- Phase 1 の `gravityspy` 互換性修正: 完了
+- Phase 2 の Sphinx / dependency 整理: 完了
+- `pytest` full suite: 完了
+- `ruff` full clean: 完了
+- `mypy`: 完了
+- docs HTML build: 完了
+
+### 最終確認コマンド
+
+- `conda run -n gwexpy ruff check gwexpy/ tests/`
+- `conda run -n gwexpy mypy gwexpy/`
+- `conda run -n gwexpy pytest tests/`
+- `conda run -n gwexpy sphinx-build -b html docs docs/_build/html`
+
+### 備考
+
+- 完了時点の作業報告追記コミット: `5a7f2b2b`
+- 調査原本の PDF は補助資料として未コミットのまま保持
