@@ -18,11 +18,13 @@ def to_segments(
     fmax: float | None = None,
 ) -> DataQualityFlag:
     """Generate DataQualityFlag (segments) from a p-value map.
+
     A segment is created when p < alpha.
 
     Parameters
     ----------
     p_value_map : Spectrogram
+        Input spectrogram of p-values.
     alpha : float, default=0.05
         Significance level.
     min_duration : float, default=0.0

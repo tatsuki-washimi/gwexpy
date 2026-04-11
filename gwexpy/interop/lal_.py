@@ -1,4 +1,5 @@
-"""gwexpy.interop.lal_
+"""Interoperate with LALSuite time and frequency series.
+
 -------------------
 
 Interoperability with LALSuite (LIGO Algorithmic Library).

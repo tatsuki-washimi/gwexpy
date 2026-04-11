@@ -47,7 +47,7 @@ def _make_timeseries(
     name: str | None = None,
     channel: str | None = None,
 ) -> TimeSeries:
-    """Helper to create a TimeSeries from data."""
+    """Create a ``TimeSeries`` from array data and sampling metadata."""
     from ..timeseries import TimeSeries
 
     return TimeSeries(
@@ -99,6 +99,8 @@ def gaussian(
         Start time. Default is 0.0.
     rng : numpy.random.Generator, optional
         Random number generator. If None, creates a new one.
+    seed : int, optional
+        Seed used to initialize the default random generator.
     unit : astropy.units.Unit, optional
         Unit of the output.
     name : str, optional
@@ -154,6 +156,8 @@ def uniform(
         Start time. Default is 0.0.
     rng : numpy.random.Generator, optional
         Random number generator.
+    seed : int, optional
+        Seed used to initialize the default random generator.
     unit : astropy.units.Unit, optional
         Unit of the output.
     name : str, optional
@@ -212,6 +216,8 @@ def colored(
         Start time. Default is 0.0.
     rng : numpy.random.Generator, optional
         Random number generator.
+    seed : int, optional
+        Seed used to initialize the default random generator.
     unit : astropy.units.Unit, optional
         Unit of the output.
     name : str, optional
@@ -839,6 +845,8 @@ def from_asd(
     rng : numpy.random.Generator, optional
         Random number generator instance. If None, a new default generator
         is created.
+    seed : int, optional
+        Seed used to initialize the default random generator.
     **kwargs
         Additional arguments passed to TimeSeries constructor (e.g., name, channel, unit).
         If provided, these override values derived from the ASD.

@@ -1,12 +1,4 @@
-"""gwexpy.interop.skrf_
----------------------
-
-Interoperability with scikit-rf (skrf) for RF/microwave network analysis.
-
-Provides bidirectional conversion between scikit-rf ``Network`` objects and
-GWexpy FrequencySeries types, plus one-way conversion of time-domain
-impulse/step responses to TimeSeries.
-"""
+"""Interoperability with scikit-rf for RF and microwave network analysis."""
 from __future__ import annotations
 
 from typing import Any
@@ -53,8 +45,7 @@ def from_skrf_network(
     port_pair: tuple[int, int] | None = None,
     unit: Any | None = None,
 ) -> Any:
-    """Create FrequencySeries, FrequencySeriesDict, or FrequencySeriesMatrix
-    from a scikit-rf Network.
+    """Create GWexpy frequency objects from a scikit-rf network.
 
     Parameters
     ----------

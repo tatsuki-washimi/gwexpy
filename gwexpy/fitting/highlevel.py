@@ -113,6 +113,8 @@ def fit_bootstrap_spectrum(
         Whether to display plots. Default is True.
     progress : bool, optional
         Whether to show progress bars for MCMC. Default is True.
+    **kwargs
+        Additional keyword arguments forwarded to lower-level fitting steps.
 
     Returns
     -------

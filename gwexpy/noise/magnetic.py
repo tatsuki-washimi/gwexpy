@@ -98,14 +98,21 @@ def geomagnetic_background(
     **kwargs: Any,
 ) -> FrequencySeries:
     """Generate 1/f^alpha magnetic background noise.
+
     Wrapper for colored.power_law.
 
     Parameters
     ----------
+    frequencies : ndarray
+        Target frequency array in Hz.
     amplitude_1hz : float
         Amplitude at 1Hz, typically in pT/rtHz (default 10e-12 = 10pT).
         Note: The user provided example says 10e-12 (10pT), assumed unit of result.
         However, if user passes unit='pT...', amplitude should be consistent.
+    exponent : float
+        Power-law exponent applied to the background spectrum.
+    **kwargs
+        Additional keyword arguments passed to ``power_law``.
 
     """
     if "unit" not in kwargs:

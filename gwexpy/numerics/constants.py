@@ -1,4 +1,4 @@
-"""Dtype-aware numerical constants for gwexpy.
+r"""Dtype-aware numerical constants for gwexpy.
 
 Why not just ``1e-12``?
 -----------------------

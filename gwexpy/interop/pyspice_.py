@@ -1,4 +1,5 @@
-"""gwexpy.interop.pyspice_
+"""Interoperate with PySpice circuit simulation results.
+
 ------------------------
 
 Interoperability with PySpice circuit simulation library.

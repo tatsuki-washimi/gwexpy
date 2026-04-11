@@ -56,6 +56,8 @@ def write_collection_dir(
         Iterable of (key, value) pairs.
     writer
         Callback: writer(value, filepath, entry_format).
+    meta_getter
+        Optional callback returning per-entry metadata for the manifest.
     overwrite
         If False and the directory exists and is non-empty, raise.
 
@@ -153,6 +155,7 @@ def read_collection_dir(
     entry_format: str | None,
     reader: Callable[[Path, str], Any],
 ) -> tuple[str, list[tuple[str, Any, dict[str, Any]]]]:
+    """Read a collection directory and return loaded entries with metadata."""
     fmt, pairs = iter_collection_dir_entries(
         dirpath, expected_kind=expected_kind, entry_format=entry_format
     )

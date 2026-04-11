@@ -51,6 +51,7 @@ class HistogramBaseDict(OrderedDict[str, _H]):
         super().__setitem__(key, value)
 
     def setdefault(self, key: str, default: _H | None = None) -> _H:
+        """Return the stored histogram for ``key`` or insert ``default``."""
         if key in self:
             return self[key]
         if default is None:
@@ -65,6 +66,7 @@ class HistogramBaseDict(OrderedDict[str, _H]):
         return default
 
     def copy(self) -> HistogramBaseDict[_H]:
+        """Return a deep copy of the histogram mapping."""
         new = self.__class__()
         for key, val in self.items():
             new[key] = val.copy()
@@ -267,15 +269,18 @@ class HistogramBaseList(PlotMixin, list[_H]):
             )
 
     def append(self, item: _H) -> HistogramBaseList[_H]:  # type: ignore[override]
+        """Append one histogram and return ``self``."""
         self._validate(item, op="append")
         super().append(item)
         return self
 
     def extend(self, items: Iterable[_H]) -> None:
+        """Extend the list with validated histogram items."""
         validated = self.__class__(*items)
         super().extend(validated)
 
     def insert(self, index: SupportsIndex, item: _H) -> None:
+        """Insert one validated histogram at ``index``."""
         self._validate(item, op="insert")
         super().insert(index, item)
 
@@ -293,6 +298,7 @@ class HistogramBaseList(PlotMixin, list[_H]):
         return super().__getitem__(index)
 
     def copy(self) -> HistogramBaseList[_H]:
+        """Return a deep copy of the histogram list."""
         return self.__class__(*(item.copy() for item in self))
 
     def plot(self, **kwargs: Any) -> Any:
@@ -344,6 +350,7 @@ class HistogramBaseList(PlotMixin, list[_H]):
         return cast(Any, registry.read(cls, source, *args, **kwargs))
 
     def write(self, target: Any, *args: Any, **kwargs: Any) -> Any:
+        """Write the histogram list to a supported target format."""
         fmt = kwargs.get("format")
 
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):

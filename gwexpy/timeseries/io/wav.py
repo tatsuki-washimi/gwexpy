@@ -1,6 +1,4 @@
-"""WAV format reader for gwexpy.
-Wrapper around scipy.io.wavfile to support TimeSeriesDict and metadata.
-"""
+"""Read WAV files through ``scipy.io.wavfile`` for gwexpy."""
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -130,7 +128,8 @@ def read_timeseriesdict_wav(
 
 
 def read_timeseries_wav(source, **kwargs):
-    """Read a WAV file into a TimeSeries.
+    """Read a WAV file into a ``TimeSeries``.
+
     If multiple channels are present, returns the first one.
     """
     tsd = read_timeseriesdict_wav(source, **kwargs)

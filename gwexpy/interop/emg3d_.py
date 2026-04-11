@@ -1,4 +1,5 @@
-"""gwexpy.interop.emg3d_
+"""Interoperate with emg3d electromagnetic modelling fields.
+
 ---------------------
 
 Interoperability with emg3d electromagnetic modelling fields.

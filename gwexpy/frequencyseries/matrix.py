@@ -81,7 +81,7 @@ class FrequencySeriesMatrix(  # type: ignore[misc]
     def __new__(cls, data=None, frequencies=None, df=None, f0=None, **kwargs):
         """Create a new FrequencySeriesMatrix.
 
-        This constructor extends the standard `SeriesMatrix` by adding support 
+        This constructor extends the standard `SeriesMatrix` by adding support
         for frequency-domain metadata (`f0`, `df`) and automatic axis alignment.
         """
         channel_names = kwargs.pop("channel_names", None)

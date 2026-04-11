@@ -27,21 +27,28 @@ def compute_student_t_nu(
     frange: tuple[float, float] | None = None,
 ) -> Spectrogram:
     """Compute Student-t degree of freedom (nu) for non-Gaussianity detection.
+
     Nu -> infinity for Gaussian, small nu (e.g., < 10) for non-Gaussian.
 
     Parameters
     ----------
     ts : TimeSeries
+        Input time series to analyze.
     fftlength : float
+        FFT segment length in seconds.
     stride : float, optional
+        Step between adjacent FFT windows in seconds.
     window : int, default=40
+        Number of STFT segments per Student-t fit window.
     overlap : float, optional
+        Overlap between adjacent FFT windows in seconds.
     frange : (float, float), optional
         Frequency range (low, high) in Hz to limit computation.
 
     Returns
     -------
-    Spectrogram (nu values)
+    Spectrogram
+        Spectrogram of estimated Student-t ``nu`` values.
 
     """
     if stride is None:
@@ -62,7 +69,13 @@ def compute_student_t_nu(
     # Simple STFT to get complex values
     # shape (n_freqs, n_times)
     from scipy.signal import stft
-    f, t, Zxx = stft(ts.value, fs=fs, nperseg=nfft, noverlap=nfft-nstep, return_onesided=True)
+    f, t, Zxx = stft(
+        ts.value,
+        fs=fs,
+        nperseg=nfft,
+        noverlap=nfft - nstep,
+        return_onesided=True,
+    )
     # Zxx shape: (n_freqs, n_times)
 
     n_freqs, n_times = Zxx.shape

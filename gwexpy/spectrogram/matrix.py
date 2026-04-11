@@ -92,6 +92,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         meta=None,
         **kwargs,
     ):
+        """Create a new `SpectrogramMatrix` instance."""
         # Handle alias
         if times is None:
             times = kwargs.get("xindex")
@@ -217,7 +218,8 @@ class SpectrogramMatrix(  # type: ignore[misc]
             self._value = self.view(np.ndarray)
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
-        """Override SeriesMatrix.__array_ufunc__ to correctly handle SpectrogramMatrix structure
+        """Override `SeriesMatrix.__array_ufunc__` to handle `SpectrogramMatrix` structure.
+
         (Batch, Time, Freq) or (Row, Col, Time, Freq).
 
         Per-element units are preserved in MetaDataMatrix:
@@ -446,13 +448,16 @@ class SpectrogramMatrix(  # type: ignore[misc]
         return np.subtract(other, self)
 
     def row_keys(self):
+        """Return the row metadata keys."""
         return tuple(self.rows.keys()) if self.rows else tuple()
 
     def col_keys(self):
+        """Return the column metadata keys."""
         return tuple(self.cols.keys()) if self.cols else tuple()
 
     def is_compatible(self, other: Any) -> bool:
         """Check compatibility with another SpectrogramMatrix/object.
+
         Overrides SeriesMatrix.is_compatible to avoid loop range issues due to
         mismatch between data shape (Time axis) and metadata shape (Batch/Col).
         """
@@ -524,6 +529,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         return True
 
     def row_index(self, key):
+        """Return the integer index for a row key."""
         if not self.rows:
             raise KeyError(f"Invalid row key: {key}")
         try:
@@ -532,6 +538,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
             raise KeyError(f"Invalid row key: {key}")
 
     def col_index(self, key):
+        """Return the integer index for a column key."""
         if not self.cols:
             raise KeyError(f"Invalid column key: {key}")
         try:
@@ -800,6 +807,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
 
     @property
     def shape3D(self):
+        """Return the display-oriented 3D shape view."""
         # Override Base logic to return relevant 3D view (Batch, Time, Freq) for display?
         # Or (Row, Col, Time) if we treat Freq as hidden dim?
         # For uniformity with SeriesMatrix which is (Row, Col, Sample),
@@ -808,8 +816,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         return self.shape
 
     def plot_summary(self, **kwargs):
-        """Plot Matrix as side-by-side Spectrograms and percentile summaries.
-        """
+        """Plot the matrix as side-by-side spectrograms and percentile summaries."""
         from gwexpy.plot.plot import plot_summary
 
         return plot_summary(self, **kwargs)
@@ -830,8 +837,7 @@ class SpectrogramMatrix(  # type: ignore[misc]
         return tuple(picked)
 
     def __setstate__(self, state):
-        """Restore state from pickle.
-        """
+        """Restore state from pickle."""
         # The last element contains our __dict__
         my_dict = state[-1]
 

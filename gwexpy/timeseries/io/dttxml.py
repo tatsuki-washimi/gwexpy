@@ -46,6 +46,7 @@ def read_timeseriesdict_dttxml(
     pad=np.nan,
     **kwargs,
 ) -> TimeSeriesDict:
+    """Read one DTT XML product into a ``TimeSeriesDict``."""
     if products is None:
         raise ValueError("products must be specified for dttxml")
     prod = str(products).upper()
@@ -85,6 +86,7 @@ def read_timeseriesdict_dttxml(
 
 
 def read_timeseries_dttxml(*args, **kwargs) -> TimeSeries:
+    """Read one DTT XML product and return its first channel."""
     tsd = read_timeseriesdict_dttxml(*args, **kwargs)
     if not tsd:
         raise ValueError("No channels found in dttxml")
@@ -92,6 +94,7 @@ def read_timeseries_dttxml(*args, **kwargs) -> TimeSeries:
 
 
 def read_timeseriesmatrix_dttxml(*args, **kwargs) -> TimeSeriesMatrix:
+    """Read one DTT XML product and convert it to a matrix."""
     tsd = read_timeseriesdict_dttxml(*args, **kwargs)
     return tsd.to_matrix()
 

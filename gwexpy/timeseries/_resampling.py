@@ -591,7 +591,7 @@ class TimeSeriesResamplingMixin(TimeSeriesAttrs):
         inplace: bool = False,
         ignore_nan: bool | None = None,
     ) -> TimeSeriesResamplingMixin:
-        """Internal: Bin-based resampling."""
+        """Perform bin-based resampling."""
         if ignore_nan is not None:
             nan_policy = "omit" if ignore_nan else "propagate"
         # Default offset

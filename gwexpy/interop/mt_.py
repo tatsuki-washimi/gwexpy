@@ -1,4 +1,5 @@
-"""gwexpy.interop.mt_
+"""Interoperate with the MTH5 magnetotelluric HDF5 format.
+
 ------------------
 
 Interoperability with MTH5 (Magnetotelluric HDF5) format.
@@ -176,6 +177,8 @@ def from_mth5(
         Run name.
     channel : str
         Channel name to read.
+    survey : str, optional
+        Survey name for MTH5 v0.2.0 files. If omitted, available surveys are searched.
 
     Returns
     -------

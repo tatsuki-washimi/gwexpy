@@ -92,7 +92,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
     """
 
     def __getitem__(self, item: Any) -> Any:
-        """Custom getitem to handle 1D views safely.
+        """Handle 1D views safely in `__getitem__`.
 
         In some environments (e.g. newer matplotlib/astropy), iterating over a
         2D Spectrogram yields 1D Spectrogram views. GWpy's Array2D.__getitem__
@@ -134,6 +134,16 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
         Parameters
         ----------
+        n_boot : int, optional
+            Number of bootstrap resamples to draw.
+        method : str, optional
+            Bootstrap estimator to use.
+        average : str, optional
+            Deprecated alias for `method`.
+        ci : float, optional
+            Central confidence interval width.
+        window : str, optional
+            Window function used for overlap-correction defaults.
         fftlength : float or Quantity, optional
             FFT segment length in seconds (e.g. ``1.0`` or ``1.0 * u.s``).
             Used for VIF overlap-correlation correction. If None, the
@@ -156,6 +166,10 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             perform standard bootstrap with analytical VIF correction.
         rebin_width : float, optional
             Frequency rebinning width in Hz before bootstrapping.
+        return_map : bool, optional
+            If True, return the full bootstrap map in addition to the summary.
+        ignore_nan : bool, optional
+            If True, ignore NaN values during resampling.
         **kwargs
             Additional keyword arguments. Passing the removed ``nperseg``
             or ``noverlap`` parameters will raise :class:`TypeError`.
@@ -225,10 +239,18 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         ignore_nan=True,
         **kwargs,
     ):
-        """Convenience wrapper for bootstrap ASD estimation.
+        """Estimate bootstrap ASD with the convenience wrapper.
 
         Parameters
         ----------
+        n_boot : int, optional
+            Number of bootstrap resamples to draw.
+        average : str, optional
+            Averaging method passed through to `bootstrap`.
+        ci : float, optional
+            Central confidence interval width.
+        window : str, optional
+            Window function used for overlap-correction defaults.
         fftlength : float or Quantity, optional
             FFT segment length in seconds (e.g. ``1.0`` or ``1.0 * u.s``).
             Used for VIF overlap-correlation correction. Cannot be used with `nfft`.
@@ -243,6 +265,10 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
             specified as float (seconds), Quantity with time units, or 'auto'.
         rebin_width : float, optional
             Frequency rebinning width in Hz before bootstrapping.
+        return_map : bool, optional
+            If True, return the full bootstrap map in addition to the summary.
+        ignore_nan : bool, optional
+            If True, ignore NaN values during resampling.
         **kwargs
             Additional keyword arguments. Passing the removed ``nperseg``
             or ``noverlap`` parameters will raise :class:`TypeError`.
@@ -288,15 +314,13 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
         )
 
     def to_th2d(self, error=None):
-        """Convert to ROOT TH2D.
-        """
+        """Convert to ROOT `TH2D`."""
         from gwexpy.interop import to_th2d
 
         return to_th2d(self, error=error)
 
     def to_quantities(self, units=None):
-        """Convert to quantities.Quantity (Elephant/Neo compatible).
-        """
+        """Convert to `quantities.Quantity` for Elephant or Neo compatibility."""
         from gwexpy.interop import to_quantity
 
         return to_quantity(self, units=units)
@@ -321,8 +345,7 @@ class Spectrogram(PlotMixin, PhaseMethodsMixin, InteropMixin, BaseSpectrogram):
 
     @classmethod
     def from_root(cls, obj, return_error=False):
-        """Create Spectrogram from ROOT TH2D.
-        """
+        """Create a `Spectrogram` from ROOT `TH2D`."""
         from gwexpy.interop import from_root
 
         return from_root(cls, obj, return_error=return_error)

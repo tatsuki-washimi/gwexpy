@@ -106,12 +106,12 @@ class VectorField(FieldDict):
         return np.stack(vals, axis=-1)
 
     def norm(self) -> ScalarField:
-        """Compute the L2 norm of the vector field.
+        r"""Compute the L2 norm of the vector field.
 
         Returns
         -------
         ScalarField
-            A scalar field representing the magnitude :math:`\\sqrt{\\sum |E_i|^2}`.
+            A scalar field representing the magnitude :math:`\sqrt{\sum |E_i|^2}`.
 
         """
         if not self:

@@ -46,6 +46,8 @@ def from_pyspeckit(cls, spectrum, **kwargs):
         Target class (FrequencySeries).
     spectrum : pyspeckit.Spectrum
         Input spectrum.
+    **kwargs
+        Additional keyword arguments passed to the target constructor.
 
     Returns
     -------

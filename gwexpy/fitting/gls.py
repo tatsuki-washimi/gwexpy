@@ -57,7 +57,9 @@ class GLS:
             self.cov_inv = np.eye(len(y))
 
     def solve(self) -> np.ndarray:
-        """Solve the linear GLS problem: beta = (X.T @ W @ X)^-1 @ X.T @ W @ y
+        """Solve the linear GLS problem.
+
+        beta = (X.T @ W @ X)^-1 @ X.T @ W @ y
         where W = cov_inv.
         """
         W = self.cov_inv

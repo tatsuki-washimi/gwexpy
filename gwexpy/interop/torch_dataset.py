@@ -14,8 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover - type hints only
 
 
 class TimeSeriesWindowDataset:
-    """Simple windowed Dataset wrapper for torch training loops.
-    """
+    """Simple windowed dataset wrapper for torch training loops."""
 
     def __init__(
         self,
@@ -133,8 +132,7 @@ def to_torch_dataset(
     device=None,
     dtype=None,
 ):
-    """Convenience wrapper to build a TimeSeriesWindowDataset.
-    """
+    """Build a ``TimeSeriesWindowDataset`` from the provided object."""
     return TimeSeriesWindowDataset(
         obj,
         window=window,
@@ -156,8 +154,7 @@ def to_torch_dataloader(
     num_workers: int = 0,
     **kwargs,
 ):
-    """Create a torch DataLoader from the provided dataset.
-    """
+    """Create a torch ``DataLoader`` from the provided dataset."""
     torch = require_optional("torch")
     return torch.utils.data.DataLoader(
         dataset,

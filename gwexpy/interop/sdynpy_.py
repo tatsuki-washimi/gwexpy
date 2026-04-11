@@ -1,18 +1,4 @@
-"""gwexpy.interop.sdynpy_
------------------------
-
-Interoperability with SDynPy (Structural Dynamics in Python).
-
-SDynPy represents modal data via NumPy structured arrays:
-- ``ShapeArray``: mode shapes with coordinate/frequency/damping fields
-- ``TransferFunctionArray``: FRF data with abscissa/ordinate
-- ``TimeHistoryArray``: time-domain data with abscissa/ordinate
-
-References
-----------
-https://github.com/sandialabs/sdynpy
-
-"""
+"""Interoperability with SDynPy (Structural Dynamics in Python)."""
 from __future__ import annotations
 
 from typing import Any, cast

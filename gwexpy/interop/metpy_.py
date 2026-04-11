@@ -1,4 +1,5 @@
-"""gwexpy.interop.metpy_
+"""Interoperate with MetPy xarray data arrays.
+
 ---------------------
 
 Interoperability with MetPy xarray DataArrays.

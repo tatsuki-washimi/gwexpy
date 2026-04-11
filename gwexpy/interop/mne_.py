@@ -187,8 +187,7 @@ def to_mne_rawarray(tsd, info=None, picks=None):
 
 
 def from_mne_raw(cls, raw, unit_map=None):
-    """raw: mne.io.Raw
-    """
+    """Create a `TimeSeriesDict` from `mne.io.Raw`."""
     data, times = raw.get_data(return_times=True)
     # data: (n_ch, n_times)
     # times: (n_times,) relative to first sample usually 0
@@ -297,7 +296,7 @@ def from_mne(cls, data, **kwargs):
 
 
 def _fs_to_mne_spectrum(fsd, info=None, **kwargs):
-    """FrequencySeries (or dict) -> mne.time_frequency.SpectrumArray"""
+    """Convert `FrequencySeries` data to `mne.time_frequency.SpectrumArray`."""
     mne = require_optional("mne")
 
     # Normalize input to list of (name, series)
@@ -350,7 +349,7 @@ def _fs_to_mne_spectrum(fsd, info=None, **kwargs):
 
 
 def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
-    """mne.time_frequency.Spectrum -> FrequencySeries (or dict)"""
+    """Convert `mne.time_frequency.Spectrum` to `FrequencySeries` data."""
     data = spectrum.get_data()
     freqs = spectrum.freqs
     ch_names = spectrum.ch_names
@@ -381,7 +380,7 @@ def _mne_spectrum_to_fs(cls, spectrum, **kwargs):
 
 
 def _spec_to_mne_tfr(specd, info=None, **kwargs):
-    """Spectrogram (or dict) -> mne.time_frequency.EpochsTFRArray"""
+    """Convert spectrogram data to `mne.time_frequency.EpochsTFRArray`."""
     mne = require_optional("mne")
 
     if isinstance(specd, Mapping):
@@ -451,7 +450,7 @@ def _spec_to_mne_tfr(specd, info=None, **kwargs):
 
 
 def _mne_tfr_to_spec(cls, tfr, **kwargs):
-    """mne.time_frequency.EpochsTFR/AverageTFR -> Spectrogram (or dict)"""
+    """Convert MNE TFR objects to spectrogram data."""
     data = tfr.data
     # Shape:
     # EpochsTFR: (n_epochs, n_channels, n_freqs, n_times)

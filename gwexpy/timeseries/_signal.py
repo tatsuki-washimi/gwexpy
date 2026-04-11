@@ -446,7 +446,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         phase0: float = 0.0,
         prefer_dt: bool = True,
     ) -> NDArray[np.floating]:
-        """Internal helper to build phase series in radians."""
+        """Build the phase series in radians."""
         if (f0 is None and phase is None) or (f0 is not None and phase is not None):
             raise ValueError("Exactly one of 'f0' or 'phase' must be provided.")
 
@@ -525,8 +525,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         singlesided: bool = False,
         copy: bool = True,
     ) -> TimeSeriesSignalMixin:
-        """Mix the TimeSeries with a complex oscillator.
-        """
+        """Mix the `TimeSeries` with a complex oscillator."""
         phase_series = self._build_phase_series(
             phase=phase,  # type: ignore[arg-type]
             f0=f0,
@@ -569,7 +568,8 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         *,
         singlesided: bool = False,
     ) -> TimeSeriesSignalMixin:
-        """Compute the average magnitude and phase of the TimeSeries after
+        """Compute the average magnitude and phase of the TimeSeries after.
+
         heterodyning with a given phase series.
 
         This method replicates the GWpy ``TimeSeries.heterodyne()`` algorithm
@@ -675,7 +675,8 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         deg: bool = True,
         exp: bool = False,
     ) -> Any:
-        r"""Compute the average magnitude and phase of the TimeSeries at a
+        r"""Compute the average magnitude and phase of the TimeSeries at a.
+
         given frequency (GWpy-compatible).
 
         This method replicates the GWpy ``TimeSeries.demodulate()`` algorithm.
@@ -1266,6 +1267,8 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
             numerical instability. If provided, the division is performed as:
             - steady mode: :math:`H(f) = \text{CSD}(f) / (\text{PSD}(f) + \epsilon)`
             - transient mode: :math:`H(f) = (FFT_B \cdot FFT_A^*) / (|FFT_A|^2 + \epsilon)`
+        **kwargs
+            Additional keyword arguments forwarded to the steady-state spectral estimators.
 
         Returns
         -------
@@ -1514,8 +1517,7 @@ class TimeSeriesSignalMixin(TimeSeriesAttrs):
         mode: str = "full",
         demean: bool = True,
     ) -> TimeSeriesSignalMixin:
-        """Compute time-domain cross-correlation between two TimeSeries.
-        """
+        """Compute the time-domain cross-correlation between two `TimeSeries`."""
         from scipy import signal
 
         dt_self = (

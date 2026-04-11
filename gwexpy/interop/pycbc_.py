@@ -1,4 +1,5 @@
-"""gwexpy.interop.pycbc_
+"""Interoperate with PyCBC time and frequency series.
+
 ---------------------
 
 Interoperability with PyCBC (Python gravitational-wave data analysis library).

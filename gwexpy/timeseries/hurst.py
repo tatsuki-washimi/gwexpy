@@ -123,6 +123,8 @@ def hurst(
         'raise' or 'impute'.
     impute_kwargs : dict, optional
         Arguments for imputation.
+    **kwargs
+        Additional keyword arguments forwarded to the selected backend.
 
     Returns
     -------
@@ -217,6 +219,8 @@ def local_hurst(
         'raise' or 'impute'.
     impute_kwargs : dict, optional
         Arguments for imputation.
+    **kwargs
+        Additional keyword arguments forwarded to `hurst` for each window.
 
     Returns
     -------

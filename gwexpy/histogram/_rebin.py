@@ -13,7 +13,7 @@ logger = get_logger(__name__)
 def _compute_A_matrix_cached(
     old_edges_tuple: tuple[float, ...], new_edges_tuple: tuple[float, ...]
 ) -> np.ndarray:
-    """Internal cached implementation of compute_A_matrix using tuples as keys."""
+    """Compute a cached rebinning matrix using tuple keys."""
     old_edges = np.array(old_edges_tuple)
     new_edges = np.array(new_edges_tuple)
 
@@ -104,6 +104,8 @@ class HistogramRebinMixin:
             New bin edges to project onto.
         xunit : str or astropy.units.Unit, optional
             The unit of new_edges if it is not a Quantity.
+        **kwargs : Any
+            Additional keyword arguments reserved for API compatibility.
 
         Returns
         -------

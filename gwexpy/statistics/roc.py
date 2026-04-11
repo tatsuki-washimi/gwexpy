@@ -16,6 +16,7 @@ def calculate_roc(
     n_points: int = 100,
 ) -> tuple[np.ndarray, np.ndarray, float]:
     """Calculate ROC curve (FPR, TPR) and AUC.
+
     y_score: probability or statistic where HIGH value means glitch.
     If using p-values, pass 1 - p-value.
     """
@@ -55,18 +56,17 @@ def evaluate_detection_performance(
     n_trials: int = 50,
     **kwargs: Any,
 ) -> tuple[np.ndarray, np.ndarray, float]:
-    """Evaluate detection performance (ROC) by comparing clean vs glitchy data.
-    """
+    """Evaluate detection performance by comparing clean and glitchy data."""
     y_true = []
     y_score = []
 
     for _ in range(n_trials):
         # Clean case
-        ts_clean = glitch_generator(A1=0, **kwargs) # Assuming 0 amplitude is clean
+        ts_clean = glitch_generator(A1=0, **kwargs)  # Assuming 0 amplitude is clean
         score_clean = method_func(ts_clean)
         # Handle if score is a map (take max/min depending on sense)
         if hasattr(score_clean, "value"):
-            val = np.nanmax(1.0 - score_clean.value) # if score is p-value
+            val = np.nanmax(1.0 - score_clean.value)  # if score is p-value
         else:
             val = score_clean
         y_true.append(0)

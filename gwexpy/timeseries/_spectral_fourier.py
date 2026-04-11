@@ -1,5 +1,4 @@
-"""Standard Fourier-based spectral transform methods for TimeSeries.
-"""
+"""Standard Fourier-based spectral transform methods for `TimeSeries`."""
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -42,8 +41,7 @@ def _get_next_fast_len() -> Callable[[int], int]:
 
 
 class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
-    """Mixin class providing standard Fourier-based spectral transform methods.
-    """
+    """Provide standard Fourier-based spectral transform methods."""
 
     def _super_ts(self) -> TimeSeriesAttrs:
         return cast(TimeSeriesAttrs, super())
@@ -54,7 +52,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         window: WindowLike | None = None,
         detrend: bool = False,
     ) -> npt.NDArray[Any]:
-        """Helper to copy data and apply detrending and windowing."""
+        """Copy data and apply optional detrending and windowing."""
         try:
             import scipy.signal  # noqa: F401 - availability check
         except ImportError:
@@ -107,6 +105,8 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
             "next_fast_len" for optimal performance.
         other_length : `int`, optional
             For convolution-like transforms.
+        **kwargs
+            Additional keyword arguments forwarded to the output constructor.
 
         Returns
         -------
@@ -134,7 +134,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
     def _fft_gwpy(
         self, nfft: NumberLike | None = None, **kwargs: Any
     ) -> FrequencySeries:
-        """Internal method for standard GWpy FFT."""
+        """Compute the standard GWpy FFT."""
         GWEXFrequencySeries = ConverterRegistry.get_constructor("FrequencySeries")
 
         base_fs = self._super_ts().fft(nfft=nfft, **kwargs)
@@ -159,7 +159,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
         other_length: NumberLike | None = None,
         **kwargs: Any,
     ) -> FrequencySeries:
-        """Internal method for transient-restoration FFT.
+        """Compute the transient-restoration FFT.
 
         Returns an **amplitude spectrum** (not a density spectrum [V/√Hz]).
         The formula ``rfft(x) / N`` with one-sided values doubled allows
@@ -368,6 +368,7 @@ class TimeSeriesSpectralFourierMixin(TimeSeriesAttrs):
 
     def spectrogram2(self, *args: Any, **kwargs: Any) -> Spectrogram:
         """Compute an alternative spectrogram (spectrogram2).
+
         Returns Spectrogram.
         """
         Spectrogram = ConverterRegistry.get_constructor("Spectrogram")

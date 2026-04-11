@@ -92,6 +92,8 @@ def _undo_ica_standardization(X, stats):
 
 @dataclass
 class PCAResult:
+    """Store PCA outputs together with preprocessing metadata."""
+
     sklearn_model: Any
     channel_labels: list[str]
     preprocessing: dict[str, Any]
@@ -99,6 +101,7 @@ class PCAResult:
 
     @property
     def components(self):
+        """Return the principal component vectors."""
         return self.sklearn_model.components_
 
     @property
@@ -108,6 +111,7 @@ class PCAResult:
 
     @property
     def explained_variance_ratio(self):
+        """Return the explained variance ratio for each component."""
         return self.sklearn_model.explained_variance_ratio_
 
     @property
@@ -116,6 +120,7 @@ class PCAResult:
         return self.sklearn_model.explained_variance_ratio_
 
     def summary_dict(self):
+        """Return a compact summary of the PCA result."""
         return {
             "explained_variance_ratio": self.explained_variance_ratio.tolist(),
             "n_components": self.sklearn_model.n_components_,
@@ -124,6 +129,8 @@ class PCAResult:
 
 @dataclass
 class ICAResult:
+    """Store ICA outputs together with preprocessing metadata."""
+
     sklearn_model: Any
     channel_labels: list[str]
     preprocessing: dict[str, Any]

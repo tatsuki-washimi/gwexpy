@@ -28,6 +28,7 @@ def _ensure_schema(conn):
 
 
 def to_sqlite(ts, conn, series_id=None, overwrite=False):
+    """Write a time series into a SQLite connection and return its id."""
     _ensure_schema(conn)
 
     sid = series_id or (ts.name if ts.name else "unknown")
@@ -69,6 +70,7 @@ def to_sqlite(ts, conn, series_id=None, overwrite=False):
 
 
 def from_sqlite(cls, conn, series_id):
+    """Read a time series from a SQLite connection by series id."""
     cur = conn.cursor()
     cur.execute("SELECT t0, dt, unit, n FROM series WHERE series_id=?", (series_id,))
     row = cur.fetchone()

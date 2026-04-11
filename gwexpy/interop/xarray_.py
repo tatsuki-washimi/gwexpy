@@ -19,8 +19,7 @@ T = TypeVar("T", bound="TimeSeries")
 def to_xarray(
     ts: TimeSeries, time_coord: Literal["datetime", "seconds", "gps"] = "datetime"
 ) -> xr.DataArray:
-    """TimeSeries -> xarray.DataArray
-    """
+    """Convert `TimeSeries` to `xarray.DataArray`."""
     xr = require_optional("xarray")
 
     data = ts.value
@@ -57,7 +56,7 @@ def to_xarray(
 
 
 def from_xarray(cls: type[T], da: xr.DataArray, unit: Optional[str] = None) -> T:
-    """DataArray -> TimeSeries"""
+    """Convert `xarray.DataArray` to `TimeSeries`."""
     require_optional("xarray")
 
     val = da.values

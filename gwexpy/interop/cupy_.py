@@ -4,8 +4,7 @@ from ._optional import require_optional
 
 
 def is_cupy_available():
-    """Check if cupy is installed and functionally usable (CUDA environment is working).
-    """
+    """Check whether CuPy is installed and the CUDA environment is usable."""
     try:
         import cupy
 
@@ -16,6 +15,7 @@ def is_cupy_available():
 
 
 def to_cupy(obj, dtype=None):
+    """Convert an object to a CuPy array."""
     cupy = require_optional("cupy")
     try:
         return cupy.asarray(obj, dtype=dtype)
@@ -32,6 +32,7 @@ def to_cupy(obj, dtype=None):
 
 
 def from_cupy(cls, array, t0, dt, unit=None):
+    """Create a GWexpy object from a CuPy array."""
     cupy = require_optional("cupy")
     data = cupy.asnumpy(array)
     return cls(data, t0=t0, dt=dt, unit=unit)

@@ -55,6 +55,7 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
         self, start: Any | None = None, end: Any | None = None, copy: bool = False
     ) -> TimeSeriesCore:
         """Crop this series to the given GPS start and end times.
+
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         """
         from gwexpy.time import to_gps
@@ -82,8 +83,7 @@ class TimeSeriesCore(RegularityMixin, BaseTimeSeries):
         gap: Any = None,
         resize: bool = True,
     ) -> TimeSeriesCore:
-        """Append another TimeSeries (GWpy-compatible), returning gwexpy TimeSeries.
-        """
+        """Append another `TimeSeries`, returning a GWexpy `TimeSeries`."""
         res = super().append(other, inplace=inplace, pad=pad, gap=gap, resize=resize)
         if inplace:
             return self

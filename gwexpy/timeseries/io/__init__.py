@@ -1,8 +1,4 @@
-"""gwexpy.timeseries.io
---------------------
-
-Registrations for additional TimeSeries readers.
-"""
+"""Register additional ``TimeSeries`` I/O handlers on import."""
 from __future__ import annotations
 
 # Readers are registered on import

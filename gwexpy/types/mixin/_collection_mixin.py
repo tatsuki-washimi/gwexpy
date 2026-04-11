@@ -49,6 +49,10 @@ def _make_dict_map_method(
 
     Parameters
     ----------
+    method_name : str
+        Name of the delegated method to call on each element.
+    doc : str, optional
+        Docstring assigned to the generated method.
     result_class_path : str
         Dotted import path for the result collection class
         (e.g. ``"gwexpy.frequencyseries.FrequencySeriesDict"``).
@@ -104,6 +108,10 @@ def _make_list_map_method(
 
     Parameters
     ----------
+    method_name : str
+        Name of the delegated method to call on each element.
+    doc : str, optional
+        Docstring assigned to the generated method.
     result_class_path : str
         Dotted import path for the result collection class.
         Uses deferred import to avoid circular dependencies.

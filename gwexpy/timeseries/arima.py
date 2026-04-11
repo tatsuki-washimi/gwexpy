@@ -43,12 +43,15 @@ except ImportError:
 
 @dataclass
 class ArimaForecastResult:
+    """Store forecast outputs and confidence intervals."""
+
     forecast_ts: TimeSeries
     intervals: dict[str, TimeSeries]
 
 
 class ArimaResult:
     """Result object for ARIMA/SARIMAX modeling on TimeSeries.
+
     Wraps statsmodels results and provides TimeSeries-aware methods.
     """
 
@@ -62,7 +65,7 @@ class ArimaResult:
         self.original_data = original_data  # Keep reference for plotting
 
     def _time_to_index(self, t, default=0):
-        """Helper to convert GPS time to relative integer index."""
+        """Convert GPS time to a relative integer index."""
         if t is None:
             return default
         if isinstance(t, (int, np.integer)):
@@ -321,6 +324,16 @@ def fit_arima(
         If True, use pmdarima (Auto-ARIMA) to find the best order.
     auto_kwargs : dict, optional
         Arguments passed to pmdarima.auto_arima (e.g., {'max_p': 5}).
+    method : str, optional
+        Fitting method override passed to the statsmodels estimator.
+    method_kwargs : dict, optional
+        Additional keyword arguments passed to the selected fitting method.
+    nan_policy : {"raise", "impute"}, default="raise"
+        Strategy for handling NaN values in the input series.
+    impute_kwargs : dict, optional
+        Keyword arguments forwarded to `impute_timeseries` when imputing NaNs.
+    **kwargs
+        Additional keyword arguments forwarded to the ARIMA or SARIMAX constructor.
 
     Notes
     -----

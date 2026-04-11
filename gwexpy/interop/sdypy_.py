@@ -1,17 +1,4 @@
-"""gwexpy.interop.sdypy_
------------------------
-
-Interoperability with SDyPy / pyuff (Universal File Format).
-
-Reads UFF dataset type 58 (function at nodal DOF) and type 55
-(modal data) into GWexpy types.
-
-References
-----------
-https://github.com/ladisk/pyuff
-https://sdypy.readthedocs.io/
-
-"""
+"""Interoperability with SDyPy and pyuff (Universal File Format)."""
 from __future__ import annotations
 
 from typing import Any

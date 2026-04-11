@@ -1,4 +1,5 @@
-"""gwexpy.interop.opensees_
+"""Interoperate with OpenSeesPy recorder output.
+
 -------------------------
 
 Interoperability with OpenSeesPy recorder output.

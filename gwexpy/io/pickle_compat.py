@@ -50,6 +50,7 @@ def _series_kwargs(series) -> dict[str, Any]:
 def timeseries_reduce_args(
     ts,
 ) -> tuple[Callable[[Any, dict[str, Any]], Any], tuple[Any, dict[str, Any]]]:
+    """Return pickle reduce arguments for a GWpy-compatible time series."""
     kwargs = _series_kwargs(ts)
     times = getattr(ts, "times", None)
     if times is not None:
@@ -64,6 +65,7 @@ def timeseries_reduce_args(
 def frequencyseries_reduce_args(
     fs,
 ) -> tuple[Callable[[Any, dict[str, Any]], Any], tuple[Any, dict[str, Any]]]:
+    """Return pickle reduce arguments for a GWpy-compatible frequency series."""
     kwargs = _series_kwargs(fs)
     freqs = getattr(fs, "frequencies", None)
     if freqs is not None:
@@ -78,6 +80,7 @@ def frequencyseries_reduce_args(
 def spectrogram_reduce_args(
     sg,
 ) -> tuple[Callable[[Any, dict[str, Any]], Any], tuple[Any, dict[str, Any]]]:
+    """Return pickle reduce arguments for a GWpy-compatible spectrogram."""
     kwargs = _series_kwargs(sg)
     kwargs["times"] = getattr(sg, "times", None)
     kwargs["frequencies"] = getattr(sg, "frequencies", None)

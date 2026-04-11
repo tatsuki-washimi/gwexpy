@@ -1,4 +1,5 @@
-"""gwexpy.interop.openems_
+"""Interoperate with openEMS field dump HDF5 files.
+
 -----------------------
 
 Interoperability with openEMS field dump HDF5 files.

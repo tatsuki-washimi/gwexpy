@@ -191,7 +191,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> TimeSeries:
-        """Rolling mean over time.
+        """Compute the rolling mean over time.
 
         Parameters
         ----------
@@ -237,7 +237,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         ddof: int = 0,
         ignore_nan: bool | None = None,
     ) -> TimeSeries:
-        """Rolling standard deviation over time.
+        """Compute the rolling standard deviation over time.
 
         Parameters
         ----------
@@ -285,7 +285,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> TimeSeries:
-        """Rolling median over time.
+        """Compute the rolling median over time.
 
         Parameters
         ----------
@@ -330,7 +330,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> TimeSeries:
-        """Rolling minimum over time.
+        """Compute the rolling minimum over time.
 
         Parameters
         ----------
@@ -375,7 +375,7 @@ class TimeSeriesAnalysisMixin(TimeSeriesAttrs):
         backend: str = "auto",
         ignore_nan: bool | None = None,
     ) -> TimeSeries:
-        """Rolling maximum over time.
+        """Compute the rolling maximum over time.
 
         Parameters
         ----------

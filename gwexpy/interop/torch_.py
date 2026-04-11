@@ -1,8 +1,4 @@
-"""gwexpy.interop.torch_
-----------------------
-
-Interoperability with PyTorch tensors.
-"""
+"""Interoperability with PyTorch tensors."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, Union

@@ -49,6 +49,7 @@ class FieldBase(Array4D):
         space_domain: str | dict[str, str] = "real",
         **kwargs,
     ):
+        """Create a field object with domain-aware axis defaults."""
         # Set default axis names based on domain
         if axis_names is None:
             time_name = (

@@ -96,8 +96,16 @@ class FieldPlot(Plot):
         ----------
         field : VectorField
             The field to plot.
+        x : str, optional
+            Name of the x-axis to display.
+        y : str, optional
+            Name of the y-axis to display.
         mode : {'quiver', 'streamline'}
             Plotting mode.
+        slice_kwargs : dict, optional
+            Fixed coordinates used to extract the displayed slice.
+        **kwargs
+            Additional keyword arguments passed to the plotting backend.
 
         """
         if slice_kwargs is None:

@@ -24,6 +24,7 @@ def rayleigh_pvalue(
     n_monte_carlo: int = 1000,
 ) -> Spectrogram:
     """Convert Rayleigh statistic spectrogram to p-value spectrogram.
+
     Rayleigh statistic is around 1 for Gaussian noise.
 
     Parameters
@@ -72,8 +73,7 @@ def rayleigh_pvalue(
 _RAYLEIGH_STAT_CACHE: dict[int, np.ndarray] = {}
 
 def _get_rayleigh_stat_null_distribution(n: int, n_trials: int = 1000) -> np.ndarray:
-    """Generate the null distribution of the Rayleigh statistic for n segments.
-    """
+    """Generate the null distribution of the Rayleigh statistic for `n` segments."""
     if n not in _RAYLEIGH_STAT_CACHE:
         # Simulate Rayleigh statistic (matching GWpy implementation)
         # In GWpy, rayleigh_spectrogram computes:

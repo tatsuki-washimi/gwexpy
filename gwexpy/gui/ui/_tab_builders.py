@@ -81,8 +81,9 @@ def _clr_box() -> QtWidgets.QComboBox:
 
 
 def _build_tab_bar_setup(panel: GraphPanel) -> None:
-    """Create the two QTabBar rows, the QStackedWidget, and the switching
-    logic.  Sets ``panel.tab_row1``, ``panel.tab_row2``, ``panel.main_stack``,
+    """Create the two QTabBar rows, the QStackedWidget, and the switching logic.
+
+    Sets ``panel.tab_row1``, ``panel.tab_row2``, ``panel.main_stack``,
     and returns the outer QVBoxLayout ``pv`` so the caller can keep a
     reference to it.
     """
@@ -283,9 +284,7 @@ def _build_traces_tab(panel: GraphPanel) -> QtWidgets.QWidget:
 def _build_trace_page(
     panel: GraphPanel, i: int, update_style: Callable[[int], None]
 ) -> QtWidgets.QWidget:
-    """Build a single trace page and append the control set to
-    ``panel.trace_controls``.
-    """
+    """Build a single trace page and append its controls to ``panel.trace_controls``."""
     page = QtWidgets.QWidget()
     pl = QtWidgets.QVBoxLayout(page)
     pl.setContentsMargins(4, 4, 4, 4)
@@ -1584,8 +1583,9 @@ def _build_config_tab(panel: GraphPanel) -> QtWidgets.QWidget:
 
 
 def _assemble_stack(panel: GraphPanel, tabs: dict[str, QtWidgets.QWidget]) -> None:
-    """Add all tab widgets to the stack in the correct order and wire up
-    the cross-tab ``update_axis_labels`` logic.
+    """Add all tab widgets to the stack in the correct order.
+
+    Wire up the cross-tab ``update_axis_labels`` logic.
 
     *tabs* is a dict mapping tab names to their widgets.
     """

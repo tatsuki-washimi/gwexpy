@@ -1,5 +1,4 @@
-"""Shared utilities for parsing dttxml (Diag GUI XML) files.
-"""
+"""Shared utilities for parsing DTT XML (Diag GUI XML) files."""
 from __future__ import annotations
 
 import warnings
@@ -10,13 +9,16 @@ import numpy as np
 
 
 class ChannelInfo(TypedDict):
+    """Channel name and enabled state extracted from a DTT XML file."""
+
     name: str
     active: bool
 
 
 def extract_xml_channels(filename: str) -> list[ChannelInfo]:
-    """Parse DTT XML to extract channel names and their Active status.
-    Returns: list of dict {'name': str, 'active': bool}
+    """Parse DTT XML and extract channel names with active flags.
+
+    Returns a list of dictionaries with ``name`` and ``active`` keys.
     """
     channels: list[ChannelInfo] = []
     try:

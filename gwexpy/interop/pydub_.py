@@ -7,6 +7,7 @@ from ._optional import require_optional
 
 def to_librosa(ts, y_dtype=np.float32):
     """Export to librosa-compatible numpy array and sampling rate.
+
     Returns (y, sr).
     """
     y = ts.value.astype(y_dtype)
@@ -15,8 +16,7 @@ def to_librosa(ts, y_dtype=np.float32):
 
 
 def to_pydub(ts, sample_width=2, channels=1):
-    """Export to pydub.AudioSegment.
-    """
+    """Export to a pydub ``AudioSegment``."""
     pydub = require_optional("pydub")
 
     # Scale float to integer based on sample_width (1, 2, 4 bytes)
@@ -52,8 +52,7 @@ def to_pydub(ts, sample_width=2, channels=1):
 
 
 def from_pydub(cls, seg, unit=None):
-    """Create TimeSeries from AudioSegment.
-    """
+    """Create a time series from a pydub ``AudioSegment``."""
     # get samples
     data = np.array(seg.get_array_of_samples())
     # if stereo, reshape? gwpy TimeSeries is 1D. TimeSeriesDict?

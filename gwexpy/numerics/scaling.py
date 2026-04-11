@@ -29,7 +29,7 @@ def safe_epsilon(
     rel_tol: float = 1e-6,
     abs_tol: float = SAFE_FLOOR,
 ) -> float:
-    """Return an epsilon appropriate for *data*'s scale.
+    r"""Return an epsilon appropriate for *data*'s scale.
 
     .. math::
 

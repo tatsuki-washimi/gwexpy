@@ -213,6 +213,8 @@ def read_timeseriesdict_csv(
         Overrides config.sample_rate if both are given.
     resample_method : str
         Resampling method: ``"interpolate"`` or ``"asfreq"``.
+    **kwargs
+        Additional keyword arguments reserved for compatibility with I/O dispatch.
 
     """
     from .. import TimeSeriesDict

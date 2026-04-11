@@ -1,4 +1,5 @@
-"""gwexpy.interop.meshio_
+"""Interoperate with meshio unstructured-mesh field data.
+
 ----------------------
 
 Interoperability with meshio for unstructured-mesh field data.

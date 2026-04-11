@@ -111,6 +111,8 @@ def read_timeseriesdict_ndscope_hdf5(
         GPS start time for cropping.
     end : float, optional
         GPS end time for cropping.
+    **kwargs
+        Additional keyword arguments reserved for compatibility with I/O dispatch.
 
     Returns
     -------
@@ -196,6 +198,8 @@ def write_timeseriesdict_ndscope_hdf5(
         Output file path.
     overwrite : bool, optional
         If ``True``, overwrite an existing file.  Default: ``False``.
+    **kwargs
+        Additional keyword arguments reserved for compatibility with I/O dispatch.
 
     """
     mode = "w" if overwrite else "w-"

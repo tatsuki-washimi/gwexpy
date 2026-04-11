@@ -59,8 +59,7 @@ def _to_angular_frequency(hz: u.Quantity) -> u.Quantity:
 
 
 def as_series(axis, unit=None, *, name=None):
-    """Convert a 1D axis (``gwpy.types.index.Index`` or ``astropy.units.Quantity``)
-    to a ``TimeSeries`` or ``FrequencySeries``.
+    """Convert a 1D axis to a ``TimeSeries`` or ``FrequencySeries``.
 
     The created series is an identity mapping: the series values represent the
     axis values (optionally converted to ``unit``), while the series axis is
