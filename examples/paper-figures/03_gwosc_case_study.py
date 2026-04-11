@@ -185,7 +185,7 @@ def main():
         y=1.02,
     )
 
-    output_dir = Path(__file__).parent.parent / "docs" / "gwexpy-paper"
+    output_dir = Path(__file__).resolve().parents[2] / "docs_internal" / "publications" / "paper_softwarex"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     fig.savefig(

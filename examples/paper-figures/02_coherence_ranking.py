@@ -105,7 +105,7 @@ def main():
     fig.suptitle('Coherence ranking: top-2 channels vs IFO:CH', y=1.02)
 
     # Save figures for paper
-    output_dir = Path(__file__).parent.parent / "docs" / "gwexpy-paper"
+    output_dir = Path(__file__).resolve().parents[2] / "docs_internal" / "publications" / "paper_softwarex"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     fig.savefig(str(output_dir / "figure3_coherence_ranking.png"), dpi=300, bbox_inches='tight')
