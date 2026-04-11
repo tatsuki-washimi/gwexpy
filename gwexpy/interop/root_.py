@@ -26,7 +26,7 @@ def _get_label(obj: Any, unit: Any, default_name: str = "x") -> str:
 
 
 def _extract_error_array(series, error):
-    """Internal helper to extract a matching error array from various types."""
+    """Extract a matching error array from supported input types."""
     from astropy import units as u
 
     # If it's a gwpy/gwexpy Series
@@ -66,8 +66,7 @@ def _extract_error_array(series, error):
 
 
 def to_tgraph(series: Any, error: Optional[Any] = None) -> ROOT.TGraph:
-    """Convert 1D Series to ROOT TGraph or TGraphErrors.
-    """
+    """Convert a 1D series to a ROOT ``TGraph`` or ``TGraphErrors``."""
     ROOT = require_optional("ROOT")
 
     x = to_plain_array(series.xindex).astype(float)
@@ -96,8 +95,7 @@ def to_tgraph(series: Any, error: Optional[Any] = None) -> ROOT.TGraph:
 
 
 def to_th1d(series: Any, error: Optional[Any] = None) -> ROOT.TH1D:
-    """Convert 1D Series to ROOT TH1D.
-    """
+    """Convert a 1D series to a ROOT ``TH1D``."""
     ROOT = require_optional("ROOT")
 
     # Handle Histogram objects (composite, not ndarray-based)
@@ -204,8 +202,7 @@ def to_th1d(series: Any, error: Optional[Any] = None) -> ROOT.TH1D:
 
 
 def to_th2d(spec: Spectrogram, error: Optional[Any] = None) -> ROOT.TH2D:
-    """Convert Spectrogram to ROOT TH2D.
-    """
+    """Convert a spectrogram to a ROOT ``TH2D``."""
     ROOT = require_optional("ROOT")
 
     times = to_plain_array(spec.times).astype(float)
@@ -271,8 +268,7 @@ def to_th2d(spec: Spectrogram, error: Optional[Any] = None) -> ROOT.TH2D:
 def from_root(
     cls: type[T_s], obj: Union[ROOT.TGraph, ROOT.TH1], return_error: bool = False
 ) -> Union[T_s, tuple[T_s, T_s]]:
-    """Create Series (TimeSeries or FrequencySeries) from ROOT TGraph or TH1.
-    """
+    """Create a GWexpy series object from a ROOT ``TGraph`` or ``TH1``."""
     ROOT = require_optional("ROOT")
 
     # Check type
@@ -471,8 +467,7 @@ def from_root(
 
 
 def to_tmultigraph(collection, name: Optional[str] = None) -> Any:
-    """Convert a collection of Series to a ROOT TMultiGraph.
-    """
+    """Convert a collection of series to a ROOT ``TMultiGraph``."""
     ROOT = require_optional("ROOT")
     mg = ROOT.TMultiGraph()
     title = name or getattr(collection, "name", "multigraph")
@@ -508,8 +503,7 @@ def to_tmultigraph(collection, name: Optional[str] = None) -> Any:
 
 
 def write_root_file(collection, filename: str, **kwargs: Any) -> None:
-    """Write a collection of Series to a ROOT TFile.
-    """
+    """Write a collection of series to a ROOT ``TFile``."""
     ROOT = require_optional("ROOT")
     mode = kwargs.get("mode", "recreate")
 

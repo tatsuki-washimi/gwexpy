@@ -12,8 +12,7 @@ if TYPE_CHECKING:
 
 
 class GauChResult:
-    """Result of the GauCh test.
-    """
+    """Result of the GauCh test."""
 
     def __init__(
         self,
@@ -44,6 +43,7 @@ def compute_gauch(
     Parameters
     ----------
     ts : TimeSeries
+        Input time series for the GauCh analysis.
     fftlength : float
         Length of each FFT segment in seconds.
     stride : float, optional
@@ -132,7 +132,7 @@ def compute_gauch(
 _LILLIEFORS_CACHE: dict[int, np.ndarray] = {}
 
 def _get_rayleigh_lilliefors_pvalue(dn: float, n: int, n_trials: int = 1000) -> float:
-    """Internal helper to get p-value and manage cache."""
+    """Get the p-value and manage the cached null distribution."""
     if n not in _LILLIEFORS_CACHE:
         # Generate distribution of Dn under H0
         null_dns = np.zeros(n_trials)

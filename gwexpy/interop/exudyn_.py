@@ -1,4 +1,5 @@
-"""gwexpy.interop.exudyn_
+"""Interoperate with Exudyn sensor output.
+
 -----------------------
 
 Interoperability with Exudyn sensor output.

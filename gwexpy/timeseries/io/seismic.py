@@ -1,5 +1,4 @@
-"""Readers/Writers for ObsPy-supported seismic formats (miniSEED, SAC, GSE2, KNET).
-"""
+"""Read and write ObsPy-supported seismic formats."""
 from __future__ import annotations
 
 import numpy as np
@@ -135,18 +134,22 @@ def _read_timeseriesdict(
 
 # -- Specific Readers
 def read_miniseed_timeseriesdict(*args, **kwargs):
+    """Read a miniSEED source into a ``TimeSeriesDict``."""
     return _read_timeseriesdict("MSEED", *args, **kwargs)
 
 
 def read_sac_timeseriesdict(*args, **kwargs):
+    """Read a SAC source into a ``TimeSeriesDict``."""
     return _read_timeseriesdict("SAC", *args, **kwargs)
 
 
 def read_gse2_timeseriesdict(*args, **kwargs):
+    """Read a GSE2 source into a ``TimeSeriesDict``."""
     return _read_timeseriesdict("GSE2", *args, **kwargs)
 
 
 def read_knet_timeseriesdict(*args, **kwargs):
+    """Read a KNET source into a ``TimeSeriesDict``."""
     return _read_timeseriesdict("KNET", *args, **kwargs)
 
 
@@ -166,7 +169,7 @@ def _adapt_matrix(reader, *args, channels=None, **kwargs):
 
 # -- Writers (via ObsPy)
 def _write_obspy(tsd, target, format_name, **kwargs):
-    """Write TimeSeriesDict to file using ObsPy"""
+    """Write a ``TimeSeriesDict`` to file using ObsPy."""
     from ..interop.obspy_ import to_obspy_trace
 
     obspy = _import_obspy()
@@ -180,10 +183,12 @@ def _write_obspy(tsd, target, format_name, **kwargs):
 
 
 def write_miniseed(tsd, target, **kwargs):
+    """Write a ``TimeSeriesDict`` in miniSEED format."""
     _write_obspy(tsd, target, "MSEED", **kwargs)
 
 
 def write_sac(tsd, target, **kwargs):
+    """Write a ``TimeSeriesDict`` in SAC format."""
     # SAC does not support multi-trace in one file standardly like MSEED,
     # but ObsPy handles writing multiple files if target is likely a pattern or directory,
     # or raises error. We wrap simply here.
@@ -191,6 +196,7 @@ def write_sac(tsd, target, **kwargs):
 
 
 def write_gse2(tsd, target, **kwargs):
+    """Write a ``TimeSeriesDict`` in GSE2 format."""
     _write_obspy(tsd, target, "GSE2", **kwargs)
 
 

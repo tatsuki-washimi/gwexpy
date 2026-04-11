@@ -43,6 +43,8 @@ except ImportError:
 
     # Create a dummy njit decorator that just returns the function
     def njit(*args, **kwargs):
+        """Return a no-op decorator when Numba is unavailable."""
+
         def decorator(func):
             return func
 
@@ -121,6 +123,8 @@ def estimate_psd(
         Window function name or samples.
     method : str, optional
         PSD estimation method name registered in GWpy.
+    **kwargs
+        Additional keyword arguments forwarded to ``timeseries.psd``.
 
     Returns
     -------
@@ -302,13 +306,17 @@ def bootstrap_spectrogram(
     Parameters
     ----------
     spectrogram : gwpy.spectrogram.Spectrogram
+        Input spectrogram to summarize across time segments.
     n_boot : int
+        Number of bootstrap resamples.
     method : str
         'median' (default) or 'mean'.
     average : str, optional
         Alias for method ('median' or 'mean') for compatibility.
     ci : float
+        Central confidence interval width.
     window : str or array, optional
+        Window used when estimating overlap correlation corrections.
     fftlength : float or Quantity, optional
         FFT segment length in seconds used to generate the spectrogram.
         Used for VIF (overlap correlation) correction.
@@ -335,6 +343,8 @@ def bootstrap_spectrogram(
         If True, return a BifrequencyMap of the covariance.
     ignore_nan : bool, optional
         If True, ignore NaNs during bootstrap averaging. Default is True.
+    **kwargs
+        Additional keyword arguments forwarded to downstream constructors.
 
     Returns
     -------

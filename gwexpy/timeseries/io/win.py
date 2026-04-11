@@ -46,6 +46,7 @@ from .. import TimeSeries, TimeSeriesDict
 
 
 def s4(v):
+    """Convert a 4-bit nibble into a signed integer."""
     if v & 0b1000:
         v = -((v - 1) ^ 0xF)
     return v
@@ -71,7 +72,8 @@ def _apply_4bit_deltas(output: list[int], sdata: bytes, n_deltas: int) -> None:
 
 
 def _read_win_fixed(filename: str | Path, century="20"):
-    """Reads a WIN file and returns a Stream object.
+    """Read a WIN file and return a ``Stream`` object.
+
     Based on obspy.io.win.core._read_win but with patches applied.
 
     Parameters
@@ -197,8 +199,7 @@ def _read_win_fixed(filename: str | Path, century="20"):
 
 
 def read_win_file(source, **kwargs) -> TimeSeriesDict:
-    """Read a WIN/WIN32 format file using fixed ObsPy-based reader.
-    """
+    """Read a WIN or WIN32 file with the patched ObsPy-based reader."""
     if not HAS_OBSPY:
         raise ImportError("obspy is required to read WIN format files")
 

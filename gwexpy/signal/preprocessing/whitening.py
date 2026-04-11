@@ -1,8 +1,4 @@
-"""gwexpy.signal.preprocessing.whitening.
---------------------------------------
-
-Whitening algorithms for signal processing.
-"""
+"""Whitening algorithms for signal processing."""
 from __future__ import annotations
 
 import warnings

@@ -15,7 +15,7 @@ from gwpy.time import to_gps
 
 
 def parse_timezone(tz: Any) -> _dt.tzinfo:
-    """Convert a timezone specifier into a tzinfo.
+    r"""Convert a timezone specifier into a tzinfo.
 
     Accepts IANA zone names (\"Asia/Tokyo\") or numeric offsets like \"+09:00\".
     """
@@ -55,8 +55,7 @@ def parse_timezone(tz: Any) -> _dt.tzinfo:
 
 
 def datetime_to_gps(dt: _dt.datetime) -> float:
-    """Convert an aware datetime (or date) into a LIGO GPS float.
-    """
+    """Convert an aware datetime or date into a LIGO GPS float."""
     if isinstance(dt, _dt.date) and not isinstance(dt, _dt.datetime):
         dt = _dt.datetime.combine(dt, _dt.time(0, 0), tzinfo=_dt.UTC)
     if dt.tzinfo is None:
@@ -97,8 +96,7 @@ def ensure_datetime(value: Any, tzinfo: _dt.tzinfo | None = None) -> _dt.datetim
 
 
 def apply_unit(series: Any, unit: Any | None) -> Any:
-    """Override the unit on a series-like object, if requested.
-    """
+    """Override the unit on a series-like object if requested."""
     if unit is None:
         return series
     if unit == "":
@@ -149,8 +147,7 @@ def apply_unit(series: Any, unit: Any | None) -> Any:
 
 
 def set_provenance(obj: Any, info: dict[str, Any]) -> None:
-    """Attach provenance metadata to a gwexpy/gwpy object.
-    """
+    """Attach provenance metadata to a gwexpy or gwpy object."""
     try:
         if hasattr(obj, "attrs") and isinstance(obj.attrs, dict):
             obj.attrs.update(info)
@@ -162,8 +159,7 @@ def set_provenance(obj: Any, info: dict[str, Any]) -> None:
 
 
 def filter_by_channels(mapping: dict[str, Any], channels: Iterable[str] | None):
-    """Return a filtered dictionary by selected channel names.
-    """
+    """Return a mapping filtered by selected channel names."""
     if channels is None:
         return mapping
     wanted = set(channels)
@@ -171,8 +167,7 @@ def filter_by_channels(mapping: dict[str, Any], channels: Iterable[str] | None):
 
 
 def maybe_pad_timeseries(ts, pad_value=np.nan, start=None, end=None, gap="pad"):
-    """Pad or raise for gaps using gwpy's join semantics.
-    """
+    """Pad gaps or raise using gwpy join semantics."""
     if gap not in ("pad", "raise"):
         return ts
 

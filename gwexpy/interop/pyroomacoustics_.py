@@ -1,4 +1,5 @@
-"""gwexpy.interop.pyroomacoustics_
+"""Interoperate with pyroomacoustics simulation results.
+
 -------------------------------
 
 Interoperability with pyroomacoustics room acoustics simulation library.

@@ -119,6 +119,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
+        """Read a `TimeSeriesDict` from a supported source."""
         fmt = kwargs.get("format")
         try:
             p = Path(source)
@@ -197,6 +198,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     def resample(self, rate, **kwargs):
         """Resample items in the TimeSeriesDict.
+
         In-place operation (updates the dict contents).
 
         If rate is time-like, performs time-bin resampling.
@@ -297,6 +299,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     def lock_in(self, *args, **kwargs):
         """Apply lock_in to each item.
+
         Returns TimeSeriesDict (if output='complex') or tuple of TimeSeriesDicts.
         """
         # We need to know the output structure (tuple vs single)
@@ -342,6 +345,8 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         ----------
         other : TimeSeriesDict or TimeSeriesList, optional
             Another collection for cross-CSD. If None, compute self-CSD matrix.
+        *args
+            Positional arguments forwarded to `TimeSeries.csd`.
         fftlength : float, optional
             FFT length in seconds.
         overlap : float, optional
@@ -353,6 +358,8 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         include_diagonal : bool, optional
             Must be True for CSD matrices; False raises ValueError because the
             diagonal is always the PSD.
+        **kwargs
+            Additional keyword arguments forwarded to `TimeSeries.csd`.
 
         Returns
         -------
@@ -402,6 +409,8 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         ----------
         other : TimeSeriesDict or TimeSeriesList, optional
             Another collection for cross-coherence.
+        *args
+            Positional arguments forwarded to `TimeSeries.coherence`.
         fftlength : float, optional
             FFT length in seconds.
         overlap : float, optional
@@ -414,6 +423,8 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
             Whether to include diagonal elements (default True).
         diagonal_value : float, optional
             Value for diagonal elements (default 1.0).
+        **kwargs
+            Additional keyword arguments forwarded to `TimeSeries.coherence`.
 
         Returns
         -------
@@ -459,8 +470,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         include_diagonal=True,
         **kwargs,
     ):
-        """Compute CSD for each element or as a matrix depending on `other`.
-        """
+        """Compute CSD for each element or as a matrix depending on `other`."""
         fftlength, overlap = _parse_fft_positional_args(
             args,
             fftlength=fftlength,
@@ -516,8 +526,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         diagonal_value=1.0,
         **kwargs,
     ):
-        """Compute coherence for each element or as a matrix depending on `other`.
-        """
+        """Compute coherence for each element or as a matrix depending on `other`."""
         fftlength, overlap = _parse_fft_positional_args(
             args,
             fftlength=fftlength,
@@ -631,6 +640,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         return to_tmultigraph(self, name=name)
 
     def write(self, target: str, *args: Any, **kwargs: Any) -> Any:
+        """Write the collection to a supported target."""
         fmt = kwargs.get("format")
         if fmt == "root" or (isinstance(target, str) and target.endswith(".root")):
             from gwexpy.interop.root_ import write_root_file
@@ -802,8 +812,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         )
 
     def to_matrix(self, *, align="intersection", **kwargs):
-        """Convert dictionary to TimeSeriesMatrix with alignment.
-        """
+        """Convert the dictionary to a `TimeSeriesMatrix` with alignment."""
         from gwexpy.timeseries.preprocess import align_timeseries_collection
 
         # Ensure consistent order (keys sorted) or specific
@@ -844,6 +853,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     def crop(self, start=None, end=None, copy=False) -> TimeSeriesDict:
         """Crop each TimeSeries in the dict.
+
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         Returns a new TimeSeriesDict.
         """
@@ -861,8 +871,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
         return new_dict
 
     def append(self, other, copy=True, **kwargs) -> TimeSeriesDict:
-        """Append another mapping of TimeSeries or a single TimeSeries to each item.
-        """
+        """Append another mapping of `TimeSeries` or a single `TimeSeries` to each item."""
         if isinstance(other, BaseTimeSeries):
             for ts in self.values():
                 ts.append(other, **kwargs)
@@ -886,6 +895,7 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
 
     def prepend(self, *args, **kwargs) -> TimeSeriesDict:
         """Prepend to each TimeSeries in the dict (in-place).
+
         Returns self.
         """
         for ts in self.values():
@@ -931,7 +941,8 @@ class TimeSeriesDict(PlotMixin, DictMapMixin, PhaseMethodsMixin, BaseTimeSeriesD
     # --- Statistics & Measurements ---
 
     def _apply_scalar_or_map(self, method_name, *args, **kwargs):
-        """Internal: apply a method that can return TimeSeries or scalar.
+        """Apply a method that can return `TimeSeries` or scalar values.
+
         If TimeSeries -> return TimeSeriesDict.
         If scalar -> return pandas.Series.
         """
@@ -1093,6 +1104,8 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         ----------
         other : TimeSeriesDict or TimeSeriesList, optional
             Other collection for cross-CSD.
+        *args
+            Positional arguments forwarded to `TimeSeries.csd`.
         fftlength, overlap, window :
             See TimeSeries.csd() arguments.
         hermitian : bool, default=True
@@ -1100,6 +1113,8 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         include_diagonal : bool, default=True
             Must be True for CSD matrices; False raises ValueError because the
             diagonal is always the PSD.
+        **kwargs
+            Additional keyword arguments forwarded to `TimeSeries.csd`.
 
         Returns
         -------
@@ -1148,6 +1163,8 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         ----------
         other : TimeSeriesDict or TimeSeriesList, optional
             Other collection.
+        *args
+            Positional arguments forwarded to `TimeSeries.coherence`.
         fftlength, overlap, window :
             See TimeSeries.coherence().
         symmetric : bool, default=True
@@ -1156,6 +1173,8 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
             Include diagonal.
         diagonal_value : float or None, default=1.0
             Value to fill diagonal if include_diagonal is True. If None, compute diagonal coherence.
+        **kwargs
+            Additional keyword arguments forwarded to `TimeSeries.coherence`.
 
         Returns
         -------
@@ -1200,8 +1219,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         include_diagonal=True,
         **kwargs,
     ):
-        """Compute CSD for each element or as a matrix depending on `other`.
-        """
+        """Compute CSD for each element or as a matrix depending on `other`."""
         fftlength, overlap = _parse_fft_positional_args(
             args,
             fftlength=fftlength,
@@ -1264,8 +1282,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
         diagonal_value=1.0,
         **kwargs,
     ):
-        """Compute coherence for each element or as a matrix depending on `other`.
-        """
+        """Compute coherence for each element or as a matrix depending on `other`."""
         fftlength, overlap = _parse_fft_positional_args(
             args,
             fftlength=fftlength,
@@ -1508,7 +1525,8 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     # --- Waveform Operations ---
 
     def crop(self, start=None, end=None, copy=False) -> TimeSeriesList:
-        """Crop each TimeSeries in the list.
+        """Crop each ``TimeSeries`` in the list.
+
         Accepts any time format supported by gwexpy.time.to_gps (str, datetime, pandas, obspy, etc).
         Returns a new TimeSeriesList.
         """
@@ -1627,7 +1645,8 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     # --- Statistics & Measurements ---
 
     def _apply_scalar_or_map(self, method_name, *args, **kwargs):
-        """Internal: apply a method that can return TimeSeries or scalar.
+        """Apply a method that can return ``TimeSeries`` or scalar values.
+
         If TimeSeries -> return TimeSeriesList.
         If scalar -> return list.
         """
@@ -1705,7 +1724,8 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
     # --- Multivariate ---
 
     def to_pandas(self, **kwargs):
-        """Convert TimeSeriesList to pandas DataFrame.
+        """Convert a ``TimeSeriesList`` to a pandas ``DataFrame``.
+
         Each element becomes a column.
         ASSUMES common time axis.
         """
@@ -1731,6 +1751,7 @@ class TimeSeriesList(PlotMixin, ListMapMixin, PhaseMethodsMixin, BaseTimeSeriesL
 
     @classmethod
     def read(cls, source, *args: Any, **kwargs: Any):  # type: ignore[override]
+        """Read a ``TimeSeriesList`` from a supported source."""
         fmt = kwargs.get("format")
         try:
             p = Path(source)

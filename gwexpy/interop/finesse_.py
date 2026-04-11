@@ -1,4 +1,5 @@
-"""gwexpy.interop.finesse_
+"""Interoperate with the Finesse 3 interferometer simulation library.
+
 ------------------------
 
 Interoperability with Finesse 3 interferometer simulation library.
@@ -36,8 +37,7 @@ def from_finesse_frequency_response(
     input_dof: Any | None = None,
     unit: Any | None = None,
 ) -> Union[T_fs, FrequencySeriesMatrix, FrequencySeriesDict]:
-    """Create FrequencySeries or FrequencySeriesMatrix from a Finesse 3
-    ``FrequencyResponseSolution``.
+    """Create a frequency-series object from a Finesse 3 response solution.
 
     Parameters
     ----------
@@ -190,8 +190,7 @@ def from_finesse_noise(
     noise: Optional[str] = None,
     unit: Any | None = None,
 ) -> Union[T_fs, FrequencySeriesDict]:
-    """Create FrequencySeries or FrequencySeriesDict from a Finesse 3
-    ``NoiseProjectionSolution``.
+    """Create a frequency-series object from a Finesse 3 noise solution.
 
     Parameters
     ----------

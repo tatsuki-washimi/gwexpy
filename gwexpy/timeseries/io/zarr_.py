@@ -59,6 +59,8 @@ def read_timeseriesdict_zarr(
         are loaded.
     unit : str, optional
         Physical unit override applied to every channel.
+    **kwargs
+        Additional keyword arguments forwarded to ``zarr.open_group``.
 
     """
     zarr = _import_zarr()
@@ -118,6 +120,7 @@ def read_timeseriesdict_zarr(
 
 
 def read_timeseries_zarr(source, **kwargs) -> TimeSeries:
+    """Read a Zarr store and return the first channel."""
     tsd = read_timeseriesdict_zarr(source, **kwargs)
     if not tsd:
         raise ValueError("No arrays found in Zarr store")
@@ -125,6 +128,7 @@ def read_timeseries_zarr(source, **kwargs) -> TimeSeries:
 
 
 def read_timeseriesmatrix_zarr(source, **kwargs) -> TimeSeriesMatrix:
+    """Read a Zarr store and convert its channels to a matrix."""
     tsd = read_timeseriesdict_zarr(source, **kwargs)
     return tsd.to_matrix()
 
@@ -161,6 +165,7 @@ def write_timeseriesdict_zarr(tsd, target, **kwargs):
 
 
 def write_timeseries_zarr(ts, target, **kwargs):
+    """Write one ``TimeSeries`` to a Zarr store."""
     write_timeseriesdict_zarr(
         TimeSeriesDict({ts.name or "channel_0": ts}), target, **kwargs
     )

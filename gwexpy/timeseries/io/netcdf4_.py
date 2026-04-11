@@ -67,6 +67,8 @@ def read_timeseriesdict_netcdf4(
         Physical unit override applied to every channel.
     time_coord : str, optional
         Name of the time coordinate.  Auto-detected if *None*.
+    **kwargs
+        Additional keyword arguments forwarded to ``xarray.open_dataset``.
 
     """
     xr = _import_xarray()
@@ -186,6 +188,7 @@ def read_timeseriesdict_netcdf4(
 
 
 def read_timeseries_netcdf4(source, **kwargs) -> TimeSeries:
+    """Read a NetCDF4 file and return the first time-series variable."""
     tsd = read_timeseriesdict_netcdf4(source, **kwargs)
     if not tsd:
         raise ValueError("No time-series variables found in NetCDF4 file")
@@ -193,6 +196,7 @@ def read_timeseries_netcdf4(source, **kwargs) -> TimeSeries:
 
 
 def read_timeseriesmatrix_netcdf4(source, **kwargs) -> TimeSeriesMatrix:
+    """Read a NetCDF4 file and convert its channels to a matrix."""
     tsd = read_timeseriesdict_netcdf4(source, **kwargs)
     return tsd.to_matrix()
 
@@ -246,6 +250,7 @@ def write_timeseriesdict_netcdf4(tsd, target, **kwargs):
 
 
 def write_timeseries_netcdf4(ts, target, **kwargs):
+    """Write one ``TimeSeries`` to a NetCDF4 file."""
     write_timeseriesdict_netcdf4(
         TimeSeriesDict({ts.name or "channel_0": ts}), target, **kwargs
     )

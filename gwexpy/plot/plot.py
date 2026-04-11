@@ -19,9 +19,13 @@ def plot_mmm(median, min_s, max_s, ax=None, **kwargs):
     Parameters
     ----------
     median : Series
+        Median series to plot as the central line.
     min_s : Series
+        Lower envelope series.
     max_s : Series
+        Upper envelope series.
     ax : Axes, optional
+        Target axes. Uses the current axes when omitted.
     **kwargs
         Passed to ax.plot for the median line.
 
@@ -58,7 +62,8 @@ def plot_mmm(median, min_s, max_s, ax=None, **kwargs):
 
 
 class Plot(BasePlot):
-    """An extension of :class:`gwpy.plot.Plot` that automatically handles
+    """Extend :class:`gwpy.plot.Plot` to automatically handle matrix inputs.
+
     :class:`gwexpy.types.SeriesMatrix` arguments by expanding them into
     individual :class:`gwpy.types.Series` objects, while preserving
     matrix layout and metadata where possible.
@@ -314,9 +319,11 @@ def plot_summary(sg_collection, fmin=None, fmax=None, title="", **kwargs):
     Parameters
     ----------
     sg_collection : SpectrogramList, SpectrogramDict, or SpectrogramMatrix
+        Collection of spectrograms to summarize.
     fmin, fmax : float, optional
-        Frequency range.
+        Frequency range to crop before plotting.
     title : str, optional
+        Figure title applied to the summary panel.
     **kwargs
         Passed to Plot constructor for global settings.
 

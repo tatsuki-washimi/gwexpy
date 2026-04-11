@@ -1,6 +1,4 @@
-"""Metronix ATS format reader for gwexpy.
-Based on binary header parsing logic provided by user (ats2gwf.py).
-"""
+"""Read Metronix ATS files for gwexpy."""
 from __future__ import annotations
 
 import datetime
@@ -155,8 +153,7 @@ def _read_ats_header(fh) -> dict[str, Any]:
 
 
 def read_timeseriesdict_ats(source, **kwargs):
-    """Read a Metronix ATS file into a TimeSeriesDict.
-    """
+    """Read a Metronix ATS file into a ``TimeSeriesDict``."""
     ts = read_timeseries_ats(source, **kwargs)
     return TimeSeriesDict({ts.name: ts})
 

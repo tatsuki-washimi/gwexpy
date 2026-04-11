@@ -38,8 +38,7 @@ def to_netcdf4(ts, ds, var_name, dim_time="time", time_units=None, overwrite=Fal
 
 
 def from_netcdf4(cls, ds, var_name):
-    """Read from netCDF4 Dataset.
-    """
+    """Read from a netCDF4 dataset."""
     v = ds.variables[var_name]
     data = v[:]
 

@@ -33,6 +33,7 @@ class _SpectrogramMatrixCoreLike(Protocol):
 
 class SpectrogramMatrixCoreMixin:
     """Core properties and metadata for SpectrogramMatrix.
+
     Overrides SeriesMatrix defaults to handle 4D (or 3D) Spectrogram data structure.
 
     Structure
@@ -71,6 +72,7 @@ class SpectrogramMatrixCoreMixin:
     @property
     def _x_axis_index(self) -> int:
         """Index of the time axis.
+
         For Spectrogram (Time, Freq), time is -2.
         """
         return -2
@@ -135,6 +137,7 @@ class SpectrogramMatrixCoreMixin:
     # Add y-axis specific properties (df, f0) similar to dx/x0
     @property
     def f0(self) -> Any:
+        """Return the starting frequency."""
         try:
             return self._f0
         except AttributeError:
@@ -146,6 +149,7 @@ class SpectrogramMatrixCoreMixin:
 
     @property
     def df(self) -> Any:
+        """Return the frequency spacing."""
         try:
             return self._df
         except AttributeError:

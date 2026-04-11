@@ -1,4 +1,5 @@
-"""gwexpy.interop.gwinc_
+"""Interoperate with pygwinc noise budgets.
+
 ---------------------
 
 Interoperability with pygwinc (gravitational wave interferometer noise budget).

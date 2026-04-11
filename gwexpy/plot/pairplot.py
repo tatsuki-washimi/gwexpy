@@ -1,8 +1,4 @@
-"""gwexpy.plot.pairplot
---------------------
-
-Pair plot for Series collections.
-"""
+"""Pair plot for series collections."""
 from __future__ import annotations
 
 from typing import Any

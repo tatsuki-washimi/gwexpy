@@ -67,6 +67,8 @@ def from_specutils(cls, spectrum, **kwargs):
         Target class (FrequencySeries).
     spectrum : specutils.Spectrum1D
         Input spectrum.
+    **kwargs
+        Additional keyword arguments passed to the target constructor.
 
     Returns
     -------

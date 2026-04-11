@@ -27,8 +27,12 @@ def to_pandas_series(
 
     Parameters
     ----------
+    ts : TimeSeries
+        Input time series to convert.
     index : str, default "datetime"
         "datetime" (UTC aware), "seconds" (unix), or "gps".
+    name : str, optional
+        Override name for the resulting series.
     copy : bool
         Whether to copy data.
 
@@ -86,8 +90,7 @@ def from_pandas_series(
     t0: Optional[float] = None,
     dt: Optional[float] = None,
 ) -> T:
-    """Create TimeSeries from pandas.Series.
-    """
+    """Create a `TimeSeries` from `pandas.Series`."""
     pd = require_optional("pandas")
     from .base import to_plain_array
 
@@ -176,7 +179,7 @@ def to_pandas_dataframe(
     index: Literal["datetime", "seconds", "gps"] = "datetime",
     copy: bool = False,
 ) -> pd.DataFrame:
-    """TimeSeriesDict -> DataFrame"""
+    """Convert `TimeSeriesDict` to `DataFrame`."""
     pd = require_optional("pandas")
 
     # Check alignment
@@ -212,7 +215,7 @@ def from_pandas_dataframe(
     t0: Optional[float] = None,
     dt: Optional[float] = None,
 ) -> TimeSeriesDict:
-    """DataFrame -> TimeSeriesDict"""
+    """Convert `DataFrame` to `TimeSeriesDict`."""
     tsd = cls()
     for col in df.columns:
         s = df[col]

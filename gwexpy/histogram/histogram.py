@@ -80,7 +80,9 @@ class Histogram(
         name: str | None = None,
         channel: Any | None = None,
     ):
-        """Parameters
+        """Initialize a histogram from values and bin edges.
+
+        Parameters
         ----------
         values : array-like or Quantity
             Total events or integrated quantity in each bin (Length: n_bins).

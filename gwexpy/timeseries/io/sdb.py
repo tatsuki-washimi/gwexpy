@@ -1,5 +1,4 @@
-"""SDB (Davis Vantage Pro2 Weather Station / WeeWX SQLite) format reader.
-"""
+"""SDB reader for Davis Vantage Pro2 and WeeWX SQLite files."""
 from __future__ import annotations
 
 import sqlite3
@@ -50,6 +49,8 @@ def read_timeseriesdict_sdb(
         Table name to read from, default 'archive'.
     columns : list, optional
         List of column names to read. If None, reads all columns found in UNIT_CONVERSION + dateTime.
+    **kwargs
+        Additional compatibility arguments accepted and ignored.
 
     """
     # Open SQLite connection (Python 3.4+ accepts Path objects)
@@ -146,7 +147,8 @@ def read_timeseriesdict_sdb(
 
 
 def read_timeseries_sdb(source, **kwargs):
-    """Read SDB file as TimeSeries.
+    """Read an SDB file as a ``TimeSeries``.
+
     If multiple columns, returns the first one (excluding dateTime).
     """
     tsd = read_timeseriesdict_sdb(source, **kwargs)

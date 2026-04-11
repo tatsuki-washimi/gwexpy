@@ -68,6 +68,8 @@ def read_timeseriesdict_audio(
         optional ``tinytag`` package (``pip install tinytag``).
         (Note: ``pip install gwexpy[audio]`` is coming soon. For now, use GitHub version.)
         Default: False (for backward compatibility).
+    **kwargs
+        Additional keyword arguments accepted for reader compatibility.
 
     """
     AudioSegment = _import_pydub()
@@ -144,6 +146,7 @@ def read_timeseriesdict_audio(
 
 
 def read_timeseries_audio(source, **kwargs) -> TimeSeries:
+    """Read an audio file and return the first channel."""
     tsd = read_timeseriesdict_audio(source, **kwargs)
     if not tsd:
         raise ValueError("No data found in audio file")
@@ -151,6 +154,7 @@ def read_timeseries_audio(source, **kwargs) -> TimeSeries:
 
 
 def read_timeseriesmatrix_audio(source, **kwargs) -> TimeSeriesMatrix:
+    """Read an audio file and convert its channels to a matrix."""
     tsd = read_timeseriesdict_audio(source, **kwargs)
     return tsd.to_matrix()
 
@@ -172,6 +176,8 @@ def write_timeseriesdict_audio(tsd, target, *, format_hint=None, **kwargs):
     format_hint : str, optional
         Audio format (e.g. ``"mp3"``, ``"flac"``).  Inferred from
         extension if *None*.
+    **kwargs
+        Additional keyword arguments forwarded to ``AudioSegment.export``.
 
     """
     AudioSegment = _import_pydub()
@@ -209,6 +215,7 @@ def write_timeseriesdict_audio(tsd, target, *, format_hint=None, **kwargs):
 
 
 def write_timeseries_audio(ts, target, **kwargs):
+    """Write one ``TimeSeries`` to an audio file."""
     write_timeseriesdict_audio(
         TimeSeriesDict({ts.name or "channel_0": ts}), target, **kwargs
     )
@@ -226,28 +233,23 @@ _AUDIO_EXTENSIONS = {
 
 def _register_audio_format(name, extension):
     def reader_dict(src, **kw):
-        """Read audio data into a TimeSeriesDict.
-        """
+        """Read audio data into a ``TimeSeriesDict``."""
         return read_timeseriesdict_audio(src, format_hint=name, **kw)
 
     def reader_single(src, **kw):
-        """Read audio data into a TimeSeries.
-        """
+        """Read audio data into a ``TimeSeries``."""
         return read_timeseries_audio(src, format_hint=name, **kw)
 
     def reader_matrix(src, **kw):
-        """Read audio data into a TimeSeriesMatrix.
-        """
+        """Read audio data into a ``TimeSeriesMatrix``."""
         return read_timeseriesmatrix_audio(src, format_hint=name, **kw)
 
     def writer_dict(tsd, tgt, **kw):
-        """Write TimeSeriesDict to an audio file.
-        """
+        """Write a ``TimeSeriesDict`` to an audio file."""
         return write_timeseriesdict_audio(tsd, tgt, format_hint=name, **kw)
 
     def writer_single(ts, tgt, **kw):
-        """Write TimeSeries to an audio file.
-        """
+        """Write a ``TimeSeries`` to an audio file."""
         return write_timeseries_audio(ts, tgt, format_hint=name, **kw)
 
     register_timeseries_format(

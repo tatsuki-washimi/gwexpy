@@ -1,10 +1,4 @@
-"""gwexpy.interop.control_
-------------------------
-
-Interoperability with the python-control library for control systems analysis.
-
-Provides conversion between FrequencySeries and control.FRD (Frequency Response Data).
-"""
+"""Provide interoperability with the ``python-control`` library."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal, TypeVar, Union

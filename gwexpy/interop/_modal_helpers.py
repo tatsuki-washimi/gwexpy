@@ -1,14 +1,4 @@
-"""gwexpy.interop._modal_helpers
-------------------------------
-
-Shared helper functions for modal analysis interop modules
-(SDynPy, SDyPy/pyuff, pyOMA, OpenSeesPy, Exudyn).
-
-Provides:
-- ``build_mode_dataframe``: assemble modal parameters into a pandas DataFrame
-- ``build_frf_matrix``: assemble FRF data into a FrequencySeriesMatrix
-- ``infer_unit_from_response_type``: map response-type strings to astropy units
-"""
+"""Provide shared helpers for modal-analysis interop modules."""
 from __future__ import annotations
 
 from typing import Any

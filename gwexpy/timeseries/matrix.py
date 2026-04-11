@@ -121,8 +121,8 @@ class TimeSeriesMatrix(  # type: ignore[misc]
     ) -> TimeSeriesMatrix:
         """Create a new TimeSeriesMatrix.
 
-        This constructor extends the standard `SeriesMatrix` by adding support 
-        for time-domain metadata (`t0`, `dt`, `sample_rate`) and automatic 
+        This constructor extends the standard `SeriesMatrix` by adding support
+        for time-domain metadata (`t0`, `dt`, `sample_rate`) and automatic
         GPS time coercion.
         """
         import warnings

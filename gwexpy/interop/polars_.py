@@ -7,6 +7,7 @@ from ._optional import require_optional
 
 def to_polars_series(ts, name=None):
     """Convert TimeSeries or FrequencySeries to polars.Series.
+
     This only contains the data values, not the index.
     """
     pl = require_optional("polars")
@@ -17,8 +18,7 @@ def to_polars_series(ts, name=None):
 
 
 def to_polars_dataframe(ts, index_column="time", time_unit="datetime"):
-    """Convert TimeSeries to polars.DataFrame with a time column.
-    """
+    """Convert `TimeSeries` to `polars.DataFrame` with a time column."""
     pl = require_optional("polars")
     from .base import to_plain_array
 
@@ -65,6 +65,7 @@ def to_polars_frequencyseries(fs, index_column="frequency", index_unit="Hz"):
 
 def from_polars_dataframe(cls, df, index_column="time", unit=None):
     """Create TimeSeries from polars.DataFrame.
+
     Attempts to infer t0 and dt from the time_column.
     """
     require_optional("polars")
@@ -135,7 +136,7 @@ def from_polars_dataframe(cls, df, index_column="time", unit=None):
 
 
 def to_polars_dict(tsd, index_column="time", time_unit="datetime"):
-    """TimeSeriesDict -> polars.DataFrame"""
+    """Convert `TimeSeriesDict` to `polars.DataFrame`."""
     pl = require_optional("polars")
     from .base import to_plain_array
 
@@ -167,7 +168,7 @@ def to_polars_dict(tsd, index_column="time", time_unit="datetime"):
 
 
 def from_polars_dict(cls, df, index_column="time", unit_map=None):
-    """polars.DataFrame -> TimeSeriesDict"""
+    """Convert `polars.DataFrame` to `TimeSeriesDict`."""
     tsd = cls()
     # Logic similar to from_pandas_dataframe but for polars
     # We create one TimeSeries for each column (except time_column)

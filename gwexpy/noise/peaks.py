@@ -17,7 +17,7 @@ from ..frequencyseries import FrequencySeries
 
 
 def _get_freqs(frequencies: np.ndarray | None, kwargs: dict[str, Any]) -> np.ndarray:
-    """Helper to determine frequency array from args or kwargs."""
+    """Determine the frequency array from args or kwargs."""
     if frequencies is not None:
         if isinstance(frequencies, u.Quantity):
             return frequencies.to("Hz").value
@@ -60,6 +60,8 @@ def lorentzian_line(
         HWHM (Half Width at Half Maximum).
     frequencies : array-like, optional
         Target frequency array.
+    **kwargs
+        Additional metadata passed to :class:`FrequencySeries`.
 
     """
     f_vals = _get_freqs(frequencies, kwargs)
@@ -107,6 +109,7 @@ def gaussian_line(
     **kwargs: Any,
 ) -> FrequencySeries:
     """Generate a Gaussian peak (ASD).
+
     Formula: ASD(f) = A * exp( - (f-f0)^2 / (2*sigma^2) )
     """
     f_vals = _get_freqs(frequencies, kwargs)
@@ -134,6 +137,7 @@ def voigt_line(
     **kwargs: Any,
 ) -> FrequencySeries:
     """Generate a Voigt peak (ASD) using Faddeeva function.
+
     Normalized to have peak value = 'amplitude'.
     """
     f_vals = _get_freqs(frequencies, kwargs)

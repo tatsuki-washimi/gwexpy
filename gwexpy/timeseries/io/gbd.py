@@ -104,12 +104,16 @@ def read_timeseriesdict_gbd(
         Local timezone of the logger (IANA name or UTC offset).
     channels : iterable, optional
         Subset of channel names to load.
+    digital_channels : iterable, optional
+        Channel names that should be treated as digital and binarized.
     unit : str or Unit, optional
         Override the physical unit (default: 'V').
     epoch : float or datetime, optional
         Override the epoch (GPS seconds). If datetime, it will be converted to GPS.
     pad : float, optional
         Padding value (unused, accepted for API symmetry).
+    **kwargs
+        Additional compatibility arguments accepted and ignored.
 
     """
     if timezone is None:
@@ -177,8 +181,7 @@ def read_timeseriesdict_gbd(
 
 
 def read_timeseries_gbd(*args, channels=None, **kwargs) -> TimeSeries:
-    """Adapter to always return a single TimeSeries.
-    """
+    """Read a GBD file and return a single ``TimeSeries``."""
     tsd = read_timeseriesdict_gbd(*args, channels=channels, **kwargs)
     if not tsd:
         raise ValueError("No channels found in GBD file")
@@ -190,8 +193,7 @@ def read_timeseries_gbd(*args, channels=None, **kwargs) -> TimeSeries:
 
 
 def read_timeseriesmatrix_gbd(*args, channels=None, **kwargs) -> TimeSeriesMatrix:
-    """Build a TimeSeriesMatrix from a GBD file.
-    """
+    """Build a ``TimeSeriesMatrix`` from a GBD file."""
     tsd = read_timeseriesdict_gbd(*args, channels=channels, **kwargs)
     return tsd.to_matrix()
 

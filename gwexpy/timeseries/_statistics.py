@@ -1,4 +1,5 @@
-"""Statistical analysis and correlation mixin for TimeSeries.
+"""Provide statistical analysis and correlation methods for `TimeSeries`.
+
 Provides skewed, kurtosis, Granger causality, distance correlation,
 and classic correlations (Pearson, Kendall, MIC).
 """
@@ -18,6 +19,7 @@ from ._typing import TimeSeriesAttrs
 
 class GrangerResult(float):
     """Subclass of float that holds Granger causality test results.
+
     Inheriting from float allows p-value formatting like `f"{result:.4f}"`.
     Dictionary-like access is also supported for backward compatibility.
     """
@@ -103,18 +105,15 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         return self.correlation(other, method="mic", alpha=alpha, c=c, est=est)
 
     def pcc(self, other):
-        """Calculate Pearson Correlation Coefficient.
-        """
+        """Calculate the Pearson correlation coefficient."""
         return self.correlation(other, method="pearson")
 
     def ktau(self, other):
-        """Calculate Kendall's Rank Correlation Coefficient.
-        """
+        """Calculate Kendall's rank correlation coefficient."""
         return self.correlation(other, method="kendall")
 
     def fastmi(self, other, **kwargs):
-        """Estimate mutual information using a fast copula/probit + FFT-based estimator.
-        """
+        """Estimate mutual information using a fast copula/probit + FFT-based estimator."""
         return self.correlation(other, method="fastmi", **kwargs)
 
     def distance_correlation(self, other):
@@ -356,7 +355,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
     # --- Internal Methods ---
 
     def _prep_stat_data(self, other):
-        """Helper to align and strip units from data."""
+        """Align the inputs and strip units from the data."""
         # Check dimensions
         if self.ndim > 1:
             raise ValueError(
@@ -512,8 +511,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
 
     @staticmethod
     def _fastmi_connected_component(mask: np.ndarray) -> np.ndarray:
-        """Keep only the connected component of mask that contains the zero-frequency bin.
-        """
+        """Keep only the connected component containing the zero-frequency bin."""
         if mask.ndim == 1:
             ms = np.fft.fftshift(mask)
             m = ms.shape[0]
@@ -563,8 +561,7 @@ class StatisticsMixin(TimeSeriesAttrs, StatisticalMethodsMixin):
         quantile: float,
         eps: float,
     ) -> np.ndarray:
-        """Estimate PDF of v (n,d) at sample points using SC FFT estimator on a regular grid.
-        """
+        """Estimate the PDF of `v` at sample points using the SC FFT estimator."""
         v = np.asarray(v, dtype=float)
         if v.ndim != 2:
             raise ValueError("v must be 2D (n, d)")

@@ -1,5 +1,4 @@
-"""Special spectral transform methods for TimeSeries (HHT, EMD, Laplace, CWT).
-"""
+"""Special spectral transform methods for `TimeSeries`."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -139,7 +138,8 @@ def _prepare_sigma(sigmas, n_freqs):
     ----------
     sigmas : scalar, list, or Quantity
         The sigma values supplied by the user.
-    n_freqs : ignored (kept for API compatibility with spec)
+    n_freqs : int
+        Unused frequency count kept for API compatibility with the spec.
 
     Returns
     -------
@@ -346,7 +346,7 @@ def _prepare_decay(sigma, time_ref, dt, n_fft):
 
 
 def _stlt_main_loop(chunks, decay, freq_config):
-    """Main STLT computation loop.
+    """Run the main STLT computation loop.
 
     Parameters
     ----------
@@ -520,8 +520,7 @@ def _create_stlt_container(result, times, frequencies, sigma, metadata):
 
 
 class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
-    """Mixin class providing special spectral transform methods.
-    """
+    """Provide special spectral transform methods."""
 
     def laplace(
         self,
@@ -557,6 +556,8 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             Output data type.
         chunk_size : `int`, optional
             Number of frequencies to process at once for memory efficiency.
+        **kwargs
+            Additional keyword arguments forwarded to the output constructor.
 
         Returns
         -------
@@ -730,6 +731,8 @@ class TimeSeriesSpectralSpecialMixin(TimeSeriesAttrs):
             If None, defaults to True for real data, False for complex data.
         legacy : bool, optional
             If True, use the old magnitude-outer-product implementation (deprecated).
+        **kwargs
+            Additional keyword arguments forwarded to legacy or output helpers.
 
         Returns
         -------

@@ -32,6 +32,7 @@ from .wave import from_asd
 __all__ = [
     # Submodules
     "asd",
+    "colored",
     "field",
     "line_mask",
     "wave",
@@ -41,6 +42,10 @@ __all__ = [
     "from_obspy",
     # Waveform Functions
     "from_asd",
+    "pink_noise",
+    "power_law",
+    "red_noise",
+    "white_noise",
     # Simulators
     "transient_gaussian_noise",
     "scatter_light_noise",

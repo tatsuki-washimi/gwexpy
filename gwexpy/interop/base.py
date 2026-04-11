@@ -9,8 +9,7 @@ T = TypeVar("T")
 
 
 def to_plain_array(data: Any, copy: bool = False) -> np.ndarray:
-    """Extract a plain numpy array from various wrappers (TimeSeries, Quantity, etc).
-    """
+    """Extract a plain NumPy array from common wrapper objects."""
     if hasattr(data, "value"):
         data = data.value
 
@@ -23,8 +22,7 @@ def to_plain_array(data: Any, copy: bool = False) -> np.ndarray:
 def from_plain_array(
     cls: type[Any], array: Any, t0: Any, dt: Any, unit: Any = None, **kwargs: Any
 ) -> Any:
-    """Reconstruct a gwexpy object from a plain array.
-    """
+    """Reconstruct a gwexpy object from a plain array."""
     # Ensure data is numpy
     if hasattr(array, "numpy"):  # torch/tf
         array = array.numpy()

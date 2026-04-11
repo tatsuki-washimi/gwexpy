@@ -1,18 +1,4 @@
-"""gwexpy.interop.wrf_
--------------------
-
-Interoperability with wrf-python (``wrf.getvar()``) output.
-
-WRF model output uses non-standard dimension names (``south_north``,
-``west_east``, ``bottom_top``) and 2-D latitude/longitude arrays
-(``XLAT``, ``XLONG``).  This module extracts 1-D axis coordinates where
-possible and delegates to :func:`gwexpy.interop.xarray_.from_xarray_field`.
-
-References
-----------
-https://wrf-python.readthedocs.io/
-
-"""
+"""Interoperability with ``wrf.getvar()`` output from wrf-python."""
 from __future__ import annotations
 
 from typing import Any, Literal

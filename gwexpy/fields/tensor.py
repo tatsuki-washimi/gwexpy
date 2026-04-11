@@ -96,12 +96,12 @@ class TensorField(FieldDict):
         return f"<TensorField({shape_str})@{first.axis0_domain}, 1.0>"
 
     def trace(self) -> ScalarField:
-        """Compute the trace of a rank-2 tensor.
+        r"""Compute the trace of a rank-2 tensor.
 
         Returns
         -------
         ScalarField
-            The sum of diagonal components :math:`\\sum T_{ii}`.
+            The sum of diagonal components :math:`\sum T_{ii}`.
 
         Raises
         ------

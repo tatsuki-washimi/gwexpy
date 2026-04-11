@@ -1,4 +1,5 @@
-"""gwexpy.interop.harmonica_
+"""Interoperate with Harmonica gravity and magnetic grids.
+
 -------------------------
 
 Interoperability with Harmonica gravity/magnetic grids.

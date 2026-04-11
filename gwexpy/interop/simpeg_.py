@@ -21,6 +21,8 @@ def to_simpeg(
         Receiver class name or class object. Default "PointElectricField".
     orientation : str, optional
         Receiver orientation ('x', 'y', 'z'). Default 'x'.
+    **kwargs
+        Reserved for future converter-specific options.
 
     Returns
     -------
@@ -128,6 +130,8 @@ def from_simpeg(cls, data_obj, **kwargs):
         Target class (TimeSeries or FrequencySeries).
     data_obj : simpeg.data.Data
         SimPEG Data object.
+    **kwargs
+        Reserved for future converter-specific options.
 
     Returns
     -------

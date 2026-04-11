@@ -138,7 +138,24 @@ def plane_wave(
         OR if k is angular wavenumber (rad/m), then don't multiply by 2pi.
         CONVENTION: k_vector input is in standard wavenumbers (1/length), NOT angular.
         So phase = 2*pi * (f*t - k*r).
-    ...
+    amplitude : float, optional
+        Wave amplitude.
+    phase : float, optional
+        Initial phase offset in radians.
+    shape : tuple of int, optional
+        Output field shape ``(nt, nx, ny, nz)``.
+    sample_rate : Quantity, optional
+        Sample rate for the time axis.
+    space_step : Quantity, optional
+        Grid spacing for the spatial axes.
+    t0 : Quantity, optional
+        Start time for the time axis.
+    origin : tuple of Quantity, optional
+        Spatial origin ``(x0, y0, z0)``.
+    unit : Unit, optional
+        Output unit for the scalar field.
+    axes : dict, optional
+        Explicit axes mapping that overrides generated axes.
 
     """
     from ..fields.scalar import ScalarField

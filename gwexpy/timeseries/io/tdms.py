@@ -1,5 +1,4 @@
-"""TDMS (National Instruments) reader for gwexpy.
-"""
+"""TDMS reader for National Instruments files."""
 from __future__ import annotations
 
 import datetime
@@ -51,6 +50,8 @@ def read_timeseriesdict_tdms(
     epoch : float or datetime, optional
         Override the start time (GPS seconds or datetime).
         If not provided, uses the timestamp from the TDMS file properties.
+    **kwargs
+        Additional keyword arguments forwarded to the TDMS reader.
 
     """
     TdmsFile = _import_nptdms()
@@ -135,6 +136,7 @@ def read_timeseriesdict_tdms(
 
 
 def read_timeseries_tdms(*args, channels=None, **kwargs) -> TimeSeries:
+    """Read a TDMS source and return the first selected channel."""
     tsd = read_timeseriesdict_tdms(*args, channels=channels, **kwargs)
     if not tsd:
         raise ValueError("No channels found in TDMS file")
@@ -142,6 +144,7 @@ def read_timeseries_tdms(*args, channels=None, **kwargs) -> TimeSeries:
 
 
 def read_timeseriesmatrix_tdms(*args, channels=None, **kwargs) -> TimeSeriesMatrix:
+    """Read a TDMS source and convert the result to a matrix."""
     tsd = read_timeseriesdict_tdms(*args, channels=channels, **kwargs)
     return tsd.to_matrix()
 

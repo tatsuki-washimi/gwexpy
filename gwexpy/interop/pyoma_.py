@@ -1,4 +1,5 @@
-"""gwexpy.interop.pyoma_
+"""Interoperate with pyOMA operational modal analysis results.
+
 ----------------------
 
 Interoperability with pyOMA (Operational Modal Analysis).

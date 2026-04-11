@@ -46,7 +46,10 @@ class SkyMap(Plot):
 
         Parameters
         ----------
-        *args, **kwargs : passed to :class:`gwexpy.plot.Plot`.
+        *args
+            Positional arguments passed to :class:`gwexpy.plot.Plot`.
+        **kwargs
+            Keyword arguments passed to :class:`gwexpy.plot.Plot`.
 
         """
         # Default projection: Mollweide in hour angle (RA) units
@@ -69,7 +72,8 @@ class SkyMap(Plot):
         ----------
         map_data : array‑like
             HEALPix map data (e.g., a ``numpy`` array of probabilities).
-        **kwargs : additional keyword arguments passed to ``ligo.skymap.plot.imshow_hpx``.
+        **kwargs
+            Additional keyword arguments passed to ``imshow_hpx``.
 
         """
         if not HAS_LIGO_SKYMAP:
@@ -163,7 +167,8 @@ class SkyMap(Plot):
             Grid of right‑ascension and declination values.
         values : 2‑D array
             Data values corresponding to each (ra, dec) point.
-        **kwargs : additional arguments passed to ``pcolormesh``.
+        **kwargs
+            Additional keyword arguments passed to ``pcolormesh``.
 
         """
         # Convert to radians for the Mollweide projection

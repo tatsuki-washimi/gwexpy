@@ -169,6 +169,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         self.data[index] = item
 
     def append(self, item):
+        """Append a spectrogram, coercing compatible base objects when needed."""
         if not isinstance(item, Spectrogram):
             if isinstance(item, BaseSpectrogram):
                 item = item.view(Spectrogram)
@@ -177,6 +178,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         super().append(item)
 
     def extend(self, other):
+        """Extend the list with validated spectrogram objects."""
         self._validate_items(other)
         super().extend(other)
 
@@ -370,8 +372,7 @@ class SpectrogramList(PhaseMethodsMixin, UserList):
         return Plot(self, **kwargs)
 
     def plot_summary(self, **kwargs):
-        """Plot List as side-by-side Spectrograms and percentile summaries.
-        """
+        """Plot the list as spectrograms with percentile summaries."""
         from gwexpy.plot.plot import plot_summary
 
         return plot_summary(self, **kwargs)
@@ -571,6 +572,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         self.data[key] = item
 
     def update(self, other=None, **kwargs):  # type: ignore[override]
+        """Update the dictionary with validated spectrogram objects."""
         if other is not None:
             if isinstance(other, dict):
                 for k, v in other.items():
@@ -806,8 +808,7 @@ class SpectrogramDict(PlotMixin, PhaseMethodsMixin, UserDict):
         return target
 
     def plot_summary(self, **kwargs):
-        """Plot Dictionary as side-by-side Spectrograms and percentile summaries.
-        """
+        """Plot the dictionary as spectrograms with percentile summaries."""
         from gwexpy.plot.plot import plot_summary
 
         return plot_summary(self, **kwargs)

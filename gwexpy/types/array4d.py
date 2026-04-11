@@ -66,6 +66,7 @@ class Array4D(Array):
         axis_names=None,
         **kwargs,
     ):
+        """Create a 4D array with explicit axis names and indices."""
         obj = super().__new__(cls, data, unit=unit, **kwargs)
         if obj.ndim != 4:
             raise ValueError(f"Array4D must be 4-dimensional, got {obj.ndim}D")
@@ -261,7 +262,7 @@ class Array4D(Array):
         return self._getitem_with_axis_metadata(item)
 
     def _isel_tuple(self, item_tuple):
-        """Internal method for isel to use the same getitem logic."""
+        """Use the same getitem logic for ``isel`` tuple indexing."""
         return self._getitem_with_axis_metadata(item_tuple)
 
     def _getitem_with_axis_metadata(self, item):

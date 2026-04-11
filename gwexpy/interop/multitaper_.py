@@ -1,4 +1,5 @@
-"""gwexpy.interop.multitaper_
+"""Interoperate with multitaper spectral estimation packages.
+
 --------------------------
 
 Interoperability with multitaper spectral estimation packages.

@@ -22,6 +22,7 @@ def to_pandas_frequencyseries(
     name: Optional[str] = None,
     copy: bool = False,
 ) -> pd.Series:
+    """Convert a `FrequencySeries` to a pandas `Series`."""
     pd = require_optional("pandas")
     data = fs.value.copy() if copy else fs.value
     freqs = fs.frequencies
@@ -42,6 +43,7 @@ def from_pandas_frequencyseries(
     f0: Optional[float] = None,
     epoch: Optional[Any] = None,
 ) -> T:
+    """Create a `FrequencySeries` from a pandas `Series`."""
     vals = series.values
     idx = series.index
     freq_axis = None
@@ -65,6 +67,7 @@ def from_pandas_frequencyseries(
 def to_xarray_frequencyseries(
     fs: FrequencySeries, freq_coord: Literal["Hz"] = "Hz"
 ) -> xr.DataArray:
+    """Convert a `FrequencySeries` to an xarray `DataArray`."""
     xr = require_optional("xarray")
     freqs = fs.frequencies
     coord = freqs.value if freq_coord == "Hz" else np.arange(len(freqs))
@@ -92,6 +95,7 @@ def from_xarray_frequencyseries(
     freq_coord: str = "frequency",
     epoch: Optional[Any] = None,
 ) -> T:
+    """Create a `FrequencySeries` from an xarray `DataArray`."""
     vals = da.values
     freqs = da.coords[freq_coord].values
     u = unit or da.attrs.get("unit")
@@ -114,6 +118,7 @@ def to_hdf5_frequencyseries(
     compression: Optional[str] = None,
     compression_opts: Any = None,
 ) -> None:
+    """Write a `FrequencySeries` to an HDF5 group."""
     require_optional("h5py")
     if path in group:
         if overwrite:
@@ -151,6 +156,7 @@ def to_hdf5_frequencyseries(
 
 
 def from_hdf5_frequencyseries(cls: type[T], group: h5py.Group, path: str) -> T:
+    """Read a `FrequencySeries` from an HDF5 group."""
     require_optional("h5py")
     dset = group[path]
     data = dset[()]

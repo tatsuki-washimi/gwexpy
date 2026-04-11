@@ -1,4 +1,5 @@
-"""gwexpy.interop.meep_
+"""Interoperate with Meep FDTD simulation output files.
+
 --------------------
 
 Interoperability with Meep FDTD simulation output files.

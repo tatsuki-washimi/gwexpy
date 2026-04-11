@@ -123,7 +123,6 @@ gettext_compact = False
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-html_favicon = "images/favicon.ico"
 html_baseurl = "https://tatsuki-washimi.github.io/gwexpy/docs/"
 
 html_theme_options = {
