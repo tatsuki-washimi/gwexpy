@@ -36,22 +36,22 @@ python scripts/install_minepy.py
 - Add or update tests for behavior changes.
 - Run `ruff check .` before submitting.
 
-## Design Principles: Controlled Extension, No Silent Monkeypatching
+## Design Principles: Modular Extensibility
 
-GWexpy extends GWpy through two sanctioned mechanisms:
+GWexpy is designed to extend GWpy and other core libraries in a way that remains safe and predictable. We avoid "silent monkeypatching" of upstream classes in favor of explicit, documented extension points.
 
-1. **Subclassing**: `gwexpy.TimeSeries`, `gwexpy.FrequencySeries`, etc. inherit from GWpy base classes.
-   New methods (e.g. `.fit()`) are added via inheritance, not by modifying the upstream class directly.
-2. **I/O registry injection**: On `import gwexpy`, `register_all()` is called to register GWexpy's
-   format readers/writers into the GWpy I/O registry. This is the standard GWpy extension pattern
-   and is limited to the I/O layer.
+**Recommended Extension Patterns:**
 
-**What is prohibited:**
+1. **Subclassing (Core Types)**: `gwexpy.TimeSeries`, `gwexpy.FrequencySeries`, etc. inherit from GWpy base classes. New methods (e.g., `.fit()`, `.mix_down()`) are added via inheritance, ensuring zero impact on other libraries using the base GWpy types.
+2. **I/O Registry Injection**: We use the official `gwpy.io.registry` mechanism to add support for new file formats (e.g., `.tdms`, `.gbd`, `.root`). This is the sanctioned way to extend GWpy's multi-format support.
+3. **MIMO/Matrix Abstractions**: For functionality involving multiple channels, we use distinct container classes (e.g., `TimeSeriesMatrix`) rather than adding complex logic to individual time series objects.
 
-- Modifying `gwpy.types.Series` or other upstream classes at import time (beyond I/O registry entries).
-- Adding attributes or methods to external objects in global scope.
-- Relying on import side effects for non-I/O functionality — such behavior must be opt-in (e.g. `enable_series_fit()`).
-- Keep import-time behavior predictable and document any compatibility shims when they are unavoidable.
+**Prohibited Behaviors:**
+
+- **Implicit Modification**: Adding attributes or methods to `gwpy.*` or `astropy.*` classes at import time.
+- **Global Scope Pollution**: Adding methods to built-in objects or external library objects globally.
+- **Hidden Side Effects**: Any behavior that changes the output of external libraries simply by importing `gwexpy` (except for the authorized I/O registry entries).
+- **Incompatible API Shims**: Modifying standard library functions or third-party API signatures without an explicit user opt-in.
 
 ## Documentation
 
@@ -75,7 +75,9 @@ Documentation and examples use Jupyter Notebooks (.ipynb). We categorize them to
 See [NOTEBOOK_POLICY.md](docs/NOTEBOOK_POLICY.md) for details. We use `nbstripout` via `pre-commit` to prevent committing large binary outputs for most notebooks.
 
 #### Syntax & Indentation
+
 To ensure notebooks are compatible with Sphinx/nbsphinx and the CI pipeline:
+
 - **Avoid indentation errors**: Ensure all cells have valid Python syntax.
 - **Warnings Blocks**: When using `with warnings.catch_warnings():`, ensure the entire cell content is correctly indented. Avoid mixing multiple warnings blocks or leaving trailing imports inside the block.
 - **Automated Checks**: The `Notebook syntax check` in CI will block PRs with corrupted JSON or major syntax regressions. Run `nbformat` locally to verify if you suspect issues.
@@ -86,6 +88,7 @@ To ensure notebooks are compatible with Sphinx/nbsphinx and the CI pipeline:
 Interactive examples in docstrings must be self-contained and stable.
 
 - **Randomness**: If an example uses random numbers, always set a seed:
+
 
   ```python
   >>> import numpy as np

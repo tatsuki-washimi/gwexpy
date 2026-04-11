@@ -221,8 +221,9 @@ ignore = [
     "E702",
     # Allow long lines (many scientific expressions are naturally long)
     "E501",
-    # Python 3.9 compatibility: `X | Y` / `X | None` syntax is not supported.
-    # Keep `typing.Union` / `typing.Optional` in runtime annotations where needed.
+    # Python 3.11+ compatibility: PEP 604 union types and other modern features are encouraged.
+    # We still keep `UP007` and `UP045` ignored if we want to maintain `typing.Union` 
+    # for strict runtime compatibility with some older tools, but the primary target is 3.11+.
     "UP007",
     "UP045",
     # Docstring ignore rules (gradual adoption)
