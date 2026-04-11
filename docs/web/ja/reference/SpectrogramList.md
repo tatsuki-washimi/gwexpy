@@ -5,10 +5,11 @@
 Spectrogram オブジェクトのリスト。
 参考: TimeSeriesList に似ていますが、2D Spectrogram 用です。
 
-.. note::
-   Spectrogram オブジェクトはメモリを大量に消費する可能性があります。
-   ディープコピーを避けるため、可能な限り `inplace=True` を使用してください。
+:::{note}
+Spectrogram オブジェクトはメモリを大量に消費する可能性があります。
+ディープコピーを避けるため、可能な限り `inplace=True` を使用してください。
 
+:::
 ## メソッド
 
 ### `__init__`

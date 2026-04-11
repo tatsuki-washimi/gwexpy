@@ -122,7 +122,8 @@ inplace : `bool`, optional
     perform operation in-place, modifying current series,
     otherwise copy data and return new series, default: `True`
 
-    .. warning::
+    :::{warning}
+    :::
 
        `inplace` append bypasses the reference check in
        `numpy.ndarray.resize`, so be carefully to only use this
@@ -783,7 +784,8 @@ inplace : `bool`, optional
     perform operation in-place, modifying current series,
     otherwise copy data and return new series, default: `True`
 
-    .. warning::
+    :::{warning}
+    :::
 
        `inplace` prepend bypasses the reference check in
        `numpy.ndarray.resize`, so be carefully to only use this

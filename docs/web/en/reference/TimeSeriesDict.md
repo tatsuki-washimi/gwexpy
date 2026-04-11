@@ -1145,10 +1145,11 @@ HDF5 dataset names (for GWpy `path=`):
 - If multiple keys sanitize to the same name, a suffix like `__1` is added.
 - The original keys are stored in file attributes, and `gwexpy` restores them on read.
 
-.. warning::
-   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
-   arbitrary code on load.
+:::{warning}
+Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+arbitrary code on load.
 
+:::
 Pickle portability note: pickled gwexpy `TimeSeriesDict` unpickles as a **GWpy**
 `TimeSeriesDict` (gwexpy not required on the loading side).
 

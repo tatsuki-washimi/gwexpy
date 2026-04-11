@@ -11,7 +11,7 @@ For reproducibility of analysis results and continued maintenance of the softwar
   author = {Washimi, Tatsuki},
   title = {GWexpy: Extended Analysis Utilities for Gravitational Wave Data},
   year = {2026},
-  url = {https://github.com/tatsuki-washimi/gwexpy},
+  url = {https://github.com/gwexpy/gwexpy},
   doi = {10.5281/zenodo.1234567},
   version = {0.1.1}
 }

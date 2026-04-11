@@ -5,11 +5,12 @@
 
 Dictionary of Spectrogram objects.
 
-.. note::
-   Spectrogram objects can be very large in memory.
-   Use `inplace=True` where possible to update container in-place.
+:::{note}
+Spectrogram objects can be very large in memory.
+Use `inplace=True` where possible to update container in-place.
 
 
+:::
 ## Methods
 
 ### `__init__`
@@ -278,9 +279,10 @@ HDF5 dataset names (for GWpy `path=`):
 - If multiple keys sanitize to the same name, a suffix like `__1` is added.
 - The original keys are stored in file attributes, and `gwexpy` restores them on read.
 
-.. warning::
-   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
-   arbitrary code on load.
+:::{warning}
+Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+arbitrary code on load.
 
+:::
 Pickle portability note: pickled gwexpy `SpectrogramDict` unpickles as a built-in
 `dict` of GWpy `Spectrogram` (gwexpy not required on the loading side).

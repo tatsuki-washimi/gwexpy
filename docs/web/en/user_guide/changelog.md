@@ -14,4 +14,4 @@ Notable changes to the GWexpy project.
 
 ## Past Versions
 
-For more details, please visit [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases).
+For more details, please visit [GitHub Releases](https://github.com/gwexpy/gwexpy/releases).

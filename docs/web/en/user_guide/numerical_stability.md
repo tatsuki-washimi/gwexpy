@@ -1,11 +1,12 @@
 # Numerical Stability and Precision
 
-> [!NOTE]
-> **Who should read this page?**
-> Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to this detailed guide only if:
-> - You see "holes" or "unusual colors" in your plots caused by `NaN` or `Inf`.
-> - You are working with extremely small signals (below $10^{-23}$) or huge signals (above 1) simultaneously.
-> - You want to deeply understand the numerical behavior of algorithms and tune parameters like `eps` or `tol`.
+:::{note}
+**Who should read this page?**
+Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to this detailed guide only if:
+- You see "holes" or "unusual colors" in your plots caused by `NaN` or `Inf`.
+- You are working with extremely small signals (below $10^{-23}$) or huge signals (above 1) simultaneously.
+- You want to deeply understand the numerical behavior of algorithms and tune parameters like `eps` or `tol`.
+:::
 
 `gwexpy` is designed to handle data with an extremely wide dynamic range without numerical breakdown.
 

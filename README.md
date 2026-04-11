@@ -1,8 +1,8 @@
 # gwexpy: GWpy Expansions for Experiments
 
-[![CI Status](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml/badge.svg)](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy/branch/main/graph/badge.svg)](https://codecov.io/gh/tatsuki-washimi/gwexpy)
-[![Documentation](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs.yml/badge.svg)](https://tatsuki-washimi.github.io/gwexpy/)
+[![CI Status](https://github.com/gwexpy/gwexpy/actions/workflows/test.yml/badge.svg)](https://github.com/gwexpy/gwexpy/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/gwexpy/gwexpy/branch/main/graph/badge.svg)](https://codecov.io/gh/gwexpy/gwexpy)
+[![Documentation](https://github.com/gwexpy/gwexpy/actions/workflows/docs.yml/badge.svg)](https://gwexpy.github.io/gwexpy/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
@@ -13,8 +13,8 @@
 > [!IMPORTANT]
 > **Full documentation is available in both English and Japanese:**
 >
-> - **English:** [https://tatsuki-washimi.github.io/gwexpy/docs/web/en/](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/)
-> - **日本語:** [https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/](https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/)
+> - **English:** [https://gwexpy.github.io/gwexpy/docs/web/en/](https://gwexpy.github.io/gwexpy/docs/web/en/)
+> - **日本語:** [https://gwexpy.github.io/gwexpy/docs/web/ja/](https://gwexpy.github.io/gwexpy/docs/web/ja/)
 >
 > **Over 25 comprehensive tutorials** covering everything from basic usage to advanced signal processing techniques are available in both languages.
 
@@ -112,7 +112,7 @@ For the complete list of 75+ supported formats and their test status, see [SUPPO
 - **Noise Simulation**: Colored noise generation from ASD/PSD specifications
 - **Field Simulation**: Isotropic noise fields and plane wave propagation
 
-See the [Features](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/) page for details.
+See the [Features](https://gwexpy.github.io/gwexpy/docs/web/en/) page for details.
 
 ---
 
@@ -120,7 +120,7 @@ See the [Features](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/) page f
 
 ```bash
 # From GitHub (recommended for now)
-pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+pip install git+https://github.com/gwexpy/gwexpy.git
 
 # From PyPI (coming soon)
 # pip install gwexpy
@@ -164,7 +164,7 @@ pip install "gwexpy[analysis,seismic,control]"
 
 ### Optional Dependencies Summary
 
-The default installation (`pip install git+https://github.com/tatsuki-washimi/gwexpy.git`) includes core dependencies for time-series analysis, basic signal processing, and standard I/O. Optional extras enable specialized workflows:
+The default installation (`pip install git+https://github.com/gwexpy/gwexpy.git`) includes core dependencies for time-series analysis, basic signal processing, and standard I/O. Optional extras enable specialized workflows:
 
 | Extra         | Description                  | Key Packages                          |
 |---------------|------------------------------|---------------------------------------|
@@ -177,7 +177,7 @@ The default installation (`pip install git+https://github.com/tatsuki-washimi/gw
 | `[io]`        | Experimental I/O             | nptdms (LabVIEW)                      |
 | `[gui]`       | GUI (experimental)           | PyQt5, pyqtgraph                      |
 
-For further configuration (e.g., `[dev]`), see the [Installation Guide](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/installation.html).
+For further configuration (e.g., `[dev]`), see the [Installation Guide](https://gwexpy.github.io/gwexpy/docs/web/en/user_guide/installation.html).
 
 ---
 
@@ -212,7 +212,7 @@ mat = TimeSeriesList([series1, series2, series3]).to_matrix()
 scores = mat.standardize().pca(n_components=2)
 ```
 
-For more complex examples, browse our **[Tutorials](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/)** (available in [English](https://tatsuki-washimi.github.io/gwexpy/docs/web/en/user_guide/tutorials/) and [日本語](https://tatsuki-washimi.github.io/gwexpy/docs/web/ja/user_guide/tutorials/)).
+For more complex examples, browse our **[Tutorials](https://gwexpy.github.io/gwexpy/docs/web/en/user_guide/tutorials/)** (available in [English](https://gwexpy.github.io/gwexpy/docs/web/en/user_guide/tutorials/) and [日本語](https://gwexpy.github.io/gwexpy/docs/web/ja/user_guide/tutorials/)).
 
 ---
 
@@ -267,7 +267,7 @@ This flat layout is intentional: it mirrors the convention used by [GWpy](https:
 
 ## Contributing
 
-Contributions are welcome! Please open issues or submit PRs on [GitHub](https://github.com/tatsuki-washimi/gwexpy).
+Contributions are welcome! Please open issues or submit PRs on [GitHub](https://github.com/gwexpy/gwexpy).
 
 ---
 
@@ -275,8 +275,8 @@ Contributions are welcome! Please open issues or submit PRs on [GitHub](https://
 
 For questions, bug reports, or feature requests:
 
-- **GitHub Issues**: [https://github.com/tatsuki-washimi/gwexpy/issues](https://github.com/tatsuki-washimi/gwexpy/issues) (recommended)
-- **Discussions**: [https://github.com/tatsuki-washimi/gwexpy/discussions](https://github.com/tatsuki-washimi/gwexpy/discussions) (for general questions)
+- **GitHub Issues**: [https://github.com/gwexpy/gwexpy/issues](https://github.com/gwexpy/gwexpy/issues) (recommended)
+- **Discussions**: [https://github.com/gwexpy/gwexpy/discussions](https://github.com/gwexpy/gwexpy/discussions) (for general questions)
 
 For academic citations and correspondence, please refer to the [CITATION.cff](CITATION.cff) file (DOI pending).
 

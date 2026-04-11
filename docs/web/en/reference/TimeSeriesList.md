@@ -804,10 +804,11 @@ tsl.write("out.h5", format="hdf5")               # GWpy-compatible (default)
 tsl.write("out.h5", format="hdf5", layout="group")  # legacy group-per-entry
 ```
 
-.. warning::
-   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
-   arbitrary code on load.
+:::{warning}
+Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+arbitrary code on load.
 
+:::
 Pickle portability note: pickled gwexpy `TimeSeriesList` unpickles as a **GWpy**
 `TimeSeriesList` (gwexpy not required on the loading side).
 
