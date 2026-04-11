@@ -28,15 +28,64 @@ Choose the most appropriate function for your goal.
 | **DateTime → GPS** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | `timezone` |
 | **GPS → DateTime** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `Time (Quantity)` | — |
 | **Convenience (Auto)** | `tconvert` | All above + `"now"` | Context-dependent (Scalar pref.) | — |
-| **High Precision** | `LIGOTimeGPS` | `seconds`, `nanoseconds` | `LIGOTimeGPS` (Sec + NanoSec) | — |
+| **High-Precision Object** | `LIGOTimeGPS` | `seconds`, `nanoseconds` | `LIGOTimeGPS` (integer s+ns) | — |
 
 ---
+
+## Basic Examples
+
+### 1. Simple Conversion
+
+```python
+from gwexpy.time import to_gps, from_gps, tconvert
+
+# Convert date string to GPS seconds (default UTC)
+gps = to_gps("2015-09-14 09:50:45")
+# → 1126259462.391
+
+# Convert GPS seconds back to datetime object
+dt = from_gps(1126259462.391)
+# → datetime.datetime(2015, 9, 14, 9, 50, 45, ...)
+
+# Automatic type detection via tconvert
+tconvert("now")     # Current GPS time
+tconvert(1126259462) # Formatted string ("September 14 2015, ...")
+```
+
+### 2. Vectorized Operations
+
+Passing lists or NumPy arrays will invoke optimized batch conversions.
+
+```python
+import numpy as np
+
+# Convert lists or arrays in bulk
+gps_list = to_gps(["2015-09-14 09:50:00", "2015-09-14 09:51:00"])
+# → array([1126259417., 1126259477.])
+
+# Convert numeric arrays back to Astropy Time objects
+times = from_gps(np.arange(1126259400, 1126259410))
+# → <Time object: scale='utc' format='gps' value=[1.1262594e+09 ...]>
+```
+
+### 3. Timezones & Leap Seconds
+
+```python
+# Use explicit timezone strings (recommended)
+to_gps("2024-01-01 09:00:00 JST") 
+
+# Be careful: inputs without timezones are treated as UTC
+to_gps("2024-01-01 09:00:00") # UTC 09:00:00
+```
 
 ## `to_gps` — DateTime → GPS Seconds
 
 **Signature**: `to_gps(t, *args, **kwargs)`
 
-Converts various time representations into GPS seconds. Supports both scalars and collections (lists, arrays) with efficient vector operations.
+Converts various time representations into GPS- **Incompatible API Shims**: Modifying standard library functions or third-party API signatures without an explicit user opt-in.
+
+## Documentation
+s.
 
 ### Working with Strings and DateTime Objects
 

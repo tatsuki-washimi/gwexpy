@@ -32,6 +32,52 @@ from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 
 ---
 
+## 基本的な使用例 (Examples)
+
+### 1. 単一時刻の相互変換
+
+```python
+from gwexpy.time import to_gps, from_gps, tconvert
+
+# 日本語の日時文字列を GPS 秒へ（デフォルト UTC）
+gps = to_gps("2015-09-14 09:50:45")
+# → 1126259462.391
+
+# GPS 秒を datetime オブジェクトへ
+dt = from_gps(1126259462.391)
+# → datetime.datetime(2015, 9, 14, 9, 50, 45, ...)
+
+# tconvert による型自動判別
+tconvert("now")     # 現在の GPS 秒
+tconvert(1126259462) # 固定文字列（"September 14 2015, ..."）
+```
+
+### 2. ベクトル演算 (Vectorized Operations)
+
+リストや NumPy 配列を渡すと、内部的に最適化されたベクトル変換が行われます。
+
+```python
+import numpy as np
+
+# リストや配列の一括変換
+gps_list = to_gps(["2015-09-14 09:50:00", "2015-09-14 09:51:00"])
+# → array([1126259417., 1126259477.])
+
+# 浮動小数点配列から Astropy Time オブジェクトの配列へ返還
+times = from_gps(np.arange(1126259400, 1126259410))
+# → <Time object: scale='utc' format='gps' value=[1.1262594e+09 ...]>
+```
+
+### 3. タイムゾーンと言号（Leap Second）の注意点
+
+```python
+# 明示的なタイムゾーン指定（推奨）
+to_gps("2024-01-01 09:00:00 JST") 
+
+# タイムゾーンなしは UTC とみなされるため注意
+to_gps("2024-01-01 09:00:00") # UTC 09:00:00
+```
+
 ## `to_gps` — 日時 → GPS 秒
 
 **Signature**: `to_gps(t, *args, **kwargs)`
