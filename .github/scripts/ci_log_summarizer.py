@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import zipfile
+from typing import Any
 
 import requests
 
@@ -31,6 +32,7 @@ ERROR_PATTERNS = [
 ]
 MAX_LOG_LINES = 100
 MAX_BODY_CHARS = 60000
+MAX_ISSUES_TO_SCAN = 200
 
 
 def filter_sensitive(line):
@@ -60,6 +62,62 @@ def extract_errors_from_log(content):
                 break
 
     return "\n".join(error_lines)
+
+
+def github_get(url: str, headers: dict[str, str], **kwargs: Any) -> requests.Response:
+    """Perform a GitHub GET request and raise on non-success."""
+    resp = requests.get(url, headers=headers, **kwargs)
+    resp.raise_for_status()
+    return resp
+
+
+def iter_open_ci_issues(repo: str, headers: dict[str, str]):
+    """Yield open automated CI issues across paginated GitHub results."""
+    url = f"https://api.github.com/repos/{repo}/issues"
+    params = {
+        "state": "open",
+        "labels": "ci-failure,automated",
+        "per_page": 100,
+    }
+    scanned = 0
+    while url and scanned < MAX_ISSUES_TO_SCAN:
+        resp = github_get(url, headers, params=params)
+        params = None
+        issues = resp.json()
+        if not isinstance(issues, list):
+            return
+        for issue in issues:
+            if "pull_request" in issue:
+                continue
+            yield issue
+            scanned += 1
+            if scanned >= MAX_ISSUES_TO_SCAN:
+                return
+        url = resp.links.get("next", {}).get("url")
+
+
+def issue_body_text(issue: dict[str, Any]) -> str:
+    """Return a normalized issue body string."""
+    body = issue.get("body")
+    return body if isinstance(body, str) else ""
+
+
+def comment_already_exists(
+    comments_url: str,
+    headers: dict[str, str],
+    run_id: str,
+) -> bool:
+    """Check whether a recurring-failure comment for the run already exists."""
+    resp = github_get(comments_url, headers, params={"per_page": 100})
+    comments = resp.json()
+    if not isinstance(comments, list):
+        return False
+    run_marker = f"/actions/runs/{run_id}"
+    for comment in comments:
+        body = comment.get("body")
+        if isinstance(body, str) and run_marker in body:
+            return True
+    return False
 
 
 def main():
@@ -99,7 +157,7 @@ def main():
                     if errors:
                         entry = f"### File: {filename}\n\n```text\n{errors}\n```\n\n"
                         if len(summary_text) + len(entry) > MAX_BODY_CHARS:
-                            summary_text += f"\n**... [Logs Truncated] ...**\n"
+                            summary_text += "\n**... [Logs Truncated] ...**\n"
                             break
                         summary_text += entry
 
@@ -111,36 +169,34 @@ def main():
     fingerprint_base = re.sub(r"/home/[^/]+/", "/HOME/", summary_text)
     fingerprint_base = re.sub(r"0x[0-9a-f]+", "0xADDR", fingerprint_base)
     fingerprint_base = re.sub(r"\d+", "N", fingerprint_base)
-    
+
     fingerprint = hashlib.sha256(fingerprint_base.encode("utf-8")).hexdigest()[:16]
     fingerprint_marker = f"<!-- trace-fingerprint: {fingerprint} -->"
 
     # 4. Check for existing open issue with the same run ID or fingerprint
-    search_url = f"https://api.github.com/repos/{repo}/issues"
-    params = {"state": "open", "labels": "ci-failure,automated"}
-    
-    resp = requests.get(search_url, headers=headers, params=params)
-    resp.raise_for_status()
-    issues = resp.json()
-    
-    issue_title_run = f"Ref: {run_id}" # Existing title check logic
-    
-    for issue in issues:
+    issue_title_run = f"Ref: {run_id}"
+
+    for issue in iter_open_ci_issues(repo, headers):
         # Check for same run ID to avoid duplicates of the same run
         if issue_title_run in issue["title"]:
             print(f"Issue for run {run_id} already exists: {issue['html_url']}")
             return
-            
+
         # Check for same failure fingerprint to avoid recurring issues
-        if fingerprint_marker in issue["body"]:
+        if fingerprint_marker in issue_body_text(issue):
             print(f"Recurring failure detected (fingerprint: {fingerprint}). Skipping new issue.")
-            # Optional: Add comment to the existing issue
-            comment_body = (
-                f"### 🔄 Recurring failure in `{workflow_name}`\n"
-                f"- **Run ID:** [{run_id}](https://github.com/{repo}/actions/runs/{run_id})\n"
-                f"- **Fingerprint:** `{fingerprint}`\n"
-            )
-            requests.post(issue["comments_url"], headers=headers, json={"body": comment_body})
+            if not comment_already_exists(issue["comments_url"], headers, run_id):
+                comment_body = (
+                    f"### 🔄 Recurring failure in `{workflow_name}`\n"
+                    f"- **Run ID:** [{run_id}](https://github.com/{repo}/actions/runs/{run_id})\n"
+                    f"- **Fingerprint:** `{fingerprint}`\n"
+                )
+                requests.post(
+                    issue["comments_url"],
+                    headers=headers,
+                    json={"body": comment_body},
+                    timeout=30,
+                ).raise_for_status()
             return
 
     # 5. Create new issue
@@ -164,7 +220,10 @@ def main():
     }
 
     resp = requests.post(
-        f"https://api.github.com/repos/{repo}/issues", headers=headers, json=payload
+        f"https://api.github.com/repos/{repo}/issues",
+        headers=headers,
+        json=payload,
+        timeout=30,
     )
     if resp.status_code == 201:
         print(f"New issue created: {resp.json()['html_url']}")
