@@ -12,7 +12,7 @@ author = "GWexpy contributors"
 copyright = f"{datetime.now():%Y}, GWexpy contributors"
 
 # Sitemap URL
-sitemap_url = "https://tatsuki-washimi.github.io/gwexpy/docs/"
+sitemap_url = "https://gwexpy.github.io/gwexpy/docs/"
 
 # Date format for last updated
 html_last_updated_fmt = "%Y-%m-%d %H:%M:%S"
@@ -67,11 +67,11 @@ nbsphinx_prolog = r"""
 {% if '/ja/' in env.docname %}
 .. note::
    このページは Jupyter Notebook から生成されました。
-   `ノートブックをダウンロード (.ipynb) <https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
+   `ノートブックをダウンロード (.ipynb) <https://github.com/gwexpy/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
 {% else %}
 .. note::
    This page was generated from a Jupyter Notebook.
-   `Download the notebook (.ipynb) <https://github.com/tatsuki-washimi/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
+   `Download the notebook (.ipynb) <https://github.com/gwexpy/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
 {% endif %}
 """
 
@@ -123,7 +123,7 @@ gettext_compact = False
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-html_baseurl = "https://tatsuki-washimi.github.io/gwexpy/docs/"
+html_baseurl = "https://gwexpy.github.io/gwexpy/docs/"
 
 html_theme_options = {
     "logo_only": False,
@@ -144,7 +144,7 @@ html_title = "GWexpy Documentation"
 html_short_title = "GWexpy"
 html_context = {
     "display_github": True,
-    "github_user": "tatsuki-washimi",
+    "github_user": "gwexpy",
     "github_repo": "gwexpy",
     "github_version": "main",
     "conf_py_path": "/docs/",
@@ -155,8 +155,8 @@ html_context = {
     "og_title": "GWexpy: Advanced GH Data Analysis",
     "og_description": "A comprehensive Python package for Gravitational Wave experimental data analysis.",
     "og_type": "website",
-    "og_url": "https://tatsuki-washimi.github.io/gwexpy/",
-    "og_image": "https://tatsuki-washimi.github.io/gwexpy/docs/_static/images/ogp.png",
+    "og_url": "https://gwexpy.github.io/gwexpy/",
+    "og_image": "https://gwexpy.github.io/gwexpy/docs/_static/images/ogp.png",
     "twitter_card": "summary_large_image",
 }
 

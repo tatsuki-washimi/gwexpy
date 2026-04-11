@@ -6,11 +6,12 @@
 List of Spectrogram objects.
 Reference: similar to TimeSeriesList but for 2D Spectrograms.
 
-.. note::
-   Spectrogram objects can be very large in memory.
-   Use `inplace=True` where possible to avoid deep copies.
+:::{note}
+Spectrogram objects can be very large in memory.
+Use `inplace=True` where possible to avoid deep copies.
 
 
+:::
 ## Methods
 
 ### `__init__`
@@ -222,9 +223,10 @@ sgl.write("out.h5", format="hdf5")               # GWpy-compatible (default)
 sgl.write("out.h5", format="hdf5", layout="group")  # legacy group-per-entry
 ```
 
-.. warning::
-   Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
-   arbitrary code on load.
+:::{warning}
+Never unpickle data from untrusted sources. ``pickle``/``shelve`` can execute
+arbitrary code on load.
 
+:::
 Pickle portability note: pickled gwexpy `SpectrogramList` unpickles as a built-in
 `list` of GWpy `Spectrogram` (gwexpy not required on the loading side).

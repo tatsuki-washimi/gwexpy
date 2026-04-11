@@ -79,9 +79,10 @@ In addition to GWpy's standard support for `gwf`, `hdf5`, and `ascii`, GWexpy ad
 GWexpy focuses on the "sharing of analysis results." 
 When saving objects via `Pickle`, GWexpy uses a **Transparent Pickle** design (Stable). This ensures that even if the recipient doesn't have GWexpy installed, the objects can be restored as base GWpy objects, provided GWpy is available.
 
-.. important::
-   Always avoid loading Pickle data from untrusted sources.
+:::{important}
+Always avoid loading Pickle data from untrusted sources.
 
+:::
 ## 5. High-dimensional Data (Field API)
 
 For handling spatial distributions (e.g., sensor arrays), you can use `ScalarField`, which extends `TimeSeries`.

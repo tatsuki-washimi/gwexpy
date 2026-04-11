@@ -1,10 +1,11 @@
 # Validated Algorithms
 
-> [!NOTE]
-> **Who should read this page?**
-> - Researchers who want to verify the mathematical and physical validity of the methods.
-> - Developers who need to know the numerical tolerances between GWexpy and external libraries (SciPy, LALSuite, etc.).
-> - Users who need to check the data characteristics (stationarity, Gaussianity, etc.) assumed by each algorithm.
+:::{note}
+**Who should read this page?**
+- Researchers who want to verify the mathematical and physical validity of the methods.
+- Developers who need to know the numerical tolerances between GWexpy and external libraries (SciPy, LALSuite, etc.).
+- Users who need to check the data characteristics (stationarity, Gaussianity, etc.) assumed by each algorithm.
+:::
 
 The numerical algorithms implemented in `gwexpy` have undergone a rigorous validation process to ensure scientific accuracy and reliability.
 

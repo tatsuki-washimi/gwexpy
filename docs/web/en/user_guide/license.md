@@ -16,7 +16,7 @@ GWexpy is licensed under the **MIT License**, a permissive open-source license t
 
 The complete license text is available in the repository:
 
-[**LICENSE.txt**](https://github.com/tatsuki-washimi/gwexpy/blob/main/LICENSE.txt)
+[**LICENSE.txt**](https://github.com/gwexpy/gwexpy/blob/main/LICENSE.txt)
 
 ## Why MIT?
 
@@ -50,8 +50,8 @@ pip-licenses
 
 ## Contributing
 
-By contributing to GWexpy, you agree that your contributions will be licensed under the same MIT License. See [CONTRIBUTING.md](https://github.com/tatsuki-washimi/gwexpy/blob/main/CONTRIBUTING.md) for details.
+By contributing to GWexpy, you agree that your contributions will be licensed under the same MIT License. See [CONTRIBUTING.md](https://github.com/gwexpy/gwexpy/blob/main/CONTRIBUTING.md) for details.
 
 ## Questions?
 
-If you have questions about licensing, feel free to open an issue on [GitHub Issues](https://github.com/tatsuki-washimi/gwexpy/issues).
+If you have questions about licensing, feel free to open an issue on [GitHub Issues](https://github.com/gwexpy/gwexpy/issues).

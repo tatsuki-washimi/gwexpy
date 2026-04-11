@@ -3,12 +3,13 @@
 This guide provides a comprehensive list of all file formats supported by `gwexpy`, along with methods for reading and writing data.
 This page focuses on the end-user API (`.read()` / `.write()` class methods) and omits internal implementation details.
 
-.. warning::
-   **Security Warning: Handling Pickle Files**
+:::{warning}
+**Security Warning: Handling Pickle Files**
 
-   The **Pickle** (:term:`Pickle`) format is highly convenient but reading a Pickle file from an untrusted source is extremely dangerous, as malicious files can execute arbitrary code on your system.
-   We strongly recommend using structured and secure formats like **HDF5**, **GWF**, or **Zarr** for data sharing and long-term storage.
+The **Pickle** (:term:`Pickle`) format is highly convenient but reading a Pickle file from an untrusted source is extremely dangerous, as malicious files can execute arbitrary code on your system.
+We strongly recommend using structured and secure formats like **HDF5**, **GWF**, or **Zarr** for data sharing and long-term storage.
 
+:::
 ## format Comparison Table
 
 Choose the best format for your data and needs. Refer to each section for detailed usage.

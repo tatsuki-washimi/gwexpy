@@ -1,11 +1,12 @@
 # Scalar Field Slicing Guide
 
-> [!NOTE]
-> **Who should read this page?**
-> Refer to this guide if you use `ScalarField` and have the following questions:
-> - Why does `field[0]` remain 4D instead of becoming a 1D array?
-> - Why do I get `Shape Mismatch` errors during indexing operations?
-> - When is it safe to use `squeeze()`, and when should it be avoided?
+:::{note}
+**Who should read this page?**
+Refer to this guide if you use `ScalarField` and have the following questions:
+- Why does `field[0]` remain 4D instead of becoming a 1D array?
+- Why do I get `Shape Mismatch` errors during indexing operations?
+- When is it safe to use `squeeze()`, and when should it be avoided?
+:::
 
 This guide explains why `ScalarField` **always maintains its 4-dimensional structure** during indexing operations. This differs from the standard behavior of NumPy or GWpy and is designed as an "invariant" to ensure the integrity of multidimensional physical data.
 
@@ -30,10 +31,11 @@ A `ScalarField` represents a physical "field" with four axes: (time, frequency, 
 
 ---
 
-> [!CAUTION]
-> **Critical Warning: Using `.squeeze()`**
-> When you call `squeeze()` to reduce dimensions, **all metadata (coordinate information) associated with the removed axes is completely lost.**
-> Since you can no longer reconstruct the correct physical axes for operations like `field.fft()`, we strongly recommend using `squeeze()` only at the "final output stage," such as for plotting or saving to CSV.
+:::{caution}
+**Critical Warning: Using `.squeeze()`**
+When you call `squeeze()` to reduce dimensions, **all metadata (coordinate information) associated with the removed axes is completely lost.**
+Since you can no longer reconstruct the correct physical axes for operations like `field.fft()`, we strongly recommend using `squeeze()` only at the "final output stage," such as for plotting or saving to CSV.
+:::
 
 ---
 

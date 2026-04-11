@@ -150,11 +150,12 @@ dict_class(dict=None, **kwargs)
 
 Dictionary of Spectrogram objects.
 
-.. note::
-   Spectrogram objects can be very large in memory.
-   Use `inplace=True` where possible to update container in-place.
+:::{note}
+Spectrogram objects can be very large in memory.
+Use `inplace=True` where possible to update container in-place.
 
 
+:::
 ### `diff`
 
 ```python
@@ -273,11 +274,12 @@ list_class(initlist=None)
 List of Spectrogram objects.
 Reference: similar to TimeSeriesList but for 2D Spectrograms.
 
-.. note::
-   Spectrogram objects can be very large in memory.
-   Use `inplace=True` where possible to avoid deep copies.
+:::{note}
+Spectrogram objects can be very large in memory.
+Use `inplace=True` where possible to avoid deep copies.
 
 
+:::
 ### `loc`
 
 Label-based indexer for direct value access.

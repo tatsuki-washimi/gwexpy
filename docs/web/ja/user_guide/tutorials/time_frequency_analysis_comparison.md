@@ -13,7 +13,7 @@
 
 ノートブック本体（`.ipynb`）はこちら：
 
-- [time_frequency_analysis_comparison.ipynb (GitHub)](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb)
+- [time_frequency_analysis_comparison.ipynb (GitHub)](https://github.com/gwexpy/gwexpy/blob/main/docs/web/en/user_guide/tutorials/time_frequency_analysis_comparison.ipynb)
 
 関連する日本語の理論ガイド：
 

@@ -45,7 +45,8 @@ subplotpars : `SubplotParams`
 tight_layout : bool or dict, default: :rc:`figure.autolayout`
     Whether to use the tight layout mechanism. See `.set_tight_layout`.
 
-    .. admonition:: Discouraged
+    :::{admonition} Discouraged
+    :::
 
         The use of this parameter is discouraged. Please use
         ``layout='tight'`` instead for the common case of
@@ -54,7 +55,8 @@ tight_layout : bool or dict, default: :rc:`figure.autolayout`
 constrained_layout : bool, default: :rc:`figure.constrained_layout.use`
     This is equal to ``layout='constrained'``.
 
-    .. admonition:: Discouraged
+    :::{admonition} Discouraged
+    :::
 
         The use of this parameter is discouraged. Please use
         ``layout='constrained'`` instead.
