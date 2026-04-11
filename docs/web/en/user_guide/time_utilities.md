@@ -82,10 +82,7 @@ to_gps("2024-01-01 09:00:00") # UTC 09:00:00
 
 **Signature**: `to_gps(t, *args, **kwargs)`
 
-Converts various time representations into GPS- **Incompatible API Shims**: Modifying standard library functions or third-party API signatures without an explicit user opt-in.
-
-## Documentation
-s.
+Converts various time representations into GPS seconds. It performs efficient vectorized operations on lists, arrays, and Series in addition to individual scalars.
 
 ### Working with Strings and DateTime Objects
 
