@@ -25,7 +25,7 @@
 > スパム防止のため、開発者のメールアドレスは非公開としています。
 > セキュリティ上の重大な問題については、上記の GitHub Private Vulnerability Reporting を通じて報告してください。
 >
-> GitHub のアカウントをお持ちでない方や、より詳細な情報の提供を希望される方は、[GitHub Discussions](https://github.com/tatsuki-washimi/gwexpy/discussions) からご連絡ください。
+> GitHub のアカウントをお持ちでない方や、より詳細な情報の提供を希望される方は、[GitHub Discussions](https://github.com/gwexpy/gwexpy/discussions) からご連絡ください。
 
 ## セキュリティ上の注意事項
 
