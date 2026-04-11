@@ -974,3 +974,51 @@ Task 5 の全残件が完了した（commit `15a51ee4`）。
 - Step 4, 5, 6: 調査の結果すでに完了済みと確認。追加作業不要。
 - Step 7（Low）: プレースホルダなし。旧リポジトリ URL の漏れのみ残存。要修正。
 - Step 8: Step 3, 7 完了後に実施。
+
+## 10. 作業報告 (2026-04-11 Task 6 完了)
+
+Task 6 の全 Step が完了した（commit `6a5d62ef`）。
+
+### 実施内容
+
+**Step 3（Critical）: paper-figures 出力パス統一**
+
+- `examples/paper-figures/02_coherence_ranking.py` の `output_dir`（旧: `Path(__file__).parent.parent / "docs" / "gwexpy-paper"`）を `Path(__file__).resolve().parents[2] / "docs_internal" / "publications" / "paper_softwarex"` に修正。
+- `examples/paper-figures/03_gwosc_case_study.py` の `output_dir` も同様に修正。
+- これにより 3 本全てのスクリプトが同一の出力先を使用する状態になった。
+
+**Step 7（Low）: コミュニティ文書の旧 URL 修正**
+
+- `CODE_OF_CONDUCT.md`（L63）と `SECURITY.md`（L28）に残存していた `https://github.com/tatsuki-washimi/gwexpy/discussions` を `https://github.com/gwexpy/gwexpy/discussions` に置換。
+
+**Step 4, 5, 6: 調査の結果、いずれも完了済みにつき作業不要**
+
+- `pyproject.toml`: `license = {text = "MIT"}` (PEP 621 準拠)、`numpy>=1.23.2`、`scipy>=1.10.0` 確認済み。
+- `all` extra: 自己参照なし、フラット列挙済み確認済み。
+- 日本語チュートリアル: `intro_noise`, `intro_fitting`, `intro_table` が toctree に存在確認済み。
+
+**Step 8: リリースチェックリスト最終確認**
+
+| # | 項目 | 確認結果 |
+|---|------|---------|
+| 1 | Python 3.11+, extras 名 | `requires-python = ">=3.11"` ✅ |
+| 2 | paper-figures 出力パス統一 | 3 本全て `docs_internal/publications/paper_softwarex/` ✅ |
+| 3 | `license`, `requires-python` メタデータ | `{text = "MIT"}`, `>=3.11` ✅ |
+| 4 | 日本語索引に基礎項目・リンク切れなし | `intro_noise/fitting/table` toctree 存在 ✅ |
+| 5 | `gwexpy.time` が API 索引に含まれる | EN/JA `api/index.rst` に `time` 存在 ✅ |
+| 6 | CODE_OF_CONDUCT / SECURITY 連絡先 | プレースホルダなし、URL 修正済み ✅ |
+
+全 6 項目クリア。
+
+### 総括
+
+GitHub Pages 改善計画（Task 1–6）の全作業が完了した。
+
+- **Task 1**: ランディングページ改善
+- **Task 2**: ナビゲーション & サイドバー最適化
+- **Task 3**: SEO & OGP 最適化
+- **Task 4**: 摩擦の大きい深掘りページの再設計
+- **Task 5**: Reference & クリーンアップ
+- **Task 6**: パッケージメタデータ整合・日本語チュートリアル補完・リリースチェック
+
+残課題は「リポジトリ公開後の GitHub Pages 最終デプロイ確認」のみ。
