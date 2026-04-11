@@ -33,10 +33,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0" \
-            iminuit control statsmodels scikit-learn PyWavelets
-          pip install papermill nbformat nbclient nbconvert pytest nbval pytest-forked
-          pip install -e "."
+          pip install -r requirements-dev.txt
+          pip install papermill nbformat nbclient nbconvert
+          pip install -e . --no-deps
 
       - name: Discover and Categorize notebooks
         run: |
