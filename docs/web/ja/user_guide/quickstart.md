@@ -7,7 +7,7 @@ GWexpy を使って、最初の解析図を最短で作成しましょう。
 現在、開発版のため GitHub から直接インストールしてください：
 
 ```bash
-pip install git+https://github.com/gwexpy/gwexpy.git
+pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 ```
 
 ## 3行で最初の図を出す (3-line Quickstart)
