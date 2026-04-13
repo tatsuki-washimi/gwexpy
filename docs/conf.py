@@ -27,9 +27,13 @@ extensions = [
     "sphinx.ext.intersphinx",
     "nbsphinx",
     "sphinx_design",
-    "sphinx_sitemap",
     "sphinx_last_updated_by_git",
 ]
+
+# Only include sphinx_sitemap if we are NOT building linkcheck.
+# Without this, `sphinx-build -b linkcheck` errors out with "No pages generated for sitemap.xml".
+if "linkcheck" not in sys.argv:
+    extensions.append("sphinx_sitemap")
 
 # nbsphinx configuration
 # Default to auto execution to ensure plots are generated in built docs.
