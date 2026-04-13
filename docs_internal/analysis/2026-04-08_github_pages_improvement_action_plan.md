@@ -989,7 +989,7 @@ Task 6 の全 Step が完了した（commit `6a5d62ef`）。
 
 **Step 7（Low）: コミュニティ文書の旧 URL 修正**
 
-- `CODE_OF_CONDUCT.md`（L63）と `SECURITY.md`（L28）に残存していた `https://github.com/tatsuki-washimi/gwexpy/discussions` を `https://github.com/gwexpy/gwexpy/discussions` に置換。
+- `CODE_OF_CONDUCT.md`（L63）と `SECURITY.md`（L28）に残存していた `https://github.com/tatsuki-washimi/gwexpy/discussions` を `https://github.com/tatsuki-washimi/gwexpy/discussions` に置換。
 
 **Step 4, 5, 6: 調査の結果、いずれも完了済みにつき作業不要**
 
