@@ -31,11 +31,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools wheel
           # Essential for scripts
           pip install requests
-          # Essential for Sphinx build (linkcheck requires theme etc.)
-          pip install 'sphinx>=6,<8' sphinx_rtd_theme myst-parser nbsphinx sphinx-design sphinx-intl
+          # Shared docs toolchain used by docs build and linkcheck.
+          pip install -r docs/requirements.txt
+          pip install sphinx-intl
           # Install gwexpy with all dependencies to ensure env is correct
           pip install -e ".[all]"
 
@@ -66,12 +67,17 @@ jobs:
             const run_id = context.runId;
             const run_url = `https://github.com/${owner}/${repo}/actions/runs/${run_id}`;
             const date = new Date().toISOString();
-            
-            // Determine labels based on which step failed
-            const labels = ["documentation", "automated-report", "needs-triage"];
-            if (process.env.STEP_EXTERNAL_FAILED === 'true') labels.push("link-broken");
-            if (process.env.STEP_SPHINX_FAILED === 'true') labels.push("link-broken");
-            
+
+            const desiredLabels = ["documentation", "automated-report", "needs-triage"];
+            const repoLabels = await github.paginate(github.rest.issues.listLabelsForRepo, {
+              owner,
+              repo,
+              per_page: 100,
+            });
+            const labels = desiredLabels.filter((name) =>
+              repoLabels.some((label) => label.name === name),
+            );
+
             const title = "🚨 Weekly Documentation Health Check Failed";
             const body = `The weekly documentation health check has failed. Please review the logs to identify broken links or terminology inconsistencies.
             
@@ -95,7 +101,7 @@ jobs:
               repo,
               title,
               body,
-              labels: labels
+              ...(labels.length ? { labels } : {}),
             });
         env:
           STEP_EXTERNAL_FAILED: ${{ steps.external_links.outcome == 'failure' }}
