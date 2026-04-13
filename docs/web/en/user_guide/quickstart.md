@@ -7,7 +7,7 @@ Get your first analysis plot with GWexpy as quickly as possible.
 Since GWexpy is currently in development, please install it directly from GitHub:
 
 ```bash
-pip install git+https://github.com/gwexpy/gwexpy.git
+pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 ```
 
 ## 3-line Quickstart

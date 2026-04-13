@@ -56,7 +56,7 @@ conda install -c conda-forge pygmt
 
 ## Still Not Working?
 
-Please report the issue with the error logs on the GitHub [Issues](https://github.com/gwexpy/gwexpy/issues) page.
+Please report the issue with the error logs on the GitHub [Issues](https://github.com/tatsuki-washimi/gwexpy/issues) page.
 Including the following information will help us assist you faster:
 * OS Version
 * Python Version

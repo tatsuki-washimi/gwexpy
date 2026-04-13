@@ -56,7 +56,7 @@ conda install -c conda-forge pygmt
 
 ## 解決しない場合
 
-GitHub の [Issues](https://github.com/gwexpy/gwexpy/issues) にエラーログを添えて報告してください。
+GitHub の [Issues](https://github.com/tatsuki-washimi/gwexpy/issues) にエラーログを添えて報告してください。
 報告時には以下の情報を含めていただけるとスムーズです：
 * OS バージョン
 * Python バージョン

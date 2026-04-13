@@ -67,11 +67,11 @@ nbsphinx_prolog = r"""
 {% if '/ja/' in env.docname %}
 .. note::
    このページは Jupyter Notebook から生成されました。
-   `ノートブックをダウンロード (.ipynb) <https://github.com/gwexpy/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
+   `ノートブックをダウンロード (.ipynb) <https://raw.githubusercontent.com/tatsuki-washimi/gwexpy/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
 {% else %}
 .. note::
    This page was generated from a Jupyter Notebook.
-   `Download the notebook (.ipynb) <https://github.com/gwexpy/gwexpy/raw/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
+   `Download the notebook (.ipynb) <https://raw.githubusercontent.com/tatsuki-washimi/gwexpy/main/docs/{{ env.doc2path(env.docname, base=None) }}>`_
 {% endif %}
 """
 
@@ -144,7 +144,7 @@ html_title = "GWexpy Documentation"
 html_short_title = "GWexpy"
 html_context = {
     "display_github": True,
-    "github_user": "gwexpy",
+    "github_user": "tatsuki-washimi",
     "github_repo": "gwexpy",
     "github_version": "main",
     "conf_py_path": "/docs/",
