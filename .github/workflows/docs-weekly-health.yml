@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # sphinx-last-updated-by-git needs full history to avoid git.too_shallow noise.
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
