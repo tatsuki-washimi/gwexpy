@@ -36,7 +36,7 @@ For a more practical workflow, we recommend the following tutorial. You can run 
         Experience everything from loading data to frequency analysis (ASD/CSD) and matrix manipulation using the latest ScalarField API.
         ^^^
         .. image:: https://colab.research.google.com/assets/colab-badge.svg
-           :target: https://colab.research.google.com/github/gwexpy/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb
+           :target: https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb
            :alt: Open In Colab
 
 ## Core Concepts
