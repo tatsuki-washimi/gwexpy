@@ -233,6 +233,7 @@ ignore = [
     "D107", # Missing docstring in __init__
     "D203", # one-blank-line-before-class (D211 preferred)
     "D213", # multi-line-docstring-summary-at-second-line (D212 preferred)
+    "D409", # Section underline length: Sphinx requires underline >= full title (with colon), Ruff counts name only
 ]
 
 [tool.ruff.lint.per-file-ignores]
