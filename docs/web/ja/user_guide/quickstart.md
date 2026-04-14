@@ -36,7 +36,7 @@ ts.plot().show()
         データの読み込みから、周波数解析（ASD/CSD）、最新の ScalarField API による行列操作までを一通り体験します。
         ^^^
         .. image:: https://colab.research.google.com/assets/colab-badge.svg
-           :target: https://colab.research.google.com/github/gwexpy/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/intro_timeseries.ipynb
+           :target: https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/intro_timeseries.ipynb
            :alt: Open In Colab
 
 ## 主要概念 (Core Concepts)
