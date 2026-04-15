@@ -1,0 +1,72 @@
+name: PR Fast
+
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/PULL_REQUEST_TEMPLATE.md"
+      - ".github/pull_request_template.md"
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Ruff, mypy, pytest, and smoke build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: gwexpy
+          auto-activate-base: false
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: "3.11"
+
+      - name: Provision gwexpy environment
+        run: |
+          conda env update -n gwexpy -f environment.yml
+          python -m pip install --upgrade pip build
+
+      - name: Generate synthetic test fixtures
+        run: python tests/fixtures/generate_fixtures.py
+
+      - name: Run Ruff
+        run: ruff check gwexpy tests scripts
+
+      - name: Run mypy
+        run: mypy gwexpy tests/docs/test_tutorial_notebook_quality.py --ignore-missing-imports
+
+      - name: Run pytest
+        run: pytest -q -m "not network and not nds" --ignore=tests/gui/ tests/ gwexpy/
+
+      - name: Build wheel
+        run: python -m build --wheel --no-isolation
+
+      - name: Import smoke test
+        run: |
+          python - <<'PY'
+          import gwexpy
+
+          print(f"gwexpy version: {gwexpy.__version__}")
+          PY
