@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 matplotlib.use("Agg")
+pytest.importorskip("iminuit")
 
 from unittest.mock import patch
 
@@ -14,8 +15,6 @@ from gwpy.frequencyseries import FrequencySeries
 
 from gwexpy.fitting import fit_series
 from gwexpy.fitting.highlevel import _plot_bootstrap_fit
-
-pytest.importorskip("iminuit")
 
 
 def _linear(x, a, b):
