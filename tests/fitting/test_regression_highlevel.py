@@ -2,9 +2,9 @@ import numpy as np
 import pytest
 from gwpy.timeseries import TimeSeries
 
-from gwexpy.fitting import fit_bootstrap_spectrum
-
 pytest.importorskip("iminuit")
+
+from gwexpy.fitting import fit_bootstrap_spectrum
 
 
 def test_fit_bootstrap_spectrum_alignment_regression():

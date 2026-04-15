@@ -234,7 +234,7 @@ PY
           if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.base_ref }}" != "" ]; then
             echo "Type checking changed files only (vs ${{ github.base_ref }})"
             git fetch origin ${{ github.base_ref }}
-            git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.py$' | xargs -r mypy --ignore-missing-imports || true
+            git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.py$' | xargs -r mypy --ignore-missing-imports
           else
             echo "Type checking entire project"
             mypy gwexpy --ignore-missing-imports
@@ -242,7 +242,6 @@ PY
 
   test-conda-full:
     runs-on: ubuntu-latest
-    continue-on-error: true
 
     steps:
       - uses: actions/checkout@v4

@@ -1,7 +1,7 @@
 # gwexpy: GWpy Expansions for Experiments
 
 [![CI Status](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml/badge.svg)](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/gwexpy/gwexpy/branch/main/graph/badge.svg)](https://codecov.io/gh/gwexpy/gwexpy)
+[![codecov](https://codecov.io/gh/tatsuki-washimi/gwexpy/branch/main/graph/badge.svg)](https://codecov.io/gh/tatsuki-washimi/gwexpy)
 [![Documentation](https://github.com/tatsuki-washimi/gwexpy/actions/workflows/docs.yml/badge.svg)](https://tatsuki-washimi.github.io/gwexpy/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -278,7 +278,7 @@ For questions, bug reports, or feature requests:
 - **GitHub Issues**: [https://github.com/tatsuki-washimi/gwexpy/issues](https://github.com/tatsuki-washimi/gwexpy/issues) (recommended)
 - **Discussions**: [https://github.com/tatsuki-washimi/gwexpy/discussions](https://github.com/tatsuki-washimi/gwexpy/discussions) (for general questions)
 
-For academic citations and correspondence, please refer to the [CITATION.cff](CITATION.cff) file (DOI pending).
+For academic citations and correspondence, please refer to the [CITATION.cff](CITATION.cff) file.
 
 > [!NOTE]
 > To protect against spam, direct email addresses are not listed here. For private inquiries, please use GitHub Discussions or open a confidential issue.
