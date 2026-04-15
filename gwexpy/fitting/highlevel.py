@@ -288,6 +288,7 @@ def fit_bootstrap_spectrum(
 
 def _plot_bootstrap_fit(result: FitResult, psd: FrequencySeries, show_mcmc: bool):
     """Create visualization for bootstrap fit results."""
+    import matplotlib
     import matplotlib.pyplot as plt
 
     n_plots = 2 if show_mcmc and result.samples is not None else 1
@@ -357,4 +358,6 @@ def _plot_bootstrap_fit(result: FitResult, psd: FrequencySeries, show_mcmc: bool
         plt.figure(fig.number)  # Switch back to main figure
 
     plt.tight_layout()
-    plt.show()
+    # Only show plot in interactive backends
+    if matplotlib.is_interactive():
+        plt.show()
