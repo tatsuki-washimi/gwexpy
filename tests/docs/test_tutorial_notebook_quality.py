@@ -1,6 +1,10 @@
 import json
+import os
 import re
+from contextlib import contextmanager
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 TUTORIAL_ROOT = ROOT / "docs" / "web"
@@ -15,6 +19,26 @@ FORBIDDEN_OUTPUT_PATTERNS = [
 
 def _read_notebook(path: Path) -> dict:
     return json.loads(path.read_text())
+
+
+def _code_cell_source_containing(nb: dict, text: str) -> str:
+    for cell in nb.get("cells", []):
+        if cell.get("cell_type") != "code":
+            continue
+        source = "".join(cell.get("source", []))
+        if text in source:
+            return source
+    raise AssertionError(f"Could not find code cell containing {text!r}")
+
+
+@contextmanager
+def _pushd(path: Path):
+    original = Path.cwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(original)
 
 
 def _iter_output_texts(nb: dict):
@@ -88,3 +112,23 @@ def test_en_case_arima_burst_search_is_actually_english():
     first_markdown = _markdown_texts(nb)[0]
     assert "# ARIMA-Based Burst Detection" in first_markdown
     assert "## Introduction" in first_markdown
+
+
+@pytest.mark.parametrize(
+    "relative_path",
+    [
+        Path("en/user_guide/tutorials/intro_table.ipynb"),
+        Path("ja/user_guide/tutorials/intro_table.ipynb"),
+    ],
+)
+def test_intro_table_sample_csv_resolves_from_repo_root(relative_path: Path):
+    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
+    source = _code_cell_source_containing(nb, "sample_segment_data.csv")
+
+    namespace: dict[str, object] = {}
+    with _pushd(ROOT):
+        exec(source, namespace)
+
+    assert Path(namespace["sample_csv"]).resolve() == (
+        ROOT / "docs" / "_static" / "samples" / "sample_segment_data.csv"
+    ).resolve()
