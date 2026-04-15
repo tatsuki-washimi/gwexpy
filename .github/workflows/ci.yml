@@ -38,7 +38,7 @@ jobs:
           if [ "${{ github.event_name }}" == "pull_request" ] && [ "${{ github.base_ref }}" != "" ]; then
             echo "Type checking changed files only (vs ${{ github.base_ref }})"
             git fetch origin ${{ github.base_ref }}
-            git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.py$' | xargs -r mypy || true
+            git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '\.py$' | xargs -r mypy
           else
             echo "Type checking entire project"
             mypy gwexpy/
