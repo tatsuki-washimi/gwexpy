@@ -195,12 +195,12 @@ class SigmaThreshold(ThresholdStrategy):
     - Increasing FFT averaging by using longer data or shorter fftlength
 
     References:
-    -----------
+    ----------
     - Welch, P.D. (1967): PSD estimation via overlapped segment averaging
     - Bendat & Piersol, Random Data (4th ed., 2010), Ch. 11
 
     Warning:
-    --------
+    -------
     This method relies heavily on the Gaussian and stationary assumptions.
     It may be unreliable if:
     - The background contains significant non-Gaussian features (glitches)
