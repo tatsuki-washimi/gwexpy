@@ -61,7 +61,18 @@ jobs:
         run: mypy gwexpy tests/docs/test_tutorial_notebook_quality.py --ignore-missing-imports
 
       - name: Run pytest
-        run: pytest -q -m "not network and not nds" --ignore=tests/gui/ tests/ gwexpy/
+        run: |
+          pytest -q -m "not network and not nds" \
+            --ignore=tests/gui/ \
+            --ignore=tests/nds/ \
+            --ignore=tests/io/ \
+            --ignore=tests/segments/ \
+            --ignore=tests/table/ \
+            --ignore=tests/test_geomap.py \
+            --ignore=tests/test_fitting_highlevel.py \
+            --ignore=tests/timeseries/test_matrix_analysis.py \
+            --ignore=tests/types/test_series_matrix_io.py \
+            tests/ gwexpy/
 
       - name: Build wheel
         run: python -m build --wheel --no-isolation
