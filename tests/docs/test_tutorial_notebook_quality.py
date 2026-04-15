@@ -3,6 +3,7 @@ import os
 import re
 from contextlib import contextmanager
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -129,7 +130,8 @@ def test_intro_table_sample_csv_resolves_from_repo_root(relative_path: Path):
     with _pushd(ROOT):
         exec(source, namespace)
 
-    assert Path(namespace["sample_csv"]).resolve() == (
+    sample_csv = cast(Path, namespace["sample_csv"])
+    assert sample_csv.resolve() == (
         ROOT / "docs" / "_static" / "samples" / "sample_segment_data.csv"
     ).resolve()
 
@@ -156,3 +158,26 @@ def test_case_bootstrap_gls_fitting_uses_explicit_mappables_for_colorbars(
     assert "plt.colorbar(mappable=im, ax=ax1" in joined
     assert "plt.colorbar(mappable=im3, ax=ax3" in joined
     assert "plt.colorbar(mappable=im4, ax=ax4" in joined
+
+
+@pytest.mark.parametrize(
+    "relative_path",
+    [
+        Path("en/user_guide/tutorials/advanced_hht.ipynb"),
+        Path("ja/user_guide/tutorials/advanced_hht.ipynb"),
+    ],
+)
+def test_advanced_hht_uses_explicit_mappables_for_colorbars(relative_path: Path):
+    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
+    joined = "\n".join(
+        "".join(cell.get("source", []))
+        for cell in nb.get("cells", [])
+        if cell.get("cell_type") == "code"
+    )
+
+    assert "plt.gca().get_images()" not in joined
+    assert "plt.gca().collections[-1]" not in joined
+    assert "plt.colorbar(mappable=mesh, ax=ax1, label=\"Power\")" in joined
+    assert "sc = None" in joined
+    assert "if sc is not None:" in joined
+    assert "cbar = plt.colorbar(mappable=sc, ax=ax2)" in joined
