@@ -1,0 +1,111 @@
+name: Docs PR
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "scripts/check_terms.py"
+      - "scripts/check_docs_sync.py"
+      - "scripts/run_quickstart_test.py"
+      - "docs/requirements.txt"
+      - "environment.yml"
+      - "pyproject.toml"
+      - ".github/workflows/docs-pr.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-pr:
+    name: Docs build and smoke checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash -el {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+      NBS_EXECUTE: never
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: gwexpy
+          auto-activate-base: false
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 pandoc
+
+      - name: Provision gwexpy docs environment
+        run: |
+          conda env update -n gwexpy -f environment.yml
+          python -m pip install --upgrade pip
+          python -m pip install -e . --no-deps
+          python -m pip install -r docs/requirements.txt
+          python -m pip install sphinx-intl papermill nbformat nbclient nbconvert
+
+      - name: Check terminology consistency
+        run: python scripts/check_terms.py
+
+      - name: Check JA/EN synchronization
+        run: python scripts/check_docs_sync.py
+
+      - name: Run quickstart tests
+        run: |
+          python scripts/run_quickstart_test.py --lang ja
+          python scripts/run_quickstart_test.py --lang en
+
+      - name: Detect changed notebooks
+        id: changed_notebooks
+        run: |
+          python - <<'PY'
+          import os
+          import subprocess
+
+          base = "${{ github.event.pull_request.base.sha }}"
+          head = "${{ github.event.pull_request.head.sha }}"
+          output = subprocess.check_output(
+              ["git", "diff", "--name-only", base, head],
+              text=True,
+          )
+          notebooks = [
+              line.strip()
+              for line in output.splitlines()
+              if line.strip().endswith(".ipynb") and line.startswith("docs/")
+          ]
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write("has_notebooks={}\n".format(str(bool(notebooks)).lower()))
+              fh.write("notebooks<<EOF\n")
+              fh.write("\n".join(notebooks))
+              fh.write("\nEOF\n")
+          PY
+
+      - name: Execute changed notebooks
+        if: steps.changed_notebooks.outputs.has_notebooks == 'true'
+        run: |
+          while IFS= read -r nb; do
+            [ -n "$nb" ] || continue
+            echo "Executing changed notebook: $nb"
+            papermill "$nb" /dev/null --kernel python3
+          done <<< "${{ steps.changed_notebooks.outputs.notebooks }}"
+
+      - name: Build Sphinx HTML
+        run: |
+          cd docs
+          sphinx-build -b html -W --keep-going . _build/html

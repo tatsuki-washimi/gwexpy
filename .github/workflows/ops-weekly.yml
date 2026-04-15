@@ -1,0 +1,115 @@
+name: Ops Weekly
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-health:
+    name: Docs health
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    env:
+      NBS_EXECUTE: never
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: gwexpy
+          auto-activate-base: false
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 pandoc
+
+      - name: Provision gwexpy docs environment
+        run: |
+          conda env update -n gwexpy -f environment.yml
+          python -m pip install --upgrade pip
+          python -m pip install -e . --no-deps
+          python -m pip install requests -r docs/requirements.txt
+
+      - name: Run docs health checks
+        run: |
+          python scripts/check_terms.py
+          python scripts/check_docs_sync.py
+          python scripts/check_external_links.py
+          cd docs
+          sphinx-build -b linkcheck . _build/linkcheck
+
+  security-audit:
+    name: Security audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: gwexpy
+          auto-activate-base: false
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: "3.11"
+
+      - name: Provision gwexpy audit environment
+        run: |
+          conda env update -n gwexpy -f environment.yml
+          python -m pip install --upgrade pip
+          python -m pip install -e . --no-deps
+          python -m pip install pip-audit bandit
+
+      - name: Run pip-audit
+        run: pip-audit -r requirements-dev.txt
+
+      - name: Run bandit
+        run: bandit -r gwexpy -ll
+
+      - name: Summarize outdated packages
+        run: |
+          python -m pip list --outdated --format=columns | tee outdated-packages.txt
+          {
+            echo "## Outdated packages"
+            echo
+            echo '```text'
+            cat outdated-packages.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3

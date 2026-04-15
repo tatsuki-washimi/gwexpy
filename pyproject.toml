@@ -242,6 +242,7 @@ ignore = [
 "gwexpy/*/tests/*" = ["F401", "E741", "D", "UP"]
 # GUI code: compact style is acceptable; allow Optional/Union for py39 runtime safety
 "gwexpy/gui/*" = ["E701", "E702", "UP045"]
+"gwexpy/analysis/threshold.py" = ["D416"]
 "gwexpy/astro/range.py" = ["F401"]
 "gwexpy/cli/*.py" = ["F401"]
 "gwexpy/detector/channel.py" = ["F401"]
