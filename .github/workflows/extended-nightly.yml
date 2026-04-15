@@ -41,7 +41,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Provision gwexpy environment
-        run: conda env update -n gwexpy -f environment.yml
+        run: |
+          conda env update -n gwexpy -f environment.yml
+          python -m pip install -e . --no-deps
 
       - name: Install extended test dependencies
         run: python -m pip install -e ".[all]"
@@ -203,7 +205,9 @@ jobs:
           python-version: "3.11"
 
       - name: Provision gwexpy environment
-        run: conda env update -n gwexpy -f environment.yml
+        run: |
+          conda env update -n gwexpy -f environment.yml
+          python -m pip install -e . --no-deps
 
       - name: Run import smoke test
         run: |
@@ -241,6 +245,7 @@ jobs:
         run: |
           conda env update -n gwexpy -f environment.yml
           conda activate gwexpy
+          python -m pip install -e . --no-deps
           python -c "import sys; print(sys.executable)"
 
       - name: Run import smoke test

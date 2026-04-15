@@ -45,6 +45,7 @@ jobs:
         run: |
           conda env update -n gwexpy -f environment.yml
           python -m pip install --upgrade pip
+          python -m pip install -e . --no-deps
           python -m pip install requests -r docs/requirements.txt
 
       - name: Run docs health checks
@@ -78,6 +79,7 @@ jobs:
         run: |
           conda env update -n gwexpy -f environment.yml
           python -m pip install --upgrade pip
+          python -m pip install -e . --no-deps
           python -m pip install pip-audit bandit
 
       - name: Run pip-audit
