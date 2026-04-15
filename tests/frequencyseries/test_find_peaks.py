@@ -56,3 +56,14 @@ def test_find_peaks_kwargs():
     # Use distance to exclude close peaks
     peaks, props = spec.find_peaks(threshold=5.0, distance=10)
     assert len(peaks) == 1
+
+
+def test_find_peaks_empty_result():
+    spec = FrequencySeries(np.zeros(32), df=1.0)
+
+    peaks, props = spec.find_peaks(threshold=0.2)
+
+    assert isinstance(peaks, FrequencySeries)
+    assert len(peaks) == 0
+    assert len(peaks.frequencies) == 0
+    assert isinstance(props, dict)

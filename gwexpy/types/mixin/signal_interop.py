@@ -269,7 +269,7 @@ class SignalAnalysisMixin:
 
         if len(peaks_indices) == 0:
             # Return empty container of same type
-            return this[[]], props
+            return this[np.array([], dtype=int)], props
 
         # Use slicing to return subset (preserves type and metadata)
         out = this[peaks_indices]
