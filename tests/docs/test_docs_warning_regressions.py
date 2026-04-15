@@ -32,3 +32,20 @@ def test_time_frequency_comparison_notebook_has_no_transition_only_markdown_cell
         if cell.get("cell_type") == "markdown"
     ]
     assert all(text.strip() != "---" and not text.strip().startswith("---\n") for text in markdown_cells)
+
+
+def test_segment_tutorial_setup_cells_define_segment_table_at_top_level():
+    for rel in (
+        "docs/web/en/user_guide/tutorials/segment_visualization.ipynb",
+        "docs/web/ja/user_guide/tutorials/segment_visualization.ipynb",
+        "docs/web/en/user_guide/tutorials/segment_asd_pipeline.ipynb",
+        "docs/web/ja/user_guide/tutorials/segment_asd_pipeline.ipynb",
+    ):
+        nb = json.loads((ROOT / rel).read_text())
+        source = "".join(nb["cells"][2].get("source", []))
+        assert "\n    segs =" in source
+        assert "\n    st = SegmentTable.from_segments(" in source
+        assert "\n    st.add_series_column(" in source
+        assert "\n        segs =" not in source
+        assert "\n        st = SegmentTable.from_segments(" not in source
+        assert "\n        st.add_series_column(" not in source
