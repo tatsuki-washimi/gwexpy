@@ -3,12 +3,9 @@ name: CI Log Summarizer
 on:
   workflow_run:
     workflows:
-      - "CI"
-      - "Tests"
-      - "Documentation"
-      - "Docs Quality Check (strict)"
-      - "docs-lint"
-      - "Notebook Tests"
+      - "PR Fast"
+      - "Docs PR"
+      - "Extended Nightly"
     types:
       - completed
 

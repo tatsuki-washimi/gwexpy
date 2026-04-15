@@ -5,9 +5,9 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from gwexpy.fitting.gls import GLS, GeneralizedLeastSquares
-
 pytest.importorskip("iminuit")
+
+from gwexpy.fitting.gls import GLS, GeneralizedLeastSquares
 
 # ---------------------------------------------------------------------------
 # Helpers
