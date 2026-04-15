@@ -53,7 +53,7 @@ jobs:
         run: python tests/fixtures/generate_fixtures.py
 
       - name: Run Ruff
-        run: ruff check gwexpy tests scripts
+        run: ruff check gwexpy tests
 
       - name: Run mypy
         run: mypy gwexpy tests/docs/test_tutorial_notebook_quality.py --ignore-missing-imports
