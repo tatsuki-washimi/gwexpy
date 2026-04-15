@@ -47,6 +47,7 @@ jobs:
         run: |
           conda env update -n gwexpy -f environment.yml
           python -m pip install --upgrade pip build
+          python -m pip install -e . --no-deps
 
       - name: Generate synthetic test fixtures
         run: python tests/fixtures/generate_fixtures.py
