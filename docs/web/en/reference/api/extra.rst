@@ -1,14 +1,14 @@
 
-fitting
-=======
+Compatibility / Extra
+=====================
 
 .. automodule:: gwexpy.fitting
    :members:
    :undoc-members:
    :show-inheritance:
 
-interop
-=======
+Additional APIs and compatibility notes
+=======================================
 
 .. automodule:: gwexpy.interop
    :members:

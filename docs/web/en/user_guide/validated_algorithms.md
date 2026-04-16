@@ -28,6 +28,11 @@ Algorithms labeled as "Validated" meet the following standards and achieve speci
 
 ---
 
+## How to Read This Page
+
+- If you want the implementation-facing API first, start with the [Signal Processing API](../reference/api/signal.rst) and [Fitting API](../reference/api/fitting.rst).
+- If you want the audit notes and validation context behind the summaries, continue to the Audit Trail section below.
+
 ## Detailed Algorithm Basis and Assumptions
 
 ### 1. k-space Calculation
@@ -59,6 +64,8 @@ Uses an amplitude-preserving convention rather than density, allowing direct rea
 
 Corrects for the reduction in effective sample size caused by overlapping segments in spectral estimation methods like Welch's.
 
+Here, VIF is not meant as the regression-style Variance Inflation Factor used in multicollinearity diagnostics. In the codebase it is exposed as `calculate_correlation_factor()` because the API is describing the concrete operation: computing the overlap-induced correlation correction factor.
+
 **Assumptions**:
 - The data must be **Weakly Stationary**.
 - VIF may under- or over-estimate variance if non-stationary glitches or step responses are present.
@@ -72,9 +79,26 @@ Corrects for the reduction in effective sample size caused by overlapping segmen
 
 Maintains GPS continuity according to LIGO conventions for future timestamp prediction.
 
+A representative update rule is `forecast_t0 = t0 + n_obs * dt`, where
+
+- `t0`: start GPS time of the original series
+- `n_obs`: number of observed samples used for the fit
+- `dt`: sampling interval in seconds
+
+This is the quantity mapping assumed when forecast timestamps are extended forward.
+
 **Assumptions**:
 - The time system must be **GPS Time (no leap seconds)**.
 - Using this in time systems with leap seconds (like UTC) will result in a 1-second offset in future predictions.
+
+### 5. MCMC / GLS Likelihood
+**Target**: `run_mcmc`, `GLS`
+
+For complex-valued residuals, the MCMC likelihood path assumes a Hermitian quadratic form `r.conj() @ cov_inv @ r` and then takes the real part. In practice, this means the API can accept complex residual vectors without silently dropping the imaginary component.
+
+**Assumptions**:
+- `cov_inv` should be close to Hermitian positive-definite.
+- The implementation is intended for a circular-complex-Gaussian-style treatment of residuals rather than a naive "real-part only" model.
 
 ---
 
@@ -83,8 +107,14 @@ Maintains GPS continuity according to LIGO conventions for future timestamp pred
 Detailed unit test results, literature comparison scripts, and past review logs are maintained in the `docs_internal/verification/` directory.
 All changes are merged only after passing the `verify-physics` gate in the CI environment.
 
+- [ALGORITHM_CONTEXT](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md) - Overview of the audited algorithms
+- [check_claude_antigravity](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/check_claude_antigravity.md) - Audit notes for VIF, GLS, and `_fft_transient`
+- [algorithm_fix_report_20260201](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md) - Change history around ARIMA and MCMC behavior
+- `docs_internal/tech_notes/scalarfield_physics_review_20260120.md`
+- `docs_internal/archive/reports/report_scalarfield_physics_verification_20260122_222000.md`
+
 ## Related Documents
 
-- {doc}`numerical_stability` - Numerical Stability (Precision Management)
-- {doc}`glossary` - Glossary of Algorithms
-- {doc}`../reference/api/signal` - Signal Processing API Reference
+- [Numerical Stability](numerical_stability.md) - Precision management
+- [Glossary](glossary.rst) - Glossary of algorithms
+- [Signal Processing API Reference](../reference/api/signal.rst)

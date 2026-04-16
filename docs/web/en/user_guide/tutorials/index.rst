@@ -6,8 +6,7 @@ Learn how to use **GWexpy** through interactive examples.
 .. tip::
    If you're new to GWexpy, we recommend starting with :doc:`../getting_started`.
 
-.. note::
-   These tutorials are generated from Jupyter Notebooks. Use "Edit on GitHub" on each page to download the original `.ipynb` and run it locally.
+These tutorials are generated from Jupyter Notebook source files. To run them locally, download the corresponding `.ipynb` from `docs/web/en/user_guide/tutorials/` in the repository.
 
 I. Core Data Structures
 -----------------------
@@ -75,7 +74,7 @@ Statistical analysis and advanced transforms.
    ML Preprocessing Pipeline <case_ml_preprocessing>
    Linear Algebra for GW Analysis <advanced_linear_algebra>
    Field × Advanced Analysis Integration <field_advanced_integration>
-   Non-Gaussian Noise Analysis: Rayleigh & GauCh <rayleigh_gauch_tutorial>
+   Non-Gaussian Noise Analysis: Rayleigh & Gaussian-Chi <rayleigh_gauch_tutorial>
    Multi-channel Coupling <advanced_coupling>
    Modal Decomposition <advanced_decomposition>
    Seismic Analysis (ObsPy) <case_seismic_obspy>
@@ -89,7 +88,7 @@ Tools for specific noise hunting and diagnostics tasks.
    :maxdepth: 1
    :caption: Specialized Tools
 
-   Noise Hunting with BruCo <advanced_BruCo>
+   BruCo Basics <advanced_BruCo>
    BruCo + ICA End-to-End Denoising <case_BruCo_ica_denoising>
    Advanced BruCo: Bilinear Coupling & AM/FM Demodulation <case_BruCo_advanced>
    Violin Mode Analysis <case_violin_mode>

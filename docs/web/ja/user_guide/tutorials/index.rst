@@ -6,8 +6,7 @@
 .. tip::
    初めての方は :doc:`../getting_started` から始めることを推奨します。
 
-.. note::
-   これらのチュートリアルは Jupyter Notebook から生成されています。ローカルで実行するには、各ページ右上の "Edit on GitHub" から `.ipynb` を取得できます。
+これらのチュートリアルは Jupyter Notebook から生成されています。ローカルで実行したい場合は、対応する `.ipynb` をリポジトリ内の `docs/web/ja/user_guide/tutorials/` から取得してください。
 
 I. 基本データ構造
 -----------------
@@ -75,7 +74,7 @@ IV. 高度な信号処理
    ML前処理パイプライン <case_ml_preprocessing>
    重力波解析のための線形代数 <advanced_linear_algebra>
    Field API × 高度な解析統合 <field_advanced_integration>
-   非ガウス雑音分析: Rayleigh & GauCh <rayleigh_gauch_tutorial>
+   非ガウス雑音分析: Rayleigh & Gaussian-Chi <rayleigh_gauch_tutorial>
    マルチチャンネル結合解析 <advanced_coupling>
    固有モード・ブラインド信号源分解 <advanced_decomposition>
    地震波データ解析 (ObsPy 連携) <case_seismic_obspy>
@@ -89,9 +88,9 @@ V. 特殊ツール
    :maxdepth: 1
    :caption: 特殊ツール
 
-   advanced_BruCo
-   BruCo + ICA エンドツーエンド ノイズ削減 <case_BruCo_ica_denoising>
-   BruCo 応用編：バイリニアカップリングと AM/FM 復調 <case_BruCo_advanced>
+   BruCo 入門 <advanced_BruCo>
+   BruCo + ICA エンドツーエンドノイズ削減 <case_BruCo_ica_denoising>
+   BruCo 応用編: バイリニアカップリングと AM/FM 復調 <case_BruCo_advanced>
    バイオリンモード解析 <case_violin_mode>
    シューマン共鳴解析 <case_schumann_resonance>
 

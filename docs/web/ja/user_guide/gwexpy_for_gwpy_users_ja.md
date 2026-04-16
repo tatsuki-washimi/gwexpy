@@ -3,28 +3,13 @@
 GWexpy は、GWpy の基本クラス（TimeSeries 等）を継承しつつ、多チャンネル解析や信号処理の利便性を大幅に強化したライブラリです。
 このガイドでは、GWpy ユーザーが GWexpy に移行する際の主な変更点と、新機能を活用したコードの簡略化例を紹介します。
 
-.. list-table:: クイック対比表 (Quick Comparison)
-   :widths: 30 35 35
-   :header-rows: 1
-
-   * - 機能・目的
-     - GWpy スタイル (従来)
-     - GWexpy スタイル (推奨)
-   * - 複数チャンネルの管理
-     - `TimeSeriesDict`
-     - `TimeSeriesMatrix` (安定性: :term:`Stable`)
-   * - 一括解析 (ASD/CSD)
-     - ループ回し or Dict 操作
-     - `.asd()`, `.csd()` (安定性: :term:`Stable`)
-   * - 深いコピー・Pickle
-     - Pickle 不可な場合がある
-     - 高い可搬性 (Pickle compatible)
-   * - 高度な信号処理
-     - `scipy` 等を別途呼び出し
-     - `.hht()`, `.arima()` 等を内蔵 (安定性: :term:`Experimental`)
-   * - 空間・多次元データ
-     - 対応する特殊クラスなし
-     - `ScalarField` (安定性: :term:`Experimental`)
+| 機能・目的 | GWpy スタイル (従来) | GWexpy スタイル (推奨) |
+| --- | --- | --- |
+| 複数チャンネルの管理 | `TimeSeriesDict` | `TimeSeriesMatrix` (Stable) |
+| 一括解析 (ASD/CSD) | ループ回し or Dict 操作 | `.asd()`, `.csd()` (Stable) |
+| 深いコピー・Pickle | Pickle 不可な場合がある | 高い可搬性 (Pickle compatible) |
+| 高度な信号処理 | `scipy` 等を別途呼び出し | `.hht()`, `.arima()` 等を内蔵 (Experimental) |
+| 空間・多次元データ | 対応する特殊クラスなし | `ScalarField` (Experimental) |
 
 ## 1. チャンネル管理と一括解析
 
@@ -81,8 +66,8 @@ GWexpy は「解析結果を共有する」ことを重視しています。
 
 :::{important}
 信頼できないソースからの Pickle データのロードは避けてください。
-
 :::
+
 ## 5. 高次元データへの展開 (Field API)
 
 空間的な広がり（センサーアレイなど）を扱う場合、`TimeSeries` を拡張した `ScalarField` を使用できます。
@@ -94,6 +79,6 @@ GWexpy は「解析結果を共有する」ことを重視しています。
 
 ## 次のステップ
 
-* :doc:`クイックスタート <quickstart>` - 実際のコードを動かしてみる
-* :doc:`はじめに <getting_started>` - ロードマップの確認
-* :doc:`リファレンス <../reference/index>` - 各クラスの全メソッドを確認
+* [クイックスタート](quickstart.md) - 実際のコードを動かしてみる
+* [はじめに](getting_started.md) - ロードマップの確認
+* [リファレンス](../reference/index.rst) - 各クラスの全メソッドを確認

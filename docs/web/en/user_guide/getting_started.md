@@ -5,72 +5,63 @@ Choose the best starting point based on your background and goals.
 
 ## Quick Summary
 
-.. list-table::
-   :widths: 25 75
-
-   * - **Target Audience**
-     - Experimental data analysts, GWpy users, and anyone interested in signal processing with Python.
-   * - **Prerequisites**
-     - Basics of Python 3.11+, NumPy array manipulation, (Recommended) Matplotlib.
-   * - **Time Required**
-     - From 5 minutes (Quick Start) to 30 minutes (Basic Hands-on).
-   * - **Goal**
-     - Load data, visualize results, and perform basic frequency-domain analysis.
+| Item | Details |
+| --- | --- |
+| **Target Audience** | Experimental data analysts, GWpy users, and anyone interested in signal processing with Python. |
+| **Prerequisites** | Basics of Python 3.11+, NumPy array manipulation, (Recommended) Matplotlib. |
+| **Time Required** | From 5 minutes (Quick Start) to 30 minutes (Basic Hands-on). |
+| **Goal** | Load data, visualize results, and perform basic frequency-domain analysis. |
 
 ## Choose Your Path
 
-.. grid:: 3
-    :gutter: 3
+### 🚀 5-min Quick Start
 
-    .. grid-item-card:: 🚀 5-min Quick Start
-        :link: quickstart
-        :link-type: doc
+[Quickstart](quickstart.md)
 
-        For those who want to see results immediately. Get a figure in just 3 lines of code.
+For those who want to see results immediately. Get a figure in just 3 lines of code.
 
-    .. grid-item-card:: 📖 30-min Hands-on
-        :link: tutorials/index
-        :link-type: doc
+### 📖 30-min Hands-on
 
-        Learn the core data structures and GWexpy-specific matrix operations from scratch.
+[Tutorial index](tutorials/index.rst)
 
-    .. grid-item-card:: 🔄 For GWpy Users
-        :link: gwexpy_for_gwpy_users_en
-        :link-type: doc
+Learn the core data structures and GWexpy-specific matrix operations from scratch.
 
-        For current GWpy users. Learn the key differences and how to simplify your code with new features.
+### 🔄 For GWpy Users
+
+[Migration from GWpy](gwexpy_for_gwpy_users_en.md)
+
+For current GWpy users. Learn the key differences and how to simplify your code with new features.
 
 ## Learning Path
 
 ### 1. Preparation
 
-GWexpy requires **Python 3.11 or later**.
-Copy the following code and run it in your terminal or Jupyter Notebook.
+Start with the [Installation Guide](installation.md) to prepare a Python 3.11+ environment.
 
 ### 2. Core Data Structures
 
 We recommend learning the primary containers in the following order:
 
-1. [{doc}`tutorials/intro_timeseries <tutorials/intro_timeseries>`] - Basic Time Series
-2. [{doc}`tutorials/intro_frequencyseries <tutorials/intro_frequencyseries>`] - Basic Frequency Series
-3. [{doc}`tutorials/intro_spectrogram <tutorials/intro_spectrogram>`] - Basic Spectrograms
-4. [{doc}`tutorials/intro_plotting <tutorials/intro_plotting>`] - Plot Customization
+1. [Basic Time Series](tutorials/intro_timeseries.ipynb)
+2. [Basic Frequency Series](tutorials/intro_frequencyseries.ipynb)
+3. [Basic Spectrograms](tutorials/intro_spectrogram.ipynb)
+4. [Plot Customization](tutorials/intro_plotting.ipynb)
 
 ### 3. Advanced Analysis
 
 Refer to these guides based on your needs:
 
-* **Multi-channel & Matrix Processing**: :doc:`Using Matrix Containers <tutorials/matrix_timeseries>`
-* **High-dimensional Data**: :doc:`Field API Intro <tutorials/field_scalar_intro>` / :doc:`ScalarField Slicing Guide <scalarfield_slicing>`
-* **Signal Processing**: :doc:`Fitting <tutorials/advanced_fitting>` / :doc:`HHT <tutorials/advanced_hht>` / :doc:`ARIMA <tutorials/advanced_arima>`
+* **Multi-channel & Matrix Processing**: [Using Matrix Containers](tutorials/matrix_timeseries.ipynb)
+* **High-dimensional Data**: [Field API Intro](tutorials/field_scalar_intro.ipynb) / [ScalarField Slicing Guide](scalarfield_slicing.md)
+* **Signal Processing**: [Fitting](tutorials/advanced_fitting.ipynb) / [HHT](tutorials/advanced_hht.ipynb) / [ARIMA](tutorials/advanced_arima.ipynb)
 
 ### 4. Practical Applications
 
-Explore real-world analysis workflows in our :doc:`Case Studies Gallery <../examples/index>`.
+Explore real-world analysis workflows in our [Case Studies Gallery](../examples/index.rst).
 
 ## Next Steps
 
-* [{doc}`Case Studies Gallery <../examples/index>`] - Visual examples and practical workflows.
-* All Tutorials: [{doc}`tutorials/index <tutorials/index>`]
-* API Reference: [{doc}`Reference <../reference/index>`]
-* [{doc}`Validated Algorithms <validated_algorithms>`] - Verification reports for numerical accuracy.
+* [Case Studies Gallery](../examples/index.rst) - Visual examples and practical workflows.
+* [All Tutorials](tutorials/index.rst)
+* [API Reference](../reference/index.rst)
+* [Validated Algorithms](validated_algorithms.md) - Verification reports for numerical accuracy.

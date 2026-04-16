@@ -26,18 +26,13 @@ ts.plot().show()
 
 より実践的なワークフローを学びたい場合は、以下のチュートリアルを推奨します。Google Colab ですぐに実行可能です。
 
-.. grid:: 1
-    :gutter: 3
+### 🧪 GWexpy 基本ハンズオン
 
-    .. grid-item-card:: 🧪 GWexpy 基本ハンズオン
-        :link: tutorials/index
-        :link-type: doc
+[チュートリアル一覧を見る](tutorials/index.rst)
 
-        データの読み込みから、周波数解析（ASD/CSD）、最新の ScalarField API による行列操作までを一通り体験します。
-        ^^^
-        .. image:: https://colab.research.google.com/assets/colab-badge.svg
-           :target: https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/intro_timeseries.ipynb
-           :alt: Open In Colab
+データの読み込みから、周波数解析（ASD/CSD）、最新の ScalarField API による行列操作までを一通り体験します。
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/ja/user_guide/tutorials/intro_timeseries.ipynb)
 
 ## 主要概念 (Core Concepts)
 
@@ -63,16 +58,18 @@ tsd = TimeSeriesDict({
 })
 
 # 行列に変換してクロススペクトル密度 (CSD) を計算
-asd = tsd.to_matrix().asd(fftlength=1)
-asd.plot().show()
+csd = tsd.to_matrix().csd(fftlength=1)
+csd.plot().show()
 ```
+
+ここでは `TimeSeriesDict` を `TimeSeriesMatrix` に変換し、チャンネル間のクロススペクトル密度を `csd` として得ています。
 
 ## 困ったときは
 
-実行時にエラーが発生したり、プロットが表示されない場合は、:doc:`トラブルシューティング <troubleshooting>` を確認してください。
+実行時にエラーが発生したり、プロットが表示されない場合は、[トラブルシューティング](troubleshooting.md) を確認してください。
 
 ## 次のステップ
 
-* :doc:`インストールガイド <installation>` - 環境の構築
-* :doc:`はじめに <getting_started>` - 体系的な学習ロードマップ
-* :doc:`GWpy からの移行 <gwexpy_for_gwpy_users_ja>` - 既存ユーザー向け差分ガイド
+* [インストールガイド](installation.md) - 環境の構築
+* [はじめに](getting_started.md) - 体系的な学習ロードマップ
+* [GWpy からの移行](gwexpy_for_gwpy_users_ja.md) - 既存ユーザー向け差分ガイド

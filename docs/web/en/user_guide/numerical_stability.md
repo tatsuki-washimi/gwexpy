@@ -10,6 +10,12 @@ Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to
 
 `gwexpy` is designed to handle data with an extremely wide dynamic range without numerical breakdown.
 
+## TL;DR
+
+- For normal analysis, start by trusting the default `gwexpy` settings.
+- Do not add manual offsets such as `+ 1e-20` before plotting unless you have a concrete reason.
+- Tune parameters only when you actually observe `NaN` / `Inf`, work with extreme amplitudes, or need algorithm-level validation.
+
 ## Impact of Stabilization (Before & After)
 
 A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexpy`'s robust numerical stabilization algorithms.
@@ -18,8 +24,8 @@ A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexp
 
 | Item | Standard Implementation (Before) | GWexpy (After) |
 | :--- | :--- | :--- |
-| **Zero Values** | `log10(0)` produces `-inf`, causing blank holes in plots | **:term:`Safe Log`** automatically sets an optimal floor based on the max value |
-| **Micro-signals** | Rounded to zero by fixed `eps=1e-12`, causing signal loss | **:term:`Adaptive Whitening`** (`eps="auto"`) maintains signal sensitivity |
+| **Zero Values** | `log10(0)` produces `-inf`, causing blank holes in plots | **Safe Log** automatically sets an optimal floor based on the max value |
+| **Micro-signals** | Rounded to zero by fixed `eps=1e-12`, causing signal loss | **Adaptive Whitening** (`eps="auto"`) maintains signal sensitivity |
 | **Failures** | `NaN` propagates, making the entire dataset uncomputable | Pre/Post-computation validation protects data integrity |
 
 ---
@@ -28,8 +34,8 @@ A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexp
 
 | Method | Target API | Issues Resolved | Configuration Hint |
 | :--- | :--- | :--- | :--- |
-| **:term:`Adaptive Whitening`** | `.whiten()` | Zero-division / Signal loss | `eps="auto"` is recommended |
-| **:term:`Safe Log`** | `.plot()`, `.spectrogram()` | `-inf` holes in plots | Adjustable via `dynamic_range` |
+| **Adaptive Whitening** | `.whiten()` | Zero-division / Signal loss | `eps="auto"` is recommended |
+| **Safe Log** | `.plot()`, `.spectrogram()` | `-inf` holes in plots | Adjustable via `dynamic_range` |
 | **Internal Standardization** | `ica_fit()` | Non-convergence | Works regardless of input amplitude |
 | **Relative Tolerance** | Various | Early termination | Auto-scales `tol` based on variance |
 
@@ -37,7 +43,7 @@ A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexp
 
 ## Detailed Explanations and Examples
 
-### 1. :term:`Adaptive Whitening`
+### 1. Adaptive Whitening
 
 Standard whitening often uses a fixed normalization parameter (`eps`) to prevent division by zero. If this value is too large, micro-signals are lost.
 
@@ -58,7 +64,7 @@ data = TimeSeries(np.random.randn(1000) * 1e-21, sample_rate=1024)
 whitened = data.whiten(eps="auto")  # Automatically applies appropriate scaling
 ```
 
-### 2. Safe Logarithmic Scaling (:term:`Safe Log`)
+### 2. Safe Logarithmic Scaling (Safe Log)
 
 Prevents `-inf` values when visualizing spectrograms or PSDs containing zeros or quiet regions.
 
@@ -85,6 +91,6 @@ plot = asd.plot()  # Safe Log is applied internally for a clean visualization
 
 ## Related Documents
 
-- {doc}`../reference/api/signal` — Signal processing API reference
-- {doc}`validated_algorithms` — List of validated algorithms
-- {doc}`glossary` — Definitions for :term:`NaN/Inf propagation` and more
+- [Signal Processing API Reference](../reference/api/signal.rst)
+- [Validated Algorithms](validated_algorithms.md)
+- [Glossary](glossary.rst) — Definitions for `NaN/Inf propagation` and more

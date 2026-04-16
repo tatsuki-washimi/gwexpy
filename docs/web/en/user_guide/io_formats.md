@@ -10,7 +10,22 @@ The **Pickle** (:term:`Pickle`) format is highly convenient but reading a Pickle
 We strongly recommend using structured and secure formats like **HDF5**, **GWF**, or **Zarr** for data sharing and long-term storage.
 
 :::
-## format Comparison Table
+
+## First: Decision Rules
+
+- **Auto-detect is fine** when the extension uniquely identifies one reader.
+- **Set `format=` explicitly** for ambiguous extensions such as `.xml`, for custom lab extensions, or whenever auto-detection is unclear.
+- **Pass `timezone` explicitly** for logger formats that store local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
+- **Read-only / write-only matters**: `○ / ×` means the format can be read but not written.
+
+## Jump Links
+
+- [Comparison Table](#format-comparison-table)
+- [Format Specific Details](#format-specific-details)
+- [Basic Usage](#basic-usage-of-read--write)
+- [Back to Top](#file-io-supported-formats-guide)
+
+## Format Comparison Table
 
 Choose the best format for your data and needs. Refer to each section for detailed usage.
 
@@ -22,7 +37,7 @@ Choose the best format for your data and needs. Refer to each section for detail
 | **LIGO_LW** (.xml) | ○ / × | `TimeSeries(Dict)` | ○ | — | DTT diagnostic products | `products` argument required |
 | **CSV / TXT** (.csv, .txt) | ○ / ○ | `TimeSeries(Dict)` | △ | — | Plain text, general purpose | Supports directory bulk loading |
 | **WAV** (.wav) | ○ / ○ | `TimeSeries(Dict)` | ○ | `scipy` | Audio analysis | Does not store absolute time |
-| **MiniSEED** (.mseed) | ○ / ○ | `TimeSeries(Dict)` | ○ | `obspy` | Standard for seismic waveforms | — |
+| **MiniSEED** (.mseed) | ○ / ○ | `TimeSeries(Dict)` | ○ | `obspy` | Standard for seismic waveforms | `gap` controls gap handling |
 | **SAC** (.sac) | ○ / ○ | `TimeSeries(Dict)` | ○ | `obspy` | Seismic analysis | Rich header definitions |
 | **GSE2** (.gse2) | ○ / ○ | `TimeSeries(Dict)` | ○ | `obspy` | Seismic waveform | — |
 | **K-NET** (.knet) | ○ / × | `TimeSeries(Dict)` | ○ | `obspy` | NIED strong motion records | Read-only |
@@ -34,11 +49,12 @@ Choose the best format for your data and needs. Refer to each section for detail
 | **SQLite** (.sdb) | ○ / × | `TimeSeriesDict` | ○ | — | WeeWX weather data | — |
 | **NetCDF4** (.nc) | ○ / ○ | `TimeSeries(Dict)` | ○ | `xarray` | Cloud-ready, multi-dimensional | — |
 | **Zarr** (.zarr) | ○ / ○ | All Classes | ○ | `zarr` | Cloud-optimized, parallel processing | Recommended modern format |
-| **Audio** (.mp3 etc) | ○ / ○ | `TimeSeriesDict` | ○ | `pydub` | Compressed audio files | Requires ffmpeg, no time info |
+| **Audio** (.mp3 etc) | ○ / ○ | `TimeSeriesDict` | ○ | `pydub` | Compressed audio files | No absolute timestamps; read with `t0=0.0` |
 | **NDS2** | ○ / × | `TimeSeries` | — | — | Network Data Server | Remote data access |
 | **TDMS** (.tdms) | ○ / × | `TimeSeriesDict` | ○ | `npTDMS` | National Instruments format | — |
 
 > **Note**: Formats marked as "gwpy standard" (GWF, HDF5, CSV/TXT, Pickle) are processed through gwpy's built-in IO pathways. Since gwexpy extends gwpy, these are available natively.
+> **Note**: The last column is intentionally biased toward the most important operational constraint, not every implementation detail.
 
 ## Format Specific Details
 
@@ -54,6 +70,26 @@ from gwexpy.timeseries.collections import TimeSeriesDict
 tsd = TimeSeriesDict.read("path/to/data.gbd", timezone="Asia/Tokyo")
 ```
 
+**Required Arguments**:
+
+- `timezone` — required for GBD because the logger timestamps are local-time based.
+
+**Notes**:
+
+- Use `format=` when the extension is ambiguous.
+- Audio formats and WAV do not preserve absolute timestamps; they are read with `t0=0.0`.
+- For DTTXML transfer functions, prefer `native=True` when you need reliable complex phase handling.
+
+### GWOSC / Open Data
+
+```python
+from gwexpy.timeseries import TimeSeries
+
+ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
+```
+
+Use this path when you want public event data directly instead of reading a local file.
+
 ## Developer Guide
 
 The following information is intended for developers or advanced users interested in the internal implementation.
@@ -68,7 +104,9 @@ The following formats are specified in the design but currently rely on external
 
 ### Unimplemented Formats (Stubs)
 
-These formats are currently registered in the IO registry as placeholders. Calling `.read()` will raise an `UnimplementedIOError`.
+These formats are currently registered in the IO registry as placeholders. Calling `.read()` will fail because they are not implemented for end users yet.
+
+Treat them simply as "not available for end users yet." The exact internal exception type is not important unless you are developing the IO layer itself.
 
 #### TimeSeries Stubs
 
@@ -90,14 +128,8 @@ tsd = TimeSeriesDict.read("path/to/file.gbd", timezone="Asia/Tokyo")
 tsd = TimeSeriesDict.read("path/to/file.dat", format="miniseed")
 ```
 
-### Implementation Reference
+## Page-End Navigation
 
-| Module Path | Summary |
-|---|---|
-| `gwexpy/timeseries/io/gbd.py` | GBD reader. Requires `timezone` |
-| `gwexpy/timeseries/io/ats.py` | ATS reader (binary parser) |
-| `gwexpy/timeseries/io/seismic.py` | MiniSEED / SAC / GSE2 / KNET IO. Depends on ObsPy |
-
-## Reference: Source Files
-
-For a full list of IO implementation files, refer to the Japanese version of this guide or the `gwexpy/timeseries/io/` directory.
+- [Back to Comparison Table](#format-comparison-table)
+- [Back to Basic Usage](#basic-usage-of-read--write)
+- [Back to Top](#file-io-supported-formats-guide)

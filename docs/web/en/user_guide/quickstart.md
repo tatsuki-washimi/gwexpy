@@ -26,18 +26,13 @@ ts.plot().show()
 
 For a more practical workflow, we recommend the following tutorial. You can run it immediately on Google Colab.
 
-.. grid:: 1
-    :gutter: 3
+### 🧪 GWexpy Basic Hands-on
 
-    .. grid-item-card:: 🧪 GWexpy Basic Hands-on
-        :link: tutorials/index
-        :link-type: doc
+[See the tutorial index](tutorials/index.rst)
 
-        Experience everything from loading data to frequency analysis (ASD/CSD) and matrix manipulation using the latest ScalarField API.
-        ^^^
-        .. image:: https://colab.research.google.com/assets/colab-badge.svg
-           :target: https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb
-           :alt: Open In Colab
+Experience everything from loading data to frequency analysis (ASD/CSD) and matrix manipulation using the latest ScalarField API.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/intro_timeseries.ipynb)
 
 ## Core Concepts
 
@@ -62,17 +57,19 @@ tsd = TimeSeriesDict({
     "L1:STRAIN": TimeSeries(np.random.randn(4096 * 4), sample_rate=4096, t0=0),
 })
 
-# Convert to matrix and calculate Cross Spectral Density (CSD)
-asd = tsd.to_matrix().asd(fftlength=1)
-asd.plot().show()
+# Convert to a matrix and calculate Cross Spectral Density (CSD)
+csd = tsd.to_matrix().csd(fftlength=1)
+csd.plot().show()
 ```
+
+This example converts a `TimeSeriesDict` into a `TimeSeriesMatrix` and stores the resulting cross-spectral density in `csd`.
 
 ## Need Help?
 
-If you encounter errors or plots do not appear, check the :doc:`Troubleshooting Guide <troubleshooting>`.
+If you encounter errors or plots do not appear, check the [Troubleshooting Guide](troubleshooting.md).
 
 ## Next Steps
 
-* :doc:`Installation Guide <installation>` - Setting up your environment.
-* :doc:`Getting Started <getting_started>` - Systematic learning roadmap.
-* :doc:`Migration from GWpy <gwexpy_for_gwpy_users_en>` - Difference guide for existing users.
+* [Installation Guide](installation.md) - Setting up your environment.
+* [Getting Started](getting_started.md) - Systematic learning roadmap.
+* [Migration from GWpy](gwexpy_for_gwpy_users_en.md) - Difference guide for existing users.

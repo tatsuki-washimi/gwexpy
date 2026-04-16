@@ -3,28 +3,13 @@
 GWexpy inherits its core classes (like TimeSeries) from GWpy while significantly enhancing usability for multi-channel analysis and signal processing.
 This guide introduces key differences for GWpy users and demonstrates how to simplify your code with GWexpy's new features.
 
-.. list-table:: Quick Comparison
-   :widths: 30 35 35
-   :header-rows: 1
-
-   * - Feature / Goal
-     - GWpy Style (Traditional)
-     - GWexpy Style (Recommended)
-   * - Managing Multiple Channels
-     - `TimeSeriesDict`
-     - `TimeSeriesMatrix` (Stable)
-   * - Batch Analysis (ASD/CSD)
-     - Loops or manual Dict manipulation
-     - `.asd()`, `.csd()` (Stable)
-   * - Portability & Pickle
-     - May not be Pickle-compatible
-     - High portability (Pickle compatible)
-   * - Advanced Signal Processing
-     - Manual SciPy calls
-     - Built-in `.hht()`, `.arima()`, etc. (Experimental)
-   * - Spatial/Multi-dimensional Data
-     - No specific classes available
-     - `ScalarField` (Experimental)
+| Feature / Goal | GWpy Style (Traditional) | GWexpy Style (Recommended) |
+| --- | --- | --- |
+| Managing Multiple Channels | `TimeSeriesDict` | `TimeSeriesMatrix` (Stable) |
+| Batch Analysis (ASD/CSD) | Loops or manual Dict manipulation | `.asd()`, `.csd()` (Stable) |
+| Portability & Pickle | May not be Pickle-compatible | High portability (Pickle compatible) |
+| Advanced Signal Processing | Manual SciPy calls | Built-in `.hht()`, `.arima()`, etc. (Experimental) |
+| Spatial/Multi-dimensional Data | No specific classes available | `ScalarField` (Experimental) |
 
 ## 1. Channel Management and Batch Analysis
 
@@ -81,8 +66,8 @@ When saving objects via `Pickle`, GWexpy uses a **Transparent Pickle** design (S
 
 :::{important}
 Always avoid loading Pickle data from untrusted sources.
-
 :::
+
 ## 5. High-dimensional Data (Field API)
 
 For handling spatial distributions (e.g., sensor arrays), you can use `ScalarField`, which extends `TimeSeries`.
@@ -94,6 +79,6 @@ For handling spatial distributions (e.g., sensor arrays), you can use `ScalarFie
 
 ## Next Steps
 
-* :doc:`Quickstart <quickstart>` - Run some real code.
-* :doc:`Getting Started <getting_started>` - Check the learning roadmap.
-* :doc:`Reference <../reference/index>` - Explore all methods for each class.
+* [Quickstart](quickstart.md) - Run some real code.
+* [Getting Started](getting_started.md) - Check the learning roadmap.
+* [Reference](../reference/index.rst) - Explore all methods for each class.

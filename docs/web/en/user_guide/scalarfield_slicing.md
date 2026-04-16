@@ -1,4 +1,4 @@
-# Scalar Field Slicing Guide
+# Scalar Field Slicing Guide (Why 4D is Preserved)
 
 :::{note}
 **Who should read this page?**
@@ -66,8 +66,10 @@ If you intentionally want to treat the data as 1D or 2D (e.g., for plotting or i
 ```python
 # Get time-series at a specific spatial point for plotting
 point_ts = field[:, 2, 5, 5]      # (100, 1, 1, 1)
-actual_ts = point_ts.squeeze()    # (100,) - compatible with TimeSeries
+actual_ts = point_ts.squeeze(axis=(1, 2, 3))    # (100,) - compatible with TimeSeries
 ```
+
+Specifying `axis=` makes it explicit which singleton axes you are removing and reduces the risk of dropping a dimension you still need.
 
 ### 3. Broadcasting Considerations
 
@@ -78,9 +80,11 @@ Since `ScalarField` is always 4D, you must match the shape when adding or subtra
 field + np.array([1, 2, 3])  # Shape mismatch
 
 # ✅ Good Example: Reshaping to the correct dimensions
-calibration = np.array([1, 2, 3]).reshape(3, 1, 1, 1) # (freq, 1, 1, 1)
+calibration = np.array([1, 2, 3]).reshape(3, 1, 1, 1) # three coefficients only along the frequency axis
 field + calibration
 ```
+
+The `reshape(3, 1, 1, 1)` form means "these 3 values belong to the frequency axis, and the same value is broadcast across time, x, and y."
 
 ---
 
@@ -94,6 +98,6 @@ field + calibration
 
 ## Related Links
 
-- {doc}`tutorials/field_scalar_intro` - ScalarField introduction tutorial
-- {doc}`../reference/api/field` - Field module API reference
-- {doc}`numerical_stability` - Numerical stability (precision management for 4D operations)
+- [ScalarField introduction tutorial](tutorials/field_scalar_intro.ipynb)
+- [Field module API reference](../reference/api/fields.rst)
+- [Numerical stability](numerical_stability.md) - Precision management for 4D operations
