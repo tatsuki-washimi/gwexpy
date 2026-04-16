@@ -90,6 +90,31 @@ def test_tutorial_outputs_do_not_expose_local_paths_or_raw_warnings():
     assert not offenders, "Forbidden notebook output found:\n" + "\n".join(offenders)
 
 
+@pytest.mark.parametrize(
+    "relative_path",
+    [
+        Path("en/user_guide/tutorials/intro_interop.ipynb"),
+        Path("ja/user_guide/tutorials/intro_interop.ipynb"),
+    ],
+)
+def test_intro_interop_uses_explicit_axes_for_pandas_plot(relative_path: Path):
+    nb = _read_notebook(TUTORIAL_ROOT / relative_path)
+    source = _code_cell_source_containing(nb, 's_pd = ts.to_pandas(index="datetime")')
+
+    assert "fig, ax = plt.subplots()" in source
+    assert 's_pd.plot(ax=ax, title="Pandas Series")' in source
+    assert "plt.close(fig)" in source
+
+
+def test_example_intro_interop_uses_explicit_axes_for_pandas_plot():
+    nb = _read_notebook(ROOT / "examples" / "basic-new-methods" / "intro_Interop.ipynb")
+    source = _code_cell_source_containing(nb, 's_pd = ts.to_pandas(index="datetime")')
+
+    assert "fig, ax = plt.subplots()" in source
+    assert 's_pd.plot(ax=ax, title="Pandas Series")' in source
+    assert "plt.close(fig)" in source
+
+
 def test_ja_advanced_coupling_mentions_frequency_range_restriction():
     nb = _read_notebook(
         TUTORIAL_ROOT / "ja" / "user_guide" / "tutorials" / "advanced_coupling.ipynb"
