@@ -1218,7 +1218,9 @@ def fit_series(
 
     # 5. Execution
     m.migrad()
-    m.hesse()
+    # Only compute Hesse if there are free parameters
+    if m.nfit > 0:
+        m.hesse()
 
     return FitResult(
         m,

@@ -14,16 +14,16 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
      - Installation Command
      - Features
    * - Minimal
-     - `pip install git+https://github.com/gwexpy/gwexpy.git`
+     - `pip install git+https://github.com/tatsuki-washimi/gwexpy.git`
      - Numerical containers and basic arithmetic. Minimal dependencies.
    * - **Recommended**
-     - `pip install "gwexpy[analysis,fitting,plotting] @ git+https://github.com/gwexpy/gwexpy.git"`
+     - `pip install "gwexpy[analysis,fitting,plotting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`
      - Advanced statistics, curve fitting, and mapping features.
    * - GW Analysis
-     - `pip install "gwexpy[gw,io] @ git+https://github.com/gwexpy/gwexpy.git"`
+     - `pip install "gwexpy[gw,io] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`
      - Frame file support, NDS2 access, and official GW tools.
    * - Dev / Full
-     - `pip install "gwexpy[all] @ git+https://github.com/gwexpy/gwexpy.git"`
+     - `pip install "gwexpy[all] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`
      - Enables all optional features.
 
 ## 1. Installation Steps
@@ -35,7 +35,7 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
       For users who want to keep dependencies minimal and only use core containers like `ScalarField`.
 
       ```bash
-      pip install git+https://github.com/gwexpy/gwexpy.git
+      pip install git+https://github.com/tatsuki-washimi/gwexpy.git
       ```
 
    .. tab-item:: Conda Environment (Recommended / GW Analysis)
@@ -49,7 +49,7 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
       conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
 
       # 2. Install GWexpy with analysis/fitting options
-      pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/gwexpy/gwexpy.git"
+      pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
       ```
 
    .. tab-item:: Developer Mode
@@ -57,7 +57,7 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
       For contributors who want to install from source and set up a testing environment.
 
       ```bash
-      git clone https://github.com/gwexpy/gwexpy.git
+      git clone https://github.com/tatsuki-washimi/gwexpy.git
       cd gwexpy
       pip install -e ".[dev,all]"
       ```

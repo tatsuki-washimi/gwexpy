@@ -22,7 +22,16 @@ Scripts that programmatically create or run Jupyter notebooks.
 | `generate_viz_tutorial.py` | Generate the Field Visualization tutorial notebook |
 | `make_scalarfield_tutorial.py` | Generate `examples/basic-new-methods/intro_ScalarField.ipynb` |
 | `make_arima_burst_notebook.py` | Generate `docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb` |
+| `check_changed_notebooks.py` | Run CI-style checks only for notebooks changed in the current PR |
 | `run_all_notebooks.py` | Execute all notebooks under `docs/` via `nbconvert` |
+
+```bash
+# CI と同じ分類規則で、PR 変更 notebook だけを検証
+conda run -n gwexpy python scripts/notebook_gen/check_changed_notebooks.py --base origin/main --head HEAD
+
+# 実行せず、対象 notebook の分類だけ確認
+conda run -n gwexpy python scripts/notebook_gen/check_changed_notebooks.py --list-only
+```
 
 ## validation/
 
