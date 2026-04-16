@@ -80,7 +80,7 @@ def _clr_box() -> QtWidgets.QComboBox:
 # ---------------------------------------------------------------------------
 
 
-def _build_tab_bar_setup(panel: GraphPanel) -> None:
+def _build_tab_bar_setup(panel: GraphPanel) -> QtWidgets.QVBoxLayout:
     """Create the two QTabBar rows, the QStackedWidget, and the switching logic.
 
     Sets ``panel.tab_row1``, ``panel.tab_row2``, ``panel.main_stack``,
@@ -395,6 +395,8 @@ def _build_trace_page(
             w.valueChanged.connect(lambda _, x=i: update_style(x)) if hasattr(
                 w, "valueChanged"
             ) else w.toggled.connect(lambda _, x=i: update_style(x))
+
+    return page
 
 
 # ---------------------------------------------------------------------------
@@ -939,7 +941,9 @@ def _build_style_tab(panel: GraphPanel) -> QtWidgets.QWidget:
 # ---------------------------------------------------------------------------
 
 
-def _build_axis_tab(panel: GraphPanel, axis: str) -> QtWidgets.QWidget:
+def _build_axis_tab(
+    panel: GraphPanel, axis: str
+) -> tuple[QtWidgets.QWidget, dict[str, object]]:
     """Build an axis configuration tab.
 
     *axis* must be ``"x"`` or ``"y"``.

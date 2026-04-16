@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 matplotlib.use("Agg")
+pytest.importorskip("iminuit")
 
 from unittest.mock import patch
 
