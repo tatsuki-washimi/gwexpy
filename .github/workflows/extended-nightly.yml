@@ -1,0 +1,255 @@
+name: Extended Nightly
+
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ubuntu-validation:
+    name: Ubuntu validation (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    defaults:
+      run:
+        shell: bash -el {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: gwexpy
+          auto-activate-base: false
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: ${{ matrix.python-version }}
+
+      - name: Provision gwexpy environment
+        run: |
+          conda env update -n gwexpy -f environment.yml
+          python -m pip install -e . --no-deps
+
+      - name: Install extended test dependencies
+        run: python -m pip install -e ".[all]"
+
+      - name: Generate synthetic test fixtures
+        run: python tests/fixtures/generate_fixtures.py
+
+      - name: Run pytest
+        run: pytest -q --doctest-modules -m "not network and not nds" --ignore=tests/gui/ tests/ gwexpy/
+
+      - name: Run paper notebook smoke script
+        if: matrix.python-version == '3.11'
+        run: python examples/paper-figures/02_coherence_ranking.py
+
+  gwpy-compat:
+    name: GWpy compatibility
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    env:
+      PYTHONFAULTHANDLER: "1"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: gwexpy
+          auto-activate-base: false
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: "3.11"
+
+      - name: Provision compatibility environment
+        run: |
+          conda install -n gwexpy -y pip
+          python -m pip install --upgrade pip
+          python -m pip install "numpy<2.0" "scipy<1.14" "astropy<7.0" pandas matplotlib h5py "gwpy>=4.0.0,<5.0.0"
+          python -m pip install pytest pytest-forked
+          python -m pip install -e . --no-deps
+
+      - name: Run focused compatibility tests
+        run: |
+          pytest -q \
+            tests/timeseries/test_transfer_function_compat.py \
+            tests/timeseries/test_collections_spectral_compat.py \
+            tests/timeseries/test_fft_param_compat.py
+
+      - name: Run full timeseries suite
+        run: pytest -q tests/timeseries
+
+  notebook-execution:
+    name: Notebook execution
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: gwexpy
+          auto-activate-base: false
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: "3.11"
+
+      - name: Provision gwexpy environment
+        run: |
+          conda env update -n gwexpy -f environment.yml
+          python -m pip install papermill nbformat nbclient nbconvert
+          python -m pip install -e ".[all]"
+
+      - name: Discover notebook categories
+        run: |
+          python - <<'PY'
+          import glob
+          import json
+
+          paths = glob.glob("docs/web/**/*.ipynb", recursive=True) + glob.glob("examples/**/*.ipynb", recursive=True)
+          light_nbs = []
+          heavy_nbs = []
+
+          for nb_path in paths:
+              if "_build" in nb_path or ".ipynb_checkpoints" in nb_path:
+                  continue
+              try:
+                  with open(nb_path, "r", encoding="utf-8") as f:
+                      nb = json.load(f)
+                  tags = nb.get("cells", [{}])[0].get("metadata", {}).get("tags", [])
+              except Exception as exc:
+                  raise RuntimeError(f"Failed to read {nb_path}: {exc}") from exc
+
+              if "display-only" in tags:
+                  continue
+              if "ci-heavy" in tags:
+                  heavy_nbs.append(nb_path)
+              else:
+                  light_nbs.append(nb_path)
+
+          with open("light_nbs.txt", "w", encoding="utf-8") as f:
+              f.write("\n".join(light_nbs))
+          with open("heavy_nbs.txt", "w", encoding="utf-8") as f:
+              f.write("\n".join(heavy_nbs))
+          print(f"Discovered {len(light_nbs)} light and {len(heavy_nbs)} heavy notebooks")
+          PY
+
+      - name: Run light notebooks with papermill
+        run: |
+          if [ ! -s light_nbs.txt ]; then
+            echo "No light notebooks to run"
+            exit 0
+          fi
+          while IFS= read -r nb; do
+            [ -n "$nb" ] || continue
+            echo "Executing: $nb"
+            papermill "$nb" /dev/null --kernel python3
+          done < light_nbs.txt
+
+      - name: Run heavy notebooks with nbval
+        run: |
+          if [ ! -s heavy_nbs.txt ]; then
+            echo "No heavy notebooks to check"
+            exit 0
+          fi
+          xargs -a heavy_nbs.txt -r pytest --nbval-lax -q
+
+  multiplatform-smoke-unix:
+    name: Smoke test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: gwexpy
+          auto-activate-base: false
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: "3.11"
+
+      - name: Provision gwexpy environment
+        run: |
+          conda env update -n gwexpy -f environment.yml
+          python -m pip install -e . --no-deps
+
+      - name: Run import smoke test
+        run: |
+          python - <<'PY'
+          import gwexpy
+          import numpy as np
+          from gwexpy import FrequencySeries, Spectrogram, TimeSeries
+
+          ts = TimeSeries(np.random.randn(100), sample_rate=1)
+          fs = FrequencySeries(np.abs(np.random.randn(100)), df=1)
+          sg = Spectrogram(np.random.randn(10, 10), dt=1, df=1)
+          print(gwexpy.__version__, ts.duration, fs.f0, sg.shape)
+          PY
+
+  multiplatform-smoke-windows:
+    name: Smoke test (windows-latest)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: gwexpy
+          auto-activate-base: false
+          channels: conda-forge
+          miniforge-version: latest
+          python-version: "3.11"
+
+      - name: Provision gwexpy environment
+        shell: pwsh
+        run: |
+          conda env update -n gwexpy -f environment.yml
+          conda activate gwexpy
+          python -m pip install -e . --no-deps
+          python -c "import sys; print(sys.executable)"
+
+      - name: Run import smoke test
+        shell: pwsh
+        run: |
+          conda activate gwexpy
+          python -c "import gwexpy, numpy as np; from gwexpy import TimeSeries, FrequencySeries, Spectrogram; ts = TimeSeries(np.random.randn(100), sample_rate=1); fs = FrequencySeries(np.abs(np.random.randn(100)), df=1); sg = Spectrogram(np.random.randn(10, 10), dt=1, df=1); print(gwexpy.__version__, ts.duration, fs.f0, sg.shape)"
