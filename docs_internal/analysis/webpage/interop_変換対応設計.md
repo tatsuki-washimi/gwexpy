@@ -207,6 +207,90 @@ Field 系変換の中核として独立に扱う。
 
 ---
 
+## 全管理対象一覧（状態つき）
+
+### 状態ラベル
+
+- `公開済み`: 実装があり、`reference/api/interop` から到達できる
+- `実装済み（公開整理待ち）`: 実装はあるが、`reference/api/interop` での整理が未完
+- `実装済み（一部経路は対応中）`: 主経路は使えるが、一部変換経路の完成度が不足している
+- `対応中`: 専用の実装面または公開面の整理が未完
+- `対応予定`: 設計対象として明示するが、まだ実装がない
+
+### A. 保存形式・コンテナ変換
+
+| 連携先 | 公開 API / 入口 | 状態 | 補足 |
+|---|---|---|---|
+| HDF5 | `to_hdf5()`, `from_hdf5()` | 公開済み | object-level 変換 |
+| JSON | `to_json()`, `from_json()` | 公開済み | JSON 文字列との相互変換 |
+| Python dict | `to_dict()`, `from_dict()` | 公開済み | dict との相互変換 |
+| SQLite | `to_sqlite()`, `from_sqlite()` | 実装済み（公開整理待ち） | object-level bridge |
+| Zarr | `to_zarr()`, `from_zarr()` | 公開済み | array/store bridge |
+| NetCDF4 | `to_netcdf4()`, `from_netcdf4()` | 公開済み | object-level bridge |
+
+### B. 解析ライブラリ・オブジェクト変換
+
+| 連携先 | 公開 API / 入口 | 状態 | 補足 |
+|---|---|---|---|
+| NumPy | 専用 `to_*()` / `from_*()` API なし | 実装済み（基盤対応） | 内部配列表現として広く利用 |
+| pandas | `to_pandas_series()`, `from_pandas_series()`, `to_pandas_dataframe()`, `from_pandas_dataframe()` | 公開済み | Series / DataFrame |
+| polars | `to_polars_series()`, `from_polars_series()`, `to_polars_dataframe()`, `from_polars_dataframe()`, `to_polars_dict()`, `from_polars_dict()` | 実装済み（公開整理待ち） | Series / DataFrame / dict |
+| xarray | `to_xarray()`, `from_xarray()` | 公開済み | DataArray / Dataset |
+| xarray Field | `to_xarray_field()`, `from_xarray_field()` | 公開済み | ScalarField / VectorField |
+| astropy | `to_astropy_timeseries()`, `from_astropy_timeseries()` | 公開済み | `astropy.timeseries.TimeSeries` |
+| dask | `to_dask()`, `from_dask()` | 公開済み | dask array bridge |
+
+### C. 機械学習 / 高速化 / 配列基盤
+
+| 連携先 | 公開 API / 入口 | 状態 | 補足 |
+|---|---|---|---|
+| PyTorch | `to_torch()`, `from_torch()` | 実装済み（公開整理待ち） | Tensor 変換 |
+| TensorFlow | `to_tf()`, `from_tf()` | 実装済み（公開整理待ち） | Tensor 変換 |
+| JAX | `to_jax()`, `from_jax()` | 実装済み（公開整理待ち） | JAX array 変換 |
+| CuPy | `to_cupy()`, `from_cupy()` | 実装済み（公開整理待ち） | GPU array 変換 |
+
+### D. 物理・ドメイン特化ライブラリ
+
+| 連携先 | 公開 API / 入口 | 状態 | 補足 |
+|---|---|---|---|
+| ROOT | `to_tgraph()`, `to_th1d()`, `to_th2d()`, `to_tmultigraph()`, `from_root()`, `write_root_file()` | 実装済み（一部経路は対応中） | `TH1 -> non-Histogram` は未完 |
+| ObsPy | `to_obspy()`, `from_obspy()`, `to_obspy_trace()`, `from_obspy_trace()` | 公開済み | seismic bridge |
+| LAL | `to_lal_timeseries()`, `from_lal_timeseries()`, `to_lal_frequencyseries()`, `from_lal_frequencyseries()` | 公開済み | GW 時系列 / 周波数系列 |
+| PyCBC | `to_pycbc_timeseries()`, `from_pycbc_timeseries()`, `to_pycbc_frequencyseries()`, `from_pycbc_frequencyseries()` | 公開済み | GW 時系列 / 周波数系列 |
+| GWINC | `from_gwinc_budget()` | 公開済み | budget import |
+| Finesse | `from_finesse_frequency_response()`, `from_finesse_noise()` | 公開済み | optics / response |
+| python-control | `to_control_frd()`, `from_control_frd()`, `from_control_response()` | 公開済み | FRD / response |
+| SimPEG | `to_simpeg()`, `from_simpeg()` | 実装済み（公開整理待ち） | geophysics |
+| MTH5 | `to_mth5()`, `from_mth5()` | 実装済み（公開整理待ち） | magnetotellurics |
+| MTpy | 専用 `to_*()` / `from_*()` API は対応中 | 対応中 | MTH5 周辺との整理が未完 |
+| MNE-Python | `to_mne()`, `from_mne()`, `to_mne_rawarray()`, `from_mne_raw()` | 実装済み（公開整理待ち） | EEG / biosignal |
+| Neo | `to_neo()`, `from_neo()` | 実装済み（公開整理待ち） | electrophysiology |
+| Elephant | 専用 `to_*()` / `from_*()` API は対応中 | 対応中 | `Neo` / `quantities` 周辺との整理が未完 |
+| quantities | `to_quantity()`, `from_quantity()` | 実装済み（公開整理待ち） | quantity bridge |
+| pyroomacoustics | `to_pyroomacoustics_source()`, `to_pyroomacoustics_stft()`, `from_pyroomacoustics_rir()`, `from_pyroomacoustics_mic_signals()`, `from_pyroomacoustics_source()`, `from_pyroomacoustics_stft()`, `from_pyroomacoustics_field()` | 実装済み（公開整理待ち） | room acoustics |
+| pydub | `to_pydub()`, `from_pydub()` | 実装済み（公開整理待ち） | audio object bridge |
+| librosa | `to_librosa()` | 実装済み（公開整理待ち） | export 中心 |
+| Specutils | `to_specutils()`, `from_specutils()` | 実装済み（公開整理待ち） | astronomy spectra |
+| pyspeckit | `to_pyspeckit()`, `from_pyspeckit()` | 実装済み（公開整理待ち） | spectral analysis |
+| PySpice | `from_pyspice_transient()`, `from_pyspice_ac()`, `from_pyspice_noise()`, `from_pyspice_distortion()` | 実装済み（公開整理待ち） | import 中心 |
+| scikit-rf | `to_skrf_network()`, `from_skrf_network()`, `from_skrf_impulse_response()`, `from_skrf_step_response()` | 実装済み（公開整理待ち） | RF network analysis |
+| pyOMA | `from_pyoma_results()` | 実装済み（公開整理待ち） | import 中心 |
+| multitaper | `from_mtspec()` | 実装済み（公開整理待ち） | import 中心 |
+| mtspec | `from_mtspec_array()` | 実装済み（公開整理待ち） | import 中心 |
+| pySDy | `from_uff_dataset55()`, `from_uff_dataset58()` | 実装済み（公開整理待ち） | import 中心 |
+| SDynPy | `from_sdynpy_frf()`, `from_sdynpy_shape()`, `from_sdynpy_timehistory()` | 実装済み（公開整理待ち） | import 中心 |
+| Meep | `from_meep_hdf5()` | 実装済み（公開整理待ち） | import 中心 |
+| openEMS | `from_openems_hdf5()` | 実装済み（公開整理待ち） | import 中心 |
+| emg3d | `to_emg3d_field()`, `from_emg3d_field()`, `from_emg3d_h5()` | 実装済み（公開整理待ち） | EM field import/export |
+| meshio | `from_meshio()`, `from_fenics_xdmf()`, `from_fenics_vtk()` | 実装済み（公開整理待ち） | import 中心 |
+| MetPy | `from_metpy_dataarray()` | 実装済み（公開整理待ち） | import 中心 |
+| WRF | `from_wrf_variable()` | 実装済み（公開整理待ち） | import 中心 |
+| Harmonica | `from_harmonica_grid()` | 実装済み（公開整理待ち） | import 中心 |
+| Exudyn | `from_exudyn_sensor()` | 実装済み（公開整理待ち） | import 中心 |
+| OpenSees | `from_opensees_recorder()` | 実装済み（公開整理待ち） | import 中心 |
+
+---
+
 ## 公開ページへの反映方針
 
 将来の公開ドキュメントでは、役割を次のように固定する。
@@ -234,9 +318,10 @@ Field 系変換の中核として独立に扱う。
 
 ---
 
-## 初回の管理対象
+## 優先的に文書整備する対象
 
-この設計書を基準に、まず次を管理対象とする。
+全対応一覧は上記のとおり管理する。
+そのうえで、I/O との境界衝突が大きく、公開ページへの影響が大きい対象から先に文書整備する。
 
 - ROOT
 - xarray / Field
@@ -245,4 +330,4 @@ Field 系変換の中核として独立に扱う。
 - ObsPy
 - pandas / polars / astropy
 
-それ以外の interop モジュールは、公開面の必要性に応じて段階的に整理する。
+上記以外も管理対象から外すのではなく、公開面の必要性と tutorial / API reference の整備状況に応じて順次詳細化する。
