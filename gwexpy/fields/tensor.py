@@ -51,7 +51,7 @@ class TensorField(FieldDict):
 
     def __init__(
         self,
-        components: dict[tuple[int, ...], ScalarField] | None = None,
+        components: dict[tuple[int, ...], ScalarField] | np.ndarray | None = None,
         rank: int | None = None,
         validate: bool = True,
     ):
@@ -61,7 +61,7 @@ class TensorField(FieldDict):
                 raise ValueError(f"TensorField rank-2 expects 6D array, got {arr.ndim}D")
 
             dim_i, dim_j = arr.shape[-2:]
-            new_components = {}
+            new_components: dict[tuple[int, ...], ScalarField] = {}
             for i in range(dim_i):
                 for j in range(dim_j):
                     new_components[(i, j)] = ScalarField(arr[..., i, j])

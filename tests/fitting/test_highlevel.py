@@ -13,6 +13,8 @@ from unittest.mock import patch
 
 from gwpy.frequencyseries import FrequencySeries
 
+pytest.importorskip("iminuit")
+
 from gwexpy.fitting import fit_series
 from gwexpy.fitting.highlevel import _plot_bootstrap_fit
 

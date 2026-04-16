@@ -31,6 +31,15 @@ def _replace_source(cell: dict, old: str, new: str) -> None:
         _set_source(cell, text.replace(old, new))
 
 
+def _ensure_first_cell_tag(nb: dict, tag: str) -> None:
+    first = nb.get("cells", [{}])[0]
+    metadata = first.setdefault("metadata", {})
+    tags = list(metadata.get("tags", []))
+    if tag not in tags:
+        tags.append(tag)
+        metadata["tags"] = tags
+
+
 def _clean_text_output(text: str, *, lang: str | None = None) -> str:
     if "Wswiglal-redir-stdio" in text:
         if "<table" in text:
@@ -188,8 +197,178 @@ def _fix_case_glitch(lang: str) -> None:
 def _fix_intro_frequencyseries(lang: str) -> None:
     path = ROOT / "docs" / "web" / lang / "user_guide" / "tutorials" / "intro_frequencyseries.ipynb"
     nb = _load(path)
-    cell = nb["cells"][13]
-    _replace_source(cell, 'ax.set_xlim(0, 200)\n', 'ax.set_xlim(1, 200)\n')
+    for cell in nb["cells"]:
+        if cell.get("cell_type") != "code":
+            continue
+        src = _cell_source(cell)
+        if "ts.plot(title=ts.name)" in src:
+            src = src.replace(
+                "print(ts)\n"
+                "ts.plot(title=ts.name)\n",
+                "print(ts)\n"
+                "\n"
+                "fig, ax = plt.subplots(figsize=(10, 4))\n"
+                "ax.plot(ts.times.value, ts.value, lw=0.8)\n"
+                'ax.set_xlabel("Time [s]")\n'
+                'ax.set_ylabel(f"[{ts.unit}]")\n'
+                "ax.set_title(ts.name)\n"
+                "ax.grid(True, alpha=0.3)\n"
+                "plt.tight_layout()\n"
+                "plt.show()\n",
+            )
+        if "plot = Plot(ts, inv_ts, red_ts)" in src and "red_ts.plot(" in src:
+            lines = src.splitlines(keepends=True)
+            prefix = []
+            suffix = []
+            in_plot_block = False
+            for line in lines:
+                if line.startswith("plot = Plot(ts, inv_ts, red_ts)"):
+                    in_plot_block = True
+                    continue
+                if in_plot_block:
+                    if line.startswith('red_ts.plot(title="Residual Time Series after IFFT");'):
+                        in_plot_block = False
+                        continue
+                    continue
+                prefix.append(line)
+            src = "".join(prefix) + (
+                "fig, axes = plt.subplots(2, 1, figsize=(10, 7), sharex=True)\n"
+                'axes[0].plot(ts.times.value, ts.value, label="Original")\n'
+                'axes[0].plot(inv_ts.times.value, inv_ts.value, "--", alpha=0.8, label="IFFT Result")\n'
+                'axes[0].set_title("Time Domain Round-trip (FFT -> IFFT)")\n'
+                "axes[0].legend()\n"
+                "axes[0].grid(True, alpha=0.3)\n"
+                "\n"
+                'axes[1].plot(red_ts.times.value, red_ts.value, color="black", label="Residual")\n'
+                'axes[1].set_title("Residual Time Series after IFFT")\n'
+                'axes[1].set_xlabel("Time [s]")\n'
+                "axes[1].legend()\n"
+                "axes[1].grid(True, alpha=0.3)\n"
+                "\n"
+                "plt.tight_layout()\n"
+                "plt.show()\n"
+            ) + "".join(suffix)
+        src = src.replace('ax.set_xlim(0, 200)\n', 'ax.set_xlim(1, 200)\n')
+        _set_source(cell, src)
+    _sanitize_outputs(nb, lang=lang)
+    _save(path, nb)
+
+
+def _fix_advanced_hht(lang: str) -> None:
+    path = ROOT / "docs" / "web" / lang / "user_guide" / "tutorials" / "advanced_hht.ipynb"
+    nb = _load(path)
+    for cell in nb["cells"]:
+        if cell.get("cell_type") != "code":
+            continue
+        _replace_source(cell, "spec = data.hht(\n", "spec = ts_norm.hht(\n")
+        src = _cell_source(cell)
+        if "emd_kwargs=emd_kwargs" in src and "hilbert_kwargs=hilbert_kwargs" in src:
+            _set_source(
+                cell,
+                "spec = ts_norm.hht(\n"
+                '    output="spectrogram",\n'
+                '    emd_method="eemd",\n'
+                "    emd_kwargs={\n"
+                '        "eemd_trials": 10,\n'
+                '        "eemd_noise_std": 0.2,\n'
+                '        "random_state": 42,\n'
+                '        "sift_max_iter": 200,\n'
+                '        "stopping_criterion": 0.2,\n'
+                "    },\n"
+                "    hilbert_kwargs={\n"
+                '        "pad": 200,\n'
+                '        "if_smooth": 11,\n'
+                "    },\n"
+                "    fmin=0,\n"
+                "    fmax=400,\n"
+                "    n_bins=120,\n"
+                '    weight="ia2",\n'
+                ")\n"
+                "\n"
+                "plot = spec.plot()\n"
+                "plt.ylim(0, 400)\n"
+                "plt.show()\n",
+            )
+    _sanitize_outputs(nb, lang=lang)
+    _save(path, nb)
+
+
+def _fix_segment_visualization_setup(lang: str) -> None:
+    path = ROOT / "docs" / "web" / lang / "user_guide" / "tutorials" / "segment_visualization.ipynb"
+    nb = _load(path)
+    cell = nb["cells"][2]
+    plot_line = "    plot\n"
+    if lang == "en":
+        comment = "    # 1. Overlay spectra graded by start time (default)\n"
+    else:
+        comment = "    # 1. 開始時間 (t0) でグラデーションをつけて重ね描き\n"
+    _set_source(
+        cell,
+        "".join(
+            [
+                "import warnings\n",
+                'warnings.filterwarnings("ignore", category=UserWarning)\n',
+                'warnings.filterwarnings("ignore", category=DeprecationWarning)\n',
+                "\n",
+                "import warnings\n",
+                "with warnings.catch_warnings():\n",
+                "    warnings.simplefilter('ignore')\n",
+                "\n",
+                "    import numpy as np\n",
+                "    from gwpy.segments import Segment\n",
+                "    from gwexpy.table import SegmentTable\n",
+                "    from gwpy.frequencyseries import FrequencySeries\n",
+                "\n",
+                "    def make_fs(i):\n",
+                "        f = np.linspace(1, 32, 256)\n",
+                "        data = (1.0/(f**1.5)) * (1.0 + i*0.1)\n",
+                "        return FrequencySeries(data, frequencies=f)\n",
+                "\n",
+                "    segs = [Segment(i*100, i*100+100) for i in range(10)]\n",
+                "    st = SegmentTable.from_segments(segs, snr=np.random.uniform(5, 20, 10))\n",
+                '    st.add_series_column("asd", data=[make_fs(i) for i in range(10)], kind="frequencyseries")\n',
+                "\n",
+                comment,
+                '    plot = st.overlay_spectra("asd", color_by="t0")\n',
+                plot_line,
+            ]
+        ),
+    )
+    _sanitize_outputs(nb, lang=lang)
+    _save(path, nb)
+
+
+def _fix_segment_asd_pipeline_setup(lang: str) -> None:
+    path = ROOT / "docs" / "web" / lang / "user_guide" / "tutorials" / "segment_asd_pipeline.ipynb"
+    nb = _load(path)
+    cell = nb["cells"][2]
+    _set_source(
+        cell,
+        "".join(
+            [
+                "import warnings\n",
+                'warnings.filterwarnings("ignore", category=UserWarning)\n',
+                'warnings.filterwarnings("ignore", category=DeprecationWarning)\n',
+                "\n",
+                "import warnings\n",
+                "with warnings.catch_warnings():\n",
+                "    warnings.simplefilter('ignore')\n",
+                "\n",
+                "    import numpy as np\n",
+                "    from gwpy.segments import Segment\n",
+                "    from gwexpy.table import SegmentTable\n",
+                "    from gwpy.timeseries import TimeSeries\n",
+                "\n",
+                "    def get_synthetic_data(t0):\n",
+                "        return TimeSeries(np.random.randn(1024), sample_rate=64, t0=t0)\n",
+                "\n",
+                "    segs = [Segment(i*16, i*16+16) for i in range(4)]\n",
+                "    st = SegmentTable.from_segments(segs)\n",
+                '    st.add_series_column("raw", data=[get_synthetic_data(seg[0]) for seg in segs], kind="timeseries")\n',
+                "    st\n",
+            ]
+        ),
+    )
     _sanitize_outputs(nb, lang=lang)
     _save(path, nb)
 
@@ -198,9 +377,6 @@ def _fix_swiglal_and_segment_examples(lang: str) -> None:
     files = [
         ("case_segment_analysis.ipynb", 1, None),
         ("intro_segment_table.ipynb", 1, None),
-        ("segment_visualization.ipynb", 1, None),
-        ("segment_asd_pipeline.ipynb", 1, None),
-        ("segment_asd_pipeline.ipynb", 3, None),
         ("intro_interop.ipynb", 3, None),
         ("intro_interop.ipynb", 55, None),
     ]
@@ -348,6 +524,79 @@ def _fix_advanced_coupling() -> None:
 
 
 def _fix_case_seismic_obspy() -> None:
+    for lang in ("en", "ja"):
+        path = ROOT / "docs" / "web" / lang / "user_guide" / "tutorials" / "case_seismic_obspy.ipynb"
+        nb = _load(path)
+        for cell in nb["cells"]:
+            if cell.get("cell_type") != "code":
+                continue
+            src = _cell_source(cell)
+            if "ts_seismic.plot(xscale='seconds');" in src:
+                if lang == "ja":
+                    replacement = (
+                        "fig, ax = plt.subplots(figsize=(10, 4))\n"
+                        "ax.plot(ts_seismic.times.value, ts_seismic.value, lw=0.6)\n"
+                        'ax.set_xlabel("時間 [s]")\n'
+                        'ax.set_ylabel(f"[{ts_seismic.unit}]")\n'
+                        'ax.set_title("地震波形")\n'
+                        "ax.grid(True, alpha=0.3)\n"
+                        "plt.tight_layout()\n"
+                        "plt.show()\n"
+                    )
+                else:
+                    replacement = (
+                        "fig, ax = plt.subplots(figsize=(10, 4))\n"
+                        "ax.plot(ts_seismic.times.value, ts_seismic.value, lw=0.6)\n"
+                        'ax.set_xlabel("Time [s]")\n'
+                        'ax.set_ylabel(f"[{ts_seismic.unit}]")\n'
+                        'ax.set_title("Seismic Time Series")\n'
+                        "ax.grid(True, alpha=0.3)\n"
+                        "plt.tight_layout()\n"
+                        "plt.show()\n"
+                    )
+                src = src.replace("# Time domain plot\n" "ts_seismic.plot(xscale='seconds');", replacement.rstrip("\n"))
+                src = src.replace("ts_seismic.plot(xscale='seconds');", replacement.rstrip("\n"))
+            if "plot = sg.plot()\n" in src:
+                src = src.replace(
+                    "plot = sg.plot()\n"
+                    "ax = plot.gca()\n"
+                    "ax.set_yscale('log')\n"
+                    "ax.set_ylim(0.05, 10)\n"
+                    'ax.set_title("Seismic Spectrogram")\n'
+                    'plot.colorbar(mappable=plt.gca().get_images()[-1] if plt.gca().get_images() else plt.gca().collections[-1], label=f"PSD [{sg[0, 0].unit if hasattr(sg, \'__getitem__\') else \'\'}]");\n',
+                    "fig, ax = plt.subplots(figsize=(9, 4))\n"
+                    'mesh = ax.pcolormesh(sg.times.value, sg.frequencies.value, sg.value.T, shading="auto")\n'
+                    "ax.set_yscale('log')\n"
+                    "ax.set_ylim(0.05, 10)\n"
+                    'ax.set_xlabel("Time [s]")\n'
+                    'ax.set_ylabel("Frequency [Hz]")\n'
+                    'ax.set_title("Seismic Spectrogram")\n'
+                    'plt.colorbar(mesh, ax=ax, label=f"PSD [{getattr(sg, \'unit\', \'\')}]")\n'
+                    "plt.tight_layout()\n"
+                    "plt.show()\n",
+                )
+            if "plot = sg.plot()" in src:
+                _set_source(
+                    cell,
+                    "# Spectrogram: Time-frequency map\n"
+                    "sg = ts_seismic.spectrogram(stride=5.0, fftlength=5.0, overlap=0.5)\n"
+                    "\n"
+                    "fig, ax = plt.subplots(figsize=(9, 4))\n"
+                    'mesh = ax.pcolormesh(sg.times.value, sg.frequencies.value, sg.value.T, shading="auto")\n'
+                    "ax.set_yscale('log')\n"
+                    "ax.set_ylim(0.05, 10)\n"
+                    'ax.set_xlabel("Time [s]")\n'
+                    'ax.set_ylabel("Frequency [Hz]")\n'
+                    'ax.set_title("Seismic Spectrogram")\n'
+                    'plt.colorbar(mesh, ax=ax, label=f"PSD [{getattr(sg, \'unit\', \'\')}]")\n'
+                    "plt.tight_layout()\n"
+                    "plt.show()\n",
+                )
+                continue
+            _set_source(cell, src)
+        _sanitize_outputs(nb, lang=lang)
+        _save(path, nb)
+
     ja_path = ROOT / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "case_seismic_obspy.ipynb"
     nb = _load(ja_path)
     joined = "\n".join(_cell_source(c) for c in nb["cells"] if c.get("cell_type") == "markdown")
@@ -418,11 +667,18 @@ def _fix_case_seismic_obspy() -> None:
         _save(ja_path, nb)
 
 
+def _tag_ci_heavy(lang: str, name: str) -> None:
+    path = ROOT / "docs" / "web" / lang / "user_guide" / "tutorials" / name
+    nb = _load(path)
+    _ensure_first_cell_tag(nb, "ci-heavy")
+    _save(path, nb)
+
+
 def _fix_case_arima_burst_search() -> None:
     path = ROOT / "docs" / "web" / "en" / "user_guide" / "tutorials" / "case_arima_burst_search.ipynb"
     nb = _load(path)
     translations = {
-        0: """# ARIMA-Based Burst Detection
+        1: """# ARIMA-Based Burst Detection
 # Idea sketch for burst gravitational-wave searches
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/tatsuki-washimi/gwexpy/blob/main/docs/web/en/user_guide/tutorials/case_arima_burst_search.ipynb)
@@ -437,12 +693,12 @@ This notebook demonstrates the idea of using an **autoregressive model (ARIMA)**
 - BEACON: Autoregressive Search for Unmodeled transients (BEACON.pdf)
 - Sparkler: Autoregressive Search of Unmodeled GW (Sparkler_1min.pdf)
 """,
-        2: "## 1. Generate detector noise\nFirst we simulate detector background noise. When available we use an aLIGO design-sensitivity model; otherwise we fall back to generic colored noise.\n",
-        4: "## 2. Inject a burst signal\nWe inject a sine-Gaussian burst into the second half of the data and use it as the test segment.\n",
-        6: "## 3. Learn the background with ARIMA\nWe fit an ARIMA model on the first 8 seconds, where no burst is present, so that the model captures the stationary background statistics. The data are moderately downsampled to keep the example lightweight.\n",
-        8: "## 4. Compute residuals and detect anomalies\nWe apply the fitted model to the remaining data and inspect the residuals. Stationary noise should leave small residuals, while an unmodeled burst produces a localized excess.\n",
-        10: "## 5. Evaluate performance versus SNR\nFinally we repeat the injection for several signal-to-noise ratios to estimate how the residual-based detection responds as the burst becomes weaker.\n",
-        12: "## Summary\n\n### Key ideas behind ARIMA-based burst searches\n1. **Background suppression**: model and subtract stationary noise to improve the visibility of weak transients.\n2. **Residual analysis**: monitor deviations from the expected residual distribution to identify unmodeled events.\n\nProduction pipelines such as BEACON extend this idea to multiple channels and coherence checks, but this notebook captures the core intuition in a compact example.\n",
+        3: "## 1. Generate detector noise\nFirst we simulate detector background noise. When available we use an aLIGO design-sensitivity model; otherwise we fall back to generic colored noise.\n",
+        5: "## 2. Inject a burst signal\nWe inject a sine-Gaussian burst into the second half of the data and use it as the test segment.\n",
+        7: "## 3. Learn the background with ARIMA\nWe fit an ARIMA model on the first 8 seconds, where no burst is present, so that the model captures the stationary background statistics. The data are moderately downsampled to keep the example lightweight.\n",
+        9: "## 4. Compute residuals and detect anomalies\nWe apply the fitted model to the remaining data and inspect the residuals. Stationary noise should leave small residuals, while an unmodeled burst produces a localized excess.\n",
+        11: "## 5. Evaluate performance versus SNR\nFinally we repeat the injection for several signal-to-noise ratios to estimate how the residual-based detection responds as the burst becomes weaker.\n",
+        13: "## Summary\n\n### Key ideas behind ARIMA-based burst searches\n1. **Background suppression**: model and subtract stationary noise to improve the visibility of weak transients.\n2. **Residual analysis**: monitor deviations from the expected residual distribution to identify unmodeled events.\n\nProduction pipelines such as BEACON extend this idea to multiple channels and coherence checks, but this notebook captures the core intuition in a compact example.\n",
     }
     for idx, text in translations.items():
         _set_source(nb["cells"][idx], text)
@@ -453,14 +709,18 @@ This notebook demonstrates the idea of using an **autoregressive model (ARIMA)**
 def _annotate_advanced_hht() -> None:
     path = ROOT / "docs" / "web" / "ja" / "user_guide" / "tutorials" / "advanced_hht.ipynb"
     nb = _load(path)
-    first = _cell_source(nb["cells"][0])
-    if "ワークフロー重視" not in first:
-        _set_source(
-            nb["cells"][0],
-            first
-            + "\n> **注記**: この日本語版は、英語版の理論比較をそのまま翻訳したものではなく、`TimeSeries.hht()` を中心にした実践ワークフロー重視の版です。\n",
-        )
-        _save(path, nb)
+    note = (
+        "> **注記**: この日本語版は、英語版の理論比較をそのまま翻訳したものではなく、"
+        "`TimeSeries.hht()` を中心にした実践ワークフロー重視の版です。\n"
+    )
+    first_code = _cell_source(nb["cells"][0]).replace(note, "").rstrip()
+    _set_source(nb["cells"][0], first_code + "\n")
+
+    first_markdown = _cell_source(nb["cells"][1])
+    if "ワークフロー重視" not in first_markdown:
+        _set_source(nb["cells"][1], first_markdown.rstrip() + "\n\n" + note)
+
+    _save(path, nb)
 
 
 def _strip_notebook_cell_ids(*paths: Path) -> None:
@@ -505,13 +765,17 @@ def main() -> None:
     _apply_pairwise_source_fixes()
     for lang in ("en", "ja"):
         _fix_advanced_correlation(lang)
+        _fix_advanced_hht(lang)
         _fix_advanced_bruco(lang)
         _fix_case_bruco_ica(lang)
         _fix_case_glitch(lang)
         _fix_intro_frequencyseries(lang)
+        _fix_segment_visualization_setup(lang)
+        _fix_segment_asd_pipeline_setup(lang)
         _fix_swiglal_and_segment_examples(lang)
         _fix_case_hdf5(lang)
         _fix_case_dttxml_and_gbd(lang)
+        _tag_ci_heavy(lang, "rayleigh_gauch_tutorial.ipynb")
     _fix_advanced_coupling()
     _fix_case_seismic_obspy()
     _fix_case_arima_burst_search()

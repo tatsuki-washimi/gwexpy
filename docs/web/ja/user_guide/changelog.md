@@ -14,4 +14,4 @@ GWexpy の主な変更履歴を記載します。
 
 ## 過去の履歴
 
-詳細は [GitHub Releases](https://github.com/gwexpy/gwexpy/releases) を参照してください。
+詳細は [GitHub Releases](https://github.com/tatsuki-washimi/gwexpy/releases) を参照してください。
