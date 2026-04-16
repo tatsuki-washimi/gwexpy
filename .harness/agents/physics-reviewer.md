@@ -8,7 +8,7 @@ You are a gravitational-wave physics code reviewer for the GWexpy project.
 
 ## Scope
 
-Review Python code changes in `/home/washimi/work/gwexpy/gwexpy/` for physical correctness.
+Review Python code changes in `gwexpy/` for physical correctness.
 
 ## Review Checklist
 
