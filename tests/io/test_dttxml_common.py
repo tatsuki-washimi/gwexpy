@@ -12,6 +12,7 @@ from gwexpy.io.dttxml_common import (
     ChannelInfo,
     _decode_dtt_stream,
     extract_xml_channels,
+    load_dttxml_products,
 )
 
 # ---------------------------------------------------------------------------
@@ -189,3 +190,77 @@ class TestDecodeDttStream:
         encoded = "  " + _base64_float32(values) + "\n"
         result = _decode_dtt_stream(encoded, "LittleEndian,base64", "float")
         np.testing.assert_allclose(result, values, rtol=1e-5)
+
+
+def _make_xml_with_string_typed_spectrum_params(tmp_path) -> str:
+    """Create a minimal DTT XML file where numeric params are stored as strings."""
+
+    n_points = 4
+
+    def block(attrs: dict[str, str], data_b64: str, dtype: str) -> str:
+        lines = ['  <LIGO_LW Type="Spectrum">']
+        for key, value in attrs.items():
+            lines.append(f'    <Param Name="{key}" Type="string">{value}</Param>')
+        lines += [
+            "    <Time Name=\"t0\">1300000000</Time>",
+            f'    <Array Type="{dtype}">',
+            f"      <Dim>{n_points}</Dim>",
+            f'      <Stream Encoding="LittleEndian,base64">{data_b64}</Stream>',
+            "    </Array>",
+            "  </LIGO_LW>",
+        ]
+        return "\n".join(lines)
+
+    psd = _base64_float32([1e-10, 1e-10, 1e-10, 1e-10])
+    tf = _base64_complex64([1 + 0j, 0.5 + 0.1j, 0.25 + 0.2j, 0.125 + 0.3j])
+
+    xml = [
+        "<?xml version='1.0' encoding='utf-8'?>",
+        "<LIGO_LW>",
+        block(
+            {
+                "ChannelA": "K1:SUS-ITMX_EXCITATION",
+                "Subtype": "1",
+                "f0": "0.0",
+                "df": "1.0",
+                "N": str(n_points),
+            },
+            psd,
+            "float",
+        ),
+        block(
+            {
+                "ChannelA": "K1:SUS-ITMX_EXCITATION",
+                "ChannelB[0]": "K1:SUS-ITMX_DISPLACEMENT",
+                "Subtype": "4",
+                "f0": "0.0",
+                "df": "1.0",
+                "N": str(n_points),
+            },
+            tf,
+            "floatComplex",
+        ),
+        "</LIGO_LW>",
+    ]
+    path = tmp_path / "string_typed_spectrum.xml"
+    path.write_text("\n".join(xml))
+    return str(path)
+
+
+class TestLoadDttxmlProducts:
+    def test_native_parser_accepts_string_typed_numeric_params(self, tmp_path):
+        path = _make_xml_with_string_typed_spectrum_params(tmp_path)
+
+        products = load_dttxml_products(path, native=True)
+
+        assert {"PSD", "ASD", "TF"} <= set(products)
+
+        psd = products["PSD"]["K1:SUS-ITMX_EXCITATION"]
+        assert psd["frequencies"].dtype.kind == "f"
+        np.testing.assert_allclose(psd["frequencies"], np.arange(4, dtype=float))
+
+        tf = products["TF"][
+            ("K1:SUS-ITMX_DISPLACEMENT", "K1:SUS-ITMX_EXCITATION")
+        ]
+        assert tf["frequencies"].dtype.kind == "f"
+        assert tf["data"].dtype.kind == "c"
