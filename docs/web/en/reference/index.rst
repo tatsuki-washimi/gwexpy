@@ -12,7 +12,7 @@ Key Data Structures
 
    * - Class
      - Description
-   * - :doc:`ScalarField <user_guide/scalarfield_slicing>`
+   * - :doc:`ScalarField <../user_guide/scalarfield_slicing>`
      - High-dimensional data container for 4D (time, space) fields.
    * - :class:`TimeSeriesMatrix <gwexpy.timeseries.TimeSeriesMatrix>`
      - Matrix-format container for batch processing of multiple time series.
@@ -39,9 +39,11 @@ For detailed methods and properties of each module, please refer to the links be
 
         Properties and methods of major classes
 
+.. note::
+   For the design intent and usage examples of `ScalarField`, see :doc:`../user_guide/scalarfield_slicing`. For module-by-module API pages, start from :doc:`api/index`.
+
 .. toctree::
    :hidden:
 
    api/index
    classes
-

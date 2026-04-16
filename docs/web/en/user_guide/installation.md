@@ -6,100 +6,62 @@ GWexpy is currently in its **Development Version**. Since it is not yet official
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
 
-.. list-table:: Recommended Installation Options
-   :widths: 25 50 25
-   :header-rows: 1
-
-   * - Goal
-     - Installation Command
-     - Features
-   * - Minimal
-     - `pip install git+https://github.com/tatsuki-washimi/gwexpy.git`
-     - Numerical containers and basic arithmetic. Minimal dependencies.
-   * - **Recommended**
-     - `pip install "gwexpy[analysis,fitting,plotting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`
-     - Advanced statistics, curve fitting, and mapping features.
-   * - GW Analysis
-     - `pip install "gwexpy[gw,io] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`
-     - Frame file support, NDS2 access, and official GW tools.
-   * - Dev / Full
-     - `pip install "gwexpy[all] @ git+https://github.com/tatsuki-washimi/gwexpy.git"`
-     - Enables all optional features.
+| Goal | Installation Command | Features |
+| --- | --- | --- |
+| Minimal | `pip install git+https://github.com/tatsuki-washimi/gwexpy.git` | Numerical containers and basic arithmetic. Minimal dependencies. |
+| **Recommended** | `pip install "gwexpy[analysis,fitting,plotting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` | Advanced statistics, curve fitting, and mapping features. |
+| GW Analysis | `pip install "gwexpy[gw,io] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` | Frame file support, NDS2 access, and official GW tools. |
+| Dev / Full | `pip install "gwexpy[all] @ git+https://github.com/tatsuki-washimi/gwexpy.git"` | Enables all optional features. |
 
 ## 1. Installation Steps
 
-.. tab-set::
+### Minimal
 
-   .. tab-item:: Minimal
+For users who want to keep dependencies minimal and only use core containers like `ScalarField`.
 
-      For users who want to keep dependencies minimal and only use core containers like `ScalarField`.
+```bash
+pip install git+https://github.com/tatsuki-washimi/gwexpy.git
+```
 
-      ```bash
-      pip install git+https://github.com/tatsuki-washimi/gwexpy.git
-      ```
+### Conda Environment (Recommended / GW Analysis)
 
-   .. tab-item:: Conda Environment (Recommended / GW Analysis)
+For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recommend using Conda (e.g., Miniforge) to resolve binary dependencies first.
 
-      For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recommend using Conda (e.g., Miniforge) to resolve binary dependencies first.
+```bash
+# 1. Create environment and resolve binary dependencies
+conda create -n gwexpy python=3.11
+conda activate gwexpy
+conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
 
-      ```bash
-      # 1. Create environment and resolve binary dependencies
-      conda create -n gwexpy python=3.11
-      conda activate gwexpy
-      conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecpp
+# 2. Install GWexpy with analysis/fitting options
+pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
+```
 
-      # 2. Install GWexpy with analysis/fitting options
-      pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
-      ```
+### Developer Mode
 
-   .. tab-item:: Developer Mode
+For contributors who want to install from source and set up a testing environment.
 
-      For contributors who want to install from source and set up a testing environment.
-
-      ```bash
-      git clone https://github.com/tatsuki-washimi/gwexpy.git
-      cd gwexpy
-      pip install -e ".[dev,all]"
-      ```
+```bash
+git clone https://github.com/tatsuki-washimi/gwexpy.git
+cd gwexpy
+pip install -e ".[dev,all]"
+```
 
 ---
 
 ## 2. Optional Dependencies (Extras) Details
 
-.. list-table:: Extras Overview
-   :widths: 20 40 40
-   :header-rows: 1
-
-   * - Extra Name
-     - Key Packages
-     - Primary Use Cases
-   * - `analysis`
-     - `scikit-learn`, `statsmodels`, `pmdarima`
-     - Noise cancellation, forecasting, and machine learning.
-   * - `fitting`
-     - `iminuit`, `emcee`, `corner`
-     - Least-squares fitting and MCMC analysis.
-   * - `gw`
-     - `lalsuite`, `gwosc`, `gwinc`, `ligo.skymap`
-     - Data discovery, sensitivity calculations, and sky mapping.
-   * - `io`
-     - `nptdms`
-     - Reading LabVIEW TDMS formats.
-   * - `plotting`
-     - `pygmt`
-     - High-precision geographic mapping (GeoMap).
-   * - `audio`
-     - `pydub`
-     - Audio export and processing.
-   * - `seismic`
-     - `obspy`, `mth5`, `mtpy`
-     - Seismic and magnetotelluric data.
-   * - `control`
-     - `control` (python-control)
-     - Control systems and transfer functions.
-   * - `gui`
-     - `PyQt5`, `pyqtgraph`
-     - Graphical interface (prototype stage).
+| Extra Name | Key Packages | Primary Use Cases |
+| --- | --- | --- |
+| `analysis` | `scikit-learn`, `statsmodels`, `pmdarima` | Noise cancellation, forecasting, and machine learning. |
+| `fitting` | `iminuit`, `emcee`, `corner` | Least-squares fitting and MCMC analysis. |
+| `gw` | `lalsuite`, `gwosc`, `gwinc`, `ligo.skymap` | Data discovery, sensitivity calculations, and sky mapping. |
+| `io` | `nptdms` | Reading LabVIEW TDMS formats. |
+| `plotting` | `pygmt` | High-precision geographic mapping (GeoMap). |
+| `audio` | `pydub` | Audio export and processing. |
+| `seismic` | `obspy`, `mth5`, `mtpy` | Seismic and magnetotelluric data. |
+| `control` | `control` (python-control) | Control systems and transfer functions. |
+| `gui` | `PyQt5`, `pyqtgraph` | Graphical interface (prototype stage). |
 
 ---
 
@@ -120,5 +82,5 @@ Python's `pickle` module has inherent security risks (Arbitrary Code Execution) 
 :::
 ## 5. Next Steps
 
-* :doc:`quickstart` - Get started in 3 lines
-* :doc:`getting_started` - Learning roadmap
+* [Quickstart](quickstart.md) - Get started in 3 lines
+* [Getting Started](getting_started.md) - Learning roadmap

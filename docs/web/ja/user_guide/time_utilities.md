@@ -1,4 +1,4 @@
-# :term:`GPS時刻ユーティリティ関数` (`gwexpy.time`)
+# GPS時刻ユーティリティ関数 (`gwexpy.time`)
 
 GWexpy は GWpy の時刻ユーティリティを拡張し、GWpy が対応するスカラーの文字列・datetime に加えて、pandas・NumPy・Astropy オブジェクトに対するベクトル演算をサポートします。
 
@@ -26,7 +26,7 @@ from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 | 目的 | 推奨関数 | 主な入力の型 | 出力の型 (Scalar / Vector) | 主要引数 |
 | :--- | :--- | :--- | :--- | :--- |
 | **日時 → GPS秒** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | `timezone` |
-| **GPS秒 → 日時** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `Time (Quantity)` | — |
+| **GPS秒 → 日時** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `astropy.time.Time` | — |
 | **相互変換 (自動判定)** | `tconvert` | 上記すべて + `"now"` | 文脈に応じた型 (Scalar 優先) | — |
 | **高精度オブジェクト** | `LIGOTimeGPS` | `seconds`, `nanoseconds` | `LIGOTimeGPS` (秒+ナノ秒保持) | — |
 
@@ -136,6 +136,9 @@ to_gps(dt64)
 GPS 秒を人間が読みやすい時刻に変換します。スカラー入力は `datetime`、
 配列入力は `astropy.time.Time` 配列を返します。
 
+- 単一の `int` / `float` / `LIGOTimeGPS` を渡した場合: `datetime.datetime`
+- リスト・NumPy 配列・pandas 系のベクトル入力を渡した場合: `astropy.time.Time`
+
 ```python
 from gwexpy.time import from_gps
 
@@ -214,5 +217,5 @@ segment = ts.crop("2015-09-14 09:50:44", "2015-09-14 09:50:50")
 
 ## 関連ドキュメント
 
-- {doc}`../reference/api/time` — `gwexpy.time` の完全な API リファレンス
-- {doc}`gwexpy_for_gwpy_users_ja` — GWexpy の全拡張機能の概要
+- [API リファレンス](../reference/api/time.rst) — `gwexpy.time` の完全な API リファレンス
+- [GWpy からの移行](gwexpy_for_gwpy_users_ja.md) — GWexpy の全拡張機能の概要

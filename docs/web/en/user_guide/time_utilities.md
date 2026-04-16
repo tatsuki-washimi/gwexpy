@@ -26,7 +26,7 @@ Choose the most appropriate function for your goal.
 | Goal | Recommended Function | Primary Input Types | Output Type (Scalar / Vector) | Key Args |
 | :--- | :--- | :--- | :--- | :--- |
 | **DateTime → GPS** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | `timezone` |
-| **GPS → DateTime** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `Time (Quantity)` | — |
+| **GPS → DateTime** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `astropy.time.Time` | — |
 | **Convenience (Auto)** | `tconvert` | All above + `"now"` | Context-dependent (Scalar pref.) | — |
 | **High-Precision Object** | `LIGOTimeGPS` | `seconds`, `nanoseconds` | `LIGOTimeGPS` (integer s+ns) | — |
 
@@ -117,6 +117,9 @@ gps_array = to_gps(dates)
 
 Converts GPS seconds into human-readable formats. Scalar inputs return `datetime` objects, while array inputs return `astropy.time.Time` objects.
 
+- Scalar input such as `int`, `float`, or `LIGOTimeGPS`: returns `datetime.datetime`
+- Vector input such as a list, NumPy array, or pandas object: returns `astropy.time.Time`
+
 ```python
 from_gps(1126259462)
 # → datetime.datetime(2015, 9, 14, 9, 50, 45, tzinfo=...)
@@ -170,5 +173,5 @@ segment = ts.crop("2015-09-14 09:50:44", "2015-09-14 09:50:50")
 
 ## Related Documents
 
-- {doc}`../reference/api/time` — Complete API reference for `gwexpy.time`
-- {doc}`gwexpy_for_gwpy_users_en` — Overview of all GWexpy extensions
+- [API Reference](../reference/api/time.rst) — Complete API reference for `gwexpy.time`
+- [Migration from GWpy](gwexpy_for_gwpy_users_en.md) — Overview of all GWexpy extensions
