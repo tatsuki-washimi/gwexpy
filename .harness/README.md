@@ -53,7 +53,8 @@ gwexpy プロジェクトにおける AI エージェント（Claude, Codex, Cur
 # リポジトリルートから実行
 AI_HARNESS_REPO_ROOT=$(pwd) \
 AI_HARNESS_QUALITY_GATES_MANIFEST=$(pwd)/.harness/config/quality-gates/manifest.yaml \
-  python3 /home/washimi/ai-harness/bin/verify-changed-files --changed
+AI_HARNESS_BIN=/path/to/ai-harness/bin \
+  python3 "$AI_HARNESS_BIN/verify-changed-files" --changed
 ```
 
 ---
