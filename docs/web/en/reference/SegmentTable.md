@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `SegmentTable` to store or manipulate time segments together with metadata needed for data-quality and analysis windows.
@@ -38,7 +40,7 @@ The detailed generated API continues below on this page.
 <!-- reference-summary:end -->
 
 
-**Inherits from:** `gwpy.table.Table`
+**Inherits from:** [GWpy table documentation](https://gwpy.readthedocs.io/en/latest/table/)
 
 A container for time segments and associated metadata, extending the standard GWpy/Astropy Table functionality.
 

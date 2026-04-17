@@ -1,6 +1,8 @@
 # Plot
 
-**Inherits from:** `gwpy.plot.Plot`
+**Stability:** Stable
+
+**Inherits from:** [`gwpy.plot.Plot`](https://gwpy.readthedocs.io/en/latest/reference/gwpy.plot.Plot/)
 
 ## What it is
 

@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `ScalarField` は物理単位・軸ドメイン・FFT 後の整合性を保ちながら場データを扱うためのクラスです。

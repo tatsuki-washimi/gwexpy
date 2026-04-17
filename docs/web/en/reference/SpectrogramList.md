@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `SpectrogramList` to keep multiple `Spectrogram` objects together while preserving channel labels and metadata.

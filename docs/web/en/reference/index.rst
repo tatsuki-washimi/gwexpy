@@ -1,49 +1,54 @@
 Reference
 =========
 
-Detailed specifications of GWexpy classes, functions, and APIs.
+**Stability:** Stable
 
-Key Data Structures
--------------------
+Use this page as the hub for navigating the GWexpy reference. Choose the entry point that matches how you are looking things up: by module, by class name, or by concept/topic.
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 70
+   :widths: 30 15 55
 
-   * - Class
-     - Description
-   * - :doc:`ScalarField <../user_guide/scalarfield_slicing>`
-     - High-dimensional data container for 4D (time, space) fields.
-   * - :class:`TimeSeriesMatrix <gwexpy.timeseries.TimeSeriesMatrix>`
-     - Matrix-format container for batch processing of multiple time series.
-   * - :class:`FrequencySeriesMatrix <gwexpy.frequencyseries.FrequencySeriesMatrix>`
-     - Container for multi-channel data in the frequency domain.
+   * - Entry Point
+     - Stability
+     - Use it for
+   * - :doc:`API Index <api/index>`
+     - Stable
+     - Browsing modules and public functions by subsystem
+   * - :doc:`Class Index <classes>`
+     - Stable
+     - Finding class pages by Python class name
+   * - :doc:`Topics <topics>`
+     - Stable
+     - Finding theory, conventions, and helper pages by concept
 
-API Reference
--------------
-
-For detailed methods and properties of each module, please refer to the links below.
-
-.. grid:: 2
+.. grid:: 3
     :gutter: 3
 
     .. grid-item-card:: 🧩 API Index
         :link: api/index
         :link-type: doc
 
-        List of all modules and functions
+        Browse module and function reference pages by subsystem.
 
-    .. grid-item-card:: 🏗️ Class List
+    .. grid-item-card:: 🏗️ Class Index
         :link: classes
         :link-type: doc
 
-        Properties and methods of major classes
+        Find major GWexpy classes in alphabetical order.
+
+    .. grid-item-card:: 🧭 Topics
+        :link: topics
+        :link-type: doc
+
+        Start from conventions, theory notes, and helper overviews.
 
 .. note::
-   For the design intent and usage examples of `ScalarField`, see :doc:`../user_guide/scalarfield_slicing`. For module-by-module API pages, start from :doc:`api/index`.
+   If you want task-oriented learning material rather than the reference, start from the user guide and tutorials. For `ScalarField` usage patterns, see :doc:`../user_guide/scalarfield_slicing`.
 
 .. toctree::
    :maxdepth: 2
 
    api/index
    classes
+   topics

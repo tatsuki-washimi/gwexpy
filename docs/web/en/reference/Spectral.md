@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use the spectral estimation helpers when you need PSD, ASD, bootstrap uncertainty bands, and unit-consistent frequency-domain estimators.

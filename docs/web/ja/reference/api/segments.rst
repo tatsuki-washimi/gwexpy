@@ -1,5 +1,7 @@
-セグメント
-==========
+セグメント (Segments)
+=====================
+
+**安定性:** Stable
 
 .. currentmodule:: gwexpy.segments
 

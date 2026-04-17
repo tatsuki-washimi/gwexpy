@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `TimeSeriesMatrix` when channels share one time axis and you want matrix-wide FFT, PSD, coherence, or preprocessing methods.

@@ -1,6 +1,8 @@
 Analysis
 ========
 
+**Stability:** Stable
+
 .. automodule:: gwexpy.analysis.coupling
    :members:
    :undoc-members:

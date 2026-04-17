@@ -1,6 +1,8 @@
 Plotting
 ========
 
+**Stability:** Stable
+
 .. currentmodule:: gwexpy.plot
 
 Matplotlib-based plotting extensions including GPS-aware axes, Bode plots,

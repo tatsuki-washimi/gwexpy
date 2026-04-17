@@ -1,6 +1,8 @@
 Preprocessing
 =============
 
+**Stability:** Stable
+
 Preprocessing utilities are provided under ``gwexpy.signal.preprocessing``.
 
 Main components:

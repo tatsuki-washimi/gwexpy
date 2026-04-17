@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `Transform` as the base contract for reusable preprocessing steps that implement `fit`, `transform`, and optional inversion.

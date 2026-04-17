@@ -1,6 +1,8 @@
 Frequency Series
 ================
 
+**Stability:** Stable
+
 .. currentmodule:: gwexpy.frequencyseries
 
 Overview

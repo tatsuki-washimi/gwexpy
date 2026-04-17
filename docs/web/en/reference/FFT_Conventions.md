@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use this page as the quick reference for Fourier normalization, axis conventions, and the APIs that follow those conventions.

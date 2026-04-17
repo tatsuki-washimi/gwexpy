@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `Plane2D` は軸名やメタデータを保持したまま配列変換を行いたいときに使います。

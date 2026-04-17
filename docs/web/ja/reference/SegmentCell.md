@@ -1,6 +1,8 @@
-# セグメントセル (SegmentCell)
+# SegmentCell
 
 <!-- reference-summary:start -->
+
+**安定性:** Stable
 
 ## 主な用途
 
@@ -37,7 +39,7 @@ segment = SegmentCell(0, 10)
 <!-- reference-summary:end -->
 
 
-**継承元:** `gwpy.segments.Segment`
+**継承元:** [`gwpy.segments.Segment`](https://gwpy.readthedocs.io/en/latest/api/gwpy.segments.Segment/)
 
 オプションのメタデータを含む時間セグメント（開始、終了）を表します。
 

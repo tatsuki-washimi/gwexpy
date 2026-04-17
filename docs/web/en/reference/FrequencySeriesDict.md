@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `FrequencySeriesDict` to manage multiple `FrequencySeries` objects as a labeled collection with batch operations and conversion helpers.

@@ -1,5 +1,7 @@
-信号処理
-========
+信号処理 (Signal Processing)
+============================
+
+**安定性:** Stable
 
 .. currentmodule:: gwexpy.signal
 

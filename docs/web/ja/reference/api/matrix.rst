@@ -1,5 +1,7 @@
-行列コンテナ
-============
+行列コンテナ (Matrix Containers)
+================================
+
+**安定性:** Stable
 
 複数の :class:`~gwexpy.timeseries.TimeSeries`、:class:`~gwexpy.frequencyseries.FrequencySeries`、
 または :class:`~gwexpy.spectrogram.Spectrogram` をグループ化し、

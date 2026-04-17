@@ -1,5 +1,7 @@
-ヒストグラム API
-================
+ヒストグラム (Histogram)
+========================
+
+**安定性:** Stable
 
 .. automodule:: gwexpy.histogram
 

@@ -1,6 +1,8 @@
 Time Series
 ===========
 
+**Stability:** Stable
+
 .. currentmodule:: gwexpy.timeseries
 
 Overview

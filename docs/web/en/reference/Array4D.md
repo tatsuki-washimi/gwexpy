@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `Array4D` when you need a typed array object that preserves semantic axis names and GWexpy metadata through transformations.

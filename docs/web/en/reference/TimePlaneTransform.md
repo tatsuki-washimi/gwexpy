@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `TimePlaneTransform` for 3D outputs where one axis is time and the remaining two axes define a 2D plane at each timestep.

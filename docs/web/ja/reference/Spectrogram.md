@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `Spectrogram` は単一の時間周波数マップを表し、GWexpy の解析・描画・変換ヘルパを利用できます。
@@ -42,7 +44,7 @@ med = sgm.percentile(50, axis="time")
 <!-- reference-summary:end -->
 
 
-**継承元:** SpectrogramAnalysisMixin, SpectrogramInteropMixin, SignalAnalysisMixin, PhaseMethodsMixin, RegularityMixin, BaseSpectrogram (gwpy.spectrogram.Spectrogram)
+**継承元:** SpectrogramAnalysisMixin, SpectrogramInteropMixin, SignalAnalysisMixin, PhaseMethodsMixin, RegularityMixin, BaseSpectrogram ([`gwpy.spectrogram.Spectrogram`](https://gwpy.readthedocs.io/en/latest/api/gwpy.spectrogram.Spectrogram/))
 
 追加の相互運用メソッドを備えた gwpy.spectrogram.Spectrogram の拡張。
 

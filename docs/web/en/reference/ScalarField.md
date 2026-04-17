@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `ScalarField` for physics-aware field data with explicit domains, units, and FFT-aware axis handling.

@@ -1,6 +1,8 @@
 Time (gwexpy.time)
 ==================
 
+**Stability:** Stable
+
 .. automodule:: gwexpy.time
 
 .. currentmodule:: gwexpy.time

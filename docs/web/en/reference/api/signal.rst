@@ -1,6 +1,8 @@
 Signal Processing
 =================
 
+**Stability:** Stable
+
 .. currentmodule:: gwexpy.signal
 
 Filters, window functions, Q-transform, and spectral estimation utilities.

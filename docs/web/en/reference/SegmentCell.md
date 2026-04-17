@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `SegmentCell` to store or manipulate time segments together with metadata needed for data-quality and analysis windows.
@@ -37,7 +39,7 @@ The detailed generated API continues below on this page.
 <!-- reference-summary:end -->
 
 
-**Inherits from:** `gwpy.segments.Segment`
+**Inherits from:** [`gwpy.segments.Segment`](https://gwpy.readthedocs.io/en/latest/api/gwpy.segments.Segment/)
 
 Represents a single time segment (start, end) with optional metadata.
 

@@ -1,6 +1,8 @@
 Fields
 ======
 
+**Stability:** Stable
+
 .. automodule:: gwexpy.fields
    :members:
    :undoc-members:

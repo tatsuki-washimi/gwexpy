@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `TimeSeriesList` to organize multiple `TimeSeries` objects while preserving per-channel metadata and enabling batch operations.

@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `SpectrogramMatrix` は多チャンネル spectrogram を整列させて、行列として解析・要約するためのコンテナです。

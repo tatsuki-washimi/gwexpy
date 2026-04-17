@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `SpectrogramList` は複数の `Spectrogram` をチャンネル情報付きでまとめて扱うために使います。

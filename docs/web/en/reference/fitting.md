@@ -1,5 +1,7 @@
 # gwexpy.fitting
 
+**Stability:** Stable
+
 The `gwexpy.fitting` module provides advanced fitting functionality using iminuit.
 
 ## Overview

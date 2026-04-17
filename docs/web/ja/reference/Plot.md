@@ -1,6 +1,8 @@
 # Plot
 
-**継承元:** `gwpy.plot.Plot`
+**安定性:** Stable
+
+**継承元:** [`gwpy.plot.Plot`](https://gwpy.readthedocs.io/en/latest/reference/gwpy.plot.Plot/)
 
 ## 主な用途
 

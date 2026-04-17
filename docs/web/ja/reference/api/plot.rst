@@ -1,5 +1,7 @@
-描画
-======
+描画 (Plotting)
+===============
+
+**安定性:** Stable
 
 .. currentmodule:: gwexpy.plot
 

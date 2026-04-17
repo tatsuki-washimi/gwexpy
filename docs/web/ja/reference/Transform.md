@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `Transform` は `fit`・`transform`・必要に応じて `inverse_transform` を実装する前処理の基底契約です。
