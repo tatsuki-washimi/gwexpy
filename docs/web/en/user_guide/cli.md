@@ -45,7 +45,7 @@ Future GWexpy releases will add specialized subcommands for:
 - Time-frequency analysis
 - Event localization
 
-For planned features and timeline, see the [Roadmap](https://github.com/tatsuki-washimi/gwexpy/issues).
+For planned features and timeline, see the public [Roadmap](roadmap.md).
 
 ## Troubleshooting
 

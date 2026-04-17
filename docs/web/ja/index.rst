@@ -135,6 +135,7 @@ Visual Examples
 
     .. grid-item-card::
         :img-top: /_static/images/case_noise_budget_thumb.png
+        :img-alt: ノイズバジェット例のサムネイル
         :link: user_guide/tutorials/advanced_bruco
         :link-type: doc
         :text-align: center
@@ -143,6 +144,7 @@ Visual Examples
 
     .. grid-item-card::
         :img-top: /_static/images/case_transfer_function_thumb.png
+        :img-alt: 伝達関数推定例のサムネイル
         :link: user_guide/tutorials/case_transfer_function
         :link-type: doc
         :text-align: center
@@ -151,6 +153,7 @@ Visual Examples
 
     .. grid-item-card::
         :img-top: /_static/images/case_active_damping_thumb.png
+        :img-alt: アクティブダンピング例のサムネイル
         :link: user_guide/tutorials/case_active_damping
         :link-type: doc
         :text-align: center
@@ -210,6 +213,7 @@ GWexpy は GWpy の上に構築されています。GWpy の基本操作は下�
    :maxdepth: 1
    :caption: ℹ️ その他 (Info)
 
+   user_guide/roadmap
    user_guide/troubleshooting
    user_guide/citation
    user_guide/changelog
