@@ -1,4 +1,4 @@
-# BruCo (Brute force coherence)
+# Bruco (Brute force coherence)
 
 <!-- reference-summary:start -->
 
@@ -40,7 +40,7 @@ The detailed generated API continues below on this page.
 <!-- reference-summary:end -->
 
 
-`BruCo` computes **brute force coherence** between a target channel (e.g., a gravitational-wave channel) and a large number of auxiliary channels to identify noise sources.
+`Bruco` computes **brute force coherence** between a target channel (e.g., a gravitational-wave channel) and a large number of auxiliary channels to identify noise sources.
 For a given frequency band and time segment, it ranks auxiliary channels by coherence with the target and estimates their noise contribution (Noise Projection).
 
 The original BruCo implementation is available at:
@@ -61,10 +61,10 @@ The original BruCo implementation is available at:
 
 ### 1. Initialization
 
-Create a `BruCo` instance by specifying the target channel and a list of auxiliary channels to scan.
+Create a `Bruco` instance by specifying the target channel and a list of auxiliary channels to scan.
 
 ```python
-from gwexpy.analysis.BruCo import BruCo
+from gwexpy.analysis import Bruco
 
 # Target channel name
 target = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
@@ -81,7 +81,7 @@ aux_channels = [
 excluded = ["K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ", "K1:GRD-LSC_LOCK_STATE_N"]
 
 # Create instance
-BruCo = BruCo(target, aux_channels, excluded_channels=excluded)
+bruco = Bruco(target, aux_channels, excluded_channels=excluded)
 ```
 
 ### 2. Running the Analysis (Compute)
@@ -97,7 +97,7 @@ start_gps = 1234567890
 duration = 64  # seconds
 
 # Run computation
-result = BruCo.compute(
+result = bruco.compute(
     start=start_gps,
     duration=duration,
     batch_size=50,     # Number of channels to fetch at once
@@ -112,7 +112,7 @@ Since timing information (`t0`, `duration`) is taken from the data, the `start` 
 **A. Pass as a dictionary (all data pre-loaded)**
 ```python
 aux_dict = TimeSeriesDict.read(..., channels=my_channels)
-result = BruCo.compute(
+result = bruco.compute(
     aux_data=aux_dict  # Pass dictionary (start, duration auto-inferred)
 )
 ```
@@ -126,7 +126,7 @@ def data_stream(channels):
     for ch in channels:
         yield TimeSeries.get(ch, start, end)
 
-result = BruCo.compute(
+result = bruco.compute(
     start, duration,                   # Recommended when using generator
     aux_data=data_stream(my_channels), # Pass generator
     batch_size=100                     # Process 100 at a time, then release memory
@@ -134,7 +134,7 @@ result = BruCo.compute(
 ```
 
 #### Case 3: Automatic Retrieval + Preprocessing (Hybrid)
-When you want `BruCo` to handle data retrieval but need to apply filtering or inter-channel operations before analysis, use a callback function.
+When you want `Bruco` to handle data retrieval but need to apply filtering or inter-channel operations before analysis, use a callback function.
 
 ```python
 def my_preprocessing(batch_data: TimeSeriesDict) -> TimeSeriesDict:
@@ -143,7 +143,7 @@ def my_preprocessing(batch_data: TimeSeriesDict) -> TimeSeriesDict:
         batch_data[ch] = ts.highpass(10)  # Example: 10 Hz highpass filter
     return batch_data
 
-result = BruCo.compute(
+result = bruco.compute(
     start, duration,
     preprocess_batch=my_preprocessing  # Specify callback
 )
@@ -151,19 +151,19 @@ result = BruCo.compute(
 This combines the convenience of automatic retrieval with the flexibility of custom processing, while still benefiting from parallel computation.
 
 #### Case 4: Mixed Mode (NDS + Manual)
-You can analyze channels specified at `BruCo` initialization (automatic retrieval) and data passed to `compute()` via `aux_data` (manual) **simultaneously**.
+You can analyze channels specified at `Bruco` initialization (automatic retrieval) and data passed to `compute()` via `aux_data` (manual) **simultaneously**.
 Both data sources are processed sequentially, and results are merged.
 
 ```python
 # 1. Initialize with channels for automatic retrieval
-BruCo = BruCo(target, ["K1:NDS-CHANNEL-1", ...])
+bruco = Bruco(target, ["K1:NDS-CHANNEL-1", ...])
 
 # 2. Create manual data dictionary
 manual_dict = TimeSeriesDict(...)
 
 # 3. Run with both sources
 # Note: manual_dict timing must match start/duration.
-result = BruCo.compute(
+result = bruco.compute(
     start, duration,
     aux_data=manual_dict
 )
@@ -263,7 +263,7 @@ block_size_resolved=414
 
 ## API Reference
 
-### `BruCo`
+### `Bruco`
 
 **`__init__(self, target_channel: str, aux_channels: List[str], excluded_channels: List[str] = None)`**
 - `target_channel`: The main channel to analyze.

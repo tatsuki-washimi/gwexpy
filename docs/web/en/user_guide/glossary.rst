@@ -51,8 +51,8 @@ Definitions of key terms and concepts used throughout the GWexpy documentation.
    VIF
       Variance Inflation Factor. A diagnostic for multicollinearity. It measures how much the variance of an estimated regression coefficient is increased due to correlation between predictors.
 
-   ``BruCo``
-      BruCo is a coherence/correlation-based noise analysis framework. The documentation follows the capitalization used in the implementation (``BruCo`` or ``Bruco``).
+   ``Bruco``
+      Bruco is a coherence/correlation-based noise analysis framework. In GWexpy docs, class names and API identifiers follow the implementation spelling ``Bruco``. When referring to the external upstream tool or repository, ``BruCo`` may still appear.
 
    Field API
       The public interface providing ``ScalarField`` and related operations.
@@ -104,4 +104,3 @@ Definitions of key terms and concepts used throughout the GWexpy documentation.
 
    Stability Labels
       Indicators of API maturity (**Stable**, **Experimental**, or **Deprecated**).
-

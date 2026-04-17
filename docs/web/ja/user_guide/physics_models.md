@@ -59,7 +59,7 @@ $$
 
 - **関連 API**: {doc}`../reference/api/signal` (ICA, PCA)
 
-### 2. 高速相関計算エンジン (:term:`BruCo`)
+### 2. 高速相関計算エンジン (:term:`Bruco`)
 
 `FastCoherenceEngine` は、数千の補助チャネルからターゲット信号への寄与を高速にスキャンするために設計されています。
 

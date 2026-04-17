@@ -30,10 +30,10 @@ API entry: [fields API](../reference/api/fields.rst), [Scalar Field Slicing Guid
 `gwexpy` builds advanced analysis pipelines by combining the following core components. For detailed mathematical and physical foundations, refer to [Physics Models and Analysis Theory](physics_models.md).
 
 - **Multi-channel Analysis Engine**: Implementation of ICA/PCA for environmental noise isolation.
-- **Fast Correlation Framework**: Accelerated coherence calculations (BruCo) for large-scale observation data.
+- **Fast Correlation Framework**: Accelerated coherence calculations (Bruco) for large-scale observation data.
 - **Statistical Inference & Fitting**: Parameter estimation using GLS and MCMC.
 
 ## Related Documents
-- [Physics Models and Analysis Theory](physics_models.md) — Detailed analysis theory and physics models (ICA/BruCo/MCMC)
+- [Physics Models and Analysis Theory](physics_models.md) — Detailed analysis theory and physics models (ICA/Bruco/MCMC)
 - [Validated Algorithms](validated_algorithms.md) — Validation reports for numerical algorithms
 - [Scalar Field Slicing Guide](scalarfield_slicing.md) — Details on 4D field operations

@@ -20,7 +20,7 @@ B
    :maxdepth: 1
 
    BifrequencyMap <BifrequencyMap>
-   BruCo <BruCo>
+   Bruco <Bruco>
 
 F
 -

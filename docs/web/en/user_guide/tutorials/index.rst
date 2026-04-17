@@ -76,9 +76,9 @@ Tools for specific noise hunting and diagnostics tasks.
 
 - :doc:`Case Study: Seismic Analysis with ObsPy <case_seismic_obspy>` :bdg-primary:`Intermediate` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
 - :doc:`Case Study: GBD Format I/O <case_gbd_format>` :bdg-primary:`Intermediate` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
-- :doc:`BruCo: Basics <advanced_bruco>` :bdg-primary:`Advanced` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
-- :doc:`Case Study: BruCo and ICA Noise Reduction <case_bruco_ica_denoising>` :bdg-primary:`Advanced` :bdg-secondary:`60 min` :bdg-info:`Analysis Practitioners`
-- :doc:`BruCo: Bilinear Coupling and AM/FM Demodulation <case_bruco_advanced>` :bdg-primary:`Advanced` :bdg-secondary:`60 min` :bdg-info:`Analysis Practitioners`
+- :doc:`Bruco: Basics <advanced_bruco>` :bdg-primary:`Advanced` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
+- :doc:`Case Study: Bruco and ICA Noise Reduction <case_bruco_ica_denoising>` :bdg-primary:`Advanced` :bdg-secondary:`60 min` :bdg-info:`Analysis Practitioners`
+- :doc:`Bruco: Bilinear Coupling and AM/FM Demodulation <case_bruco_advanced>` :bdg-primary:`Advanced` :bdg-secondary:`60 min` :bdg-info:`Analysis Practitioners`
 - :doc:`Case Study: Violin Mode Analysis <case_violin_mode>` :bdg-primary:`Advanced` :bdg-secondary:`60 min` :bdg-info:`Analysis Practitioners`
 - :doc:`Case Study: Schumann Resonance Analysis <case_schumann_resonance>` :bdg-primary:`Advanced` :bdg-secondary:`60 min` :bdg-info:`Analysis Practitioners`
 

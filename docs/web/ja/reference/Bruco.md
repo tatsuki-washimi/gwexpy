@@ -1,4 +1,4 @@
-# BruCo (Brute force coherence) 
+# Bruco (Brute force coherence)
 
 <!-- reference-summary:start -->
 
@@ -40,10 +40,10 @@ result = bruco.compute(start=0, duration=64, fftlength=4.0, overlap=2.0)
 <!-- reference-summary:end -->
 
 
-`BruCo` は、ターゲットチャンネル（重力波チャンネルなど）と多数の補助チャンネルとの間の**「総当たりコヒーレンス（Brute force coherence）」**を計算し、ノイズ源を特定するためのツールです。
+`Bruco` は、ターゲットチャンネル（重力波チャンネルなど）と多数の補助チャンネルとの間の**「総当たりコヒーレンス（Brute force coherence）」**を計算し、ノイズ源を特定するためのツールです。
 指定された周波数帯域、時間帯において、ターゲットと高いコヒーレンスを持つ補助チャンネルをランキング形式で提示し、そのノイズ寄与（Noise Projection）を推定します。
 
-オリジナルのBruCo実装は以下で公開されています。設計詳細やCLIの挙動を確認したい場合はこちらを参照してください。
+オリジナルの BruCo 実装は以下で公開されています。設計詳細や CLI の挙動を確認したい場合はこちらを参照してください。
 - https://github.com/mikelovskij/BruCo
 
 
@@ -61,10 +61,10 @@ result = bruco.compute(start=0, duration=64, fftlength=4.0, overlap=2.0)
 
 ### 1. 初期化
 
-まず、解析対象のターゲットチャンネルと、スキャンしたい補助チャンネルのリストを指定して `BruCo` インスタンスを作成します。
+まず、解析対象のターゲットチャンネルと、スキャンしたい補助チャンネルのリストを指定して `Bruco` インスタンスを作成します。
 
 ```python
-from gwexpy.analysis.BruCo import BruCo
+from gwexpy.analysis import Bruco
 
 # ターゲットチャンネル名
 target = "K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ"
@@ -81,7 +81,7 @@ aux_channels = [
 excluded = ["K1:CAL-CS_PROC_DARM_DISPLACEMENT_DQ", "K1:GRD-LSC_LOCK_STATE_N"]
 
 # インスタンス作成
-BruCo = BruCo(target, aux_channels, excluded_channels=excluded)
+bruco = Bruco(target, aux_channels, excluded_channels=excluded)
 ```
 
 ### 2. 解析の実行 (Compute)
@@ -97,7 +97,7 @@ start_gps = 1234567890
 duration = 64  # 秒
 
 # 計算実行
-result = BruCo.compute(
+result = bruco.compute(
     start=start_gps,
     duration=duration,
     batch_size=50,     # 一度に取得するチャンネル数
@@ -112,7 +112,7 @@ result = BruCo.compute(
 **A. 辞書で渡す (全データロード済)**
 ```python
 aux_dict = TimeSeriesDict.read(..., channels=my_channels)
-result = BruCo.compute(
+result = bruco.compute(
     aux_data=aux_dict  # 辞書を渡す (start, durationは自動推定)
 )
 ```
@@ -126,7 +126,7 @@ def data_stream(channels):
     for ch in channels:
         yield TimeSeries.get(ch, start, end)
 
-result = BruCo.compute(
+result = bruco.compute(
     start, duration,                   # ジェネレータの場合は指定推奨
     aux_data=data_stream(my_channels), # ジェネレータを渡す
     batch_size=100                     # 100個溜まるごとに並列解析してメモリ解放
@@ -134,7 +134,7 @@ result = BruCo.compute(
 ```
 
 #### Case 3: 自動取得 + 前処理 (ハイブリッド)
-データ取得は `BruCo` に任せつつ、解析前にフィルタリングやチャンネル間の演算（掛け算など）を行いたい場合、コールバック関数を利用できます。
+データ取得は `Bruco` に任せつつ、解析前にフィルタリングやチャンネル間の演算（掛け算など）を行いたい場合、コールバック関数を利用できます。
 
 ```python
 def my_preprocessing(batch_data: TimeSeriesDict) -> TimeSeriesDict:
@@ -143,7 +143,7 @@ def my_preprocessing(batch_data: TimeSeriesDict) -> TimeSeriesDict:
         batch_data[ch] = ts.highpass(10)  # 例: 10Hzハイパスフィルター
     return batch_data
 
-result = BruCo.compute(
+result = bruco.compute(
     start, duration,
     preprocess_batch=my_preprocessing  # コールバック指定
 )
@@ -151,19 +151,19 @@ result = BruCo.compute(
 これにより、「自動取得の利便性」と「カスタム処理の柔軟性」を両立しつつ、並列処理の恩恵も受けられます。
 
 #### Case 4: 混合モード (NDS + マニュアル)
-`BruCo` 初期化時に指定したチャンネル（自動取得）と、`compute()` で渡す `aux_data`（マニュアル）を **同時に** 解析することも可能です。
+`Bruco` 初期化時に指定したチャンネル（自動取得）と、`compute()` で渡す `aux_data`（マニュアル）を **同時に** 解析することも可能です。
 両方のデータソースが順番に処理され、結果は統合されます。
 
 ```python
 # 1. 自動取得したいチャンネルで初期化
-BruCo = BruCo(target, ["K1:NDS-CHANNEL-1", ...])
+bruco = Bruco(target, ["K1:NDS-CHANNEL-1", ...])
 
 # 2. 手動データの辞書を作成
 manual_dict = TimeSeriesDict(...) 
 
 # 3. 両方を指定して実行
 # 注意: manual_dict の時間は start/duration と一致している必要があります。
-result = BruCo.compute(
+result = bruco.compute(
     start, duration,
     aux_data=manual_dict
 )
@@ -263,7 +263,7 @@ block_size_resolved=414
 
 ## API リファレンス
 
-### `BruCo`
+### `Bruco`
 
 **`__init__(self, target_channel: str, aux_channels: List[str], excluded_channels: List[str] = None)`**
 - `target_channel`: 解析対象のメインチャンネル名。
