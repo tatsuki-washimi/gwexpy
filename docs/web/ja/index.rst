@@ -3,27 +3,28 @@
 GWexpy ドキュメント
 ==============================
 
-.. grid:: 1
-    :gutter: 3
+GWexpy は GWpy を拡張し、時系列および周波数系列データ解析のための新たなコンテナや数値計算ユーティリティを提供します。
 
-    .. grid-item::
-        :columns: 12
+v\ |release| · Python ≥ 3.9 · 最終更新: |today|
 
-        GWexpy は GWpy を拡張し、時系列および周波数系列データ解析のための新たなコンテナや数値計算ユーティリティを提供します。
+.. button-ref:: user_guide/quickstart
+    :ref-type: doc
+    :color: primary
+    :shadow:
+    :expand:
 
-        .. button-ref:: user_guide/quickstart
-            :ref-type: doc
-            :color: primary
-            :shadow:
-            :expand:
+    🚀 クイックスタート（5分で基本を習得）
 
-            クイックスタート (5分で基本を習得)
+----
+
+あなたに合ったガイド
+--------------------
 
 .. grid:: 3
     :gutter: 3
     :class-container: grid-container
 
-    .. grid-item-card:: 初めての方へ
+    .. grid-item-card:: 🎓 初めての方へ
         :link: user_guide/getting_started
         :link-type: doc
 
@@ -32,7 +33,7 @@ GWexpy ドキュメント
         * インストールガイド
         * 基本チュートリアル
 
-    .. grid-item-card:: 実験データ解析者向け
+    .. grid-item-card:: 🔬 実験データ解析者向け
         :link: examples/index
         :link-type: doc
 
@@ -41,7 +42,7 @@ GWexpy ドキュメント
         * 解析ケーススタディ
         * 高度な信号処理
 
-    .. grid-item-card:: GWpy ユーザー向け
+    .. grid-item-card:: 🔄 GWpy ユーザー向け
         :link: user_guide/gwexpy_for_gwpy_users_ja
         :link-type: doc
 
@@ -49,6 +50,123 @@ GWexpy ドキュメント
 
         * 主な変更点と移行ガイド
         * 新機能ハイライト
+
+----
+
+やりたいことから探す
+--------------------
+
+.. grid:: 3
+    :gutter: 3
+
+    .. grid-item-card:: 📈 時系列の可視化・解析
+        :link: user_guide/tutorials/intro_timeseries
+        :link-type: doc
+
+        TimeSeries の読み込み・描画・フィルタ処理
+
+    .. grid-item-card:: 📊 スペクトログラム解析
+        :link: user_guide/tutorials/intro_spectrogram
+        :link-type: doc
+
+        STFT・Qスキャン・周波数-時間表現の生成
+
+    .. grid-item-card:: 🌊 フィールドデータ操作
+        :link: user_guide/tutorials/field_scalar_intro
+        :link-type: doc
+
+        ScalarField / VectorField / TensorField の基礎
+
+.. grid:: 3
+    :gutter: 3
+
+    .. grid-item-card:: 🔧 ノイズバジェット（BrUCo）
+        :link: user_guide/tutorials/advanced_bruco
+        :link-type: doc
+
+        各ノイズ源の寄与を分離・可視化
+
+    .. grid-item-card:: 📐 フィッティング & MCMC
+        :link: user_guide/tutorials/intro_fitting
+        :link-type: doc
+
+        GLS・ベイズフィット・MCMC サンプリング
+
+    .. grid-item-card:: 🧮 前処理 & ML パイプライン
+        :link: user_guide/tutorials/ml_preprocessing_methods
+        :link-type: doc
+
+        特徴抽出・正規化・scikit-learn との連携
+
+.. grid:: 3
+    :gutter: 3
+
+    .. grid-item-card:: 📁 マルチフォーマット I/O
+        :link: user_guide/tutorials/case_gbd_format
+        :link-type: doc
+        :class-card: gw-highlight
+
+        HDF5 / GBD / Frame / Zarr など多形式対応
+
+        **GWexpy の差別化ポイント**
+
+    .. grid-item-card:: 🔗 他ライブラリ連携
+        :link: user_guide/tutorials/case_seismic_obspy
+        :link-type: doc
+        :class-card: gw-highlight
+
+        ObsPy / LAL / Finesse / PyCBC との相互運用
+
+        **GWexpy の差別化ポイント**
+
+    .. grid-item-card:: 🔢 行列演算（Matrix 系）
+        :link: user_guide/tutorials/matrix_timeseries
+        :link-type: doc
+
+        TimeSeriesMatrix / FrequencySeriesMatrix の一括処理
+
+----
+
+Visual Examples
+---------------
+
+.. grid:: 3
+    :gutter: 3
+
+    .. grid-item-card::
+        :img-top: /_static/images/case_noise_budget_thumb.png
+        :link: user_guide/tutorials/advanced_bruco
+        :link-type: doc
+        :text-align: center
+
+        ノイズバジェット
+
+    .. grid-item-card::
+        :img-top: /_static/images/case_transfer_function_thumb.png
+        :link: user_guide/tutorials/case_transfer_function
+        :link-type: doc
+        :text-align: center
+
+        伝達関数推定
+
+    .. grid-item-card::
+        :img-top: /_static/images/case_active_damping_thumb.png
+        :link: user_guide/tutorials/case_active_damping
+        :link-type: doc
+        :text-align: center
+
+        アクティブダンピング
+
+----
+
+GWpy の基礎を学ぶ
+-----------------
+
+GWexpy は GWpy の上に構築されています。GWpy の基本操作は下記の公式ドキュメントを参照してください。
+
+`gwpy.github.io/docs/stable/ <https://gwpy.github.io/docs/stable/>`_
+
+----
 
 .. toctree::
    :maxdepth: 2
@@ -94,13 +212,3 @@ GWexpy ドキュメント
 
    user_guide/cli
    user_guide/gui
-
----
-
-.. grid:: 2
-
-    .. grid-item::
-        **Language:** :doc:`English <../en/index>`
-    .. grid-item::
-        **Support:** :doc:`Troubleshooting <user_guide/troubleshooting>`
-
