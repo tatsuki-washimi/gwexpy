@@ -20,7 +20,7 @@
    スペクトログラム辞書 (SpectrogramDict) <SpectrogramDict>
    スペクトログラムリスト (SpectrogramList) <SpectrogramList>
    スペクトログラム行列 (SpectrogramMatrix) <SpectrogramMatrix>
-   シリーズ行列 (SeriesMatrix) <SeriesMatrix>
+   SeriesMatrix <SeriesMatrix>
    2D配列 (Array2D) <Array2D>
    2D平面 (Plane2D) <Plane2D>
    4D配列 (Array4D) <Array4D>

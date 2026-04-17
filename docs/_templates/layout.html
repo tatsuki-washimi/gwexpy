@@ -55,20 +55,34 @@
   </style>
 {% endblock %}
 
-{% block header %}
+{% block extrabody %}
   {{ super() }}
-  <div id="lang-pill">
-    <span>🌐</span>
-    {% if '/ja/' in pagename or pagename.startswith('web/ja') %}
+  {% if pagename.startswith('web/ja/') %}
+    {% set peer_doc = 'web/en/' + pagename.split('web/ja/', 1)[1] %}
+    {% set peer_href = pathto(peer_doc if hasdoc(peer_doc) else 'web/en/index') %}
+    <div id="lang-pill">
+      <span>🌐</span>
       <span class="lang-current">日本語</span>
       <span class="lang-sep">|</span>
-      <a href="{{ pathto('../en/' + pagename.split('/ja/')[1] if '/ja/' in pagename else 'index', 1) }}">English</a>
-    {% else %}
-      <a href="{{ pathto('../ja/' + pagename.split('/en/')[1] if '/en/' in pagename else 'index', 1) }}">日本語</a>
+      <a href="{{ peer_href }}">English</a>
+    </div>
+  {% elif pagename.startswith('web/en/') %}
+    {% set peer_doc = 'web/ja/' + pagename.split('web/en/', 1)[1] %}
+    {% set peer_href = pathto(peer_doc if hasdoc(peer_doc) else 'web/ja/index') %}
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="{{ peer_href }}">日本語</a>
       <span class="lang-sep">|</span>
       <span class="lang-current">English</span>
-    {% endif %}
-  </div>
+    </div>
+  {% else %}
+    <div id="lang-pill">
+      <span>🌐</span>
+      <a href="{{ pathto('web/ja/index') }}">日本語</a>
+      <span class="lang-sep">|</span>
+      <a href="{{ pathto('web/en/index') }}">English</a>
+    </div>
+  {% endif %}
 {% endblock %}
 
 {# Override footer to add GitHub links and align styles #}
