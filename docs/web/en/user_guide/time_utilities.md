@@ -19,13 +19,20 @@ It is important to understand these fundamental behaviors before performing conv
 - Strings like `"2015-09-14 09:50:45"` without a timezone are treated as **UTC by default** in `to_gps` and `tconvert`.
 - For reliable local time conversion, always include the timezone name (e.g., `"Asia/Tokyo"`) or provide a timezone-aware `datetime` object.
 
+### Common Failure Modes
+- Strings that cannot be parsed as datetimes, such as `to_gps("not-a-time")` or `tconvert("not-a-time")`, fail with `ValueError`.
+- Inputs that cannot be converted to numeric GPS seconds, such as `from_gps("abc")`, fail with `ValueError`.
+- Unsupported keyword arguments such as `to_gps(..., timezone="Asia/Tokyo")` raise `TypeError` in the current implementation. Pass the timezone in the string itself or use a timezone-aware `datetime`.
+- Naive `datetime` inputs are treated as UTC. If you mean a local civil time, use a timezone-aware `datetime`.
+- For DST boundaries or other ambiguous local civil times, this page does not guarantee automatic resolution. Prefer explicit UTC offsets or timezone-aware `datetime` objects for boundary cases.
+
 ## Function Selection Quick Reference
 
 Choose the most appropriate function for your goal.
 
 | Goal | Recommended Function | Primary Input Types | Output Type (Scalar / Vector) | Key Args |
 | :--- | :--- | :--- | :--- | :--- |
-| **DateTime → GPS** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | `timezone` |
+| **DateTime → GPS** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | — |
 | **GPS → DateTime** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `astropy.time.Time` | — |
 | **Convenience (Auto)** | `tconvert` | All above + `"now"` | Context-dependent (Scalar pref.) | — |
 | **High-Precision Object** | `LIGOTimeGPS` | `seconds`, `nanoseconds` | `LIGOTimeGPS` (integer s+ns) | — |
@@ -76,6 +83,29 @@ to_gps("2024-01-01 09:00:00 JST")
 
 # Be careful: inputs without timezones are treated as UTC
 to_gps("2024-01-01 09:00:00") # UTC 09:00:00
+```
+
+```python
+# Naive datetime is treated as UTC
+from datetime import datetime
+to_gps(datetime(2024, 1, 1, 9, 0, 0))
+
+# For local civil time, use a timezone-aware datetime
+from zoneinfo import ZoneInfo
+to_gps(datetime(2024, 1, 1, 9, 0, 0, tzinfo=ZoneInfo("Asia/Tokyo")))
+```
+
+### 4. Invalid Input Examples
+
+```python
+# String cannot be parsed as a datetime
+to_gps("not-a-time")  # -> ValueError
+
+# GPS input is not numeric
+from_gps("abc")       # -> ValueError
+
+# Unsupported keyword argument
+to_gps("2024-01-01 09:00:00", timezone="Asia/Tokyo")  # -> TypeError
 ```
 
 ## `to_gps` — DateTime → GPS Seconds
