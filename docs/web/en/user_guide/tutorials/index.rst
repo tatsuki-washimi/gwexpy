@@ -63,6 +63,9 @@ Statistical analysis and advanced transforms.
 - :doc:`HHT: Analysis <advanced_hht>` :bdg-primary:`Advanced` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
 - :doc:`Time-Frequency Analysis: Interactive Comparison <time_frequency_analysis_comparison>` :bdg-primary:`Intermediate` :bdg-secondary:`30 min` :bdg-info:`Analysis Practitioners`
 - :doc:`Time-Frequency Analysis: Method Selection Guide <time_frequency_comparison>` :bdg-primary:`Intermediate` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
+- :doc:`Control Analysis: Discretization Basics <advanced_control_discretization>` :bdg-primary:`Intermediate` :bdg-secondary:`30 min` :bdg-info:`Analysis Practitioners`
+- :doc:`Control Analysis: Resonance and Feedback Basics <advanced_control_basics>` :bdg-primary:`Intermediate` :bdg-secondary:`30 min` :bdg-info:`Analysis Practitioners`
+- :doc:`Control Analysis: Plant Modeling from Measured Response <advanced_control_modeling>` :bdg-primary:`Intermediate` :bdg-secondary:`30 min` :bdg-info:`Analysis Practitioners`
 - :doc:`ARIMA: Time Series Forecasting <advanced_arima>` :bdg-primary:`Advanced` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
 - :doc:`Correlation Analysis: Statistical Methods <advanced_correlation>` :bdg-primary:`Intermediate` :bdg-secondary:`30 min` :bdg-info:`Analysis Practitioners`
 - :doc:`ML Preprocessing: Individual Methods <ml_preprocessing_methods>` :bdg-primary:`Intermediate` :bdg-secondary:`30 min` :bdg-info:`Analysis Practitioners`
@@ -126,6 +129,9 @@ Table-based analysis for time segments.
    advanced_hht
    time_frequency_analysis_comparison
    time_frequency_comparison
+   advanced_control_discretization
+   advanced_control_basics
+   advanced_control_modeling
    advanced_arima
    advanced_correlation
    ml_preprocessing_methods

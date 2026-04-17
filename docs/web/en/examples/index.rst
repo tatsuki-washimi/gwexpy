@@ -33,11 +33,15 @@ III. Statistical and ML Workflows
 - :doc:`Event-Synchronized Analysis: SegmentTable-driven window selection <../user_guide/tutorials/case_segment_analysis>`
 - :doc:`Physical Validity Checking: units, floors, and sanity tests <../user_guide/tutorials/case_physics_validation>`
 - :doc:`ARIMA-Based Burst Detection <../user_guide/tutorials/case_arima_burst_search>`
+- :doc:`Signal Extraction: weak signal recovery from colored noise <../user_guide/tutorials/case_signal_extraction>`
 
 IV. Noise Hunting and Detector Diagnostics
 ------------------------------------------
 
 - :doc:`Noise Budgeting: identifying dominant noise couplings <../user_guide/tutorials/case_noise_budget>`
+- :doc:`Lock-in Detection: recovering weak AM/FM structure <../user_guide/tutorials/case_lockin_detection>`
+- :doc:`Wiener Filtering: coherent noise subtraction <../user_guide/tutorials/case_wiener_filter>`
+- :doc:`Coupling Analysis: estimating transfer paths between channels <../user_guide/tutorials/case_coupling_analysis>`
 - :doc:`Bruco and ICA Noise Reduction <../user_guide/tutorials/case_bruco_ica_denoising>`
 - :doc:`Bruco Advanced: bilinear coupling and AM/FM demodulation <../user_guide/tutorials/case_bruco_advanced>`
 - :doc:`Violin Mode Analysis: fitting and tracking resonance families <../user_guide/tutorials/case_violin_mode>`
@@ -64,7 +68,11 @@ IV. Noise Hunting and Detector Diagnostics
    ../user_guide/tutorials/case_segment_analysis
    ../user_guide/tutorials/case_physics_validation
    ../user_guide/tutorials/case_arima_burst_search
+   ../user_guide/tutorials/case_signal_extraction
    ../user_guide/tutorials/case_noise_budget
+   ../user_guide/tutorials/case_lockin_detection
+   ../user_guide/tutorials/case_wiener_filter
+   ../user_guide/tutorials/case_coupling_analysis
    ../user_guide/tutorials/case_bruco_ica_denoising
    ../user_guide/tutorials/case_bruco_advanced
    ../user_guide/tutorials/case_violin_mode

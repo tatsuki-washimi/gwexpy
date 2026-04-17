@@ -32,11 +32,15 @@ III. 統計・機械学習ワークフロー
 - :doc:`ML 前処理パイプライン: 特徴量整形と比較 <../user_guide/tutorials/case_ml_preprocessing>`
 - :doc:`イベント同期解析: SegmentTable による窓選択 <../user_guide/tutorials/case_segment_analysis>`
 - :doc:`物理妥当性検証: 単位・数値床・健全性テスト <../user_guide/tutorials/case_physics_validation>`
+- :doc:`信号抽出: 色付き雑音からの微弱信号回収 <../user_guide/tutorials/case_signal_extraction>`
 
 IV. ノイズハンティングと検出器診断
 ----------------------------------
 
 - :doc:`ノイズバジェット解析: 多チャンネル相関で寄与源を切り分ける <../user_guide/tutorials/case_noise_budget>`
+- :doc:`ロックイン検出: 弱い AM/FM 構造の復元 <../user_guide/tutorials/case_lockin_detection>`
+- :doc:`ウィーナーフィルタ: コヒーレント雑音の差し引き <../user_guide/tutorials/case_wiener_filter>`
+- :doc:`カップリング解析: チャンネル間伝達経路の推定 <../user_guide/tutorials/case_coupling_analysis>`
 - :doc:`Bruco と ICA: ラインノイズ低減の統合フロー <../user_guide/tutorials/case_bruco_ica_denoising>`
 - :doc:`Bruco 応用: バイリニア結合と AM/FM 復調 <../user_guide/tutorials/case_bruco_advanced>`
 - :doc:`バイオリンモード解析: 共振モードの同定と追跡 <../user_guide/tutorials/case_violin_mode>`
@@ -62,7 +66,11 @@ IV. ノイズハンティングと検出器診断
    ../user_guide/tutorials/case_ml_preprocessing
    ../user_guide/tutorials/case_segment_analysis
    ../user_guide/tutorials/case_physics_validation
+   ../user_guide/tutorials/case_signal_extraction
    ../user_guide/tutorials/case_noise_budget
+   ../user_guide/tutorials/case_lockin_detection
+   ../user_guide/tutorials/case_wiener_filter
+   ../user_guide/tutorials/case_coupling_analysis
    ../user_guide/tutorials/case_bruco_ica_denoising
    ../user_guide/tutorials/case_bruco_advanced
    ../user_guide/tutorials/case_violin_mode

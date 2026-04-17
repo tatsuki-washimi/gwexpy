@@ -2,6 +2,14 @@
 
 GWexpy のドキュメントおよびサンプルで使用される Jupyter Notebook (.ipynb) の運用、CI での検証、および出力管理に関するガイドラインです。
 
+## 0. 正本管理 (Source of Truth)
+
+- 公開ドキュメントとして配信する notebook は `docs/web/{en,ja}/user_guide/tutorials/` を正本とします。
+- `examples/` は legacy notebook、公開候補、ローカル実行向け補助資料の置き場です。
+- 同名または同等内容の notebook が両方に存在する場合、公開内容については `docs/web/.../tutorials/` 側を authoritative とみなします。
+- `examples/` から notebook を公開昇格する場合は、`docs/web/{en,ja}/user_guide/tutorials/` へ取り込み、対応する index へ追加してから保守対象にします。
+- セクション 14-10 に関連するコードコメント修正は `docs/developers/guides/notebook_physics_comment_rubric.md` に従って行います。
+
 ## 1. ノートブックの分類 (Classification)
 
 計算負荷、依存関係、および用途に基づいて 3 つのカテゴリに分類します。
@@ -38,3 +46,4 @@ GWexpy のドキュメントおよびサンプルで使用される Jupyter Note
 - [ ] 他のドキュメント（Quickstart, Tutorial 一覧）から正しくリンクされているか？
 - [ ] 依存ライブラリが `docs/requirements.txt` または `pyproject.toml` に含まれているか？
 - [ ] `display-only` の場合、`.gitattributes` に除外設定を追記したか？
+- [ ] 解析手順に物理的判断が含まれる場合、コードコメントが `notebook_physics_comment_rubric.md` を満たしているか？

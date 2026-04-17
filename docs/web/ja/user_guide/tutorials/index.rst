@@ -63,6 +63,9 @@ IV. 高度な信号処理
 - :doc:`HHT: 解析 <advanced_hht>` :bdg-primary:`上級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
 - :doc:`時間-周波数解析: インタラクティブ比較 <time_frequency_analysis_comparison>` :bdg-primary:`中級` :bdg-secondary:`30分` :bdg-info:`解析実務者`
 - :doc:`時間-周波数解析: 手法比較ガイド <time_frequency_comparison>` :bdg-primary:`中級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
+- :doc:`制御解析: 離散化の基礎 <advanced_control_discretization>` :bdg-primary:`中級` :bdg-secondary:`30分` :bdg-info:`解析実務者`
+- :doc:`制御解析: 共振とフィードバックの基礎 <advanced_control_basics>` :bdg-primary:`中級` :bdg-secondary:`30分` :bdg-info:`解析実務者`
+- :doc:`制御解析: 実測応答からのプラントモデリング <advanced_control_modeling>` :bdg-primary:`中級` :bdg-secondary:`30分` :bdg-info:`解析実務者`
 - :doc:`ARIMA: 時系列予測 <advanced_arima>` :bdg-primary:`上級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
 - :doc:`相関解析: 統計的手法 <advanced_correlation>` :bdg-primary:`中級` :bdg-secondary:`30分` :bdg-info:`解析実務者`
 - :doc:`ML 前処理: 個別手法 <ml_preprocessing_methods>` :bdg-primary:`中級` :bdg-secondary:`30分` :bdg-info:`解析実務者`
@@ -125,6 +128,9 @@ VII. セグメント解析
    advanced_hht
    time_frequency_analysis_comparison
    time_frequency_comparison
+   advanced_control_discretization
+   advanced_control_basics
+   advanced_control_modeling
    advanced_arima
    advanced_correlation
    ml_preprocessing_methods
