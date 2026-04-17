@@ -12,7 +12,7 @@
    :doc:`../../user_guide/tutorials/index`
       `TimeSeriesMatrix`・`FrequencySeriesMatrix`・`SpectrogramMatrix` を使うチュートリアル集。
 
-タイムシリーズ行列
+時系列行列
 ------------------
 
 .. currentmodule:: gwexpy.timeseries
@@ -29,7 +29,7 @@
    :show-inheritance:
    :member-order: bysource
 
-周波数シリーズ行列
+周波数系列行列
 ------------------
 
 .. currentmodule:: gwexpy.frequencyseries

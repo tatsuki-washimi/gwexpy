@@ -44,7 +44,7 @@ out = mat.to_dict()
 
 **継承元:** RegularityMixin, InteropMixin, SeriesMatrixCoreMixin, SeriesMatrixIndexingMixin, SeriesMatrixIOMixin, SeriesMatrixMathMixin, SeriesMatrixAnalysisMixin, SeriesMatrixStructureMixin, SeriesMatrixVisualizationMixin, SeriesMatrixValidationMixin, StatisticalMethodsMixin, ndarray
 
-複数の Series オブジェクト用の基底マトリックスクラス。
+複数の Series オブジェクト用の基底行列クラス。
 
 ## 主要プロパティ
 
@@ -60,7 +60,7 @@ out = mat.to_dict()
 | `channel_names` | すべての要素名のフラットなリスト |
 | `names` | 各要素の名前の2D配列 |
 | `units` | 各要素の単位の2D配列 |
-| `MetaDataMatrix` | 要素ごとのメタデータを含むマトリックス |
+| `MetaDataMatrix` | 要素ごとのメタデータを含む行列 |
 | `T` | 転置（行と列を交換） |
 | `value` | 基盤となる numpy 配列 |
 
@@ -73,7 +73,7 @@ out = mat.to_dict()
 | `keys()` | 行キーと列キーの両方を取得 |
 | `get_index()` | キーの (row, col) 整数インデックスを取得 |
 | `loc` | 直接値アクセス用のラベルベースインデクサー |
-| `submatrix()` | 特定の行と列を選択してサブマトリックスを抽出 |
+| `submatrix()` | 特定の行と列を選択して部分行列を抽出 |
 
 ## 線形代数
 
@@ -98,14 +98,14 @@ out = mat.to_dict()
 | メソッド | 説明 |
 |---------|------|
 | `crop()` | サンプル軸に沿って指定範囲にクロップ |
-| `append()` / `prepend()` | サンプル軸に沿って別のマトリックスを追加 |
+| `append()` / `prepend()` | サンプル軸に沿って別の行列を追加 |
 | `append_exact()` / `prepend_exact()` | 厳密な連続性チェック付き |
 | `update()` | リサイズせずに追加（ローリングバッファスタイル） |
 | `interpolate()` | 新しいサンプル軸に補間 |
 | `pad()` | サンプル軸に沿ってパディング |
 | `shift()` | サンプル軸を定数オフセットでシフト |
 | `diff()` | N 次離散差分を計算 |
-| `reshape()` | マトリックスの次元を変形 |
+| `reshape()` | 行列の次元を変形 |
 | `copy()` | ディープコピーを作成 |
 | `astype()` | データを指定した型にキャスト |
 
@@ -123,8 +123,8 @@ out = mat.to_dict()
 
 | メソッド | 説明 |
 |---------|------|
-| `read()` | ファイルからマトリックスを読み込む |
-| `write()` | マトリックスをファイルに書き込む |
+| `read()` | ファイルから行列を読み込む |
+| `write()` | 行列をファイルに書き込む |
 | `to_hdf5()` / `to_zarr()` | HDF5/Zarr 形式で保存 |
 
 ## 可視化
@@ -141,4 +141,4 @@ out = mat.to_dict()
 | `is_compatible()` / `is_compatible_exact()` | 互換性をチェック |
 | `is_contiguous()` / `is_contiguous_exact()` | 連続性をチェック |
 | `is_regular` | 等間隔グリッドかどうか |
-| `value_at()` | 特定の X 位置のマトリックス値を取得 |
+| `value_at()` | 特定の X 位置の行列値を取得 |

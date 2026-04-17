@@ -44,9 +44,9 @@ coh = mat.coherence(mat)
 
 **継承元:** PhaseMethodsMixin, TimeSeriesMatrixCoreMixin, TimeSeriesMatrixAnalysisMixin, TimeSeriesMatrixSpectralMixin, TimeSeriesMatrixInteropMixin, SeriesMatrix
 
-**共通の時間軸を共有する複数の TimeSeries オブジェクト用の2Dマトリックスコンテナ。**
+**共通の時間軸を共有する複数の TimeSeries オブジェクト用の 2D 行列コンテナ。**
 
-このクラスは、各要素が TimeSeries データストリームに対応する2次元配列（行 x 列）を表します。**マトリックス内のすべての要素は同じ時間配列を共有します**（同じ `t0`, `dt`, サンプル数）。グリッド構造で整理された多変量時系列のように振る舞います。
+このクラスは、各要素が TimeSeries データストリームに対応する 2 次元配列（行 x 列）を表します。**行列内のすべての要素は同じ時間配列を共有します**（同じ `t0`, `dt`, サンプル数）。グリッド構造で整理された多変量時系列のように振る舞います。
 
 ## 主要プロパティ
 
@@ -114,8 +114,8 @@ coh = mat.coherence(mat)
 
 | メソッド | 説明 |
 |---------|------|
-| `read()` | ファイルからマトリックスを読み込む |
-| `write()` | マトリックスをファイルに書き込む |
+| `read()` | ファイルから行列を読み込む |
+| `write()` | 行列をファイルに書き込む |
 | `to_hdf5()` / `to_zarr()` | HDF5/Zarr 形式で保存 |
 
 ## データ操作
@@ -123,6 +123,6 @@ coh = mat.coherence(mat)
 | メソッド | 説明 |
 |---------|------|
 | `crop()` | GPS 開始/終了時刻でクロップ。gwexpy.time.to_gps がサポートする形式を使用可能 |
-| `append()` / `prepend()` | サンプル軸に沿って別のマトリックスを追加 |
+| `append()` / `prepend()` | サンプル軸に沿って別の行列を追加 |
 | `interpolate()` | 新しいサンプル軸に補間 |
 | `pad()` | サンプル軸に沿ってパディング |
