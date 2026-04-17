@@ -1,72 +1,112 @@
 Class Index
 ===========
 
-This index lists the major classes available in GWexpy, categorized by their primary domain.
+This index lists the major GWexpy classes in alphabetical order by class name.
+If you want a domain-oriented entry point, see :doc:`index`.
 
-Core Data Structures
---------------------
+A
+-
+
 .. toctree::
    :maxdepth: 1
 
-   TimeSeries
-   TimeSeriesDict
-   TimeSeriesList
-   TimeSeriesMatrix
+   Array2D
+
+B
+-
+
+.. toctree::
+   :maxdepth: 1
+
+   BifrequencyMap
+   BruCo
+
+F
+-
+
+.. toctree::
+   :maxdepth: 1
+
+   FFT_Conventions
+   FieldDict
+   FieldList
+   Fitting <fitting>
    FrequencySeries
    FrequencySeriesDict
    FrequencySeriesList
    FrequencySeriesMatrix
-   Spectrogram
-   SpectrogramDict
-   SpectrogramList
-   SpectrogramMatrix
-   SeriesMatrix
-   Array2D
-   Plane2D
-   Array4D
 
-Field Domain
-------------
+I
+-
+
+.. toctree::
+   :maxdepth: 1
+
+   ICATransform
+   ImputeTransform
+
+N
+-
+
+.. toctree::
+   :maxdepth: 1
+
+   Noise
+
+P
+-
+
+.. toctree::
+   :maxdepth: 1
+
+   PCATransform
+   Pipeline
+   Plane2D
+   Plot
+
+S
+-
+
 .. toctree::
    :maxdepth: 1
 
    ScalarField
-   VectorField
-   TensorField
-   FieldList
-   FieldDict
-
-Signal Processing & Transforms
-------------------------------
-.. toctree::
-   :maxdepth: 1
-
-   TimePlaneTransform
-   BifrequencyMap
-   Pipeline
-   Transform
-   ImputeTransform
-   StandardizeTransform
-   WhitenTransform
-   PCATransform
-   ICATransform
-   FFT_Conventions
-
-Analysis & Fitting
-------------------
-.. toctree::
-   :maxdepth: 1
-
-   BruCo
-   fitting
-   Spectral
-   Noise
-
-Utilities
----------
-.. toctree::
-   :maxdepth: 1
-
-   SegmentTable
    SegmentCell
-   Plot
+   SegmentTable
+   SeriesMatrix
+   Spectral
+   Spectrogram
+   SpectrogramDict
+   SpectrogramList
+   SpectrogramMatrix
+   StandardizeTransform
+
+T
+-
+
+.. toctree::
+   :maxdepth: 1
+
+   TensorField
+   TimePlaneTransform
+   TimeSeries
+   TimeSeriesDict
+   TimeSeriesList
+   TimeSeriesMatrix
+   Transform
+
+V
+-
+
+.. toctree::
+   :maxdepth: 1
+
+   VectorField
+
+W
+-
+
+.. toctree::
+   :maxdepth: 1
+
+   WhitenTransform
