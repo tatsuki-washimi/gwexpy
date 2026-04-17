@@ -53,6 +53,7 @@ jobs:
           python scripts/check_terms.py
           python scripts/check_docs_sync.py
           python scripts/check_external_links.py
+          python scripts/update_intersphinx_inventories.py --check-upstream
           cd docs
           sphinx-build -b linkcheck . _build/linkcheck
 
