@@ -72,6 +72,26 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 - `.xml` is ambiguous, so **use `format="dttxml"` explicitly** for DTTXML data.
 - `NDS2` and `GWOSC` are not file readers, so they use `fetch()` / `fetch_open_data()` instead of `.read()`.
 
+## Supported Classes at a Glance
+
+If the main question is whether a format is for a single channel or multiple channels, use this table first.
+
+| Format / Family | Single-channel | Multi-channel | Other supported classes |
+|---|---|---|---|
+| **GWF / MiniSEED / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | Baseline end-user direct I/O pattern |
+| **NetCDF4 / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | Includes matrix-style direct I/O |
+| **HDF5** | `TimeSeries`, `FrequencySeries`, and related classes | `TimeSeriesDict` and related collections | Also covers `Spectrogram`, `Histogram`, `EventTable`, and `Field` |
+| **ndscope-hdf5** | - | `TimeSeriesDict` | ndscope-compatible schema |
+| **DTTXML** | - | `TimeSeriesDict` | Requires `products` |
+| **NDS2 / GWOSC** | `TimeSeries` | - | Use `fetch()` / `fetch_open_data()` |
+| **ATS.MTH5** | `TimeSeries` | - | Partial single-path support |
+| **Pickle** | Major classes broadly | Major classes broadly | Use only for trusted data |
+| **ROOT** | `EventTable` | - | Direct I/O is limited to EventTable |
+
+- If you are unsure, start by thinking in terms of `TimeSeries` and `TimeSeriesDict`.
+- `TimeSeriesMatrix` mainly matters for `NetCDF4`, `Zarr`, `GBD`, and `TDMS`.
+- If you need to preserve richer objects beyond Series classes, start with **HDF5** or **Pickle**.
+
 <a id="io-formats-en-a"></a>
 
 ## A. GW Standards
