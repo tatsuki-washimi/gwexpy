@@ -30,7 +30,7 @@ Learn the core data structures and GWexpy-specific matrix operations from scratc
 
 [Migration from GWpy](gwexpy_for_gwpy_users_en.md)
 
-For current GWpy users. Learn the key differences and how to simplify your code with new features.
+For current GWpy users. Start with the migration recipes, then use the [GWpy Difference API Index](gwpy_added_api_index_en.md) when you need a difference-oriented lookup of added APIs.
 
 ## Learning Path
 
@@ -63,5 +63,7 @@ Explore real-world analysis workflows in our [Case Studies Gallery](../examples/
 
 * [Case Studies Gallery](../examples/index.rst) - Visual examples and practical workflows.
 * [All Tutorials](tutorials/index.rst)
+* [Migration from GWpy](gwexpy_for_gwpy_users_en.md) - start from the difference-oriented migration recipes
+* [GWpy Difference API Index](gwpy_added_api_index_en.md) - look up added APIs from a GWpy-difference view
 * [API Reference](../reference/index.rst)
 * [Validated Algorithms](validated_algorithms.md) - Verification reports for numerical accuracy.
