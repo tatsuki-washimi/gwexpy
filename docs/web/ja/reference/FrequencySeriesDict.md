@@ -30,14 +30,16 @@ mat = dct.to_matrix()
 
 ## 関連理論
 
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [FrequencySeries](FrequencySeries.md)
+- [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
 
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [FrequencySeries チュートリアル](../user_guide/tutorials/intro_frequencyseries.ipynb)
+- [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb)
+- [ノイズバジェット解析](../user_guide/tutorials/case_noise_budget.ipynb)
 
 ## API リファレンス
 
@@ -49,6 +51,25 @@ mat = dct.to_matrix()
 **継承元:** FrequencySeriesBaseDict
 
 ラベルをキーとする `FrequencySeries` オブジェクトの順序付きマッピング。
+
+## 物理コンテキスト
+
+`FrequencySeriesDict` は、ラベルそのものが物理的な識別子である場合に向いています。チャンネル名、センサ位置、構成タグ、処理分岐などをキーとして保持したいときに使います。
+
+- list と違ってキー自体が解析記録の一部になります
+- ラベルを失うと比較の意味が薄れる多センサ解析で有用です
+
+## よくある誤読
+
+1. キーが違うだけで較正や整列条件まで違うと勝手に思い込む
+2. 出力時にサニタイズされたキーを元の物理チャンネル名だとみなす
+3. キーだけで比較し、単位や周波数間隔を確認しない
+
+## どのページへ進むか
+
+- 各スペクトルの解釈: [FrequencySeries](FrequencySeries.md)
+- 整列済み解析グリッドへの変換: [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
+- 実務ワークフロー: [伝達関数計測](../user_guide/tutorials/case_transfer_function.ipynb), [ノイズバジェット解析](../user_guide/tutorials/case_noise_budget.ipynb)
 
 ## メソッド
 

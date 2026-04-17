@@ -27,15 +27,16 @@ out = mat.to_dict()
 
 ## Related Theory
 
-- [Physics Models](../user_guide/physics_models.md)
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [FrequencySeries](FrequencySeries.md)
+- [SeriesMatrix](SeriesMatrix.md)
 
 ## Related Tutorials
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [FrequencySeries Matrix Tutorial](../user_guide/tutorials/matrix_frequencyseries.ipynb)
+- [Transfer Function Measurement](../user_guide/tutorials/case_transfer_function.ipynb)
+- [Advanced Fitting](../user_guide/tutorials/advanced_fitting.ipynb)
 
 ## API Reference
 
@@ -50,6 +51,25 @@ The detailed generated API continues below on this page.
 Matrix container for multiple FrequencySeries objects.
 
 Inherits from SeriesMatrix and returns FrequencySeries instances when indexed.
+
+## Physical Context
+
+Use `FrequencySeriesMatrix` when multiple spectra are already aligned on one frequency axis and should be processed as one object: sensor arrays, response matrices, coherence-like channel grids, or repeated spectra arranged by configuration.
+
+- matrix operations assume shared sampling on the frequency axis
+- this is the right container when relationships between channels matter as much as the spectra themselves
+
+## Common Misreadings
+
+1. treating an unaligned stack of spectra as a valid matrix input
+2. forgetting that matrix-level filtering or inversion is only meaningful when the entries share a common physical frequency grid
+3. interpreting linear-algebra outputs without checking conditioning and units
+
+## Where to go next
+
+- per-element interpretation: [FrequencySeries](FrequencySeries.md)
+- container conversions: [FrequencySeriesList](FrequencySeriesList.md), [FrequencySeriesDict](FrequencySeriesDict.md)
+- aligned workflow: [FrequencySeries Matrix Tutorial](../user_guide/tutorials/matrix_frequencyseries.ipynb)
 
 
 ## Methods
@@ -807,4 +827,3 @@ Full extent of the sample axis as a tuple (start, end).
 ### `xunit`
 
 _No documentation available._
-

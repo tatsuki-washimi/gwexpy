@@ -6,7 +6,7 @@
 
 ## 主な用途
 
-`Plane2D` は軸名やメタデータを保持したまま配列変換を行いたいときに使います。
+`Plane2D` は高次元データから 2 次元断面を取り出したあとも、軸名や物理メタデータを保ちたいときに使います。
 
 ## 代表的なシグネチャ
 
@@ -27,12 +27,13 @@ plane_t = plane.swapaxes(0, 1)
 
 ## 関連理論
 
+- [前提条件と規約](../user_guide/prerequisites_and_conventions.md)
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
 
 ## 関連チュートリアル
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [TimeSeries 基本](../user_guide/tutorials/intro_timeseries.ipynb)
+- [ScalarField 信号処理](../user_guide/tutorials/field_scalar_signal.md)
 
 ## API リファレンス
 

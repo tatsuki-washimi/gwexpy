@@ -26,12 +26,14 @@ plot = segments.plot()
 
 ## Related Theory
 
+- [Prerequisites and Conventions](../user_guide/prerequisites_and_conventions.md)
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [SegmentTable: Basics](../user_guide/tutorials/intro_segment_table.ipynb)
+- [Segment ASD Pipeline](../user_guide/tutorials/segment_asd_pipeline.ipynb)
+- [Segment Visualization](../user_guide/tutorials/segment_visualization.ipynb)
 
 ## API Reference
 

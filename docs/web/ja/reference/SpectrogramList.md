@@ -27,14 +27,16 @@ mat = lst.to_matrix()
 
 ## 関連理論
 
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [Spectrogram](Spectrogram.md)
+- [SpectrogramMatrix](SpectrogramMatrix.md)
 
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Spectrogram チュートリアル](../user_guide/tutorials/intro_spectrogram.ipynb)
+- [セグメント可視化](../user_guide/tutorials/segment_visualization.ipynb)
+- [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
 
 ## API リファレンス
 
@@ -47,6 +49,25 @@ mat = lst.to_matrix()
 
 Spectrogram オブジェクトのリスト。
 参考: TimeSeriesList に似ていますが、2D Spectrogram 用です。
+
+## 物理コンテキスト
+
+`SpectrogramList` は、複数の時間周波数マップを別々の意味を保ったまま一括処理したいときに使います。繰り返し観測、複数センサ、同一イベントの別前処理などが典型です。
+
+- 各要素は別々の provenance を持ったままバッチ描画できます
+- コンテナ自体は色スケール、正規化、ビン幅の一致を保証しません
+
+## よくある誤読
+
+1. スケールや単位を揃えずに明るさだけで要素間比較する
+2. 同じリストに入っているだけで `dt`/`df` が一致していると思い込む
+3. 積み重ね表示を見て、メタデータ確認なしに整列済みだと判断する
+
+## どのページへ進むか
+
+- 各マップの解釈: [Spectrogram](Spectrogram.md)
+- 整列済みコレクション解析: [SpectrogramMatrix](SpectrogramMatrix.md)
+- 実務ワークフロー: [セグメント可視化](../user_guide/tutorials/segment_visualization.ipynb), [グリッチ詳細解析](../user_guide/tutorials/case_glitch_analysis.ipynb)
 
 :::{note}
 Spectrogram オブジェクトはメモリを大量に消費する可能性があります。

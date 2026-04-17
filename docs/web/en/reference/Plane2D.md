@@ -6,7 +6,7 @@
 
 ## What it is
 
-Use `Plane2D` when you need a typed array object that preserves semantic axis names and GWexpy metadata through transformations.
+Use `Plane2D` for 2D slices that should keep semantic axis names and physical metadata after extracting a plane from a higher-dimensional result.
 
 ## Representative Signatures
 
@@ -27,12 +27,13 @@ plane_t = plane.swapaxes(0, 1)
 
 ## Related Theory
 
+- [Prerequisites and Conventions](../user_guide/prerequisites_and_conventions.md)
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [TimeSeries Basics](../user_guide/tutorials/intro_timeseries.ipynb)
+- [ScalarField Signal Processing](../user_guide/tutorials/field_scalar_signal.md)
 
 ## API Reference
 
@@ -1251,6 +1252,5 @@ array([[-5.,  0.],
        [-3.,  4.],
        [-2.,  6.],
        [-1.,  8.]])
-
 
 

@@ -30,14 +30,16 @@ mat = dct.to_matrix()
 
 ## Related Theory
 
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [FrequencySeries](FrequencySeries.md)
+- [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
 
 ## Related Tutorials
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [FrequencySeries Tutorial](../user_guide/tutorials/intro_frequencyseries.ipynb)
+- [Transfer Function Measurement](../user_guide/tutorials/case_transfer_function.ipynb)
+- [Noise Budgeting](../user_guide/tutorials/case_noise_budget.ipynb)
 
 ## API Reference
 
@@ -49,6 +51,25 @@ The detailed generated API continues below on this page.
 **Inherits from:** FrequencySeriesBaseDict
 
 Ordered mapping of `FrequencySeries` objects keyed by label.
+
+## Physical Context
+
+Use `FrequencySeriesDict` when the label itself matters physically: channel name, sensor location, configuration tag, or processing branch.
+
+- unlike a list, the key is part of the analysis record
+- this is useful for multi-sensor comparisons where losing the label would make the spectrum hard to interpret
+
+## Common Misreadings
+
+1. assuming dictionary keys imply identical calibration or alignment
+2. using sanitized file-output keys as though they were the original physical channel names
+3. comparing spectra by key only, without checking units and frequency spacing
+
+## Where to go next
+
+- per-spectrum interpretation: [FrequencySeries](FrequencySeries.md)
+- convert to aligned analysis grid: [FrequencySeriesMatrix](FrequencySeriesMatrix.md)
+- practical workflows: [Transfer Function Measurement](../user_guide/tutorials/case_transfer_function.ipynb), [Noise Budgeting](../user_guide/tutorials/case_noise_budget.ipynb)
 
 ## Methods
 

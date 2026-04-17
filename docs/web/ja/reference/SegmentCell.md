@@ -6,7 +6,7 @@
 
 ## 主な用途
 
-`SegmentCell` はデータ品質や解析区間に必要な時間セグメントと付随メタデータを管理するために使います。
+`SegmentCell` は 1 つの時間区間と付随メタデータを表す要素で、特に `SegmentTable` の行要素として使うときに有効です。
 
 ## 代表的なシグネチャ
 
@@ -25,12 +25,13 @@ segment = SegmentCell(0, 10)
 
 ## 関連理論
 
+- [前提条件と規約](../user_guide/prerequisites_and_conventions.md)
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
 
 ## 関連チュートリアル
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [SegmentTable: 基本](../user_guide/tutorials/intro_segment_table.ipynb)
+- [セグメント解析ケーススタディ](../user_guide/tutorials/case_segment_analysis.ipynb)
 
 ## API リファレンス
 

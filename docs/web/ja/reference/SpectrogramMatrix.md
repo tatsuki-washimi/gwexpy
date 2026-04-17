@@ -27,15 +27,16 @@ out = mat.to_dict()
 
 ## 関連理論
 
-- [Physics Models](../user_guide/physics_models.md)
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [Spectrogram](Spectrogram.md)
+- [SeriesMatrix](SeriesMatrix.md)
 
 ## 関連チュートリアル
 
 - [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Spectrogram 行列チュートリアル](../user_guide/tutorials/matrix_spectrogram.ipynb)
+- [時間-周波数解析: 手法比較ガイド](../user_guide/tutorials/time_frequency_comparison.md)
+- [HHT: 解析](../user_guide/tutorials/advanced_hht.ipynb)
 
 ## API リファレンス
 
@@ -53,6 +54,25 @@ out = mat.to_dict()
 - 4D: (Row, Col, Time, Frequency)
 
 SeriesMatrix を継承し、強力なインデックス参照、メタデータ管理、解析機能（スライス、補間、統計）を提供します。
+
+## 物理コンテキスト
+
+`SpectrogramMatrix` は、複数の時間周波数マップが同じビニング条件を共有し、その相互関係まで含めて解析したい場合に使います。検出器配列、パラメータ掃引、before/after 比較、チャネル横断サマリーなどが典型です。
+
+- 行列統計が意味を持つのは、時間軸・周波数軸が整列している場合です
+- 単に多くの図を保存するためではなく、マップ間構造を比較するためのコンテナです
+
+## よくある誤読
+
+1. 変換条件の違う spectrogram の束をそのまま比較可能だとみなす
+2. スケールや正規化が違う入力に対する行列サマリーを物理平均だと解釈する
+3. 行・列の構造を、自動的に空間配置や幾何学と同一視する
+
+## どのページへ進むか
+
+- 各マップの解釈: [Spectrogram](Spectrogram.md)
+- コンテナ間の往復: [SpectrogramList](SpectrogramList.md), [SpectrogramDict](SpectrogramDict.md)
+- 整列ワークフロー: [Spectrogram 行列チュートリアル](../user_guide/tutorials/matrix_spectrogram.ipynb)
 
 ## 主要プロパティ
 

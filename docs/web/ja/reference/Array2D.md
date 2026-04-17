@@ -27,12 +27,13 @@ arr_t = arr.swapaxes(0, 1)
 
 ## 関連理論
 
+- [前提条件と規約](../user_guide/prerequisites_and_conventions.md)
 - [Validated Algorithms](../user_guide/validated_algorithms.md)
 
 ## 関連チュートリアル
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [TimeSeries 基本](../user_guide/tutorials/intro_timeseries.ipynb)
+- [高度な線形代数](../user_guide/tutorials/advanced_linear_algebra.md)
 
 ## API リファレンス
 
