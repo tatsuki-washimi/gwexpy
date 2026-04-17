@@ -19,13 +19,20 @@ from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 - `"2015-09-14 09:50:45"` のようにタイムゾーンが指定されていない文字列を `to_gps` や `tconvert` に渡すと、**デフォルトで UTC** として解釈されます。
 - ローカルタイムとして品質の高い変換を行いたい場合は、必ずタイムゾーン名（例: `"Asia/Tokyo"`）を文字列に含めるか、タイムゾーン付きの `datetime` オブジェクトを渡してください。
 
+### よくある失敗とエラー条件
+- `to_gps("not-a-time")` や `tconvert("not-a-time")` のように日時として解釈できない文字列は、`ValueError` で失敗します。
+- `from_gps("abc")` のように GPS 秒として数値化できない入力は、`ValueError` で失敗します。
+- `to_gps(..., timezone="Asia/Tokyo")` のような未対応キーワード引数は、この実装では受け付けず `TypeError` になります。タイムゾーンは文字列本体または timezone-aware `datetime` で指定してください。
+- naive な `datetime` は UTC として扱われます。ローカル時刻を表したい場合は、timezone-aware `datetime` を使ってください。
+- 夏時間の切替などで曖昧になるローカル時刻は、このページでは自動解決を保証しません。境界時刻では UTC オフセット付き文字列または明示的な timezone-aware `datetime` を推奨します。
+
 ## 関数選択早見表
 
 目的に応じて最適な関数を選択してください。
 
 | 目的 | 推奨関数 | 主な入力の型 | 出力の型 (Scalar / Vector) | 主要引数 |
 | :--- | :--- | :--- | :--- | :--- |
-| **日時 → GPS秒** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | `timezone` |
+| **日時 → GPS秒** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | — |
 | **GPS秒 → 日時** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `astropy.time.Time` | — |
 | **相互変換 (自動判定)** | `tconvert` | 上記すべて + `"now"` | 文脈に応じた型 (Scalar 優先) | — |
 | **高精度オブジェクト** | `LIGOTimeGPS` | `seconds`, `nanoseconds` | `LIGOTimeGPS` (秒+ナノ秒保持) | — |
@@ -76,6 +83,29 @@ to_gps("2024-01-01 09:00:00 JST")
 
 # タイムゾーンなしは UTC とみなされるため注意
 to_gps("2024-01-01 09:00:00") # UTC 09:00:00
+```
+
+```python
+# naive datetime は UTC として扱われる
+from datetime import datetime
+to_gps(datetime(2024, 1, 1, 9, 0, 0))
+
+# ローカル時刻なら timezone-aware datetime を使う
+from zoneinfo import ZoneInfo
+to_gps(datetime(2024, 1, 1, 9, 0, 0, tzinfo=ZoneInfo("Asia/Tokyo")))
+```
+
+### 4. 異常入力の扱い
+
+```python
+# 日時として解釈できない文字列
+to_gps("not-a-time")  # -> ValueError
+
+# 数値化できない GPS 入力
+from_gps("abc")       # -> ValueError
+
+# 未対応キーワード引数
+to_gps("2024-01-01 09:00:00", timezone="Asia/Tokyo")  # -> TypeError
 ```
 
 ## `to_gps` — 日時 → GPS 秒
