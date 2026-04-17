@@ -2,7 +2,8 @@
 ========================
 
 この索引では、GWexpy の主要なクラスを英名のアルファベット順に一覧します。
-分野別の入口が必要な場合は :doc:`index` を参照してください。
+検索性を優先するため、項目ラベルは Python クラス名の英名のみで表記します。
+分野別の入口や日本語での概要は :doc:`index` および glossary / 各個別ページを参照してください。
 
 A
 -
@@ -10,7 +11,7 @@ A
 .. toctree::
    :maxdepth: 1
 
-   Array2D - 2D配列 <Array2D>
+   Array2D <Array2D>
 
 B
 -
@@ -18,7 +19,7 @@ B
 .. toctree::
    :maxdepth: 1
 
-   BifrequencyMap - 二重周波数マップ <BifrequencyMap>
+   BifrequencyMap <BifrequencyMap>
    BruCo <BruCo>
 
 F
@@ -27,14 +28,14 @@ F
 .. toctree::
    :maxdepth: 1
 
-   FFT_Conventions - FFT規約 <FFT_Conventions>
-   FieldDict - フィールド辞書 <FieldDict>
-   FieldList - フィールドリスト <FieldList>
-   Fitting - フィッティング <fitting>
-   FrequencySeries - 周波数系列 <FrequencySeries>
-   FrequencySeriesDict - 周波数系列辞書 <FrequencySeriesDict>
-   FrequencySeriesList - 周波数系列リスト <FrequencySeriesList>
-   FrequencySeriesMatrix - 周波数系列行列 <FrequencySeriesMatrix>
+   FFT_Conventions <FFT_Conventions>
+   FieldDict <FieldDict>
+   FieldList <FieldList>
+   Fitting <fitting>
+   FrequencySeries <FrequencySeries>
+   FrequencySeriesDict <FrequencySeriesDict>
+   FrequencySeriesList <FrequencySeriesList>
+   FrequencySeriesMatrix <FrequencySeriesMatrix>
 
 I
 -
@@ -42,8 +43,8 @@ I
 .. toctree::
    :maxdepth: 1
 
-   ICATransform - ICA変換 <ICATransform>
-   ImputeTransform - 欠損値補完変換 <ImputeTransform>
+   ICATransform <ICATransform>
+   ImputeTransform <ImputeTransform>
 
 N
 -
@@ -51,7 +52,7 @@ N
 .. toctree::
    :maxdepth: 1
 
-   Noise - ノイズ <Noise>
+   Noise <Noise>
 
 P
 -
@@ -59,10 +60,10 @@ P
 .. toctree::
    :maxdepth: 1
 
-   PCATransform - PCA変換 <PCATransform>
-   Pipeline - パイプライン <Pipeline>
-   Plane2D - 2D平面 <Plane2D>
-   Plot - プロット <Plot>
+   PCATransform <PCATransform>
+   Pipeline <Pipeline>
+   Plane2D <Plane2D>
+   Plot <Plot>
 
 S
 -
@@ -70,16 +71,16 @@ S
 .. toctree::
    :maxdepth: 1
 
-   ScalarField - スカラー場 <ScalarField>
-   SegmentCell - セグメントセル <SegmentCell>
-   SegmentTable - セグメントテーブル <SegmentTable>
+   ScalarField <ScalarField>
+   SegmentCell <SegmentCell>
+   SegmentTable <SegmentTable>
    SeriesMatrix <SeriesMatrix>
-   Spectral - スペクトル <Spectral>
-   Spectrogram - スペクトログラム <Spectrogram>
-   SpectrogramDict - スペクトログラム辞書 <SpectrogramDict>
-   SpectrogramList - スペクトログラムリスト <SpectrogramList>
-   SpectrogramMatrix - スペクトログラム行列 <SpectrogramMatrix>
-   StandardizeTransform - 標準化変換 <StandardizeTransform>
+   Spectral <Spectral>
+   Spectrogram <Spectrogram>
+   SpectrogramDict <SpectrogramDict>
+   SpectrogramList <SpectrogramList>
+   SpectrogramMatrix <SpectrogramMatrix>
+   StandardizeTransform <StandardizeTransform>
 
 T
 -
@@ -87,13 +88,13 @@ T
 .. toctree::
    :maxdepth: 1
 
-   TensorField - テンソル場 <TensorField>
+   TensorField <TensorField>
    TimePlaneTransform <TimePlaneTransform>
-   TimeSeries - 時系列 <TimeSeries>
-   TimeSeriesDict - 時系列辞書 <TimeSeriesDict>
-   TimeSeriesList - 時系列リスト <TimeSeriesList>
-   TimeSeriesMatrix - 時系列行列 <TimeSeriesMatrix>
-   Transform - 変換 <Transform>
+   TimeSeries <TimeSeries>
+   TimeSeriesDict <TimeSeriesDict>
+   TimeSeriesList <TimeSeriesList>
+   TimeSeriesMatrix <TimeSeriesMatrix>
+   Transform <Transform>
 
 V
 -
@@ -101,7 +102,7 @@ V
 .. toctree::
    :maxdepth: 1
 
-   VectorField - ベクトル場 <VectorField>
+   VectorField <VectorField>
 
 W
 -
@@ -109,4 +110,4 @@ W
 .. toctree::
    :maxdepth: 1
 
-   WhitenTransform - 白色化変換 <WhitenTransform>
+   WhitenTransform <WhitenTransform>
