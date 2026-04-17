@@ -72,6 +72,26 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 - `.xml` は用途が曖昧なので、**DTTXML では `format="dttxml"` を明示**してください。
 - `NDS2` と `GWOSC` はファイルではないため、`.read()` ではなく `fetch()` / `fetch_open_data()` を使います。
 
+## 対応クラスの早見表
+
+「単一チャネルなのか、複数チャネルなのか」で入口を迷いやすい形式を先に整理すると、次のようになります。
+
+| 形式 / 系統 | 単一チャネル | 複数チャネル | そのほかの対応 |
+|---|---|---|---|
+| **GWF / MiniSEED / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | end-user 向け direct I/O の基本形 |
+| **NetCDF4 / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | 行列系まで含む direct I/O |
+| **HDF5** | `TimeSeries`, `FrequencySeries` など | `TimeSeriesDict` など | `Spectrogram`, `Histogram`, `EventTable`, `Field` まで含む主保存先 |
+| **ndscope-hdf5** | - | `TimeSeriesDict` | ndscope 互換スキーマ |
+| **DTTXML** | - | `TimeSeriesDict` | `products` 必須 |
+| **NDS2 / GWOSC** | `TimeSeries` | - | `fetch()` / `fetch_open_data()` を使う |
+| **ATS.MTH5** | `TimeSeries` | - | 一部対応の単一路 |
+| **Pickle** | 主要クラス全般 | 主要クラス全般 | 信頼できるデータだけに使用 |
+| **ROOT** | `EventTable` | - | EventTable の直 I/O のみ |
+
+- **まず迷ったら** `TimeSeries` と `TimeSeriesDict` を基準に考えてください。
+- **`TimeSeriesMatrix` が出てくるのは主に** `NetCDF4`, `Zarr`, `GBD`, `TDMS` です。
+- **Series 以外もまとめて保持したい** 場合は、まず **HDF5** か **Pickle** を検討してください。
+
 <a id="io-formats-ja-a"></a>
 
 ## A. GW標準
