@@ -180,6 +180,7 @@ GWexpy is built on top of GWpy. For GWpy fundamentals, see the official docs:
    :maxdepth: 2
    :caption: 📖 Guide
 
+   user_guide/prerequisites_and_conventions
    user_guide/io_formats
    user_guide/interop
    user_guide/time_utilities
