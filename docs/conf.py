@@ -30,9 +30,23 @@ extensions = [
     "sphinx_last_updated_by_git",
 ]
 
-# Only include sphinx_sitemap if we are NOT building linkcheck.
-# Without this, `sphinx-build -b linkcheck` errors out with "No pages generated for sitemap.xml".
-if "linkcheck" not in sys.argv:
+# Only include sphinx_sitemap for environments that actually need sitemap generation.
+# The extension unconditionally creates a multiprocessing.Manager() queue during
+# ``builder-inited``, which fails in restricted local sandboxes with
+# ``PermissionError: [Errno 1] Operation not permitted``.
+#
+# GitHub Actions builds keep sitemap generation enabled by default. For other
+# environments, opt in explicitly with ``ENABLE_SITEMAP=1``.
+enable_sitemap = os.environ.get("ENABLE_SITEMAP", "").lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+} or os.environ.get("GITHUB_ACTIONS", "").lower() == "true"
+
+# Without this, `sphinx-build -b linkcheck` errors out with
+# "No pages generated for sitemap.xml".
+if "linkcheck" not in sys.argv and enable_sitemap:
     extensions.append("sphinx_sitemap")
 
 # nbsphinx configuration
