@@ -1,6 +1,8 @@
 周波数系列 (Frequency Series)
 =============================
 
+**安定性:** Stable
+
 .. currentmodule:: gwexpy.frequencyseries
 
 概要

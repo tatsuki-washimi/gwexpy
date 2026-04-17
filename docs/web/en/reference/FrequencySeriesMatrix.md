@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `FrequencySeriesMatrix` for aligned multi-channel spectra that should be processed together as one matrix.

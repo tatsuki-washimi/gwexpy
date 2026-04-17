@@ -1,6 +1,8 @@
-# Bruco (Brute force coherence)
+# Bruco
 
 <!-- reference-summary:start -->
+
+**安定性:** Stable
 
 ## 主な用途
 

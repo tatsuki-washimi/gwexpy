@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `Pipeline` to chain reusable preprocessing transforms and apply them deterministically to time-series-like data.

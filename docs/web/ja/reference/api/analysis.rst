@@ -1,6 +1,8 @@
 解析ユーティリティ (Analysis)
 =============================
 
+**安定性:** Stable
+
 .. automodule:: gwexpy.analysis.coupling
    :members:
    :undoc-members:

@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `TimeSeries` は単一の等間隔サンプリング時系列を扱うための基本クラスで、GWexpy の信号処理・モデリング・相互運用拡張を含みます。
@@ -42,7 +44,7 @@ psd = ts.psd(fftlength=1.0)
 <!-- reference-summary:end -->
 
 
-**継承元:** `gwpy.timeseries.TimeSeries`
+**継承元:** [`gwpy.timeseries.TimeSeries`](https://gwpy.readthedocs.io/en/latest/reference/gwpy.timeseries.TimeSeries/)
 
 すべての gwexpy 機能を備えた拡張 TimeSeries。
 

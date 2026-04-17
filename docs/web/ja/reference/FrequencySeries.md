@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `FrequencySeries` は単一スペクトルを表す基本クラスで、GWexpy のフィッティング・統計・フィルタ・描画拡張を含みます。
@@ -42,7 +44,7 @@ phase = fs.phase()
 <!-- reference-summary:end -->
 
 
-**継承元:** FrequencySeriesAnalysisMixin, SignalAnalysisMixin, FrequencySeriesSpectralMixin, StatisticsMixin, FittingMixin, PhaseMethodsMixin, RegularityMixin, BaseFrequencySeries (gwpy.frequencyseries.FrequencySeries)
+**継承元:** FrequencySeriesAnalysisMixin, SignalAnalysisMixin, FrequencySeriesSpectralMixin, StatisticsMixin, FittingMixin, PhaseMethodsMixin, RegularityMixin, BaseFrequencySeries ([`gwpy.frequencyseries.FrequencySeries`](https://gwpy.readthedocs.io/en/latest/api/gwpy.frequencyseries.FrequencySeries/))
 
 互換性と将来の拡張のための gwpy の FrequencySeries の軽量ラッパー。
 

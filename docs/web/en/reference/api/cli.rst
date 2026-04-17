@@ -1,6 +1,8 @@
 Command-Line Interface
 ======================
 
+**Stability:** Stable
+
 .. note::
    The GWexpy CLI (``gwexpy`` command) is currently a placeholder and is not yet
    feature-complete. A full command-line interface is planned for a future release.

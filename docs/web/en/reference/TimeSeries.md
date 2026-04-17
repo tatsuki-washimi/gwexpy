@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `TimeSeries` for a single regularly sampled time-domain channel with GWexpy signal-processing, modeling, and interoperability extensions.
@@ -42,7 +44,7 @@ The detailed generated API continues below on this page.
 <!-- reference-summary:end -->
 
 
-**Inherits from:** `gwpy.timeseries.TimeSeries`
+**Inherits from:** [`gwpy.timeseries.TimeSeries`](https://gwpy.readthedocs.io/en/latest/reference/gwpy.timeseries.TimeSeries/)
 
 Extended TimeSeries with full gwexpy functionality.
 

@@ -1,49 +1,54 @@
 リファレンス (Reference)
 ========================
 
-GWexpy のクラス、関数、および API の詳細な仕様を解説します。
+**安定性:** Stable
 
-主要なデータ構造
-----------------
+このページは GWexpy のリファレンス入口です。モジュール別に探すか、クラス名で引くか、概念別に探すかに応じて入口を選んでください。
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 70
+   :widths: 30 15 55
 
-   * - クラス名
-     - 説明
-   * - :doc:`ScalarField <../user_guide/scalarfield_slicing>`
-     - 4次元（時間、空間）を扱う高次元データコンテナ。
-   * - :class:`TimeSeriesMatrix <gwexpy.timeseries.TimeSeriesMatrix>`
-     - 複数の時系列データを一括処理するための行列形式コンテナ。
-   * - :class:`FrequencySeriesMatrix <gwexpy.frequencyseries.FrequencySeriesMatrix>`
-     - 周波数ドメインの多チャネルデータを扱うコンテナ。
+   * - 入口
+     - 安定性
+     - 用途
+   * - :doc:`API リファレンス (API Reference) <api/index>`
+     - Stable
+     - サブシステム別にモジュールと公開関数をたどる
+   * - :doc:`クラス索引 (Class Index) <classes>`
+     - Stable
+     - Python クラス名から個別ページを引く
+   * - :doc:`トピック別参照 (Topics) <topics>`
+     - Stable
+     - 規約、理論、補助ページを概念別に探す
 
-API リファレンス
-----------------
-
-各モジュールの詳細なメソッドやプロパティについては、以下のリンクを参照してください。
-
-.. grid:: 2
+.. grid:: 3
     :gutter: 3
 
-    .. grid-item-card:: 🧩 API 索引
+    .. grid-item-card:: 🧩 API リファレンス
         :link: api/index
         :link-type: doc
 
-        全てのモジュールと関数のリスト
+        モジュール別の API と関数をサブシステム単位でたどれます。
 
-    .. grid-item-card:: 🏗️ クラス一覧
+    .. grid-item-card:: 🏗️ クラス索引
         :link: classes
         :link-type: doc
 
-        主要なクラスのプロパティとメソッド
+        主要クラスを英名のアルファベット順で引けます。
+
+    .. grid-item-card:: 🧭 トピック別参照
+        :link: topics
+        :link-type: doc
+
+        規約、理論、補助ページを概念別にまとめています。
 
 .. note::
-   `ScalarField` の設計意図や操作例は :doc:`../user_guide/scalarfield_slicing`、モジュール別 API は :doc:`api/index` から確認できます。
+   学習用の導線が必要な場合は user guide / tutorials を参照してください。`ScalarField` の設計意図や操作例は :doc:`../user_guide/scalarfield_slicing` にあります。
 
 .. toctree::
    :maxdepth: 2
 
    api/index
    classes
+   topics

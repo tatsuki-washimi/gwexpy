@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `FrequencySeries` for one frequency-domain spectrum with GWexpy fitting, statistics, filtering, and plotting extensions.
@@ -42,7 +44,7 @@ The detailed generated API continues below on this page.
 <!-- reference-summary:end -->
 
 
-**Inherits from:** `gwpy.frequencyseries.FrequencySeries`
+**Inherits from:** [`gwpy.frequencyseries.FrequencySeries`](https://gwpy.readthedocs.io/en/latest/api/gwpy.frequencyseries.FrequencySeries/)
 
 Extended FrequencySeries with gwexpy analysis and interop features.
 

@@ -1,6 +1,8 @@
-# FFTの仕様とコンベンション
+# FFT の仕様と規約 (FFT_Conventions)
 
 <!-- reference-summary:start -->
+
+**安定性:** Stable
 
 ## 主な用途
 

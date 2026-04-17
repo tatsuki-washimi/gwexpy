@@ -1,6 +1,7 @@
-
 Compatibility / Extra
 =====================
+
+**Stability:** Stable
 
 .. automodule:: gwexpy.fitting
    :members:

@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `SpectrogramMatrix` for aligned multi-channel spectrogram analysis and summary statistics across a grid of spectrograms.

@@ -1,6 +1,8 @@
 Segments
 ========
 
+**Stability:** Stable
+
 .. currentmodule:: gwexpy.segments
 
 Classes and utilities for managing time segments (data quality flags, active/inactive intervals).

@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `BifrequencyMap` は入力周波数軸と出力周波数軸の結合や伝達を表すためのマップです。

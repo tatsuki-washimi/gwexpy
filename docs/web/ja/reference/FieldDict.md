@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `FieldDict` は複数 field に対する一括処理とドメイン整合チェックをまとめて扱うためのコンテナです。

@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `TimeSeriesMatrix` は全チャンネルが同じ時間軸を共有する場合に使い、行列単位で FFT・PSD・コヒーレンス・前処理を適用できます。

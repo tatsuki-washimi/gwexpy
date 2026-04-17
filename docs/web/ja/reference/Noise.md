@@ -1,6 +1,8 @@
-# Noise
+# ノイズ生成 (Noise)
 
 <!-- reference-summary:start -->
+
+**安定性:** Stable
 
 ## 主な用途
 

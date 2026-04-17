@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `FrequencySeriesMatrix` は周波数軸が揃った多チャンネルスペクトルを 1 つの行列として処理したいときに使います。

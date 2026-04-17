@@ -1,4 +1,6 @@
-# gwexpy.fitting
+# フィッティング (gwexpy.fitting)
+
+**安定性:** Stable
 
 `gwexpy.fitting` モジュールは、iminuit を使用した高度なフィッティング機能を提供します。
 

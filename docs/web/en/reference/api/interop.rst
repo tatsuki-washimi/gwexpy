@@ -1,6 +1,8 @@
 Interoperability (gwexpy.interop)
 =================================
 
+**Stability:** Stable
+
 .. automodule:: gwexpy.interop
 
 Standard Formats

@@ -1,5 +1,7 @@
 フィールド (Fields)
-==========================
+===================
+
+**安定性:** Stable
 
 .. automodule:: gwexpy.fields
    :no-index:

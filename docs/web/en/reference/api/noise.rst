@@ -1,6 +1,8 @@
 Noise
 =====
 
+**Stability:** Stable
+
 .. automodule:: gwexpy.noise
    :members:
    :undoc-members:

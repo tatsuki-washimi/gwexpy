@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `StandardizeTransform` as a ready-made preprocessing step inside direct analysis code or a `Pipeline`.

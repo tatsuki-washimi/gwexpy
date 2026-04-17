@@ -1,6 +1,8 @@
-# Bruco (Brute force coherence)
+# Bruco
 
 <!-- reference-summary:start -->
+
+**Stability:** Stable
 
 ## What it is
 

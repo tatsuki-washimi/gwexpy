@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `TimePlaneTransform` は、時間軸と 2 つの平面軸を持つ 3 次元変換結果を扱うコンテナです。STLT のような変換では `(time, sigma, frequency)` のような軸構造を表せます。

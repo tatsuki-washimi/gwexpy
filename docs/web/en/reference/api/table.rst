@@ -1,6 +1,8 @@
 Table
 =====
 
+**Stability:** Stable
+
 .. currentmodule:: gwexpy.table
 
 Overview

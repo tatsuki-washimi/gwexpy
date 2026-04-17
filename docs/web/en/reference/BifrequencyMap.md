@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `BifrequencyMap` to represent couplings between an input frequency axis and an output frequency axis.

@@ -1,6 +1,8 @@
 基本型 (Types)
 ==============
 
+**安定性:** Stable
+
 .. automodule:: gwexpy.types
    :no-index:
    :members:

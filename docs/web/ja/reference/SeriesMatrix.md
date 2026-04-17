@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `SeriesMatrix` は時系列・周波数系列・spectrogram の各行列コンテナに共通する基盤抽象です。

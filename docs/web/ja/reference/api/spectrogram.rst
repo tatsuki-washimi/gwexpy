@@ -1,6 +1,8 @@
 スペクトログラム (Spectrogram)
 ==============================
 
+**安定性:** Stable
+
 .. currentmodule:: gwexpy.spectrogram
 
 概要

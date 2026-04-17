@@ -1,6 +1,8 @@
 Matrix Containers
 =================
 
+**Stability:** Stable
+
 Multi-channel containers that group multiple :class:`~gwexpy.timeseries.TimeSeries`,
 :class:`~gwexpy.frequencyseries.FrequencySeries`, or :class:`~gwexpy.spectrogram.Spectrogram`
 objects and expose vectorized operations across all channels simultaneously.

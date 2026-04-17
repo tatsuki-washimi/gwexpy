@@ -1,6 +1,8 @@
-# スペクトル推定
+# スペクトル推定 (Spectral)
 
 <!-- reference-summary:start -->
+
+**安定性:** Stable
 
 ## 主な用途
 

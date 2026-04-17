@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `SeriesMatrix` as the common matrix abstraction behind time-series, frequency-series, and spectrogram matrix containers.

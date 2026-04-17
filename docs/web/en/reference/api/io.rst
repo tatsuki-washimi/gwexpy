@@ -1,6 +1,8 @@
 I/O
 ===
 
+**Stability:** Stable
+
 .. currentmodule:: gwexpy.io
 
 File format readers and writers registered in the GWpy I/O registry.

@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use `FieldList` to batch field operations while keeping domain and metadata checks consistent across members.

@@ -1,5 +1,7 @@
-互換ページ / Extra
+互換・補助 (Extra)
 ==================
+
+**安定性:** Stable
 
 .. automodule:: gwexpy.fitting
    :no-index:

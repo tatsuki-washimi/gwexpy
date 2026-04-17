@@ -1,6 +1,8 @@
-# セグメントテーブル (SegmentTable)
+# SegmentTable
 
 <!-- reference-summary:start -->
+
+**安定性:** Stable
 
 ## 主な用途
 
@@ -38,7 +40,7 @@ plot = segments.plot()
 <!-- reference-summary:end -->
 
 
-**継承元:** `gwpy.table.Table`
+**継承元:** [GWpy table documentation](https://gwpy.readthedocs.io/en/latest/table/)
 
 時間セグメントとそのメタデータのコンテナ。GWpy / Astropy Table の機能を拡張します。
 

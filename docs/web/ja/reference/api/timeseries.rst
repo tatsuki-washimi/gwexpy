@@ -1,5 +1,7 @@
 時系列 (Time Series)
-=====================
+====================
+
+**安定性:** Stable
 
 .. currentmodule:: gwexpy.timeseries
 

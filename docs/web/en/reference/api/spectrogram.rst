@@ -1,6 +1,8 @@
 Spectrogram
 ===========
 
+**Stability:** Stable
+
 .. currentmodule:: gwexpy.spectrogram
 
 Overview

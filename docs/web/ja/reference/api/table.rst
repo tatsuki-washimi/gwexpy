@@ -1,5 +1,7 @@
-テーブル
-========
+テーブル (Table)
+================
+
+**安定性:** Stable
 
 .. currentmodule:: gwexpy.table
 

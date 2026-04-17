@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `FrequencySeriesDict` は複数の `FrequencySeries` をラベル付きで保持し、一括処理や変換を行うために使います。

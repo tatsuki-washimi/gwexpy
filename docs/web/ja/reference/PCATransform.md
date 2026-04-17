@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `PCATransform` は直接呼び出しでも `Pipeline` の構成要素としても使える既成の前処理変換です。

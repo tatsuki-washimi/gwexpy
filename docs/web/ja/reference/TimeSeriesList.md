@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**安定性:** Stable
+
 ## 主な用途
 
 `TimeSeriesList` は複数の `TimeSeries` をチャンネル単位で整理し、メタデータを保ったまま一括処理するために使います。

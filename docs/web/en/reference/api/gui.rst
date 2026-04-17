@@ -1,6 +1,8 @@
 Graphical User Interface
 ========================
 
+**Stability:** Experimental
+
 .. warning::
    The GWexpy GUI (``gwexpy.gui``) is **experimental** and not included in the v0.1.0
    release. It requires the ``.[gui]`` optional dependency (PyQt5, pyqtgraph).

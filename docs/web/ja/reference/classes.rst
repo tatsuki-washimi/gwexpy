@@ -1,9 +1,11 @@
 クラス索引 (Class Index)
 ========================
 
+**安定性:** Stable
+
 この索引では、GWexpy の主要なクラスを英名のアルファベット順に一覧します。
 検索性を優先するため、項目ラベルは Python クラス名の英名のみで表記します。
-分野別の入口や日本語での概要は :doc:`index` および glossary / 各個別ページを参照してください。
+分野別の入口や日本語での概要は :doc:`index`、:doc:`topics`、glossary / 各個別ページを参照してください。
 
 A
 -
@@ -28,10 +30,8 @@ F
 .. toctree::
    :maxdepth: 1
 
-   FFT_Conventions <FFT_Conventions>
    FieldDict <FieldDict>
    FieldList <FieldList>
-   Fitting <fitting>
    FrequencySeries <FrequencySeries>
    FrequencySeriesDict <FrequencySeriesDict>
    FrequencySeriesList <FrequencySeriesList>
@@ -52,14 +52,6 @@ N
 .. toctree::
    :maxdepth: 1
 
-   Noise <Noise>
-
-P
--
-
-.. toctree::
-   :maxdepth: 1
-
    PCATransform <PCATransform>
    Pipeline <Pipeline>
    Plane2D <Plane2D>
@@ -75,7 +67,6 @@ S
    SegmentCell <SegmentCell>
    SegmentTable <SegmentTable>
    SeriesMatrix <SeriesMatrix>
-   Spectral <Spectral>
    Spectrogram <Spectrogram>
    SpectrogramDict <SpectrogramDict>
    SpectrogramList <SpectrogramList>

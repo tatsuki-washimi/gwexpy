@@ -1,8 +1,10 @@
 Class Index
 ===========
 
+**Stability:** Stable
+
 This index lists the major GWexpy classes in alphabetical order by class name.
-If you want a domain-oriented entry point, see :doc:`index`.
+If you want a domain-oriented entry point, see :doc:`index`. For theory pages, helper overviews, and conventions, see :doc:`topics`.
 
 A
 -
@@ -27,10 +29,8 @@ F
 .. toctree::
    :maxdepth: 1
 
-   FFT_Conventions
    FieldDict
    FieldList
-   Fitting <fitting>
    FrequencySeries
    FrequencySeriesDict
    FrequencySeriesList
@@ -51,14 +51,6 @@ N
 .. toctree::
    :maxdepth: 1
 
-   Noise
-
-P
--
-
-.. toctree::
-   :maxdepth: 1
-
    PCATransform
    Pipeline
    Plane2D
@@ -74,7 +66,6 @@ S
    SegmentCell
    SegmentTable
    SeriesMatrix
-   Spectral
    Spectrogram
    SpectrogramDict
    SpectrogramList

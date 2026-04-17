@@ -2,6 +2,8 @@
 
 <!-- reference-summary:start -->
 
+**Stability:** Stable
+
 ## What it is
 
 Use the noise helpers to generate detector-noise models, synthetic ASD curves, and time-domain noise or waveform surrogates.
