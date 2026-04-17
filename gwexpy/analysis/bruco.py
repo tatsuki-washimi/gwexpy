@@ -1017,6 +1017,31 @@ class Bruco:
     channels_to_scan : list of str
         The final sorted list of channels to be scanned (aux - excluded - target).
 
+    Examples
+    --------
+    Prepare the scanner from an already curated channel list:
+
+    >>> from gwexpy.analysis import Bruco
+    >>> bruco = Bruco(
+    ...     target_channel="H1:CAL-DELTAL_EXTERNAL_DQ",
+    ...     aux_channels=["H1:ASC-X_TR_A_NSUM_OUT_DQ", "H1:PEM-CS_ACC_BSC1_ITMY_X_DQ"],
+    ... )
+    >>> len(bruco.channels_to_scan)
+    2
+
+    Run the coherence scan with pre-fetched data when acquisition is handled
+    elsewhere:
+
+    >>> result = bruco.compute(
+    ...     fftlength=4.0,
+    ...     overlap=2.0,
+    ...     top_n=3,
+    ...     target_data=target_ts,
+    ...     aux_data=aux_dict,
+    ... )
+    >>> result.top_channels(3)[0]["channel"]
+    'H1:ASC-X_TR_A_NSUM_OUT_DQ'
+
     """
 
     def __init__(
@@ -1027,11 +1052,15 @@ class Bruco:
     ) -> None:
         """Initialize the Bruco scanner.
 
-        Args:
-            target_channel (str): The main channel to analyze.
-            aux_channels (List[str]): A list of all available auxiliary channels.
-            excluded_channels (List[str], optional): Channels to ignore (e.g., calibration lines).
-
+        Parameters
+        ----------
+        target_channel : str
+            The main channel to analyze.
+        aux_channels : list of str
+            Candidate witness channels to compare against the target.
+        excluded_channels : list of str, optional
+            Channels to ignore before scanning, such as known self-couplings
+            or calibration lines.
         """
         self.target = str(target_channel)
         self.aux_channels = [str(c) for c in aux_channels]

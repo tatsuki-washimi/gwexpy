@@ -8,6 +8,7 @@ from astropy import units as u
 from gwexpy.types.metadata import MetaDataDict, MetaDataMatrix
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.seriesmatrix import SeriesMatrix
+from gwexpy.types.typing import ArrayLike, IndexLike, MetaDataCollectionType, UnitLike
 
 from .collections import SpectrogramDict, SpectrogramList
 from .matrix_analysis import SpectrogramMatrixAnalysisMixin
@@ -82,16 +83,16 @@ class SpectrogramMatrix(  # type: ignore[misc]
 
     def __new__(
         cls,
-        data,
-        times=None,
-        frequencies=None,
-        unit=None,
-        name=None,
-        rows=None,
-        cols=None,
-        meta=None,
-        **kwargs,
-    ):
+        data: ArrayLike | SpectrogramMatrix,
+        times: IndexLike | None = None,
+        frequencies: IndexLike | None = None,
+        unit: UnitLike = None,
+        name: str | None = None,
+        rows: MetaDataCollectionType = None,
+        cols: MetaDataCollectionType = None,
+        meta: Any = None,
+        **kwargs: Any,
+    ) -> SpectrogramMatrix:
         """Create a new `SpectrogramMatrix` instance."""
         # Handle alias
         if times is None:

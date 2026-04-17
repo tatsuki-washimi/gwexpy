@@ -10,7 +10,6 @@
 
 .. autosummary::
    :toctree:
-   :nosignatures:
 
    Histogram
    HistogramDict

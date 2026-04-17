@@ -1,5 +1,46 @@
 # TensorField
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `TensorField` for physics-aware field data with explicit domains, units, and FFT-aware axis handling.
+
+## Representative Signatures
+
+```python
+TensorField(components, axis0_domain="time", spatial_domains=(...), ...)
+TensorField.trace()
+```
+
+## Minimal Example
+
+```python
+from gwexpy.fields import TensorField
+import numpy as np
+
+ten = TensorField(np.random.randn(3, 3, 16, 4, 4, 4), axis0_domain="time")
+trace = ten.trace()
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 `TensorField` is a tensor-valued field represented as a collection of `ScalarField` components.
 
 ## Overview

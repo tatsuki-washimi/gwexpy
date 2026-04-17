@@ -1,5 +1,46 @@
 # TimePlaneTransform
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`TimePlaneTransform` は 3 次元出力のうち 1 軸を時間、残り 2 軸を平面として扱いたいときに使います。
+
+## 代表的なシグネチャ
+
+```python
+TimePlaneTransform(data3d, kind="custom", meta=None)
+TimePlaneTransform.plane(drop_axis, drop_index)
+```
+
+## 最小例
+
+```python
+from gwexpy.types import TimePlaneTransform
+import numpy as np
+
+obj = TimePlaneTransform((np.zeros((4, 8, 8)), np.arange(4), np.arange(8), np.arange(8)))
+plane = obj.at_time(0)
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** object
 
 時間-周波数変換などで生成される、(time, axis1, axis2) 構造を持つ3次元データのコンテナ。

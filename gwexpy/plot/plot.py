@@ -62,11 +62,48 @@ def plot_mmm(median, min_s, max_s, ax=None, **kwargs):
 
 
 class Plot(BasePlot):
-    """Extend :class:`gwpy.plot.Plot` to automatically handle matrix inputs.
+    """GWexpy-aware plotting facade for series, matrices, and spectrogram grids.
 
-    :class:`gwexpy.types.SeriesMatrix` arguments by expanding them into
-    individual :class:`gwpy.types.Series` objects, while preserving
-    matrix layout and metadata where possible.
+    `Plot` keeps the familiar :class:`gwpy.plot.Plot` constructor while adding
+    conveniences needed by GWexpy collections:
+
+    - `SeriesMatrix` and `SpectrogramMatrix` inputs are expanded into per-axis
+      subplots automatically.
+    - Layout hints such as `separate`, `geometry`, and shared-axis labeling are
+      inferred from the input shape.
+    - Spectrogram plots can receive automatic colorbar management and adaptive
+      decimation for large overlays.
+
+    Parameters
+    ----------
+    *args
+        Series-like objects, matrices, lists, or dictionaries accepted by the
+        GWexpy plotting registry.
+    **kwargs
+        Standard `gwpy.plot.Plot` keyword arguments plus GWexpy-specific layout
+        helpers such as `separate`, `geometry`, `monitor`,
+        `decimate_threshold`, and `decimate_points`.
+
+    Examples
+    --------
+    Plot a matrix as aligned subplots:
+
+    >>> from gwexpy.plot import Plot
+    >>> fig = Plot(ts_matrix, separate=True, figsize=(10, 6))
+    >>> len(fig.axes) >= 1
+    True
+
+    Overlay summary curves with a shaded min/max envelope:
+
+    >>> fig = Plot(median_series)
+    >>> _ = fig.plot_mmm(median_series, min_series, max_series, alpha_fill=0.15)
+
+    See Also
+    --------
+    plot_mmm
+        Convenience helper for median/min/max overlays.
+    gwexpy.types.SeriesMatrix
+        Matrix container expanded automatically by this plot class.
     """
 
     # Suppress _repr_html_ to prevent double plotting (repr + backend)

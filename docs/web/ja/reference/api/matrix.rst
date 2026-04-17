@@ -5,6 +5,13 @@
 または :class:`~gwexpy.spectrogram.Spectrogram` をグループ化し、
 全チャンネルに対して同時にベクトル化された演算を実行する多チャンネルコンテナ。
 
+.. seealso::
+
+   :doc:`../../user_guide/validated_algorithms`
+      行列全体に対する FFT・PSD・コヒーレンスなどのアルゴリズム検証。
+   :doc:`../../user_guide/tutorials/index`
+      `TimeSeriesMatrix`・`FrequencySeriesMatrix`・`SpectrogramMatrix` を使うチュートリアル集。
+
 タイムシリーズ行列
 ------------------
 
@@ -12,7 +19,6 @@
 
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    TimeSeriesMatrix
 
@@ -30,7 +36,6 @@
 
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    FrequencySeriesMatrix
 
@@ -48,7 +53,6 @@
 
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    SpectrogramMatrix
 

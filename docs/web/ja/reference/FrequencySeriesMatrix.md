@@ -1,5 +1,47 @@
 # FrequencySeriesMatrix
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`FrequencySeriesMatrix` は周波数軸が揃った多チャンネルスペクトルを 1 つの行列として処理したいときに使います。
+
+## 代表的なシグネチャ
+
+```python
+FrequencySeriesMatrix(data, frequencies=None, df=None, f0=None, ...)
+FrequencySeriesMatrix.to_dict()
+```
+
+## 最小例
+
+```python
+from gwexpy.frequencyseries import FrequencySeriesMatrix
+import numpy as np
+
+mat = FrequencySeriesMatrix(np.ones((2, 2, 64)), df=1.0)
+out = mat.to_dict()
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** FrequencySeriesMatrixCoreMixin, FrequencySeriesMatrixAnalysisMixin, SeriesMatrix
 
 複数の FrequencySeries オブジェクト用のマトリックスコンテナ。

@@ -1,5 +1,44 @@
 # Array2D
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `Array2D` when you need a typed array object that preserves semantic axis names and GWexpy metadata through transformations.
+
+## Representative Signatures
+
+```python
+Array2D(data, axis_names=("axis0", "axis1"), ...)
+Array2D.swapaxes(0, 1)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.types import Array2D
+import numpy as np
+
+arr = Array2D(np.arange(6).reshape(2, 3), axis_names=("row", "col"))
+arr_t = arr.swapaxes(0, 1)
+```
+
+## Related Theory
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** AxisApiMixin, StatisticalMethodsMixin, Array2D
 
 

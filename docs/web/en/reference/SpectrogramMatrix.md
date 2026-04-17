@@ -1,5 +1,47 @@
 # SpectrogramMatrix
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `SpectrogramMatrix` for aligned multi-channel spectrogram analysis and summary statistics across a grid of spectrograms.
+
+## Representative Signatures
+
+```python
+SpectrogramMatrix(data, times=None, frequencies=None, ...)
+SpectrogramMatrix.to_dict()
+```
+
+## Minimal Example
+
+```python
+from gwexpy.spectrogram import SpectrogramMatrix
+import numpy as np
+
+mat = SpectrogramMatrix(np.ones((2, 8, 16)), times=np.arange(8), frequencies=np.arange(16))
+out = mat.to_dict()
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** PhaseMethodsMixin, SpectrogramMatrixCoreMixin, SpectrogramMatrixAnalysisMixin, SeriesMatrix
 
 

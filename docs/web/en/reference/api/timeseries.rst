@@ -6,9 +6,15 @@ Time Series
 Overview
 --------
 
+.. seealso::
+
+   :doc:`../../user_guide/validated_algorithms`
+      Validation notes for FFT, PSD, ASD, and coherence-related estimators.
+   :doc:`../FFT_Conventions`
+      Fourier normalization and axis conventions used by GWexpy.
+
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    TimeSeries
 
@@ -26,7 +32,6 @@ TimeSeries Class
    .. rubric:: Methods
 
    .. autosummary::
-      :nosignatures:
 
       ~TimeSeries.fft
       ~TimeSeries.rfft

@@ -1,5 +1,42 @@
 # Noise
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+Noise ヘルパは検出器ノイズモデル、合成 ASD、時間領域ノイズや波形の生成に使います。
+
+## 代表的なシグネチャ
+
+```python
+from_pygwinc(ifo, quantity="strain", fmin=10, fmax=8192, df=1.0)
+gaussian(duration, sample_rate, std=1.0, mean=0.0, ...)
+```
+
+## 最小例
+
+```python
+from gwexpy.noise.wave import gaussian
+
+noise = gaussian(duration=1.0, sample_rate=1024, std=0.1)
+```
+
+## 関連理論
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 検出器および環境ノイズモデル用のユーティリティ。ASDヘルパーと時間領域の合成機能を含みます。
 `gwexpy.noise` モジュールは以下の2つのサブモジュールに分かれています：
 

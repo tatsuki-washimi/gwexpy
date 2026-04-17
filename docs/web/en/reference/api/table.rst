@@ -8,7 +8,6 @@ Overview
 
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    SegmentTable
    SegmentCell
@@ -25,7 +24,6 @@ SegmentTable Class
    .. rubric:: Factory Methods
 
    .. autosummary::
-      :nosignatures:
 
       ~SegmentTable.from_segments
       ~SegmentTable.from_table
@@ -33,7 +31,6 @@ SegmentTable Class
    .. rubric:: Column Management
 
    .. autosummary::
-      :nosignatures:
 
       ~SegmentTable.add_column
       ~SegmentTable.add_series_column
@@ -41,7 +38,6 @@ SegmentTable Class
    .. rubric:: Row-wise Processing
 
    .. autosummary::
-      :nosignatures:
 
       ~SegmentTable.apply
       ~SegmentTable.map
@@ -51,7 +47,6 @@ SegmentTable Class
    .. rubric:: Selection & Conversion
 
    .. autosummary::
-      :nosignatures:
 
       ~SegmentTable.select
       ~SegmentTable.fetch
@@ -62,7 +57,6 @@ SegmentTable Class
    .. rubric:: Drawing (Representative APIs)
 
    .. autosummary::
-      :nosignatures:
 
       ~SegmentTable.segments
       ~SegmentTable.overlay_spectra

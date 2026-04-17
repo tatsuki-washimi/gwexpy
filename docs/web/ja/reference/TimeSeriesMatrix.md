@@ -1,5 +1,47 @@
 # TimeSeriesMatrix
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`TimeSeriesMatrix` は全チャンネルが同じ時間軸を共有する場合に使い、行列単位で FFT・PSD・コヒーレンス・前処理を適用できます。
+
+## 代表的なシグネチャ
+
+```python
+TimeSeriesMatrix(data, times=None, dt=None, t0=None, sample_rate=None, ...)
+TimeSeriesMatrix.psd(fftlength=None, overlap=0, ...)
+```
+
+## 最小例
+
+```python
+from gwexpy.timeseries import TimeSeriesMatrix
+import numpy as np
+
+mat = TimeSeriesMatrix(np.random.randn(2, 2, 256), sample_rate=256)
+coh = mat.coherence(mat)
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** PhaseMethodsMixin, TimeSeriesMatrixCoreMixin, TimeSeriesMatrixAnalysisMixin, TimeSeriesMatrixSpectralMixin, TimeSeriesMatrixInteropMixin, SeriesMatrix
 
 **共通の時間軸を共有する複数の TimeSeries オブジェクト用の2Dマトリックスコンテナ。**

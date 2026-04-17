@@ -1,5 +1,46 @@
 # TensorField
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`TensorField` は物理単位・軸ドメイン・FFT 後の整合性を保ちながら場データを扱うためのクラスです。
+
+## 代表的なシグネチャ
+
+```python
+TensorField(components, axis0_domain="time", spatial_domains=(...), ...)
+TensorField.trace()
+```
+
+## 最小例
+
+```python
+from gwexpy.fields import TensorField
+import numpy as np
+
+ten = TensorField(np.random.randn(3, 3, 16, 4, 4, 4), axis0_domain="time")
+trace = ten.trace()
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 `TensorField` は、`ScalarField` コンポーネントのコレクションとして表現されるテンソル値フィールドです。
 
 ## 概要

@@ -8,7 +8,6 @@
 
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    SegmentTable
    SegmentCell
@@ -25,7 +24,6 @@ SegmentTable クラス
    .. rubric:: ファクトリメソッド
 
    .. autosummary::
-      :nosignatures:
 
       ~SegmentTable.from_segments
       ~SegmentTable.from_table
@@ -33,7 +31,6 @@ SegmentTable クラス
    .. rubric:: カラム管理
 
    .. autosummary::
-      :nosignatures:
 
       ~SegmentTable.add_column
       ~SegmentTable.add_series_column
@@ -41,7 +38,6 @@ SegmentTable クラス
    .. rubric:: 行単位の処理
 
    .. autosummary::
-      :nosignatures:
 
       ~SegmentTable.apply
       ~SegmentTable.map
@@ -51,7 +47,6 @@ SegmentTable クラス
    .. rubric:: 選択と変換
 
    .. autosummary::
-      :nosignatures:
 
       ~SegmentTable.select
       ~SegmentTable.fetch
@@ -62,7 +57,6 @@ SegmentTable クラス
    .. rubric:: 描画 (代表的な API)
 
    .. autosummary::
-      :nosignatures:
 
       ~SegmentTable.segments
       ~SegmentTable.overlay_spectra

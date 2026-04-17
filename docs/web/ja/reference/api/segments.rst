@@ -7,7 +7,6 @@
 
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    DataQualityFlag
    DataQualityDict

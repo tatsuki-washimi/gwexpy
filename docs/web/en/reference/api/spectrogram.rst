@@ -6,9 +6,15 @@ Spectrogram
 Overview
 --------
 
+.. seealso::
+
+   :doc:`../../user_guide/validated_algorithms`
+      Validation notes for time-frequency estimation and spectrogram-derived methods.
+   :doc:`../FFT_Conventions`
+      Fourier normalization and axis conventions used by GWexpy.
+
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    Spectrogram
 
@@ -26,7 +32,6 @@ Spectrogram Class
    .. rubric:: Methods
 
    .. autosummary::
-      :nosignatures:
 
       ~Spectrogram.plot
       ~Spectrogram.crop

@@ -1,5 +1,47 @@
 # FrequencySeriesMatrix
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `FrequencySeriesMatrix` for aligned multi-channel spectra that should be processed together as one matrix.
+
+## Representative Signatures
+
+```python
+FrequencySeriesMatrix(data, frequencies=None, df=None, f0=None, ...)
+FrequencySeriesMatrix.to_dict()
+```
+
+## Minimal Example
+
+```python
+from gwexpy.frequencyseries import FrequencySeriesMatrix
+import numpy as np
+
+mat = FrequencySeriesMatrix(np.ones((2, 2, 64)), df=1.0)
+out = mat.to_dict()
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** FrequencySeriesMatrixCoreMixin, FrequencySeriesMatrixAnalysisMixin, SeriesMatrix
 
 

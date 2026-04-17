@@ -10,7 +10,6 @@
 
 .. autosummary::
    :toctree:
-   :nosignatures:
 
    Time
    LIGOTimeGPS
@@ -20,7 +19,6 @@
 
 .. autosummary::
    :toctree:
-   :nosignatures:
 
    to_gps
    from_gps

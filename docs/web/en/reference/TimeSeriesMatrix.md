@@ -1,5 +1,47 @@
 # TimeSeriesMatrix
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `TimeSeriesMatrix` when channels share one time axis and you want matrix-wide FFT, PSD, coherence, or preprocessing methods.
+
+## Representative Signatures
+
+```python
+TimeSeriesMatrix(data, times=None, dt=None, t0=None, sample_rate=None, ...)
+TimeSeriesMatrix.psd(fftlength=None, overlap=0, ...)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.timeseries import TimeSeriesMatrix
+import numpy as np
+
+mat = TimeSeriesMatrix(np.random.randn(2, 2, 256), sample_rate=256)
+coh = mat.coherence(mat)
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** PhaseMethodsMixin, TimeSeriesMatrixCoreMixin, TimeSeriesMatrixAnalysisMixin, TimeSeriesMatrixSpectralMixin, TimeSeriesMatrixInteropMixin, SeriesMatrix
 
 

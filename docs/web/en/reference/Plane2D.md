@@ -1,5 +1,44 @@
 # Plane2D
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `Plane2D` when you need a typed array object that preserves semantic axis names and GWexpy metadata through transformations.
+
+## Representative Signatures
+
+```python
+Plane2D(data, axis1_name="axis1", axis2_name="axis2", ...)
+Plane2D.swapaxes(0, 1)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.types import Plane2D
+import numpy as np
+
+plane = Plane2D(np.ones((4, 8)), axis1_name="time", axis2_name="frequency")
+plane_t = plane.swapaxes(0, 1)
+```
+
+## Related Theory
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** Array2D
 
 

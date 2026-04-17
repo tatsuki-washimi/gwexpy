@@ -1,5 +1,46 @@
 # VectorField
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`VectorField` は物理単位・軸ドメイン・FFT 後の整合性を保ちながら場データを扱うためのクラスです。
+
+## 代表的なシグネチャ
+
+```python
+VectorField(components, axis0_domain="time", spatial_domains=(...), ...)
+VectorField.norm()
+```
+
+## 最小例
+
+```python
+from gwexpy.fields import VectorField
+import numpy as np
+
+vec = VectorField(np.random.randn(3, 16, 4, 4, 4), axis0_domain="time")
+amplitude = vec.norm()
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 `VectorField` は、`ScalarField` コンポーネントのコレクションとして表現されるベクトル値フィールドです。
 
 ## 概要

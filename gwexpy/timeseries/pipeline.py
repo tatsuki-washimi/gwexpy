@@ -48,32 +48,70 @@ def _restore_collection(result, original):
 
 
 class Transform:
-    """Minimal transform interface for TimeSeries-like objects."""
+    """Base interface for reusable preprocessing transforms.
+
+    Subclasses implement :meth:`transform` and optionally :meth:`fit` and
+    :meth:`inverse_transform`. The interface accepts individual
+    `TimeSeries` objects as well as GWexpy collections such as
+    `TimeSeriesMatrix`, `TimeSeriesDict`, and `TimeSeriesList`.
+
+    Examples
+    --------
+    >>> transform = ImputeTransform(method="interpolate")
+    >>> filled = transform.fit_transform(ts)
+    >>> filled.shape == ts.shape
+    True
+    """
 
     supports_inverse = False
 
     def fit(self, x):
-        """Fit the transform to the data. Returns self."""
+        """Fit the transform to the input data and return `self`."""
         return self
 
     def transform(self, x):
-        """Apply the transform to data. Must be implemented by subclasses."""
+        """Apply the transform to input data.
+
+        Subclasses must override this method.
+        """
         raise NotImplementedError
 
     def fit_transform(self, x):
-        """Fit and transform in one step."""
+        """Fit the transform and immediately apply it to `x`."""
         self.fit(x)
         return self.transform(x)
 
     def inverse_transform(self, y):
-        """Reverse the transform. Not all transforms support this."""
+        """Reverse the transform when supported by the subclass."""
         raise NotImplementedError(
             "inverse_transform is not implemented for this transform"
         )
 
 
 class Pipeline:
-    """Sequentially apply a list of transforms."""
+    """Compose multiple transforms into a deterministic preprocessing chain.
+
+    The pipeline applies each step in order during :meth:`fit` and
+    :meth:`transform`, mirroring common ML preprocessing workflows while
+    preserving GWexpy metadata and collection types.
+
+    Parameters
+    ----------
+    steps : sequence of (str, Transform)
+        Ordered `(name, transform)` pairs to execute.
+
+    Examples
+    --------
+    >>> pipeline = Pipeline(
+    ...     [
+    ...         ("impute", ImputeTransform(method="interpolate")),
+    ...         ("standardize", StandardizeTransform()),
+    ...     ]
+    ... )
+    >>> standardized = pipeline.fit_transform(ts_matrix)
+    >>> standardized.shape == ts_matrix.shape
+    True
+    """
 
     def __init__(self, steps: Sequence[tuple[str, Transform]]):
         """Initialize pipeline with named transform steps.
@@ -92,7 +130,7 @@ class Pipeline:
         self._is_fitted = False
 
     def fit(self, x):
-        """Fit all transforms in sequence."""
+        """Fit each step in order using the output of the previous step."""
         data = x
         for _, step in self.steps:
             data = step.fit_transform(data)
@@ -100,19 +138,19 @@ class Pipeline:
         return self
 
     def transform(self, x):
-        """Apply all transforms in sequence."""
+        """Apply every fitted transform in sequence."""
         data = x
         for _, step in self.steps:
             data = step.transform(data)
         return data
 
     def fit_transform(self, x):
-        """Fit and transform in one step."""
+        """Fit the pipeline and return the transformed output."""
         self.fit(x)
         return self.transform(x)
 
     def inverse_transform(self, y, *, strict: bool = True):
-        """Apply inverse transforms in reverse order.
+        """Apply supported inverse transforms in reverse order.
 
         Parameters
         ----------

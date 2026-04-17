@@ -12,6 +12,8 @@ If you want the full API surface regardless of GWpy compatibility, use the [API 
   For `TimeSeries` / `FrequencySeries` / `Spectrogram`, many basic read, plot, and spectral-analysis paths can be tried first by swapping imports to `gwexpy`.
 - **The biggest shift is multi-channel processing.**
   Instead of manually looping over `TimeSeriesDict`, you can convert it with `to_matrix()` and treat the channel set as a batch-analysis container.
+- **The Field API is a GWexpy-only extension.**
+  `ScalarField` and `FieldList` / `FieldDict` cover spatially indexed data and batch operations across multiple fields, which GWpy does not provide as a standard layer.
 - **Some external-library calls move onto the data object itself.**
   Representative examples are `.find_peaks()`, `.fit()`, `.hht()`, and `.arima()`.
 - **Direct I/O and interop have their own guides.**
@@ -22,6 +24,7 @@ If you want the full API surface regardless of GWpy compatibility, use the [API 
 | Goal | First difference to check | Where to go next |
 | --- | --- | --- |
 | Analyse many channels together | `TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix` | [Matrix Tutorial](tutorials/matrix_timeseries.ipynb) |
+| Work with spatially indexed data or multiple fields together | `ScalarField`, `FieldList`, `FieldDict` | [Field API Intro](tutorials/field_scalar_intro.ipynb), [GWpy Difference API Index](gwpy_added_api_index_en.md) |
 | Reduce direct SciPy / Statsmodels plumbing | added object-level APIs | [GWpy Difference API Index](gwpy_added_api_index_en.md) |
 | Move existing single-channel code quickly | swap imports first, then add difference APIs only where needed | [Quickstart](quickstart.md) |
 | Understand result-sharing behavior | Transparent Pickle compatibility | [GWpy Difference API Index](gwpy_added_api_index_en.md) |
@@ -145,7 +148,55 @@ Related pages:
 - [Tutorial Index](tutorials/index.rst)
 - [API Reference](../reference/index.rst)
 
-## Recipe 4: Read Pickle sharing in terms of compatibility
+## Recipe 4: Group `ScalarField` objects with `FieldList` / `FieldDict`
+
+Typical GWpy migration paths focus on series-like objects, and GWpy does not provide a standard container layer for field-like data with shared spatial metadata.
+In GWexpy, you can keep a single field in `ScalarField` and manage multiple related fields through `FieldList` / `FieldDict`.
+
+### GWpy style
+
+```python
+import numpy as np
+
+field_a = np.random.randn(8, 3, 3, 3)
+field_b = np.random.randn(8, 3, 3, 3)
+
+fields = {"before": field_a, "after": field_b}
+
+# axis metadata and units must be tracked separately
+```
+
+### GWexpy style
+
+```python
+import numpy as np
+from gwexpy.fields import ScalarField, FieldDict
+
+fields = FieldDict(
+    {
+        "before": ScalarField(np.random.randn(8, 3, 3, 3)),
+        "after": ScalarField(np.random.randn(8, 3, 3, 3)),
+    },
+    validate=True,
+)
+
+fft_fields = fields.fft_space_all()
+```
+
+This difference matters when:
+
+- you want multiple fields to share unit/axis/domain checks instead of managing metadata by hand
+- you want spatial transforms or selections to stay at the collection level rather than writing field-by-field loops
+
+Related pages:
+
+- [Field API Intro](tutorials/field_scalar_intro.ipynb)
+- [GWpy Difference API Index](gwpy_added_api_index_en.md)
+- [ScalarField Reference](../reference/ScalarField.md)
+- [FieldList Reference](../reference/FieldList.md)
+- [FieldDict Reference](../reference/FieldDict.md)
+
+## Recipe 5: Read Pickle sharing in terms of compatibility
 
 GWexpy is designed with result sharing in mind, including cases where the receiver does not have GWexpy installed.  
 The point here is not generic Pickle safety advice, but what a GWpy user can expect operationally.
@@ -198,6 +249,7 @@ Use the dedicated guides below as the source of truth:
 ## Next Steps
 
 - [GWpy Difference API Index](gwpy_added_api_index_en.md) - look up added APIs from a difference-oriented view
+- [Field API Intro](tutorials/field_scalar_intro.ipynb) - see how `ScalarField`, `FieldList`, and `FieldDict` fit together
 - [Tutorial Index](tutorials/index.rst) - move from migration recipes into worked examples
 - [File I/O Supported Formats Guide](io_formats.md) - check supported read/write formats
 - [Interop / Conversion Guide](interop.md) - check bridges to external libraries

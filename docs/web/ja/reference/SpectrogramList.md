@@ -1,5 +1,46 @@
 # SpectrogramList
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`SpectrogramList` は複数の `Spectrogram` をチャンネル情報付きでまとめて扱うために使います。
+
+## 代表的なシグネチャ
+
+```python
+SpectrogramList(data: list[Spectrogram])
+SpectrogramList.to_matrix()
+```
+
+## 最小例
+
+```python
+from gwexpy.spectrogram import Spectrogram, SpectrogramList
+import numpy as np
+
+lst = SpectrogramList([Spectrogram(np.ones((8, 16)), dt=1.0, df=1.0)])
+mat = lst.to_matrix()
+```
+
+## 関連理論
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** PhaseMethodsMixin, UserList
 
 Spectrogram オブジェクトのリスト。

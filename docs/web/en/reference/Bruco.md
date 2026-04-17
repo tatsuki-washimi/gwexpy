@@ -1,5 +1,45 @@
 # BruCo (Brute force coherence)
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `Bruco` to scan a target channel against many auxiliary channels, rank coherence peaks, and estimate projected noise contributions.
+
+## Representative Signatures
+
+```python
+Bruco(target_channel, aux_channels, excluded_channels=None)
+Bruco.compute(start=None, duration=None, fftlength=2.0, overlap=1.0, ...)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.analysis import Bruco
+
+bruco = Bruco("H1:TARGET", ["H1:AUX1", "H1:AUX2"])
+result = bruco.compute(start=0, duration=64, fftlength=4.0, overlap=2.0)
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 `BruCo` computes **brute force coherence** between a target channel (e.g., a gravitational-wave channel) and a large number of auxiliary channels to identify noise sources.
 For a given frequency band and time segment, it ranks auxiliary channels by coherence with the target and estimates their noise contribution (Noise Projection).
 

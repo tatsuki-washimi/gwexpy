@@ -12,6 +12,8 @@
   `TimeSeries` / `FrequencySeries` / `Spectrogram` を使った読み込み、プロット、基本スペクトル解析は、まず import を `gwexpy` 側へ置き換えるだけで試せます。
 - **差分が大きいのは多チャネル処理です。**
   `TimeSeriesDict` を手作業でループする代わりに、`to_matrix()` で `TimeSeriesMatrix` へ変換して一括処理できます。
+- **Field API は GWpy にはない拡張です。**
+  `ScalarField` と `FieldList` / `FieldDict` は、空間軸を持つデータや複数 field の一括操作を扱うための GWexpy 固有レイヤです。
 - **外部ライブラリ呼び出しをデータオブジェクト側へ寄せられます。**
   代表例は `.find_peaks()`, `.fit()`, `.hht()`, `.arima()` です。
 - **I/O と interop は別ガイドを見る前提です。**
@@ -22,6 +24,7 @@
 | 目的 | まず見る差分 | 深掘り先 |
 | --- | --- | --- |
 | 複数チャンネルをまとめて解析したい | `TimeSeriesDict.to_matrix()` → `TimeSeriesMatrix` | [Matrix チュートリアル](tutorials/matrix_timeseries.ipynb) |
+| 空間軸付きデータや複数 field をまとめて扱いたい | `ScalarField`, `FieldList`, `FieldDict` | [Field API 入門](tutorials/field_scalar_intro.ipynb), [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
 | SciPy / Statsmodels 呼び出しを整理したい | オブジェクトメソッド化された追加 API | [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
 | 既存の単一チャネルコードを早く移したい | import だけ差し替えてから必要箇所だけ差分 API を追加 | [クイックスタート](quickstart.md) |
 | 結果共有の互換性を知りたい | Transparent Pickle の挙動 | [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
@@ -145,7 +148,55 @@ asd.plot().show()
 - [チュートリアル一覧](tutorials/index.rst)
 - [API リファレンス](../reference/index.rst)
 
-## 差分レシピ 4: Pickle 共有時の互換性を見る
+## 差分レシピ 4: `ScalarField` を `FieldList` / `FieldDict` でまとめる
+
+GWpy の標準的な移行対象は `TimeSeries` 系が中心で、空間軸を持つ field コンテナや、そのコレクションに対応する標準クラスはありません。
+GWexpy では、単一 field を `ScalarField` で保持し、複数の field を `FieldList` / `FieldDict` で一括管理できます。
+
+### GWpy style
+
+```python
+import numpy as np
+
+field_a = np.random.randn(8, 3, 3, 3)
+field_b = np.random.randn(8, 3, 3, 3)
+
+fields = {"before": field_a, "after": field_b}
+
+# 軸情報や単位の整合性は別途自前で管理する
+```
+
+### GWexpy style
+
+```python
+import numpy as np
+from gwexpy.fields import ScalarField, FieldDict
+
+fields = FieldDict(
+    {
+        "before": ScalarField(np.random.randn(8, 3, 3, 3)),
+        "after": ScalarField(np.random.randn(8, 3, 3, 3)),
+    },
+    validate=True,
+)
+
+fft_fields = fields.fft_space_all()
+```
+
+この差分が効く場面:
+
+- 同じ軸・単位・ドメインを共有する複数の field をまとめて扱いたいとき
+- 空間方向の変換や切り出しを、field 単位のループではなくコレクション単位で揃えたいとき
+
+関連ページ:
+
+- [Field API 入門](tutorials/field_scalar_intro.ipynb)
+- [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
+- [ScalarField リファレンス](../reference/ScalarField.md)
+- [FieldList リファレンス](../reference/FieldList.md)
+- [FieldDict リファレンス](../reference/FieldDict.md)
+
+## 差分レシピ 5: Pickle 共有時の互換性を見る
 
 GWexpy は、解析結果の共有時に「受け取り側が GWexpy を入れていない」ケースも意識しています。  
 このページでは安全性の一般論ではなく、**GWpy ユーザーが共有運用で何を期待できるか**だけを押さえます。
@@ -198,6 +249,7 @@ Pickle は信頼できるデータだけをロードしてください。
 ## 次のステップ
 
 - [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) - 追加 API を差分観点で引く
+- [Field API 入門](tutorials/field_scalar_intro.ipynb) - `ScalarField` / `FieldList` / `FieldDict` の使い分けを見る
 - [チュートリアル一覧](tutorials/index.rst) - 差分レシピから実例へ進む
 - [ファイル I/O 対応フォーマットガイド](io_formats.md) - 読み書き形式を確認する
 - [Interop / 変換ガイド](interop.md) - 外部ライブラリとの橋渡しを見る
