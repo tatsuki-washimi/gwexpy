@@ -1,4 +1,5 @@
 import os
+import shutil
 import sys
 import warnings
 from datetime import datetime
@@ -34,10 +35,27 @@ extensions = [
     "sphinx.ext.mathjax",
     "myst_parser",
     "sphinx.ext.intersphinx",
-    "nbsphinx",
     "sphinx_design",
     "sphinx_last_updated_by_git",
 ]
+
+
+def _env_flag(name: str) -> bool:
+    return os.environ.get(name, "").lower() in {"1", "true", "yes", "on"}
+
+
+def _has_pandoc() -> bool:
+    return shutil.which("pandoc") is not None
+
+
+def _default_nbsphinx_execute() -> str:
+    """Choose a safe default execution policy for the current environment."""
+    if "NBS_EXECUTE" in os.environ:
+        return os.environ["NBS_EXECUTE"]
+    # Local/sandbox builds cannot reliably start Jupyter kernels.
+    if _env_flag("GITHUB_ACTIONS"):
+        return "always"
+    return "never"
 
 # Only include sphinx_sitemap for environments that actually need sitemap generation.
 # The extension unconditionally creates a multiprocessing.Manager() queue during
@@ -46,23 +64,25 @@ extensions = [
 #
 # GitHub Actions builds keep sitemap generation enabled by default. For other
 # environments, opt in explicitly with ``ENABLE_SITEMAP=1``.
-enable_sitemap = os.environ.get("ENABLE_SITEMAP", "").lower() in {
-    "1",
-    "true",
-    "yes",
-    "on",
-} or os.environ.get("GITHUB_ACTIONS", "").lower() == "true"
+enable_sitemap = _env_flag("ENABLE_SITEMAP") or _env_flag("GITHUB_ACTIONS")
 
 # Without this, `sphinx-build -b linkcheck` errors out with
 # "No pages generated for sitemap.xml".
 if "linkcheck" not in sys.argv and enable_sitemap:
     extensions.append("sphinx_sitemap")
 
+# Notebook support is optional for local builds:
+# - sandboxed environments cannot open sockets for kernel execution
+# - nbconvert requires pandoc to convert notebook markdown cells
+notebook_build_enabled = _has_pandoc()
+if notebook_build_enabled:
+    extensions.append("nbsphinx")
+
 # nbsphinx configuration
-# Default to auto execution to ensure plots are generated in built docs.
-# For local development: NBS_EXECUTE=never (fast, no execution)
-# For CI/production builds: NBS_EXECUTE=always (ensure notebooks execute correctly)
-nbsphinx_execute = os.environ.get("NBS_EXECUTE", "auto")
+# Local development defaults to "never" to avoid sandbox/kernel failures.
+# CI/production can opt in explicitly with NBS_EXECUTE=always or rely on the
+# GitHub Actions default below.
+nbsphinx_execute = _default_nbsphinx_execute()
 
 # Allow errors in notebooks during local development
 # For CI/production: set NBS_ALLOW_ERRORS=false to catch notebook errors
@@ -126,6 +146,8 @@ nitpick_ignore_regex = []
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "developers/**"]
+if not notebook_build_enabled:
+    exclude_patterns.append("**/*.ipynb")
 
 # Silence cross-reference warnings from external docstrings (e.g. GWpy upstream).
 # Avoid suppressing broad categories like "autodoc" or "docutils" so that
