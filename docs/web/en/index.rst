@@ -175,38 +175,44 @@ GWexpy is built on top of GWpy. For GWpy fundamentals, see the official docs:
    user_guide/installation
    user_guide/quickstart
    user_guide/getting_started
-   user_guide/troubleshooting
-   user_guide/citation
-   user_guide/changelog
-   user_guide/license
 
 .. toctree::
    :maxdepth: 2
-   :caption: 📖 Learn
+   :caption: 📖 Guide
 
-   user_guide/tutorials/index
-   examples/index
+   user_guide/io_formats
+   user_guide/interop
+   user_guide/time_utilities
+   user_guide/numerical_stability
+   user_guide/scalarfield_slicing
    user_guide/gwexpy_for_gwpy_users_en
    user_guide/gwpy_added_api_index_en
 
 .. toctree::
-   :maxdepth: 1
-   :caption: 🛠️ Advanced
+   :maxdepth: 2
+   :caption: 🎓 Learn
 
-   user_guide/io_formats
-   user_guide/time_utilities
-   user_guide/numerical_stability
-   user_guide/scalarfield_slicing
-   user_guide/validated_algorithms
-   user_guide/architecture
-   user_guide/physics_models
+   user_guide/tutorials/index
+   examples/index
 
 .. toctree::
    :maxdepth: 2
    :caption: 📚 Reference
 
    reference/index
+   user_guide/validated_algorithms
+   user_guide/architecture
+   user_guide/physics_models
    user_guide/glossary
+
+.. toctree::
+   :maxdepth: 1
+   :caption: ℹ️ Info
+
+   user_guide/troubleshooting
+   user_guide/citation
+   user_guide/changelog
+   user_guide/license
 
 .. toctree::
    :hidden:

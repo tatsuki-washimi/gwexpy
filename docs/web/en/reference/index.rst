@@ -43,7 +43,7 @@ For detailed methods and properties of each module, please refer to the links be
    For the design intent and usage examples of `ScalarField`, see :doc:`../user_guide/scalarfield_slicing`. For module-by-module API pages, start from :doc:`api/index`.
 
 .. toctree::
-   :hidden:
+   :maxdepth: 2
 
    api/index
    classes

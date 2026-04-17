@@ -43,7 +43,7 @@ API リファレンス
    `ScalarField` の設計意図や操作例は :doc:`../user_guide/scalarfield_slicing`、モジュール別 API は :doc:`api/index` から確認できます。
 
 .. toctree::
-   :hidden:
+   :maxdepth: 2
 
    api/index
    classes

@@ -6,7 +6,7 @@ Learn how to use **GWexpy** through interactive examples.
 .. tip::
    If you're new to GWexpy, we recommend starting with :doc:`../getting_started`.
 
-These tutorials are generated from Jupyter Notebook source files. To run them locally, download the corresponding `.ipynb` from `docs/web/en/user_guide/tutorials/` in the repository.
+These tutorials are generated from Jupyter Notebook source files. To run them locally, download the corresponding ``.ipynb`` from ``docs/web/en/user_guide/tutorials/`` in the repository.
 
 .. note::
    Naming convention: tutorial titles follow the form "Feature: Task".
@@ -16,9 +16,28 @@ I. Core Data Structures
 -----------------------
 Fundamental data containers and basic operations.
 
+II. Multi-channel & Matrix Containers
+-------------------------------------
+Handling multiple channels efficiently using Matrix classes.
+
+III. High-dimensional Fields
+----------------------------
+Next-generation API for scalar, vector, and tensor fields in 4D spacetime.
+
+IV. Advanced Signal Processing
+------------------------------
+Statistical analysis and advanced transforms.
+
+V. Specialized Tools
+--------------------
+Tools for specific noise hunting and diagnostics tasks.
+
+VI. Segment Analysis
+--------------------
+Table-based analysis for time segments.
+
 .. toctree::
    :maxdepth: 1
-   :caption: Core Data Structures
 
    TimeSeries: Basics <intro_timeseries>
    FrequencySeries: Basics <intro_frequencyseries>
@@ -28,41 +47,14 @@ Fundamental data containers and basic operations.
    Map Plotting: Basics <intro_mapplotting>
    Interoperability: Basics <intro_interop>
    Histogram: Basics <intro_histogram>
-
-II. Multi-channel & Matrix Containers
--------------------------------------
-Handling multiple channels efficiently using Matrix classes.
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Matrix Containers
-
    TimeSeriesMatrix: Matrix Basics <matrix_timeseries>
    FrequencySeriesMatrix: Matrix Basics <matrix_frequencyseries>
    SpectrogramMatrix: Matrix Basics <matrix_spectrogram>
-
-III. High-dimensional Fields
-----------------------------
-Next-generation API for scalar, vector, and tensor fields in 4D spacetime.
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Fields API
-
    Field API: ScalarField Basics <field_scalar_intro>
    Field API: VectorField Basics <field_vector_intro>
    Field API: TensorField Basics <field_tensor_intro>
    Field API: ScalarField Signal Processing <field_scalar_signal>
    Field API: Advanced Analysis Workflow <field_advanced_workflow>
-
-IV. Advanced Signal Processing
-------------------------------
-Statistical analysis and advanced transforms.
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Advanced Analysis
-
    Fitting: Basics <intro_fitting>
    Fitting: Spectral Line Analysis <advanced_fitting>
    Spectrogram: Normalization and Cleaning <advanced_spectrogram_processing>
@@ -83,29 +75,11 @@ Statistical analysis and advanced transforms.
    Decomposition Analysis: PCA, ICA, and Eigenmodes <advanced_decomposition>
    Case Study: Seismic Analysis with ObsPy <case_seismic_obspy>
    Case Study: GBD Format I/O <case_gbd_format>
-
-V. Specialized Tools
---------------------
-Tools for specific noise hunting and diagnostics tasks.
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Specialized Tools
-
    BruCo: Basics <advanced_bruco>
    Case Study: BruCo and ICA Noise Reduction <case_bruco_ica_denoising>
    BruCo: Bilinear Coupling and AM/FM Demodulation <case_bruco_advanced>
    Case Study: Violin Mode Analysis <case_violin_mode>
    Case Study: Schumann Resonance Analysis <case_schumann_resonance>
-
-VI. Segment Analysis
---------------------
-Table-based analysis for time segments.
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Segment Analysis
-
    SegmentTable: Basics <intro_segment_table>
    Segment Analysis: Basic Pipeline <intro_table>
    ASD Analysis: Pipeline <segment_asd_pipeline>

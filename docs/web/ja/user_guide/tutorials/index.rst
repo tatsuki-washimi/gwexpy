@@ -6,7 +6,7 @@
 .. tip::
    初めての方は :doc:`../getting_started` から始めることを推奨します。
 
-これらのチュートリアルは Jupyter Notebook から生成されています。ローカルで実行したい場合は、対応する `.ipynb` をリポジトリ内の `docs/web/ja/user_guide/tutorials/` から取得してください。
+これらのチュートリアルは Jupyter Notebook から生成されています。ローカルで実行したい場合は、対応する ``.ipynb`` をリポジトリ内の ``docs/web/ja/user_guide/tutorials/`` から取得してください。
 
 .. note::
    命名規則: 日本語タイトルは「機能名: 実施タスク」で統一します。
@@ -16,9 +16,28 @@ I. 基本データ構造
 -----------------
 基本的なデータコンテナと操作方法について説明します。
 
+II. 多チャンネル & 行列コンテナ
+----------------------------------------
+Matrixクラスを使用して、複数のチャンネルを効率的に扱う方法を説明します。
+
+III. 高次元フィールド (Field API)
+---------------------------------
+4次元時空におけるスカラ場、ベクトル場、テンソル場を扱うための次世代 API について説明します。
+
+IV. 高度な信号処理
+------------------
+統計的分析や、高度な信号変換手法について説明します。
+
+V. 特殊ツール
+--------------
+ノイズ源特定や診断タスクのための専用ツールについて説明します。
+
+VI. セグメント解析
+------------------
+時間区間（セグメント）をベースとした表形式の解析手法について説明します。
+
 .. toctree::
    :maxdepth: 1
-   :caption: 基本データ構造
 
    TimeSeries: 基本 <intro_timeseries>
    FrequencySeries: 基本 <intro_frequencyseries>
@@ -28,41 +47,14 @@ I. 基本データ構造
    マッププロット: 基本 <intro_mapplotting>
    相互運用: 基本 <intro_interop>
    ヒストグラム: 基本 <intro_histogram>
-
-II. 多チャンネル & 行列コンテナ
-----------------------------------------
-Matrixクラスを使用して、複数のチャンネルを効率的に扱う方法を説明します。
-
-.. toctree::
-   :maxdepth: 1
-   :caption: 行列コンテナ
-
    TimeSeriesMatrix: 行列処理の基本 <matrix_timeseries>
    FrequencySeriesMatrix: 行列処理の基本 <matrix_frequencyseries>
    SpectrogramMatrix: 行列処理の基本 <matrix_spectrogram>
-
-III. 高次元フィールド (Field API)
----------------------------------
-4次元時空におけるスカラ場、ベクトル場、テンソル場を扱うための次世代 API について説明します。
-
-.. toctree::
-   :maxdepth: 1
-   :caption: フィールド API
-
    Field API: ScalarField の基本 <field_scalar_intro>
    Field API: VectorField の基本 <field_vector_intro>
    Field API: TensorField の基本 <field_tensor_intro>
    Field API: ScalarField の信号処理 <field_scalar_signal>
    Field API: 高度解析ワークフロー <field_advanced_workflow>
-
-IV. 高度な信号処理
-------------------
-統計的分析や、高度な信号変換手法について説明します。
-
-.. toctree::
-   :maxdepth: 1
-   :caption: 高度な解析
-
    フィッティング: 基本 <intro_fitting>
    フィッティング: スペクトル線解析 <advanced_fitting>
    スペクトログラム: 正規化とクリーニング <advanced_spectrogram_processing>
@@ -83,29 +75,11 @@ IV. 高度な信号処理
    分解解析: PCA・ICA と固有モード <advanced_decomposition>
    ケーススタディ: ObsPy 連携による地震データ解析 <case_seismic_obspy>
    ケーススタディ: GBD 形式 I/O <case_gbd_format>
-
-V. 特殊ツール
---------------
-ノイズ源特定や診断タスクのための専用ツールについて説明します。
-
-.. toctree::
-   :maxdepth: 1
-   :caption: 特殊ツール
-
    BruCo: 基本 <advanced_bruco>
    ケーススタディ: BruCo と ICA によるノイズ削減 <case_bruco_ica_denoising>
    BruCo: バイリニアカップリングと AM/FM 復調 <case_bruco_advanced>
    ケーススタディ: バイオリンモード解析 <case_violin_mode>
    ケーススタディ: シューマン共鳴解析 <case_schumann_resonance>
-
-VI. セグメント解析
-------------------
-時間区間（セグメント）をベースとした表形式の解析手法について説明します。
-
-.. toctree::
-   :maxdepth: 1
-   :caption: セグメント解析
-
    SegmentTable: 基本 <intro_segment_table>
    セグメント解析: 基本パイプライン <intro_table>
    ASD 解析: パイプライン <segment_asd_pipeline>
