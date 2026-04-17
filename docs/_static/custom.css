@@ -63,6 +63,31 @@ body {
     background: #fdfdfd;
 }
 
+.gw-copy-wrap {
+    position: relative;
+}
+
+.gw-copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    border: 1px solid #cfd8e3;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #35506b;
+    font-size: 0.8rem;
+    line-height: 1;
+    padding: 0.45rem 0.6rem;
+    cursor: pointer;
+}
+
+.gw-copy-btn:hover {
+    background: #ffffff;
+    border-color: var(--gw-primary);
+    color: var(--gw-primary);
+}
+
 /* Table overflow handling & Scroll wrapper style */
 .wy-table-responsive {
     border-radius: 8px;
@@ -103,4 +128,19 @@ body {
     font-size: 0.8em;
     padding-left: 4px;
     vertical-align: super;
+}
+
+/* De-emphasize the GitHub edit link in the breadcrumb header. */
+.wy-breadcrumbs-aside {
+    font-size: 0.82em;
+    opacity: 0.62;
+}
+
+.wy-breadcrumbs-aside a {
+    font-weight: 400;
+}
+
+.wy-breadcrumbs-aside:hover,
+.wy-breadcrumbs-aside:focus-within {
+    opacity: 0.9;
 }

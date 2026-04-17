@@ -91,10 +91,21 @@
     <p>
       {% if '/ja/' in pagename or pagename.startswith('web/ja') %}
         <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
-        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a>
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> 不備を報告・改善を提案</a> |
+        <a href="{{ pathto('web/ja/user_guide/license') }}">ライセンス / 免責</a> |
+        <a href="{{ pathto('web/ja/user_guide/roadmap') }}">ロードマップ</a>
       {% else %}
         <a href="https://github.com/tatsuki-washimi/gwexpy"><i class="fa fa-github"></i> GitHub Repository</a> |
-        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a>
+        <a href="https://github.com/tatsuki-washimi/gwexpy/issues/new"><i class="fa fa-bug"></i> Report Bug / Suggest Improvement</a> |
+        <a href="{{ pathto('web/en/user_guide/license') }}">License / Disclaimer</a> |
+        <a href="{{ pathto('web/en/user_guide/roadmap') }}">Roadmap</a>
+      {% endif %}
+    </p>
+    <p style="margin-top: 0.4em; opacity: 0.8;">
+      {% if '/ja/' in pagename or pagename.startswith('web/ja') %}
+        GWexpy は MIT ライセンスの下で提供され、「現状のまま」であり無保証です。
+      {% else %}
+        GWexpy is provided under the MIT License on an "as is" basis without warranty.
       {% endif %}
     </p>
   </div>
