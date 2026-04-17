@@ -238,6 +238,57 @@ Related pages:
 - [GWpy Difference API Index](gwpy_added_api_index_en.md)
 - [Installation Guide](installation.md)
 
+## Recipe 6: Bridge to python-control
+
+In GWpy-based code, using `control.bode()` or similar functions requires manually extracting a `FrequencySeries` value as a numpy array and passing it to `control.frd()`.  
+In GWexpy, `to_control_frd()` handles the conversion in one call, removing that boilerplate.
+
+### GWpy style
+
+```python
+import control
+import numpy as np
+from gwpy.frequencyseries import FrequencySeries
+
+spec = FrequencySeries.read("data.hdf5", "H1:STRAIN_ASD")
+
+# must manually extract numpy arrays before building the FRD object
+omega = 2 * np.pi * np.asarray(spec.frequencies.value)
+frd_sys = control.frd(np.asarray(spec.value), omega)
+
+# draw Bode plot
+control.bode(frd_sys)
+```
+
+### GWexpy style
+
+```python
+import control
+from gwexpy.frequencyseries import FrequencySeries
+
+spec = FrequencySeries.read("data.hdf5", "H1:STRAIN_ASD")
+
+# one-line conversion and round-trip
+frd_sys = spec.to_control_frd()                      # FrequencySeries → control.FrequencyResponseData
+control.bode(frd_sys)                                # pass directly to Bode / Nichols / Nyquist
+
+spec2 = FrequencySeries.from_control_frd(frd_sys)    # control.FRD → FrequencySeries
+```
+
+This difference matters when:
+
+- you want to treat an ASD / PSD spectrum directly as a control-system FRD model
+- you want to skip manual numpy extraction before passing data to `control.bode()` / `control.nichols()` / `control.nyquist()`
+- you want to restore a processed FRD back to a `FrequencySeries` and feed it into an existing plot or statistics pipeline
+- you want to convert each channel in a multi-channel spectrum with `FrequencySeriesDict.to_control_frd()`
+
+Related pages:
+
+- [Interop / Conversion Guide](interop.md)
+- [python-control API Reference](../reference/api/gwexpy.interop.control_.rst)
+- [Active Damping Tutorial](tutorials/case_active_damping.ipynb)
+- [Frequency Series Tutorial](tutorials/intro_frequencyseries.ipynb)
+
 ## Treat direct I/O and external-library conversion as separate guides
 
 This page intentionally does not duplicate the I/O-format list or the external-library conversion list.  

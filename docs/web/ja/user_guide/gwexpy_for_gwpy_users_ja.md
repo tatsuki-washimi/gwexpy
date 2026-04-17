@@ -238,6 +238,57 @@ Pickle は信頼できるデータだけをロードしてください。
 - [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
 - [インストールガイド](installation.md)
 
+## 差分レシピ 6: python-control との橋渡し
+
+GWpy ベースのコードで `control.bode()` 等を使う場合、`FrequencySeries` の値を numpy 配列として手動で取り出し、`control.frd()` に渡す手順が必要です。  
+GWexpy では `to_control_frd()` が変換を一括して行うため、この手順を省けます。
+
+### GWpy style
+
+```python
+import control
+import numpy as np
+from gwpy.frequencyseries import FrequencySeries
+
+spec = FrequencySeries.read("data.hdf5", "H1:STRAIN_ASD")
+
+# numpy 配列を手動で取り出してから FRD を構築する必要がある
+omega = 2 * np.pi * np.asarray(spec.frequencies.value)
+frd_sys = control.frd(np.asarray(spec.value), omega)
+
+# Bode プロットを描画
+control.bode(frd_sys)
+```
+
+### GWexpy style
+
+```python
+import control
+from gwexpy.frequencyseries import FrequencySeries
+
+spec = FrequencySeries.read("data.hdf5", "H1:STRAIN_ASD")
+
+# 1 行で FRD 変換・往復変換
+frd_sys = spec.to_control_frd()                      # FrequencySeries → control.FrequencyResponseData
+control.bode(frd_sys)                                # Bode / Nichols / Nyquist にそのまま渡せる
+
+spec2 = FrequencySeries.from_control_frd(frd_sys)    # control.FRD → FrequencySeries に復元
+```
+
+この差分が効く場面:
+
+- ASD / PSD スペクトルをそのまま制御系の FRD モデルとして扱いたいとき
+- `control.bode()` / `control.nichols()` / `control.nyquist()` に渡す前の numpy 配列取り出し処理を省きたいとき
+- 解析結果の FRD を GWexpy の `FrequencySeries` に戻して既存のプロット・統計処理パイプラインに繋げたいとき
+- 多チャネルのスペクトルを `FrequencySeriesDict.to_control_frd()` でチャネルごとに FRD 化したいとき
+
+関連ページ:
+
+- [Interop / 変換ガイド](interop.md)
+- [python-control API リファレンス](../reference/api/gwexpy.interop.control_.rst)
+- [アクティブダンピング チュートリアル](tutorials/case_active_damping.ipynb)
+- [周波数系列チュートリアル](tutorials/intro_frequencyseries.ipynb)
+
 ## I/O と外部ライブラリ連携は別ページを見る
 
 このページでは、I/O 形式や外部ライブラリ連携の一覧を再掲しません。  
