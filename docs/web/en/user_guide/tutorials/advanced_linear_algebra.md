@@ -1,4 +1,4 @@
-# Linear Algebra for Gravitational Wave Analysis
+# Linear Algebra: Gravitational Wave Analysis
 
 This tutorial demonstrates how to use gwexpy's Matrix classes and linear algebra methods for gravitational wave data analysis.
 

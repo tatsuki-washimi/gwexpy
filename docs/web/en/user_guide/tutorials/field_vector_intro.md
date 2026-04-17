@@ -1,4 +1,4 @@
-# Introduction to VectorField Class
+# Field API: VectorField Basics
 
 This tutorial introduces the `VectorField` class in `gwexpy`, which represents vector-valued fields in 4D spacetime.
 

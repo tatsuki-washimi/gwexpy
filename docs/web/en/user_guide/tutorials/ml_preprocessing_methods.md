@@ -1,4 +1,4 @@
-# ML Preprocessing Methods - Individual Techniques
+# ML Preprocessing: Individual Methods
 
 This tutorial explains each machine learning preprocessing method available in gwexpy **individually**, before combining them into a pipeline.
 
