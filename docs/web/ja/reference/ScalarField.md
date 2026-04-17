@@ -28,7 +28,8 @@ field_f = field.fft_time()
 ## 関連理論
 
 - [Physics Models](../user_guide/physics_models.md)
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- {ref}`k-space 計算の検証 <validated-ja-k-space>` - `ScalarField.fft_space()` の前提条件と検証根拠
+- [検証済みアルゴリズムの概要](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
 
 ## 関連チュートリアル

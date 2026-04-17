@@ -28,7 +28,8 @@ field_f = field.fft_time()
 ## Related Theory
 
 - [Physics Models](../user_guide/physics_models.md)
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- {ref}`K-space calculation validation <validated-en-k-space>` - Assumptions and evidence for `ScalarField.fft_space()`
+- [Validated Algorithms overview](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
 
 ## Related Tutorials

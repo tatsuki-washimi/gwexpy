@@ -16,26 +16,40 @@ Algorithms labeled as "Validated" meet the following standards and achieve speci
 - **Tolerance**: We generally use $10^{-12}$ (relative error) as the passing criterion. This indicates no significant logic differences beyond standard double-precision rounding errors.
 - **Invariance**: All algorithms are verified for "Scale Invariance," ensuring results remain consistent even after scaling data (e.g., multiplying by 1000).
 
+(validated-en-objective-evidence)=
+## Objective Evidence
+
+The summaries on this page are backed by repository artifacts you can inspect directly.
+
+| Evidence type | Source | What it shows |
+| :--- | :--- | :--- |
+| Audit scope | [ALGORITHM_CONTEXT](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md) | Which algorithms were reviewed and which numerical questions were checked |
+| Consolidated findings | [merged_validation_report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/merged_validation_report.md) | Cross-reviewed findings, severity, and agreement across independent audits |
+| Fix history | [algorithm_fix_report_20260201](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md) | What changed after the review findings were merged and addressed |
+| Field-specific physics review | [scalarfield_physics_review_20260120](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md) | Physics and axis-consistency review for `ScalarField` FFT behavior |
+
 ## Validated Algorithms Summary Table
 
-| Algorithm | Target API | External Baseline | Numerical Tol | Physical Assumptions | Related Tutorial |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **k-space calculation** | `.fft_space()` | SciPy / FFTW | $10^{-15}$ | Uniform Grid | [Field Intro](tutorials/field_scalar_intro.ipynb) |
-| **Transient FFT** | `._fft_transient()` | NumPy | $10^{-15}$ | No window (Rect) | — |
-| **VIF Correction** | `calculate_correlation_factor()` | Literature (Percival)| — | Stationary Process | [Bootstrap Guide](tutorials/case_bootstrap_gls_fitting.ipynb) |
-| **Forecast Timing** | `ArimaResult.forecast()` | LIGO Convention | $10^{-9}$ (s) | No leap seconds (GPS) | — |
-| **Adaptive Whitening** | `.whiten(eps="auto")` | Numerical Exp | $10^{-12}$ | Locally Quasi-stationary | [Stability](numerical_stability.md) |
+| Algorithm | Primary API | API page | Evidence | Related tutorial |
+| :--- | :--- | :--- | :--- | :--- |
+| **k-space calculation** | `ScalarField.fft_space()` | [Fields API](../reference/api/fields.rst) / [ScalarField](../reference/ScalarField.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Field Intro](tutorials/field_scalar_intro.ipynb) |
+| **Transient FFT** | `TimeSeries.fft(mode="transient")` / `TimeSeries._fft_transient` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | — |
+| **VIF correction** | `calculate_correlation_factor()` | [Spectral API](../reference/api/spectral.rst) / [Spectral Estimation](../reference/Spectral.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Bootstrap Guide](tutorials/case_bootstrap_gls_fitting.ipynb) |
+| **Forecast timing** | `ArimaResult.forecast()` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | — |
+| **MCMC / GLS likelihood** | `fit_series()` / `GeneralizedLeastSquares` | [Fitting API](../reference/api/fitting.rst) / [gwexpy.fitting](../reference/fitting.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Bootstrap Guide](tutorials/case_bootstrap_gls_fitting.ipynb) |
+| **Adaptive whitening** | `whiten()` / `WhiteningModel` | [Preprocessing API](../reference/api/preprocessing.rst) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Stability](numerical_stability.md) |
 
 ---
 
 ## How to Read This Page
 
 - If you want the shared prerequisites, time-system assumptions, and FFT conventions first, start with [Prerequisites and Conventions](prerequisites_and_conventions.md).
-- If you want the implementation-facing API first, start with the [Signal Processing API](../reference/api/signal.rst) and [Fitting API](../reference/api/fitting.rst).
-- If you want the audit notes and validation context behind the summaries, continue to the Audit Trail section below.
+- If you want the implementation-facing APIs first, start with [Fields API](../reference/api/fields.rst), [Time Series API](../reference/api/timeseries.rst), [Spectral API](../reference/api/spectral.rst), [Fitting API](../reference/api/fitting.rst), and [Preprocessing API](../reference/api/preprocessing.rst).
+- If you want the repository-backed evidence behind the summaries, continue to the {ref}`Objective Evidence <validated-en-objective-evidence>` and Audit Trail sections below.
 
 ## Detailed Algorithm Basis and Assumptions
 
+(validated-en-k-space)=
 ### 1. k-space Calculation
 **Target**: {meth}`gwexpy.fields.ScalarField.fft_space`
 
@@ -47,8 +61,13 @@ Angular wavenumber calculation follows the standard physics definition $k = 2\pi
 
 **Reference**: Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2
 
+**Related API pages**
+- [Fields API](../reference/api/fields.rst)
+- [ScalarField](../reference/ScalarField.md)
+
 ---
 
+(validated-en-transient-fft)=
 ### 2. Transient FFT (Amplitude Spectrum)
 **Target**: `TimeSeries._fft_transient`
 
@@ -58,8 +77,13 @@ Uses an amplitude-preserving convention rather than density, allowing direct rea
 - No window function is applied to the input signal (assumes Rectangular window).
 - For data with windows already applied, separate correction for coherent gain is required.
 
+**Related API pages**
+- [Time Series API](../reference/api/timeseries.rst)
+- [TimeSeries](../reference/TimeSeries.md)
+
 ---
 
+(validated-en-vif)=
 ### 3. VIF (Variance Inflation Factor)
 **Target**: {func}`gwexpy.spectral.estimation.calculate_correlation_factor`
 
@@ -73,8 +97,13 @@ Here, VIF is not meant as the regression-style Variance Inflation Factor used in
 
 **Reference**: Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications* (1993), Eq.(56)
 
+**Related API pages**
+- [Spectral API](../reference/api/spectral.rst)
+- [Spectral Estimation](../reference/Spectral.md)
+
 ---
 
+(validated-en-arima-forecast)=
 ### 4. Forecast Timestamp (ARIMA)
 **Target**: {meth}`gwexpy.timeseries.arima.ArimaResult.forecast`
 
@@ -92,6 +121,11 @@ This is the quantity mapping assumed when forecast timestamps are extended forwa
 - The time system must be **GPS Time (no leap seconds)**.
 - Using this in time systems with leap seconds (like UTC) will result in a 1-second offset in future predictions.
 
+**Related API pages**
+- [Time Series API](../reference/api/timeseries.rst)
+- [TimeSeries](../reference/TimeSeries.md)
+
+(validated-en-mcmc-gls)=
 ### 5. MCMC / GLS Likelihood
 **Target**: `run_mcmc`, `GLS`
 
@@ -101,21 +135,46 @@ For complex-valued residuals, the MCMC likelihood path assumes a Hermitian quadr
 - `cov_inv` should be close to Hermitian positive-definite.
 - The implementation is intended for a circular-complex-Gaussian-style treatment of residuals rather than a naive "real-part only" model.
 
+**Related API pages**
+- [Time Series API](../reference/api/timeseries.rst)
+- [Fitting API](../reference/api/fitting.rst)
+- [gwexpy.fitting](../reference/fitting.md)
+
+---
+
+(validated-en-adaptive-whitening)=
+### 6. Adaptive Whitening
+**Target**: `whiten()`, `WhiteningModel`, `.whiten(eps="auto")`
+
+Adaptive whitening uses an automatically chosen stabilization parameter so that PSD-based normalization remains well behaved in the presence of very small bins or local numerical underflow.
+
+**Assumptions**:
+- The data are treated as locally quasi-stationary over the FFT segments used for whitening.
+- The adaptive `eps` path is intended to stabilize small denominators, not to compensate for a badly chosen whitening window or clearly non-stationary bursts.
+
+**Related API pages**
+- [Preprocessing API](../reference/api/preprocessing.rst)
+- [Numerical Stability](numerical_stability.md)
+
 ---
 
 ## Audit Trail
 
-Detailed unit test results, literature comparison scripts, and past review logs are maintained in the `docs_internal/verification/` directory.
-All changes are merged only after passing the `verify-physics` gate in the CI environment.
+The links below point to the audit scope, merged findings, and fix history used to support the summaries on this page.
 
 - [ALGORITHM_CONTEXT](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/ALGORITHM_CONTEXT.md) - Overview of the audited algorithms
+- [merged_validation_report](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/merged_validation_report.md) - Consolidated severity and agreement across independent audit passes
 - [check_claude_antigravity](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/check_claude_antigravity.md) - Audit notes for VIF, GLS, and `_fft_transient`
 - [algorithm_fix_report_20260201](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md) - Change history around ARIMA and MCMC behavior
-- `docs_internal/tech_notes/scalarfield_physics_review_20260120.md`
-- `docs_internal/archive/reports/report_scalarfield_physics_verification_20260122_222000.md`
+- [scalarfield_physics_review_20260120](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md) - Physics and FFT review notes for `ScalarField`
+- [report_scalarfield_physics_verification_20260122_222000](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/archive/reports/report_scalarfield_physics_verification_20260122_222000.md) - Archived follow-up verification notes for field FFT behavior
 
 ## Related Documents
 
 - [Numerical Stability](numerical_stability.md) - Precision management
 - [Glossary](glossary.rst) - Glossary of algorithms
-- [Signal Processing API Reference](../reference/api/signal.rst)
+- [Fields API](../reference/api/fields.rst)
+- [Time Series API](../reference/api/timeseries.rst)
+- [Spectral API](../reference/api/spectral.rst)
+- [Fitting API](../reference/api/fitting.rst)
+- [Preprocessing API](../reference/api/preprocessing.rst)

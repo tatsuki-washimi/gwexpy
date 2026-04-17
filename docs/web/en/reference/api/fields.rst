@@ -3,6 +3,15 @@ Fields
 
 **Stability:** Stable
 
+.. seealso::
+
+   :ref:`validated-en-k-space`
+      Validation assumptions and evidence for ``ScalarField.fft_space()`` and related field-domain FFT behavior.
+   :doc:`../../user_guide/validated_algorithms`
+      Overview of validated algorithm summaries.
+   :doc:`../FFT_Conventions`
+      Fourier normalization and axis conventions used by GWexpy.
+
 .. automodule:: gwexpy.fields
    :members:
    :undoc-members:

@@ -10,6 +10,12 @@
 
 .. seealso::
 
+   :ref:`validated-ja-transient-fft`
+      トランジェント FFT の振幅規約と前提条件。
+   :ref:`validated-ja-arima-forecast`
+      ``ArimaResult.forecast()`` の GPS 時刻前提。
+   :ref:`validated-ja-mcmc-gls`
+      時系列データが GLS / MCMC フィットに渡る際の尤度前提。
    :doc:`../../user_guide/validated_algorithms`
       FFT・PSD・ASD・コヒーレンス推定の検証ノート。
    :doc:`../FFT_Conventions`

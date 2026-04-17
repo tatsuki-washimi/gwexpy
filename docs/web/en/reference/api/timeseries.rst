@@ -10,6 +10,12 @@ Overview
 
 .. seealso::
 
+   :ref:`validated-en-transient-fft`
+      Validation assumptions and evidence for transient-amplitude FFT behavior.
+   :ref:`validated-en-arima-forecast`
+      GPS timestamp assumptions for ``ArimaResult.forecast()``.
+   :ref:`validated-en-mcmc-gls`
+      Likelihood assumptions relevant when time-series data flow into GLS or MCMC fitting paths.
    :doc:`../../user_guide/validated_algorithms`
       Validation notes for FFT, PSD, ASD, and coherence-related estimators.
    :doc:`../FFT_Conventions`

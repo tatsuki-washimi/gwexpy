@@ -28,7 +28,10 @@ psd = ts.psd(fftlength=1.0)
 ## 関連理論
 
 - [Physics Models](../user_guide/physics_models.md)
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- {ref}`トランジェント FFT の検証 <validated-ja-transient-fft>` - トランジェント FFT モードの振幅規約と前提条件
+- {ref}`ARIMA 予測時刻の検証 <validated-ja-arima-forecast>` - 予測延長時の GPS 時刻前提
+- {ref}`MCMC / GLS 尤度の検証 <validated-ja-mcmc-gls>` - 時系列データをフィットに渡す際の尤度前提
+- [検証済みアルゴリズムの概要](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
 
 ## 関連チュートリアル

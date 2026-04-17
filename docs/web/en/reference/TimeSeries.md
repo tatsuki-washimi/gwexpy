@@ -28,7 +28,10 @@ psd = ts.psd(fftlength=1.0)
 ## Related Theory
 
 - [Physics Models](../user_guide/physics_models.md)
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- {ref}`Transient FFT validation <validated-en-transient-fft>` - Amplitude-spectrum assumptions for transient FFT mode
+- {ref}`ARIMA forecast timing validation <validated-en-arima-forecast>` - GPS timestamp assumptions for forecast extension
+- {ref}`MCMC / GLS likelihood validation <validated-en-mcmc-gls>` - Likelihood assumptions when fitting time-series data
+- [Validated Algorithms overview](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
 
 ## Related Tutorials

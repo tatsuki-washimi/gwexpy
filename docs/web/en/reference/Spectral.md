@@ -26,7 +26,8 @@ psd = estimate_psd(ts, fftlength=1.0)
 ## Related Theory
 
 - [Physics Models](../user_guide/physics_models.md)
-- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- {ref}`VIF / overlap correction validation <validated-en-vif>` - Assumptions and evidence for Welch overlap correction
+- [Validated Algorithms overview](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
 
 ## Related Tutorials
