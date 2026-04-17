@@ -1,88 +1,204 @@
-# GWpy ユーザー向け移行ガイド (GWpy to GWexpy Migration)
+# GWpy ユーザー向け移行ガイド
 
-GWexpy は、GWpy の基本クラス（TimeSeries 等）を継承しつつ、多チャンネル解析や信号処理の利便性を大幅に強化したライブラリです。
-このガイドでは、GWpy ユーザーが GWexpy に移行する際の主な変更点と、新機能を活用したコードの簡略化例を紹介します。
+このページは、**GWpy から GWexpy へ移るときの入口**です。  
+全 API を網羅するページではありません。まずは「何がそのまま動くか」と「どこから差分を使うと効果が大きいか」を短時間で掴むことを目的にしています。
 
-| 機能・目的 | GWpy スタイル (従来) | GWexpy スタイル (推奨) |
+完全な API 一覧ではなく、**GWpy との差分だけを引きたい**場合は [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) を参照してください。  
+全 API の仕様を追いたい場合は [API リファレンス](../reference/index.rst) を参照してください。
+
+## まず最初に押さえること
+
+- **単一チャネルの基本操作はかなりそのままです。**
+  `TimeSeries` / `FrequencySeries` / `Spectrogram` を使った読み込み、プロット、基本スペクトル解析は、まず import を `gwexpy` 側へ置き換えるだけで試せます。
+- **差分が大きいのは多チャネル処理です。**
+  `TimeSeriesDict` を手作業でループする代わりに、`to_matrix()` で `TimeSeriesMatrix` へ変換して一括処理できます。
+- **外部ライブラリ呼び出しをデータオブジェクト側へ寄せられます。**
+  代表例は `.find_peaks()`, `.fit()`, `.hht()`, `.arima()` です。
+- **I/O と interop は別ガイドを見る前提です。**
+  直接 I/O は [ファイル I/O 対応フォーマットガイド](io_formats.md)、外部ライブラリ変換は [Interop / 変換ガイド](interop.md) を正本とします。
+
+## どこから書き換えると効果が大きいか
+
+| 目的 | まず見る差分 | 深掘り先 |
 | --- | --- | --- |
-| 複数チャンネルの管理 | `TimeSeriesDict` | `TimeSeriesMatrix` (Stable) |
-| 一括解析 (ASD/CSD) | ループ回し or Dict 操作 | `.asd()`, `.csd()` (Stable) |
-| 深いコピー・Pickle | Pickle 不可な場合がある | 高い可搬性 (Pickle compatible) |
-| 高度な信号処理 | `scipy` 等を別途呼び出し | `.hht()`, `.arima()` 等を内蔵 (Experimental) |
-| 空間・多次元データ | 対応する特殊クラスなし | `ScalarField` (Experimental) |
+| 複数チャンネルをまとめて解析したい | `TimeSeriesDict.to_matrix()` → `TimeSeriesMatrix` | [Matrix チュートリアル](tutorials/matrix_timeseries.ipynb) |
+| SciPy / Statsmodels 呼び出しを整理したい | オブジェクトメソッド化された追加 API | [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
+| 既存の単一チャネルコードを早く移したい | import だけ差し替えてから必要箇所だけ差分 API を追加 | [クイックスタート](quickstart.md) |
+| 結果共有の互換性を知りたい | Transparent Pickle の挙動 | [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) |
 
-## 1. チャンネル管理と一括解析
+## 差分レシピ 1: `TimeSeriesDict` の手ループを `TimeSeriesMatrix` に寄せる
 
-GWpy では `TimeSeriesDict` で複数のチャンネルを管理していましたが、GWexpy ではチャンネル情報を「行列の軸」として扱う `TimeSeriesMatrix` を推奨します。これにより、ループを書かずに一括でスペクトル解析が可能になります。
+GWpy では、複数チャンネルの比較やペアごとのスペクトル計算を、自分でループして組み立てることが多くなります。  
+GWexpy では `to_matrix()` を入口にして、チャンネル集合をそのまま一括解析の対象にできます。
 
-### コード例: CSD (クロススペクトル密度) の計算
-
-**GWpy スタイル:**
+### GWpy style
 
 ```python
 from gwpy.timeseries import TimeSeriesDict
+
 tsd = TimeSeriesDict.read(cache, channels)
-# CSDを計算するには、各ペアに対してループ等が必要
+reference = tsd["H1:STRAIN"]
+
+csd = {}
+for name, ts in tsd.items():
+    if name == "H1:STRAIN":
+        continue
+    csd[name] = ts.csd(reference, fftlength=4)
 ```
 
-#### GWexpy スタイル (安定性: Stable)
+### GWexpy style
 
 ```python
 from gwexpy.timeseries import TimeSeriesDict
-tsd = TimeSeriesDict.read(cache, channels)
 
-# 行列に変換
+tsd = TimeSeriesDict.read(cache, channels)
 matrix = tsd.to_matrix()
 
-# 全チャンネルペアの CSD を一括計算
 csm = matrix.csd(fftlength=4)
 csm.plot().show()
 ```
 
-## 2. 信号処理のシームレスな統合
+この差分が効く場面:
 
-GWpy の基本メソッドに加え、SciPy や Statsmodels などの高度なアルゴリズムが基本クラスに Mixin されています。
+- ループを減らして、チャンネル集合をそのまま計算対象にしたいとき
+- 多チャネル解析を `TimeSeriesMatrix` / `FrequencySeriesMatrix` へ揃えたいとき
 
-### 主な拡張メソッド
+関連ページ:
 
-| メソッド | 安定性 | 概要 |
-| --- | --- | --- |
-| `.fit()` | Stable | `iminuit` を用いた最小二乗法や MCMC 解析を、データオブジェクトに対して直接実行できます。 |
-| `.find_peaks()` | Stable | パルストレインや共振のような顕著なピークの検出を簡潔に行えます。 |
-| `.hht()` | Experimental | Hilbert-Huang 変換による瞬時周波数解析を実行します。 |
-| `.arima()` | Experimental | 信号の自己相関に基づく予測やノイズ除去を行います。 |
+- [Matrix チュートリアル](tutorials/matrix_timeseries.ipynb)
+- [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
+- [TimeSeriesDict リファレンス](../reference/TimeSeriesDict.md)
+- [TimeSeriesMatrix リファレンス](../reference/TimeSeriesMatrix.md)
 
-## 3. 拡張された I/O サポート
+## 差分レシピ 2: 外部関数呼び出しをオブジェクトメソッドへ寄せる
 
-GWpy がサポートする `gwf`, `hdf5`, `ascii` 等に加え、実験現場で多用される以下のフォーマットを標準サポートしています。
+GWpy ベースのコードでは、NumPy 配列へ取り出してから SciPy / Statsmodels を直接呼ぶ流れが自然です。  
+GWexpy では、その一部がデータオブジェクトのメソッドとしてまとまっています。
 
-| 形式 | 概要 |
-| --- | --- |
-| GBD (GraphTec) | デジタル CH の正規化や、レンジ情報に基づく count->V 換算を自動化します。 |
-| TDMS (LabVIEW) | NI 製ハードウェアで記録されたデータを直接読み込めます。 |
-| WIN (地震波) | 日本の地震観測網で標準的な WIN フォーマットをデコードできます。 |
-| Zarr / Parquet | 大規模データ向けの高速なクラウド/ディスク I/O を扱えます。 |
+### GWpy style
 
-## 4. 可搬性と互換性 (Pickle)
+```python
+import numpy as np
+from scipy.signal import find_peaks
+from gwpy.frequencyseries import FrequencySeries
 
-GWexpy は「解析結果を共有する」ことを重視しています。
-`Pickle` でオブジェクトを保存した場合、**読み込み側に GWexpy がインストールされていなくても、GWpy があれば基本クラスのオブジェクトとして復元できる** 設計（GWexpy 透過 Pickle）を採用しています (安定性: Stable)。
+spec = FrequencySeries(...)
+peaks, props = find_peaks(np.asarray(spec.value), height=0.2)
+```
+
+### GWexpy style
+
+```python
+from gwexpy.frequencyseries import FrequencySeries
+
+spec = FrequencySeries(...)
+peaks, props = spec.find_peaks(threshold=0.2)
+```
+
+同じ方向の差分として、`gwexpy` では次のような API も追加されています。
+
+- `.fit()` : データオブジェクトに対するフィッティング
+- `.hht()` : Hilbert-Huang Transform
+- `.arima()` : 時系列予測・モデル化
+
+関連ページ:
+
+- [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
+- [周波数系列チュートリアル](tutorials/intro_frequencyseries.ipynb)
+- [フィッティング](tutorials/advanced_fitting.ipynb)
+- [HHT](tutorials/advanced_hht.ipynb)
+- [ARIMA](tutorials/advanced_arima.ipynb)
+
+## 差分レシピ 3: 単一チャネルコードは大きく変えなくてよい
+
+GWpy の基本クラスに慣れている場合、最初から全面的に書き換える必要はありません。  
+まずは import を `gwexpy` 側へ置き換え、必要になった箇所だけ差分 API を足す進め方が現実的です。
+
+### GWpy style
+
+```python
+from gwpy.timeseries import TimeSeries
+
+ts = TimeSeries.read("data.gwf", "H1:STRAIN")
+asd = ts.asd(fftlength=4)
+asd.plot().show()
+```
+
+### GWexpy style
+
+```python
+from gwexpy.timeseries import TimeSeries
+
+ts = TimeSeries.read("data.gwf", "H1:STRAIN")
+asd = ts.asd(fftlength=4)
+asd.plot().show()
+```
+
+実務上の見方:
+
+- まずは既存の単一チャネル処理をそのまま持ってくる
+- 多チャネル化や追加メソッドが必要になった地点で `gwexpy` 固有 API を使う
+
+関連ページ:
+
+- [クイックスタート](quickstart.md)
+- [チュートリアル一覧](tutorials/index.rst)
+- [API リファレンス](../reference/index.rst)
+
+## 差分レシピ 4: Pickle 共有時の互換性を見る
+
+GWexpy は、解析結果の共有時に「受け取り側が GWexpy を入れていない」ケースも意識しています。  
+このページでは安全性の一般論ではなく、**GWpy ユーザーが共有運用で何を期待できるか**だけを押さえます。
+
+### GWpy style
+
+```python
+import pickle
+from gwpy.timeseries import TimeSeries
+
+ts = TimeSeries(...)
+
+with open("result.pkl", "wb") as f:
+    pickle.dump(ts, f)
+
+# 受け取り側も、同じ型を読める環境を前提に共有する
+```
+
+### GWexpy style
+
+```python
+import pickle
+from gwexpy.timeseries import TimeSeries
+
+ts = TimeSeries(...)
+
+with open("result.pkl", "wb") as f:
+    pickle.dump(ts, f)
+
+# 受け取り側に GWexpy がなくても、GWpy があれば基本クラスとして復元できる
+```
 
 :::{important}
-信頼できないソースからの Pickle データのロードは避けてください。
+Pickle は信頼できるデータだけをロードしてください。
 :::
 
-## 5. 高次元データへの展開 (Field API)
+関連ページ:
 
-空間的な広がり（センサーアレイなど）を扱う場合、`TimeSeries` を拡張した `ScalarField` を使用できます。
+- [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md)
+- [インストールガイド](installation.md)
 
-* **ドメイン変換 (安定性: Experimental)**: `.fft_space()` により、時間・空間ドメインから周波数・波数ドメインへの 2 次元変換が可能です。
-* **空間抽出**: 任意の位置座標における時系列を、補間を含めて 1 行で抽出できます。
+## I/O と外部ライブラリ連携は別ページを見る
 
----
+このページでは、I/O 形式や外部ライブラリ連携の一覧を再掲しません。  
+それぞれ既に専用ページがあるため、移行時は次を正本として参照してください。
+
+- 直接 I/O: [ファイル I/O 対応フォーマットガイド](io_formats.md)
+- 外部ライブラリ変換: [Interop / 変換ガイド](interop.md)
 
 ## 次のステップ
 
-* [クイックスタート](quickstart.md) - 実際のコードを動かしてみる
-* [はじめに](getting_started.md) - ロードマップの確認
-* [リファレンス](../reference/index.rst) - 各クラスの全メソッドを確認
+- [GWpy 差分 API 一覧](gwpy_added_api_index_ja.md) - 追加 API を差分観点で引く
+- [チュートリアル一覧](tutorials/index.rst) - 差分レシピから実例へ進む
+- [ファイル I/O 対応フォーマットガイド](io_formats.md) - 読み書き形式を確認する
+- [Interop / 変換ガイド](interop.md) - 外部ライブラリとの橋渡しを見る
+- [API リファレンス](../reference/index.rst) - 全 API の仕様を確認する

@@ -1,88 +1,204 @@
 # Migration Guide for GWpy Users
 
-GWexpy inherits its core classes (like TimeSeries) from GWpy while significantly enhancing usability for multi-channel analysis and signal processing.
-This guide introduces key differences for GWpy users and demonstrates how to simplify your code with GWexpy's new features.
+This page is the **entry point for moving from GWpy to GWexpy**.  
+It is not intended to be a full API catalog. The goal is to understand, quickly, what still works as-is and where the high-value differences start.
 
-| Feature / Goal | GWpy Style (Traditional) | GWexpy Style (Recommended) |
+If you want a **difference-oriented index of added APIs**, see [GWpy Difference API Index](gwpy_added_api_index_en.md).  
+If you want the full API surface regardless of GWpy compatibility, use the [API Reference](../reference/index.rst).
+
+## What to lock in first
+
+- **Single-channel workflows are often still familiar.**
+  For `TimeSeries` / `FrequencySeries` / `Spectrogram`, many basic read, plot, and spectral-analysis paths can be tried first by swapping imports to `gwexpy`.
+- **The biggest shift is multi-channel processing.**
+  Instead of manually looping over `TimeSeriesDict`, you can convert it with `to_matrix()` and treat the channel set as a batch-analysis container.
+- **Some external-library calls move onto the data object itself.**
+  Representative examples are `.find_peaks()`, `.fit()`, `.hht()`, and `.arima()`.
+- **Direct I/O and interop have their own guides.**
+  Treat [File I/O Supported Formats Guide](io_formats.md) as the source of truth for `read(..., format=...)` / `write(..., format=...)`, and [Interop / Conversion Guide](interop.md) as the source of truth for `to_*()` / `from_*()` conversions.
+
+## Where migration usually pays off first
+
+| Goal | First difference to check | Where to go next |
 | --- | --- | --- |
-| Managing Multiple Channels | `TimeSeriesDict` | `TimeSeriesMatrix` (Stable) |
-| Batch Analysis (ASD/CSD) | Loops or manual Dict manipulation | `.asd()`, `.csd()` (Stable) |
-| Portability & Pickle | May not be Pickle-compatible | High portability (Pickle compatible) |
-| Advanced Signal Processing | Manual SciPy calls | Built-in `.hht()`, `.arima()`, etc. (Experimental) |
-| Spatial/Multi-dimensional Data | No specific classes available | `ScalarField` (Experimental) |
+| Analyse many channels together | `TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix` | [Matrix Tutorial](tutorials/matrix_timeseries.ipynb) |
+| Reduce direct SciPy / Statsmodels plumbing | added object-level APIs | [GWpy Difference API Index](gwpy_added_api_index_en.md) |
+| Move existing single-channel code quickly | swap imports first, then add difference APIs only where needed | [Quickstart](quickstart.md) |
+| Understand result-sharing behavior | Transparent Pickle compatibility | [GWpy Difference API Index](gwpy_added_api_index_en.md) |
 
-## 1. Channel Management and Batch Analysis
+## Recipe 1: Move manual `TimeSeriesDict` loops toward `TimeSeriesMatrix`
 
-While GWpy uses `TimeSeriesDict` to manage multiple channels, GWexpy recommends `TimeSeriesMatrix`, which treats channel information as a "matrix axis." This allows for batch spectral analysis without writing loops.
+In GWpy-style code, pairwise comparisons or per-channel spectral logic often become explicit loops.  
+In GWexpy, `to_matrix()` is the main entry point for treating the whole channel set as a batch-analysis object.
 
-### Example: Calculating CSD (Cross-Spectral Density)
-
-**GWpy Style:**
+### GWpy style
 
 ```python
 from gwpy.timeseries import TimeSeriesDict
+
 tsd = TimeSeriesDict.read(cache, channels)
-# Loops or nested logic required for all channel pairs
+reference = tsd["H1:STRAIN"]
+
+csd = {}
+for name, ts in tsd.items():
+    if name == "H1:STRAIN":
+        continue
+    csd[name] = ts.csd(reference, fftlength=4)
 ```
 
-#### GWexpy Style (Stable)
+### GWexpy style
 
 ```python
 from gwexpy.timeseries import TimeSeriesDict
-tsd = TimeSeriesDict.read(cache, channels)
 
-# Convert to a matrix
+tsd = TimeSeriesDict.read(cache, channels)
 matrix = tsd.to_matrix()
 
-# Batch calculate CSD for all channel pairs at once
 csm = matrix.csd(fftlength=4)
 csm.plot().show()
 ```
 
-## 2. Seamless Signal Processing Integration
+This difference matters when:
 
-In addition to base GWpy methods, advanced algorithms from SciPy, Statsmodels, and other libraries are mixed directly into the base classes.
+- you want fewer manual loops and more object-level batch operations
+- you want multi-channel analysis to stay in `TimeSeriesMatrix` / `FrequencySeriesMatrix`
 
-### Selected Extension Methods
+Related pages:
 
-| Method | Stability | Summary |
-| --- | --- | --- |
-| `.fit()` | Stable | Runs least-squares and MCMC analysis via `iminuit` directly on your data objects. |
-| `.find_peaks()` | Stable | Identifies pulse trains or resonances with a concise API. |
-| `.hht()` | Experimental | Runs Hilbert-Huang Transform analysis for instantaneous frequency inspection. |
-| `.arima()` | Experimental | Provides forecasting and noise subtraction based on signal autocorrelation. |
+- [Matrix Tutorial](tutorials/matrix_timeseries.ipynb)
+- [GWpy Difference API Index](gwpy_added_api_index_en.md)
+- [TimeSeriesDict Reference](../reference/TimeSeriesDict.md)
+- [TimeSeriesMatrix Reference](../reference/TimeSeriesMatrix.md)
 
-## 3. Extended I/O Support
+## Recipe 2: Pull external function calls back onto the data object
 
-In addition to GWpy's standard support for `gwf`, `hdf5`, and `ascii`, GWexpy adds support for formats frequently used in experiments:
+In GWpy-based code, the natural pattern is often “extract arrays, then call SciPy or Statsmodels directly.”  
+In GWexpy, part of that workflow is exposed as methods on the data object itself.
 
-| Format | Summary |
-| --- | --- |
-| GBD (GraphTec) | Automates digital channel normalization and count-to-voltage conversion based on range headers. |
-| TDMS (LabVIEW) | Reads data recorded by National Instruments hardware directly. |
-| WIN (Seis) | Decodes the WIN format used by Japanese seismic networks. |
-| Zarr / Parquet | Supports high-speed cloud/disk I/O for large-scale datasets. |
+### GWpy style
 
-## 4. Portability and Compatibility (Pickle)
+```python
+import numpy as np
+from scipy.signal import find_peaks
+from gwpy.frequencyseries import FrequencySeries
 
-GWexpy focuses on the "sharing of analysis results." 
-When saving objects via `Pickle`, GWexpy uses a **Transparent Pickle** design (Stable). This ensures that even if the recipient doesn't have GWexpy installed, the objects can be restored as base GWpy objects, provided GWpy is available.
+spec = FrequencySeries(...)
+peaks, props = find_peaks(np.asarray(spec.value), height=0.2)
+```
+
+### GWexpy style
+
+```python
+from gwexpy.frequencyseries import FrequencySeries
+
+spec = FrequencySeries(...)
+peaks, props = spec.find_peaks(threshold=0.2)
+```
+
+The same direction applies to other added APIs in `gwexpy`, including:
+
+- `.fit()` for object-level fitting workflows
+- `.hht()` for Hilbert-Huang Transform analysis
+- `.arima()` for time-series modelling and forecasting
+
+Related pages:
+
+- [GWpy Difference API Index](gwpy_added_api_index_en.md)
+- [Frequency Series Tutorial](tutorials/intro_frequencyseries.ipynb)
+- [Fitting](tutorials/advanced_fitting.ipynb)
+- [HHT](tutorials/advanced_hht.ipynb)
+- [ARIMA](tutorials/advanced_arima.ipynb)
+
+## Recipe 3: Single-channel code often does not need a full rewrite
+
+If you already know GWpy’s base classes, you do not need to redesign everything up front.  
+In many cases, the practical migration path is: change imports first, then adopt GWexpy-specific APIs only where they help.
+
+### GWpy style
+
+```python
+from gwpy.timeseries import TimeSeries
+
+ts = TimeSeries.read("data.gwf", "H1:STRAIN")
+asd = ts.asd(fftlength=4)
+asd.plot().show()
+```
+
+### GWexpy style
+
+```python
+from gwexpy.timeseries import TimeSeries
+
+ts = TimeSeries.read("data.gwf", "H1:STRAIN")
+asd = ts.asd(fftlength=4)
+asd.plot().show()
+```
+
+Practical reading of this difference:
+
+- start by carrying over existing single-channel workflows
+- add GWexpy-only APIs later, where multi-channel or higher-level analysis benefits matter
+
+Related pages:
+
+- [Quickstart](quickstart.md)
+- [Tutorial Index](tutorials/index.rst)
+- [API Reference](../reference/index.rst)
+
+## Recipe 4: Read Pickle sharing in terms of compatibility
+
+GWexpy is designed with result sharing in mind, including cases where the receiver does not have GWexpy installed.  
+The point here is not generic Pickle safety advice, but what a GWpy user can expect operationally.
+
+### GWpy style
+
+```python
+import pickle
+from gwpy.timeseries import TimeSeries
+
+ts = TimeSeries(...)
+
+with open("result.pkl", "wb") as f:
+    pickle.dump(ts, f)
+
+# sharing assumes the receiving side can read the same object type
+```
+
+### GWexpy style
+
+```python
+import pickle
+from gwexpy.timeseries import TimeSeries
+
+ts = TimeSeries(...)
+
+with open("result.pkl", "wb") as f:
+    pickle.dump(ts, f)
+
+# the receiving side can restore it as a GWpy base object even without GWexpy
+```
 
 :::{important}
-Always avoid loading Pickle data from untrusted sources.
+Only load Pickle data from trusted sources.
 :::
 
-## 5. High-dimensional Data (Field API)
+Related pages:
 
-For handling spatial distributions (e.g., sensor arrays), you can use `ScalarField`, which extends `TimeSeries`.
+- [GWpy Difference API Index](gwpy_added_api_index_en.md)
+- [Installation Guide](installation.md)
 
-* **Domain Transformation (Experimental)**: Use `.fft_space()` for 2D transformations between time-space and frequency-wavenumber domains.
-* **Spatial Extraction**: Extract a time series at any arbitrary coordinate, including interpolation, in a single line.
+## Treat direct I/O and external-library conversion as separate guides
 
----
+This page intentionally does not duplicate the I/O-format list or the external-library conversion list.  
+Use the dedicated guides below as the source of truth:
+
+- Direct I/O: [File I/O Supported Formats Guide](io_formats.md)
+- External-library conversion: [Interop / Conversion Guide](interop.md)
 
 ## Next Steps
 
-* [Quickstart](quickstart.md) - Run some real code.
-* [Getting Started](getting_started.md) - Check the learning roadmap.
-* [Reference](../reference/index.rst) - Explore all methods for each class.
+- [GWpy Difference API Index](gwpy_added_api_index_en.md) - look up added APIs from a difference-oriented view
+- [Tutorial Index](tutorials/index.rst) - move from migration recipes into worked examples
+- [File I/O Supported Formats Guide](io_formats.md) - check supported read/write formats
+- [Interop / Conversion Guide](interop.md) - check bridges to external libraries
+- [API Reference](../reference/index.rst) - inspect the full API surface

@@ -48,8 +48,8 @@ Find the right guide for you
 
         Migration and compatibility
 
-        * Key differences
-        * New feature highlights
+        * Difference recipes and compatibility
+        * Path to the added-API index
 
 ----
 
@@ -187,6 +187,7 @@ GWexpy is built on top of GWpy. For GWpy fundamentals, see the official docs:
    user_guide/tutorials/index
    examples/index
    user_guide/gwexpy_for_gwpy_users_en
+   user_guide/gwpy_added_api_index_en
 
 .. toctree::
    :maxdepth: 1
