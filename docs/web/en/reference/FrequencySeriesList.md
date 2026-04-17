@@ -1,5 +1,46 @@
 # FrequencySeriesList
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `FrequencySeriesList` to manage multiple `FrequencySeries` objects as a labeled collection with batch operations and conversion helpers.
+
+## Representative Signatures
+
+```python
+FrequencySeriesList(data: list[FrequencySeries])
+FrequencySeriesList.to_matrix()
+```
+
+## Minimal Example
+
+```python
+from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesList
+import numpy as np
+
+lst = FrequencySeriesList([FrequencySeries(np.ones(64), df=1.0)])
+mat = lst.to_matrix()
+```
+
+## Related Theory
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** FrequencySeriesBaseList
 
 List of `FrequencySeries` objects.

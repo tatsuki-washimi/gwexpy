@@ -14,9 +14,26 @@ class TimePlaneTransform:
     This class wraps an `Array3D` to enforce semantic structure:
     - Axis 0 is "time"
     - Axis 1 and 2 are symmetric spatial/frequency dimensions.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from gwexpy.types import TimePlaneTransform
+    >>> cube = np.zeros((4, 8, 8))
+    >>> transform = TimePlaneTransform((cube, np.arange(4), np.arange(8), np.arange(8)))
+    >>> transform.shape
+    (4, 8, 8)
+    >>> transform.plane("time", 0).shape
+    (8, 8)
     """
 
-    def __init__(self, data3d, *, kind="custom", meta=None):
+    def __init__(
+        self,
+        data3d: Array3D | tuple[object, object, object, object] | tuple[object, object, object, object, object],
+        *,
+        kind: str = "custom",
+        meta: dict[str, object] | None = None,
+    ) -> None:
         """Initialize a TimePlaneTransform.
 
         Parameters

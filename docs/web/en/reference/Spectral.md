@@ -1,5 +1,44 @@
 # Spectral Estimation
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use the spectral estimation helpers when you need PSD, ASD, bootstrap uncertainty bands, and unit-consistent frequency-domain estimators.
+
+## Representative Signatures
+
+```python
+estimate_psd(ts, fftlength=1.0, overlap=0.5, ...)
+bootstrap_spectrogram(sgm, n_boot=1000, ...)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.spectral import estimate_psd
+
+psd = estimate_psd(ts, fftlength=1.0)
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 gwexpy enforces strict unit conventions for spectral density and power spectrum estimation.
 
 ## Unit Semantics

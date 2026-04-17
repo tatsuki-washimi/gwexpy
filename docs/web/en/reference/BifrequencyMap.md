@@ -1,5 +1,46 @@
 # BifrequencyMap
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `BifrequencyMap` to represent couplings between an input frequency axis and an output frequency axis.
+
+## Representative Signatures
+
+```python
+BifrequencyMap.from_points(data, f2, f1, **kwargs)
+BifrequencyMap.propagate(input_spectrum, interpolate=True)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.types import BifrequencyMap
+import numpy as np
+
+map2d = BifrequencyMap.from_points(np.ones((8, 8)), f2=np.arange(8), f1=np.arange(8))
+out = map2d.diagonal()
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** `FrequencySeriesMatrix`
 
 Map representing the relationship between two frequency axes (Frequency 1 -> Frequency 2).

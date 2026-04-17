@@ -1,5 +1,47 @@
 # FrequencySeries
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`FrequencySeries` は単一スペクトルを表す基本クラスで、GWexpy のフィッティング・統計・フィルタ・描画拡張を含みます。
+
+## 代表的なシグネチャ
+
+```python
+FrequencySeries(data, unit=None, f0=None, df=None, frequencies=None, ...)
+FrequencySeries.ifft(...)
+```
+
+## 最小例
+
+```python
+from gwexpy.frequencyseries import FrequencySeries
+import numpy as np
+
+fs = FrequencySeries(np.ones(128), df=1.0, unit="V / Hz")
+phase = fs.phase()
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** FrequencySeriesAnalysisMixin, SignalAnalysisMixin, FrequencySeriesSpectralMixin, StatisticsMixin, FittingMixin, PhaseMethodsMixin, RegularityMixin, BaseFrequencySeries (gwpy.frequencyseries.FrequencySeries)
 
 互換性と将来の拡張のための gwpy の FrequencySeries の軽量ラッパー。

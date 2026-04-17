@@ -1,5 +1,44 @@
 # FieldDict
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`FieldDict` は複数 field に対する一括処理とドメイン整合チェックをまとめて扱うためのコンテナです。
+
+## 代表的なシグネチャ
+
+```python
+FieldDict({"ch0": field0, "ch1": field1})
+FieldDict.filter_all(*args, **kwargs)
+```
+
+## 最小例
+
+```python
+from gwexpy.fields import ScalarField, FieldDict
+import numpy as np
+
+fields = FieldDict({"A": ScalarField(np.random.randn(8, 3, 3, 3))})
+subset = fields.isel_all(axis0=slice(0, 4))
+```
+
+## 関連理論
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 一括操作をサポートする、`ScalarField` オブジェクトの辞書形式のコレクションです。
 
 単位、軸、ドメインの整合性を検証し、格納されている `ScalarField` 値に対して一括メソッドを提供します。

@@ -1,5 +1,43 @@
 # SegmentTable
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `SegmentTable` to store or manipulate time segments together with metadata needed for data-quality and analysis windows.
+
+## Representative Signatures
+
+```python
+SegmentTable.from_segments(segments, **kwargs)
+SegmentTable.plot(**kwargs)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.table import SegmentTable
+
+segments = SegmentTable.from_segments([(0, 1), (2, 3)])
+plot = segments.plot()
+```
+
+## Related Theory
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** `gwpy.table.Table`
 
 A container for time segments and associated metadata, extending the standard GWpy/Astropy Table functionality.

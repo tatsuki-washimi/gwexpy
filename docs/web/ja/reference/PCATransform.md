@@ -1,5 +1,44 @@
 # PCATransform
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`PCATransform` は直接呼び出しでも `Pipeline` の構成要素としても使える既成の前処理変換です。
+
+## 代表的なシグネチャ
+
+```python
+PCATransform(n_components=None, whiten=False, align="intersection")
+PCATransform.fit_transform(x)
+```
+
+## 最小例
+
+```python
+from gwexpy.timeseries import PCATransform
+
+components = PCATransform(n_components=2).fit_transform(ts_matrix)
+```
+
+## 関連理論
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** Transform
 
 既存の分解ヘルパーを使用した PCA ラッパー。

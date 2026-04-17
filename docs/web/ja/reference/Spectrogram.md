@@ -1,5 +1,47 @@
 # Spectrogram
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`Spectrogram` は単一の時間周波数マップを表し、GWexpy の解析・描画・変換ヘルパを利用できます。
+
+## 代表的なシグネチャ
+
+```python
+Spectrogram(data, t0=None, dt=None, f0=None, df=None, ...)
+Spectrogram.percentile(q, axis="time")
+```
+
+## 最小例
+
+```python
+from gwexpy.spectrogram import Spectrogram
+import numpy as np
+
+sgm = Spectrogram(np.random.randn(16, 32), dt=1.0, df=1.0)
+med = sgm.percentile(50, axis="time")
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** SpectrogramAnalysisMixin, SpectrogramInteropMixin, SignalAnalysisMixin, PhaseMethodsMixin, RegularityMixin, BaseSpectrogram (gwpy.spectrogram.Spectrogram)
 
 追加の相互運用メソッドを備えた gwpy.spectrogram.Spectrogram の拡張。

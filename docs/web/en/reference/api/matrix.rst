@@ -5,6 +5,13 @@ Multi-channel containers that group multiple :class:`~gwexpy.timeseries.TimeSeri
 :class:`~gwexpy.frequencyseries.FrequencySeries`, or :class:`~gwexpy.spectrogram.Spectrogram`
 objects and expose vectorized operations across all channels simultaneously.
 
+.. seealso::
+
+   :doc:`../../user_guide/validated_algorithms`
+      Algorithm notes for matrix-wide FFT, PSD, coherence, and related estimators.
+   :doc:`../../user_guide/tutorials/index`
+      End-to-end tutorials using `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and `SpectrogramMatrix`.
+
 Time Series Matrix
 ------------------
 
@@ -12,7 +19,6 @@ Time Series Matrix
 
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    TimeSeriesMatrix
 
@@ -30,7 +36,6 @@ Frequency Series Matrix
 
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    FrequencySeriesMatrix
 
@@ -48,7 +53,6 @@ Spectrogram Matrix
 
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    SpectrogramMatrix
 

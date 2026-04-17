@@ -1,5 +1,47 @@
 # TimeSeries
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `TimeSeries` for a single regularly sampled time-domain channel with GWexpy signal-processing, modeling, and interoperability extensions.
+
+## Representative Signatures
+
+```python
+TimeSeries(data, unit=None, t0=None, dt=None, sample_rate=None, times=None, ...)
+TimeSeries.fft(fftlength=None, overlap=0, window="hann", ...)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.timeseries import TimeSeries
+import numpy as np
+
+ts = TimeSeries(np.random.randn(1024), sample_rate=1024, unit="strain")
+psd = ts.psd(fftlength=1.0)
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** `gwpy.timeseries.TimeSeries`
 
 Extended TimeSeries with full gwexpy functionality.

@@ -1,5 +1,48 @@
 # TimeSeriesDict
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`TimeSeriesDict` は複数の `TimeSeries` をチャンネル単位で整理し、メタデータを保ったまま一括処理するために使います。
+
+## 代表的なシグネチャ
+
+```python
+TimeSeriesDict(data: dict[str, TimeSeries])
+TimeSeriesDict.to_matrix(align="intersection")
+```
+
+## 最小例
+
+```python
+from gwexpy.timeseries import TimeSeries, TimeSeriesDict
+import numpy as np
+
+ts0 = TimeSeries(np.random.randn(128), sample_rate=128)
+ts1 = TimeSeries(np.random.randn(128), sample_rate=128)
+dct = TimeSeriesDict({"A": ts0, "B": ts1})
+mat = dct.to_matrix()
+```
+
+## 関連理論
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** PhaseMethodsMixin, TimeSeriesDict
 
 TimeSeries オブジェクトの辞書。

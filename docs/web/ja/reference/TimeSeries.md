@@ -1,5 +1,47 @@
 # TimeSeries
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`TimeSeries` は単一の等間隔サンプリング時系列を扱うための基本クラスで、GWexpy の信号処理・モデリング・相互運用拡張を含みます。
+
+## 代表的なシグネチャ
+
+```python
+TimeSeries(data, unit=None, t0=None, dt=None, sample_rate=None, times=None, ...)
+TimeSeries.fft(fftlength=None, overlap=0, window="hann", ...)
+```
+
+## 最小例
+
+```python
+from gwexpy.timeseries import TimeSeries
+import numpy as np
+
+ts = TimeSeries(np.random.randn(1024), sample_rate=1024, unit="strain")
+psd = ts.psd(fftlength=1.0)
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** `gwpy.timeseries.TimeSeries`
 
 すべての gwexpy 機能を備えた拡張 TimeSeries。

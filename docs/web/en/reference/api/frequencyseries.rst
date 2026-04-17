@@ -6,9 +6,15 @@ Frequency Series
 Overview
 --------
 
+.. seealso::
+
+   :doc:`../../user_guide/physics_models`
+      Background on frequency-domain modeling and spectral interpretation.
+   :doc:`../FFT_Conventions`
+      Fourier normalization and axis conventions used by GWexpy.
+
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    FrequencySeries
 
@@ -26,7 +32,6 @@ FrequencySeries Class
    .. rubric:: Methods
 
    .. autosummary::
-      :nosignatures:
 
       ~FrequencySeries.ifft
       ~FrequencySeries.idct

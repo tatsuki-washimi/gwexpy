@@ -1,5 +1,44 @@
 # Transform
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`Transform` は `fit`・`transform`・必要に応じて `inverse_transform` を実装する前処理の基底契約です。
+
+## 代表的なシグネチャ
+
+```python
+Transform.fit(x)
+Transform.transform(x)
+```
+
+## 最小例
+
+```python
+from gwexpy.timeseries import Transform
+
+# Implement fit/transform in a subclass before using it inside Pipeline.
+```
+
+## 関連理論
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** object
 
 TimeSeries ライクなオブジェクト用の最小限の変換インターフェース。

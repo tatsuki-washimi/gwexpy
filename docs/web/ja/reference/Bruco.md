@@ -1,5 +1,45 @@
 # BruCo (Brute force coherence) 
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`Bruco` はターゲットチャンネルと多数の補助チャンネルのコヒーレンスを走査し、ノイズ寄与の候補を順位付けするために使います。
+
+## 代表的なシグネチャ
+
+```python
+Bruco(target_channel, aux_channels, excluded_channels=None)
+Bruco.compute(start=None, duration=None, fftlength=2.0, overlap=1.0, ...)
+```
+
+## 最小例
+
+```python
+from gwexpy.analysis import Bruco
+
+bruco = Bruco("H1:TARGET", ["H1:AUX1", "H1:AUX2"])
+result = bruco.compute(start=0, duration=64, fftlength=4.0, overlap=2.0)
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 `BruCo` は、ターゲットチャンネル（重力波チャンネルなど）と多数の補助チャンネルとの間の**「総当たりコヒーレンス（Brute force coherence）」**を計算し、ノイズ源を特定するためのツールです。
 指定された周波数帯域、時間帯において、ターゲットと高いコヒーレンスを持つ補助チャンネルをランキング形式で提示し、そのノイズ寄与（Noise Projection）を推定します。
 

@@ -1,5 +1,44 @@
 # Plane2D
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`Plane2D` は軸名やメタデータを保持したまま配列変換を行いたいときに使います。
+
+## 代表的なシグネチャ
+
+```python
+Plane2D(data, axis1_name="axis1", axis2_name="axis2", ...)
+Plane2D.swapaxes(0, 1)
+```
+
+## 最小例
+
+```python
+from gwexpy.types import Plane2D
+import numpy as np
+
+plane = Plane2D(np.ones((4, 8)), axis1_name="time", axis2_name="frequency")
+plane_t = plane.swapaxes(0, 1)
+```
+
+## 関連理論
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** Array2D
 
 2つの軸が軸1と軸2として意味的に重要な2次元配列ラッパー。

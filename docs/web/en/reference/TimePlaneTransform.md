@@ -1,5 +1,46 @@
 # TimePlaneTransform
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `TimePlaneTransform` for 3D outputs where one axis is time and the remaining two axes define a 2D plane at each timestep.
+
+## Representative Signatures
+
+```python
+TimePlaneTransform(data3d, kind="custom", meta=None)
+TimePlaneTransform.plane(drop_axis, drop_index)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.types import TimePlaneTransform
+import numpy as np
+
+obj = TimePlaneTransform((np.zeros((4, 8, 8)), np.arange(4), np.arange(8), np.arange(8)))
+plane = obj.at_time(0)
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** object
 
 

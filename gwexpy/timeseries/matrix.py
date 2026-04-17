@@ -16,6 +16,7 @@ from gwpy.timeseries import TimeSeries as BaseTimeSeries
 
 from gwexpy.types.mixin import PhaseMethodsMixin
 from gwexpy.types.seriesmatrix import SeriesMatrix
+from gwexpy.types.typing import ArrayLike, IndexLike
 
 from .collections import TimeSeriesDict, TimeSeriesList
 from .matrix_analysis import TimeSeriesMatrixAnalysisMixin
@@ -111,12 +112,12 @@ class TimeSeriesMatrix(  # type: ignore[misc]
 
     def __new__(
         cls,
-        data: Any = None,
-        times: Any = None,
-        dt: Any = None,
-        t0: Any = None,
-        sample_rate: Any = None,
-        epoch: Any = None,
+        data: ArrayLike | BaseTimeSeries | TimeSeriesMatrix | None = None,
+        times: IndexLike | None = None,
+        dt: float | u.Quantity | None = None,
+        t0: float | u.Quantity | None = None,
+        sample_rate: float | u.Quantity | None = None,
+        epoch: float | u.Quantity | None = None,
         **kwargs: Any,
     ) -> TimeSeriesMatrix:
         """Create a new TimeSeriesMatrix.

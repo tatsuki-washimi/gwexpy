@@ -7,7 +7,6 @@ Classes and utilities for managing time segments (data quality flags, active/ina
 
 .. autosummary::
    :toctree: _autosummary
-   :nosignatures:
 
    DataQualityFlag
    DataQualityDict

@@ -1,5 +1,46 @@
 # ScalarField
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`ScalarField` は物理単位・軸ドメイン・FFT 後の整合性を保ちながら場データを扱うためのクラスです。
+
+## 代表的なシグネチャ
+
+```python
+ScalarField(data, axis0_domain="time", spatial_domains=("real", "real", "real"), ...)
+ScalarField.fft_time(nfft=None)
+```
+
+## 最小例
+
+```python
+from gwexpy.fields import ScalarField
+import numpy as np
+
+field = ScalarField(np.random.randn(16, 4, 4, 4), axis0_domain="time")
+field_f = field.fft_time()
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承:** `FieldBase`, `Array4D`, `AxisApiMixin`, `StatisticalMethodsMixin`, `GwpyArray`
 
 明示的なドメインメタデータを持つ4次元スカラー場クラスです。軸構造は常に `(axis0, x, y, z)` を保持し、スライスしても軸は削除されず長さ1のまま残ります。時間/周波数と位置/波数のドメインを軸ごとに保持し、FFT操作後もドメインと単位の整合性を検証します。

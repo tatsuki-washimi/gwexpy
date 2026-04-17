@@ -1,5 +1,44 @@
 # Array4D
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`Array4D` は軸名やメタデータを保持したまま配列変換を行いたいときに使います。
+
+## 代表的なシグネチャ
+
+```python
+Array4D(data, axis_names=(...), ...)
+Array4D.plane(drop_axis, drop_index)
+```
+
+## 最小例
+
+```python
+from gwexpy.types import Array4D
+import numpy as np
+
+arr = Array4D(np.zeros((4, 3, 3, 3)))
+sl = arr.plane(0, 0)
+```
+
+## 関連理論
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** Array, AxisApiMixin, StatisticalMethodsMixin, GwpyArray
 
 明示的な軸管理機能を備えた 4 次元配列クラス。

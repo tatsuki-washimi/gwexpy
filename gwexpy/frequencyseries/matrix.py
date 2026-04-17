@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
+from astropy import units as u
 
 from gwexpy.types.seriesmatrix import SeriesMatrix
+from gwexpy.types.typing import ArrayLike, IndexLike
 
 from .collections import FrequencySeriesDict, FrequencySeriesList
 from .frequencyseries import FrequencySeries, SeriesType
@@ -78,7 +82,14 @@ class FrequencySeriesMatrix(  # type: ignore[misc]
     default_yunit = None
     _default_plot_method = "plot"
 
-    def __new__(cls, data=None, frequencies=None, df=None, f0=None, **kwargs):
+    def __new__(
+        cls,
+        data: ArrayLike | FrequencySeriesMatrix | None = None,
+        frequencies: IndexLike | None = None,
+        df: float | u.Quantity | None = None,
+        f0: float | u.Quantity | None = None,
+        **kwargs: Any,
+    ) -> FrequencySeriesMatrix:
         """Create a new FrequencySeriesMatrix.
 
         This constructor extends the standard `SeriesMatrix` by adding support

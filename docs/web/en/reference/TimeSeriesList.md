@@ -1,5 +1,49 @@
 # TimeSeriesList
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `TimeSeriesList` to organize multiple `TimeSeries` objects while preserving per-channel metadata and enabling batch operations.
+
+## Representative Signatures
+
+```python
+TimeSeriesList(data: list[TimeSeries])
+TimeSeriesList.to_matrix(align="intersection")
+```
+
+## Minimal Example
+
+```python
+from gwexpy.timeseries import TimeSeries, TimeSeriesList
+import numpy as np
+
+lst = TimeSeriesList([
+    TimeSeries(np.random.randn(128), sample_rate=128),
+    TimeSeries(np.random.randn(128), sample_rate=128),
+])
+mat = lst.to_matrix()
+```
+
+## Related Theory
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_en.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** PhaseMethodsMixin, TimeSeriesList
 
 List of TimeSeries objects.

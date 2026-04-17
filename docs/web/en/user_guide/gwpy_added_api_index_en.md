@@ -18,34 +18,34 @@ If you want the migration entry point first, go back to the [Migration Guide for
 
 ### Multi-channel
 
-| Representative API | Stability | What it adds relative to GWpy | Details |
-| --- | --- | --- | --- |
-| `TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix` | Stable | converts channel collections into a batch-analysis container for spectral or statistical workflows | [Matrix Tutorial](tutorials/matrix_timeseries.ipynb), [TimeSeriesDict](../reference/TimeSeriesDict.md), [TimeSeriesMatrix](../reference/TimeSeriesMatrix.md) |
-| `FrequencySeriesDict.to_matrix()` -> `FrequencySeriesMatrix` | Stable | turns collections of frequency-series objects into a container suited for pairwise and batch analysis | [FrequencySeriesDict](../reference/FrequencySeriesDict.md), [FrequencySeriesMatrix](../reference/FrequencySeriesMatrix.md) |
-| `SpectrogramDict.to_matrix()` / `SpectrogramList.to_matrix()` -> `SpectrogramMatrix` | Stable | lets time-frequency collections move into a matrix-style container for downstream processing | [SpectrogramDict](../reference/SpectrogramDict.md), [SpectrogramList](../reference/SpectrogramList.md), [SpectrogramMatrix](../reference/SpectrogramMatrix.md) |
+| API Kind | Representative API | Stability | What it adds relative to GWpy | Details |
+| --- | --- | --- | --- | --- |
+| Conversion method | `TimeSeriesDict.to_matrix()` -> `TimeSeriesMatrix` | Stable | converts channel collections into a batch-analysis container for spectral or statistical workflows | [Matrix Tutorial](tutorials/matrix_timeseries.ipynb), [TimeSeriesDict](../reference/TimeSeriesDict.md), [TimeSeriesMatrix](../reference/TimeSeriesMatrix.md) |
+| Conversion method | `FrequencySeriesDict.to_matrix()` -> `FrequencySeriesMatrix` | Stable | turns collections of frequency-series objects into a container suited for pairwise and batch analysis | [FrequencySeriesDict](../reference/FrequencySeriesDict.md), [FrequencySeriesMatrix](../reference/FrequencySeriesMatrix.md) |
+| Conversion method | `SpectrogramDict.to_matrix()` / `SpectrogramList.to_matrix()` -> `SpectrogramMatrix` | Stable | lets time-frequency collections move into a matrix-style container for downstream processing | [SpectrogramDict](../reference/SpectrogramDict.md), [SpectrogramList](../reference/SpectrogramList.md), [SpectrogramMatrix](../reference/SpectrogramMatrix.md) |
 
 ### Added Methods
 
-| Representative API | Stability | What it adds relative to GWpy | Details |
-| --- | --- | --- | --- |
-| `.find_peaks()` | Stable | lets you run peak detection directly on the data object instead of dropping to arrays first | [Frequency Series Tutorial](tutorials/intro_frequencyseries.ipynb), [TimeSeries](../reference/TimeSeries.md), [FrequencySeries](../reference/FrequencySeries.md) |
-| `.fit()` | Stable | starts fitting workflows directly from the data object | [Fitting](tutorials/advanced_fitting.ipynb), [Fitting Reference](../reference/fitting.md) |
-| `.hht()` | Experimental | exposes Hilbert-Huang Transform analysis as an object method | [HHT](tutorials/advanced_hht.ipynb), [TimeSeries](../reference/TimeSeries.md) |
-| `.arima()` | Experimental | exposes time-series modelling and forecasting as an object method | [ARIMA](tutorials/advanced_arima.ipynb), [TimeSeries](../reference/TimeSeries.md) |
+| API Kind | Representative API | Stability | What it adds relative to GWpy | Details |
+| --- | --- | --- | --- | --- |
+| Instance method | `.find_peaks()` | Stable | lets you run peak detection directly on the data object instead of dropping to arrays first | [Frequency Series Tutorial](tutorials/intro_frequencyseries.ipynb), [TimeSeries](../reference/TimeSeries.md), [FrequencySeries](../reference/FrequencySeries.md) |
+| Instance method | `.fit()` | Stable | starts fitting workflows directly from the data object | [Fitting](tutorials/advanced_fitting.ipynb), [Fitting Reference](../reference/fitting.md) |
+| Instance method | `.hht()` | Experimental | exposes Hilbert-Huang Transform analysis as an object method | [HHT](tutorials/advanced_hht.ipynb), [TimeSeries](../reference/TimeSeries.md) |
+| Instance method | `.arima()` | Experimental | exposes time-series modelling and forecasting as an object method | [ARIMA](tutorials/advanced_arima.ipynb), [TimeSeries](../reference/TimeSeries.md) |
 
 ### Field API
 
-| Representative API | Stability | What it adds relative to GWpy | Details |
-| --- | --- | --- | --- |
-| `ScalarField` | Experimental | introduces a metadata-aware 4D field container with time and spatial axes | [Field API Intro](tutorials/field_scalar_intro.ipynb), [ScalarField](../reference/ScalarField.md) |
-| `ScalarField.fft_space()` | Experimental | performs spatial-domain transforms while staying inside the Field-object model | [Field API Intro](tutorials/field_scalar_intro.ipynb), [ScalarField](../reference/ScalarField.md) |
-| `FieldList` / `FieldDict` | Experimental | groups multiple `ScalarField` objects for batch-style processing and shared validation | [Field API Intro](tutorials/field_scalar_intro.ipynb), [FieldList](../reference/FieldList.md), [FieldDict](../reference/FieldDict.md) |
+| API Kind | Representative API | Stability | What it adds relative to GWpy | Details |
+| --- | --- | --- | --- | --- |
+| Class | `ScalarField` | Experimental | introduces a metadata-aware 4D field container with time and spatial axes | [Field API Intro](tutorials/field_scalar_intro.ipynb), [ScalarField](../reference/ScalarField.md) |
+| Instance method | `ScalarField.fft_space()` | Experimental | performs spatial-domain transforms while staying inside the Field-object model | [Field API Intro](tutorials/field_scalar_intro.ipynb), [ScalarField](../reference/ScalarField.md) |
+| Collection | `FieldList` / `FieldDict` | Experimental | groups multiple `ScalarField` objects for batch-style processing and shared validation | [Field API Intro](tutorials/field_scalar_intro.ipynb), [FieldList](../reference/FieldList.md), [FieldDict](../reference/FieldDict.md) |
 
 ### Sharing / Compatibility
 
-| Representative API / behavior | Stability | What it adds relative to GWpy | Details |
-| --- | --- | --- | --- |
-| Transparent Pickle | Stable | allows a GWexpy-produced object to be restored as a GWpy base object on the receiving side even without GWexpy | [Migration Guide for GWpy Users](gwexpy_for_gwpy_users_en.md), [Installation Guide](installation.md) |
+| API Kind | Representative API / behavior | Stability | What it adds relative to GWpy | Details |
+| --- | --- | --- | --- | --- |
+| Behavior | Transparent Pickle | Stable | allows a GWexpy-produced object to be restored as a GWpy base object on the receiving side even without GWexpy | [Migration Guide for GWpy Users](gwexpy_for_gwpy_users_en.md), [Installation Guide](installation.md) |
 
 ## What this page does not duplicate
 

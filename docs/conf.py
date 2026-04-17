@@ -70,6 +70,8 @@ nbsphinx_allow_errors = os.environ.get("NBS_ALLOW_ERRORS", "true").lower() == "t
 
 autosummary_generate = True
 autosummary_imported_members = False
+autodoc_typehints = "signature"
+autodoc_typehints_format = "short"
 
 autodoc_default_options = {
     "members": True,

@@ -10,13 +10,43 @@ __all__ = ["Plane2D"]
 
 
 class Plane2D(FittingMixin, Array2D):
-    """2D array wrapper with semantically significant axis names."""
+    """Two-dimensional array with explicit semantic names for each axis.
+
+    `Plane2D` is used by field and transform APIs when a derived slice should
+    keep human-readable axis meaning instead of anonymous array dimensions.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from gwexpy.types import Plane2D
+    >>> plane = Plane2D(np.ones((2, 3)), axis1_name="time", axis2_name="frequency")
+    >>> plane.axis1.name, plane.axis2.name
+    ('time', 'frequency')
+    """
 
     # Do NOT add _axis1_name/_axis2_name to slots, as they duplicate Array2D slots or cause confusion.
     # We rely on Array2D's _axis0_name/_axis1_name for storage.
 
-    def __new__(cls, data, axis1_name="axis1", axis2_name="axis2", **kwargs):
-        """Create a plane with explicit names for both axes."""
+    def __new__(
+        cls,
+        data,
+        axis1_name: str = "axis1",
+        axis2_name: str = "axis2",
+        **kwargs,
+    ):
+        """Create a plane with explicit names for both axes.
+
+        Parameters
+        ----------
+        data : array-like
+            Two-dimensional values to wrap.
+        axis1_name : str, optional
+            Semantic name for dimension 0.
+        axis2_name : str, optional
+            Semantic name for dimension 1.
+        **kwargs
+            Forwarded to :class:`gwexpy.types.Array2D`.
+        """
         if "axis_names" in kwargs:
             axis1_name, axis2_name = kwargs.pop("axis_names")
         obj = super().__new__(cls, data, axis_names=(axis1_name, axis2_name), **kwargs)

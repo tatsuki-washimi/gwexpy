@@ -1,163 +1,55 @@
 # Plot
 
-**継承元:** Plot
+**継承元:** `gwpy.plot.Plot`
 
-`:class:gwpy.plot.Plot` の拡張で、`:class:gwexpy.types.SeriesMatrix` 引数を
-個々の `:class:gwpy.types.Series` オブジェクトに自動展開し、
-可能な限りマトリクスのレイアウトとメタデータを保持します。
+## 主な用途
 
-## メソッド
+`Plot` は GWexpy における可視化の入口です。単一 series だけでなく、
+`SeriesMatrix` や `SpectrogramMatrix` のような多チャンネル入力も扱えます。
+GWpy 互換の Figure 操作を保ちながら、行列入力の自動展開、サブプロット配置、
+高密度オーバーレイの間引き、spectrogram 系の colorbar 配置を補助します。
 
-### `__init__`
-
-```python
-__init__(self, *args, **kwargs)
-```
-
-パラメータ
-----------
-
-figsize : 2-tuple of floats, default: `:rc:figure.figsize`
-    図の寸法 ``(width, height)`` (インチ単位)。
-
-dpi : float, default: `:rc:figure.dpi`
-    1インチあたりのドット数。
-
-facecolor : default: `:rc:figure.facecolor`
-    図パッチの表面色。
-
-edgecolor : default: `:rc:figure.edgecolor`
-    図パッチの境界色。
-
-linewidth : float
-    フレームの線幅（図パッチの境界線幅）。
-
-frameon : bool, default: `:rc:figure.frameon`
-    ``False`` の場合、図の背景パッチの描画を抑制します。
-
-layout : {'constrained', 'compressed', 'tight', `.LayoutEngine`, None}
-    Axes の装飾（ラベル、目盛りなど）の重複を避けるためのプロット要素配置メカニズム。
-
-*(Figure から継承)*
-
-### `add_segments_bar`
+## 代表的なシグネチャ
 
 ```python
-add_segments_bar(self, segments, ax=None, height=0.14, pad=0.1, sharex=True, location='bottom', **plotargs)
+Plot(*args, separate=None, geometry=None, monitor=None, decimate_threshold=50000, decimate_points=10000, **kwargs)
+plot_mmm(median, min_s, max_s, ax=None, **kwargs)
 ```
 
-状態情報を示すセグメントバー `Plot` を追加します。
-
-パラメータ
-----------
-
-segments : `~gwpy.segments.DataQualityFlag`
-    データ品質フラグ、またはこの Plot に関する状態セグメントを示す `SegmentList`
-
-ax : `Axes`, optional
-    新しい `Axes` を配置する基準となる特定の `Axes`
-
-height : `float`, optional
-    アンカー軸の割合としての新しい軸の高さ
-
-pad : `float`, optional
-    新しい軸とアンカー間のパディング（アンカー軸の寸法の割合）
-
-location : `str`, optional
-    新しいセグメント軸の位置。デフォルトは ``'bottom'``
-
-### `close`
+## 最小例
 
 ```python
-close(self)
+from gwexpy.plot import Plot
+
+fig = Plot(ts_matrix, separate=True, figsize=(10, 6))
+_ = fig.plot_mmm(median_series, min_series, max_series, alpha_fill=0.15)
 ```
 
-プロットを閉じてメモリを解放します。
+## GWexpy 固有の挙動
 
-### `colorbar`
+- `SeriesMatrix` と `SpectrogramMatrix` を自動的にサブプロットへ展開します。
+- list / dict 入力のラベルを legend と軸へ引き継ぎます。
+- spectrogram 系入力では colorbar の配置を自動化できます。
+- `decimate_threshold` を超える高密度オーバーレイは自動で間引きされます。
 
-```python
-colorbar(self, mappable=None, cax=None, ax=None, fraction=0.0, use_axesgrid=True, emit=True, **kwargs)
+## 関連理論
+
+- [FFT_Conventions](FFT_Conventions.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+継承メソッドを含む完全な API は以下の生成済みリファレンスを参照してください。
+
+```{eval-rst}
+.. currentmodule:: gwexpy.plot
+
+.. autoclass:: Plot
+   :members: __init__, plot_mmm, show
+   :show-inheritance:
 ```
-
-現在の `Plot` にカラーバーを追加します。
-
-パラメータ
-----------
-
-mappable : matplotlib data collection
-    色付けをマッピングするコレクション
-
-cax : `~matplotlib.axes.Axes`
-    カラーバーを描画する Axes
-
-ax : `~matplotlib.axes.Axes`
-    カラーバーを配置する基準となる Axes
-
-fraction : `float`, optional
-    カラーバーに使用する元の軸の割合。デフォルト (0) は元の軸をまったくリサイズしません。
-
-use_axesgrid : `bool`
-    :mod:`mpl_toolkits.axes_grid1` を使用してカラーバー軸を生成
-
-emit : `bool`, optional
-    `True` の場合、`Axes` 上のすべてのマップ可能なオブジェクトをカラーバーと同じ色付けに更新
-
-戻り値
--------
-
-cbar : `~matplotlib.colorbar.Colorbar`
-    新しく追加された `Colorbar`
-
-### `get_axes`
-
-```python
-get_axes(self, projection=None)
-```
-
-すべての `Axes` を検索します（オプションで指定された投影に一致するもの）
-
-パラメータ
-----------
-
-projection : `str`
-    返す軸タイプの名前
-
-戻り値
--------
-
-axlist : `list` of `~matplotlib.axes.Axes`
-
-### `plot_mmm`
-
-```python
-plot_mmm(self, median, min_s, max_s, ax=None, **kwargs)
-```
-
-*ドキュメントなし。*
-
-### `refresh`
-
-```python
-refresh(self)
-```
-
-現在の図を更新します。
-
-### `save`
-
-```python
-save(self, *args, **kwargs)
-```
-
-図をディスクに保存します。
-
-このメソッドは `:meth:~matplotlib.figure.Figure.savefig` のエイリアスです。
-
-### `show`
-
-```python
-show(self, warn=True)
-```
-
-図を表示します。

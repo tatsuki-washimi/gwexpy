@@ -1,5 +1,47 @@
 # SeriesMatrix
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`SeriesMatrix` は時系列・周波数系列・spectrogram の各行列コンテナに共通する基盤抽象です。
+
+## 代表的なシグネチャ
+
+```python
+SeriesMatrix(data, xindex=None, x0=None, dx=None, names=None, ...)
+SeriesMatrix.to_dict()
+```
+
+## 最小例
+
+```python
+from gwexpy.types import SeriesMatrix
+import numpy as np
+
+mat = SeriesMatrix(np.ones((2, 2, 32)), x0=0, dx=1.0)
+out = mat.to_dict()
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** RegularityMixin, InteropMixin, SeriesMatrixCoreMixin, SeriesMatrixIndexingMixin, SeriesMatrixIOMixin, SeriesMatrixMathMixin, SeriesMatrixAnalysisMixin, SeriesMatrixStructureMixin, SeriesMatrixVisualizationMixin, SeriesMatrixValidationMixin, StatisticalMethodsMixin, ndarray
 
 複数の Series オブジェクト用の基底マトリックスクラス。

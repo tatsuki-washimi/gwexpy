@@ -1,5 +1,44 @@
 # Array2D
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`Array2D` は軸名やメタデータを保持したまま配列変換を行いたいときに使います。
+
+## 代表的なシグネチャ
+
+```python
+Array2D(data, axis_names=("axis0", "axis1"), ...)
+Array2D.swapaxes(0, 1)
+```
+
+## 最小例
+
+```python
+from gwexpy.types import Array2D
+import numpy as np
+
+arr = Array2D(np.arange(6).reshape(2, 3), axis_names=("row", "col"))
+arr_t = arr.swapaxes(0, 1)
+```
+
+## 関連理論
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** AxisApiMixin, StatisticalMethodsMixin, Array2D
 
 統一された軸 API を持つ2次元配列。

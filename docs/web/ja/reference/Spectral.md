@@ -1,5 +1,44 @@
 # スペクトル推定
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+Spectral ヘルパは PSD・ASD・bootstrap 誤差帯など、単位整合を保った周波数領域推定を行うときに使います。
+
+## 代表的なシグネチャ
+
+```python
+estimate_psd(ts, fftlength=1.0, overlap=0.5, ...)
+bootstrap_spectrogram(sgm, n_boot=1000, ...)
+```
+
+## 最小例
+
+```python
+from gwexpy.spectral import estimate_psd
+
+psd = estimate_psd(ts, fftlength=1.0)
+```
+
+## 関連理論
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 gwexpy はスペクトル密度とパワースペクトル推定に厳密な単位規則を適用します。
 
 ## 単位のセマンティクス

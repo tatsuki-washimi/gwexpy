@@ -1,5 +1,49 @@
 # FrequencySeriesDict
 
+<!-- reference-summary:start -->
+
+## 主な用途
+
+`FrequencySeriesDict` は複数の `FrequencySeries` をラベル付きで保持し、一括処理や変換を行うために使います。
+
+## 代表的なシグネチャ
+
+```python
+FrequencySeriesDict(data: dict[str, FrequencySeries])
+FrequencySeriesDict.to_matrix()
+```
+
+## 最小例
+
+```python
+from gwexpy.frequencyseries import FrequencySeries, FrequencySeriesDict
+import numpy as np
+
+dct = FrequencySeriesDict({
+    "A": FrequencySeries(np.ones(64), df=1.0),
+    "B": FrequencySeries(np.ones(64), df=1.0),
+})
+mat = dct.to_matrix()
+```
+
+## 関連理論
+
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## 関連チュートリアル
+
+- [GWpy Migration Guide](../user_guide/gwexpy_for_gwpy_users_ja.md)
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API リファレンス
+
+詳細な生成済み API はこのページの下部に続きます。
+
+<!-- reference-summary:end -->
+
+
 **継承元:** FrequencySeriesBaseDict
 
 ラベルをキーとする `FrequencySeries` オブジェクトの順序付きマッピング。

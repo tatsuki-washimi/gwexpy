@@ -1,5 +1,46 @@
 # ScalarField
 
+<!-- reference-summary:start -->
+
+## What it is
+
+Use `ScalarField` for physics-aware field data with explicit domains, units, and FFT-aware axis handling.
+
+## Representative Signatures
+
+```python
+ScalarField(data, axis0_domain="time", spatial_domains=("real", "real", "real"), ...)
+ScalarField.fft_time(nfft=None)
+```
+
+## Minimal Example
+
+```python
+from gwexpy.fields import ScalarField
+import numpy as np
+
+field = ScalarField(np.random.randn(16, 4, 4, 4), axis0_domain="time")
+field_f = field.fft_time()
+```
+
+## Related Theory
+
+- [Physics Models](../user_guide/physics_models.md)
+- [Validated Algorithms](../user_guide/validated_algorithms.md)
+- [FFT_Conventions](FFT_Conventions.md)
+
+## Related Tutorials
+
+- [Tutorial Index](../user_guide/tutorials/index.rst)
+- [Getting Started](../user_guide/getting_started.md)
+
+## API Reference
+
+The detailed generated API continues below on this page.
+
+<!-- reference-summary:end -->
+
+
 **Inherits from:** `FieldBase`, `Array4D`, `AxisApiMixin`, `StatisticalMethodsMixin`, `GwpyArray`
 
 4D scalar field with explicit axis domains and FFT operations.

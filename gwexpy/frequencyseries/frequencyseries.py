@@ -26,6 +26,9 @@ if TYPE_CHECKING:
         from gwpy.types.index import SeriesType
     except ImportError:
         pass
+    from gwpy.detector import Channel
+    from gwpy.time import SupportsToGps
+    from gwpy.typing import ArrayLike1D, UnitLike
 
 # Runtime fallback for SeriesType if not available from gwpy
 try:
@@ -132,7 +135,18 @@ class FrequencySeries(
 
     """
 
-    def __new__(cls, *args: Any, **kwargs: Any) -> FrequencySeries:
+    def __new__(
+        cls,
+        data: ArrayLike1D,
+        unit: UnitLike = None,
+        f0: u.Quantity | float | None = None,
+        df: u.Quantity | float | None = None,
+        frequencies: ArrayLike1D | None = None,
+        name: str | None = None,
+        epoch: SupportsToGps | None = None,
+        channel: Channel | str | None = None,
+        **kwargs: Any,
+    ) -> FrequencySeries:
         """Create a new FrequencySeries instance.
 
         This override ensures compatibility with `gwexpy.noise` generation
@@ -143,7 +157,18 @@ class FrequencySeries(
         for key in ["fmin", "fmax"]:
             kwargs.pop(key, None)
 
-        return super().__new__(cls, *args, **kwargs)
+        return super().__new__(
+            cls,
+            data,
+            unit=unit,
+            f0=f0,
+            df=df,
+            frequencies=frequencies,
+            name=name,
+            epoch=epoch,
+            channel=channel,
+            **kwargs,
+        )
 
     def __array_finalize__(self, obj: Any) -> None:
         """Propagate gwexpy-specific attributes through NumPy operations.
