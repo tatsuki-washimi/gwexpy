@@ -25,7 +25,7 @@ tsd = TimeSeriesDict.read(cache, channels)
 # Loops or nested logic required for all channel pairs
 ```
 
-**GWexpy Style (Stable):**
+#### GWexpy Style (Stable)
 
 ```python
 from gwexpy.timeseries import TimeSeriesDict
@@ -45,19 +45,23 @@ In addition to base GWpy methods, advanced algorithms from SciPy, Statsmodels, a
 
 ### Selected Extension Methods
 
-* **Fitting (Stable)**: The `.fit()` method enables least-squares and MCMC analysis via `iminuit` directly on your data objects.
-* **Peak Detection (Stable)**: `.find_peaks()` makes it easy to identify pulse trains or resonances.
-* **Instantaneous Frequency (Experimental)**: Simply call `.hht()` for Hilbert-Huang Transform analysis.
-* **Statistical Forecasting (Experimental)**: `.arima()` provides forecasting and noise subtraction based on signal autocorrelation.
+| Method | Stability | Summary |
+| --- | --- | --- |
+| `.fit()` | Stable | Runs least-squares and MCMC analysis via `iminuit` directly on your data objects. |
+| `.find_peaks()` | Stable | Identifies pulse trains or resonances with a concise API. |
+| `.hht()` | Experimental | Runs Hilbert-Huang Transform analysis for instantaneous frequency inspection. |
+| `.arima()` | Experimental | Provides forecasting and noise subtraction based on signal autocorrelation. |
 
 ## 3. Extended I/O Support
 
 In addition to GWpy's standard support for `gwf`, `hdf5`, and `ascii`, GWexpy adds support for formats frequently used in experiments:
 
-* **GBD (GraphTec)**: Automates digital channel normalization and count-to-voltage conversion based on range headers.
-* **TDMS (LabVIEW)**: Direct reading of data recorded by National Instruments hardware.
-* **WIN (Seis)**: Decoding of the WIN format, the standard for Japanese seismic networks.
-* **Zarr / Parquet**: High-speed cloud/disk I/O for large-scale datasets.
+| Format | Summary |
+| --- | --- |
+| GBD (GraphTec) | Automates digital channel normalization and count-to-voltage conversion based on range headers. |
+| TDMS (LabVIEW) | Reads data recorded by National Instruments hardware directly. |
+| WIN (Seis) | Decodes the WIN format used by Japanese seismic networks. |
+| Zarr / Parquet | Supports high-speed cloud/disk I/O for large-scale datasets. |
 
 ## 4. Portability and Compatibility (Pickle)
 

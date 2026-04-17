@@ -27,6 +27,10 @@ pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 
 For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recommend using Conda (e.g., Miniforge) to resolve binary dependencies first.
 
+:::{warning}
+If you use Conda, avoid running `pip install` directly in `base` or in a shared environment for unrelated work. Create a **dedicated environment for GWexpy** first, then install both the Conda-managed binary dependencies and the `pip` packages there. This keeps binary dependency resolution isolated and reduces the risk of breaking the environment.
+:::
+
 ```bash
 # 1. Create environment and resolve binary dependencies
 conda create -n gwexpy python=3.11
@@ -37,9 +41,11 @@ conda install -c conda-forge python-nds2-client python-framel ldas-tools-framecp
 pip install "gwexpy[gw,analysis,fitting] @ git+https://github.com/tatsuki-washimi/gwexpy.git"
 ```
 
+If you see `No module named nds2` or FrameLIB-related import errors, re-run the `conda install -c conda-forge ...` step inside that dedicated environment first. If you do not need NDS2 or FrameLIB, the minimal or recommended installation without the `gw` extras is usually sufficient.
+
 ### Developer Mode
 
-For contributors who want to install from source and set up a testing environment.
+For contributors who want to install from source and set up a testing environment. **Conda is optional here.** Use the Conda workflow above when you need to validate `gw`-related binary dependencies; otherwise, a standard virtual environment such as `venv` is fine for documentation work and general development.
 
 ```bash
 git clone https://github.com/tatsuki-washimi/gwexpy.git
@@ -47,9 +53,15 @@ cd gwexpy
 pip install -e ".[dev,all]"
 ```
 
+## 2.1. Dependency Troubleshooting
+
+- If you see `No module named nds2`: install `python-nds2-client` in the active dedicated Conda environment.
+- If you see FrameLIB / `framecpp`-related errors: reinstall `python-framel` and `ldas-tools-framecpp` in the same environment.
+- If the environment has already been mixed with unrelated packages: recreating it with `conda create -n gwexpy python=3.11` is usually safer than trying to repair it in place.
+
 ---
 
-## 2. Optional Dependencies (Extras) Details
+## 3. Optional Dependencies (Extras) Details
 
 | Extra Name | Key Packages | Primary Use Cases |
 | --- | --- | --- |
@@ -65,13 +77,13 @@ pip install -e ".[dev,all]"
 
 ---
 
-## 3. OS-Specific Notes
+## 4. OS-Specific Notes
 
 * **Linux**: Ensure standard build tools (`build-essential`) are installed.
 * **macOS (Apple Silicon)**: Using the `conda-forge` channel ensures most binaries run natively on M1/M2/M3.
 * **Windows (WSL2)**: We recommend installing GWexpy within a Linux environment on WSL2 rather than on Windows proper.
 
-## 4. Security Note (Pickle)
+## 5. Security Note (Pickle)
 
 To facilitate sharing analysis results, GWexpy supports saving and restoring objects via `Pickle`. This uses **Transparent Pickle** technology, allowing objects to be restored as base GWpy objects even if the recipient does not have GWexpy installed.
 
@@ -80,7 +92,7 @@ To facilitate sharing analysis results, GWexpy supports saving and restoring obj
 Python's `pickle` module has inherent security risks (Arbitrary Code Execution) when loading data. Always exchange data through trusted channels or consider more secure serialization formats like `HDF5`.
 
 :::
-## 5. Next Steps
+## 6. Further Reading
 
 * [Quickstart](quickstart.md) - Get started in 3 lines
 * [Getting Started](getting_started.md) - Learning roadmap

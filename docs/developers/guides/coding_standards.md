@@ -1,4 +1,4 @@
-# GWExPy Coding Standards & Developer Guidelines (v0.1)
+# GWexpy Coding Standards & Developer Guidelines (v0.1)
 
 **Last Updated**: 2026-01-27
 
