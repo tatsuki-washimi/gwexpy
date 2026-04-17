@@ -4,7 +4,7 @@
 
 ## 主な用途
 
-`TimePlaneTransform` は 3 次元出力のうち 1 軸を時間、残り 2 軸を平面として扱いたいときに使います。
+`TimePlaneTransform` は、時間軸と 2 つの平面軸を持つ 3 次元変換結果を扱うコンテナです。STLT のような変換では `(time, sigma, frequency)` のような軸構造を表せます。
 
 ## 代表的なシグネチャ
 

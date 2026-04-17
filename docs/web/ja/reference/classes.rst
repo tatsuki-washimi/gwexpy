@@ -41,7 +41,7 @@
 .. toctree::
    :maxdepth: 1
 
-   時間-平面変換 (TimePlaneTransform) <TimePlaneTransform>
+   TimePlaneTransform <TimePlaneTransform>
    二重周波数マップ (BifrequencyMap) <BifrequencyMap>
    パイプライン (Pipeline) <Pipeline>
    変換 (Transform) <Transform>
