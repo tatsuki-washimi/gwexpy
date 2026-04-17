@@ -1,4 +1,4 @@
-# Time-Frequency Methods: Comparison and Selection Guide
+# Time-Frequency Analysis: Method Selection Guide
 
 :::{admonition} Interactive Version Available
 :class: tip
