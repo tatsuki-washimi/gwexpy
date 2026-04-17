@@ -184,7 +184,6 @@ GWexpy is built on top of GWpy. For GWpy fundamentals, see the official docs:
    :caption: 📖 Guide
 
    user_guide/prerequisites_and_conventions
-   user_guide/io_formats
    user_guide/interop
    user_guide/time_utilities
    user_guide/numerical_stability
@@ -198,6 +197,12 @@ GWexpy is built on top of GWpy. For GWpy fundamentals, see the official docs:
 
    user_guide/tutorials/index
    examples/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 🗂 Formats & I/O
+
+   user_guide/io_formats
 
 .. toctree::
    :maxdepth: 2
