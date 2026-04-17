@@ -32,10 +32,10 @@ API 入口: [fields API](../reference/api/fields.rst), [スライス操作ガイ
 `gwexpy` は、以下の主要コンポーネントを組み合わせて高度な解析パイプラインを構築します。個別のアルゴリズム詳細は [物理モデルと解析理論](physics_models.md) を参照してください。
 
 - **多チャネル解析エンジン**: 環境ノイズ分離のための ICA/PCA 実装。
-- **高速相関計算基盤**: 大規模観測データに対する高速コヒーレンス計算（BruCo）。
+- **高速相関計算基盤**: 大規模観測データに対する高速コヒーレンス計算（Bruco）。
 - **統計的推定・フィッティング**: GLS や MCMC を用いた物理パラメータ推定。
 
 ## 関連ドキュメント
-- [物理モデルと解析理論](physics_models.md) — ICA/BruCo/MCMC などの解析理論・物理モデル詳細
+- [物理モデルと解析理論](physics_models.md) — ICA/Bruco/MCMC などの解析理論・物理モデル詳細
 - [検証済みアルゴリズム](validated_algorithms.md) — 各数値アルゴリズムの信頼性検証
 - [4次元フィールドの操作詳細](scalarfield_slicing.md)

@@ -57,7 +57,7 @@ The ICA/PCA implementation in `gwexpy` is optimized for physical data characteri
 
 - **Related API**: {doc}`../reference/api/signal` (ICA, PCA)
 
-### 2. Fast Correlation Engine (:term:`BruCo`)
+### 2. Fast Correlation Engine (:term:`Bruco`)
 
 The `FastCoherenceEngine` scans thousands of auxiliary channels for contributions to a target signal with extreme speed.
 

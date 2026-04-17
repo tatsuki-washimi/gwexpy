@@ -19,7 +19,7 @@ B
    :maxdepth: 1
 
    BifrequencyMap
-   BruCo
+   Bruco
 
 F
 -

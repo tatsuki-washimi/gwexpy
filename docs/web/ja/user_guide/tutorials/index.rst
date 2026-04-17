@@ -76,9 +76,9 @@ V. 特殊ツール
 
 - :doc:`ケーススタディ: ObsPy 連携による地震データ解析 <case_seismic_obspy>` :bdg-primary:`中級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
 - :doc:`ケーススタディ: GBD 形式 I/O <case_gbd_format>` :bdg-primary:`中級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
-- :doc:`BruCo: 基本 <advanced_bruco>` :bdg-primary:`上級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
-- :doc:`ケーススタディ: BruCo と ICA によるノイズ削減 <case_bruco_ica_denoising>` :bdg-primary:`上級` :bdg-secondary:`60分` :bdg-info:`解析実務者`
-- :doc:`BruCo: バイリニアカップリングと AM/FM 復調 <case_bruco_advanced>` :bdg-primary:`上級` :bdg-secondary:`60分` :bdg-info:`解析実務者`
+- :doc:`Bruco: 基本 <advanced_bruco>` :bdg-primary:`上級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
+- :doc:`ケーススタディ: Bruco と ICA によるノイズ削減 <case_bruco_ica_denoising>` :bdg-primary:`上級` :bdg-secondary:`60分` :bdg-info:`解析実務者`
+- :doc:`Bruco: バイリニアカップリングと AM/FM 復調 <case_bruco_advanced>` :bdg-primary:`上級` :bdg-secondary:`60分` :bdg-info:`解析実務者`
 - :doc:`ケーススタディ: バイオリンモード解析 <case_violin_mode>` :bdg-primary:`上級` :bdg-secondary:`60分` :bdg-info:`解析実務者`
 - :doc:`ケーススタディ: シューマン共鳴解析 <case_schumann_resonance>` :bdg-primary:`上級` :bdg-secondary:`60分` :bdg-info:`解析実務者`
 
