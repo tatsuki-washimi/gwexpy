@@ -82,44 +82,18 @@ body {
 }
 
 /* --- 4. Language Switcher & Utilities --- */
+/* #lang-pill のスタイルは _templates/layout.html の extrahead ブロック内に定義済み */
 
-#language-switcher-box {
-    margin: 15px;
-    padding: 10px;
-    border: 1px solid #e1e4e6;
-    border-radius: 8px;
-    background-color: #ffffff;
-    font-size: 0.85em;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+/* --- 5. Gateway LP: highlighted cards (Phase 2 用) --- */
+
+/* カード 7・8 の強調スタイル（目玉機能） */
+.sd-card.gw-highlight {
+    border-color: var(--gw-primary) !important;
+    background-color: #f0f7fd !important;
 }
 
-#language-switcher-box strong {
+.sd-card.gw-highlight .sd-card-title {
     color: var(--gw-primary);
-}
-
-#language-switcher-box a {
-    color: #666;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-#language-switcher-box a:hover {
-    color: var(--gw-primary);
-    text-decoration: underline;
-}
-
-/* --- 5. Dark Mode Support (Basic) --- */
-@media (prefers-color-scheme: dark) {
-    /* Note: RTD theme doesn't support full dark mode natively yet without heavy hacking,
-       but we can at least adjust our custom components to be less jarring. */
-    #language-switcher-box {
-        background-color: #2c2c2e;
-        border-color: #3a3a3c;
-        color: #efeff4;
-    }
-    #language-switcher-box a {
-        color: #aeaeb2;
-    }
 }
 
 /* External link icons */

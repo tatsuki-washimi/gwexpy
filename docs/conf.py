@@ -11,6 +11,15 @@ project = "GWexpy"
 author = "GWexpy contributors"
 copyright = f"{datetime.now():%Y}, GWexpy contributors"
 
+# Version variables — automatically resolved by Sphinx |release| and |version|
+try:
+    from importlib.metadata import version as _get_version
+    release = _get_version("gwexpy")
+except Exception:
+    # Fallback for development environments
+    release = "dev"
+version = ".".join(release.split(".")[:2]) if release != "dev" else "dev"
+
 # Sitemap URL
 sitemap_url = "https://tatsuki-washimi.github.io/gwexpy/docs/"
 
