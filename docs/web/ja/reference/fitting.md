@@ -15,7 +15,8 @@
 
 - {ref}`MCMC / GLS 尤度の検証 <validated-ja-mcmc-gls>` - エルミート形式の尤度評価と GLS コスト関数の前提条件
 - {ref}`VIF / オーバーラップ補正の検証 <validated-ja-vif>` - ブートストラップ併用時に関係するオーバーラップ補正の前提
-- [検証済みアルゴリズムの概要](../user_guide/validated_algorithms.md)
+- [Physics Models](../user_guide/physics_models.md) - GLS とベイズ推定の背景
+- [Bootstrap GLS Fitting](../user_guide/tutorials/case_bootstrap_gls_fitting.ipynb) - この API へ戻れる一連の事例
 
 ---
 

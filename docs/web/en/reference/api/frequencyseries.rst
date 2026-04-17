@@ -14,6 +14,10 @@ Overview
       Background on frequency-domain modeling and spectral interpretation.
    :doc:`../FFT_Conventions`
       Fourier normalization and axis conventions used by GWexpy.
+   :doc:`../Spectral`
+      PSD / ASD estimation helpers that commonly produce or consume ``FrequencySeries`` objects.
+   :doc:`../../user_guide/tutorials/case_bootstrap_gls_fitting`
+      Frequency-domain fitting workflow that maps back to this API.
 
 .. autosummary::
    :toctree: _autosummary

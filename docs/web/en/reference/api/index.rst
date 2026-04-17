@@ -79,8 +79,8 @@ This index groups the main modules by topic. If you're unsure where to start, be
      - Stable
      - Compatibility entry points and additional APIs
    * - CLI
-     - Stable
-     - Command-line interface
+     - Experimental
+     - Entry point, version reporting, and planned command-line workflows
    * - GUI
      - Experimental
      - Graphical interface and interactive tools

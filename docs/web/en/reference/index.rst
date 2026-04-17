@@ -44,7 +44,11 @@ Use this page as the hub for navigating the GWexpy reference. Choose the entry p
         Start from conventions, theory notes, and helper overviews.
 
 .. note::
-   If you want task-oriented learning material rather than the reference, start from the user guide and tutorials. For `ScalarField` usage patterns, see :doc:`../user_guide/scalarfield_slicing`.
+   If you want task-oriented learning material rather than the reference, jump directly to the matching guide:
+
+   - :doc:`../user_guide/scalarfield_slicing` for `ScalarField` slicing and field-style workflows
+   - :doc:`../user_guide/validated_algorithms` for advanced validation assumptions and audit-backed theory notes
+   - :doc:`../user_guide/gwexpy_for_gwpy_users_en` for GWpy migration-oriented usage
 
 .. toctree::
    :maxdepth: 2

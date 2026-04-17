@@ -7,6 +7,12 @@
 - Users who need to check the data characteristics (stationarity, Gaussianity, etc.) assumed by each algorithm.
 :::
 
+:::{important}
+**Advanced validation/theory companion**
+
+This page intentionally stays under the user guide so readers can discover it from feature docs, but it is not an onboarding page. Treat it as an audit-oriented companion to the API reference, theory notes, and targeted tutorials. For first-use guidance, start with [Getting Started](getting_started.md), [Prerequisites and Conventions](prerequisites_and_conventions.md), or the linked tutorials for each method.
+:::
+
 The numerical algorithms implemented in `gwexpy` have undergone a rigorous validation process to ensure scientific accuracy and reliability.
 
 ## Validation Criteria and Numerical Precision
@@ -28,24 +34,38 @@ The summaries on this page are backed by repository artifacts you can inspect di
 | Fix history | [algorithm_fix_report_20260201](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs/developers/algorithms/algorithm_fix_report_20260201.md) | What changed after the review findings were merged and addressed |
 | Field-specific physics review | [scalarfield_physics_review_20260120](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md) | Physics and axis-consistency review for `ScalarField` FFT behavior |
 
+(validated-en-source-references)=
+## Source References
+
+Use the source keys below in the per-algorithm sections so the bibliography and source trail stay centralized on this page.
+
+| Key | Source | Used for |
+| :--- | :--- | :--- |
+| `S1` | Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2 | k-space calculation and FFT-axis interpretation |
+| `S2` | Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications* (1993), Eq.(56) | Welch overlap / VIF correction |
+| `S3` | [Prerequisites and Conventions](prerequisites_and_conventions.md) | Time-system assumptions and FFT-related conventions referenced by validation notes |
+| `S4` | [Numerical Stability](numerical_stability.md) | Adaptive stabilization guidance for whitening and related preprocessing paths |
+| `S5` | {ref}`Objective Evidence <validated-en-objective-evidence>` and the Audit Trail below | Repository-backed implementation evidence for transient FFT behavior and complex GLS / MCMC handling |
+
 ## Validated Algorithms Summary Table
 
 | Algorithm | Primary API | API page | Evidence | Related tutorial |
 | :--- | :--- | :--- | :--- | :--- |
 | **k-space calculation** | `ScalarField.fft_space()` | [Fields API](../reference/api/fields.rst) / [ScalarField](../reference/ScalarField.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Field Intro](tutorials/field_scalar_intro.ipynb) |
-| **Transient FFT** | `TimeSeries.fft(mode="transient")` / `TimeSeries._fft_transient` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | — |
+| **Transient FFT** | `TimeSeries.fft(mode="transient")` / `TimeSeries._fft_transient` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Signal Extraction](tutorials/case_signal_extraction.ipynb) |
 | **VIF correction** | `calculate_correlation_factor()` | [Spectral API](../reference/api/spectral.rst) / [Spectral Estimation](../reference/Spectral.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Bootstrap Guide](tutorials/case_bootstrap_gls_fitting.ipynb) |
-| **Forecast timing** | `ArimaResult.forecast()` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | — |
+| **Forecast timing** | `ArimaResult.forecast()` | [Time Series API](../reference/api/timeseries.rst) / [TimeSeries](../reference/TimeSeries.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Advanced ARIMA](tutorials/advanced_arima.ipynb) |
 | **MCMC / GLS likelihood** | `fit_series()` / `GeneralizedLeastSquares` | [Fitting API](../reference/api/fitting.rst) / [gwexpy.fitting](../reference/fitting.md) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Bootstrap Guide](tutorials/case_bootstrap_gls_fitting.ipynb) |
-| **Adaptive whitening** | `whiten()` / `WhiteningModel` | [Preprocessing API](../reference/api/preprocessing.rst) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [Stability](numerical_stability.md) |
+| **Adaptive whitening** | `whiten()` / `WhiteningModel` | [Preprocessing API](../reference/api/preprocessing.rst) | {ref}`Objective Evidence <validated-en-objective-evidence>` | [ML Preprocessing Case Study](tutorials/case_ml_preprocessing.ipynb) |
 
 ---
 
 ## How to Read This Page
 
 - If you want the shared prerequisites, time-system assumptions, and FFT conventions first, start with [Prerequisites and Conventions](prerequisites_and_conventions.md).
+- If you want hands-on usage before reading the audit notes, use the exact tutorial linked in the summary table rather than the general tutorial index.
 - If you want the implementation-facing APIs first, start with [Fields API](../reference/api/fields.rst), [Time Series API](../reference/api/timeseries.rst), [Spectral API](../reference/api/spectral.rst), [Fitting API](../reference/api/fitting.rst), and [Preprocessing API](../reference/api/preprocessing.rst).
-- If you want the repository-backed evidence behind the summaries, continue to the {ref}`Objective Evidence <validated-en-objective-evidence>` and Audit Trail sections below.
+- If you want the repository-backed evidence behind the summaries, continue to the {ref}`Objective Evidence <validated-en-objective-evidence>`, {ref}`Source References <validated-en-source-references>`, and Audit Trail sections below.
 
 ## Detailed Algorithm Basis and Assumptions
 
@@ -59,7 +79,7 @@ Angular wavenumber calculation follows the standard physics definition $k = 2\pi
 - Spatial coordinates ($x, y$) must be **Uniformly Spaced**.
 - For non-uniform grids, a correct wavenumber axis cannot be obtained without prior interpolation.
 
-**Reference**: Press et al., *Numerical Recipes* (3rd ed., 2007), §12.3.2
+**Source reference**: {ref}`S1 <validated-en-source-references>`
 
 **Related API pages**
 - [Fields API](../reference/api/fields.rst)
@@ -77,9 +97,12 @@ Uses an amplitude-preserving convention rather than density, allowing direct rea
 - No window function is applied to the input signal (assumes Rectangular window).
 - For data with windows already applied, separate correction for coherent gain is required.
 
+**Source reference**: {ref}`S5 <validated-en-source-references>`
+
 **Related API pages**
 - [Time Series API](../reference/api/timeseries.rst)
 - [TimeSeries](../reference/TimeSeries.md)
+- [Signal Extraction tutorial](tutorials/case_signal_extraction.ipynb)
 
 ---
 
@@ -95,11 +118,12 @@ Here, VIF is not meant as the regression-style Variance Inflation Factor used in
 - The data must be **Weakly Stationary**.
 - VIF may under- or over-estimate variance if non-stationary glitches or step responses are present.
 
-**Reference**: Percival, D.B. & Walden, A.T., *Spectral Analysis for Physical Applications* (1993), Eq.(56)
+**Source reference**: {ref}`S2 <validated-en-source-references>`
 
 **Related API pages**
 - [Spectral API](../reference/api/spectral.rst)
 - [Spectral Estimation](../reference/Spectral.md)
+- [Bootstrap GLS fitting case study](tutorials/case_bootstrap_gls_fitting.ipynb)
 
 ---
 
@@ -121,9 +145,12 @@ This is the quantity mapping assumed when forecast timestamps are extended forwa
 - The time system must be **GPS Time (no leap seconds)**.
 - Using this in time systems with leap seconds (like UTC) will result in a 1-second offset in future predictions.
 
+**Source reference**: {ref}`S3 <validated-en-source-references>`
+
 **Related API pages**
 - [Time Series API](../reference/api/timeseries.rst)
 - [TimeSeries](../reference/TimeSeries.md)
+- [Advanced ARIMA tutorial](tutorials/advanced_arima.ipynb)
 
 (validated-en-mcmc-gls)=
 ### 5. MCMC / GLS Likelihood
@@ -135,10 +162,13 @@ For complex-valued residuals, the MCMC likelihood path assumes a Hermitian quadr
 - `cov_inv` should be close to Hermitian positive-definite.
 - The implementation is intended for a circular-complex-Gaussian-style treatment of residuals rather than a naive "real-part only" model.
 
+**Source reference**: {ref}`S5 <validated-en-source-references>`
+
 **Related API pages**
 - [Time Series API](../reference/api/timeseries.rst)
 - [Fitting API](../reference/api/fitting.rst)
 - [gwexpy.fitting](../reference/fitting.md)
+- [Bootstrap GLS fitting case study](tutorials/case_bootstrap_gls_fitting.ipynb)
 
 ---
 
@@ -152,9 +182,12 @@ Adaptive whitening uses an automatically chosen stabilization parameter so that 
 - The data are treated as locally quasi-stationary over the FFT segments used for whitening.
 - The adaptive `eps` path is intended to stabilize small denominators, not to compensate for a badly chosen whitening window or clearly non-stationary bursts.
 
+**Source reference**: {ref}`S4 <validated-en-source-references>`
+
 **Related API pages**
 - [Preprocessing API](../reference/api/preprocessing.rst)
 - [Numerical Stability](numerical_stability.md)
+- [ML Preprocessing Case Study](tutorials/case_ml_preprocessing.ipynb)
 
 ---
 
@@ -172,6 +205,7 @@ The links below point to the audit scope, merged findings, and fix history used 
 ## Related Documents
 
 - [Numerical Stability](numerical_stability.md) - Precision management
+- [Prerequisites and Conventions](prerequisites_and_conventions.md) - Shared assumptions for time systems and FFT conventions
 - [Glossary](glossary.rst) - Glossary of algorithms
 - [Fields API](../reference/api/fields.rst)
 - [Time Series API](../reference/api/timeseries.rst)

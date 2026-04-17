@@ -3,6 +3,24 @@
 This page is the entry point for the **shared prerequisites** and **conventions** used across the GWexpy guides and tutorials.
 Page-specific assumptions and mathematical details remain on their original pages; this guide is meant to show where to check first.
 
+## At a Glance
+
+| Item | Details |
+| --- | --- |
+| **Page Role** | Guide |
+| **Audience** | Users who want the shared assumptions before diving into tutorials or API pages |
+| **Prerequisites** | Basic Python and NumPy familiarity, with GWpy/GWexpy differences still being learned |
+| **Use Cases** | Review GPS-time assumptions, FFT conventions, and what is preserved from GWpy |
+| **Search Keywords** | prerequisites, conventions, GPS time, FFT, GWpy compatibility, Field API |
+
+## On This Page
+
+- [Environment Prerequisites](#1-environment-prerequisites)
+- [Data and Time Assumptions](#2-data-and-time-assumptions)
+- [FFT and Spectral Conventions](#3-fft-and-spectral-conventions)
+- [GWpy Compatibility and GWexpy Extensions](#4-gwpy-compatibility-and-gwexpy-extensions)
+- [Where to Go Next](#5-where-to-go-next)
+
 ## 1. Environment Prerequisites
 
 - The basic user-facing environment assumes **Python 3.11+**.
@@ -44,7 +62,7 @@ For migration-oriented guidance, see [Migration from GWpy](gwexpy_for_gwpy_users
 - Algorithm assumptions and validation basis: [Validated Algorithms](validated_algorithms.md)
 - GWpy migration: [Migration from GWpy](gwexpy_for_gwpy_users_en.md)
 
-## Related Pages
+## Next to Read
 
 - [Installation Guide](installation.md)
 - [Getting Started](getting_started.md)

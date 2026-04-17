@@ -17,7 +17,7 @@ gwexpy の end-user 向け I/O ガイドです。
 
 ## まず最初に: 判断ルール
 
-- **まず保存形式を選ぶ**なら、GW 系データは **HDF5**、観測網の既存資産は **MiniSEED / SAC / WIN / ATS**、汎用交換は **CSV / NetCDF4 / Zarr**、ロガー固有データは **GBD / TDMS / SDB / WAV / Audio** を起点に考えると整理しやすいです。
+- **まず保存形式を選ぶ**なら、GW 系データは **HDF5**、観測網の既存資産は **MiniSEED / SAC / WIN / ATS**、汎用交換は **CSV / NetCDF4 / Zarr**、ロガー固有データは **GBD / TDMS / SDB / WAV / Audio** を起点に考えると整理しやすいです。**MTH5** については、現時点の public direct-I/O は **`ats.mth5` の単一路だけ** で、汎用の standalone **`format="mth5"`** はまだ公開していません。
 - **自動判別でよい**のは、拡張子から reader が一意に決まる場合です。
 - **`format=` を明示する**のは、`.xml` のように経路が複数ありうる場合、独自拡張子を使っている場合、または実験データで自動判別が不安な場合です。
 - **`timezone` を必ず指定する**のは、ファイル内に UTC/GPS がなくローカル時刻だけを持つ形式です。現時点でユーザーが明示必須なのは **GBD** です。
@@ -41,7 +41,7 @@ gwexpy の end-user 向け I/O ガイドです。
 | グループ | こういうときに選ぶ | 最初に見る形式 | このページで扱う形式 |
 |---|---|---|---|
 | **A. GW標準** | GW 系の標準保存、共有、取得経路を使いたい | **HDF5** | GWF, HDF5, ndscope-hdf5, DTTXML, NDS2, GWOSC |
-| **B. 地震・地球物理観測** | 既存の地震・電磁気観測フォーマットを読む | **MiniSEED** | MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5, MTH5 standalone |
+| **B. 地震・地球物理観測** | 既存の地震・電磁気観測フォーマットを読む | **MiniSEED** | MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5（MTH5 standalone は状況注記のみ） |
 | **C. 汎用・解析用** | 汎用保存、外部解析、交換をしたい | **CSV / TXT** または **Zarr** | CSV / TXT, NetCDF4, Zarr, Pickle, ROOT |
 | **D. 計測機器・ロガー** | ロガーや機材固有の時系列を読む | **GBD** または **TDMS** | GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A |
 
@@ -138,7 +138,7 @@ open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 | **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | 国内 WIN データ | 改良版 parser、読み込み専用 |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix 観測データ | ネイティブ binary reader |
 | **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | MTH5 経由の単一路 | 一部対応 |
-| **MTH5 standalone** (`.h5`) | 対応中 | 専用 `format="mth5"` は未整備 | MTH5 を直接 I/O したい場合 | 現時点の direct path は `ats.mth5` のみ |
+| **MTH5 standalone** (`.h5`) | 対応中 | 専用 `format="mth5"` は未整備 | 今後の汎用 MTH5 direct I/O | **現時点では public direct-I/O 対応ではありません**。使える direct path は `ats.mth5` のみ |
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -151,7 +151,8 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 
 - **MiniSEED** はギャップがある場合、既定では `NaN` パディングされます。`gap="raise"` で失敗させることもできます。
 - **K-NET**, **WIN / WIN32** は表のとおり読み込み専用です。
-- **ATS.MTH5** は利用経路が限定されます。一般的な MTH5 の説明はまだ整理中なので、「全面対応」とは読ませない書き方にしています。
+- **ATS.MTH5** は利用経路が限定される current direct path です。
+- **MTH5 standalone** は設計・公開整理中です。**「MTH5 は対応済み」ではなく、「`ats.mth5` のみ一部対応」** と読んでください。
 
 <a id="io-formats-ja-c"></a>
 
@@ -179,7 +180,7 @@ events = EventTable.read("events.root", format="root")
 
 - **CSV / TXT** は素朴ですが、共有や確認には依然として有用です。
 - **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。
-- **Zarr** では `sample_rate` 欠落時の既定挙動に注意が必要です。完全に安全な API 挙動の改善は別課題として扱っています。
+- **Zarr** では `sample_rate` 欠落時の既定挙動に未解決の API 課題があります。**このページで解決済みとはみなしていません**。
 - **ROOT** の object-level 変換はここでは扱いません。I/O ガイドでは EventTable の直 I/O のみ扱います。
 
 <a id="io-formats-ja-d"></a>
@@ -222,8 +223,8 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 |---|---|---|
 | `ndscope-hdf5` | 実装済み（未掲載） | `TimeSeriesDict` 限定の HDF5 スキーマ |
 | `SQLite`, `SQLite3` | 実装済み（未掲載） | `SDB` と同系統の alias |
-| `ATS.MTH5` | 実装済み（一部対応） | MTH5 経由の単一路 |
-| `MTH5 standalone` | 対応中 | 専用 `format="mth5"` は未整備 |
+| `ATS.MTH5` | 実装済み（一部対応） | MTH5 経由の current public direct path |
+| `MTH5 standalone` | 対応中 | 専用 `format="mth5"` は未整備。public direct-I/O としては未公開 |
 
 ### 未実装フォーマット (Stubs)
 

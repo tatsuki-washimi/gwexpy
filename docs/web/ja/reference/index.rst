@@ -44,7 +44,11 @@
         規約、理論、補助ページを概念別にまとめています。
 
 .. note::
-   学習用の導線が必要な場合は user guide / tutorials を参照してください。`ScalarField` の設計意図や操作例は :doc:`../user_guide/scalarfield_slicing` にあります。
+   リファレンスではなく用途別ガイドから入りたい場合は、総合 index ではなく次の個別ページを起点にしてください。
+
+   - :doc:`../user_guide/scalarfield_slicing` for `ScalarField` のスライス設計と実例
+   - :doc:`../user_guide/validated_algorithms` for 高度な検証前提と監査ベースの理論メモ
+   - :doc:`../user_guide/gwexpy_for_gwpy_users_ja` for GWpy からの移行ガイド
 
 .. toctree::
    :maxdepth: 2

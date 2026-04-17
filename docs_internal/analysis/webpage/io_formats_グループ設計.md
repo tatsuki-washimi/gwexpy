@@ -1,7 +1,7 @@
 # `io_formats.html` ドメイン別グループ設計（I/O専用版）
 
 作成日: 2026-04-16  
-最終更新: 2026-04-17（I/O / interop 分離）
+最終更新: 2026-04-18（MTH5 public wording 整理）
 
 ---
 
@@ -70,8 +70,8 @@
 | **K-NET** (`.knet`) | `TimeSeriesDict.read(..., format="knet")` | 掲載済み | Read only |
 | **WIN / WIN32** (`.win`, `.cnt`) | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | 掲載済み | Read only。国内 WIN データ向け改良 reader |
 | **ATS** (`.ats`) | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | 掲載済み | ネイティブ binary reader |
-| **ATS.MTH5** (`format="ats.mth5"`) | `TimeSeries.read(..., format="ats.mth5")` | 実装済み（一部対応） | MTH5 経由の単一路。`.atss` と命名規約依存 |
-| **MTH5 standalone** (`.h5`) | 専用 `read(..., format="mth5")` / `write(..., format="mth5")` は未整備 | 対応中 | 現時点の direct path は `ats.mth5` のみ |
+| **ATS.MTH5** (`format="ats.mth5"`) | `TimeSeries.read(..., format="ats.mth5")` | 実装済み（一部対応） | MTH5 経由の current public direct path。`.atss` と命名規約依存 |
+| **MTH5 standalone** (`.h5`) | 専用 `read(..., format="mth5")` / `write(..., format="mth5")` は未整備 | 対応中 | 現時点では public direct-I/O としては未公開。direct path は `ats.mth5` のみ |
 | **CSV** (`.csv`) | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | 掲載済み | enhanced CSV reader を含む |
 | **TXT** (`.txt`) | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | 掲載済み | enhanced ASCII reader を含む |
 | **NetCDF4** (`.nc`) | `TimeSeries.read(..., format="netcdf4")`, `TimeSeriesDict.read(..., format="netcdf4")`, `TimeSeriesMatrix.read(..., format="netcdf4")`, `.write(..., format="netcdf4")` | 掲載済み | TimeSeries 系の direct I/O |
@@ -123,8 +123,8 @@
 | WIN | `TimeSeriesDict.read(..., format="win")` | 掲載済み | Read only |
 | WIN32 | `TimeSeriesDict.read(..., format="win32")` | 掲載済み | Read only |
 | ATS | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | 掲載済み | ネイティブ binary reader |
-| ATS.MTH5 | `TimeSeries.read(..., format="ats.mth5")` | 実装済み（一部対応） | 単一路のみ |
-| MTH5 standalone | 専用 `read(..., format="mth5")` / `write(..., format="mth5")` は未整備 | 対応中 | format 名と対象範囲の整理が必要 |
+| ATS.MTH5 | `TimeSeries.read(..., format="ats.mth5")` | 実装済み（一部対応） | current public direct path の単一路のみ |
+| MTH5 standalone | 専用 `read(..., format="mth5")` / `write(..., format="mth5")` は未整備 | 対応中 | format 名と対象範囲の整理が必要。public direct-I/O としては未公開 |
 
 ### C. 汎用・解析用
 

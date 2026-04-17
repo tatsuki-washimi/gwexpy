@@ -17,7 +17,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 
 ## First: Decision Rules
 
-- If you need a **default GW storage format**, start with **HDF5**. For existing seismic or geophysical assets, start with **MiniSEED / SAC / WIN / ATS**. For general interchange, start with **CSV / NetCDF4 / Zarr**. For logger- or device-specific data, start with **GBD / TDMS / SDB / WAV / Audio**.
+- If you need a **default GW storage format**, start with **HDF5**. For existing seismic or geophysical assets, start with **MiniSEED / SAC / WIN / ATS**. For general interchange, start with **CSV / NetCDF4 / Zarr**. For logger- or device-specific data, start with **GBD / TDMS / SDB / WAV / Audio**. For **MTH5**, the current public direct-I/O story is only the single **`ats.mth5`** path. A generic standalone **`format="mth5"`** route is not published yet.
 - **Auto-detect is fine** when the extension uniquely selects one reader.
 - **Set `format=` explicitly** for ambiguous extensions such as `.xml`, for custom lab extensions, or whenever auto-detection is unclear.
 - **Pass `timezone` explicitly** when the file stores local wall-clock time without embedded UTC/GPS. In the current user-facing guide, **GBD** is the main required case.
@@ -41,7 +41,7 @@ For data sharing and long-term storage, prefer structured formats such as **HDF5
 | Group | Choose this when... | First format to check | Formats covered here |
 |---|---|---|---|
 | **A. GW Standards** | You want standard GW storage, exchange, or acquisition paths | **HDF5** | GWF, HDF5, ndscope-hdf5, DTTXML, NDS2, GWOSC |
-| **B. Seismic and Geophysical Observation** | You need to read existing seismic or EM observation data | **MiniSEED** | MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5, MTH5 standalone |
+| **B. Seismic and Geophysical Observation** | You need to read existing seismic or EM observation data | **MiniSEED** | MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5 (MTH5 standalone is status-only here) |
 | **C. General Analysis and Exchange** | You need general-purpose storage or external analysis exchange | **CSV / TXT** or **Zarr** | CSV / TXT, NetCDF4, Zarr, Pickle, ROOT |
 | **D. Loggers and Instrument Formats** | You are working with device- or logger-specific time series | **GBD** or **TDMS** | GBD, TDMS, SDB / SQLite / SQLite3, WAV, MP3, FLAC, OGG, M4A |
 
@@ -138,7 +138,7 @@ In practice, **MiniSEED** is the easiest starting point when you need to place a
 | **WIN / WIN32** (`.win`, `.cnt`) | ○ / × | `TimeSeriesDict.read(..., format="win")`, `TimeSeriesDict.read(..., format="win32")` | Japanese WIN datasets | Improved parser, read-only |
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix observation data | Native binary reader |
 | **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | Single MTH5-backed path | Partial support |
-| **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Direct MTH5 I/O | Current direct path is only `ats.mth5` |
+| **MTH5 standalone** (`.h5`) | In progress | Dedicated `format="mth5"` not yet exposed | Future general MTH5 direct I/O | **Not currently a public direct-I/O format**. The only direct path today is `ats.mth5` |
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -151,7 +151,8 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 
 - **MiniSEED** pads gaps with `NaN` by default. Use `gap="raise"` if you want failures instead.
 - **K-NET** and **WIN / WIN32** are intentionally read-only.
-- **ATS.MTH5** is a limited path. The docs should not imply that generic MTH5 direct I/O is already complete.
+- **ATS.MTH5** is the limited current direct path.
+- **MTH5 standalone** is still in design/publication cleanup. Read this as **"`ats.mth5` has partial support"**, not as **"MTH5 direct I/O is generally complete."**
 
 <a id="io-formats-en-c"></a>
 
@@ -179,7 +180,7 @@ events = EventTable.read("events.root", format="root")
 
 - **CSV / TXT** remains useful for inspection and simple interchange.
 - **NetCDF4 / Zarr** are treated here only as **direct TimeSeries-style I/O**. Field/xarray bridges belong to interop.
-- **Zarr** still has an open API-behavior issue around missing sampling-rate metadata. That is tracked separately from this page structure work.
+- **Zarr** still has an open API-behavior issue around missing sampling-rate metadata. **This page does not treat that issue as fixed**; it is tracked separately from the docs cleanup.
 - **ROOT** object-level export/import belongs to interop. This page only covers EventTable direct I/O.
 
 <a id="io-formats-en-d"></a>
@@ -222,8 +223,8 @@ It exists mainly to collect not-yet-prominent implementations and placeholders i
 |---|---|---|
 | `ndscope-hdf5` | Implemented, not yet prominent | `TimeSeriesDict`-only HDF5 schema |
 | `SQLite`, `SQLite3` | Implemented, not yet prominent | Aliases in the same family as `SDB` |
-| `ATS.MTH5` | Implemented with partial scope | Single MTH5-backed path |
-| `MTH5 standalone` | In progress | Dedicated `format="mth5"` is not exposed yet |
+| `ATS.MTH5` | Implemented with partial scope | Current public direct path backed by MTH5 |
+| `MTH5 standalone` | In progress | Dedicated `format="mth5"` is not exposed yet; not published as public direct I/O |
 
 ### Unimplemented Formats (Stubs)
 

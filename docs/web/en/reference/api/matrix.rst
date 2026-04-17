@@ -9,10 +9,14 @@ objects and expose vectorized operations across all channels simultaneously.
 
 .. seealso::
 
-   :doc:`../../user_guide/validated_algorithms`
-      Algorithm notes for matrix-wide FFT, PSD, coherence, and related estimators.
-   :doc:`../../user_guide/tutorials/index`
-      End-to-end tutorials using `TimeSeriesMatrix`, `FrequencySeriesMatrix`, and `SpectrogramMatrix`.
+   :doc:`../api/timeseries`
+      Container-level time-series API that many matrix methods mirror.
+   :doc:`../api/frequencyseries`
+      Frequency-domain container API used by `FrequencySeriesMatrix`.
+   :doc:`../api/spectrogram`
+      Time-frequency container API used by `SpectrogramMatrix`.
+   :doc:`../../user_guide/tutorials/case_signal_extraction`
+      Multi-channel time-frequency workflow with matrix-style analysis.
 
 Time Series Matrix
 ------------------

@@ -79,8 +79,8 @@ API リファレンス (API Reference)
      - Stable
      - 互換入口と補助 API
    * - コマンドラインインターフェース (CLI)
-     - Stable
-     - コマンドライン操作
+     - Experimental
+     - エントリポイント、バージョン表示、将来の CLI ワークフロー
    * - グラフィカルユーザーインターフェース (GUI)
      - Experimental
      - GUI と対話ツール

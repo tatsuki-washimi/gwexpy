@@ -9,10 +9,14 @@
 
 .. seealso::
 
-   :doc:`../../user_guide/validated_algorithms`
-      行列全体に対する FFT・PSD・コヒーレンスなどのアルゴリズム検証。
-   :doc:`../../user_guide/tutorials/index`
-      `TimeSeriesMatrix`・`FrequencySeriesMatrix`・`SpectrogramMatrix` を使うチュートリアル集。
+   :doc:`../api/timeseries`
+      行列 API と対になる時系列コンテナ API。
+   :doc:`../api/frequencyseries`
+      `FrequencySeriesMatrix` と対応する周波数領域コンテナ API。
+   :doc:`../api/spectrogram`
+      `SpectrogramMatrix` と対応する時間周波数コンテナ API。
+   :doc:`../../user_guide/tutorials/case_signal_extraction`
+      matrix 系の時間周波数解析へつながる具体例。
 
 時系列行列
 ------------------

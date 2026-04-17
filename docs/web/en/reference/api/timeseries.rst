@@ -16,10 +16,14 @@ Overview
       GPS timestamp assumptions for ``ArimaResult.forecast()``.
    :ref:`validated-en-mcmc-gls`
       Likelihood assumptions relevant when time-series data flow into GLS or MCMC fitting paths.
-   :doc:`../../user_guide/validated_algorithms`
-      Validation notes for FFT, PSD, ASD, and coherence-related estimators.
    :doc:`../FFT_Conventions`
       Fourier normalization and axis conventions used by GWexpy.
+   :doc:`../../user_guide/prerequisites_and_conventions`
+      Shared assumptions for time systems, FFT conventions, and physical interpretation.
+   :doc:`../../user_guide/tutorials/case_signal_extraction`
+      Example workflow that uses transient-style time-frequency analysis paths.
+   :doc:`../../user_guide/tutorials/advanced_arima`
+      Time-series forecasting tutorial that maps back to ``ArimaResult.forecast()``.
 
 .. autosummary::
    :toctree: _autosummary

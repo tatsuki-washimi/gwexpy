@@ -27,13 +27,13 @@ psd = estimate_psd(ts, fftlength=1.0)
 
 - [Physics Models](../user_guide/physics_models.md)
 - {ref}`VIF / オーバーラップ補正の検証 <validated-ja-vif>` - Welch オーバーラップ補正の前提条件と検証根拠
-- [検証済みアルゴリズムの概要](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [数値安定性](../user_guide/numerical_stability.md)
 
 ## 関連チュートリアル
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Bootstrap GLS Fitting](../user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
+- [Noise Budget](../user_guide/tutorials/case_noise_budget.ipynb)
 
 ## API リファレンス
 

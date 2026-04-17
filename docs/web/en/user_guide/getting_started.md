@@ -7,12 +7,21 @@ Choose the best starting point based on your background and goals.
 
 | Item | Details |
 | --- | --- |
+| **Page Role** | Guide |
 | **Target Audience** | Experimental data analysts, GWpy users, and anyone interested in signal processing with Python. |
 | **Prerequisites** | Basics of Python 3.11+, NumPy array manipulation, (Recommended) Matplotlib. |
+| **Use Cases** | Choose a learning path, find the GWpy migration entry point, or identify the shortest path to a working workflow |
 | **Time Required** | From 5 minutes (Quick Start) to 30 minutes (Basic Hands-on). |
 | **Goal** | Load data, visualize results, and perform basic frequency-domain analysis. |
+| **Search Keywords** | getting started, learning path, GWpy migration, tutorial entry point |
 
 If you want the shared assumptions and FFT/time conventions first, use [Prerequisites and Conventions](prerequisites_and_conventions.md) as the entry point.
+
+## On This Page
+
+- [Choose Your Path](#choose-your-path)
+- [Learning Path](#learning-path)
+- [Next Steps](#next-steps)
 
 ## Choose Your Path
 

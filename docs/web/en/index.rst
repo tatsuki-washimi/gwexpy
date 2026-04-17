@@ -7,6 +7,12 @@ GWexpy extends GWpy with new containers and numerical utilities for time-series 
 
 v\ |release| · Python ≥ 3.9 · Last updated: |today|
 
+.. note::
+
+   **Page Role**: documentation landing page
+   **Audience**: first-time users, GWpy users, and analysts looking for practical workflows
+   **Search Hints**: ``quickstart``, ``installation``, ``tutorials``, ``examples``, ``ScalarField``, ``TimeSeriesMatrix``
+
 .. button-ref:: user_guide/quickstart
     :ref-type: doc
     :color: primary
@@ -168,6 +174,15 @@ Learn the basics of GWpy
 GWexpy is built on top of GWpy. For GWpy fundamentals, see the official docs:
 
 `gwpy.github.io/docs/stable/ <https://gwpy.github.io/docs/stable/>`_
+
+----
+
+Suggested starting points
+-------------------------
+
+- Run code immediately: :doc:`user_guide/quickstart`
+- Choose a learning path: :doc:`user_guide/getting_started`
+- Review shared assumptions first: :doc:`user_guide/prerequisites_and_conventions`
 
 ----
 

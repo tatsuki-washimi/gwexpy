@@ -27,13 +27,13 @@ psd = estimate_psd(ts, fftlength=1.0)
 
 - [Physics Models](../user_guide/physics_models.md)
 - {ref}`VIF / overlap correction validation <validated-en-vif>` - Assumptions and evidence for Welch overlap correction
-- [Validated Algorithms overview](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [Numerical Stability](../user_guide/numerical_stability.md)
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Bootstrap GLS Fitting](../user_guide/tutorials/case_bootstrap_gls_fitting.ipynb)
+- [Noise Budget](../user_guide/tutorials/case_noise_budget.ipynb)
 
 ## API Reference
 

@@ -1,5 +1,23 @@
 # Installation Guide
 
+## At a Glance
+
+| Item | Details |
+| --- | --- |
+| **Page Role** | Guide |
+| **Audience** | New users installing GWexpy, users choosing extras, and contributors setting up a local dev environment |
+| **Prerequisites** | Python 3.11+, basic `pip` usage, and basic Conda usage when you need GW binary dependencies |
+| **Use Cases** | Install the minimal stack, decide whether Conda is required, choose extras, or prepare a contributor setup |
+| **Search Keywords** | `install`, `pip`, `conda`, extras, development version, NDS2, FrameLIB |
+
+## On This Page
+
+- [Installation Steps](#1-installation-steps)
+- [Dependency Troubleshooting](#21-dependency-troubleshooting)
+- [Optional Dependencies (Extras) Details](#3-optional-dependencies-extras-details)
+- [OS-Specific Notes](#4-os-specific-notes)
+- [Security Note (Pickle)](#5-security-note-pickle)
+
 :::{note}
 GWexpy is currently in its **Development Version**. Since it is not yet officially published on PyPI or Conda, we recommend a source installation from GitHub. These commands will be fully operational after the official release.
 :::
@@ -19,6 +37,10 @@ GWexpy supports **Python 3.11 or later**. You can choose from several installati
 
 For users who want to keep dependencies minimal and only use core containers like `ScalarField`.
 
+- Purpose: verify import and core container usage with the smallest dependency set
+- Input: Python 3.11+ and `pip`
+- Output: a minimal GWexpy environment
+
 ```bash
 pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 ```
@@ -30,6 +52,10 @@ For gravitational-wave analysis (requiring NDS2 or FrameLIB), we strongly recomm
 :::{warning}
 If you use Conda, avoid running `pip install` directly in `base` or in a shared environment for unrelated work. Create a **dedicated environment for GWexpy** first, then install both the Conda-managed binary dependencies and the `pip` packages there. This keeps binary dependency resolution isolated and reduces the risk of breaking the environment.
 :::
+
+- Purpose: build a GW-ready environment with binary dependencies such as NDS2 and FrameLIB
+- Input: a shell with Conda available
+- Output: a dedicated `gwexpy` environment with `gw` extras enabled
 
 ```bash
 # 1. Create environment and resolve binary dependencies
@@ -46,6 +72,10 @@ If you see `No module named nds2` or FrameLIB-related import errors, re-run the 
 ### Developer Mode
 
 For contributors who want to install from source and set up a testing environment. **Conda is optional here.** Use the Conda workflow above when you need to validate `gw`-related binary dependencies; otherwise, a standard virtual environment such as `venv` is fine for documentation work and general development.
+
+- Purpose: install from a local clone for editing and tests
+- Input: Git plus a Python virtual environment
+- Output: an editable install via `pip install -e`
 
 ```bash
 git clone https://github.com/tatsuki-washimi/gwexpy.git
@@ -92,7 +122,8 @@ To facilitate sharing analysis results, GWexpy supports saving and restoring obj
 Python's `pickle` module has inherent security risks (Arbitrary Code Execution) when loading data. Always exchange data through trusted channels or consider more secure serialization formats like `HDF5`.
 
 :::
-## 6. Further Reading
+## 6. Next to Read
 
-* [Quickstart](quickstart.md) - Get started in 3 lines
-* [Getting Started](getting_started.md) - Learning roadmap
+* [Quickstart](quickstart.md) - confirm import and plotting with the smallest possible example
+* [Getting Started](getting_started.md) - choose the right learning path
+* [Prerequisites and Conventions](prerequisites_and_conventions.md) - review FFT, GPS time, and GWpy-compatibility assumptions

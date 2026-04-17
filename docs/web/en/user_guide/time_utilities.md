@@ -2,6 +2,27 @@
 
 `gwexpy` extends GWpy's time utilities to support vector operations on pandas Series, NumPy ndarrays, and Astropy Time objects, in addition to standard string/datetime scalars.
 
+## At a Glance
+
+| Item | Details |
+| --- | --- |
+| **Page Role** | Guide |
+| **Audience** | Users who need safe GPS/UTC conversion and contributors looking for the public `gwexpy.time` entry points |
+| **Prerequisites** | Basic familiarity with Python `datetime`, timezones, and the use of GPS time in GW workflows |
+| **Use Cases** | Choose between `to_gps`, `from_gps`, and `tconvert`, or avoid leap-second and timezone pitfalls |
+| **Search Keywords** | GPS time, `to_gps`, `from_gps`, `tconvert`, `LIGOTimeGPS`, leap second, timezone |
+
+## On This Page
+
+- [Quick Guide: Important Considerations](#quick-guide-important-considerations-faq)
+- [Function Selection Quick Reference](#function-selection-quick-reference)
+- [Basic Examples](#basic-examples)
+- [`to_gps`](#to_gps--datetime--gps-seconds)
+- [`from_gps`](#from_gps--gps-seconds--datetime)
+- [`tconvert`](#tconvert--automatic-conversion)
+- [`LIGOTimeGPS`](#ligotimegps--high-precision-gps-time)
+- [TimeSeries Integration](#timeseries-integration)
+
 ```python
 from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 ```
@@ -43,6 +64,10 @@ Choose the most appropriate function for your goal.
 
 ### 1. Simple Conversion
 
+- Purpose: verify round-trip conversion between a datetime string and GPS seconds
+- Input: one UTC string and one GPS scalar
+- Output: `LIGOTimeGPS`, `datetime`, and `tconvert` return values
+
 ```python
 from gwexpy.time import to_gps, from_gps, tconvert
 
@@ -63,6 +88,10 @@ tconvert(1126259462) # Formatted string ("September 14 2015, ...")
 
 Passing lists or NumPy arrays will invoke optimized batch conversions.
 
+- Purpose: convert multiple timestamps in one call
+- Input: a list of datetime strings or a NumPy array of GPS seconds
+- Output: `numpy.ndarray` or `astropy.time.Time` array
+
 ```python
 import numpy as np
 
@@ -76,6 +105,10 @@ times = from_gps(np.arange(1126259400, 1126259410))
 ```
 
 ### 3. Timezones & Leap Seconds
+
+- Purpose: show the difference between timezone-free input and timezone-aware input
+- Input: strings or `datetime` objects
+- Output: GPS-second conversions with explicit interpretation
 
 ```python
 # Use explicit timezone strings (recommended)
@@ -96,6 +129,10 @@ to_gps(datetime(2024, 1, 1, 9, 0, 0, tzinfo=ZoneInfo("Asia/Tokyo")))
 ```
 
 ### 4. Invalid Input Examples
+
+- Purpose: identify representative `ValueError` and `TypeError` cases before wiring this into a workflow
+- Input: unparsable strings, non-numeric GPS input, unsupported keyword arguments
+- Output: failure-mode examples
 
 ```python
 # String cannot be parsed as a datetime
@@ -201,7 +238,8 @@ segment = ts.crop("2015-09-14 09:50:44", "2015-09-14 09:50:50")
 
 ---
 
-## Related Documents
+## Next to Read
 
 - [API Reference](../reference/api/time.rst) — Complete API reference for `gwexpy.time`
 - [Migration from GWpy](gwexpy_for_gwpy_users_en.md) — Overview of all GWexpy extensions
+- [Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared assumptions for GPS time, timezones, and FFT behavior

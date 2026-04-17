@@ -16,10 +16,14 @@
       ``ArimaResult.forecast()`` の GPS 時刻前提。
    :ref:`validated-ja-mcmc-gls`
       時系列データが GLS / MCMC フィットに渡る際の尤度前提。
-   :doc:`../../user_guide/validated_algorithms`
-      FFT・PSD・ASD・コヒーレンス推定の検証ノート。
    :doc:`../FFT_Conventions`
       GWexpy が採用するフーリエ正規化と軸の規約。
+   :doc:`../../user_guide/prerequisites_and_conventions`
+      時刻系、FFT 規約、物理解釈の共通前提。
+   :doc:`../../user_guide/tutorials/case_signal_extraction`
+      transient 系の解析導線を含む時系列チュートリアル。
+   :doc:`../../user_guide/tutorials/advanced_arima`
+      ``ArimaResult.forecast()`` に戻れる ARIMA チュートリアル。
 
 .. autosummary::
    :toctree: _autosummary

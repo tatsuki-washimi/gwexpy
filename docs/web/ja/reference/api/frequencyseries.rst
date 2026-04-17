@@ -14,6 +14,10 @@
       周波数領域モデリングとスペクトル解釈の背景。
    :doc:`../FFT_Conventions`
       GWexpy が採用するフーリエ正規化と軸の規約。
+   :doc:`../Spectral`
+      ``FrequencySeries`` を入出力に使う PSD / ASD 推定の概念整理。
+   :doc:`../../user_guide/tutorials/case_bootstrap_gls_fitting`
+      周波数領域フィッティングに戻れる具体的な事例。
 
 .. autosummary::
    :toctree: _autosummary

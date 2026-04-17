@@ -10,6 +10,24 @@ Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to
 
 `gwexpy` is designed to handle data with an extremely wide dynamic range without numerical breakdown.
 
+## At a Glance
+
+| Item | Details |
+| --- | --- |
+| **Page Role** | Guide |
+| **Audience** | Users seeing `NaN` / `Inf` issues, or users working with extremely small and large amplitudes in the same workflow |
+| **Prerequisites** | Basic familiarity with FFTs, ASD/PSD plots, and whitening |
+| **Use Cases** | Diagnose broken plots, understand when to tune `eps` or `tol`, or review GWexpy's stabilization design |
+| **Search Keywords** | numerical stability, `NaN`, `Inf`, `whiten`, `eps`, safe log, `tol` |
+
+## On This Page
+
+- [TL;DR](#tldr)
+- [Impact of Stabilization (Before & After)](#impact-of-stabilization-before--after)
+- [Core Stabilization Methods and APIs](#core-stabilization-methods-and-apis)
+- [Detailed Explanations and Examples](#detailed-explanations-and-examples)
+- [Recommendations for Users](#recommendations-for-users)
+
 ## TL;DR
 
 - For normal analysis, start by trusting the default `gwexpy` settings.
@@ -45,6 +63,10 @@ A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexp
 
 ### 1. Adaptive Whitening
 
+- Purpose: avoid signal loss caused by a fixed `eps`
+- Input: a `TimeSeries` containing very small amplitudes
+- Output: a whitened series with automatic scaling
+
 Standard whitening often uses a fixed normalization parameter (`eps`) to prevent division by zero. If this value is too large, micro-signals are lost.
 
 #### ❌ Bad Example: Fixed eps causing signal loss
@@ -65,6 +87,10 @@ whitened = data.whiten(eps="auto")  # Automatically applies appropriate scaling
 ```
 
 ### 2. Safe Logarithmic Scaling (Safe Log)
+
+- Purpose: prevent `-inf` values and broken plots when zeros are present
+- Input: ASD/PSD-like data with zeros or very quiet regions
+- Output: a stable visualization with a dynamic floor
 
 Prevents `-inf` values when visualizing spectrograms or PSDs containing zeros or quiet regions.
 
@@ -89,8 +115,9 @@ plot = asd.plot()  # Safe Log is applied internally for a clean visualization
 - **Trust the Defaults**: Default parameters for `whiten()` and `ica_fit()` are tuned for numerical safety.
 - **Check Warnings**: `gwexpy` issues informative warnings with suggested fixes for truly unstable operations.
 
-## Related Documents
+## Next to Read
 
 - [Signal Processing API Reference](../reference/api/signal.rst)
 - [Validated Algorithms](validated_algorithms.md)
 - [Glossary](glossary.rst) — Definitions for `NaN/Inf propagation` and more
+- [Prerequisites and Conventions](prerequisites_and_conventions.md) — Shared FFT and numerical assumptions across the docs

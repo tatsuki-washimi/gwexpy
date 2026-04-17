@@ -29,13 +29,13 @@ field_f = field.fft_time()
 
 - [Physics Models](../user_guide/physics_models.md)
 - {ref}`K-space calculation validation <validated-en-k-space>` - Assumptions and evidence for `ScalarField.fft_space()`
-- [Validated Algorithms overview](../user_guide/validated_algorithms.md)
 - [FFT_Conventions](FFT_Conventions.md)
+- [Prerequisites and Conventions](../user_guide/prerequisites_and_conventions.md)
 
 ## Related Tutorials
 
-- [Tutorial Index](../user_guide/tutorials/index.rst)
-- [Getting Started](../user_guide/getting_started.md)
+- [Field API Intro](../user_guide/tutorials/field_scalar_intro.ipynb)
+- [ScalarField Slicing](../user_guide/scalarfield_slicing.md)
 
 ## API Reference
 
