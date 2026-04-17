@@ -1,46 +1,48 @@
 Case Studies
 ============
 
-A collection of practical workflows targeting real-world analysis tasks.
-To learn basic operations for each feature (arguments, return values, etc.), please refer to :doc:`../user_guide/tutorials/index`.
+A collection of theme-driven demonstrations that combine multiple GWexpy features into practical workflows.
+To learn class- and feature-oriented examples first, refer to :doc:`../user_guide/tutorials/index`.
 
-Case Study Gallery
-------------------
+.. note::
+   `Case Studies` are theme-based demonstrations, while `Tutorials` are class/feature examples.
+   This page is the canonical public index for all `case_*` notebooks.
 
-.. grid:: 1
-    :gutter: 3
+I. Calibration, Response, and Control
+-------------------------------------
 
-    .. grid-item-card:: 📈 Noise Budget Analysis
-        :link: ../user_guide/tutorials/case_noise_budget
-        :link-type: doc
+- :doc:`Active Damping: MIMO control for a 6-DOF isolation system <../user_guide/tutorials/case_active_damping>`
+- :doc:`Transfer Function Measurement: estimation, coherence, and fitting <../user_guide/tutorials/case_transfer_function>`
+- :doc:`Calibration Pipeline: counts-to-strain conversion <../user_guide/tutorials/case_calibration_pipeline>`
+- :doc:`DTT XML Workflow: loading and reusing measured response data <../user_guide/tutorials/case_dttxml_calibration>`
 
-        *   **Problem**: Identify major noise sources in observation data.
-        *   **Approach**: Multi-channel coherence analysis and spectral synthesis.
-        *   **Key APIs**: ``TimeSeriesMatrix``, ``PSD``, ``Coherence``.
+II. Interoperability, I/O, and Reproducibility
+----------------------------------------------
 
-    .. grid-item-card:: 🎛️ Transfer Function Measurement & Fitting
-        :link: ../user_guide/tutorials/case_transfer_function
-        :link-type: doc
+- :doc:`Finesse 3 Interoperability: simulation vs. measurement <../user_guide/tutorials/case_finesse_optics>`
+- :doc:`ObsPy Interoperability: ingesting and analyzing seismic data <../user_guide/tutorials/case_seismic_obspy>`
+- :doc:`GBD Format I/O: round-tripping detector data products <../user_guide/tutorials/case_gbd_format>`
+- :doc:`HDF5 Provenance: reproducible metadata management <../user_guide/tutorials/case_hdf5_provenance>`
+- :doc:`PyCBC Interoperability: from gwexpy preprocessing to search <../user_guide/tutorials/case_pycbc_search>`
 
-        *   **Problem**: Measure system transfer functions and compare with theoretical models.
-        *   **Approach**: TF measurement and pole-zero placement using sine-sweeps or white-noise excitation.
-        *   **Key APIs**: ``TransferFunction``, ``Fitter``, ``BodePlot``.
+III. Statistical and ML Workflows
+---------------------------------
 
-    .. grid-item-card:: 🏗️ Active Damping Control
-        :link: ../user_guide/tutorials/case_active_damping
-        :link-type: doc
+- :doc:`Bootstrap PSD and GLS Fitting <../user_guide/tutorials/case_bootstrap_gls_fitting>`
+- :doc:`ML Preprocessing Pipeline: feature engineering and comparison <../user_guide/tutorials/case_ml_preprocessing>`
+- :doc:`Event-Synchronized Analysis: SegmentTable-driven window selection <../user_guide/tutorials/case_segment_analysis>`
+- :doc:`Physical Validity Checking: units, floors, and sanity tests <../user_guide/tutorials/case_physics_validation>`
+- :doc:`ARIMA-Based Burst Detection <../user_guide/tutorials/case_arima_burst_search>`
 
-        *   **Problem**: Design and evaluate MIMO control systems to suppress suspension resonances.
-        *   **Approach**: Feedback control simulation using state-space models.
-        *   **Key APIs**: ``StateSpaceMatrix``, ``ActiveControl``, ``LQR``.
+IV. Noise Hunting and Detector Diagnostics
+------------------------------------------
 
-    .. grid-item-card:: ✂️ Segment Analysis of Long-term Data
-        :link: ../user_guide/tutorials/case_segment_analysis
-        :link-type: doc
-
-        *   **Problem**: Extract specific intervals (segments) satisfying conditions from multi-day data for statistical processing.
-        *   **Approach**: Data querying and parallel processing using ``SegmentTable``.
-        *   **Key APIs**: ``SegmentTable``, ``SegmentList``, ``Fetch``.
+- :doc:`Noise Budgeting: identifying dominant noise couplings <../user_guide/tutorials/case_noise_budget>`
+- :doc:`Bruco and ICA Noise Reduction <../user_guide/tutorials/case_bruco_ica_denoising>`
+- :doc:`Bruco Advanced: bilinear coupling and AM/FM demodulation <../user_guide/tutorials/case_bruco_advanced>`
+- :doc:`Violin Mode Analysis: fitting and tracking resonance families <../user_guide/tutorials/case_violin_mode>`
+- :doc:`Schumann Resonance Analysis <../user_guide/tutorials/case_schumann_resonance>`
+- :doc:`Glitch Analysis: Q-transform and Omega-scan <../user_guide/tutorials/case_glitch_analysis>`
 
 .. note::
    For full API details (arguments, return values, class listings), see :doc:`../reference/index`.
@@ -48,7 +50,23 @@ Case Study Gallery
 .. toctree::
    :hidden:
 
-   ../user_guide/tutorials/case_noise_budget
-   ../user_guide/tutorials/case_transfer_function
    ../user_guide/tutorials/case_active_damping
+   ../user_guide/tutorials/case_transfer_function
+   ../user_guide/tutorials/case_calibration_pipeline
+   ../user_guide/tutorials/case_dttxml_calibration
+   ../user_guide/tutorials/case_finesse_optics
+   ../user_guide/tutorials/case_seismic_obspy
+   ../user_guide/tutorials/case_gbd_format
+   ../user_guide/tutorials/case_hdf5_provenance
+   ../user_guide/tutorials/case_pycbc_search
+   ../user_guide/tutorials/case_bootstrap_gls_fitting
+   ../user_guide/tutorials/case_ml_preprocessing
    ../user_guide/tutorials/case_segment_analysis
+   ../user_guide/tutorials/case_physics_validation
+   ../user_guide/tutorials/case_arima_burst_search
+   ../user_guide/tutorials/case_noise_budget
+   ../user_guide/tutorials/case_bruco_ica_denoising
+   ../user_guide/tutorials/case_bruco_advanced
+   ../user_guide/tutorials/case_violin_mode
+   ../user_guide/tutorials/case_schumann_resonance
+   ../user_guide/tutorials/case_glitch_analysis

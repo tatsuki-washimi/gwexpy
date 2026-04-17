@@ -1,46 +1,47 @@
 ケーススタディ (Case Studies)
 ===============================
 
-実際の解析タスクを想定した、実践的なワークフロー集です。
-機能ごとの基本操作（引数、戻り値等）を学ぶ場合は、 :doc:`../user_guide/tutorials/index` を参照してください。
+複数の GWexpy 機能をひとつのテーマに沿って組み合わせる、実践的なデモ集です。
+クラスや機能ごとの使い方を順番に学びたい場合は、 :doc:`../user_guide/tutorials/index` を参照してください。
 
-実践例一覧
------------
+.. note::
+   `Case Studies` はテーマ別の実演、`Tutorials` は class/feature examples です。
+   このページを `case_*` ノートブックの正本一覧として扱います。
 
-.. grid:: 1
-    :gutter: 3
+I. キャリブレーション・応答・制御
+---------------------------------
 
-    .. grid-item-card:: 📈 ノイズバジェット解析 (Noise Budget)
-        :link: ../user_guide/tutorials/case_noise_budget
-        :link-type: doc
+- :doc:`アクティブダンピング: 6自由度防振系の MIMO 制御 <../user_guide/tutorials/case_active_damping>`
+- :doc:`伝達関数計測: 実測・コヒーレンス・フィッティング <../user_guide/tutorials/case_transfer_function>`
+- :doc:`キャリブレーションパイプライン: Counts から Strain へ <../user_guide/tutorials/case_calibration_pipeline>`
+- :doc:`DTT XML 活用: 測定済み応答の読み込みと再利用 <../user_guide/tutorials/case_dttxml_calibration>`
 
-        *   **問題**: 観測データに含まれる主要なノイズ源を特定したい。
-        *   **アプローチ**: 多チャンネルのコヒーレンス解析とスペクトル合成。
-        *   **利用 API**: ``TimeSeriesMatrix``, ``PSD``, ``Coherence``.
+II. 外部連携・I/O・再現性
+-------------------------
 
-    .. grid-item-card:: 🎛️ 伝達関数の測定とフィッティング
-        :link: ../user_guide/tutorials/case_transfer_function
-        :link-type: doc
+- :doc:`Finesse 3 連携: シミュレーションと測定の比較 <../user_guide/tutorials/case_finesse_optics>`
+- :doc:`ObsPy 連携: 地震データの取り込みと解析 <../user_guide/tutorials/case_seismic_obspy>`
+- :doc:`GBD 形式 I/O: 書き出しと再読込の実務フロー <../user_guide/tutorials/case_gbd_format>`
+- :doc:`HDF5 provenance: 再現可能なメタデータ管理 <../user_guide/tutorials/case_hdf5_provenance>`
+- :doc:`PyCBC 連携: gwexpy 前処理から探索まで <../user_guide/tutorials/case_pycbc_search>`
 
-        *   **問題**: システムの伝達関数を実測し、理論モデルと比較したい。
-        *   **アプローチ**: 正弦波スイープや白色雑音励起による TF 測定と極零点配置。
-        *   **利用 API**: ``TransferFunction``, ``Fitter``, ``BodePlot``.
+III. 統計・機械学習ワークフロー
+--------------------------------
 
-    .. grid-item-card:: 🏗️ アクティブダンピング制御
-        :link: ../user_guide/tutorials/case_active_damping
-        :link-type: doc
+- :doc:`Bootstrap PSD と GLS フィッティング <../user_guide/tutorials/case_bootstrap_gls_fitting>`
+- :doc:`ML 前処理パイプライン: 特徴量整形と比較 <../user_guide/tutorials/case_ml_preprocessing>`
+- :doc:`イベント同期解析: SegmentTable による窓選択 <../user_guide/tutorials/case_segment_analysis>`
+- :doc:`物理妥当性検証: 単位・数値床・健全性テスト <../user_guide/tutorials/case_physics_validation>`
 
-        *   **問題**: 懸架系の共振を抑制するための MIMO 制御系を設計・評価したい。
-        *   **アプローチ**: 状態空間モデルを用いたフィードバック制御シミュレーション。
-        *   **利用 API**: ``StateSpaceMatrix``, ``ActiveControl``, ``LQR``.
+IV. ノイズハンティングと検出器診断
+----------------------------------
 
-    .. grid-item-card:: ✂️ 長期データのセグメント解析
-        :link: ../user_guide/tutorials/case_segment_analysis
-        :link-type: doc
-
-        *   **問題**: 数日間にわたるデータから、条件を満たす区間（セグメント）のみを抽出して統計処理したい。
-        *   **アプローチ**: ``SegmentTable`` を活用したデータクエリと並列処理。
-        *   **利用 API**: ``SegmentTable``, ``SegmentList``, ``Fetch``.
+- :doc:`ノイズバジェット解析: 多チャンネル相関で寄与源を切り分ける <../user_guide/tutorials/case_noise_budget>`
+- :doc:`Bruco と ICA: ラインノイズ低減の統合フロー <../user_guide/tutorials/case_bruco_ica_denoising>`
+- :doc:`Bruco 応用: バイリニア結合と AM/FM 復調 <../user_guide/tutorials/case_bruco_advanced>`
+- :doc:`バイオリンモード解析: 共振モードの同定と追跡 <../user_guide/tutorials/case_violin_mode>`
+- :doc:`シューマン共鳴解析: 環境磁場モードの読み解き <../user_guide/tutorials/case_schumann_resonance>`
+- :doc:`グリッチ詳細解析: Q 変換と Omega スキャン <../user_guide/tutorials/case_glitch_analysis>`
 
 .. note::
    各 API の詳細（引数・戻り値・クラス一覧）は :doc:`../reference/index` を参照してください。
@@ -48,8 +49,22 @@
 .. toctree::
    :hidden:
 
-   ../user_guide/tutorials/case_noise_budget
-   ../user_guide/tutorials/case_transfer_function
    ../user_guide/tutorials/case_active_damping
+   ../user_guide/tutorials/case_transfer_function
+   ../user_guide/tutorials/case_calibration_pipeline
+   ../user_guide/tutorials/case_dttxml_calibration
+   ../user_guide/tutorials/case_finesse_optics
+   ../user_guide/tutorials/case_seismic_obspy
+   ../user_guide/tutorials/case_gbd_format
+   ../user_guide/tutorials/case_hdf5_provenance
+   ../user_guide/tutorials/case_pycbc_search
+   ../user_guide/tutorials/case_bootstrap_gls_fitting
+   ../user_guide/tutorials/case_ml_preprocessing
    ../user_guide/tutorials/case_segment_analysis
-
+   ../user_guide/tutorials/case_physics_validation
+   ../user_guide/tutorials/case_noise_budget
+   ../user_guide/tutorials/case_bruco_ica_denoising
+   ../user_guide/tutorials/case_bruco_advanced
+   ../user_guide/tutorials/case_violin_mode
+   ../user_guide/tutorials/case_schumann_resonance
+   ../user_guide/tutorials/case_glitch_analysis
