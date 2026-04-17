@@ -12,6 +12,8 @@ Choose the best starting point based on your background and goals.
 | **Time Required** | From 5 minutes (Quick Start) to 30 minutes (Basic Hands-on). |
 | **Goal** | Load data, visualize results, and perform basic frequency-domain analysis. |
 
+If you want the shared assumptions and FFT/time conventions first, use [Prerequisites and Conventions](prerequisites_and_conventions.md) as the entry point.
+
 ## Choose Your Path
 
 ### 🚀 5-min Quick Start
@@ -65,5 +67,6 @@ Explore real-world analysis workflows in our [Case Studies Gallery](../examples/
 * [All Tutorials](tutorials/index.rst)
 * [Migration from GWpy](gwexpy_for_gwpy_users_en.md) - start from the difference-oriented migration recipes
 * [GWpy Difference API Index](gwpy_added_api_index_en.md) - look up added APIs from a GWpy-difference view
+* [Prerequisites and Conventions](prerequisites_and_conventions.md) - entry point for environment assumptions, GPS time, and FFT conventions
 * [API Reference](../reference/index.rst)
 * [Validated Algorithms](validated_algorithms.md) - Verification reports for numerical accuracy.

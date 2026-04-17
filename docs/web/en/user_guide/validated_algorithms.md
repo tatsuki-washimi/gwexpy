@@ -30,6 +30,7 @@ Algorithms labeled as "Validated" meet the following standards and achieve speci
 
 ## How to Read This Page
 
+- If you want the shared prerequisites, time-system assumptions, and FFT conventions first, start with [Prerequisites and Conventions](prerequisites_and_conventions.md).
 - If you want the implementation-facing API first, start with the [Signal Processing API](../reference/api/signal.rst) and [Fitting API](../reference/api/fitting.rst).
 - If you want the audit notes and validation context behind the summaries, continue to the Audit Trail section below.
 

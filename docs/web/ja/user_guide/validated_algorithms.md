@@ -30,6 +30,7 @@
 
 ## 読み方ガイド
 
+- 共通の前提条件、時刻系、FFT 規約を先に整理したい場合は [前提条件と規約](prerequisites_and_conventions.md) を入口にしてください。
 - 実装側の API シグネチャを先に確認したい場合は [信号処理 API](../reference/api/signal.rst) と [フィッティング API](../reference/api/fitting.rst) を参照してください。
 - 検証の背景や監査メモまで追いたい場合は、後述の Audit Trail から開発者向け資料へ進んでください。
 
