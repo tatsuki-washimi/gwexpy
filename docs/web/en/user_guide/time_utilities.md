@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    description: "Use GWexpy time helpers safely for GPS and UTC conversion, including to_gps, from_gps, tconvert, LIGOTimeGPS, vectorized inputs, and timezone edge cases."
+---
+
 # GPS Time Utility Functions (`gwexpy.time`)
 
 `gwexpy` extends GWpy's time utilities to support vector operations on pandas Series, NumPy ndarrays, and Astropy Time objects, in addition to standard string/datetime scalars.
@@ -11,6 +17,8 @@
 | **Prerequisites** | Basic familiarity with Python `datetime`, timezones, and the use of GPS time in GW workflows |
 | **Use Cases** | Choose between `to_gps`, `from_gps`, and `tconvert`, or avoid leap-second and timezone pitfalls |
 | **Search Keywords** | GPS time, `to_gps`, `from_gps`, `tconvert`, `LIGOTimeGPS`, leap second, timezone |
+
+**Search hints:** GPS time, `to_gps`, `from_gps`, `tconvert`, `LIGOTimeGPS`, leap second, timezone
 
 ## On This Page
 
@@ -27,6 +35,7 @@
 from gwexpy.time import to_gps, from_gps, tconvert, LIGOTimeGPS
 ```
 
+(time-utils-en-faq)=
 ## Quick Guide: Important Considerations (FAQ)
 
 It is important to understand these fundamental behaviors before performing conversions.
@@ -51,7 +60,7 @@ It is important to understand these fundamental behaviors before performing conv
 
 Choose the most appropriate function for your goal.
 
-| Goal | Recommended Function | Primary Input Types | Output Type (Scalar / Vector) | Key Args |
+| Goal | Use | Input types | Output | Key args |
 | :--- | :--- | :--- | :--- | :--- |
 | **DateTime → GPS** | `to_gps` | `str`, `datetime`, `Time`, `Series` | `LIGOTimeGPS` / `f8 ndarray` | — |
 | **GPS → DateTime** | `from_gps` | `int`, `float`, `LIGOTimeGPS`, `ndarray` | `datetime` / `astropy.time.Time` | — |
@@ -145,6 +154,7 @@ from_gps("abc")       # -> ValueError
 to_gps("2024-01-01 09:00:00", timezone="Asia/Tokyo")  # -> TypeError
 ```
 
+(time-utils-en-to-gps)=
 ## `to_gps` — DateTime → GPS Seconds
 
 **Signature**: `to_gps(t, *args, **kwargs)`
@@ -152,6 +162,10 @@ to_gps("2024-01-01 09:00:00", timezone="Asia/Tokyo")  # -> TypeError
 Converts various time representations into GPS seconds. It performs efficient vectorized operations on lists, arrays, and Series in addition to individual scalars.
 
 ### Working with Strings and DateTime Objects
+
+- Purpose: convert a scalar datetime-like value into GPS seconds
+- Input: a string or `datetime`
+- Output: `LIGOTimeGPS` or equivalent scalar GPS representation
 
 ```python
 from gwexpy.time import to_gps
@@ -167,6 +181,10 @@ to_gps(datetime(2015, 9, 14, 9, 50, 45, tzinfo=timezone.utc))
 
 ### Working with pandas (Vectorized)
 
+- Purpose: convert multiple timestamps in one call
+- Input: a pandas `Series`
+- Output: a NumPy array of GPS seconds
+
 ```python
 import pandas as pd
 from gwexpy.time import to_gps
@@ -178,6 +196,7 @@ gps_array = to_gps(dates)
 
 ---
 
+(time-utils-en-from-gps)=
 ## `from_gps` — GPS Seconds → DateTime
 
 **Signature**: `from_gps(t, *args, **kwargs)`
@@ -194,11 +213,16 @@ from_gps(1126259462)
 
 ---
 
+(time-utils-en-tconvert)=
 ## `tconvert` — Automatic Conversion
 
 **Signature**: `tconvert(t=None, *args, **kwargs)`
 
 Automatically detects the input type and dispatches to `to_gps` or `from_gps`.
+
+- Purpose: use one convenience function when the input type may vary
+- Input: a datetime-like value, a GPS value, or `"now"`
+- Output: GPS seconds or a formatted UTC-side representation depending on input type
 
 ```python
 from gwexpy.time import tconvert
@@ -209,9 +233,14 @@ tconvert("now")                     # Current time as GPS
 
 ---
 
+(time-utils-en-ligotimegps)=
 ## `LIGOTimeGPS` — High-Precision GPS Time
 
 `LIGOTimeGPS` stores GPS time with nanosecond precision (integer seconds + integer nanoseconds).
+
+- Purpose: preserve integer-second and nanosecond precision explicitly
+- Input: integer seconds and optional nanoseconds
+- Output: a `LIGOTimeGPS` object
 
 ```python
 from gwexpy.time import LIGOTimeGPS
@@ -221,9 +250,14 @@ t = LIGOTimeGPS(1126259462, 391000000)
 
 ---
 
+(time-utils-en-timeseries)=
 ## TimeSeries Integration
 
 Many methods in `gwexpy` accept time specifications in any format supported by `to_gps()`.
+
+- Purpose: show where the time helpers surface in everyday `TimeSeries` workflows
+- Input: time strings, datetimes, or GPS-style values accepted by `to_gps()`
+- Output: fetched or cropped `TimeSeries` objects
 
 ```python
 import gwexpy

@@ -1,4 +1,12 @@
+---
+myst:
+  html_meta:
+    description: "Understand GWexpy numerical stability behavior, including whitening eps handling, safe log plotting, NaN and Inf failure modes, and when users should tune parameters."
+---
+
 # Numerical Stability and Precision
+
+**Page role:** Guide
 
 :::{note}
 **Who should read this page?**
@@ -9,6 +17,8 @@ Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to
 :::
 
 `gwexpy` is designed to handle data with an extremely wide dynamic range without numerical breakdown.
+
+**Search hints:** `numerical stability`, `NaN`, `Inf`, `whiten`, `eps`, `safe log`, `tol`
 
 ## At a Glance
 
@@ -28,19 +38,21 @@ Standard analysis in `gwexpy` works out-of-the-box with high stability. Refer to
 - [Detailed Explanations and Examples](#detailed-explanations-and-examples)
 - [Recommendations for Users](#recommendations-for-users)
 
+(numerical-stability-en-tldr)=
 ## TL;DR
 
 - For normal analysis, start by trusting the default `gwexpy` settings.
 - Do not add manual offsets such as `+ 1e-20` before plotting unless you have a concrete reason.
 - Tune parameters only when you actually observe `NaN` / `Inf`, work with extreme amplitudes, or need algorithm-level validation.
 
+(numerical-stability-en-impact)=
 ## Impact of Stabilization (Before & After)
 
 A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexpy`'s robust numerical stabilization algorithms.
 
 ![Numerical stabilization comparison: Noisy visualization with NaN/Inf artifacts (Left) vs. Clean gravitational-wave signal (Right)](../../../_static/images/numerical_stability_comparison.png)
 
-| Item | Standard Implementation (Before) | GWexpy (After) |
+| Item | Standard path | GWexpy path |
 | :--- | :--- | :--- |
 | **Zero Values** | `log10(0)` produces `-inf`, causing blank holes in plots | **Safe Log** automatically sets an optimal floor based on the max value |
 | **Micro-signals** | Rounded to zero by fixed `eps=1e-12`, causing signal loss | **Adaptive Whitening** (`eps="auto"`) maintains signal sensitivity |
@@ -48,6 +60,7 @@ A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexp
 
 ---
 
+(numerical-stability-en-methods)=
 ## Core Stabilization Methods and APIs
 
 | Method | Target API | Issues Resolved | Configuration Hint |
@@ -59,13 +72,14 @@ A comparison between standard methods (simple `log10` or fixed `eps`) and `gwexp
 
 ---
 
+(numerical-stability-en-examples)=
 ## Detailed Explanations and Examples
 
 ### 1. Adaptive Whitening
 
-- Purpose: avoid signal loss caused by a fixed `eps`
-- Input: a `TimeSeries` containing very small amplitudes
-- Output: a whitened series with automatic scaling
+**Goal:** Avoid signal loss caused by a fixed `eps`.
+**Input:** A `TimeSeries` containing very small amplitudes.
+**Output:** A whitened series with automatic scaling.
 
 Standard whitening often uses a fixed normalization parameter (`eps`) to prevent division by zero. If this value is too large, micro-signals are lost.
 
@@ -88,9 +102,9 @@ whitened = data.whiten(eps="auto")  # Automatically applies appropriate scaling
 
 ### 2. Safe Logarithmic Scaling (Safe Log)
 
-- Purpose: prevent `-inf` values and broken plots when zeros are present
-- Input: ASD/PSD-like data with zeros or very quiet regions
-- Output: a stable visualization with a dynamic floor
+**Goal:** Prevent `-inf` values and broken plots when zeros are present.
+**Input:** ASD/PSD-like data with zeros or very quiet regions.
+**Output:** A stable visualization with a dynamic floor.
 
 Prevents `-inf` values when visualizing spectrograms or PSDs containing zeros or quiet regions.
 
@@ -109,6 +123,7 @@ plot = asd.plot()  # Safe Log is applied internally for a clean visualization
 
 ---
 
+(numerical-stability-en-recommendations)=
 ## Recommendations for Users
 
 - **Avoid Manual Offsets**: Do not add arbitrary small values like `data + 1e-20` before plotting. `gwexpy` handles this internally.

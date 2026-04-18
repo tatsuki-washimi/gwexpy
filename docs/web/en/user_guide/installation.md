@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    description: "Install GWexpy for Python 3.11+ with minimal, recommended, GW-analysis, or developer setups, including extras guidance and dependency troubleshooting."
+---
+
 # Installation Guide
 
 ## At a Glance
@@ -12,17 +18,21 @@
 
 ## On This Page
 
+- [Install Commands](#install-command)
 - [Installation Steps](#1-installation-steps)
 - [Dependency Troubleshooting](#21-dependency-troubleshooting)
 - [Optional Dependencies (Extras) Details](#3-optional-dependencies-extras-details)
 - [OS-Specific Notes](#4-os-specific-notes)
 - [Security Note (Pickle)](#5-security-note-pickle)
+- [Next to Read](#next-to-read)
 
 :::{note}
 GWexpy is currently in its **Development Version**. Since it is not yet officially published on PyPI or Conda, we recommend a source installation from GitHub. These commands will be fully operational after the official release.
 :::
 
 GWexpy supports **Python 3.11 or later**. You can choose from several installation options (extras) depending on your analysis goals.
+
+<a id="install-command"></a>
 
 | Goal | Installation Command | Features |
 | --- | --- | --- |
@@ -122,8 +132,11 @@ To facilitate sharing analysis results, GWexpy supports saving and restoring obj
 Python's `pickle` module has inherent security risks (Arbitrary Code Execution) when loading data. Always exchange data through trusted channels or consider more secure serialization formats like `HDF5`.
 
 :::
+<a id="next-to-read"></a>
+<a id="next-steps"></a>
+
 ## 6. Next to Read
 
 * [Quickstart](quickstart.md) - confirm import and plotting with the smallest possible example
-* [Getting Started](getting_started.md) - choose the right learning path
+* [Getting Started](getting_started.md) - choose the right learning path after installation
 * [Prerequisites and Conventions](prerequisites_and_conventions.md) - review FFT, GPS time, and GWpy-compatibility assumptions

@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    description: "ScalarField のスライスで 4 次元構造を維持する理由、メタデータ保持の考え方、squeeze() を安全に使う条件を説明します。"
+---
+
 # スカラーフィールドのスライス操作ガイド (4次元を維持する理由)
 
 :::{note}
@@ -11,6 +17,8 @@
 `ScalarField` がインデクシング操作時に**4次元構造を常に維持する**挙動について説明します。これは NumPy や GWpy の標準的な挙動とは異なり、多次元物理データの整合性を保つための「不変条件」として設計されています。
 
 ## このページでわかること
+
+以下の要約表は、共有 CSS の表スタイルに合わせてコンパクトに保っています。画面幅が狭い場合は、横スクロールしながら読むのが最も確実です。
 
 | 項目 | 内容 |
 | --- | --- |
@@ -26,6 +34,7 @@
 - [実践的な操作例](#実践的な操作例)
 - [よくある質問](#よくある質問-faq)
 
+(scalarfield-slicing-4d-persistence-ja)=
 ## なぜ「4次元」を維持し続けるのか？
 
 `ScalarField` は (時間, 周波数, x, y) の 4 つの軸を持つ物理的な「場」を表現します。NumPy のようにスライス時に次元を削減（Rank Loss）しない理由は、主に以下の **4つの柱** によります。
@@ -35,6 +44,7 @@
 3.  **ストリーム処理の安全性**: 関数間で受け渡しをする際、次元数が変動しないためプログラムの堅牢性が向上します。
 4.  **ブロードキャストの一貫性**: 常に 4D であるため、計算時の次元合わせ（reshape）の意図がコード上で明確になります。
 
+(scalarfield-slicing-comparison-diagram-ja)=
 ### NumPy vs GWexpy の挙動比較
 
 ![NumPy と GWexpy の 4次元維持の比較図](../../../_static/images/scalarfield_slicing_4d_persistence.png)
@@ -55,6 +65,7 @@
 
 ---
 
+(scalarfield-slicing-practical-examples-ja)=
 ## 実践的な操作例
 
 ### 1. スライシングの挙動
@@ -116,6 +127,7 @@ field + calibration
 
 ---
 
+(scalarfield-slicing-faq-ja)=
 ## よくある質問 (FAQ)
 
 ### Q: 常に 4次元だと、1次元の計算時に不便ではありませんか？
@@ -124,6 +136,7 @@ field + calibration
 ### Q: `ScalarField[0, 0, 0, 0]` とスカラー抽出した場合は？
 **A:** インデックスがすべてスカラーの場合は、通常の Python スカラー値または NumPy スカラーが返されます。
 
+(scalarfield-slicing-next-to-read-ja)=
 ## 次に読む
 
 - [ScalarField 入門チュートリアル](tutorials/field_scalar_intro.ipynb)

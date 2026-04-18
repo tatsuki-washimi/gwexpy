@@ -1,5 +1,10 @@
 :orphan:
 
+.. meta::
+   :description: GWexpy documentation hub for installation, quickstart, tutorials, case studies, and API reference entry points.
+
+.. _hub-en-hero:
+
 GWexpy Documentation
 ==============================
 
@@ -191,6 +196,8 @@ v\ |release| · Python ≥ 3.9 · Last updated: |today|
 
     🚀 Quick Start (Get started in 5 minutes)
 
+.. _hub-en-workflow-entry:
+
 ----
 
 Find the right guide for you
@@ -303,8 +310,12 @@ Find by what you want to do
 
 ----
 
+.. _hub-en-gallery-entry:
+
 Visual Examples
 ---------------
+
+These cards are a short preview of the canonical case-study gallery.
 
 .. grid:: 3
     :gutter: 3
@@ -312,7 +323,7 @@ Visual Examples
     .. grid-item-card::
         :img-top: /_static/images/case_noise_budget_thumb.png
         :img-alt: Thumbnail of the Bruco noise budget example
-        :link: user_guide/tutorials/advanced_bruco
+        :link: user_guide/tutorials/case_noise_budget
         :link-type: doc
         :text-align: center
 
@@ -335,6 +346,15 @@ Visual Examples
         :text-align: center
 
         Active Damping
+
+.. button-ref:: examples/index
+    :ref-type: doc
+    :color: secondary
+    :expand:
+
+    Browse the full case-study gallery
+
+.. _hub-en-reference-entry:
 
 ----
 

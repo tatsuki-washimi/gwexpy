@@ -1,4 +1,13 @@
+---
+myst:
+  html_meta:
+    description: "Review GWexpy validated algorithms, numerical tolerances, assumptions, audit evidence, and bridges to theory, API, and tutorials."
+---
+
 # Validated Algorithms
+
+**Page role:** Advanced guide / theory companion
+**Badges:** `Advanced` `Theory companion`
 
 :::{note}
 **Who should read this page?**
@@ -15,6 +24,20 @@ This page intentionally stays under the user guide so readers can discover it fr
 
 The numerical algorithms implemented in `gwexpy` have undergone a rigorous validation process to ensure scientific accuracy and reliability.
 
+**Search hints:** `validated algorithms`, `tolerance`, `FFT conventions`, `whitening`, `GLS`, `MCMC`, `VIF`
+
+## On This Page
+
+- [Validation Criteria and Numerical Precision](#validation-criteria-and-numerical-precision)
+- [Objective Evidence](#objective-evidence)
+- [Source References](#source-references)
+- [Validated Algorithms Summary Table](#validated-algorithms-summary-table)
+- [How to Read This Page](#how-to-read-this-page)
+- [Detailed Algorithm Basis and Assumptions](#detailed-algorithm-basis-and-assumptions)
+- [Audit Trail](#audit-trail)
+- [Related Documents](#validated-algorithms-related-documents)
+
+(validated-algorithms-validation-criteria)=
 ## Validation Criteria and Numerical Precision
 
 Algorithms labeled as "Validated" meet the following standards and achieve specific precision (tolerance) benchmarks:
@@ -26,6 +49,8 @@ Algorithms labeled as "Validated" meet the following standards and achieve speci
 ## Objective Evidence
 
 The summaries on this page are backed by repository artifacts you can inspect directly.
+
+The evidence table is intentionally column-dense so the audit trail stays on one page. On mobile, horizontal scrolling is expected and should align with the shared table CSS used across the docs.
 
 | Evidence type | Source | What it shows |
 | :--- | :--- | :--- |
@@ -47,6 +72,7 @@ Use the source keys below in the per-algorithm sections so the bibliography and 
 | `S4` | [Numerical Stability](numerical_stability.md) | Adaptive stabilization guidance for whitening and related preprocessing paths |
 | `S5` | {ref}`Objective Evidence <validated-en-objective-evidence>` and the Audit Trail below | Repository-backed implementation evidence for transient FFT behavior and complex GLS / MCMC handling |
 
+(validated-algorithms-summary-table)=
 ## Validated Algorithms Summary Table
 
 | Algorithm | Primary API | API page | Evidence | Related tutorial |
@@ -60,6 +86,7 @@ Use the source keys below in the per-algorithm sections so the bibliography and 
 
 ---
 
+(validated-algorithms-how-to-read)=
 ## How to Read This Page
 
 - If you want the shared prerequisites, time-system assumptions, and FFT conventions first, start with [Prerequisites and Conventions](prerequisites_and_conventions.md).
@@ -67,6 +94,7 @@ Use the source keys below in the per-algorithm sections so the bibliography and 
 - If you want the implementation-facing APIs first, start with [Fields API](../reference/api/fields.rst), [Time Series API](../reference/api/timeseries.rst), [Spectral API](../reference/api/spectral.rst), [Fitting API](../reference/api/fitting.rst), and [Preprocessing API](../reference/api/preprocessing.rst).
 - If you want the repository-backed evidence behind the summaries, continue to the {ref}`Objective Evidence <validated-en-objective-evidence>`, {ref}`Source References <validated-en-source-references>`, and Audit Trail sections below.
 
+(validated-algorithms-detail-sections)=
 ## Detailed Algorithm Basis and Assumptions
 
 (validated-en-k-space)=
@@ -81,9 +109,16 @@ Angular wavenumber calculation follows the standard physics definition $k = 2\pi
 
 **Source reference**: {ref}`S1 <validated-en-source-references>`
 
-**Related API pages**
+**Related tutorial**
+- [Field Intro](tutorials/field_scalar_intro.ipynb)
+
+**Related API**
 - [Fields API](../reference/api/fields.rst)
 - [ScalarField](../reference/ScalarField.md)
+
+**Related theory**
+- [Prerequisites and Conventions](prerequisites_and_conventions.md)
+- [Architecture and Data Flow](architecture.md)
 
 ---
 
@@ -99,10 +134,16 @@ Uses an amplitude-preserving convention rather than density, allowing direct rea
 
 **Source reference**: {ref}`S5 <validated-en-source-references>`
 
-**Related API pages**
+**Related tutorial**
+- [Signal Extraction tutorial](tutorials/case_signal_extraction.ipynb)
+
+**Related API**
 - [Time Series API](../reference/api/timeseries.rst)
 - [TimeSeries](../reference/TimeSeries.md)
-- [Signal Extraction tutorial](tutorials/case_signal_extraction.ipynb)
+
+**Related theory**
+- [Prerequisites and Conventions](prerequisites_and_conventions.md)
+- [Numerical Stability](numerical_stability.md)
 
 ---
 
@@ -120,10 +161,15 @@ Here, VIF is not meant as the regression-style Variance Inflation Factor used in
 
 **Source reference**: {ref}`S2 <validated-en-source-references>`
 
-**Related API pages**
+**Related tutorial**
+- [Bootstrap GLS fitting case study](tutorials/case_bootstrap_gls_fitting.ipynb)
+
+**Related API**
 - [Spectral API](../reference/api/spectral.rst)
 - [Spectral Estimation](../reference/Spectral.md)
-- [Bootstrap GLS fitting case study](tutorials/case_bootstrap_gls_fitting.ipynb)
+
+**Related theory**
+- [Prerequisites and Conventions](prerequisites_and_conventions.md)
 
 ---
 
@@ -147,10 +193,15 @@ This is the quantity mapping assumed when forecast timestamps are extended forwa
 
 **Source reference**: {ref}`S3 <validated-en-source-references>`
 
-**Related API pages**
+**Related tutorial**
+- [Advanced ARIMA tutorial](tutorials/advanced_arima.ipynb)
+
+**Related API**
 - [Time Series API](../reference/api/timeseries.rst)
 - [TimeSeries](../reference/TimeSeries.md)
-- [Advanced ARIMA tutorial](tutorials/advanced_arima.ipynb)
+
+**Related theory**
+- [Prerequisites and Conventions](prerequisites_and_conventions.md)
 
 (validated-en-mcmc-gls)=
 ### 5. MCMC / GLS Likelihood
@@ -164,11 +215,17 @@ For complex-valued residuals, the MCMC likelihood path assumes a Hermitian quadr
 
 **Source reference**: {ref}`S5 <validated-en-source-references>`
 
-**Related API pages**
+**Related tutorial**
+- [Bootstrap GLS fitting case study](tutorials/case_bootstrap_gls_fitting.ipynb)
+
+**Related API**
 - [Time Series API](../reference/api/timeseries.rst)
 - [Fitting API](../reference/api/fitting.rst)
 - [gwexpy.fitting](../reference/fitting.md)
-- [Bootstrap GLS fitting case study](tutorials/case_bootstrap_gls_fitting.ipynb)
+
+**Related theory**
+- [Prerequisites and Conventions](prerequisites_and_conventions.md)
+- [Numerical Stability](numerical_stability.md)
 
 ---
 
@@ -184,13 +241,19 @@ Adaptive whitening uses an automatically chosen stabilization parameter so that 
 
 **Source reference**: {ref}`S4 <validated-en-source-references>`
 
-**Related API pages**
-- [Preprocessing API](../reference/api/preprocessing.rst)
-- [Numerical Stability](numerical_stability.md)
+**Related tutorial**
 - [ML Preprocessing Case Study](tutorials/case_ml_preprocessing.ipynb)
+
+**Related API**
+- [Preprocessing API](../reference/api/preprocessing.rst)
+
+**Related theory**
+- [Numerical Stability](numerical_stability.md)
+- [Prerequisites and Conventions](prerequisites_and_conventions.md)
 
 ---
 
+(validated-algorithms-audit-trail)=
 ## Audit Trail
 
 The links below point to the audit scope, merged findings, and fix history used to support the summaries on this page.
@@ -202,7 +265,8 @@ The links below point to the audit scope, merged findings, and fix history used 
 - [scalarfield_physics_review_20260120](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/tech_notes/scalarfield_physics_review_20260120.md) - Physics and FFT review notes for `ScalarField`
 - [report_scalarfield_physics_verification_20260122_222000](https://github.com/tatsuki-washimi/gwexpy/blob/main/docs_internal/archive/reports/report_scalarfield_physics_verification_20260122_222000.md) - Archived follow-up verification notes for field FFT behavior
 
-## Related Documents
+(validated-algorithms-related-documents)=
+## Related Documents for Validation
 
 - [Numerical Stability](numerical_stability.md) - Precision management
 - [Prerequisites and Conventions](prerequisites_and_conventions.md) - Shared assumptions for time systems and FFT conventions
@@ -212,3 +276,11 @@ The links below point to the audit scope, merged findings, and fix history used 
 - [Spectral API](../reference/api/spectral.rst)
 - [Fitting API](../reference/api/fitting.rst)
 - [Preprocessing API](../reference/api/preprocessing.rst)
+
+(validated-algorithms-next-to-read)=
+## Next to Read
+
+- [Prerequisites and Conventions](prerequisites_and_conventions.md) - Shared assumptions behind the validation notes
+- [Numerical Stability](numerical_stability.md) - Stabilization behavior referenced by adaptive whitening
+- [Architecture and Data Flow](architecture.md) - Container and API design context behind the validated methods
+- [Tutorial Index](tutorials/index.rst) - Task-oriented notebooks that show the methods in use

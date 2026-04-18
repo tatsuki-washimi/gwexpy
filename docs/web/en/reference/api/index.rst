@@ -1,9 +1,19 @@
 API Reference
 =============
 
+.. note::
+   Page role: API category hub
+
 **Stability:** Stable
 
 This index groups the main modules by topic. If you're unsure where to start, begin with `timeseries`, `matrix`, `fields`, `signal`, `fitting`, or `io`.
+
+**Audience:** Users who already know the subsystem they want and need category-level API navigation.
+**Use this page for:** Jumping from the reference hub or tutorials into the right module family.
+
+.. note::
+   Advanced/theory routing:
+   If your question is about validation assumptions, Fourier conventions, or audit-backed reasoning rather than symbols and methods, go to :doc:`../topics` and :doc:`../../user_guide/validated_algorithms`.
 
 .. list-table::
    :header-rows: 1
@@ -84,6 +94,14 @@ This index groups the main modules by topic. If you're unsure where to start, be
    * - GUI
      - Experimental
      - Graphical interface and interactive tools
+
+.. seealso::
+   Cross-navigation:
+
+   - :doc:`../index` for the top-level reference hub
+   - :doc:`../topics` for theory, conventions, and bridge pages
+   - :doc:`../../user_guide/tutorials/index` for feature-first notebook navigation
+   - :doc:`matrix`, :doc:`frequencyseries`, and :doc:`spectrogram` for secondary category pages tied to common tutorial paths
 
 .. toctree::
    :maxdepth: 2

@@ -1,12 +1,85 @@
+.. meta::
+   :description: GWexpy のケーススタディをテーマ別に探せる正本ギャラリーです。キャリブレーション、外部連携、ML、ノイズハンティングをまとめています。
+
+.. _examples-ja-gallery-entry:
+
 ケーススタディ (Case Studies)
 ===============================
+
+.. note::
+   ページ種別: ガイド索引
 
 複数の GWexpy 機能をひとつのテーマに沿って組み合わせる、実践的なデモ集です。
 クラスや機能ごとの使い方を順番に学びたい場合は、 :doc:`../user_guide/tutorials/index` を参照してください。
 
+**対象読者:** 基本操作を理解したうえで、実務に近い一連の解析例を探したい利用者。
+**前提知識:** :doc:`../user_guide/tutorials/index` や :doc:`../user_guide/getting_started` にある主要クラスの基本を理解していること。
+**このページの用途:** GWexpy のケーススタディをテーマ別に探すための正本一覧として使うこと。
+**検索のヒント:** ケーススタディ, ギャラリー, 実践ワークフロー, キャリブレーション, 相互運用, ノイズハンティング, ML
+
 .. note::
-   `Case Studies` はテーマ別の実演、`Tutorials` は class/feature examples です。
+   `Case Studies` はテーマ別の実演、`Tutorials` はクラスや機能ごとの例です。
    このページを `case_*` ノートブックの正本一覧として扱います。
+
+.. note::
+   このページの見方:
+   I はキャリブレーションと制御、II は外部連携と再現性、III は統計・機械学習、IV はノイズハンティングと検出器診断を扱います。
+
+.. note::
+   例の読み方:
+   目的: 自分の課題に近いワークフローを選ぶこと。
+   入力: 関連する GWexpy オブジェクトの基本知識と notebook 実行環境。
+   出力: 読むべき、またはローカルで実行すべきケーススタディ notebook の候補。
+
+.. _examples-ja-featured-gallery:
+
+注目ギャラリー
+--------------
+
+.. note::
+   この注目カードは、ホームページの teaser で使っている 3 枚のサムネイルと同じ画像を再利用しています。
+   ただし正本はこのページです。ホームページは短い導入であり、以下のカテゴリ別一覧が正式なギャラリーです。
+
+.. note::
+   最小限のビジュアル索引:
+
+   - `ノイズバジェット` のサムネイル -> :ref:`section-iv-noise-hunting-and-detector-diagnostics-ja` から探し始める
+   - `伝達関数推定` のサムネイル -> :ref:`section-i-calibration-response-and-control-ja` から探し始める
+   - `アクティブダンピング` のサムネイル -> :ref:`section-i-calibration-response-and-control-ja` から探し始める
+
+.. grid:: 3
+   :gutter: 3
+
+   .. grid-item-card:: ノイズバジェット
+      :img-top: /_static/images/case_noise_budget_thumb.png
+      :img-alt: ノイズバジェット例のサムネイル
+      :link: ../user_guide/tutorials/case_noise_budget
+      :link-type: doc
+      :text-align: center
+
+      検出器雑音の主要な結合経路を切り分け、どこから対策すべきかを比較します。
+
+   .. grid-item-card:: 伝達関数推定
+      :img-top: /_static/images/case_transfer_function_thumb.png
+      :img-alt: 伝達関数推定例のサムネイル
+      :link: ../user_guide/tutorials/case_transfer_function
+      :link-type: doc
+      :text-align: center
+
+      コヒーレンス評価、応答のフィッティング、実測伝達経路の解釈をひとつの流れで確認します。
+
+   .. grid-item-card:: アクティブダンピング
+      :img-top: /_static/images/case_active_damping_thumb.png
+      :img-alt: アクティブダンピング例のサムネイル
+      :link: ../user_guide/tutorials/case_active_damping
+      :link-type: doc
+      :text-align: center
+
+      6 自由度防振系に対する MIMO 制御ワークフローを具体例でたどれます。
+
+.. _examples-ja-canonical-list:
+
+.. _section-i-calibration-response-and-control-ja:
 
 I. キャリブレーション・応答・制御
 ---------------------------------
@@ -15,6 +88,8 @@ I. キャリブレーション・応答・制御
 - :doc:`伝達関数計測: 実測・コヒーレンス・フィッティング <../user_guide/tutorials/case_transfer_function>`
 - :doc:`キャリブレーションパイプライン: Counts から Strain へ <../user_guide/tutorials/case_calibration_pipeline>`
 - :doc:`DTT XML 活用: 測定済み応答の読み込みと再利用 <../user_guide/tutorials/case_dttxml_calibration>`
+
+.. _section-ii-interoperability-io-and-reproducibility-ja:
 
 II. 外部連携・I/O・再現性
 -------------------------
@@ -25,6 +100,8 @@ II. 外部連携・I/O・再現性
 - :doc:`HDF5 provenance: 再現可能なメタデータ管理 <../user_guide/tutorials/case_hdf5_provenance>`
 - :doc:`PyCBC 連携: gwexpy 前処理から探索まで <../user_guide/tutorials/case_pycbc_search>`
 
+.. _section-iii-statistical-and-ml-workflows-ja:
+
 III. 統計・機械学習ワークフロー
 --------------------------------
 
@@ -33,6 +110,8 @@ III. 統計・機械学習ワークフロー
 - :doc:`イベント同期解析: SegmentTable による窓選択 <../user_guide/tutorials/case_segment_analysis>`
 - :doc:`物理妥当性検証: 単位・数値床・健全性テスト <../user_guide/tutorials/case_physics_validation>`
 - :doc:`信号抽出: 色付き雑音からの微弱信号回収 <../user_guide/tutorials/case_signal_extraction>`
+
+.. _section-iv-noise-hunting-and-detector-diagnostics-ja:
 
 IV. ノイズハンティングと検出器診断
 ----------------------------------
@@ -51,6 +130,13 @@ IV. ノイズハンティングと検出器診断
 
 .. note::
    各 API の詳細（引数・戻り値・クラス一覧）は :doc:`../reference/index` を参照してください。
+
+.. seealso::
+   次に読むページ:
+
+   - :doc:`../user_guide/tutorials/index` でクラス別・機能別の基礎を固める
+   - :doc:`../reference/index` でケーススタディ内の API 詳細を確認する
+   - :doc:`../user_guide/io_formats` で対応フォーマットと読み書き経路を調べる
 
 .. toctree::
    :hidden:

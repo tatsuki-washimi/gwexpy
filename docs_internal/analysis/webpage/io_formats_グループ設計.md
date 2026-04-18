@@ -60,7 +60,7 @@
 |---|---|---|---|
 | **GWF** (`.gwf`) | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | 掲載済み | Frame 形式。Series 優先 |
 | **HDF5** (`.h5`, `.hdf5`) | 各クラスの `.read(..., format="hdf5")`, `.write(..., format="hdf5")` | 掲載済み | TimeSeries 系、FrequencySeries 系、Spectrogram 系、Histogram、EventTable、Field |
-| **ndscope-hdf5** (`.h5`, `.hdf5`) | `TimeSeriesDict.read(..., format="ndscope-hdf5")`, `.write(..., format="ndscope-hdf5")` | 実装済み（未掲載） | ndscope 互換の HDF5 スキーマ。Dict 限定 |
+| **ndscope-hdf5** (`.h5`, `.hdf5`) | `TimeSeriesDict.read(..., format="ndscope-hdf5")`, `.write(..., format="ndscope-hdf5")` | 実装済み（未掲載） | ndscope 互換の HDF5 スキーマ。Dict 限定。後方互換 alias: `ndscope_hdf5`, `ndscopehdf5` |
 | **DTTXML** (`.xml`) | `TimeSeriesDict.read(..., format="dttxml", products="...")` | 掲載済み | `products` 指定前提。Write なし |
 | **NDS2** | `TimeSeries.fetch()` | 掲載済み | ネットワーク経由 |
 | **GWOSC** | `TimeSeries.fetch_open_data()` | 掲載済み | ネットワーク経由 |
@@ -75,7 +75,7 @@
 | **CSV** (`.csv`) | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | 掲載済み | enhanced CSV reader を含む |
 | **TXT** (`.txt`) | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | 掲載済み | enhanced ASCII reader を含む |
 | **NetCDF4** (`.nc`) | `TimeSeries.read(..., format="netcdf4")`, `TimeSeriesDict.read(..., format="netcdf4")`, `TimeSeriesMatrix.read(..., format="netcdf4")`, `.write(..., format="netcdf4")` | 掲載済み | TimeSeries 系の direct I/O |
-| **Zarr** (`.zarr`) | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | 掲載済み | TimeSeries 系の direct I/O |
+| **Zarr** (`.zarr`) | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | 掲載済み | TimeSeries 系の direct I/O。`t0` / `dt` などの時刻メタデータは attrs に保持 |
 | **Pickle** (`.pkl`) | 各クラスの `.read()`, `.write()` | 掲載済み | セキュリティ警告が必要 |
 | **ROOT** (`.root`) | `EventTable.read(..., format="root")`, `EventTable.write(..., format="root")` | 掲載済み | EventTable 直I/O のみ |
 | **GBD** (`.gbd`) | `TimeSeries.read(..., format="gbd")`, `TimeSeriesDict.read(..., format="gbd")`, `TimeSeriesMatrix.read(..., format="gbd")` | 掲載済み | Read only。`timezone` 必須 |
@@ -107,7 +107,7 @@
 |---|---|---|---|
 | GWF | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | 掲載済み | gwpy 継承 |
 | HDF5 | 各クラスの `.read(..., format="hdf5")`, `.write(..., format="hdf5")` | 掲載済み | 全体の標準保存形式 |
-| ndscope-hdf5 | `TimeSeriesDict.read(..., format="ndscope-hdf5")`, `.write(..., format="ndscope-hdf5")` | 実装済み（未掲載） | Dict 限定 |
+| ndscope-hdf5 | `TimeSeriesDict.read(..., format="ndscope-hdf5")`, `.write(..., format="ndscope-hdf5")` | 実装済み（未掲載） | Dict 限定。後方互換 alias: `ndscope_hdf5`, `ndscopehdf5` |
 | DTTXML | `TimeSeriesDict.read(..., format="dttxml", products="...")` | 掲載済み | Read only |
 | NDS2 | `TimeSeries.fetch()` | 掲載済み | ネットワーク経由 |
 | GWOSC | `TimeSeries.fetch_open_data()` | 掲載済み | ネットワーク経由 |
@@ -133,7 +133,7 @@
 | CSV | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | 掲載済み | enhanced CSV reader を含む |
 | TXT | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | 掲載済み | enhanced ASCII reader を含む |
 | NetCDF4 | `TimeSeries.read(..., format="netcdf4")`, `TimeSeriesDict.read(..., format="netcdf4")`, `TimeSeriesMatrix.read(..., format="netcdf4")`, `.write(..., format="netcdf4")` | 掲載済み | TimeSeries 系 |
-| Zarr | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | 掲載済み | TimeSeries 系 |
+| Zarr | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | 掲載済み | TimeSeries 系。`t0` / `dt` を attrs に保持 |
 | Pickle | 各クラスの `.read()`, `.write()` | 掲載済み | セキュリティ警告を必須表示 |
 | ROOT | `EventTable.read(..., format="root")`, `EventTable.write(..., format="root")` | 掲載済み | EventTable のみ |
 
@@ -265,8 +265,8 @@ ObsPy 系と国内/電磁気形式をまとめる。
 ## 議論・未解決事項
 
 > [!IMPORTANT]
-> **D1: `ndscope-hdf5` 命名の是非**
-> 実装名は `ndscope-hdf5`。ドキュメント側だけ `hdf5.ndscope` に揃えるかは別途判断が必要。
+> **D1: `ndscope-hdf5` 命名方針**
+> public format 名は `ndscope-hdf5` を維持する。後方互換 alias として `ndscope_hdf5`, `ndscopehdf5` を受理するが、ドキュメント側で `hdf5.ndscope` へ改名はしない。
 
 > [!IMPORTANT]
 > **D2: 表記言語**

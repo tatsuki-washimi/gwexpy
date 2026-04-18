@@ -1,9 +1,19 @@
 API リファレンス (API Reference)
 ================================
 
+.. note::
+   ページ種別: API カテゴリ索引
+
 **安定性:** Stable
 
 主要モジュールをカテゴリ別に並べています。迷った場合は `timeseries`, `matrix`, `fields`, `signal`, `fitting`, `io` から確認してください。
+
+**対象読者:** どのサブシステムを見たいかが分かっており、カテゴリ単位で API をたどりたい利用者。
+**このページの用途:** リファレンス総合入口やチュートリアルから、適切なモジュール群へ進むこと。
+
+.. note::
+   高度・理論系の導線:
+   メソッドやシンボルではなく、検証前提、フーリエ規約、監査根拠を確認したい場合は :doc:`../topics` と :doc:`../../user_guide/validated_algorithms` を参照してください。
 
 .. list-table::
    :header-rows: 1
@@ -84,6 +94,14 @@ API リファレンス (API Reference)
    * - グラフィカルユーザーインターフェース (GUI)
      - Experimental
      - GUI と対話ツール
+
+.. seealso::
+   ハブ間の移動:
+
+   - :doc:`../index` でリファレンス総合入口に戻る
+   - :doc:`../topics` で理論、規約、橋渡しページから入る
+   - :doc:`../../user_guide/tutorials/index` で機能別チュートリアルから学ぶ
+   - :doc:`matrix`, :doc:`frequencyseries`, :doc:`spectrogram` でよく使う二次カテゴリを確認する
 
 .. toctree::
    :maxdepth: 2

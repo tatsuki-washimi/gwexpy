@@ -1,11 +1,30 @@
+---
+myst:
+  html_meta:
+    description: "GWexpy の direct I/O ガイドです。対応フォーマット、読み書きの可否、fetch 系の入口、format= を明示すべき場面を整理します。"
+---
+
 <a id="io-formats-ja-top"></a>
 
 # ファイル I/O 対応フォーマットガイド
 
-gwexpy の end-user 向け I/O ガイドです。
+> **ページ種別:** ガイド
+
+gwexpy の利用者向け I/O ガイドです。
 このページでは、ユーザーが直接使う `.read()` / `.write()` / `fetch()` 系 API だけを扱います。
 
 `to_*()` / `from_*()` による変換や、xarray / ROOT object / Zarr array との橋渡しは、このページでは扱いません。必要な場合は [他ライブラリ連携チュートリアル](tutorials/intro_interop) や [Interop API リファレンス](../reference/api/interop) を参照してください。
+
+## このページでわかること
+
+| 項目 | 内容 |
+| --- | --- |
+| **対象読者** | `gwexpy` オブジェクトの直接的な読み書きやネットワーク取得の入口を選びたい利用者 |
+| **前提** | `TimeSeries` / `TimeSeriesDict` の基本、拡張子による形式判定、direct I/O と interop の違い |
+| **こんなときに読む** | 対応形式を選びたい、`format=` を明示すべき場面を知りたい、読み込み専用かどうかを確認したい |
+| **検索キーワード** | file I/O, direct I/O, `read`, `write`, `fetch`, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC |
+
+**検索ヒント:** file I/O, direct I/O, `read`, `write`, `fetch`, HDF5, GWF, MiniSEED, Zarr, NDS2, GWOSC
 
 :::{warning}
 **セキュリティ警告: Pickle 形式の取り扱い**
@@ -38,7 +57,7 @@ gwexpy の end-user 向け I/O ガイドです。
 
 ## クイック判定表
 
-| グループ | こういうときに選ぶ | 最初に見る形式 | このページで扱う形式 |
+| グループ | まず見る場面 | 最初の形式 | このページで扱う形式 |
 |---|---|---|---|
 | **A. GW標準** | GW 系の標準保存、共有、取得経路を使いたい | **HDF5** | GWF, HDF5, ndscope-hdf5, DTTXML, NDS2, GWOSC |
 | **B. 地震・地球物理観測** | 既存の地震・電磁気観測フォーマットを読む | **MiniSEED** | MiniSEED, SAC, GSE2, K-NET, WIN / WIN32, ATS, ATS.MTH5（MTH5 standalone は状況注記のみ） |
@@ -50,6 +69,10 @@ gwexpy の end-user 向け I/O ガイドです。
 <a id="io-formats-ja-basic"></a>
 
 ## `.read()` / `.write()` / `fetch()` の基本
+
+- 目的: 形式ごとの細かい違いを見る前に、direct I/O の基本入口を確認する
+- 入力: ファイルパス、必要に応じた `format=`、またはネットワーク取得の問い合わせ
+- 出力: `TimeSeries`、`TimeSeriesDict` などの direct I/O の返り値
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -72,11 +95,12 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 - `.xml` は用途が曖昧なので、**DTTXML では `format="dttxml"` を明示**してください。
 - `NDS2` と `GWOSC` はファイルではないため、`.read()` ではなく `fetch()` / `fetch_open_data()` を使います。
 
+(io-formats-ja-supported-classes)=
 ## 対応クラスの早見表
 
 「単一チャネルなのか、複数チャネルなのか」で入口を迷いやすい形式を先に整理すると、次のようになります。
 
-| 形式 / 系統 | 単一チャネル | 複数チャネル | そのほかの対応 |
+| 形式 / 系統 | 単一 | 複数 | そのほかの対応 |
 |---|---|---|---|
 | **GWF / MiniSEED / SAC / GSE2 / K-NET / WIN / WIN32 / ATS / CSV / TXT / SDB / SQLite / SQLite3 / WAV / Audio** | `TimeSeries` | `TimeSeriesDict` | end-user 向け direct I/O の基本形 |
 | **NetCDF4 / Zarr / GBD / TDMS** | `TimeSeries` | `TimeSeriesDict`, `TimeSeriesMatrix` | 行列系まで含む direct I/O |
@@ -99,14 +123,18 @@ ts = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 GW 系の標準保存・交換・取得経路です。
 迷ったらまず **HDF5**、外部標準との互換が必要なら **GWF**、診断ツール出力なら **DTTXML** を見てください。
 
-| 形式 / 経路 | 読 / 写 | 主な入口 | 向いている用途 | 備考 |
+| 形式 / 経路 | 読 / 写 | 主な入口 | 用途 | 備考 |
 |---|:---:|---|---|---|
 | **GWF** (`.gwf`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | LIGO/KAGRA の標準交換 | 標準形式。gwpy 経由 |
 | **HDF5** (`.h5`, `.hdf5`) | ○ / ○ | 各クラスの `.read(..., format="hdf5")`, `.write(..., format="hdf5")` | 長期保存、メタデータ保持 | このページで唯一、Field 系の第一候補 |
-| **ndscope-hdf5** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="ndscope-hdf5")`, `.write(..., format="ndscope-hdf5")` | ndscope 互換 | `TimeSeriesDict` 限定 |
+| **ndscope-hdf5** (`.h5`, `.hdf5`) | ○ / ○ | `TimeSeriesDict.read(..., format="ndscope-hdf5")`, `.write(..., format="ndscope-hdf5")` | ndscope 互換 | `TimeSeriesDict` 限定。後方互換 alias: `ndscope_hdf5`, `ndscopehdf5` |
 | **DTTXML** (`.xml`, `.xml.gz`) | ○ / × | `TimeSeriesDict.read(..., format="dttxml", products="...")` | DTT 出力、診断結果 | `products` 必須 |
 | **NDS2** | ○ / × | `TimeSeries.fetch()` | 検出器データサーバ取得 | ネットワーク経由 |
 | **GWOSC** | ○ / × | `TimeSeries.fetch_open_data()` | オープンデータ取得 | ネットワーク経由 |
+
+- 目的: GW 系で代表的な direct I/O とネットワーク取得の入口を比較する
+- 入力: HDF5, GWF, DTTXML, または検出器 / オープンデータ取得の条件
+- 出力: `TimeSeries`, `TimeSeriesDict`, または取得した open data
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -129,7 +157,7 @@ open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 地震観測・電磁気観測の既存フォーマットです。
 既存資産をまず読めることが重要なグループで、MiniSEED を起点に考えると分かりやすいです。
 
-| 形式 | 読 / 写 | 主な入口 | 向いている用途 | 備考 |
+| 形式 | 読 / 写 | 主な入口 | 用途 | 備考 |
 |---|:---:|---|---|---|
 | **MiniSEED** (`.mseed`) | ○ / ○ | `TimeSeriesDict.read(..., format="miniseed")`, `.write(..., format="miniseed")` | 地震波形の標準交換 | `gap` でギャップ処理を指定 |
 | **SAC** (`.sac`) | ○ / ○ | `TimeSeriesDict.read(..., format="sac")`, `.write(..., format="sac")` | 地震波形解析 | ObsPy 経由 |
@@ -139,6 +167,10 @@ open_data = TimeSeries.fetch_open_data("H1", 1126259446, 1126259478)
 | **ATS** (`.ats`) | ○ / × | `TimeSeries.read(..., format="ats")`, `TimeSeriesDict.read(..., format="ats")` | Metronix 観測データ | ネイティブ binary reader |
 | **ATS.MTH5** (`format="ats.mth5"`) | ○ / × | `TimeSeries.read(..., format="ats.mth5")` | MTH5 経由の単一路 | 一部対応 |
 | **MTH5 standalone** (`.h5`) | 対応中 | 専用 `format="mth5"` は未整備 | 今後の汎用 MTH5 direct I/O | **現時点では public direct-I/O 対応ではありません**。使える direct path は `ats.mth5` のみ |
+
+- 目的: 地震・地球物理系 reader の違いを、MTH5 を過大評価せずに比較する
+- 入力: MiniSEED, WIN/WIN32, または限定公開中の `ats.mth5` 経路
+- 出力: reader に応じた `TimeSeries` または `TimeSeriesDict`
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -161,13 +193,17 @@ ats = TimeSeries.read("data.atss", format="ats.mth5")
 解析ノート、外部解析、交換に向いた形式です。
 このグループでは「保存形式として選ぶ話」と「他ライブラリへ変換する話」を混ぜないのが重要です。
 
-| 形式 | 読 / 写 | 主な入口 | 向いている用途 | 備考 |
+| 形式 | 読 / 写 | 主な入口 | 用途 | 備考 |
 |---|:---:|---|---|---|
 | **CSV / TXT** (`.csv`, `.txt`) | ○ / ○ | `TimeSeries.read()`, `TimeSeriesDict.read()`, `.write()` | 軽量な交換、目視確認 | ディレクトリ一括読み込みにも対応 |
 | **NetCDF4** (`.nc`) | ○ / ○ | `TimeSeries.read(..., format="netcdf4")`, `TimeSeriesDict.read(..., format="netcdf4")`, `TimeSeriesMatrix.read(..., format="netcdf4")`, `.write(..., format="netcdf4")` | 時系列系の科学データ保存 | direct I/O は TimeSeries 系中心 |
 | **Zarr** (`.zarr`) | ○ / ○ | `TimeSeries.read(..., format="zarr")`, `TimeSeriesDict.read(..., format="zarr")`, `TimeSeriesMatrix.read(..., format="zarr")`, `.write(..., format="zarr")` | chunked 保存、並列処理 | direct I/O は TimeSeries 系中心 |
 | **Pickle** (`.pkl`) | ○ / ○ | 各クラスの `.read()`, `.write()` | Python オブジェクト丸ごと保存 | 信頼できるデータだけに使用 |
 | **ROOT** (`.root`) | ○ / ○ | `EventTable.read(..., format="root")`, `EventTable.write(..., format="root")` | EventTable の入出力 | 直 I/O は EventTable のみ |
+
+- 目的: 汎用交換向けの direct I/O を、interop 専用の橋渡しと混同せず整理する
+- 入力: CSV, Zarr, ROOT などの汎用形式
+- 出力: `TimeSeriesDict`, `TimeSeriesMatrix`, または `EventTable`
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -180,7 +216,7 @@ events = EventTable.read("events.root", format="root")
 
 - **CSV / TXT** は素朴ですが、共有や確認には依然として有用です。
 - **NetCDF4 / Zarr** はこのページでは **TimeSeries 系の direct I/O** としてだけ扱います。Field と xarray の橋渡しは interop 側を見てください。
-- **Zarr** では `sample_rate` 欠落時の既定挙動に未解決の API 課題があります。**このページで解決済みとはみなしていません**。
+- **Zarr** の direct I/O では、`t0` と `dt` などの時刻メタデータを Zarr attributes に保存し、読み込み時に復元します。このページでは、そのメタデータ保持を現在の対応動作として扱います。
 - **ROOT** の object-level 変換はここでは扱いません。I/O ガイドでは EventTable の直 I/O のみ扱います。
 
 <a id="io-formats-ja-d"></a>
@@ -190,13 +226,17 @@ events = EventTable.read("events.root", format="root")
 ロガーや機材固有の時系列です。
 時刻の扱い、単位、音声の `t0` など、フォーマットごとの注意点が比較的重要です。
 
-| 形式 | 読 / 写 | 主な入口 | 向いている用途 | 備考 |
+| 形式 | 読 / 写 | 主な入口 | 用途 | 備考 |
 |---|:---:|---|---|---|
 | **GBD** (`.gbd`) | ○ / × | `TimeSeries.read(..., format="gbd")`, `TimeSeriesDict.read(..., format="gbd")`, `TimeSeriesMatrix.read(..., format="gbd")` | GRAPHTEC ロガー | `timezone` 必須 |
 | **TDMS** (`.tdms`) | ○ / × | `TimeSeries.read(..., format="tdms")`, `TimeSeriesDict.read(..., format="tdms")`, `TimeSeriesMatrix.read(..., format="tdms")` | National Instruments | 読み込み専用 |
 | **SDB / SQLite / SQLite3** (`.sdb`, `.sqlite`, `.sqlite3`) | ○ / × | `TimeSeries.read(..., format="sdb" / "sqlite" / "sqlite3")`, `TimeSeriesDict.read(...)` | WeeWX 等の蓄積データ | `sqlite` / `sqlite3` も同系統 |
 | **WAV** (`.wav`) | ○ / ○ | `TimeSeries.read(..., format="wav")`, `TimeSeriesDict.read(..., format="wav")`, `.write(..., format="wav")` | 非圧縮音声 | 絶対時刻は保持しない |
 | **MP3 / FLAC / OGG / M4A** | ○ / ○ | `TimeSeries.read(..., format="mp3" / "flac" / "ogg" / "m4a")`, `.write(...)` | 圧縮音声 | `pydub`、一部形式は `ffmpeg` が必要 |
+
+- 目的: ロガー系・音声系 format で注意すべき条件をまとめる
+- 入力: ロガーデータ、SQLite 系アーカイブ、音声ファイル
+- 出力: `TimeSeries`, `TimeSeriesDict`, または `TimeSeriesMatrix`
 
 ```python
 from gwexpy.timeseries.collections import TimeSeriesDict
@@ -219,9 +259,9 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 
 ### 設計上は管理するが、公開ページでは主表示しないもの
 
-| 形式 | 現状 | 補足 |
+| 形式 | 状態 | 補足 |
 |---|---|---|
-| `ndscope-hdf5` | 実装済み（未掲載） | `TimeSeriesDict` 限定の HDF5 スキーマ |
+| `ndscope-hdf5` | 実装済み（未掲載） | `TimeSeriesDict` 限定の HDF5 スキーマ。正規名は `ndscope-hdf5`。後方互換 alias は `ndscope_hdf5`, `ndscopehdf5` |
 | `SQLite`, `SQLite3` | 実装済み（未掲載） | `SDB` と同系統の alias |
 | `ATS.MTH5` | 実装済み（一部対応） | MTH5 経由の current public direct path |
 | `MTH5 standalone` | 対応中 | 専用 `format="mth5"` は未整備。public direct-I/O としては未公開 |
@@ -262,6 +302,12 @@ audio = TimeSeriesDict.read("sound.flac", format="flac")
 - [他ライブラリ連携チュートリアル](tutorials/intro_interop)
 - [Interop API リファレンス](../reference/api/interop)
 - [インストールガイド](installation)
+
+## 次に読む
+
+- [Interop / 変換ガイド](interop) で `to_*()` / `from_*()` による橋渡しを確認する
+- [GPS 時刻ユーティリティ](time_utilities) で時刻文字列やタイムゾーンの扱いを確認する
+- [インストールガイド](installation) で形式ごとの依存関係を確認する
 
 ## ページ末尾ナビゲーション
 

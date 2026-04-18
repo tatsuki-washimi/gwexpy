@@ -1,6 +1,9 @@
 周波数系列 (Frequency Series)
 =============================
 
+.. note::
+   ページ種別: 二次 API カテゴリ
+
 **安定性:** Stable
 
 .. currentmodule:: gwexpy.frequencyseries
@@ -8,8 +11,16 @@
 概要
 ----
 
+.. note::
+   学習導線:
+   ``FrequencySeries`` の基礎チュートリアルを読んだあとや、フィッティング/スペクトル解析から正確な API に戻りたい場合に使ってください。
+
 .. seealso::
 
+   :doc:`../../user_guide/tutorials/index`
+      機能別に学び始めるためのチュートリアル一覧。
+   :doc:`../../user_guide/tutorials/intro_frequencyseries`
+      API を引く前に確認したい ``FrequencySeries`` の基本例。
    :doc:`../../user_guide/physics_models`
       周波数領域モデリングとスペクトル解釈の背景。
    :doc:`../FFT_Conventions`
@@ -18,6 +29,8 @@
       ``FrequencySeries`` を入出力に使う PSD / ASD 推定の概念整理。
    :doc:`../../user_guide/tutorials/case_bootstrap_gls_fitting`
       周波数領域フィッティングに戻れる具体的な事例。
+   :doc:`../topics`
+      検証前提や規約を概念別に確認するための入口。
 
 .. autosummary::
    :toctree: _autosummary

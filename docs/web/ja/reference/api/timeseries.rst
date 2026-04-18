@@ -18,8 +18,10 @@
       時系列データが GLS / MCMC フィットに渡る際の尤度前提。
    :doc:`../FFT_Conventions`
       GWexpy が採用するフーリエ正規化と軸の規約。
-   :doc:`../../user_guide/prerequisites_and_conventions`
-      時刻系、FFT 規約、物理解釈の共通前提。
+   :doc:`../../user_guide/tutorials/intro_timeseries`
+      ``TimeSeries`` の基本操作を先に確認するための入門チュートリアル。
+   :doc:`../../user_guide/tutorials/matrix_timeseries`
+      複数チャネルや行列系の時系列処理を扱うチュートリアル。
    :doc:`../../user_guide/tutorials/case_signal_extraction`
       transient 系の解析導線を含む時系列チュートリアル。
    :doc:`../../user_guide/tutorials/advanced_arima`

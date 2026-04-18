@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    description: "Choose the right GWexpy onboarding path with quickstart, tutorial, GWpy migration, and learning-path links for the next steps in analysis."
+---
+
 # Getting Started
 
 We provide a **systematic learning path** for GWexpy users.
@@ -21,7 +27,7 @@ If you want the shared assumptions and FFT/time conventions first, use [Prerequi
 
 - [Choose Your Path](#choose-your-path)
 - [Learning Path](#learning-path)
-- [Next Steps](#next-steps)
+- [Next Steps](#next-to-read)
 
 ## Choose Your Path
 
@@ -42,6 +48,8 @@ Learn the core data structures and GWexpy-specific matrix operations from scratc
 [Migration from GWpy](gwexpy_for_gwpy_users_en.md)
 
 For current GWpy users. Start with the migration recipes, then use the [GWpy Difference API Index](gwpy_added_api_index_en.md) when you need a difference-oriented lookup of added APIs.
+
+<a id="learning-path"></a>
 
 ## Learning Path
 
@@ -70,7 +78,10 @@ Refer to these guides based on your needs:
 
 Explore real-world analysis workflows in our [Case Studies Gallery](../examples/index.rst).
 
-## Next Steps
+<a id="next-to-read"></a>
+<a id="next-steps"></a>
+
+## Next to Read
 
 * [Case Studies Gallery](../examples/index.rst) - Visual examples and practical workflows.
 * [All Tutorials](tutorials/index.rst)

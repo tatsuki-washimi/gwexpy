@@ -13,6 +13,8 @@ Preprocessing
       Example preprocessing workflow that uses whitening in context.
    :doc:`../../user_guide/tutorials/ml_preprocessing_methods`
       Method-by-method guide for preprocessing utilities.
+   :doc:`../../user_guide/tutorials/case_wiener_filter`
+      Related case study that applies preprocessing choices inside a noise-subtraction workflow.
 
 Preprocessing utilities are provided under ``gwexpy.signal.preprocessing``.
 

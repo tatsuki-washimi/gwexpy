@@ -13,6 +13,8 @@
       ホワイトニングを含む前処理フローの事例。
    :doc:`../../user_guide/tutorials/ml_preprocessing_methods`
       前処理ユーティリティを手法別に整理したガイド。
+   :doc:`../../user_guide/tutorials/case_wiener_filter`
+      前処理の選択がノイズ差し引きにどう効くかを見る関連ケーススタディ。
 
 前処理ユーティリティは ``gwexpy.signal.preprocessing`` にあります。
 

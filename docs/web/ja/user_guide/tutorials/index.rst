@@ -1,12 +1,29 @@
+.. meta::
+   :description: GWexpy のチュートリアル一覧です。データ構造、解析ワークフロー、難易度、目的から notebook を選べます。
+
+.. _tutorials-ja-entry:
+
 チュートリアル
 ==============
 
+.. note::
+   ページ種別: ガイド索引
+
 **GWexpy** の使い方を、対話的な例題（Jupyter Notebook）を通して学びます。
+
+**対象読者:** GWexpy をこれから学ぶ人、GWpy から移行する人、解析実務で手順を確認したい人。
+**前提知識:** GWexpy の実行環境があり、:doc:`../getting_started` の基本事項を把握していること。
+**このページの用途:** データ構造、ワークフロー、難易度から適切なチュートリアルを選ぶこと。
+**検索のヒント:** notebook, Jupyter, チュートリアル一覧, 初学者向け, フィールド API, 信号処理, 相互運用
 
 .. tip::
    初めての方は :doc:`../getting_started` から始めることを推奨します。
 
 これらのチュートリアルは Jupyter Notebook から生成されています。ローカルで実行したい場合は、対応する ``.ipynb`` をリポジトリ内の ``docs/web/ja/user_guide/tutorials/`` から取得してください。
+
+.. note::
+   このページの見方:
+   I-II は基礎、III は Field API による高次元フィールド、IV-VI は解析ワークフロー、VII はセグメント表ベースの解析をまとめています。
 
 .. note::
    命名規則: 日本語タイトルは「機能名: 実施タスク」で統一します。
@@ -18,7 +35,13 @@
 
 .. note::
    `Tutorials` はクラスや機能ごとの使い方を学ぶための例です。
-   テーマ別に複数機能を組み合わせた実演は :doc:`../../examples/index` の `Case Studies` に集約しています。
+   複数機能を組み合わせたテーマ別の実演は、正本一覧である :doc:`../../examples/index` の `Case Studies` に集約しています。
+
+.. note::
+   リファレンスへの橋渡し:
+   チュートリアルの後で正確なクラス、メソッド、規約を確認したい場合は、まず :doc:`../../reference/index` に進み、必要に応じて :doc:`../../reference/api/index` または :doc:`../../reference/topics` を開いてください。
+
+.. _tutorials-ja-core-entry:
 
 I. 基本データ構造
 -----------------
@@ -88,6 +111,8 @@ VI. ノイズハンティングと特殊ツール
 
 - :doc:`Bruco: 基本 <advanced_bruco>` :bdg-primary:`上級` :bdg-secondary:`45分` :bdg-info:`解析実務者`
 
+.. _tutorials-ja-segment-entry:
+
 VII. セグメント解析
 -------------------
 時間区間（セグメント）をベースとした表形式の解析手法について説明します。
@@ -100,6 +125,14 @@ VII. セグメント解析
 .. note::
    テーマ別の実演は :doc:`../../examples/index` を参照してください。
    ノイズバジェット解析、伝達関数計測、ML 前処理パイプライン、イベント同期解析などをまとめています。
+
+.. seealso::
+   次に読むページ:
+
+   - :doc:`../getting_started` でユーザーガイドの導入を確認する
+   - :doc:`../../reference/index` で API・クラス・トピック別の詳細を調べる
+   - :doc:`../../reference/api/index` でカテゴリ別の API 入口を開く
+   - :doc:`../../reference/topics` で高度・理論、規約、橋渡しページを確認する
 
 .. toctree::
    :hidden:

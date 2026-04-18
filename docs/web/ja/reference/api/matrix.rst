@@ -1,11 +1,18 @@
 行列コンテナ (Matrix Containers)
 ================================
 
+.. note::
+   ページ種別: 二次 API カテゴリ
+
 **安定性:** Stable
 
 複数の :class:`~gwexpy.timeseries.TimeSeries`、:class:`~gwexpy.frequencyseries.FrequencySeries`、
 または :class:`~gwexpy.spectrogram.Spectrogram` をグループ化し、
 全チャンネルに対して同時にベクトル化された演算を実行する多チャンネルコンテナ。
+
+.. note::
+   学習導線:
+   行列系チュートリアルを読んだあとに、メンバーや正確なシグネチャを確認したい場合はこのページを起点にしてください。
 
 .. seealso::
 
@@ -17,6 +24,10 @@
       `SpectrogramMatrix` と対応する時間周波数コンテナ API。
    :doc:`../../user_guide/tutorials/case_signal_extraction`
       matrix 系の時間周波数解析へつながる具体例。
+   :doc:`../../user_guide/tutorials/index`
+      行列中心の学習を始めるチュートリアル一覧。
+   :doc:`../topics`
+      行列ワークフローに関わる規約や高度ノートの入口。
 
 時系列行列
 ------------------

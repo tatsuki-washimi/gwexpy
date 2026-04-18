@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    description: "Learn why ScalarField slicing in GWexpy preserves 4D structure, how metadata survives indexing, and when squeeze() is safe."
+---
+
 # Scalar Field Slicing Guide (Why 4D is Preserved)
 
 :::{note}
@@ -11,6 +17,8 @@ Refer to this guide if you use `ScalarField` and have the following questions:
 This guide explains why `ScalarField` **always maintains its 4-dimensional structure** during indexing operations. This differs from the standard behavior of NumPy or GWpy and is designed as an "invariant" to ensure the integrity of multidimensional physical data.
 
 ## At a Glance
+
+The summary table below stays compact to match the shared docs table styling. On narrow screens, horizontal scrolling may be the easiest way to read every column.
 
 | Item | Details |
 | --- | --- |
@@ -26,6 +34,7 @@ This guide explains why `ScalarField` **always maintains its 4-dimensional struc
 - [Practical Operation Examples](#practical-operation-examples)
 - [FAQ](#faq)
 
+(scalarfield-slicing-4d-persistence)=
 ## Why Always Maintain "4D"?
 
 A `ScalarField` represents a physical "field" with four axes: (time, frequency, x, y). The reasons for not reducing dimensions (Rank Loss) like NumPy does are based on the **Four Pillars of Persistence**:
@@ -35,6 +44,7 @@ A `ScalarField` represents a physical "field" with four axes: (time, frequency, 
 3.  **Stream Processing Safety**: The number of dimensions remains constant when passing objects between functions, improving program robustness.
 4.  **Broadcast Consistency**: Dimensional alignment (`reshape`) intent becomes explicit in the code because the object is always 4D.
 
+(scalarfield-slicing-comparison-diagram)=
 ### NumPy vs GWexpy Slicing Behavior
 
 ![4D Dimension Persistence comparison between NumPy and GWexpy](../../../_static/images/scalarfield_slicing_4d_persistence.png)
@@ -55,6 +65,7 @@ Since you can no longer reconstruct the correct physical axes for operations lik
 
 ---
 
+(scalarfield-slicing-practical-examples)=
 ## Practical Operation Examples
 
 ### 1. Slicing Behavior
@@ -116,6 +127,7 @@ The `reshape(3, 1, 1, 1)` form means "these 3 values belong to the frequency axi
 
 ---
 
+(scalarfield-slicing-faq)=
 ## FAQ
 
 ### Q: Isn't it inconvenient for 1D calculations if it's always 4D?
@@ -124,6 +136,7 @@ The `reshape(3, 1, 1, 1)` form means "these 3 values belong to the frequency axi
 ### Q: What happens if I extract a scalar like `ScalarField[0, 0, 0, 0]`?
 **A:** If all indices are scalars, a standard Python scalar or NumPy scalar is returned.
 
+(scalarfield-slicing-next-to-read)=
 ## Next to Read
 
 - [ScalarField introduction tutorial](tutorials/field_scalar_intro.ipynb)

@@ -18,8 +18,10 @@ Overview
       Likelihood assumptions relevant when time-series data flow into GLS or MCMC fitting paths.
    :doc:`../FFT_Conventions`
       Fourier normalization and axis conventions used by GWexpy.
-   :doc:`../../user_guide/prerequisites_and_conventions`
-      Shared assumptions for time systems, FFT conventions, and physical interpretation.
+   :doc:`../../user_guide/tutorials/intro_timeseries`
+      Introductory walkthrough for the core ``TimeSeries`` API before the reference details below.
+   :doc:`../../user_guide/tutorials/matrix_timeseries`
+      Multi-channel and matrix-style time-series tutorial that complements collection-oriented APIs.
    :doc:`../../user_guide/tutorials/case_signal_extraction`
       Example workflow that uses transient-style time-frequency analysis paths.
    :doc:`../../user_guide/tutorials/advanced_arima`

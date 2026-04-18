@@ -1,5 +1,10 @@
 :orphan:
 
+.. meta::
+   :description: GWexpy ドキュメントの入口ページ。インストール、クイックスタート、チュートリアル、ケーススタディ、リファレンスへの導線をまとめています。
+
+.. _hub-ja-hero:
+
 GWexpy ドキュメント
 ==============================
 
@@ -191,6 +196,8 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
 
     🚀 クイックスタート（5分で基本を習得）
 
+.. _hub-ja-workflow-entry:
+
 ----
 
 あなたに合ったガイド
@@ -303,8 +310,12 @@ v\ |release| · Python ≥ 3.9 · 最終更新: |today|
 
 ----
 
+.. _hub-ja-gallery-entry:
+
 Visual Examples
 ---------------
+
+このカード群は、正本であるケーススタディギャラリーの短い teaser です。
 
 .. grid:: 3
     :gutter: 3
@@ -312,7 +323,7 @@ Visual Examples
     .. grid-item-card::
         :img-top: /_static/images/case_noise_budget_thumb.png
         :img-alt: ノイズバジェット例のサムネイル
-        :link: user_guide/tutorials/advanced_bruco
+        :link: user_guide/tutorials/case_noise_budget
         :link-type: doc
         :text-align: center
 
@@ -335,6 +346,15 @@ Visual Examples
         :text-align: center
 
         アクティブダンピング
+
+.. button-ref:: examples/index
+    :ref-type: doc
+    :color: secondary
+    :expand:
+
+    正式なケーススタディギャラリーを見る
+
+.. _hub-ja-reference-entry:
 
 ----
 

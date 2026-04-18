@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    description: "Start GWexpy quickly with a GitHub install command, a 3-line first plot, and pointers to the next tutorials and migration guides."
+---
+
 # Quickstart
 
 Get your first analysis plot with GWexpy as quickly as possible.
@@ -14,19 +20,27 @@ Get your first analysis plot with GWexpy as quickly as possible.
 
 ## On This Page
 
-- [Quick Install](#quick-install)
-- [3-line Quickstart](#3-line-quickstart)
+- [Quick Install](#install-command)
+- [3-line Quickstart](#quick-demo)
 - [30-min Hands-on (Interactive Tutorial)](#30-min-hands-on-interactive-tutorial)
 - [Multi-channel Analysis Example](#multi-channel-analysis-example)
-- [Next Steps](#next-steps)
+- [Next Steps](#next-to-read)
+
+<a id="install-command"></a>
 
 ## Quick Install
 
 Since GWexpy is currently in development, please install it directly from GitHub:
 
+- Purpose: install the current development build as quickly as possible
+- Input: Python 3.11+ with `pip`
+- Output: a local GWexpy installation ready for the first example
+
 ```bash
 pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 ```
+
+<a id="quick-demo"></a>
 
 ## 3-line Quickstart
 
@@ -63,7 +77,7 @@ The two pillars to mastering GWexpy.
 * **TimeSeries / FrequencySeries**: 
   Basic classes for handling single-channel data. High compatibility with GWpy allows you to run existing code as is.
 * **TimeSeriesMatrix / ScalarField**:
-  New APIs for handling multi-channel (matrix format) or multi-dimensional data. Large-scale analysis with over 100 channels can be handled safely with a single line of code.
+  New APIs for handling multi-channel (matrix format) or multi-dimensional field-like data. Large-scale analysis with over 100 channels can be handled safely with a single line of code.
 
 ## Multi-channel Analysis Example
 
@@ -94,7 +108,10 @@ This example converts a `TimeSeriesDict` into a `TimeSeriesMatrix` and stores th
 
 If you encounter errors or plots do not appear, check the [Troubleshooting Guide](troubleshooting.md).
 
-## Next Steps
+<a id="next-to-read"></a>
+<a id="next-steps"></a>
+
+## Next to Read
 
 * [Installation Guide](installation.md) - Setting up your environment.
 * [Getting Started](getting_started.md) - Systematic learning roadmap.

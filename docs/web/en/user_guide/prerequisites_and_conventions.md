@@ -1,9 +1,17 @@
+---
+myst:
+  html_meta:
+    description: "Check GWexpy prerequisites, GPS-time assumptions, FFT conventions, and GWpy compatibility before moving into tutorials, theory, or API pages."
+---
+
 # Prerequisites and Conventions
 
 This page is the entry point for the **shared prerequisites** and **conventions** used across the GWexpy guides and tutorials.
 Page-specific assumptions and mathematical details remain on their original pages; this guide is meant to show where to check first.
 
 ## At a Glance
+
+The table below follows the shared table styling used across the docs. On mobile, horizontal scrolling is preferred instead of page-specific table behavior.
 
 | Item | Details |
 | --- | --- |
@@ -21,6 +29,7 @@ Page-specific assumptions and mathematical details remain on their original page
 - [GWpy Compatibility and GWexpy Extensions](#4-gwpy-compatibility-and-gwexpy-extensions)
 - [Where to Go Next](#5-where-to-go-next)
 
+(prerequisites-environment)=
 ## 1. Environment Prerequisites
 
 - The basic user-facing environment assumes **Python 3.11+**.
@@ -29,6 +38,7 @@ Page-specific assumptions and mathematical details remain on their original page
 
 If you want the shortest overall learning path first, start with [Getting Started](getting_started.md).
 
+(prerequisites-data-and-time)=
 ## 2. Data and Time Assumptions
 
 - GWexpy is designed to stay compatible with `gwpy`-style time-series and frequency-series containers.
@@ -38,6 +48,7 @@ If you want the shortest overall learning path first, start with [Getting Starte
 
 For algorithm-specific assumptions, see [Validated Algorithms](validated_algorithms.md).
 
+(prerequisites-fft-and-spectral-conventions)=
 ## 3. FFT and Spectral Conventions
 
 - GWexpy treats FFT **normalization**, **one-sided vs two-sided spectra**, and **sign conventions** explicitly.
@@ -46,6 +57,7 @@ For algorithm-specific assumptions, see [Validated Algorithms](validated_algorit
 
 For the mathematical details, see [FFT Specifications and Conventions](../reference/FFT_Conventions.md).
 
+(prerequisites-gwpy-compatibility)=
 ## 4. GWpy Compatibility and GWexpy Extensions
 
 - GWexpy is built on top of GWpy and preserves the basic data model and workflow expectations where possible.
@@ -54,6 +66,7 @@ For the mathematical details, see [FFT Specifications and Conventions](../refere
 
 For migration-oriented guidance, see [Migration from GWpy](gwexpy_for_gwpy_users_en.md) and the [GWpy Difference API Index](gwpy_added_api_index_en.md).
 
+(prerequisites-reference-bridge)=
 ## 5. Where to Go Next
 
 - First-time users: [Getting Started](getting_started.md)
@@ -62,6 +75,7 @@ For migration-oriented guidance, see [Migration from GWpy](gwexpy_for_gwpy_users
 - Algorithm assumptions and validation basis: [Validated Algorithms](validated_algorithms.md)
 - GWpy migration: [Migration from GWpy](gwexpy_for_gwpy_users_en.md)
 
+(prerequisites-next-to-read)=
 ## Next to Read
 
 - [Installation Guide](installation.md)

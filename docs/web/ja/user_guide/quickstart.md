@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    description: "GWexpy を最短で始めるための導入ガイドです。GitHub からのインストール、3 行の最小例、次に読むチュートリアルへの入口をまとめています。"
+---
+
 # クイックスタート (Quickstart)
 
 GWexpy を使って、最初の解析図を最短で作成しましょう。
@@ -14,19 +20,27 @@ GWexpy を使って、最初の解析図を最短で作成しましょう。
 
 ## このページの近道
 
-- [クイックインストール](#クイックインストール-quick-install)
-- [3行で最初の図を出す](#3行で最初の図を出す-3-line-quickstart)
+- [クイックインストール](#install-command)
+- [3行で最初の図を出す](#quick-demo)
 - [30分で学べるハンズオン](#30分で学べるハンズオン-interactive-tutorial)
 - [複数チャンネルの解析例](#複数チャンネルの解析例)
-- [次のステップ](#次のステップ)
+- [次のステップ](#next-to-read)
+
+<a id="install-command"></a>
 
 ## クイックインストール (Quick Install)
 
 現在、開発版のため GitHub から直接インストールしてください：
 
+- 目的: 開発版を最短でインストールする
+- 入力: Python 3.11 以上と `pip`
+- 出力: 最初のサンプルを実行できる GWexpy 環境
+
 ```bash
 pip install git+https://github.com/tatsuki-washimi/gwexpy.git
 ```
+
+<a id="quick-demo"></a>
 
 ## 3行で最初の図を出す (3-line Quickstart)
 
@@ -63,7 +77,7 @@ GWexpy を使いこなすための 2 つの重要な柱です。
 * **TimeSeries / FrequencySeries**: 
   単一チャンネルのデータを扱う基本クラスです。GWpy と高い互換性があり、既存のコードをそのまま動かすことができます。
 * **TimeSeriesMatrix / ScalarField**:
-  複数チャンネル（行列形式）や多次元データを扱うための新しい API です。100 チャンネルを超えるような大規模な解析も、1 行のコードで安全に処理できます。
+  複数チャンネル（行列形式）や多次元のフィールド系データを扱うための新しい API です。100 チャンネルを超えるような大規模な解析も、1 行のコードで安全に処理できます。
 
 ## 複数チャンネルの解析例
 
@@ -94,7 +108,10 @@ csd.plot().show()
 
 実行時にエラーが発生したり、プロットが表示されない場合は、[トラブルシューティング](troubleshooting.md) を確認してください。
 
-## 次のステップ
+<a id="next-to-read"></a>
+<a id="next-steps"></a>
+
+## 次に読む
 
 * [インストールガイド](installation.md) - 環境の構築
 * [はじめに](getting_started.md) - 体系的な学習ロードマップ

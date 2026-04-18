@@ -1,12 +1,29 @@
+.. meta::
+   :description: GWexpy tutorial index for notebook-based learning by data structure, workflow, difficulty, and analysis goal.
+
+.. _tutorials-en-entry:
+
 Tutorials
 =========
 
+.. note::
+   Page role: Guide index
+
 Learn how to use **GWexpy** through interactive examples.
+
+**Audience:** New users, GWpy users, and analysis practitioners who want step-by-step notebook-based learning.
+**Prerequisites:** A working GWexpy environment and familiarity with the basics in :doc:`../getting_started`.
+**Use this page for:** Choosing tutorials by data structure, workflow, and expected difficulty.
+**Search hints:** notebooks, Jupyter, tutorial index, beginner workflow, Field API, signal processing, interoperability
 
 .. tip::
    If you're new to GWexpy, we recommend starting with :doc:`../getting_started`.
 
 These tutorials are generated from Jupyter Notebook source files. To run them locally, download the corresponding ``.ipynb`` from ``docs/web/en/user_guide/tutorials/`` in the repository.
+
+.. note::
+   On this page:
+   Start with sections I-II for fundamentals, jump to III for Field API notebooks, use IV-VI for workflow-oriented analysis, and use VII for table-based segment analysis.
 
 .. note::
    Naming convention: tutorial titles follow the form "Feature: Task".
@@ -19,6 +36,12 @@ These tutorials are generated from Jupyter Notebook source files. To run them lo
 .. note::
    `Tutorials` are class- and feature-oriented examples.
    Theme-driven demonstrations that combine multiple features are collected in :doc:`../../examples/index` under `Case Studies`.
+
+.. note::
+   Reference bridge:
+   When you finish a tutorial and need exact classes, methods, or conventions, move to :doc:`../../reference/index`, then continue into :doc:`../../reference/api/index` or :doc:`../../reference/topics`.
+
+.. _tutorials-en-core-entry:
 
 I. Core Data Structures
 -----------------------
@@ -88,6 +111,8 @@ Tools for specific noise hunting and diagnostics tasks.
 
 - :doc:`Bruco: Basics <advanced_bruco>` :bdg-primary:`Advanced` :bdg-secondary:`45 min` :bdg-info:`Analysis Practitioners`
 
+.. _tutorials-en-segment-entry:
+
 VII. Segment Analysis
 ---------------------
 Table-based analysis for time segments.
@@ -101,6 +126,14 @@ Table-based analysis for time segments.
    Theme-driven demonstrations live in :doc:`../../examples/index`.
    See the case studies section for workflows such as noise budgeting,
    transfer function measurement, ML preprocessing, and event-synchronized analysis.
+
+.. seealso::
+   Next to read:
+
+   - :doc:`../getting_started` for the shortest path into the user guide
+   - :doc:`../../reference/index` for API, class, and topic lookup once you know what feature you need
+   - :doc:`../../reference/api/index` for category-by-category API browsing after a tutorial
+   - :doc:`../../reference/topics` for advanced/theory, conventions, and bridge pages
 
 .. toctree::
    :hidden:
